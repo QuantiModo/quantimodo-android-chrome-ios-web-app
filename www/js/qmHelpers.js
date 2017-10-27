@@ -2,37 +2,67 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
-    trackingReminderNotifications : []
+    trackingReminderNotifications : [],
+    platform : {
+        isChromeExtension: function (){
+            if(typeof chrome === "undefined"){
+                window.qmLog.debug(null, 'chrome is undefined', null, null);
+                return false;
+            }
+            if(typeof chrome.runtime === "undefined"){
+                window.qmLog.debug(null, 'chrome.runtime is undefined', null, null);
+                return false;
+            }
+            if(typeof chrome.alarms === "undefined"){
+                window.qmLog.debug(null, 'chrome.alarms is undefined', null, null);
+                return false;
+            }
+            window.qmLog.debug(null, 'isChromeExtension returns true', null, null);
+            return true;
+        }
+    },
+    globals: {}
 };
 window.apiPaths = {
     trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
 };
 window.notificationsHelper = {};
 window.userHelper = {};
-window.qmStorage = {
-    items: {
-        accessToken: 'accessToken',
-        apiUrl: 'apiUrl',
-        chromeWindowId: 'chromeWindowId',
-        clientId: 'clientId',
-        defaultHelpCards: 'defaultHelpCards',
-        deviceTokenOnServer: 'deviceTokenOnServer',
-        deviceTokenToSync: 'deviceTokenToSync',
-        drawOverAppsEnabled: 'drawOverAppsEnabled',
-        expiresAtMilliseconds: 'expiresAtMilliseconds',
-        lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
-        lastLatitude: 'lastLatitude',
-        lastLocationName: 'lastLocationName',
-        lastLocationPostUnixtime: 'lastLocationPostUnixtime',
-        lastLongitude: 'lastLongitude',
-        lastPushTimestamp: 'lastPushTimestamp',
-        notifications: 'trackingReminderNotifications',
-        refreshToken: 'refreshToken',
-        trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
-        trackingReminderNotifications: 'trackingReminderNotifications',
-        trackingReminders: 'trackingReminders',
-    }
+window.qmItems = {
+    accessToken: 'accessToken',
+    apiUrl: 'apiUrl',
+    chromeWindowId: 'chromeWindowId',
+    clientId: 'clientId',
+    defaultHelpCards: 'defaultHelpCards',
+    deviceTokenOnServer: 'deviceTokenOnServer',
+    deviceTokenToSync: 'deviceTokenToSync',
+    drawOverAppsEnabled: 'drawOverAppsEnabled',
+    expiresAtMilliseconds: 'expiresAtMilliseconds',
+    introSeen: 'introSeen',
+    lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
+    lastLatitude: 'lastLatitude',
+    lastLocationAddress: 'lastLocationAddress',
+    lastLocationName: 'lastLocationName',
+    lastLocationNameAndAddress: 'lastLocationNameAndAddress',
+    lastLocationPostUnixtime: 'lastLocationPostUnixtime',
+    lastLocationResultType: 'lastLocationResultType',
+    lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
+    lastLongitude: 'lastLongitude',
+    lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
+    lastPushTimestamp: 'lastPushTimestamp',
+    measurementsQueue: 'measurementsQueue',
+    mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
+    notifications: 'trackingReminderNotifications',
+    onboarded: 'onboarded',
+    refreshToken: 'refreshToken',
+    trackingReminderNotifications: 'trackingReminderNotifications',
+    trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
+    trackingReminders: 'trackingReminders',
+    trackingReminderSyncQueue: ' trackingReminderSyncQueue',
+    user: 'user',
+    userVariables: 'userVariables'
 };
+window.qmStorage = {};
 window.timeHelper = {};
 window.apiHelper = {};
 window.qmPush = {};
@@ -67,21 +97,12 @@ var appConfigFileNames = {
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
 if(!window.qmUser){
-    window.qmUser = localStorage.getItem(qmStorage.items.user);
+    window.qmUser = localStorage.getItem(qmItems.user);
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
     if(qm.trackingReminderNotifications){return qm.trackingReminderNotifications;}
-    return qm.trackingReminderNotifications = qmStorage.getAsObject(qmStorage.items.trackingReminderNotifications);
-};
-window.qmStorage.getItem = function(key){
-    var item = localStorage.getItem(key);
-    if (typeof item === "string"){
-        window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
-    } else {
-        window.qmLog.debug(key + ' not found in localStorage');
-    }
-    return item;
+    return qm.trackingReminderNotifications = qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
 // returns bool | string
 // if search param is found: returns its value
@@ -123,6 +144,14 @@ window.urlHelper = {
  };
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
+qm.getSourceName = function(){
+    return config.appSettings.appDisplayName + " for " + qm.getPlatform();
+};
+qm.getPlatform = function(){
+    if(qm.platform.isChromeExtension()){return "chromeExtension";}
+    if(window.location.href.indexOf('https://') !== -1){return "web";}
+    return 'mobile';
+};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -146,7 +175,7 @@ function getQuantiModoClientId() {
         window.qmLog.debug(null, 'Using clientIdFromQueryParams: ' + clientId, null);
         return clientId;
     }
-    if(!clientId){clientId = qmStorage.getItem(qmStorage.items.clientId);}
+    if(!clientId){clientId = qmStorage.getItem(qmItems.clientId);}
     if(clientId){
         window.qmLog.debug(null, 'Using clientId From localStorage: ' + clientId, null);
         return clientId;
@@ -188,14 +217,15 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = window.urlHelper.getParam(qmStorage.items.apiUrl);
-        if(!apiUrl){apiUrl = qmStorage.getItem(qmStorage.items.apiUrl);}
+        var apiUrl = window.urlHelper.getParam(qmItems.apiUrl);
+        if(!apiUrl){apiUrl = qmStorage.getItem(qmItems.apiUrl);}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
         if(!apiUrl){apiUrl = "https://app.quantimo.do";}
         if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
         apiUrl = apiUrl.replace("https://https", "https");
+        if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
@@ -206,23 +236,7 @@ var appsManager = { // jshint ignore:line
         if(getClientIdFromQueryParameters() === 'app'){return true;}
     }
 };
-window.isChromeExtension = function (){
-    if(typeof chrome === "undefined"){
-        window.qmLog.debug(null, 'chrome is undefined', null, null);
-        return false;
-    }
-    if(typeof chrome.runtime === "undefined"){
-        window.qmLog.debug(null, 'chrome.runtime is undefined', null, null);
-        return false;
-    }
-    if(typeof chrome.alarms === "undefined"){
-        window.qmLog.debug(null, 'chrome.alarms is undefined', null, null);
-        return false;
-    }
-    window.qmLog.debug(null, 'isChromeExtension returns true', null, null);
-    return true;
-};
-function getChromeManifest() {if(isChromeExtension()){return chrome.runtime.getManifest();}}
+function getChromeManifest() {if(qm.platform.isChromeExtension()){return chrome.runtime.getManifest();}}
 function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
     return window.urlHelper.getParam('appName');
@@ -239,7 +253,7 @@ function getAppVersion() {
 window.getAccessToken = function() {
     if(urlHelper.getParam('accessToken')){return urlHelper.getParam('accessToken');}
     if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
-    if(localStorage.accessToken){return localStorage.accessToken;}
+    if(qmStorage.getItem(qmItems.accessToken)){return qmStorage.getItem(qmItems.accessToken);}
     qmLog.info("No access token or user!");
     return null;
 };
@@ -287,7 +301,7 @@ function getAppHostName() {
     return "https://app.quantimo.do";
 }
 function openOrFocusChromePopupWindow(windowParams) {
-    if(!isChromeExtension()){return;}
+    if(!qm.platform.isChromeExtension()){return;}
     window.qmLog.info('openOrFocusChromePopupWindow checking if a window is already open', null, windowParams );
     function createWindow(windowParams) {
         qmLog.info("creating popup window", null, windowParams);
@@ -296,7 +310,7 @@ function openOrFocusChromePopupWindow(windowParams) {
             chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
         });
     }
-    var chromeWindowId = parseInt(qmStorage.getItem(qmStorage.items.chromeWindowId), null);
+    var chromeWindowId = parseInt(qmStorage.getItem(qmItems.chromeWindowId), null);
     if(!chromeWindowId){
         window.qmLog.info('openOrFocusChromePopupWindow: No window id from localStorage. Creating one...', windowParams );
         createWindow(windowParams);
@@ -319,14 +333,14 @@ function openOrFocusChromePopupWindow(windowParams) {
 }
 qmChrome.updateChromeBadge = function(numberOfNotifications){
     var text = "";
-    if(isChromeExtension() && typeof chrome.browserAction !== "undefined"){
+    if(qm.platform.isChromeExtension() && typeof chrome.browserAction !== "undefined"){
         if(numberOfNotifications){text = numberOfNotifications.toString();}
         if(numberOfNotifications > 9){text = "?";}
         chrome.browserAction.setBadgeText({text: text});
     }
 };
 function openChromePopup(notificationId, focusWindow) {
-    if(!isChromeExtension()){return;}
+    if(!qm.platform.isChromeExtension()){return;}
 	if(!notificationId){notificationId = null;}
 	var windowParams;
 	qmChrome.updateChromeBadge(0);
@@ -349,7 +363,7 @@ function openChromePopup(notificationId, focusWindow) {
 	}
 	if(notificationId){chrome.notifications.clear(notificationId);}
 }
-if(isChromeExtension()){
+if(qm.platform.isChromeExtension()){
     // Called when the notification is clicked
     chrome.notifications.onClicked.addListener(function(notificationId) {
         window.qmLog.debug(null, 'onClicked: notificationId:', null, notificationId);
@@ -391,7 +405,7 @@ function objectLength(obj) {
     return result;
 }
 function showSignInNotification() {
-    if(!isChromeExtension()){return;}
+    if(!qm.platform.isChromeExtension()){return;}
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, qmChrome.signInNotificationParams, function (id) {});
 }
@@ -404,7 +418,7 @@ qmStorage.setTrackingReminderNotifications = function(notifications){
     qmStorage.setLastNotificationsRefreshTime();
     qm.trackingReminderNotifications = notifications;
     qmChrome.updateChromeBadge(notifications.length);
-    qmStorage.setItem(qmStorage.items.trackingReminderNotifications, notifications);
+    qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
 };
 qmChrome.createSmallNotificationAndOpenInboxInBackground = function(){
     var notificationId = "inbox";
@@ -413,7 +427,7 @@ qmChrome.createSmallNotificationAndOpenInboxInBackground = function(){
     windowParams.focused = false;
     openOrFocusChromePopupWindow(windowParams);
 };
-notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams, alarm) {
+notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams) {
     var type = "GET";
     var route = apiPaths.trackingReminderNotificationsPast;
     if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){return;}
@@ -439,25 +453,39 @@ notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams
     xhr.send();
     return notificationParams;
 };
-userHelper.getUser = function(){
-    if(window.qmUser){return window.qmUser;}
-    window.qmUser = qmStorage.getAsObject('user');
-    return window.qmUser;
-};
-userHelper.withinAllowedNotificationTimes = function(){
-    if(userHelper.getUser()){
-        var now = new Date();
-        var hours = now.getHours();
-        var currentTime = hours + ':00:00';
-        if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
-            window.qmLog.info('Not showing notification because outside allowed time range');
-            return false;
+window.userHelper = {
+    getUser: function(){
+        if(window.qmUser){return window.qmUser;}
+        window.qmUser = qmStorage.getAsObject('user');
+        return window.qmUser;
+    },
+    setUser: function(user){
+        window.qmUser = user;
+        window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
+        if(urlHelper.getParam('doNotRemember')){return;}
+        qmLog.setupUserVoice();
+        qmStorage.setItem(qmItems.user, user);
+        if(!user.accessToken){
+            qmLog.error("User does not have access token!", null, {userToSave: user});
+        } else {
+            qmStorage.saveAccessToken(user);
         }
+    },
+    withinAllowedNotificationTimes: function(){
+        if(userHelper.getUser()){
+            var now = new Date();
+            var hours = now.getHours();
+            var currentTime = hours + ':00:00';
+            if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
+                window.qmLog.info('Not showing notification because outside allowed time range');
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 };
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(!isChromeExtension()){return;}
+    if(!qm.platform.isChromeExtension()){return;}
 	window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
     if(!userHelper.withinAllowedNotificationTimes()){return false;}
     if(notificationsHelper.getNumberInGlobalsOrLocalStorage()){
@@ -473,14 +501,14 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
 function IsJsonString(str) {
     try {
         JSON.parse(str);
-    } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+    } catch (exception) {
         return false;
     }
     return true;
 }
 window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
     var elementsToKeep = [];
-    var localStorageItemArray = JSON.parse(qmStorage.getItem(localStorageItemName));
+    var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
         window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
@@ -559,7 +587,7 @@ window.qmStorage.getTrackingReminderNotifications = function(variableCategoryNam
     var trackingReminderNotifications = window.qmStorage.getWithFilters('trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
     if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
     if(trackingReminderNotifications.length){
-        if (isChromeExtension()) {
+        if (qm.platform.isChromeExtension()) {
             //noinspection JSUnresolvedFunction
             qmChrome.updateChromeBadge(trackingReminderNotifications.length);
         }
@@ -579,7 +607,12 @@ window.qmStorage.deleteById = function(localStorageItemName, elementId){
 };
 window.qmStorage.removeItem = function(key){
     qmLog.debug("Removing " + key + " from local storage");
+    delete qm.globals[key];
     return localStorage.removeItem(key);
+};
+window.qmStorage.clear = function(){
+    localStorage.clear();
+    qm.globals = {};
 };
 window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemName, elementId){
     var localStorageItemAsString = qmStorage.getAsString(localStorageItemName);
@@ -599,7 +632,7 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     }
     // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
-    var localStorageItemArray = JSON.parse(qmStorage.getAsString(localStorageItemName));
+    var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     var found = false;
     if(localStorageItemArray){
         for(var i = 0; i < localStorageItemArray.length; i++){
@@ -616,10 +649,15 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     qmStorage.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
     return elementsToKeep;
 };
+window.qmStorage.setGlobal = function(key, value){qm.globals[key] = value;};
 window.qmStorage.setItem = function(key, value){
-    qm[key] = value;
+    if(value === qmStorage.getGlobal(key)){
+        qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + JSON.stringify(value));
+        return;
+    }
+    qmStorage.setGlobal(key, value);
     if(typeof value !== "string"){value = JSON.stringify(value);}
-    window.qmLog.debug(null, 'Setting localStorage.' + key + ' to ' + value.substring(0, 18) + '...', null, null);
+    window.qmLog.debug('Setting localStorage.' + key + ' to ' + value.substring(0, 18) + '...');
     try {
         localStorage.setItem(key, value);
     } catch (error) {
@@ -635,20 +673,37 @@ window.qmStorage.setItem = function(key, value){
         qmStorage.setItem(key, value);
     }
 };
+window.qmStorage.getGlobal = function(key){return (typeof qm.globals[key] !== "undefined") ? qm.globals[key] : null;};
+window.qmStorage.getItem = function(key){
+    if(qmStorage.getGlobal(key)){return qmStorage.getGlobal(key);}
+    var item = localStorage.getItem(key);
+    qm.globals[key] = parseIfJsonString(item);
+    if (typeof item === "string"){
+        window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
+    } else {
+        window.qmLog.debug(key + ' not found in localStorage');
+    }
+    return item;
+};
+var parseIfJsonString = function(stringOrObject) {
+    if(!stringOrObject){return stringOrObject;}
+    if(typeof stringOrObject !== "string"){return stringOrObject;}
+    try {
+        return JSON.parse(stringOrObject);
+    } catch (e) {
+        return stringOrObject;
+    }
+};
+qmStorage.getAsObject = function(key) {
+    var item = qmStorage.getItem(key);
+    item = parseIfJsonString(item);
+    qm[key] = item;
+    return item;
+};
 window.qmStorage.clearOAuthTokens = function(){
     window.qmStorage.setItem('accessToken', null);
     window.qmStorage.setItem('refreshToken', null);
     window.qmStorage.setItem('expiresAtMilliseconds', null);
-};
-var convertToObjectIfJsonString = function(stringOrObject) {
-    try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
-    return stringOrObject;
-};
-qmStorage.getAsObject = function(key) {
-    var item = qmStorage.getItem(key);
-    item = convertToObjectIfJsonString(item);
-    qm[key] = item;
-    return item;
 };
 window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
     function removeArrayElementsWithSameId(localStorageItem, elementToAdd) {
@@ -659,9 +714,7 @@ window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
         }
         return localStorageItem;
     }
-    var array = [];
-    var string = window.qmStorage.getItem(localStorageItemName);
-    if(string){array = JSON.parse(string);}
+    var array = window.qmStorage.getAsObject(localStorageItemName) || [];
     array = removeArrayElementsWithSameId(array, elementToAdd);
     array.push(elementToAdd);
     window.qmStorage.setItem(localStorageItemName, array);
@@ -676,7 +729,7 @@ window.qmStorage.saveAccessToken = function (accessResponse) {
         return;
     }
     var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-    if (refreshToken) {localStorage.refreshToken = refreshToken;}
+    if (refreshToken) {qmStorage.setItem(qmItems.refreshToken, refreshToken);}
     /** @namespace accessResponse.expiresAt */
     var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
     var expiresAtMilliseconds;
@@ -697,7 +750,7 @@ window.qmStorage.saveAccessToken = function (accessResponse) {
         qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
     }
     if(expiresAtMilliseconds){
-        localStorage.expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
+        qmStorage.setItem(qmItems.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
         return accessToken;
     } else {
         qmLog.error('No expiresAtMilliseconds!');
@@ -723,7 +776,7 @@ window.qmStorage.getMostRecentRatingNotification = function (){
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
         //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        qmStorage.deleteByProperty(qmStorage.items.notifications, 'variableName', notification.variableName);
+        qmStorage.deleteByProperty(qmItems.notifications, 'variableName', notification.variableName);
         return notification;
     } else {
         console.info('No rating notifications for popup');
@@ -760,7 +813,7 @@ window.qmStorage.deleteTrackingReminderNotification = function(body){
     }
 };
 window.qmNotifications.drawOverAppsEnabled = function(){
-    var drawOverAppsEnabled =  qmStorage.getItem(qmStorage.items.drawOverAppsEnabled);
+    var drawOverAppsEnabled =  qmStorage.getItem(qmItems.drawOverAppsEnabled);
     return drawOverAppsEnabled == 'true';
 };
 window.showAndroidPopupForMostRecentNotification = function(){
@@ -793,6 +846,7 @@ window.drawOverAppsPopup = function(path){
         window.qmLog.error(null, 'window.overApps is undefined!');
         return;
     }
+    if(!qmNotifications.canWeShowPopupYet()){return;}
     //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
         path: path,          // file path to display as view content.
@@ -811,6 +865,32 @@ window.drawOverAppsPopup = function(path){
         window.qmLog.error(null, 'startOverApp error: ' + err);
     });
 };
+qmNotifications.setLastPopupTime = function(){
+    qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, timeHelper.getUnixTimestampInSeconds());
+    return true;
+};
+qmNotifications.canWeShowPopupYet = function() {
+    var lastPopupNotificationUnixtimeSeconds = qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
+    if(!lastPopupNotificationUnixtimeSeconds){return qmNotifications.setLastPopupTime();}
+    var mostFrequentReminderIntervalInSeconds = qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
+    var secondsSinceLastPopup = timeHelper.getUnixTimestampInSeconds() - lastPopupNotificationUnixtimeSeconds;
+    if(secondsSinceLastPopup > mostFrequentReminderIntervalInSeconds){return qmNotifications.setLastPopupTime();}
+    qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + secondsSinceLastPopup +
+        ' seconds ago and mostFrequentReminderIntervalInSeconds is ' + mostFrequentReminderIntervalInSeconds);
+    return false;
+};
+qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
+    if(!trackingReminders){trackingReminders = qmStorage.getAsObject(qmItems.trackingReminders);}
+    var shortestInterval = 86400;
+    if(trackingReminders){
+        for (var i = 0; i < trackingReminders.length; i++) {
+            if(trackingReminders[i].reminderFrequency < shortestInterval){
+                shortestInterval = trackingReminders[i].reminderFrequency;
+            }
+        }
+    }
+    return shortestInterval/60;
+}
 window.timeHelper.getUnixTimestampInSeconds = function(dateTimeString) {
     if(!dateTimeString){dateTimeString = new Date().getTime();}
     return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
@@ -862,12 +942,11 @@ window.getUserFromApi = function(){
     xhr.open("GET", window.apiHelper.getRequestUrl("user/me"), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            window.qmUser = JSON.parse(xhr.responseText);
-            qmStorage.setItem('user', window.qmUser);
-            if (typeof window.qmUser.displayName !== "undefined") {
-                window.qmLog.debug(null, window.qmUser.displayName + ' is logged in.  ', null);
+            var userFromApi = JSON.parse(xhr.responseText);
+            if (userFromApi && typeof userFromApi.displayName !== "undefined") {
+                userHelper.setUser(userFromApi);
             } else {
-                if(isChromeExtension()){
+                if(qm.platform.isChromeExtension()){
                     var url = window.apiHelper.getRequestUrl("v2/auth/login");
                     chrome.tabs.create({"url": url, "selected": true});
                 }
@@ -877,18 +956,18 @@ window.getUserFromApi = function(){
     xhr.send();
 };
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmStorage.items.lastPushTimestamp);};
+window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmItems.lastPushTimestamp);};
 window.qmPush.getHoursSinceLastPush = function(){
-    return (window.timeHelper.getUnixTimestampInSeconds() - qmPush.getLastPushTimeStampInSeconds())/3600;
+    return Math.round((window.timeHelper.getUnixTimestampInSeconds() - qmPush.getLastPushTimeStampInSeconds())/3600);
 };
-if(isChromeExtension()) {
-    if (!localStorage.introSeen) {
+if(qm.platform.isChromeExtension()) {
+    if (!qmStorage.getItem(qmItems.introSeen)) {
         window.qmLog.info(null, 'introSeen false on chrome extension so opening intro window popup', null);
         window.qmStorage.setItem('introSeen', true);
         openOrFocusChromePopupWindow(qmChrome.introWindowParams);
     }
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
-        var notificationInterval = parseInt(localStorage.notificationInterval || "60");
+        var notificationInterval = parseInt(qmStorage.getItem(qmItems.notificationInterval) || "60");
         if (notificationInterval === -1) {
             chrome.alarms.clear("moodReportAlarm");
             window.qmLog.debug(null, 'Alarm cancelled', null);
@@ -903,7 +982,7 @@ if(isChromeExtension()) {
         if(ratingNotification){
             openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
             qmChrome.updateChromeBadge(0);
-        } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
+        } else if (qmStorage.getItem(qmItems.useSmallInbox) && qmStorage.getItem(qmItems.useSmallInbox) === "true") {
             openOrFocusChromePopupWindow(qmChrome.compactInboxWindowParams);
         } else if (alarm) {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);

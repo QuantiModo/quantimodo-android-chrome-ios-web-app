@@ -7,7 +7,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
-        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) == 'true');
+        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmItems.drawOverAppsEnabled) == 'true');
 		$rootScope.hideNavigationMenu = false;
 		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
@@ -71,7 +71,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
-				if(!qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
+				if(!qmStorage.getItem(qmItems.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
 					qmService.syncTrackingReminders();
 				}
@@ -173,8 +173,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function saveDeviceTokenToSyncWhenWeLogInAgain(){
 		// Getting token so we can post as the new user if they log in again
-		if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
-			qmStorage.setItem(qmStorage.items.deviceTokenToSync, qmStorage.getItem(qmStorage.items.deviceTokenOnServer));
+		if(qmStorage.getItem(qmItems.deviceTokenOnServer)){
+			qmStorage.setItem(qmItems.deviceTokenToSync, qmStorage.getItem(qmItems.deviceTokenOnServer));
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}
@@ -200,8 +200,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			window.qmStorage.clearOAuthTokens();
 			logOutOfWebsite();
-			window.localStorage.introSeen = false;
-			window.localStorage.onboarded = false;
+            window.qmStorage.setItem(qmItems.introSeen, false);
+            window.qmStorage.setItem(qmItems.onboarded, false);
 			qmService.goToState('app.intro');
 		};
 		var showDataClearPopup = function(ev){

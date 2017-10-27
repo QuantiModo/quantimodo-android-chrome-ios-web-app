@@ -32,7 +32,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     };
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
-        window.localStorage.onboarded = true;
+        window.qmStorage.setItem(qmItems.onboarded, true);
         qmService.goToState(config.appSettings.appDesign.defaultState);
     };
     $scope.goToReminderSearchFromOnboarding = function() {
@@ -57,7 +57,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     $scope.doneOnboarding = function () {
         qmService.goToState('app.remindersInbox');
         $rootScope.hideMenuButton = false;
-        window.localStorage.onboarded = true;
+        window.qmStorage.setItem(qmItems.onboarded, true);
         qmStorage.removeItem('onboardingPages');
     };
     $scope.hideOnboardingPage = function () {
