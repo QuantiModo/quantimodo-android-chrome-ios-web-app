@@ -38,7 +38,9 @@ var templateCache = require('gulp-angular-templatecache');
 var uglify      = require('gulp-uglify');
 var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
+var sourcemaps = require('gulp-sourcemaps');
 var useref = require('gulp-useref');
+var lazypipe = require('lazypipe');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
 
@@ -1245,8 +1247,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+
+    var sourceMapsWriteOptions = {
+        sourceRoot: "src/lib/",
+        includeContent: false
+    };
     return gulp.src("src/index.html")
-        .pipe(useref())      // Concatenate with gulp-useref
+        //.pipe(useref())      // Concatenate with gulp-useref
+        .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
+        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(jsFilter)
         .pipe(uglify())             // Minify any javascript sources
         .pipe(jsFilter.restore)
