@@ -675,8 +675,12 @@ window.qmStorage.setItem = function(key, value){
 };
 window.qmStorage.getGlobal = function(key){return (typeof qm.globals[key] !== "undefined") ? qm.globals[key] : null;};
 window.qmStorage.getItem = function(key){
-    if(qmStorage.getGlobal(key)){return qmStorage.getGlobal(key);}
+    if(qmStorage.getGlobal(key)){
+        qmLog.info("Got " + key + " from globals");
+        return qmStorage.getGlobal(key);
+    }
     var item = localStorage.getItem(key);
+    qmLog.info("Got " + key + " from localStorage");
     qm.globals[key] = parseIfJsonString(item);
     if (typeof item === "string"){
         window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');

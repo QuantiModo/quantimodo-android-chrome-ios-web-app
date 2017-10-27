@@ -1803,13 +1803,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        qmService.qmStorage.getAsStringWithCallback('connectors', function(connectors){
-            if(connectors){
-                connectors = JSON.parse(connectors);
-                connectors = hideBrokenConnectors(connectors);
-                deferred.resolve(connectors);
-            } else {qmService.refreshConnectors().then(function(){deferred.resolve(connectors);});}
-        });
+        var connectors = qmStorage.getAsObject('connectors');
+        if(connectors){
+            connectors = hideBrokenConnectors(connectors);
+            deferred.resolve(connectors);
+        } else {
+            qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
+        }
         return deferred.promise;
     };
     qmService.refreshConnectors = function(){
@@ -2493,10 +2493,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var yesterday = reference.clone().subtract(1, 'days').startOf('day');
         var weekOld = reference.clone().subtract(7, 'days').startOf('day');
         var monthOld = reference.clone().subtract(30, 'days').startOf('day');
-        var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-            /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
-            return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
-        });
+        try {
+            var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+                /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+            });
+        } catch (error) {
+            //qmLog.error(error, "notifications are: " + JSON.stringify(trackingReminderNotifications), {});
+            qmLog.error(error, "Trying again after JSON.parse(JSON.stringify(trackingReminderNotifications)). Why is this necessary?", {});
+            trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
+            var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+                /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+            });
+        }
         if (todayResult.length) {result.push({name: "Today", trackingReminderNotifications: todayResult});}
         var yesterdayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
             return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
@@ -4401,7 +4411,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
         if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
-            var mostFrequentIntervalInMinutes = getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
+            var mostFrequentIntervalInMinutes = qmNotifications.getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
             if(trackingRemindersFromApi){
                 for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                     if(trackingRemindersFromApi[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
@@ -6073,8 +6083,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 return trackingReminder.reminderFrequency === 0;
             });
         } catch (error){
-            reminderTypesArray.favorites = [];
-            qmLogService.error(error, {trackingReminders: trackingReminders});
+            // TODO: Why is this necessary?
+            qmLogService.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: trackingReminders});
+            trackingReminders = JSON.parse(JSON.stringify(trackingReminders));
+            reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency === 0;
+            });
+            //reminderTypesArray.favorites = [];
         }
         try {
             reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {

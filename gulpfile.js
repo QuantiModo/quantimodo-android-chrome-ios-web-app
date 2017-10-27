@@ -686,7 +686,8 @@ function createChromeManifest(outputPath) {
             'https://*.googleapis.com/*',
             'https://*.intercom.com/*',
             'https://*.intercom.io/*',
-            'https://*.googleapis.com/*'
+            'https://*.googleapis.com/*',
+            'https://*.google-analytics.com/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
