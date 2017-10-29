@@ -826,7 +826,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qmService.qmStorage.setItem('onboarded', true);
                 qmService.qmStorage.setItem('introSeen', true);
-                qmLogService.info(null, 'Setting onboarded and introSeen to true', null);
+                qmLogService.info('Setting onboarded and introSeen to true', null);
                 if($state.current.name !== 'app.login'){
                     qmLogService.info(null, 'Setting afterLoginGoToState and afterLoginGoToUrl to null', null);
                     qmService.qmStorage.setItem('afterLoginGoToState', null);

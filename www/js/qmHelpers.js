@@ -561,7 +561,7 @@ window.qmStorage.getLocalStorageList = function(summary){
         localStorageItemsArray.push({
             name: key,
             value: value,
-            kB: Math.round(qmStorage.getItem(key).length*16/(8*1024))
+            kB: Math.round(localStorage.getItem(key).length*16/(8*1024))
         });
     }
     return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
@@ -717,7 +717,7 @@ window.qmStorage.getItem = function(key){
     if (item && typeof item === "string"){
         qm.globals[key] = parseIfJsonString(item);
         window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
-        return item;
+        return qm.globals[key];
     } else {
         window.qmLog.debug(key + ' not found in localStorage');
     }
