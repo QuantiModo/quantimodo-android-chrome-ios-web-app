@@ -6038,7 +6038,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function processTrackingReminders(trackingReminders, variableCategoryName) {
         trackingReminders = qmService.filterByStringProperty(trackingReminders, 'variableCategoryName', variableCategoryName);
-        if(!trackingReminders || !trackingReminders.length){return {};}
+        //if(!trackingReminders || !trackingReminders.length){return {};}
         for(var i = 0; i < trackingReminders.length; i++){
             trackingReminders[i].total = null;
             if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
