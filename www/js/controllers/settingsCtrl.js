@@ -4,15 +4,15 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 										  $ionicPlatform) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
-	$scope.userEmail = qmService.getUrlParameter('userEmail');
+	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
-        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) == 'true');
+        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmItems.drawOverAppsEnabled) == 'true');
 		$rootScope.hideNavigationMenu = false;
-		if(qmService.getUrlParameter('userEmail')){
+		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
-			qmService.refreshUserEmailPreferencesDeferred({userEmail: qmService.getUrlParameter('userEmail')}, function(user){
+			qmService.refreshUserEmailPreferencesDeferred({userEmail: urlHelper.getParam('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
 				qmService.hideLoader();
@@ -71,7 +71,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
-				if(!qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
+				if(!qmStorage.getItem(qmItems.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
 					qmService.syncTrackingReminders();
 				}
@@ -89,7 +89,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
 		var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendReminderNotificationEmails){
             qmService.showMaterialAlert('Reminder Emails Enabled', "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email.", ev);
@@ -100,7 +100,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
             qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
@@ -173,8 +173,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function saveDeviceTokenToSyncWhenWeLogInAgain(){
 		// Getting token so we can post as the new user if they log in again
-		if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
-			qmStorage.setItem(qmStorage.items.deviceTokenToSync, qmStorage.getItem(qmStorage.items.deviceTokenOnServer));
+		if(qmStorage.getItem(qmItems.deviceTokenOnServer)){
+			qmStorage.setItem(qmItems.deviceTokenToSync, qmStorage.getItem(qmItems.deviceTokenOnServer));
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}
@@ -200,8 +200,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			window.qmStorage.clearOAuthTokens();
 			logOutOfWebsite();
-			window.localStorage.introSeen = false;
-			window.localStorage.onboarded = false;
+            window.qmStorage.setItem(qmItems.introSeen, false);
+            window.qmStorage.setItem(qmItems.onboarded, false);
 			qmService.goToState('app.intro');
 		};
 		var showDataClearPopup = function(ev){

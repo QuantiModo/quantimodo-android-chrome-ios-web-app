@@ -2,6 +2,7 @@
     <div id="helpInfoCardHeader" class="item item-avatar item-borderless">
         <i class="icon positive {{defaultHelpCards[0].icon}}" style="position: absolute; top: 15px; left: 15px;font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"></i>
         <p style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: black; font-size: 18px;">{{defaultHelpCards[0].title}}</p>
+        <i class="icon assertive ion-close-round" style="position: absolute; top: 15px; right: 15px; font-size: 30px;" ng-click="hideHelpCard(defaultHelpCards[0])"></i>
     </div>
     <div class="item item-body item-borderless" style="text-align: center;">{{defaultHelpCards[0].bodyText}}</div>
     <div ng-repeat="button in defaultHelpCards[0].buttons" >

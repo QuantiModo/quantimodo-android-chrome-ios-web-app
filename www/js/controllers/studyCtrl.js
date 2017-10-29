@@ -36,11 +36,11 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         robots();
     });
     function setupRequestParams() {
-        if(qmService.getUrlParameter("causeVariableName")){ $scope.state.requestParams.causeVariableName = qmService.getUrlParameter("causeVariableName", window.location.href, true); }
-        if(qmService.getUrlParameter("effectVariableName")){ $scope.state.requestParams.effectVariableName = qmService.getUrlParameter("effectVariableName", window.location.href, true); }
+        if(urlHelper.getParam("causeVariableName")){ $scope.state.requestParams.causeVariableName = urlHelper.getParam("causeVariableName", window.location.href, true); }
+        if(urlHelper.getParam("effectVariableName")){ $scope.state.requestParams.effectVariableName = urlHelper.getParam("effectVariableName", window.location.href, true); }
         if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
         if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
-        if(qmService.getUrlParameter("userId")){$scope.state.requestParams.userId = qmService.getUrlParameter("userId");}
+        if(urlHelper.getParam("userId")){$scope.state.requestParams.userId = urlHelper.getParam("userId");}
         if($rootScope.correlationObject && !$scope.state.requestParams.causeVariableName){
             $scope.state.requestParams = {
                 causeVariableName: $rootScope.correlationObject.causeVariableName,

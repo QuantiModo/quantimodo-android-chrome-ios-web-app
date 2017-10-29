@@ -38,7 +38,9 @@ var templateCache = require('gulp-angular-templatecache');
 var uglify      = require('gulp-uglify');
 var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
+var sourcemaps = require('gulp-sourcemaps');
 var useref = require('gulp-useref');
+var lazypipe = require('lazypipe');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
 
@@ -261,10 +263,16 @@ function uploadToS3(filePath) {
     }));
 }
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
-function execute(command, callback) {
+function execute(command, callback, suppressErrors) {
     logDebug('executing ' + command);
     var my_child_process = exec(command, function (error, stdout, stderr) {
-        if (error !== null) {logError('ERROR: exec ' + error);}
+        if (error !== null) {
+            if (suppressErrors) {
+                logInfo('ERROR: exec ' + error);
+            } else {
+                logError('ERROR: exec ' + error);
+            }
+        }
         callback(error, stdout);
     });
     my_child_process.stdout.pipe(process.stdout);
@@ -680,7 +688,8 @@ function createChromeManifest(outputPath) {
             'https://*.googleapis.com/*',
             'https://*.intercom.com/*',
             'https://*.intercom.io/*',
-            'https://*.googleapis.com/*'
+            'https://*.googleapis.com/*',
+            'https://*.google-analytics.com/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
@@ -1238,8 +1247,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+
+    var sourceMapsWriteOptions = {
+        sourceRoot: "src/lib/",
+        includeContent: false
+    };
     return gulp.src("src/index.html")
-        .pipe(useref())      // Concatenate with gulp-useref
+        //.pipe(useref())      // Concatenate with gulp-useref
+        .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
+        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(jsFilter)
         .pipe(uglify())             // Minify any javascript sources
         .pipe(jsFilter.restore)
@@ -1271,10 +1287,18 @@ gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    fastlaneSupply('beta', callback);
+    try {
+        fastlaneSupply('beta', callback, true);
+    } catch (error) {
+        logInfo(error);
+    }
 });
 gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    fastlaneSupply('production', callback);
+    try {
+        fastlaneSupply('production', callback, true);
+    } catch (error) {
+        logInfo(error);
+    }
 });
 gulp.task('ionicResources', function (callback) {
     executeCommand('ionic resources', callback);
@@ -1460,6 +1484,7 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
 });
 gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     logInfo('We have to reinstall DrawOverAppsPlugin with new client id to fix "package com.quantimodo.quantimodo does not exist" error');
+    var suppressErrors = true;
     execute("cordova plugin remove cordova-plugin-drawoverapps", function (error) {
         if (error !== null) {
             logError('ERROR: Failed to remove drawoverapps PLUGIN! error: ' + error);
@@ -1467,7 +1492,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
             logInfo('drawoverapps plugin REMOVED');
         }
         if(callback){callback();}
-    });
+    }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
     return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
@@ -1879,7 +1904,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(
-        'deleteSuccessFile',
+        //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
         'copyIonIconsToWww',
         'sass',

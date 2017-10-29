@@ -16,7 +16,7 @@ if(!window.qmUser){
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
-qmLog.loglevel = null;
+qmLog.loglevel = "info";
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}
@@ -29,12 +29,12 @@ window.stringifyIfNecessary = function(variable){
 };
 window.qmLog.getLogLevelName = function() {
     if(qmLog.loglevel){return qmLog.loglevel;}
-    if(getUrlParameter('debug') || getUrlParameter('debugMode')){
+    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
         qmLog.loglevel = "debug";
         return qmLog.loglevel;
     }
-    if(getUrlParameter('logLevel')){
-        qmLog.loglevel = getUrlParameter('logLevel');
+    if(urlHelper.getParam('logLevel')){
+        qmLog.loglevel = urlHelper.getParam('logLevel');
         return qmLog.loglevel;
     }
     return "error";
@@ -104,7 +104,22 @@ qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
         }
     }
     return metaData;
-}
+};
+window.qmLog.getEnv = function(){
+    var env = "production";
+    if(window.location.origin.indexOf('local') !== -1){env = "development";}
+    if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
+    if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
+    if(qmUser){
+        if(qmUser.email && qmUser.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if(qmUser.displayName && qmUser.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    }
+    if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
+    return env;
+};
+qmLog.envIsTesting = function(){
+    return qmLog.getEnv() === 'testing';
+};
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
     function obfuscateSecrets(object){
@@ -158,9 +173,12 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
     };
     metaData.push_data = {
-        "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
-        "deviceTokenToSync": localStorage.getItem('deviceTokenToSync'),
-        "last_push": window.qmPush.getHoursSinceLastPush() + " hours ago"
+        "deviceTokenOnServer": qmStorage.getItem(qmItems.deviceTokenOnServer),
+        "deviceTokenToSync": qmStorage.getItem(qmItems.deviceTokenToSync),
+        "last_push": window.qmPush.getTimeSinceLastPushString(),
+        "push enabled": qmPush.enabled(),
+        "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
+        "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
     metaData.local_storage = window.qmStorage.getLocalStorageList(true);
     if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
@@ -190,7 +208,53 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
     metaData = obfuscateSecrets(metaData);
     return metaData;
-}
+};
+window.qmLog.setupBugsnag = function(){
+    if (typeof Bugsnag !== "undefined") {
+        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+        Bugsnag.releaseStage = qmLog.getEnv();
+        if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
+        Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
+        if(typeof config !== "undefined"){
+            Bugsnag.appVersion = config.appSettings.versionNumber;
+            Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+        }
+        if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
+    } else {
+        qmLog.error('Bugsnag is not defined');
+    }
+};
+//window.qmLog.setupBugsnag();
+window.qmLog.setupUserVoice = function() {
+    if (typeof UserVoice !== "undefined") {
+        UserVoice.push(['identify', {
+            email: qmUser.email, // User’s email address
+            name: qmUser.displayName, // User’s real name
+            created_at: window.timeHelper.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
+            id: user.id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+            account: {
+                //id: 123, // Optional: associate multiple users with a single account
+                name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
+                //created_at: 1364406966, // Unix timestamp for the date the account was created
+                //monthly_rate: 9.99, // Decimal; monthly rate of the account
+                //ltv: 1495.00, // Decimal; lifetime value of the account
+                //plan: 'Subscribed' // Plan name for the account
+            }
+        }]);
+    }
+};
+window.qmLog.setupIntercom = function() {
+    window.intercomSettings = {
+        app_id: "uwtx2m33",
+        name: user.displayName,
+        email: user.email,
+        user_id: user.id,
+        app_name: config.appSettings.appDisplayName,
+        app_version: config.appSettings.versionNumber,
+        platform: qm.getPlatform()
+    };
+};
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
     if(typeof Bugsnag === "undefined"){ console.error('Bugsnag not defined'); return; }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
@@ -208,7 +272,7 @@ var logLevels = {
 };
 function getConsoleLogString(name, message, metaData, stackTrace){
     var logString = name;
-    if(logString !== message){logString = logString + ": " + message;}
+    if(message && logString !== message){logString = logString + ": " + message;}
     logString = addCallerFunctionToMessage(logString);
     if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
     if(metaData){logString = logString + ". metaData: " + metaData;}
@@ -230,6 +294,7 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
 window.qmLog.info = function (name, message, metaData, stackTrace) {
     name = name || message;
     metaData = metaData || null;
+    //console.info(name + ": " + message);
     if(!qmLog.shouldWeLog("info")){return;}
     message = addCallerFunctionToMessage(message);
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace));
