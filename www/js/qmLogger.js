@@ -51,7 +51,7 @@ window.qmLog.getStackTrace = function() {
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.info')).replace('window.qmLog.info', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.error')).replace('window.qmLog.error', '');
     return stackTrace;
-}
+};
 function addStackTraceToMessage(message, stackTrace) {
     if(message.toLowerCase().indexOf('stacktrace') !== -1){return message;}
     if(!stackTrace){stackTrace = qmLog.getStackTrace();}
@@ -180,7 +180,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
         "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
-    metaData.local_storage = window.qmStorage.getLocalStorageList(true);
+    if(qmLog.getDebugMode()){metaData.local_storage = window.qmStorage.getLocalStorageList(true);} // Too slow to do for every error
     if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
         metaData.build_server = config.appSettings.buildServer;
         metaData.build_link = config.appSettings.buildLink;
