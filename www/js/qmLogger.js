@@ -9,13 +9,14 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {};
+Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 var logMetaData = false;
 if(!window.qmUser){
     window.qmUser = localStorage.getItem('user');
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
-qmLog.loglevel = null;
+qmLog.loglevel = "info";
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}
@@ -207,7 +208,6 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
 };
 window.qmLog.setupBugsnag = function(){
     if (typeof Bugsnag !== "undefined") {
-        Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
         //Bugsnag.notifyReleaseStages = ['Production','Staging'];
         Bugsnag.releaseStage = qmLog.getEnv();
         if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
@@ -269,7 +269,7 @@ var logLevels = {
 };
 function getConsoleLogString(name, message, metaData, stackTrace){
     var logString = name;
-    if(logString !== message){logString = logString + ": " + message;}
+    if(message && logString !== message){logString = logString + ": " + message;}
     logString = addCallerFunctionToMessage(logString);
     if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
     if(metaData){logString = logString + ". metaData: " + metaData;}
@@ -291,6 +291,7 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
 window.qmLog.info = function (name, message, metaData, stackTrace) {
     name = name || message;
     metaData = metaData || null;
+    //console.info(name + ": " + message);
     if(!qmLog.shouldWeLog("info")){return;}
     message = addCallerFunctionToMessage(message);
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace));
