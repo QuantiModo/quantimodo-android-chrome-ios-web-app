@@ -1,20 +1,7 @@
 angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
     $scope.controller_name = "ChartsPageCtrl";
-    $scope.addReminderButtonText = "Add Reminder";
-    $scope.recordMeasurementButtonText = "Record Measurement";
-    $scope.lineChartConfig = false;
-    $scope.distributionChartConfig = false;
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.state = {
-        history : [],
-        dailyHistory : [],
-        sum : 0,
-        rangeLength : 0,
-        averageValue : 0,
-        offset: 0,
-        dailyHistoryOffset: 0,
-        title: "Charts"
-    };
+    $scope.state = {title: "Charts"};
     function getVariableName() {
         if($scope.variableName){return $scope.variableName;}
         $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
