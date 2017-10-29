@@ -788,7 +788,9 @@ window.qmStorage.saveAccessToken = function (accessResponse) {
         'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qmStorage.getAsString('user'),
         {groupingHash: groupingHash}, "error");
 };
-qmNotifications.deleteByVariableName = function(variableName){qmStorage.deleteByProperty(qmItems.notifications, 'variableName', variableName);};
+qmNotifications.deleteByVariableName = function(variableName){
+    qmStorage.deleteByProperty(qmItems.notifications, 'variableName', variableName);
+};
 qmNotifications.deleteById = function(id){qmStorage.deleteById(qmItems.trackingReminderNotifications, id);};
 qmNotifications.undo = function(){
     var notificationsSyncQueue = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
@@ -1077,4 +1079,5 @@ if(qm.platform.isChromeExtension()) {
         window.qmLog.info(null, 'onAlarm Listener heard this alarm ', null, alarm);
         qmChrome.showRatingOrInboxPopup(alarm);
     });
+    if(userHelper.getUser()){qmChrome.showRatingOrInboxPopup();}
 }

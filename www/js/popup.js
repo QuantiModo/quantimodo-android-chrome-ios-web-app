@@ -1,5 +1,5 @@
 /** @namespace window.qmLog */
-var originalHeight;
+var ratingPopupHeight, ratingPopupWidth;
 function clearNotifications() {
     if(typeof chrome === "undefined"){ window.qmLog.debug(null, 'Can\'t clearNotifications because chrome is undefined', null, null); return;}
     qmChrome.updateChromeBadge(0);
@@ -49,7 +49,6 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodOk") {ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
-    hidePopup();
     if(window.trackingReminderNotification){
         window.trackingReminderNotification.action = 'track';
         window.trackingReminderNotification.modifiedValue = ratingValue;
@@ -60,9 +59,8 @@ var onFaceButtonClicked = function() {
         if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
-            //hidePopup();
+            hidePopup();
             window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
-            //closePopup();
         }
         return;
     } else {
@@ -84,40 +82,12 @@ var onFaceButtonClicked = function() {
     closePopup();
 };
 function hidePopup() {
-    console.log('hidePopup');
-    window.qmLog.info('hidePopup');
-    //originalHeight = 56;
-    //var sectionRate = document.getElementById("sectionRate");
-    //var loader = document.getElementById("loader");
-    //var question = document.getElementById("question");
-    if (document.getElementsByTagName("body")[0]) {
-        originalHeight = document.getElementsByTagName("body")[0].style.height;
-        document.getElementsByTagName("body")[0].style.height = "0px";
-    } else {
-        window.qmLog.error('document.getElementsByTagName(body)[0] does not exist');
-    }
-    //sectionRate.className = "invisible";
-    //sectionRate.style.display = "none";
-    //question.className = "invisible";
-    //question.style.display = "none";
-    //loader.style.display = "block";
-    //loader.className = "visible";
+    window.qmLog.info('hidePopup: resizing to ' + ratingPopupWidth + " x 0 ");
+    window.resizeTo(ratingPopupWidth, 0);
 }
 function unHidePopup() {
-    window.qmLog.info('unHidePopup');
-    //var sectionRate = document.getElementById("sectionRate");
-    //var question = document.getElementById("question");
-    if (document.getElementsByTagName("body")[0]) {
-        document.getElementsByTagName("body")[0].style.height = originalHeight;
-    } else {
-        window.qmLog.error('document.getElementsByTagName(body)[0] does not exist');
-    }
-    //sectionRate.className = "visible";
-    //sectionRate.style.display = "block";
-    //question.className = "visible";
-    //question.style.display = "block";
-    //loader.style.display = "block";
-    //loader.className = "visible";
+    window.qmLog.info('unHidePopup: resizing to ' + ratingPopupWidth + " x " + ratingPopupHeight);
+    window.resizeTo(ratingPopupWidth, ratingPopupHeight);
 }
 // function hideLoader() {
 //     var sectionRate = document.getElementById("sectionRate");
@@ -158,7 +128,6 @@ function closePopup() {
     }
 }
 function updateQuestion(variableName) {
-    unHidePopup();
     var questionText = "How is your " + variableName.toLowerCase() + "?";
     window.qmLog.info(null, 'Updating question to ' + questionText);
     document.getElementById("question").innerHTML = questionText;
@@ -179,6 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
     window.resizeBy(wDiff, hDiff);
+    ratingPopupHeight = window.innerHeight;
+    ratingPopupWidth = window.innerWidth;
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
     window.notificationsHelper.refreshIfEmpty();
