@@ -117,40 +117,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
         qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
-    var showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
-        var title = 'Share Variable';
-        var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
-            ' measurements publicly visible? You can make them private again at any time on this page.';
-        function yesCallback() {
-            variableObject.shareUserMeasurements = true;
-            var body = {variableId: variableObject.id, shareUserMeasurements: true};
-            qmService.showBlackRingLoader();
-            qmService.postUserVariableDeferred(body).then(function () {
-                qmService.hideLoader();
-                qmService.openSharingUrl(sharingUrl);
-            }, function (error) {
-                qmService.hideLoader();
-                qmLogService.error(error);
-            });
-        }
-        function noCallback() {variableObject.shareUserMeasurements = false;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    var showUnshareVariableConfirmation = function(variableObject, ev) {
-        var title = 'Share Variable';
-        var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
-            ' and ' + variableObject.name + ' measurements private? Links to studies you ' +
-            'previously shared with this variable will no longer work.';
-        function yesCallback() {
-            variableObject.shareUserMeasurements = false;
-            var body = {variableId: variableObject.id, shareUserMeasurements: false};
-            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {qmLogService.error(error);});
-        }
-        function noCallback() {variableObject.shareUserMeasurements = true;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
     $scope.toggleVariableShare = function (variableObject, ev) {
-        if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject, ev);} else {showUnshareVariableConfirmation(variableObject, ev);}
+        if(variableObject.shareUserMeasurements){qmService.showShareVariableConfirmation(variableObject, ev);} else {qmService.showUnshareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
         qmLogService.debug(null, 'Set ' + flagName + ' to true', null);

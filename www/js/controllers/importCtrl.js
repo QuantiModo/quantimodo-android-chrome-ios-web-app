@@ -16,7 +16,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	});
 	$scope.hideImportHelpCard = function () {
 		$scope.showImportHelpCard = false;
-		window.localStorage.hideImportHelpCard = true;
+        window.qmStorage.setItem(qmItems.hideImportHelpCard, true);
 	};
 	var goToWebImportDataPage = function() {
 		qmLogService.debug(null, 'importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
@@ -49,7 +49,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		});
 	};
 	var loadNativeConnectorPage = function(){
-		$scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
+		$scope.showImportHelpCard = (window.qmStorage.getItem(qmItems.hideImportHelpCard) !== "true");
 		qmService.showBlackRingLoader();
 		qmService.getConnectorsDeferred()
 			.then(function(connectors){
