@@ -64,6 +64,8 @@ var onFaceButtonClicked = function() {
             //closePopup();
         }
         return;
+    } else {
+        qmLog.error("No window.trackingReminderNotification to post or add to queue!");
     }
     var request = {
         message: "uploadMeasurements",
