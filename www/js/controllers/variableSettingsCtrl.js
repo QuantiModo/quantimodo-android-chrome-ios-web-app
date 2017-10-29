@@ -3,9 +3,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     function getVariableName() {
-        if($stateParams.variableName){return $stateParams.variableName;}
-        $stateParams.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams);
-        if($stateParams.variableName){return $stateParams.variableName;}
+        if($scope.variableName){return $scope.variableName;}
+        $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
+        if($scope.variableName){return $scope.variableName;}
         $scope.goBack();
     }
     function getLocalVariableObject() {
