@@ -273,7 +273,7 @@ function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
 function getChromeRatingNotificationParams(trackingReminderNotification){
     return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
-        left: screen.width - 380, width: 390, height: 110, focused: true}
+        left: screen.width - 380, width: 390, height: 110, focused: true};
 }
 function addGlobalQueryParameters(url) {
     if (window.getAccessToken()) {
@@ -794,8 +794,8 @@ qmNotifications.undo = function(){
     var notificationsSyncQueue = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
     if(!notificationsSyncQueue){ return false; }
     notificationsSyncQueue[0].hide = false;
-    qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.trackingReminderNotifications, notificationsSyncQueue[0]);
-    qmService.qmStorage.deleteByProperty(qmItems.notificationsSyncQueue, 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.trackingReminderNotifications, notificationsSyncQueue[0]);
+    qmStorage.deleteByProperty(qmItems.notificationsSyncQueue, 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 };
 window.qmStorage.getMostRecentRatingNotification = function (){
     var ratingNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
@@ -852,7 +852,7 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
-    qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
+    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
     if(!qmNotifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
