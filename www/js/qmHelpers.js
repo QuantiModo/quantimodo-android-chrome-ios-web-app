@@ -891,14 +891,29 @@ qmNotifications.setLastPopupTime = function(){
     qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, timeHelper.getUnixTimestampInSeconds());
     return true;
 };
+qmNotifications.getTimeSinceLastPopupString = function(){
+    return timeHelper.getTimeSinceString()
+};
+qmNotifications.getLastPopupUnixtime = function(){
+    return qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
+};
+qmNotifications.getSecondsSinceLastPopup = function(){
+    return timeHelper.getUnixTimestampInSeconds() - qmNotifications.getLastPopupUnixtime();
+};
+qmNotifications.getMostFrequentReminderIntervalInSeconds = function(){
+    return qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
+};
 qmNotifications.canWeShowPopupYet = function() {
-    var lastPopupNotificationUnixtimeSeconds = qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
-    if(!lastPopupNotificationUnixtimeSeconds){return qmNotifications.setLastPopupTime();}
-    var mostFrequentReminderIntervalInSeconds = qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
-    var secondsSinceLastPopup = timeHelper.getUnixTimestampInSeconds() - lastPopupNotificationUnixtimeSeconds;
-    if(secondsSinceLastPopup > mostFrequentReminderIntervalInSeconds){return qmNotifications.setLastPopupTime();}
-    qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + secondsSinceLastPopup +
-        ' seconds ago and mostFrequentReminderIntervalInSeconds is ' + mostFrequentReminderIntervalInSeconds);
+    if(!qmNotifications.getLastPopupUnixtime()){
+        qmNotifications.setLastPopupTime();
+        return true;
+    }
+    if(qmNotifications.getSecondsSinceLastPopup() > qmNotifications.getMostFrequentReminderIntervalInSeconds()){
+        qmNotifications.setLastPopupTime();
+        return true;
+    }
+    qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + qmNotifications.getTimeSinceLastPopupString() +
+        ' and getMostFrequentReminderIntervalInMinutes is ' + qmNotifications.getMostFrequentReminderIntervalInMinutes());
     return false;
 };
 qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
@@ -1001,6 +1016,9 @@ window.isTestUser = function(){return window.qmUser && window.qmUser.displayName
 window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmItems.lastPushTimestamp);};
 window.qmPush.getHoursSinceLastPush = function(){
     return Math.round((window.timeHelper.secondsAgo(qmPush.getLastPushTimeStampInSeconds()))/3600);
+};
+window.qmPush.getTimeSinceLastPushString = function(){
+    return timeHelper.getTimeSinceString(qmPush.getLastPushTimeStampInSeconds());
 };
 if(qm.platform.isChromeExtension()) {
     if (!qmStorage.getItem(qmItems.introSeen)) {
