@@ -704,7 +704,7 @@ window.qmStorage.getItem = function(key){
         window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
         return item;
     } else {
-        window.qmLog.info(key + ' not found in localStorage');
+        window.qmLog.debug(key + ' not found in localStorage');
     }
     return null;
 };
