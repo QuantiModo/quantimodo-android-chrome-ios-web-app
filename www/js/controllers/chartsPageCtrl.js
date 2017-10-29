@@ -17,28 +17,17 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     };
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
-        if(urlHelper.getParam('variableName')){
-            $stateParams.variableName = urlHelper.getParam('variableName', window.location.href, true);
-        } else if ($stateParams.variableObject) {
-            $stateParams.variableName = $stateParams.variableObject.name;
-        } else if ($rootScope.variableObject) {
-            $stateParams.variableName = $rootScope.variableObject.name;
-        } else if ($stateParams.trackingReminder){
-            $stateParams.variableName = $stateParams.trackingReminder.variableName;
-        } else if (qmService.getPrimaryOutcomeVariable()){
-            $stateParams.variableName = qmService.getPrimaryOutcomeVariable().name;
-        } else {
-            $scope.goBack();
-        }
-        return $stateParams.variableName;
+        $stateParams.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams);
+        if($stateParams.variableName){return $stateParams.variableName;}
+        $scope.goBack();
     }
-    function getVariableObject() {
+    function getScopedVariableObject() {
         if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
         if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
         return $rootScope.variableObject;
     }
     function initializeCharts() {
-        if(!getVariableObject() || !getVariableObject().charts){
+        if(!getScopedVariableObject() || !getScopedVariableObject().charts){
             qmService.showBlackRingLoader();
             getCharts();
         } else {
@@ -53,9 +42,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 $scope.$broadcast('scroll.refreshComplete');
             });
     }
-    $scope.refreshCharts = function () {
-        getCharts(true);
-    };
+    $scope.refreshCharts = function () {getCharts(true);};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         $rootScope.variableName = getVariableName();

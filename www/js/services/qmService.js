@@ -3939,7 +3939,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.refreshUserVariableByNameDeferred = function (variableName, params) {
         var deferred = $q.defer();
-        params.includeTags = true;
+        if(!params){params = {includeTags: true};}
         qmService.getVariablesByNameFromApi(variableName, params, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
@@ -7386,6 +7386,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         function noCallback() {variableObject.shareUserMeasurements = true;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
+    qmService.getVariableNameFromStateParamsRootScopeOrUrl = function($stateParams) {
+        if($stateParams.variableName){return $stateParams.variableName;}
+        if(urlHelper.getParam('variableName')){
+            $stateParams.variableName = urlHelper.getParam('variableName', window.location.href, true);
+        } else if ($stateParams.variableObject) {
+            $stateParams.variableName = $stateParams.variableObject.name;
+        } else if ($rootScope.variableObject) {
+            $stateParams.variableName = $rootScope.variableObject.name;
+        } else if ($stateParams.trackingReminder){
+            $stateParams.variableName = $stateParams.trackingReminder.variableName;
+        } else if (qmService.getPrimaryOutcomeVariable()){
+            $stateParams.variableName = qmService.getPrimaryOutcomeVariable().name;
+        }
+        return $stateParams.variableName;
     };
     return qmService;
 });
