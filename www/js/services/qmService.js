@@ -1859,32 +1859,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return connectors;
     }
-    // Name: The error message associated with the error. Usually this will
-    // contain some information about this specific instance of the
-    // error and is not used to group the errors (optional, default
-    // none). (searchable)
-    // Message: The error message associated with the error. Usually this will
-    // contain some information about this specific instance of the
-    // error and is not used to group the errors (optional, default
-    // none). (searchable)
-    qmService.bugsnagNotify = function(name, message, metaData, severity){
-        if(!metaData){ metaData = {}; }
-        metaData.groupingHash = name;
-        if(!metaData.stackTrace){ metaData.stackTrace = new Error().stack; }
-        var deferred = $q.defer();
-        if(!severity){ severity = "error"; }
-        if(!message){ message = name; }
-        qmLogService.error('NAME: ' + name + '. MESSAGE: ' + message + '. METADATA: ' + JSON.stringify(metaData));
-        qmLogService.setupBugsnag().then(function () {
-            Bugsnag.notify(name, message, metaData, severity);
-            deferred.resolve();
-        }, function (error) {
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-
     var geoLocationDebug = false;
     qmService.getLocationInfoFromFoursquareOrGoogleMaps = function (latitude, longitude) {
         if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){qmLogService.error('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + longitude + ' and latitude,' + latitude);}
@@ -1940,9 +1914,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     qmService.qmStorage.updateLocation = function (geoLookupResult) {
         if(getLocationNameFromResult(geoLookupResult)) {qmStorage.setItem(qmItems.lastLocationName, getLocationNameFromResult(geoLookupResult));}
-        if(geoLookupResult.type){qmStorage.setItem(qmItems.lastLocationResultType, geoLookupResult.type);} else {qmService.bugsnagNotify('Geolocation error', "No geolocation lookup type", geoLookupResult);}
-        if(geoLookupResult.latitude){qmStorage.setItem(qmItems.lastLatitude, geoLookupResult.latitude);} else {qmService.bugsnagNotify('Geolocation error', "No latitude!", geoLookupResult);}
-        if(geoLookupResult.longitude){qmStorage.setItem(qmItems.lastLongitude, geoLookupResult.longitude);} else {qmService.bugsnagNotify('Geolocation error', "No longitude!", geoLookupResult);}
+        if(geoLookupResult.type){qmStorage.setItem(qmItems.lastLocationResultType, geoLookupResult.type);} else {qmLogService.error('Geolocation error', "No geolocation lookup type", geoLookupResult);}
+        if(geoLookupResult.latitude){qmStorage.setItem(qmItems.lastLatitude, geoLookupResult.latitude);} else {qmLogService.error('Geolocation error', "No latitude!", geoLookupResult);}
+        if(geoLookupResult.longitude){qmStorage.setItem(qmItems.lastLongitude, geoLookupResult.longitude);} else {qmLogService.error('Geolocation error', "No longitude!", geoLookupResult);}
         qmStorage.setItem(qmItems.lastLocationUpdateTimeEpochSeconds, window.timeHelper.getUnixTimestampInSeconds());
         if(geoLookupResult.address) {
             qmStorage.setItem(qmItems.lastLocationAddress, geoLookupResult.address);
@@ -7050,7 +7024,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 push.on('registration', function(registerResponse) {
                     qmService.logEventToGA(qmAnalytics.eventCategories.pushNotifications, "registered");
                     qmLogService.info(null, 'Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse), null);
-                    if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
+                    if(!registerResponse.registrationId){qmLogService.error('No registerResponse.registrationId from push registration');}
                     qmLogService.info(null, 'Got device token for push notifications: ' + registerResponse.registrationId, null);
                     var deviceTokenOnServer = qmStorage.getItem(qmItems.deviceTokenOnServer);
                     if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
