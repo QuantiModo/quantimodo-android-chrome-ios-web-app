@@ -176,7 +176,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "deviceTokenOnServer": qmStorage.getItem(qmItems.deviceTokenOnServer),
         "deviceTokenToSync": qmStorage.getItem(qmItems.deviceTokenToSync),
         "last_push": window.qmPush.getTimeSinceLastPushString(),
-        "push enabled": userHelper.getUser().pushNotificationsEnabled,
+        "push enabled": qmPush.enabled(),
         "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
         "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
