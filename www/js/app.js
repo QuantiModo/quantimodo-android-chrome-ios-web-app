@@ -1214,10 +1214,10 @@ angular.module('starter',
             }
         });
 
-    if (!qmStorage.introSeen) {
+    if (!qmStorage.getItem(qmItems.introSeen)) {
         //console.debug("Intro not seen so setting default route to intro");
         $urlRouterProvider.otherwise('/');
-    } else if (!qmStorage.getItem(qmStorage.g)) {
+    } else if (!qmStorage.getItem(qmItems.onboarded)) {
         //console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
