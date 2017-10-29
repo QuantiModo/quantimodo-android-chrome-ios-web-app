@@ -61,6 +61,7 @@ window.qmItems = {
     trackingReminders: 'trackingReminders',
     trackingReminderSyncQueue: ' trackingReminderSyncQueue',
     user: 'user',
+    useSmallInbox: 'useSmallInbox',
     userVariables: 'userVariables'
 };
 window.qmStorage = {};
@@ -102,8 +103,7 @@ if(!window.qmUser){
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
-    if(qm.trackingReminderNotifications){return qm.trackingReminderNotifications;}
-    return qm.trackingReminderNotifications = qmStorage.getAsObject(qmItems.trackingReminderNotifications);
+    return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
 qmStorage.getUserVariableByName = function (variableName) {
     var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
@@ -425,7 +425,6 @@ window.apiHelper.getRequestUrl = function(path) {
 };
 qmStorage.setTrackingReminderNotifications = function(notifications){
     qmNotifications.setLastNotificationsRefreshTime();
-    qm.trackingReminderNotifications = notifications;
     qmChrome.updateChromeBadge(notifications.length);
     qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
 };
@@ -639,7 +638,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.info(null, 'qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray), null);
+    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
@@ -647,7 +646,7 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     var found = false;
-    if(localStorageItemArray){
+    if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
         for(var i = 0; i < localStorageItemArray.length; i++){
             found = false;
             for (var j = 0; j < replacementElementArray.length; j++){
@@ -821,7 +820,7 @@ window.notificationsHelper.refreshIfEmpty = function(){
         window.qmLog.info('No notifications in local storage');
         notificationsHelper.refreshNotifications();
     } else {
-        window.qmLog.info(count + ' notifications in local storage');
+        window.qmLog.info(notificationsHelper.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
     }
 };
 window.qmStorage.deleteTrackingReminderNotification = function(body){
@@ -1021,22 +1020,27 @@ if(qm.platform.isChromeExtension()) {
         }
     });
     window.qmChrome.showRatingOrInboxPopup = function (alarm) {
-        var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
-        if(ratingNotification){
-            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
+        window.trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
+        if(window.trackingReminderNotification){
+            qmLog.info("Opening rating notification popup");
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
             qmChrome.updateChromeBadge(0);
         } else if (qmStorage.getItem(qmItems.useSmallInbox) && qmStorage.getItem(qmItems.useSmallInbox) === "true") {
+            qmLog.info("No rating notifications so opening compactInboxWindow popup");
             openOrFocusChromePopupWindow(qmChrome.compactInboxWindowParams);
         } else if (alarm) {
+            qmLog.info("Got an alarm and no rating notifications so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         } else if (notificationsHelper.getNumberInGlobalsOrLocalStorage()) {
+            qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
             qmChrome.createSmallNotificationAndOpenInboxInBackground();
         } else {
+            qmLog.info("No notifications in localStorage so refreshIfEmpty");
             notificationsHelper.refreshIfEmpty();
         }
     };
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
-        window.qmLog.debug(null, 'onAlarm Listener heard this alarm ', null, alarm);
+        window.qmLog.info(null, 'onAlarm Listener heard this alarm ', null, alarm);
         qmChrome.showRatingOrInboxPopup(alarm);
     });
 }
