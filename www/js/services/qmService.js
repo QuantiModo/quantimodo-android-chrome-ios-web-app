@@ -7387,7 +7387,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         function noCallback() {variableObject.shareUserMeasurements = true;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    qmService.getVariableNameFromStateParamsRootScopeOrUrl = function($stateParams) {
+    qmService.getVariableNameFromStateParamsRootScopeOrUrl = function($stateParams, $scope) {
+        if($scope.variableName){return $scope.variableName;}
         if($stateParams.variableName){return $stateParams.variableName;}
         if(urlHelper.getParam('variableName')){
             $stateParams.variableName = urlHelper.getParam('variableName', window.location.href, true);

@@ -16,9 +16,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         title: "Charts"
     };
     function getVariableName() {
-        if($stateParams.variableName){return $stateParams.variableName;}
-        $stateParams.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams);
-        if($stateParams.variableName){return $stateParams.variableName;}
+        if($scope.variableName){return $scope.variableName;}
+        $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
+        if($scope.variableName){return $scope.variableName;}
         $scope.goBack();
     }
     function getScopedVariableObject() {
