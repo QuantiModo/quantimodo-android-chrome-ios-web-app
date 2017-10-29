@@ -933,7 +933,8 @@ window.drawOverAppsPopup = function(path){
         window.qmLog.error(null, 'startOverApp error: ' + err);
     });
 };
-qmNotifications.setLastPopupTime = function(){
+qmNotifications.setLastPopupTime = function(time){
+    if(typeof time === "undefined"){time = timeHelper.getUnixTimestampInSeconds();}
     qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, timeHelper.getUnixTimestampInSeconds());
     return true;
 };

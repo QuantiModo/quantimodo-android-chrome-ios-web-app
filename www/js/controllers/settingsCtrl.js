@@ -309,6 +309,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
     }
     if($rootScope.isAndroid){
     	$scope.togglePushNotificationsEnabled = function(){
+    		qmNotifications.setLastPopupTime(null);
     		// Toggle is done by the HTML
             //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
             qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
