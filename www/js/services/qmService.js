@@ -1,3 +1,6 @@
+/** @namespace window.qmLog */
+/** @namespace window.qmNotifications */
+/** @namespace window.qmStorage */
 angular.module('starter').factory('qmService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
                                                         $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, 
                                                         $ionicActionSheet) {
@@ -780,7 +783,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmLogService.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
             return;
         }
-        qmService.qmStorage.deleteByProperty('trackingReminderNotifications', 'trackingReminderId', trackingReminderId);
+        qmService.qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
         qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler,
             errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
     };
@@ -2120,9 +2123,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
-        var trackingReminderNotificationsArray = qmStorage.getAsObject('notificationsSyncQueue');
+        var trackingReminderNotificationsArray = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
         qmLogService.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray), null);
-        qmStorage.removeItem('notificationsSyncQueue');
+        qmStorage.removeItem(qmItems.notificationsSyncQueue);
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
             deferred.resolve();
@@ -2132,11 +2135,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(successHandler){successHandler(response);}
             deferred.resolve(response);
         }, function(error){
-            var newNotificationsSyncQueue = qmStorage.getAsObject('notificationsSyncQueue');
+            var newNotificationsSyncQueue = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
             if(newNotificationsSyncQueue){
                 trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
             }
-            qmService.qmStorage.setItem('notificationsSyncQueue', JSON.stringify(trackingReminderNotificationsArray));
+            qmService.qmStorage.setItem(qmItems.notificationsSyncQueue, JSON.stringify(trackingReminderNotificationsArray));
             if(errorHandler){errorHandler();}
             deferred.reject(error);
         });
@@ -2160,15 +2163,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
-        qmService.qmStorage.deleteById('trackingReminderNotifications', trackingReminderNotification.id);
         trackingReminderNotification.action = 'skip';
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('notificationsSyncQueue', trackingReminderNotification);
+        qmNotifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
         return deferred.promise;
     };
     qmService.skipAllTrackingReminderNotificationsDeferred = function(params){
         var deferred = $q.defer();
-        qmStorage.removeItem('trackingReminderNotifications');
+        qmStorage.removeItem(qmItems.trackingReminderNotifications);
         qmService.skipAllTrackingReminderNotifications(params, function(response){
             if(response.success) {deferred.resolve();} else {deferred.reject();}
         }, function(error){
@@ -2177,12 +2179,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return deferred.promise;
     };
+    /**
+     * @param trackingReminderNotification
+     * @param trackAll
+     */
     qmService.trackTrackingReminderNotificationDeferred = function(trackingReminderNotification, trackAll){
         var deferred = $q.defer();
         qmLogService.debug(null, 'qmService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(trackingReminderNotification), null);
         if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
-            var notificationFromLocalStorage = qmStorage.getElementById('trackingReminderNotifications',
-                trackingReminderNotification.trackingReminderNotificationId);
+            var notificationFromLocalStorage = qmStorage.getElementOfLocalStorageItemById(qmItems.trackingReminderNotifications, trackingReminderNotification.trackingReminderNotificationId);
             if(notificationFromLocalStorage){
                 if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
                     notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
@@ -2191,19 +2196,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
-        qmService.qmStorage.deleteById('trackingReminderNotifications', trackingReminderNotification.id);
         trackingReminderNotification.action = 'track';
         if(trackAll){trackingReminderNotification.action = 'trackAll';}
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('notificationsSyncQueue', trackingReminderNotification);
+        qmNotifications.addToSyncQueue(trackingReminderNotification);
         if(trackAll){scheduleNotificationSync(1);} else {scheduleNotificationSync();}
         return deferred.promise;
     };
-    qmService.snoozeTrackingReminderNotificationDeferred = function(body){
+    qmService.snoozeTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
-        qmService.qmStorage.deleteById('trackingReminderNotifications', body.id);
-        body.action = 'snooze';
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('notificationsSyncQueue', body);
+        trackingReminderNotification.action = 'snooze';
+        qmNotifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
         return deferred.promise;
     };
