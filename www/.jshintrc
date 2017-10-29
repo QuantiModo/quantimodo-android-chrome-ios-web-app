@@ -56,6 +56,6 @@
     "qmUser": false,
     "userHelper": false,
     "urlHelper": false,
-    "Quantimodo": false
+    "qmAnalytics": false
   }
 }
