@@ -639,7 +639,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.info(null, 'qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray), null);
+    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
@@ -647,7 +647,7 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     var found = false;
-    if(localStorageItemArray){
+    if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
         for(var i = 0; i < localStorageItemArray.length; i++){
             found = false;
             for (var j = 0; j < replacementElementArray.length; j++){

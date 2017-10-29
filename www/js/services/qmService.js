@@ -3937,9 +3937,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return deferred.promise;
     };
-    qmService.refreshUserVariableByNameDeferred = function (variableName) {
+    qmService.refreshUserVariableByNameDeferred = function (variableName, params) {
         var deferred = $q.defer();
-        var params = {includeTags : true};
+        params.includeTags = true;
         qmService.getVariablesByNameFromApi(variableName, params, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
@@ -3964,21 +3964,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //variables = addVariableCategoryInfo(variables);
         return variables;
     };
-    qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function(name, params, refresh){
+    qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
         var deferred = $q.defer();
-        var userVariables = qmStorage.getAsObject(qmItems.userVariables);
-        if(!refresh && userVariables){
-            for(var i = 0; i < userVariables.length; i++){
-                if(userVariables[i].name === name){
-                    qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables[i]);
-                    deferred.resolve(userVariables[i]);
-                    return;
+        if(!refresh){
+            var userVariable = qmStorage.getUserVariableByName(name);
+            if(userVariable){
+                if(typeof params.includeCharts === "undefined" || userVariable.charts){
+                    deferred.resolve(userVariable);
+                    return deferred.promise;
                 }
             }
         }
-        qmService.getVariablesByNameFromApi(name, params, function(variable){
-            qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, variable);
-            deferred.resolve(variable);
+        qmService.getVariablesByNameFromApi(name, params, function(userVariable){
+            qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
+            deferred.resolve(userVariable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
