@@ -6994,11 +6994,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(qmStorage.getItem(qmItems.deviceTokenOnServer)){template = template + '\r\n' + "deviceTokenOnServer: " + qmStorage.getItem(qmItems.deviceTokenOnServer) + '\r\n' + '\r\n';}
             if(qmStorage.getItem(qmItems.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qmStorage.getItem(qmItems.deviceTokenToSync) + '\r\n' + '\r\n';}
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
-            if(qmStorage.getItem(qmItems.lastPushTimestamp)){
-                template = template + '\r\n' + "lastPushReceived: " + convertUnixTimeStampToISOString(qmStorage.getItem(qmItems.lastPushTimestamp)) + '\r\n' + '\r\n';
-            } else {
-                template + '\r\n' + "lastPushReceived: NEVER " + '\r\n' + '\r\n';
-            }
+            template = template + "user.pushNotificationsEnabled: " + userHelper.getUser().pushNotificationsEnabled + '\r\n';
+            template = template + "lastPushReceived: " + qmPush.getTimeSinceLastPushString() + '\r\n';
+            template = template + "drawOverAppsEnabled: " + qmNotifications.drawOverAppsEnabled() + '\r\n';
+            template = template + "last popup: " + qmNotifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
             template = template + "User ID: " + $rootScope.user.id + '\r\n';
