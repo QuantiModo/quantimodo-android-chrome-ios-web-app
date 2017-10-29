@@ -54,12 +54,12 @@ var onFaceButtonClicked = function() {
         window.trackingReminderNotification.modifiedValue = ratingValue;
         if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
         window.notificationsSyncQueue.push(window.trackingReminderNotification);
-        window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
-        window.trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
-        if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
+        //window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
+        if(window.qmNotifications.setFirstUniqueRatingNotificationFromWindow() && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
             hidePopup();
+            qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
             window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
         }
         return;
