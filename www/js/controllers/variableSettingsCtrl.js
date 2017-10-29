@@ -2,31 +2,35 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                  $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
+    function getVariableName() {
+        if($scope.variableName){return $scope.variableName;}
+        $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
+        if($scope.variableName){return $scope.variableName;}
+        $scope.goBack();
+    }
+    function getLocalVariableObject() {
+        if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
+        if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
+        if(!$rootScope.variableObject){$rootScope.variableObject = qmStorage.getUserVariableByName(getVariableName());}
+        return $rootScope.variableObject;
+    }
+    function initializeVariableSettings() {
+        if(!getLocalVariableObject()){
+            qmService.showBlackRingLoader();
+            refreshUserVariable();
+        } else {
+            qmService.hideLoader();
+        }
+    }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
-        qmLogService.debug(null, $state.current.name + ' initializing...', null);
-        $scope.loading = true;
-        if($stateParams.variableObject){
-            qmService.setupVariableByVariableObject($stateParams.variableObject);
-            refreshUserVariable($stateParams.variableObject.name);
-        } else if ($stateParams.variableName) {
-            $rootScope.variableName = $stateParams.variableName;
-            $scope.getUserVariableByName($rootScope.variableName);
-            refreshUserVariable($rootScope.variableName);
-        } else if ($rootScope.variableObject) {
-            qmService.setupVariableByVariableObject($rootScope.variableObject);
-            refreshUserVariable($rootScope.variableObject.name);
-        } else {
-            qmLogService.error(null, 'Variable name not provided to variable settings controller!');
-            qmService.goToState(config.appSettings.appDesign.defaultState);
-            //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
-        }
+        initializeVariableSettings();
     });
-    function getTruncatedVariableName(variableName) {
-        if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
-    }
     function refreshUserVariable(variableName) {
-        qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
+        qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){
+            qmService.hideLoader();
+            $rootScope.variableObject = userVariable;
+        });
     }
     $rootScope.showActionSheetMenu = function() {
         qmLogService.debug(null, 'variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, $rootScope.variableObject);
@@ -36,7 +40,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 qmService.actionSheetButtons.addReminder,
                 qmService.actionSheetButtons.charts,
                 qmService.actionSheetButtons.history,
-                { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
+                { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName($rootScope.variableObject.name)},
                 { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
@@ -351,7 +355,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
             qmService.hideLoader();
-            qmLogService.error(null, error);
+            qmLogService.error(error);
         });
     };
 });
