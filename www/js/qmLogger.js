@@ -175,7 +175,10 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     metaData.push_data = {
         "deviceTokenOnServer": qmStorage.getItem(qmItems.deviceTokenOnServer),
         "deviceTokenToSync": qmStorage.getItem(qmItems.deviceTokenToSync),
-        "last_push": window.qmPush.getHoursSinceLastPush() + " hours ago"
+        "last_push": window.qmPush.getTimeSinceLastPushString(),
+        "push enabled": qmPush.enabled(),
+        "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
+        "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
     metaData.local_storage = window.qmStorage.getLocalStorageList(true);
     if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
