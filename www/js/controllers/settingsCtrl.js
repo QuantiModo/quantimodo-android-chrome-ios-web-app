@@ -7,7 +7,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
-        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmItems.drawOverAppsEnabled) == 'true');
+        $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
 		$rootScope.hideNavigationMenu = false;
 		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
