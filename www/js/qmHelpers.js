@@ -479,10 +479,11 @@ window.userHelper = {
     },
     setUser: function(user){
         window.qmUser = user;
+        qmStorage.setItem(qmItems.user, user);
+        if(!user){return;}
         window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
         if(urlHelper.getParam('doNotRemember')){return;}
         qmLog.setupUserVoice();
-        qmStorage.setItem(qmItems.user, user);
         if(!user.accessToken){
             qmLog.error("User does not have access token!", null, {userToSave: user});
         } else {
@@ -879,8 +880,7 @@ window.qmStorage.deleteTrackingReminderNotification = function(body){
     }
 };
 window.qmNotifications.drawOverAppsEnabled = function(){
-    var drawOverAppsEnabled =  qmStorage.getItem(qmItems.drawOverAppsEnabled);
-    return drawOverAppsEnabled == 'true';
+    return qmStorage.getItem(qmItems.drawOverAppsEnabled);
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
@@ -942,7 +942,7 @@ qmNotifications.setLastPopupTime = function(time){
     return true;
 };
 qmNotifications.getTimeSinceLastPopupString = function(){
-    return timeHelper.getTimeSinceString()
+    return timeHelper.getTimeSinceString(qmNotifications.getLastPopupUnixtime());
 };
 qmNotifications.getLastPopupUnixtime = function(){
     return qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
