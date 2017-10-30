@@ -1683,6 +1683,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
         nonAdvancedUnitObjects.push(showMoreUnitsObject);
+        manualTrackingUnitObjects.push(showMoreUnitsObject);
         nonAdvancedUnitsIndexedByAbbreviatedName[showMoreUnitsObject.abbreviatedName] = showMoreUnitsObject;
         $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;

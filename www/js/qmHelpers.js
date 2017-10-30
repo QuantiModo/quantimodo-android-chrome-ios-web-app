@@ -5,6 +5,8 @@ window.qm = {
     apiPaths: {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
+    api: {},
+    unitHelper: {},
     trackingReminderNotifications : [],
     platform: {
         isChromeExtension: function (){
@@ -62,6 +64,7 @@ window.qmItems = {
     trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
     trackingReminders: 'trackingReminders',
     trackingReminderSyncQueue: ' trackingReminderSyncQueue',
+    units: 'units',
     user: 'user',
     useSmallInbox: 'useSmallInbox',
     userVariables: 'userVariables'
