@@ -2,16 +2,7 @@
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content style="background-color: #f2f2f2">
         <div class="card" >
-            <div ng-show="state.helpText" class="item item-text-wrap">
-                <div>
-                    <div>
-                        <!--<span class="heading positive">Track {{state.measurement.variableCategoryName}}</span>-->
-                        <ul class="from-top">
-                            <li>{{state.helpText}}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <div ng-show="state.helpText" class="item item-text-wrap"> <ul class="from-top"> <li>{{state.helpText}}</li> </ul> </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
                 <input ng-model="state.variableSearchQuery.name"

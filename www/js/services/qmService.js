@@ -1577,6 +1577,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             qmService.addToMeasurementsQueue(measurementInfo);
         }
+        qm.userVariables.updateLatestMeasurementTime(measurementInfo.variableName);
         if(measurementInfo.variableName === qmService.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {

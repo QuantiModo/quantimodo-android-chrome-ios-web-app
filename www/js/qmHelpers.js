@@ -21,7 +21,8 @@ window.qm = {
             return true;
         }
     },
-    globals: {}
+    globals: {},
+    userVariables: {}
 };
 window.apiPaths = {
     trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
@@ -106,11 +107,12 @@ if(!window.qmUser){
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
     return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
-qmStorage.getUserVariableByName = function (variableName) {
+qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurmentTime) {
     var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
     if(!userVariables || !userVariables.length){return null;}
     var userVariable = userVariables[0];
     userVariable.lastAccessedUnixtime = timeHelper.getUnixTimestampInSeconds();
+    if(updateLatestMeasurmentTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
     return userVariable;
 };
@@ -164,6 +166,7 @@ qm.getPlatform = function(){
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
 };
+qm.userVariables.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);}
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -881,6 +884,7 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
+    qm.userVariables.updateLatestMeasurementTime(trackingReminderNotification.variableName);
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
