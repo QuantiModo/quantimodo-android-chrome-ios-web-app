@@ -166,7 +166,7 @@ qm.getPlatform = function(){
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
 };
-qm.userVariables.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);}
+qm.userVariables.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
