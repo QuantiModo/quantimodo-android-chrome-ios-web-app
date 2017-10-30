@@ -82,7 +82,7 @@
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
-  <plugin name="de.appplant.cordova.plugin.local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications#94563ec3431eaf633bc9b8e0c89eae66c7ce2ad6" />
+  <plugin name="de.appplant.cordova.plugin.local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications#53262c8242e9b932758d2086071865e27909204f" />
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
   <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
     <variable name="REVERSED_CLIENT_ID" value="REVERSED_CLIENT_ID_PLACEHOLDER" />
