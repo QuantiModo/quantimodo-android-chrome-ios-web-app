@@ -3942,7 +3942,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //variables = addVariableCategoryInfo(variables);
         return variables;
     };
+    qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
+        if(!variableName){name = qmService.getPrimaryOutcomeVariable().name;}
+        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
+            .then(function (variableObject) {
+                $rootScope.variableObject = variableObject;
+                qmService.hideLoader();
+                if(successHandler){successHandler();}
+            });
+    }
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
+        if(!name){name = qmService.getPrimaryOutcomeVariable().name;}
         var deferred = $q.defer();
         if(!refresh){
             var userVariable = qmStorage.getUserVariableByName(name);

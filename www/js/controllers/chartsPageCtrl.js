@@ -22,12 +22,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         }
     }
     function getCharts(refresh) {
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
-            .then(function (variableObject) {
-                $rootScope.variableObject = variableObject;
-                qmService.hideLoader();
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+        qmService.setRootScopeVariableWithCharts(getVariableName(), refresh, function (variableObject) {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
     }
     $scope.refreshCharts = function () {getCharts(true);};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name);
