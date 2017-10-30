@@ -1577,6 +1577,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             qmService.addToMeasurementsQueue(measurementInfo);
         }
+        qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName);
         if(measurementInfo.variableName === qmService.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
@@ -2229,7 +2230,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
             options.blockRequests = true;
         }
-        if(!canWeMakeRequestYet('GET', apiPaths.trackingReminderNotificationsPast, options)){
+        if(!canWeMakeRequestYet('GET', qm.apiPaths.trackingReminderNotificationsPast, options)){
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
         }

@@ -2,8 +2,11 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
+    apiPaths: {
+        trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
+    },
     trackingReminderNotifications : [],
-    platform : {
+    platform: {
         isChromeExtension: function (){
             if(typeof chrome === "undefined"){
                 window.qmLog.debug(null, 'chrome is undefined', null, null);
@@ -21,10 +24,8 @@ window.qm = {
             return true;
         }
     },
-    globals: {}
-};
-window.apiPaths = {
-    trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
+    globals: {},
+    userVariableHelper: {}
 };
 window.notificationsHelper = {};
 window.userHelper = {};
@@ -106,11 +107,12 @@ if(!window.qmUser){
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
     return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
-qmStorage.getUserVariableByName = function (variableName) {
+qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime) {
     var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
     if(!userVariables || !userVariables.length){return null;}
     var userVariable = userVariables[0];
     userVariable.lastAccessedUnixtime = timeHelper.getUnixTimestampInSeconds();
+    if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
     return userVariable;
 };
@@ -164,6 +166,7 @@ qm.getPlatform = function(){
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
 };
+qm.userVariableHelper.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -440,7 +443,7 @@ qmChrome.createSmallNotificationAndOpenInboxInBackground = function(){
 };
 notificationsHelper.refreshNotifications = function(callback) {
     var type = "GET";
-    var route = apiPaths.trackingReminderNotificationsPast;
+    var route = qm.apiPaths.trackingReminderNotificationsPast;
     if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){return;}
     var xhr = new XMLHttpRequest();
     xhr.open(type, window.apiHelper.getRequestUrl(route), false);
@@ -881,6 +884,7 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
+    qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName);
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
@@ -982,10 +986,10 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.qmNotifications.setLastNotificationsRefreshTime = function(){
-    window.qmStorage.setLastRequestTime("GET", apiPaths.trackingReminderNotificationsPast);
+    window.qmStorage.setLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
 };
 window.qmNotifications.getLastNotificationsRefreshTime = function(){
-    var lastTime = window.qmStorage.getLastRequestTime("GET", apiPaths.trackingReminderNotificationsPast);
+    var lastTime = window.qmStorage.getLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
     qmLog.info("Last notifications refresh " + timeHelper.getTimeSinceString(lastTime));
     return lastTime;
 };
@@ -1103,7 +1107,7 @@ if(qm.platform.isChromeExtension()) {
             qmLog.info("Opening rating notification popup");
             openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
             qmChrome.updateChromeBadge(0);
-        } else if (qmStorage.getItem(qmItems.useSmallInbox) && qmStorage.getItem(qmItems.useSmallInbox) === "true") {
+        } else if (qmStorage.getItem(qmItems.useSmallInbox)) {
             qmLog.info("No rating notifications so opening compactInboxWindow popup");
             openOrFocusChromePopupWindow(qmChrome.compactInboxWindowParams);
         } else if (alarm) {
