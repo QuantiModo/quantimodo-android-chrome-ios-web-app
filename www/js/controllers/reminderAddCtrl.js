@@ -53,7 +53,9 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             { id : 14, name : 'Every 4 weeks'}
         ]
     };
-    if($rootScope.user && $rootScope.user.administrator){$scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});}
+    if($rootScope.user && ($rootScope.user.administrator || $rootScope.user.email.toLowerCase().indexOf('test') > -1)){
+        $scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});
+    }
     if(!$rootScope.user){qmService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info(null, 'ReminderAddCtrl beforeEnter...', null);
         var backView = $ionicHistory.backView();
