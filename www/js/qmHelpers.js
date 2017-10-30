@@ -938,7 +938,7 @@ qmNotifications.setLastPopupTime = function(time){
     return true;
 };
 qmNotifications.getTimeSinceLastPopupString = function(){
-    return timeHelper.getTimeSinceString()
+    return timeHelper.getTimeSinceString(qmNotifications.getLastPopupUnixtime());
 };
 qmNotifications.getLastPopupUnixtime = function(){
     return qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
