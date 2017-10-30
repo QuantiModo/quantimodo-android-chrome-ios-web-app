@@ -645,8 +645,7 @@ window.qmStorage.clear = function(){
     qm.globals = {};
 };
 window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemName, elementId){
-    var localStorageItemAsString = qmStorage.getAsString(localStorageItemName);
-    var localStorageItemArray = JSON.parse(localStorageItemAsString);
+    var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
         console.warn("Local storage item " + localStorageItemName + " not found");
     } else {
@@ -933,7 +932,8 @@ window.drawOverAppsPopup = function(path){
         window.qmLog.error(null, 'startOverApp error: ' + err);
     });
 };
-qmNotifications.setLastPopupTime = function(){
+qmNotifications.setLastPopupTime = function(time){
+    if(typeof time === "undefined"){time = timeHelper.getUnixTimestampInSeconds();}
     qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, timeHelper.getUnixTimestampInSeconds());
     return true;
 };
