@@ -706,7 +706,13 @@ window.qmStorage.setItem = function(key, value){
         qmStorage.setItem(key, value);
     }
 };
-window.qmStorage.getGlobal = function(key){return (typeof qm.globals[key] !== "undefined") ? qm.globals[key] : null;};
+window.qmStorage.getGlobal = function(key){
+    if(typeof qm.globals[key] === "undefined"){return null;}
+    if(qm.globals[key] === "false"){return false;}
+    if(qm.globals[key] === "true"){return true;}
+    if(qm.globals[key] === "null"){return null;}
+    return qm.globals[key];
+};
 window.qmStorage.getItem = function(key){
     if(!key){
         qmLog.error("No key provided to qmStorage.getItem")
