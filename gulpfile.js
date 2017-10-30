@@ -548,6 +548,15 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
         value: (buildSettings.xwalkMultipleApk) ? true : false}});
     return parsedXmlFile;
 }
+function outputPluginConfig(folderName) {
+    var pluginXmlPath = 'plugins/' + folderName + '/plugin.xml';
+    try {
+        var xml = fs.readFileSync(pluginXmlPath, 'utf8');
+        console.log(prettyJSONStringify(xml));
+    } catch (error) {
+        logError("Could not get plugin config from " + pluginXmlPath);
+    }
+}
 function generateConfigXmlFromTemplate(callback) {
     //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
     var configXmlPath = 'config-template-shared.xml';
@@ -2174,6 +2183,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
             + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
+    outputPluginConfig('de.appplant.cordova.plugin.local-notification');
+    outputPluginConfig('cordova-plugin-local-notifications');
     runSequence(
         'copyAndroidLicenses',
         'bowerInstall',
