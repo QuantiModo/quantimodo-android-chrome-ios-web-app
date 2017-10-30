@@ -944,7 +944,7 @@ window.drawOverAppsPopup = function(path){
 };
 qmNotifications.setLastPopupTime = function(time){
     if(typeof time === "undefined"){time = timeHelper.getUnixTimestampInSeconds();}
-    qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, timeHelper.getUnixTimestampInSeconds());
+    qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, time);
     return true;
 };
 qmNotifications.getTimeSinceLastPopupString = function(){
