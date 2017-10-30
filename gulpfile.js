@@ -1511,12 +1511,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
-    // Using nofetch to fix Failed to restore plugin "cordova-plugin-drawoverapps" from config.xml. You might need to try adding it again. Error: Failed to fetch plugin git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git via git.
-    // Either there is a connection problems, or plugin spec is incorrect:
-    //     Error: git: Command failed with exit code 128 Error output:
-    //     Cloning into '/tmp/git/1509376697734'...
-    //     fatal: Unable to find remote helper for 'git+https'
-    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git --nofetch", function (error) {
+    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
         if (error !== null) {
             logError('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
         } else {
