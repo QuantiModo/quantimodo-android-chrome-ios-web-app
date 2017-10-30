@@ -4,7 +4,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.state = $stateParams;
     $scope.state.searching = true;
     $scope.state.variableSearchResults = [];
-    $scope.state.variableSearchParameters = {};
+    //$scope.state.variableSearchParameters = {};  DON'T OVERWRITE $stateParams.variableSearchParameters
     $scope.state.variableSearchQuery = {name:''};
     if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
