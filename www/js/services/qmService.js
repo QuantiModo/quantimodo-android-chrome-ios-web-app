@@ -813,6 +813,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             successHandler,
             errorHandler);
     };
+    qmService.getVariableCategoryNameFromStateParamsOrUrl = function($stateParams, $scope){
+        var variableCategoryName;
+        if ($scope && $scope.state && $scope.state.variableSearchParameters && $scope.state.variableSearchParameters.variableCategoryName) {
+            variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;
+        } else if ($stateParams && $stateParams.variableCategoryName) {
+            variableCategoryName = $stateParams.variableCategoryName;
+        } else if (urlHelper.getParam('variableCategoryName')){
+            variableCategoryName = urlHelper.getParam('variableCategoryName');
+        }
+        if(variableCategoryName && variableCategoryName !== "Anything"){return variableCategoryName;}
+        return null;
+    };
     qmService.getAccessTokenFromCurrentUrl = function(){
         qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
         return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
