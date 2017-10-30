@@ -69,6 +69,8 @@ general:
       - /feature\/.*/ # or ignore regexes
   artifacts:
     - "platforms/android/build/outputs/apk"
+    - "plugins/de.appplant.cordova.plugin.local-notification"
+    - "plugins/cordova-plugin-local-notifications"
     #- "dropbox"
 
 deployment:
