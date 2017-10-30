@@ -7309,6 +7309,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
             var noText = 'No';
             function yesCallback() {
+                qmNotifications.setLastPopupTime(null);
                 qmService.qmStorage.setItem(qmItems.drawOverAppsEnabled, true);
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
