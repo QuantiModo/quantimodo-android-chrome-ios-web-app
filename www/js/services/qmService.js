@@ -7057,7 +7057,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     push.finish(function () {qmLogService.debug(null, 'processing of push data is finished: ' + JSON.stringify(data), null);});
                     data.deviceToken = qmStorage.getItem(qmItems.deviceTokenOnServer);
-                    if(true || data.additionalData.acknowledge){
+                    if(data.additionalData.acknowledge){
                         qmService.logEventToGA(qmAnalytics.eventCategories.pushNotifications, "sendAcknowledgement");
                         $http.post(apiHelper.getRequestUrl("v1/trackingReminderNotification/received"), data)
                             .success(function (response) {
