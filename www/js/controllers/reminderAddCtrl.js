@@ -4,6 +4,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {
+        units: $rootScope.nonAdvancedUnitObjects,
         showAddVariableCard : false,
         showReminderFrequencyCard : false,
         showUnits: false,
@@ -369,13 +370,21 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         setupVariableCategory(variableCategoryName);
         showMoreUnitsIfNecessary();
     };
+    function showAllUnits() {
+        $scope.state.showMoreUnits = true;
+        $scope.state.moreUnits = $rootScope.unitObjects;
+    }
+    function showManualTrackingUnits() {
+        $scope.state.showMoreUnits = true;
+        $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
+    }
     var showMoreUnitsIfNecessary = function () {
-        if($scope.state.trackingReminder.unitAbbreviatedName && !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
+        if($scope.state.trackingReminder.unitAbbreviatedName &&
+            !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
             if($rootScope.manualTrackingUnitObjects[$scope.state.trackingReminder.unitAbbreviatedName]){
-                $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
+                showManualTrackingUnits();
             } else {
-                $scope.state.showMoreUnits = true;
-                $scope.state.moreUnits = $rootScope.unitObjects;
+                showAllUnits();
             }
         }
     };
@@ -454,13 +463,21 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             $scope.state.hideDefaultValueField = true;
         } else {$scope.state.hideDefaultValueField = false;}
     }
+    function showMoreUnits(){
+        if($scope.state.units === $rootScope.nonAdvancedUnitObjects){
+            $scope.state.units = $rootScope.manualTrackingUnitObjects;
+        } else {
+            $scope.state.units = $rootScope.unitObjects;
+        }
+        $scope.state.showMoreUnits = true;
+        $scope.state.trackingReminder.unitAbbreviatedName = null;
+        $scope.state.trackingReminder.unitName = null;
+        $scope.state.trackingReminder.unitId = null;
+    }
     $scope.unitSelected = function(){
         $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
         if($scope.state.trackingReminder.unitAbbreviatedName === 'Show more units'){
-            $scope.state.showMoreUnits = true;
-            $scope.state.trackingReminder.unitAbbreviatedName = null;
-            $scope.state.trackingReminder.unitName = null;
-            $scope.state.trackingReminder.unitId = null;
+            showMoreUnits();
         } else {
             qmLogService.debug(null, 'selecting_unit', null, $scope.state.trackingReminder.unitAbbreviatedName);
             $scope.state.trackingReminder.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name;
