@@ -877,8 +877,7 @@ window.qmStorage.deleteTrackingReminderNotification = function(body){
     }
 };
 window.qmNotifications.drawOverAppsEnabled = function(){
-    var drawOverAppsEnabled =  qmStorage.getItem(qmItems.drawOverAppsEnabled);
-    return drawOverAppsEnabled == 'true';
+    return qmStorage.getItem(qmItems.drawOverAppsEnabled);
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
