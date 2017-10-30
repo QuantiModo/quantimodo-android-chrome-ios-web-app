@@ -12,7 +12,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug(null, $state.current.name + ' beforeEnter...', null);
         $rootScope.hideNavigationMenu = false;
-        $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams, $scope);
+        $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
         if ($scope.state.variableSearchParameters.variableCategoryName) {
             $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
