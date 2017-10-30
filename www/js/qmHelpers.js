@@ -436,6 +436,7 @@ qmStorage.setTrackingReminderNotifications = function(notifications){
     qmNotifications.setLastNotificationsRefreshTime();
     qmChrome.updateChromeBadge(notifications.length);
     qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
+    window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
 };
 qmChrome.createSmallNotificationAndOpenInboxInBackground = function(){
     var notificationId = "inbox";
@@ -829,7 +830,15 @@ function getUnique(array, propertyName) {
 }
 qmNotifications.getAllUniqueRatingNotifications = function() {
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
-    return getUnique(ratingNotifications, 'variableName');
+    if(!ratingNotifications){
+        qmLog.info("No rating notifications in storage. Refreshing if empty");
+        notificationsHelper.refreshIfEmpty();
+        return;
+    }
+    qmLog.info("Got " + ratingNotifications.length + " total rating notification from storage");
+    var unique = getUnique(ratingNotifications, 'variableName');
+    qmLog.info("Got " + unique.length + " unique rating notifications");
+    return unique;
 };
 qmNotifications.deleteById = function(id){qmStorage.deleteById(qmItems.trackingReminderNotifications, id);};
 qmNotifications.undo = function(){
@@ -1080,6 +1089,9 @@ window.qmPush.getTimeSinceLastPushString = function(){
     return timeHelper.getTimeSinceString(qmPush.getLastPushTimeStampInSeconds());
 };
 qmNotifications.setFirstUniqueRatingNotificationFromWindow = function(){
+    if(!window.uniqueRatingNotifications){
+        window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
+    }
     if(window.uniqueRatingNotifications && window.uniqueRatingNotifications.length) {
         window.trackingReminderNotification = window.uniqueRatingNotifications[0];
         window.uniqueRatingNotifications.shift();
@@ -1090,7 +1102,9 @@ qmNotifications.setFirstUniqueRatingNotificationFromWindow = function(){
     return null;
 };
 qmNotifications.getAndSetFirstUniqueRatingNotificationFromWindow = function(){
-    window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
+    if(!window.uniqueRatingNotifications){
+        window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
+    }
     return qmNotifications.setFirstUniqueRatingNotificationFromWindow();
 };
 if(qm.platform.isChromeExtension()) {
