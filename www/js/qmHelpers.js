@@ -476,10 +476,11 @@ window.userHelper = {
     },
     setUser: function(user){
         window.qmUser = user;
+        qmStorage.setItem(qmItems.user, user);
+        if(!user){return;}
         window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
         if(urlHelper.getParam('doNotRemember')){return;}
         qmLog.setupUserVoice();
-        qmStorage.setItem(qmItems.user, user);
         if(!user.accessToken){
             qmLog.error("User does not have access token!", null, {userToSave: user});
         } else {
