@@ -49,7 +49,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		});
 	};
 	var loadNativeConnectorPage = function(){
-		$scope.showImportHelpCard = (window.qmStorage.getItem(qmItems.hideImportHelpCard) !== "true");
+		$scope.showImportHelpCard = !qmStorage.getItem(qmItems.hideImportHelpCard);
 		qmService.showBlackRingLoader();
 		qmService.getConnectorsDeferred()
 			.then(function(connectors){
