@@ -210,7 +210,7 @@ function getQuantiModoClientId() {
         window.qmLog.debug(null, 'Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subdomain: ' + subdomain, null);
         return clientIdFromAppConfigName;
     }
-    window.qmLog.debug(null, 'Using subdomain as client id: ' + subdomain, null, null);
+    window.qmLog.debug(null, 'Using subdomain as client id: ' + subdomain);
     return subdomain;
 }
 function onMobile() {

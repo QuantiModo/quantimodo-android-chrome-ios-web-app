@@ -574,7 +574,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
     qmService.getUserFromApi = function(params, successHandler, errorHandler){
-        if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
+        if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', null, $rootScope.user);}
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
         options.doNotSendToLogin = true;
@@ -1203,11 +1203,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
         if(urlHelper.getParam('logout')){
-            qmLogService.debug(null, 'Not refreshing user because we have a logout parameter', null);
+            qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
         }
+        qmLogService.debug('qmService.refreshUser: Calling qmService.getUserFromApi...');
         qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+            qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ' + JSON.stringify(user));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
         }, function(error){deferred.reject(error);});
