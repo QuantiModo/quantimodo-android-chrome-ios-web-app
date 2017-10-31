@@ -67,24 +67,12 @@
                 </div>
                 <label ng-if="!bloodPressure.show" class="item item-input item-select">
                     <div class="input-label">Unit</div>
-                    <select ng-if="!state.showMoreUnits"
-                            id="unitSelector"
-                            ng-model="state.measurement.unitAbbreviatedName"
-                            ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
-                            ng-change="unitSelected()">
+                    <select id="unitSelector" ng-model="state.measurement.unitAbbreviatedName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()">
                     </select>
-                    <select ng-if="state.showMoreUnits"
-                            id="advancedUnitSelector"
-                            ng-model="state.measurement.unitAbbreviatedName"
-                            ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
-                            ng-change="unitSelected()">
-                    </select>
-
                 </label>
                 <label class="item item-input">
-                    <div class="input-label">
-                        Date
-                    </div>
+                    <div class="input-label"> Date </div>
                     <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
                                placeholder="Date"
                                style="cursor: pointer;  background-color: white;"
@@ -92,11 +80,8 @@
                                ng-model="state.selectedDate"
                                class="md-input text-right">
                 </label>
-
                 <label class="item item-input">
-                    <div class="input-label">
-                        Time
-                    </div>
+                    <div class="input-label"> Time </div>
                     <input style="cursor: pointer; background-color: white;"
                                mdc-datetime-picker=""
                                date="false"
