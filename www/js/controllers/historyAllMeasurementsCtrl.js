@@ -36,7 +36,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             $scope.state.title = $stateParams.variableObject.name + ' History';
             $rootScope.variableObject = $stateParams.variableObject;
         }
-        if ($stateParams.variableName || $stateParams.variableObject) {$rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;}
+        if ($stateParams.variableObject) {
+        	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet($stateParams.variableObject);
+        } else if ($stateParams.variableName) {
+            $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheetByVariableName($stateParams.variableName);
+        }
         $scope.getHistory();
     });
 	$scope.editMeasurement = function(measurement){

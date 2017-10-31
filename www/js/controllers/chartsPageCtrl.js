@@ -23,6 +23,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     }
     function getCharts(refresh) {
         qmService.setRootScopeVariableWithCharts(getVariableName(), refresh, function (variableObject) {
+            $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(variableObject);
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
@@ -31,7 +32,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $rootScope.hideNavigationMenu = false;
         $rootScope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
+        if(getScopedVariableObject()){$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(variableObject);}
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
