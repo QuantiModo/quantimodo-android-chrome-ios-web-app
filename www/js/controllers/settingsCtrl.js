@@ -178,31 +178,27 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}
-	function logOutOfWebsite() {
+	function logOutOfWebsite(callback) {
 		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-        //qmService.get(logoutUrl);
         var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
-        $http(request);
-		//window.location.replace(logoutUrl);
+        $http(request).success(function() {callback();});
 	}
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
 			qmService.showBlackRingLoader();
 			qmService.completelyResetAppState();
-			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
-			qmService.goToState('app.intro');
+            logOutOfWebsite(function () {qmService.goToState('app.intro');});
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
             qmService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			window.qmStorage.clearOAuthTokens();
-			logOutOfWebsite();
             window.qmStorage.setItem(qmItems.introSeen, false);
             window.qmStorage.setItem(qmItems.onboarded, false);
-			qmService.goToState('app.intro');
+            logOutOfWebsite(function () {qmService.goToState('app.intro');});
 		};
 		var showDataClearPopup = function(ev){
             var title = 'Clear local storage?';
