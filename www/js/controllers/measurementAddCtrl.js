@@ -255,7 +255,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         // Fill in default value as last value if not /5
         /** @namespace variableObject.lastValue */
         if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof variableObject.lastValue !== "undefined") {
-            $scope.state.measurement.value = Number((variableObject.lastValueInUserVariableDefaultUnit) ? variableObject.lastValueInUserVariableDefaultUnit : variableObject.lastValue);
+            $scope.state.measurement.value = Number((variableObject.lastValueInUserUnit) ? variableObject.lastValueInUserUnit : variableObject.lastValue);
         }
     };
     var setupFromVariableName = function(variableName){
