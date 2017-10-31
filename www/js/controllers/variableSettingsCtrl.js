@@ -86,7 +86,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var userTagData;
-            if($rootScope.variableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($rootScope.variableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState('app.tagAdd', {
                     userTaggedVariableObject: $rootScope.variableObject,
                     fromState: $state.current.name,
@@ -123,7 +123,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
          */
         function loadAll(variables) {
             if(!variables){ variables = qmStorage.getAsObject('userVariables'); }
-            if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
+            if(variables && $rootScope.variableObject.unit.abbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
                 return {value: variable.name.toLowerCase(), name: variable.name, variable: variable};
@@ -163,7 +163,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
             self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
             self.variableObject.name + ".  You can only join variables that have the same unit " +
-            self.variableObject.userVariableDefaultUnitAbbreviatedName + ".";
+            self.variableObject.unit.abbreviatedName + ".";
         self.placeholder = "What variable would you like to join?";
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {

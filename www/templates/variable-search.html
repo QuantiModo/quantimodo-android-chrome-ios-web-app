@@ -11,12 +11,15 @@
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
+                <a ng-if="state.variableSearchQuery.name != ''"
+                   on-touch="state.variableSearchQuery.name=''">
+                    <i class="icon ion-close-round placeholder-icon"></i>
+                    &nbsp
+                </a>
             </label>
             <p></p>
             <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching || showSearchLoader">
-                    <ion-spinner></ion-spinner>
-                </ion-item>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching || showSearchLoader"> <ion-spinner></ion-spinner> </ion-item>
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
@@ -28,9 +31,7 @@
                 </ion-item>
             </ion-list>
             <ion-list ng-if="state.showAddVariableButton && !state.searching">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
-                    {{state.addNewVariableButtonText}}
-                </ion-item>
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()"> {{state.addNewVariableButtonText}} </ion-item>
             </ion-list>
         </div>
         <div class="list card"  ng-if="state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">
@@ -53,16 +54,14 @@
                 </div>
                 <div class="row" >
                     <div class="button-bar">
-                        <button class="button button-clear button-royal" style="font-size: 14px;"
-                                ng-click="goToStateFromVariableSearch('app.measurementAddSearch')">
+                        <button class="button button-clear button-royal" style="font-size: 14px;" ng-click="goToStateFromVariableSearch('app.measurementAddSearch')">
                             <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
                         </button>
                     </div>
                 </div>
                 <div class="row" >
                     <div class="button-bar">
-                        <button class="button button-clear button-calm" style="font-size: 14px;"
-                                ng-click="goToStateFromVariableSearch('app.import')">
+                        <button class="button button-clear button-calm" style="font-size: 14px;" ng-click="goToStateFromVariableSearch('app.import')">
                             <i class="ion-ios-list-outline"> &nbsp; Import Your Data &nbsp;</i>
                         </button>
                     </div>
