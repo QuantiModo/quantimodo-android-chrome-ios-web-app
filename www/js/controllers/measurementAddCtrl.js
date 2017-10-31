@@ -29,8 +29,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             { id : 8, name : 'Miscellaneous' }
         ],
         hideReminderMeButton : false,
-        editReminder : false,
-        showMoreUnits: false
+        editReminder : false
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
@@ -107,12 +106,12 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             qmService.validationFailure(message, $scope.state.measurement);
             return false;
         } else {
-            if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
+            if(!qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName)){
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
-                        ' and $rootScope.unitsIndexedByAbbreviatedName are ' + JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                        ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
                 }
-            } else {$scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;}
+            } else {$scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName).id;}
         }
         return true;
     };
@@ -182,21 +181,24 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
         setupUnit($scope.state.measurement.unitAbbreviatedName);
     };
+    function showMoreUnits(){
+        $scope.state.units = qm.unitHelper.getProgressivelyMoreUnits($scope.state.units);
+        $scope.state.measurement.unitAbbreviatedName = null;
+        $scope.state.measurement.unitName = null;
+        $scope.state.measurement.unitId = null;
+    }
     function setupUnit(unitAbbreviatedName, valence){
         if(!unitAbbreviatedName){
             qmLogService.error("No unitAbbreviatedName provided to setupUnit!");
             return;
         }
         if(unitAbbreviatedName === 'Show more units'){
-            $scope.state.showMoreUnits = true;
-            $scope.state.measurement.unitAbbreviatedName = null;
-            $scope.state.measurement.unitName = null;
-            $scope.state.measurement.unitId = null;
+            showMoreUnits();
         } else {
             qmLogService.debug(null, 'selecting_unit ' + unitAbbreviatedName, null);
             $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
-            $scope.state.measurement.unitName = $rootScope.unitsIndexedByAbbreviatedName[unitAbbreviatedName].name;
-            $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[unitAbbreviatedName].id;
+            $scope.state.measurement.unitName = qm.unitHelper.getByAbbreviatedName(unitAbbreviatedName).name;
+            $scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName(unitAbbreviatedName).id;
         }
         setupValueFieldType(unitAbbreviatedName, valence);
     }
@@ -209,7 +211,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         $scope.state.measurement.value = val;
         qmLogService.debug(null, $state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + val, null);
     };
-    $scope.toggleShowUnits = function(){ $scope.state.showUnits = !$scope.state.showUnits; };
     $scope.showUnitsDropDown = function(){ $scope.showUnitsDropDown = true; };
     var setupFromUrlParameters = function() {
         var unitAbbreviatedName = urlHelper.getParam('unitAbbreviatedName', location.href, true);
@@ -294,14 +295,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             measurement: $stateParams.measurement
         });
     };
-    var showMoreUnitsIfNecessary = function () {
-        if($scope.state.measurement.unitAbbreviatedName &&
-            !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
-            $scope.state.showMoreUnits = true;
-        }
-    };
     function setupValueFieldType(unitAbbreviatedName, valence, variableName) {
-        showMoreUnitsIfNecessary();
+        $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
         //if($scope.state.measurement.inputType){return;} Why is this here?  It prevents updating when we change a unit!  :(
         if(!unitAbbreviatedName){
             qmLogService.error('No unitAbbreviatedName provided to setupValueFieldType');
@@ -384,7 +379,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3) {qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
-                if(index === 4) { $scope.state.showMoreUnits = true; }
+                if(index === 4) { showMoreUnits(); }
                 return true;
             },
             destructiveButtonClicked: function() {

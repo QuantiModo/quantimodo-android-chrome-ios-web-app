@@ -4,7 +4,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {
-        units: $rootScope.nonAdvancedUnitObjects,
+        units: qm.unitHelper.getProgressivelyMoreUnits(),
         showAddVariableCard : false,
         showReminderFrequencyCard : false,
         showUnits: false,
@@ -59,7 +59,6 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     if(!$rootScope.user){qmService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info(null, 'ReminderAddCtrl beforeEnter...', null);
         var backView = $ionicHistory.backView();
-        $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
         qmService.sendToLoginIfNecessaryAndComeBack();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
@@ -230,27 +229,27 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if(!$scope.state.trackingReminder.unitAbbreviatedName) {
             validationFailure('Please select a unit for ' + $scope.state.trackingReminder.variableName);
             return false;
-        } else {$scope.state.trackingReminder.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;}
-        if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName] &&
-            typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue !== "undefined" &&
-            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue !== null)
+        } else {$scope.state.trackingReminder.unitId = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;}
+        if(qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName] &&
+            typeof qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue !== "undefined" &&
+            qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue !== null)
         {
             if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue){
-                validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue +
-                    ' is the smallest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name +
+                qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue){
+                validationFailure(qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].minimumValue +
+                    ' is the smallest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name +
                     ".  Please select another unit or value.");
                 return false;
             }
         }
-        if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName] &&
-            typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue !== "undefined" &&
-            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue !== null)
+        if(qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName] &&
+            typeof qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue !== "undefined" &&
+            qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue !== null)
         {
             if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue){
-                validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue +
-                    ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name +
+                qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue){
+                validationFailure(qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].maximumValue +
+                    ' is the largest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name +
                     ".  Please select another unit or value.");
                 return false;
             }
@@ -372,23 +371,8 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         setupVariableCategory(variableCategoryName);
         showMoreUnitsIfNecessary();
     };
-    function showAllUnits() {
-        $scope.state.showMoreUnits = true;
-        $scope.state.moreUnits = $rootScope.unitObjects;
-    }
-    function showManualTrackingUnits() {
-        $scope.state.showMoreUnits = true;
-        $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
-    }
     var showMoreUnitsIfNecessary = function () {
-        if($scope.state.trackingReminder.unitAbbreviatedName &&
-            !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
-            if($rootScope.manualTrackingUnitObjects[$scope.state.trackingReminder.unitAbbreviatedName]){
-                showManualTrackingUnits();
-            } else {
-                showAllUnits();
-            }
-        }
+        $scope.state.units = qm.unitHelper.getUnitArrayContaining($scope.state.trackingReminder.unitAbbreviatedName);
     };
     var setupVariableCategory = function(variableCategoryName){
         qmLogService.debug(null, 'remindersAdd.setupVariableCategory ' + variableCategoryName, null);
@@ -466,12 +450,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         } else {$scope.state.hideDefaultValueField = false;}
     }
     function showMoreUnits(){
-        if($scope.state.units === $rootScope.nonAdvancedUnitObjects){
-            $scope.state.units = $rootScope.manualTrackingUnitObjects;
-        } else {
-            $scope.state.units = $rootScope.unitObjects;
-        }
-        $scope.state.showMoreUnits = true;
+        $scope.state.units = qm.unitHelper.getProgressivelyMoreUnits($scope.state.units);
         $scope.state.trackingReminder.unitAbbreviatedName = null;
         $scope.state.trackingReminder.unitName = null;
         $scope.state.trackingReminder.unitId = null;
@@ -482,12 +461,11 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             showMoreUnits();
         } else {
             qmLogService.debug(null, 'selecting_unit', null, $scope.state.trackingReminder.unitAbbreviatedName);
-            $scope.state.trackingReminder.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name;
-            $scope.state.trackingReminder.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;
+            $scope.state.trackingReminder.unitName = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name;
+            $scope.state.trackingReminder.unitId = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;
         }
         setHideDefaultValueField();
     };
-    $scope.toggleShowUnits = function(){$scope.state.showUnits=!$scope.state.showUnits;};
     $scope.showUnitsDropDown = function(){$scope.showUnitsDropDown = true;};
     $rootScope.showActionSheetMenu = function() {
         $rootScope.variableObject = $scope.state.trackingReminder;
@@ -510,7 +488,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3) {qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminder.variableName});}
-                if(index === 4) {$scope.state.showMoreUnits = true;}
+                if(index === 4) {showMoreUnits();}
                 return true;
             },
             destructiveButtonClicked: function() {

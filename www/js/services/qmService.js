@@ -953,7 +953,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmLogService.debug(null, 'Token refresh failed: ' + data.error, null);
                 deferred.reject('Token refresh failed: ' + data.error);
             } else {
-                var accessTokenRefreshed = window.qmStorage.saveAccessToken(data);
+                var accessTokenRefreshed = qm.auth.saveAccessTokenResponse(data);
                 qmLogService.debug(null, 'qmService.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data), null);
                 deferred.resolve(accessTokenRefreshed);
             }
@@ -1172,10 +1172,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         Analytics.pageView(); // send data to Google Analytics
         //qmLogService.debug('Just set up Google Analytics');
     };
-    qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-        qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
+    qmService.setUser = function(user){
         $rootScope.user = user;
         userHelper.setUser(user);
+    };
+    qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
+        qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
+        qmService.setUser(user);
         if(urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
@@ -1234,11 +1237,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
         if(urlHelper.getParam('logout')){
-            qmLogService.debug(null, 'Not refreshing user because we have a logout parameter', null);
+            qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
         }
+        qmLogService.debug('qmService.refreshUser: Calling qmService.getUserFromApi...');
         qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+            qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ' + JSON.stringify(user));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
         }, function(error){deferred.reject(error);});
@@ -1671,36 +1676,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return deferred.promise;
     };
-    function addUnitsToRootScope(units) {
-        $rootScope.unitObjects = units;
-        var unitAbbreviatedNames = [];
-        var unitsIndexedByAbbreviatedName = [];
-        var nonAdvancedUnitsIndexedByAbbreviatedName = [];
-        var nonAdvancedUnitObjects = [];
-        var manualTrackingUnitsIndexedByAbbreviatedName = [];
-        var manualTrackingUnitObjects = [];
-        for (var i = 0; i < units.length; i++) {
-            unitAbbreviatedNames[i] = units[i].abbreviatedName;
-            unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-            if(!units[i].advanced){
-                nonAdvancedUnitObjects.push(units[i]);
-                nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-            }
-            if(units[i].manualTracking){
-                manualTrackingUnitObjects.push(units[i]);
-                manualTrackingUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-            }
-        }
-        var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
-        nonAdvancedUnitObjects.push(showMoreUnitsObject);
-        manualTrackingUnitObjects.push(showMoreUnitsObject);
-        nonAdvancedUnitsIndexedByAbbreviatedName[showMoreUnitsObject.abbreviatedName] = showMoreUnitsObject;
-        $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
-        $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
-        $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
-        $rootScope.manualTrackingUnitsIndexedByAbbreviatedName = manualTrackingUnitsIndexedByAbbreviatedName;
-        $rootScope.manualTrackingUnitObjects = manualTrackingUnitObjects;
-    }
     qmService.variableCategories = [];
     $rootScope.variableCategories = [];
     $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
@@ -2459,18 +2434,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
         window.qmStorage.deleteTrackingReminderNotification(body);
     };
-    function isArray(variable){
-        var isArray = Array.isArray(variable);
-        if(isArray){return true;}
-        var constructorArray = variable.constructor === Array;
-        if(constructorArray){return true;}
-        var instanceOfArray = variable instanceof Array;
-        if(instanceOfArray){return true;}
-        var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
-        if(prototypeArray){return true;}
-    }
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
-        if(!isArray(trackingReminderNotifications)){
+        if(!qm.variableIsArray(trackingReminderNotifications)){
             qmLogService.error("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminderNotifications));
             return;
         } else {
@@ -5181,7 +5146,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmService.qmStorage.setItem('user', null);
                 } else {
                     qmLogService.debug(null, 'Access token received', null, response);
-                    qmStorage.saveAccessToken(response);
+                    qm.auth.saveAccessTokenResponse(response);
                     qmLogService.debug(null, 'get user details from server and going to defaultState...', null);
                     qmService.showBlackRingLoader();
                     qmService.refreshUser().then(function(user){
@@ -6273,16 +6238,16 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.valueIsValid = function(object, value){
         var message;
-        if($rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== "undefined" && $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== null) {
-            if(value < $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue){
-                message = $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue + ' is the smallest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+        if(qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== "undefined" && qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== null) {
+            if(value < qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue){
+                message = qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue + ' is the smallest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
                 qmService.validationFailure(message);
                 return false;
             }
         }
-        if($rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== "undefined" && $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== null) {
-            if(value > $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue){
-                message = $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue + ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+        if(qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== "undefined" && qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== null) {
+            if(value > qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue){
+                message = qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue + ' is the largest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
                 qmService.validationFailure(message);
                 return false;
             }
@@ -6614,7 +6579,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(typeof response !== "string"){
                 if(response.accessToken && !$rootScope.user){
                     qmLogService.info(null, 'Using access token from dev-credentials.json', null);
-                    qmStorage.saveAccessToken(response.accessToken);
+                    qm.auth.saveAccessTokenResponse(response.accessToken);
                     qmService.refreshUser().then(function () {qmService.goToState(config.appSettings.appDesign.defaultState);});
                 }
             } else {
@@ -6889,7 +6854,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(urlHelper.getParam('finish_url')){$rootScope.finishUrl = urlHelper.getParam('finish_url', null, true);}
-        if(!qmStorage.getItem('units')){qmService.getUnitsFromApi();} else {addUnitsToRootScope(qmStorage.getItem('units'));}
+        qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
         if($rootScope.isAndroid && qmStorage.getItem(qmItems.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
