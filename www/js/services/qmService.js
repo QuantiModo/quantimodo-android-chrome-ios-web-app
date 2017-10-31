@@ -953,7 +953,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmLogService.debug(null, 'Token refresh failed: ' + data.error, null);
                 deferred.reject('Token refresh failed: ' + data.error);
             } else {
-                var accessTokenRefreshed = window.qmStorage.saveAccessToken(data);
+                var accessTokenRefreshed = qm.auth.saveAccessTokenResponse(data);
                 qmLogService.debug(null, 'qmService.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data), null);
                 deferred.resolve(accessTokenRefreshed);
             }
@@ -1172,10 +1172,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         Analytics.pageView(); // send data to Google Analytics
         //qmLogService.debug('Just set up Google Analytics');
     };
-    qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-        qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
+    qmService.setUser = function(user){
         $rootScope.user = user;
         userHelper.setUser(user);
+    };
+    qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
+        qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
+        qmService.setUser(user);
         if(urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
@@ -5143,7 +5146,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmService.qmStorage.setItem('user', null);
                 } else {
                     qmLogService.debug(null, 'Access token received', null, response);
-                    qmStorage.saveAccessToken(response);
+                    qm.auth.saveAccessTokenResponse(response);
                     qmLogService.debug(null, 'get user details from server and going to defaultState...', null);
                     qmService.showBlackRingLoader();
                     qmService.refreshUser().then(function(user){
@@ -6576,7 +6579,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(typeof response !== "string"){
                 if(response.accessToken && !$rootScope.user){
                     qmLogService.info(null, 'Using access token from dev-credentials.json', null);
-                    qmStorage.saveAccessToken(response.accessToken);
+                    qm.auth.saveAccessTokenResponse(response.accessToken);
                     qmService.refreshUser().then(function () {qmService.goToState(config.appSettings.appDesign.defaultState);});
                 }
             } else {
