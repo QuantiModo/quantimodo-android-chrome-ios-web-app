@@ -120,7 +120,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
     if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
     if(lastValue){
         userVariable.lastValue = lastValue;
-        userVariable.lastValue = lastValueInUserUnit;
+        userVariable.lastValueInUserUnit = lastValue;
     }
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
     return userVariable;
