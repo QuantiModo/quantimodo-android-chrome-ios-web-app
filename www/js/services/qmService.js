@@ -5870,7 +5870,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
         trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 0;
@@ -5908,7 +5908,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
         trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 86400;
@@ -5916,8 +5916,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var skipReminderSettings = false;
         if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
         if(options.skipReminderSettingsIfPossible){
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
+            if(variableObject.unit.abbreviatedName === '/5'){skipReminderSettings = true;}
+            if(variableObject.unit.abbreviatedName === 'serving'){
                 skipReminderSettings = true;
                 trackingReminder.defaultValue = 1;
             }
