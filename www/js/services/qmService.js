@@ -1306,12 +1306,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
-    qmService.getVariableObjectActionSheetByVariableName = function(variableName){
-        var variableObject = qmStorage.getUserVariableByName(variableName);
-        if(variableObject){return qmService.getVariableObjectActionSheet(variableObject);}
-        return null;
-    };
-    qmService.getVariableObjectActionSheet = function(variableObject){
+    qmService.getVariableObjectActionSheet = function(variableObject, variableName){
+        if(!variableObject){variableObject = qmStorage.getUserVariableByName(variableName);}
         var variableObjectActionSheet = function() {
             qmLogService.debug(null, 'variablePageCtrl.showActionSheetMenu:  variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
@@ -3932,9 +3928,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             .then(function (variableObject) {
                 $rootScope.variableObject = variableObject;
                 qmService.hideLoader();
-                if(successHandler){successHandler();}
+                if(successHandler){successHandler(variableObject);}
             });
-    }
+    };
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
         if(!name){name = qmService.getPrimaryOutcomeVariable().name;}
         var deferred = $q.defer();

@@ -23,7 +23,8 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     }
     function getCharts(refresh) {
         qmService.setRootScopeVariableWithCharts(getVariableName(), refresh, function (variableObject) {
-            $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(variableObject);
+            if(!variableObject){qmLog.error("No variable give to successHandler of setRootScopeVariableWithCharts")}
+            $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getScopedVariableObject(), getVariableName());
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
@@ -32,7 +33,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $rootScope.hideNavigationMenu = false;
         $rootScope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        if(getScopedVariableObject()){$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(variableObject);}
+        $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getScopedVariableObject(), getVariableName());
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');

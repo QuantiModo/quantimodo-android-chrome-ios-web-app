@@ -36,11 +36,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             $scope.state.title = $stateParams.variableObject.name + ' History';
             $rootScope.variableObject = $stateParams.variableObject;
         }
-        if ($stateParams.variableObject) {
-        	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet($stateParams.variableObject);
-        } else if ($stateParams.variableName) {
-            $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheetByVariableName($stateParams.variableName);
-        }
+		$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet($stateParams.variableObject, $stateParams.variableName);
         $scope.getHistory();
     });
 	$scope.editMeasurement = function(measurement){
@@ -90,7 +86,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             $scope.state.noHistory = true;
             hideLoader();
         }
-        qmService.showBasicLoader();
+        //qmService.showBasicLoader();
         qmService.getMeasurements(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
