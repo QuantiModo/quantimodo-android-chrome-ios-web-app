@@ -33,6 +33,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
+        $scope.state.variableSearchQuery.name = '';
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
             qmService.addToFavoritesUsingVariableObject(variableObject);
