@@ -312,6 +312,6 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    var tokenDebug = false;
-    if(tokenDebug){qmLog.debug(message, message, null);}
+    var authDebug = false;
+    if(authDebug){qmLog.debug(message, message, null);}
 };

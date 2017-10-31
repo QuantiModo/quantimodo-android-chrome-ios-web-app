@@ -160,7 +160,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
-        if($state.current.name === 'app.intro' && !params.force && !qmService.getAccessTokenFromCurrentUrl()){
+        if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
             qmLogService.debug(null, 'Not making request to ' + route + ' user because we are in the intro state', null, options.stackTrace);
             return;
         }
@@ -810,14 +810,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(variableCategoryName && variableCategoryName !== "Anything"){return variableCategoryName;}
         return null;
     };
-    qmService.getAccessTokenFromCurrentUrl = function(){
-        qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
-    };
+
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
             qmLog.authDebug("getAccessTokenFromUrl: No previous $rootScope.accessTokenFromUrl");
-            $rootScope.accessTokenFromUrl = qmService.getAccessTokenFromCurrentUrl();
+            $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
             if($rootScope.accessTokenFromUrl){
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
@@ -940,7 +937,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmLogService.debug(null, 'Token refresh failed: ' + data.error, null);
                 deferred.reject('Token refresh failed: ' + data.error);
             } else {
-                var accessTokenRefreshed = window.qmStorage.saveAccessToken(data);
+                var accessTokenRefreshed = window.qm.auth.saveAccessTokenResponse(data);
                 qmLogService.debug(null, 'qmService.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data), null);
                 deferred.resolve(accessTokenRefreshed);
             }
@@ -5116,7 +5113,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmService.qmStorage.setItem('user', null);
                 } else {
                     qmLogService.debug(null, 'Access token received', null, response);
-                    qmStorage.saveAccessToken(response);
+                    qm.auth.saveAccessTokenResponse(response);
                     qmLogService.debug(null, 'get user details from server and going to defaultState...', null);
                     qmService.showBlackRingLoader();
                     qmService.refreshUser().then(function(user){
@@ -6294,7 +6291,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function sendToLogin() {
         if(urlHelper.getParam('access_token')){
-            if(!qmService.getAccessTokenFromCurrentUrl()){
+            if(!qm.auth.getAccessTokenFromCurrentUrl()){
                 qmLogService.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
             }
             qmLogService.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
@@ -6549,7 +6546,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(typeof response !== "string"){
                 if(response.accessToken && !$rootScope.user){
                     qmLogService.info(null, 'Using access token from dev-credentials.json', null);
-                    qmStorage.saveAccessToken(response.accessToken);
+                    qm.auth.saveAccessTokenResponse(response.accessToken);
                     qmService.refreshUser().then(function () {qmService.goToState(config.appSettings.appDesign.defaultState);});
                 }
             } else {
