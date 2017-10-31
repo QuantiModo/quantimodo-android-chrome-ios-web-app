@@ -112,12 +112,16 @@ if(!window.qmUser){
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
     return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
-qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime) {
+qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime, lastValue) {
     var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
     if(!userVariables || !userVariables.length){return null;}
     var userVariable = userVariables[0];
     userVariable.lastAccessedUnixtime = timeHelper.getUnixTimestampInSeconds();
     if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
+    if(lastValue){
+        userVariable.lastValue = lastValue;
+        userVariable.lastValueInUserUnit = lastValue;
+    }
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
     return userVariable;
 };
@@ -171,7 +175,9 @@ qm.getPlatform = function(){
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
 };
-qm.userVariableHelper.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);};
+qm.userVariableHelper.updateLatestMeasurementTime = function(variableName, lastValue){
+    qmStorage.getUserVariableByName(variableName, true, lastValue);
+};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -844,7 +850,7 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
-    qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName);
+    qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
