@@ -814,9 +814,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
             qmLog.authDebug("getAccessTokenFromUrl: No previous $rootScope.accessTokenFromUrl");
-            $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
-            qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
-            if($rootScope.accessTokenFromUrl){
+            if(qm.auth.getAccessTokenFromCurrentUrl()){
+                $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
+                qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qmService.qmStorage.setItem('onboarded', true);
                 qmService.qmStorage.setItem('introSeen', true);
@@ -863,7 +863,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var user = qmStorage.getAsObject(qmItems.user);
             if(!user){
                 user = $rootScope.user;
-                qmLog.authDebug("No user from local storage");
+                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No user from local storage");
             }
             if(!user && $rootScope.user){
                 user = $rootScope.user;

@@ -1,4 +1,5 @@
 /** @namespace window.qmLog */
+/** @namespace window.qmChrome */
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
@@ -271,15 +272,19 @@ function getAppVersion() {
 qm.auth.getAccessTokenFromCurrentUrl = function(){
     qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
     var accessTokenFromUrl = (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
-    if(accessTokenFromUrl){qm.auth.saveAccessToken(accessTokenFromUrl);}
+    if(accessTokenFromUrl){
+        qmLog.authDebug("getAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
+        qm.auth.saveAccessToken(accessTokenFromUrl);
+    }
+    return accessTokenFromUrl;
 };
 qm.auth.saveAccessToken = function(accessToken){
     if(!urlHelper.getParam('doNotRemember')){
-        qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-        qmService.qmStorage.setItem(qmItems.accessToken, accessToken);
+        qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
+        qmStorage.setItem(qmItems.accessToken, accessToken);
     }
 };
-qm.api.getAccessToken = function() {
+qm.auth.getAccessTokenFromUrlUserOrStorage = function() {
     if(qm.auth.getAccessTokenFromCurrentUrl()){return qm.auth.getAccessTokenFromCurrentUrl();}
     if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
     if(qmStorage.getItem(qmItems.accessToken)){return qmStorage.getItem(qmItems.accessToken);}
@@ -293,8 +298,8 @@ function getChromeRatingNotificationParams(trackingReminderNotification){
         left: screen.width - 380, width: 390, height: 110, focused: true};
 }
 function addGlobalQueryParameters(url) {
-    if (qm.api.getAccessToken()) {
-        url = addQueryParameter(url, 'access_token', qm.api.getAccessToken());
+    if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
+        url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
     } else {
         window.qmLog.error(null, 'No access token!');
         showSignInNotification();
@@ -845,7 +850,7 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&valence=" + trackingReminderNotification.valence +
     "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
     "&clientId=" + window.getClientId() +
-    "&accessToken=" + qm.api.getAccessToken();
+    "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
 }
 window.drawOverAppsRatingNotification = function(trackingReminderNotification) {
     window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification));
@@ -1144,6 +1149,6 @@ qm.api.configureClient = function() {
     var qmApiClient = Quantimodo.ApiClient.instance;
     var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
     qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
-    quantimodo_oauth2.accessToken = qm.api.getAccessToken();
+    quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
     return qmApiClient;
 };
