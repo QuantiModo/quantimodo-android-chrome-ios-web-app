@@ -1047,7 +1047,7 @@ qmNotifications.setFirstUniqueRatingNotificationFromWindow = function(){
         qmLog.info("got FirstUniqueRatingNotificationFromWindow");
         return window.trackingReminderNotification;
     }
-    qmLog.info("NO FirstUniqueRatingNotificationFromWindow");
+    qmLog.info("NO FirstUniqueRatingNotificationFromWindow!  " + notificationsHelper.getNumberInGlobalsOrLocalStorage() + " notifications in globals/localStorage");
     return null;
 };
 qmNotifications.getAndSetFirstUniqueRatingNotificationFromWindow = function(){
