@@ -535,9 +535,15 @@ function outputVersionCodeForApk(pathToApk) {
         if (error !== null) {logError('ERROR: ' + error);}
     });
 }
-function copyFiles(sourceFiles, destinationPath) {
+function copyFiles(sourceFiles, destinationPath, excludedFolder) {
     console.log("Copying " + sourceFiles + " to " + destinationPath);
-    return gulp.src([sourceFiles])
+    var srcArray = [sourceFiles];
+    if(excludedFolder){
+        console.log("Excluding " + excludedFolder + " from copy.. ");
+        srcArray.push('!' + excludedFolder);
+        srcArray.push('!' + excludedFolder + '/**');
+    }
+    return gulp.src(srcArray)
         .pipe(gulp.dest(destinationPath));
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
@@ -1265,13 +1271,12 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
 
     var sourceMapsWriteOptions = {
-        sourceRoot: "src/lib/",
-        includeContent: false
+        //sourceRoot: "src/lib/",
+        includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
     return gulp.src("src/index.html")
         //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
-        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(jsFilter)
         .pipe(uglify())             // Minify any javascript sources
         .pipe(jsFilter.restore)
@@ -1282,6 +1287,7 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(rev())                // Rename the concatenated files (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(revReplace())         // Substitute in new filenames
+        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
@@ -1825,6 +1831,9 @@ gulp.task('copyAppResources', [
 gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
+gulp.task('copySrcToWww', [], function () {
+    return copyFiles('src/**/*', 'www', 'src/lib');
+});
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
@@ -1924,6 +1933,7 @@ gulp.task('configureApp', [], function (callback) {
         'setClientId',
         'copyIonIconsToWww',
         'sass',
+        'copySrcToWww',
         'minify-js-generate-css-and-index-html',
         'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
