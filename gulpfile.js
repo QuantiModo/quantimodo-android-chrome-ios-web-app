@@ -317,11 +317,6 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     logDebug('executing ' + cmd);
     execute(cmd, callback);
 }
-function encryptPrivateConfig(callback) {
-    var encryptedFilePath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
-    var fileToEncryptPath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-}
 function ionicUpload(callback) {
     var commandForGit = 'git log -1 HEAD --pretty=format:%s';
     execute(commandForGit, function (error, output) {
@@ -423,7 +418,9 @@ function obfuscateStringify(message, object) {
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
     return message;
 }
-function logDebug(message, object) {if(buildDebug){logInfo(message, object);}}
+function logDebug(message, object) {
+    if(buildDebug){logInfo("BUILD DEBUG: " + message, object);}
+}
 function logInfo(message, object) {console.log(obfuscateStringify(message, object));}
 function logError(message, object) {
     console.error(obfuscateStringify(message, object));
@@ -503,6 +500,11 @@ function replaceTextInFiles(filesArray, textToReplace, replacementText){
         .pipe(gulp.dest('./'));
 }
 function outputApiErrorResponse(err, options) {
+    if(!err || !err.response){
+        logError("No err.response provided to outputApiErrorResponse!  err: ", err);
+        logError("Request options: ", options);
+        return;
+    }
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     logError(options.uri + " error response", err.response.body);
 }
@@ -535,9 +537,15 @@ function outputVersionCodeForApk(pathToApk) {
         if (error !== null) {logError('ERROR: ' + error);}
     });
 }
-function copyFiles(sourceFiles, destinationPath) {
+function copyFiles(sourceFiles, destinationPath, excludedFolder) {
     console.log("Copying " + sourceFiles + " to " + destinationPath);
-    return gulp.src([sourceFiles])
+    var srcArray = [sourceFiles];
+    if(excludedFolder){
+        console.log("Excluding " + excludedFolder + " from copy.. ");
+        srcArray.push('!' + excludedFolder);
+        srcArray.push('!' + excludedFolder + '/**');
+    }
+    return gulp.src(srcArray)
         .pipe(gulp.dest(destinationPath));
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
@@ -1240,24 +1248,7 @@ gulp.task('decryptBuildJson', [], function (callback) {
 gulp.task('encryptPrivateConfig', [], function () {
     encryptPrivateConfig();
 });
-gulp.task('encryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.json', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            encryptFile(files[i], files[i] + '.enc');
-        }
-    });
-});
-gulp.task('decryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.enc', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            decryptFile(files[i], files[i].replace('.enc', ''));
-        }
-    });
-});
+
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     logInfo("Running minify-js-generate-css-and-index-html...");
     var jsFilter = filter("**/*.js", { restore: true });
@@ -1265,13 +1256,12 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
 
     var sourceMapsWriteOptions = {
-        sourceRoot: "src/lib/",
-        includeContent: false
+        //sourceRoot: "src/lib/",
+        includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
     return gulp.src("src/index.html")
         //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
-        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(jsFilter)
         .pipe(uglify())             // Minify any javascript sources
         .pipe(jsFilter.restore)
@@ -1282,6 +1272,7 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(rev())                // Rename the concatenated files (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(revReplace())         // Substitute in new filenames
+        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
@@ -1825,6 +1816,9 @@ gulp.task('copyAppResources', [
 gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
+gulp.task('copySrcToWww', [], function () {
+    return copyFiles('src/**/*', 'www', 'src/lib');
+});
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
@@ -1924,6 +1918,7 @@ gulp.task('configureApp', [], function (callback) {
         'setClientId',
         'copyIonIconsToWww',
         'sass',
+        'copySrcToWww',
         'minify-js-generate-css-and-index-html',
         'removeCordovaJsFromIndexHtml',
         'getCommonVariables',

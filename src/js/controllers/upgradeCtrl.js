@@ -1,5 +1,21 @@
 angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
                                                               $rootScope, $stateParams, qmService, qmLogService, $locale) {
+    $scope.signUpQuestions = [
+        {
+            question: "What do you do with my data?",
+            answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to " +
+            "put your privacy at risk.  "
+        },
+        {
+            question: "Can I pause my account?",
+            answer: "You can pause or quit at any time. You have complete control."
+        },
+        {
+            question: "Data Security",
+            answer: "Our customers have demanding security and privacy requirements. Our platform was designed using " +
+            "the most rigorous security standards, using the same technology used by online banks."
+        },
+    ];
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         $rootScope.showFilterBarSearchIcon = false;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
