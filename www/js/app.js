@@ -36,7 +36,7 @@ angular.module('starter',
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
-    if(urlHelper.getParam('logout')){qmStorage.clear(); qmService.setUserInLocalStorageBugsnagIntercomPush(null);}
+    if(urlHelper.getParam('logout')){qmStorage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();

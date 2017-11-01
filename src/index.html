@@ -14,7 +14,7 @@
     <!-- inject:css -->
     <!-- endinject -->
     <link rel="shortcut icon" href="img/icons/icon_16.png">
-    <script src="custom-lib/bugsnag.js"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
+    <script src="custom-lib/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
     <!-- build:js scripts/combined-head-libraries.js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>  <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -27,6 +27,7 @@
       <!-- your app's js -->
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
+    <script src="js/qmChrome.js"></script>
     <script src="js/app.js"></script>
     <script src="js/services/qmLogService.js"></script>
     <script src="js/services/qmService.js"></script>

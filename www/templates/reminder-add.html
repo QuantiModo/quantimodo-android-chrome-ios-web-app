@@ -14,14 +14,9 @@
 				<span class="input-label left-span" on-tap="showExplanationsPopup('Default Value')">{{state.defaultValueLabel}} <i class="icon ion-help-circled"></i></span>
                 <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
             </label>
-            <label id="unitSelectorBlock" class="item item-input item-select" ng-if="!state.showMoreUnits && !state.hideDefaultValueField && !state.showMoreOptions">
+            <label id="unitSelectorBlock" class="item item-input item-select" ng-if="!state.hideDefaultValueField">
                 <div class="input-label">Unit</div>
-                <select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects" ng-change="unitSelected()"> </select>
-            </label>
-            <label id="advancedUnitSelectorBlock" class="item item-input item-select" ng-if="state.showMoreUnits || state.showMoreOptions">
-                <div class="input-label">Unit</div>
-                <select id="advancedUnitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-options="unit.abbreviatedName as unit.name for unit in state.moreUnits" ng-change="unitSelected()">
-                </select>
+                <select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()"> </select>
             </label>
             <label class="item item-input item-select" ng-if="!stateParams.favorite">
                 <div class="input-label">Frequency</div>
