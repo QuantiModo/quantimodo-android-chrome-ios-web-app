@@ -763,6 +763,7 @@ function getUnique(array, propertyName) {
     return output;
 }
 qmNotifications.getAllUniqueRatingNotifications = function() {
+    qmLog.info("Called getAllUniqueRatingNotifications");
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
         qmLog.info("No rating notifications in storage. Refreshing if empty");
@@ -872,18 +873,18 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&clientId=" + window.getClientId() +
     "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
 }
-window.drawOverAppsRatingNotification = function(trackingReminderNotification) {
-    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification));
+window.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
+    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
 };
 window.drawOverAppsCompactInboxNotification = function() {
     window.drawOverAppsPopup(qmChrome.compactInboxWindowParams.url);
 };
-window.drawOverAppsPopup = function(path){
+window.drawOverAppsPopup = function(path, force){
     if(typeof window.overApps === "undefined"){
         window.qmLog.error(null, 'window.overApps is undefined!');
         return;
     }
-    if(!qmNotifications.canWeShowPopupYet()){return;}
+    if(!force && !qmNotifications.canWeShowPopupYet(path)){return;}
     //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
         path: path,          // file path to display as view content.
@@ -894,12 +895,12 @@ window.drawOverAppsPopup = function(path){
         verticalPosition: "bottom",    // set vertical alignment of view.
         horizontalPosition: "center"  // set horizontal alignment of view.
     };
-    window.qmLog.info(null, 'drawOverAppsRatingNotification options: ' + JSON.stringify(options), null);
+    window.qmLog.info('drawOverAppsRatingNotification options: ' + JSON.stringify(options));
     /** @namespace window.overApps */
     window.overApps.startOverApp(options, function (success){
-        window.qmLog.info(null, 'startOverApp success: ' + success, null);
+        window.qmLog.info('startOverApp success: ' + success, null);
     },function (err){
-        window.qmLog.error(null, 'startOverApp error: ' + err);
+        window.qmLog.error('startOverApp error: ' + err);
     });
 };
 qmNotifications.setLastPopupTime = function(time){
@@ -919,7 +920,7 @@ qmNotifications.getSecondsSinceLastPopup = function(){
 qmNotifications.getMostFrequentReminderIntervalInSeconds = function(){
     return qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
 };
-qmNotifications.canWeShowPopupYet = function() {
+qmNotifications.canWeShowPopupYet = function(path) {
     if(!qmNotifications.getLastPopupUnixtime()){
         qmNotifications.setLastPopupTime();
         return true;
@@ -929,7 +930,7 @@ qmNotifications.canWeShowPopupYet = function() {
         return true;
     }
     qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + qmNotifications.getTimeSinceLastPopupString() +
-        ' and getMostFrequentReminderIntervalInMinutes is ' + qmNotifications.getMostFrequentReminderIntervalInMinutes());
+        ' and getMostFrequentReminderIntervalInMinutes is ' + qmNotifications.getMostFrequentReminderIntervalInMinutes() + ". path: " + path);
     return false;
 };
 qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
