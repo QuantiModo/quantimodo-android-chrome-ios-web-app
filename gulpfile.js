@@ -502,6 +502,7 @@ function replaceTextInFiles(filesArray, textToReplace, replacementText){
 function outputApiErrorResponse(err, options) {
     if(!err.response){
         logError("No err.response provided to outputApiErrorResponse!  err: ", err);
+        logError("Request options: ", options);
         return;
     }
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
