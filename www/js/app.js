@@ -147,6 +147,7 @@ angular.module('starter',
                 settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(window.designMode){settingsUrl += '&designMode=true';}
             }
+            qm.auth.getAccessTokenFromCurrentUrl();
             window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
             return $http({method: 'GET', url: settingsUrl});
         }

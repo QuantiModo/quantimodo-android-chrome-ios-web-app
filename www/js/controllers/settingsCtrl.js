@@ -44,7 +44,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
-			encodeURIComponent(qmService.getApiUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
+			encodeURIComponent(qm.api.getBaseUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 		var fallbackUrl = qmService.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
 		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
@@ -178,31 +178,27 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}
-	function logOutOfWebsite() {
+	function logOutOfWebsite(callback) {
 		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-        //qmService.get(logoutUrl);
         var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
-        $http(request);
-		//window.location.replace(logoutUrl);
+        $http(request).success(function() {callback();});
 	}
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
 			qmService.showBlackRingLoader();
 			qmService.completelyResetAppState();
-			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
-			qmService.goToState('app.intro');
+            logOutOfWebsite(function () {qmService.goToState('app.intro');});
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
             qmService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			window.qmStorage.clearOAuthTokens();
-			logOutOfWebsite();
             window.qmStorage.setItem(qmItems.introSeen, false);
             window.qmStorage.setItem(qmItems.onboarded, false);
-			qmService.goToState('app.intro');
+            logOutOfWebsite(function () {qmService.goToState('app.intro');});
 		};
 		var showDataClearPopup = function(ev){
             var title = 'Clear local storage?';
