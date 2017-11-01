@@ -5394,22 +5394,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         $rootScope.appSettings.appDesign.onboarding.active = qmService.addColorsCategoriesAndNames(activeOnboardingPages);
     };
-    $rootScope.signUpQuestions = [
-        {
-            question: "What do you do with my data?",
-            answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to " +
-            "put your privacy at risk.  "
-        },
-        {
-            question: "Can I pause my account?",
-            answer: "You can pause or quit at any time. You have complete control."
-        },
-        {
-            question: "Data Security",
-            answer: "Our customers have demanding security and privacy requirements. Our platform was designed using " +
-            "the most rigorous security standards, using the same technology used by online banks."
-        },
-    ];
+
     qmService.setupUpgradePages = function () {
         var upgradePages = [
             {

@@ -1,8 +1,8 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 !/fastlane/
-!/www/private_configs/
-!/www/private_configs/your_quantimodo_client_id_here.private_config.json
+!/src/private_configs/
+!/src/private_configs/your_quantimodo_client_id_here.private_config.json
 *.app.dSYM.zip
 *.ipa
 *.keystore
@@ -22,8 +22,8 @@
 /ionic.project
 /platforms/
 /resources/
-/www/private_configs/*.json
-/www/README.md
+/src/private_configs/*.json
+/src/README.md
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
 build.json
@@ -47,23 +47,25 @@ scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
 supply_json_key_for_google_play.json
-www/configs/*.js
-www/configs/default.config.json
-www/configuration-index.html
-www/configuration/
+src/configs
+src/configuration-index.html
+src/configuration/
 *.css
-www/data/commonVariables.json
-www/img/CS6.zip
-www/img/icons/*
-!www/img/icons/.gitkeep
-www/js/configuration-app.js
-www/lib/
-www/manifest.json
-www/manifest.json.enc
-www/private_configs/default.private_config.json.enc
-www/private_configs/sample_private.private_config.json.enc
-www/private_configs/your_quantimodo_client_id_here.private_config.json.enc
-www/private_configs/yourlowercaseappnamehere.private_config.json.enc
+src/data/commonVariables.json
+src/img/CS6.zip
+src/img/icons/*
+!src/img/icons/.gitkeep
+!src/data/.gitkeep
+!src/configs/.gitkeep
+!src/chrome_extension/*
+src/js/configuration-app.js
+src/lib/
+src/manifest.json
+src/manifest.json.enc
+src/private_configs/default.private_config.json.enc
+src/private_configs/sample_private.private_config.json.enc
+src/private_configs/your_quantimodo_client_id_here.private_config.json.enc
+src/private_configs/yourlowercaseappnamehere.private_config.json.enc
 
 
 # Visual Studio Recommended Folder Exclusions
@@ -81,19 +83,17 @@ plugins/remote_ios.json
 changeList.json
 *.suo
 *.jsproj.user
-www/configs/
 Ionic\.jsproj
 Ionic\.sln
 composer.phar
 packages/
 npm-debug.log*
-src/lib/
-www/scripts/
-www/index.html
-www/custom-lib/quantimodo/
+src/scripts/
+src/index.html
+src/custom-lib/quantimodo/
 .DS_Store
 .io-config.json
-www/data/units\.json
+src/data/units\.json
 ghostinspector\.json
 ngrok*
 gradlew
@@ -101,3 +101,8 @@ gradlew.bat
 local.properties
 gradle/
 success
+!/src/configs/.gitkeep
+www/*
+!/www/gitkeep
+www/configs/*
+!/www/configs/gitkeep
