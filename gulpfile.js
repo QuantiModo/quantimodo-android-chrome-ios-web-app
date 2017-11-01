@@ -317,11 +317,6 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     logDebug('executing ' + cmd);
     execute(cmd, callback);
 }
-function encryptPrivateConfig(callback) {
-    var encryptedFilePath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
-    var fileToEncryptPath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-}
 function ionicUpload(callback) {
     var commandForGit = 'git log -1 HEAD --pretty=format:%s';
     execute(commandForGit, function (error, output) {
@@ -423,7 +418,9 @@ function obfuscateStringify(message, object) {
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
     return message;
 }
-function logDebug(message, object) {if(buildDebug){logInfo(message, object);}}
+function logDebug(message, object) {
+    if(buildDebug){logInfo("BUILD DEBUG: " + message, object);}
+}
 function logInfo(message, object) {console.log(obfuscateStringify(message, object));}
 function logError(message, object) {
     console.error(obfuscateStringify(message, object));
@@ -1246,24 +1243,7 @@ gulp.task('decryptBuildJson', [], function (callback) {
 gulp.task('encryptPrivateConfig', [], function () {
     encryptPrivateConfig();
 });
-gulp.task('encryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.json', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            encryptFile(files[i], files[i] + '.enc');
-        }
-    });
-});
-gulp.task('decryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.enc', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            decryptFile(files[i], files[i].replace('.enc', ''));
-        }
-    });
-});
+
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     logInfo("Running minify-js-generate-css-and-index-html...");
     var jsFilter = filter("**/*.js", { restore: true });
