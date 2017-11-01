@@ -500,6 +500,10 @@ function replaceTextInFiles(filesArray, textToReplace, replacementText){
         .pipe(gulp.dest('./'));
 }
 function outputApiErrorResponse(err, options) {
+    if(!err.response){
+        logError("No err.response provided to outputApiErrorResponse!  err: ", err);
+        return;
+    }
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     logError(options.uri + " error response", err.response.body);
 }
