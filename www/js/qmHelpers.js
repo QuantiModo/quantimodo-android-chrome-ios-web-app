@@ -763,6 +763,7 @@ function getUnique(array, propertyName) {
     return output;
 }
 qmNotifications.getAllUniqueRatingNotifications = function() {
+    qmLog.info("Called getAllUniqueRatingNotifications");
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
         qmLog.info("No rating notifications in storage. Refreshing if empty");
@@ -919,7 +920,7 @@ qmNotifications.getSecondsSinceLastPopup = function(){
 qmNotifications.getMostFrequentReminderIntervalInSeconds = function(){
     return qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
 };
-qmNotifications.canWeShowPopupYet = function() {
+qmNotifications.canWeShowPopupYet = function(path) {
     if(!qmNotifications.getLastPopupUnixtime()){
         qmNotifications.setLastPopupTime();
         return true;
