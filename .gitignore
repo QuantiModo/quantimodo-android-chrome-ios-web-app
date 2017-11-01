@@ -104,3 +104,4 @@ success
 !/src/configs/.gitkeep
 www/
 !/www/gitkeep
+!/www/configs/gitkeep
