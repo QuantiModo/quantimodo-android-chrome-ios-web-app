@@ -33,6 +33,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
+        $scope.state.variableSearchQuery.name = '';
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
             qmService.addToFavoritesUsingVariableObject(variableObject);
@@ -44,7 +45,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         } else if ($scope.state.nextState.indexOf('outcome') !== -1) {
             qmService.goToState($scope.state.nextState, {causeVariableName: variableObject.name});
         } else if ($scope.state.userTaggedVariableObject) {
-            if($scope.state.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($scope.state.userTaggedVariableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: $scope.state.userTaggedVariableObject,
                     fromState: $scope.state.fromState,
@@ -61,7 +62,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             }
         } else if($scope.state.userTagVariableObject) {
-            if($scope.state.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($scope.state.userTagVariableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: variableObject,
                     fromState: $scope.state.fromState,

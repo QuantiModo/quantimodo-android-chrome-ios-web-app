@@ -11,6 +11,11 @@
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
+                <a ng-if="state.variableSearchQuery.name != ''"
+                   on-touch="state.variableSearchQuery.name=''">
+                    <i class="icon ion-close-round placeholder-icon"></i>
+                    &nbsp
+                </a>
             </label>
             <p></p>
             <ion-list>

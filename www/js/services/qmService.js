@@ -1558,7 +1558,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             qmService.addToMeasurementsQueue(measurementInfo);
         }
-        qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName);
+        qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
         if(measurementInfo.variableName === qmService.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
@@ -5829,7 +5829,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
         trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 0;
@@ -5867,7 +5867,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
         trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 86400;
@@ -5875,8 +5875,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var skipReminderSettings = false;
         if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
         if(options.skipReminderSettingsIfPossible){
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
+            if(variableObject.unit.abbreviatedName === '/5'){skipReminderSettings = true;}
+            if(variableObject.unit.abbreviatedName === 'serving'){
                 skipReminderSettings = true;
                 trackingReminder.defaultValue = 1;
             }
@@ -6973,7 +6973,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmLogService.debug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                        qmService.drawOverAppsRatingNotification(data.additionalData);
+                        var force = true;
+                        qmService.drawOverAppsRatingNotification(data.additionalData, force);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLogService.debug('push.on.notification: successfully refreshed notifications');
@@ -7220,18 +7221,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //     });
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
-    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification) {
+    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
         if(!$rootScope.isAndroid){
-            qmLogService.debug(null, 'Can only show popups on android', null);
+            qmLogService.debug('Can only show popups on android', null);
             return;
         }
         if(isFalsey(qmStorage.getItem(qmItems.drawOverAppsEnabled))){
-            window.qmLog.debug(null, 'drawOverApps is disabled', null, null);
+            window.qmLog.debug('drawOverApps is disabled');
             return;
         }
         $ionicPlatform.ready(function() {
             qmService.logEventToGA(qmAnalytics.eventCategories.pushNotifications, "drawOverAppsRatingNotification");
-            window.drawOverAppsRatingNotification(trackingReminderNotification);
+            window.drawOverAppsRatingNotification(trackingReminderNotification, force);
         });
     };
     qmService.toggleDrawOverApps = function(ev){

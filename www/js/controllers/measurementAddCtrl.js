@@ -233,8 +233,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $rootScope.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
-        if(variableObject.userVariableDefaultUnitAbbreviatedName){
-            setupUnit(variableObject.userVariableDefaultUnitAbbreviatedName, variableObject.valence);
+        if(variableObject.unit && variableObject.unit.abbreviatedName){
+            setupUnit(variableObject.unit.abbreviatedName, variableObject.valence);
         } else if (variableObject.defaultUnitAbbreviatedName){
             setupUnit(variableObject.defaultUnitAbbreviatedName, variableObject.valence);
         } else if (variableObject.variableCategoryName){
@@ -255,7 +255,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         // Fill in default value as last value if not /5
         /** @namespace variableObject.lastValue */
         if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof variableObject.lastValue !== "undefined") {
-            $scope.state.measurement.value = Number((variableObject.lastValueInUserVariableDefaultUnit) ? variableObject.lastValueInUserVariableDefaultUnit : variableObject.lastValue);
+            $scope.state.measurement.value = Number((variableObject.lastValueInUserUnit) ? variableObject.lastValueInUserUnit : variableObject.lastValue);
         }
     };
     var setupFromVariableName = function(variableName){

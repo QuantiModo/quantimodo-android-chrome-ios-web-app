@@ -112,12 +112,16 @@ if(!window.qmUser){
 notificationsHelper.getFromGlobalsOrLocalStorage = function(){
     return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
-qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime) {
+qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime, lastValue) {
     var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
     if(!userVariables || !userVariables.length){return null;}
     var userVariable = userVariables[0];
     userVariable.lastAccessedUnixtime = timeHelper.getUnixTimestampInSeconds();
     if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
+    if(lastValue){
+        userVariable.lastValue = lastValue;
+        userVariable.lastValueInUserUnit = lastValue;
+    }
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
     return userVariable;
 };
@@ -171,7 +175,9 @@ qm.getPlatform = function(){
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
 };
-qm.userVariableHelper.updateLatestMeasurementTime = function(variableName){qmStorage.getUserVariableByName(variableName, true);};
+qm.userVariableHelper.updateLatestMeasurementTime = function(variableName, lastValue){
+    qmStorage.getUserVariableByName(variableName, true, lastValue);
+};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -757,6 +763,7 @@ function getUnique(array, propertyName) {
     return output;
 }
 qmNotifications.getAllUniqueRatingNotifications = function() {
+    qmLog.info("Called getAllUniqueRatingNotifications");
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
         qmLog.info("No rating notifications in storage. Refreshing if empty");
@@ -844,7 +851,7 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmNotifications.deleteById(trackingReminderNotification.id);
-    qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName);
+    qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
@@ -866,18 +873,18 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&clientId=" + window.getClientId() +
     "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
 }
-window.drawOverAppsRatingNotification = function(trackingReminderNotification) {
-    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification));
+window.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
+    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
 };
 window.drawOverAppsCompactInboxNotification = function() {
     window.drawOverAppsPopup(qmChrome.compactInboxWindowParams.url);
 };
-window.drawOverAppsPopup = function(path){
+window.drawOverAppsPopup = function(path, force){
     if(typeof window.overApps === "undefined"){
         window.qmLog.error(null, 'window.overApps is undefined!');
         return;
     }
-    if(!qmNotifications.canWeShowPopupYet()){return;}
+    if(!force && !qmNotifications.canWeShowPopupYet(path)){return;}
     //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
         path: path,          // file path to display as view content.
@@ -888,12 +895,12 @@ window.drawOverAppsPopup = function(path){
         verticalPosition: "bottom",    // set vertical alignment of view.
         horizontalPosition: "center"  // set horizontal alignment of view.
     };
-    window.qmLog.info(null, 'drawOverAppsRatingNotification options: ' + JSON.stringify(options), null);
+    window.qmLog.info('drawOverAppsRatingNotification options: ' + JSON.stringify(options));
     /** @namespace window.overApps */
     window.overApps.startOverApp(options, function (success){
-        window.qmLog.info(null, 'startOverApp success: ' + success, null);
+        window.qmLog.info('startOverApp success: ' + success, null);
     },function (err){
-        window.qmLog.error(null, 'startOverApp error: ' + err);
+        window.qmLog.error('startOverApp error: ' + err);
     });
 };
 qmNotifications.setLastPopupTime = function(time){
@@ -913,7 +920,7 @@ qmNotifications.getSecondsSinceLastPopup = function(){
 qmNotifications.getMostFrequentReminderIntervalInSeconds = function(){
     return qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
 };
-qmNotifications.canWeShowPopupYet = function() {
+qmNotifications.canWeShowPopupYet = function(path) {
     if(!qmNotifications.getLastPopupUnixtime()){
         qmNotifications.setLastPopupTime();
         return true;
@@ -923,7 +930,7 @@ qmNotifications.canWeShowPopupYet = function() {
         return true;
     }
     qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + qmNotifications.getTimeSinceLastPopupString() +
-        ' and getMostFrequentReminderIntervalInMinutes is ' + qmNotifications.getMostFrequentReminderIntervalInMinutes());
+        ' and getMostFrequentReminderIntervalInMinutes is ' + qmNotifications.getMostFrequentReminderIntervalInMinutes() + ". path: " + path);
     return false;
 };
 qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
@@ -991,10 +998,11 @@ window.canWeMakeRequestYet = function(type, route, options){
         var name = 'Just made a ' + type + ' request to ' + route;
         var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
             getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-        window.qmLog.error(name, message, options);
         if(blockRequests){
             window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
             return false;
+        } else {
+            window.qmLog.error(name, message, options);
         }
     }
     window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
@@ -1040,7 +1048,7 @@ qmNotifications.setFirstUniqueRatingNotificationFromWindow = function(){
         qmLog.info("got FirstUniqueRatingNotificationFromWindow");
         return window.trackingReminderNotification;
     }
-    qmLog.info("NO FirstUniqueRatingNotificationFromWindow");
+    qmLog.error("NO FirstUniqueRatingNotificationFromWindow!  " + notificationsHelper.getNumberInGlobalsOrLocalStorage() + " notifications in globals/localStorage");
     return null;
 };
 qmNotifications.getAndSetFirstUniqueRatingNotificationFromWindow = function(){

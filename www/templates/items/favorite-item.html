@@ -50,17 +50,17 @@
     <div class="row">
         <div class="button-bar">
             <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
-                    ng-click="trackByFavorite(trackingReminder, trackingReminder.lastValueInUserVariableDefaultUnit)">
-                <i class="ion-android-done">&nbsp; Record {{trackingReminder.lastValueInUserVariableDefaultUnit}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
+                    ng-click="trackByFavorite(trackingReminder, trackingReminder.lastValueInUserUnit)">
+                <i class="ion-android-done">&nbsp; Record {{trackingReminder.lastValueInUserUnit}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
             </button>
         </div>
     </div>
     <div class="row">
         <div style="width: 100%" class="range range-positive">
             {{trackingReminder.minimumAllowedValue}}
-            <input ng-model="trackingReminder.lastValueInUserVariableDefaultUnit" type="range" name="valueSlider"
+            <input ng-model="trackingReminder.lastValueInUserUnit" type="range" name="valueSlider"
                    min="{{trackingReminder.minimumAllowedValue}}" max="{{trackingReminder.maximumAllowedValue}}"
-                   value="{{trackingReminder.lastValueInUserVariableDefaultUnit}}">
+                   value="{{trackingReminder.lastValueInUserUnit}}">
             {{trackingReminder.maximumAllowedValue}}
         </div>
     </div>

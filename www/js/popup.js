@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ratingPopupWidth = window.innerWidth;
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
+    qmLog.info(notificationsHelper.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.notificationsHelper.refreshIfEmpty();
     window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
     window.qmLog.setupBugsnag();
