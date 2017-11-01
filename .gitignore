@@ -102,3 +102,5 @@ local.properties
 gradle/
 success
 !/src/configs/.gitkeep
+www/
+!/www/gitkeep
