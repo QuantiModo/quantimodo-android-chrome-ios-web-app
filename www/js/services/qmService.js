@@ -1306,32 +1306,36 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
-    qmService.variableObjectActionSheet = function() {
-        qmLogService.debug(null, 'variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ', null, $rootScope.variableObject);
-        var hideSheet = $ionicActionSheet.show({
-            buttons: [
-                qmService.actionSheetButtons.recordMeasurement,
-                qmService.actionSheetButtons.addReminder,
-                qmService.actionSheetButtons.history,
-                qmService.actionSheetButtons.analysisSettings,
-            ],
-            destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
-            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
-            buttonClicked: function(index) {
-                qmLogService.debug(null, 'BUTTON CLICKED', null, index);
-                if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 3) {qmService.goToState('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                return true;
-            },
-            destructiveButtonClicked: function() {
-                qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject);
-                return true;
-            }
-        });
-        $timeout(function() {hideSheet();}, 20000);
+    qmService.getVariableObjectActionSheet = function(variableObject, variableName){
+        if(!variableObject){variableObject = qmStorage.getUserVariableByName(variableName);}
+        var variableObjectActionSheet = function() {
+            qmLogService.debug(null, 'variablePageCtrl.showActionSheetMenu:  variableObject: ', null, variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    qmService.actionSheetButtons.recordMeasurement,
+                    qmService.actionSheetButtons.addReminder,
+                    qmService.actionSheetButtons.history,
+                    qmService.actionSheetButtons.analysisSettings,
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+                buttonClicked: function(index) {
+                    qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+                    if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 3) {qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    qmService.showDeleteAllMeasurementsForVariablePopup(variableObject);
+                    return true;
+                }
+            });
+            $timeout(function() {hideSheet();}, 20000);
+        };
+        return variableObjectActionSheet;
     };
     qmService.attachVariableCategoryIcons = function(dataArray){
         if(!dataArray){ return;}
@@ -3918,7 +3922,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //variables = addVariableCategoryInfo(variables);
         return variables;
     };
+    qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
+        if(!variableName){name = qmService.getPrimaryOutcomeVariable().name;}
+        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
+            .then(function (variableObject) {
+                $rootScope.variableObject = variableObject;
+                qmService.hideLoader();
+                if(successHandler){successHandler(variableObject);}
+            });
+    };
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
+        if(!name){name = qmService.getPrimaryOutcomeVariable().name;}
         var deferred = $q.defer();
         if(!refresh){
             var userVariable = qmStorage.getUserVariableByName(name);
