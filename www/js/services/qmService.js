@@ -7028,7 +7028,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmLogService.debug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                        qmService.drawOverAppsRatingNotification(data.additionalData);
+                        var force = true;
+                        qmService.drawOverAppsRatingNotification(data.additionalData, force);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLogService.debug('push.on.notification: successfully refreshed notifications');
@@ -7275,18 +7276,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //     });
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
-    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification) {
+    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
         if(!$rootScope.isAndroid){
-            qmLogService.debug(null, 'Can only show popups on android', null);
+            qmLogService.debug('Can only show popups on android', null);
             return;
         }
         if(isFalsey(qmStorage.getItem(qmItems.drawOverAppsEnabled))){
-            window.qmLog.debug(null, 'drawOverApps is disabled', null, null);
+            window.qmLog.debug('drawOverApps is disabled');
             return;
         }
         $ionicPlatform.ready(function() {
             qmService.logEventToGA(qmAnalytics.eventCategories.pushNotifications, "drawOverAppsRatingNotification");
-            window.drawOverAppsRatingNotification(trackingReminderNotification);
+            window.drawOverAppsRatingNotification(trackingReminderNotification, force);
         });
     };
     qmService.toggleDrawOverApps = function(ev){
