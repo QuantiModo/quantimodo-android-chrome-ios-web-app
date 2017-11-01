@@ -1,7 +1,7 @@
 /** @namespace window.qmLog */
 var ratingPopupHeight, ratingPopupWidth;
 function clearNotifications() {
-    if(typeof chrome === "undefined"){ window.qmLog.debug(null, 'Can\'t clearNotifications because chrome is undefined', null, null); return;}
+    if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
     qmChrome.updateChromeBadge(0);
     chrome.notifications.clear("moodReportNotification", function() {});
 }
@@ -39,6 +39,15 @@ var inboxButtonClicked = function() {
         openOrFocusChromePopupWindow(qmChrome.fullInboxWindowParams);
     }
 };
+function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
+    hidePopup();
+    if(window.notificationsSyncQueue){
+        qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
+        window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+    } else {
+        closePopup();
+    }
+}
 var onFaceButtonClicked = function() {
     var buttonId = this.id;
     console.log('onFaceButtonClicked');
@@ -55,17 +64,11 @@ var onFaceButtonClicked = function() {
         if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
         window.notificationsSyncQueue.push(window.trackingReminderNotification);
         //window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
-        var previousVariableName = window.trackingReminderNotification.variableName;
-        window.trackingReminderNotification = qmNotifications.setFirstUniqueRatingNotificationFromWindow();
-        if(window.trackingReminderNotification && window.trackingReminderNotification.variableName === previousVariableName){
-            window.trackingReminderNotification = qmNotifications.setFirstUniqueRatingNotificationFromWindow();
-        }
+        window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
         if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
-            hidePopup();
-            qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
-            window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+            hidePopupPostNotificationsDeleteLocalAndClosePopup();
         }
         return;
     } else {
@@ -133,6 +136,16 @@ function closePopup() {
     }
 }
 function updateQuestion(variableName) {
+    if(!variableName || typeof variableName !== "string"){
+        if(!window.trackingReminderNotification){
+            window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
+            if(!window.trackingReminderNotification){
+                closePopup();
+                return;
+            }
+        }
+        variableName = window.trackingReminderNotification.variableName;
+    }
     var questionText = "How is your " + variableName.toLowerCase() + "?";
     window.qmLog.info(null, 'Updating question to ' + questionText);
     document.getElementById("question").innerHTML = questionText;
@@ -143,13 +156,22 @@ function updateQuestion(variableName) {
     } else {
         window.qmLog.info(null, 'NOT setting question display to none because not on Chrome', null);
     }
+    unHidePopup();
 }
 document.addEventListener('DOMContentLoaded', function() {
     qmLog.info("popup.js DOMContentLoaded");
     if(window.urlHelper.getParam("trackingReminderNotificationId")){
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
-        updateQuestion(window.urlHelper.getParam("variableName"));
+        window.qmNotifications.refreshIfEmpty()
+    } else {
+        window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
+    }
+    if (window.trackingReminderNotification){
+        updateQuestion(window.trackingReminderNotification.variableName);
+    } else {
+        hidePopup();
+        qmNotifications.refreshNotifications(updateQuestion, closePopup);
     }
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
@@ -158,8 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
     ratingPopupWidth = window.innerWidth;
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
-    qmLog.info(notificationsHelper.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
-    window.notificationsHelper.refreshIfEmpty();
-    window.uniqueRatingNotifications = qmNotifications.getAllUniqueRatingNotifications();
+    qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.qmLog.setupBugsnag();
 });
