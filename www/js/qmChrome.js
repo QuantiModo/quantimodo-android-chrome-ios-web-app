@@ -16,11 +16,25 @@ function showSignInNotification() {
 }
 function getChromeManifest() {if(qm.platform.isChromeExtension()){return chrome.runtime.getManifest();}}
 function getChromeRatingNotificationParams(trackingReminderNotification){
+    if(!trackingReminderNotification){trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();}
     return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
         left: screen.width - 380, width: 390, height: 110, focused: true};
 }
+qmChrome.canShowChromePopups = function(){
+    if(typeof chrome === "undefined" || typeof chrome.windows === "undefined" || typeof chrome.windows.create === "undefined"){
+        qmLog.info("Cannot show chrome popups");
+        return false;
+    }
+    return true;
+};
+qmChrome.showRatingPopup = function(){
+    window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
+    if(window.trackingReminderNotification){
+        openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
+    }
+};
 function openOrFocusChromePopupWindow(windowParams) {
-    if(!qm.platform.isChromeExtension()){return;}
+    if(!window.qmChrome.canShowChromePopups()){return;}
     window.qmLog.info('openOrFocusChromePopupWindow checking if a window is already open', null, windowParams );
     function createWindow(windowParams) {
         qmLog.info("creating popup window", null, windowParams);
@@ -104,23 +118,23 @@ qmChrome.createSmallNotificationAndOpenInboxInBackground = function(){
     openOrFocusChromePopupWindow(windowParams);
 };
 window.qmChrome.showRatingOrInboxPopup = function (alarm) {
-    //window.trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
-    if(qmNotifications.getAndSetFirstUniqueRatingNotificationFromWindow()){
+    //window.trackingReminderNotification = window.qmNotifications.getMostRecentRatingNotification();
+    if(qmNotifications.getMostRecentRatingNotificationNotInSyncQueue()){
         qmLog.info("Opening rating notification popup");
-        openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
-        qmChrome.updateChromeBadge(0);
+        openOrFocusChromePopupWindow(getChromeRatingNotificationParams(qmNotifications.getMostRecentRatingNotificationNotInSyncQueue()));
+        window.qmChrome.updateChromeBadge(0);
     } else if (qmStorage.getItem(qmItems.useSmallInbox)) {
         qmLog.info("No rating notifications so opening compactInboxWindow popup");
         openOrFocusChromePopupWindow(qmChrome.compactInboxWindowParams);
     } else if (alarm) {
         qmLog.info("Got an alarm and no rating notifications so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
         checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
-    } else if (notificationsHelper.getNumberInGlobalsOrLocalStorage()) {
+    } else if (qmNotifications.getNumberInGlobalsOrLocalStorage()) {
         qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-        qmChrome.createSmallNotificationAndOpenInboxInBackground();
+        window.qmChrome.createSmallNotificationAndOpenInboxInBackground();
     } else {
         qmLog.info("No notifications in localStorage so refreshIfEmpty");
-        notificationsHelper.refreshIfEmpty();
+        qmNotifications.refreshIfEmpty();
     }
 };
 if(qm.platform.isChromeExtension()) {
@@ -137,7 +151,7 @@ if(qm.platform.isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info(null, 'onAlarm Listener heard this alarm ', null, alarm);
-        qmChrome.showRatingOrInboxPopup(alarm);
+        window.qmChrome.showRatingOrInboxPopup(alarm);
     });
     if(userHelper.getUser()){window.qmChrome.showRatingOrInboxPopup();}
     if (!qmStorage.getItem(qmItems.introSeen)) {
