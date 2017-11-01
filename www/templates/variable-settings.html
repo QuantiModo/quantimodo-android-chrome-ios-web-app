@@ -32,7 +32,7 @@
                     <md-select ng-model="variableObject.userVariableDefaultUnitId" ng-show="!isMobile">
                         <md-option ng-repeat="unit in variableObject.availableDefaultUnits" ng-value="unit.id" >{{unit.name}}</md-option>
                     </md-select>
-                    <select id="unitSelector" ng-model="variableObject.userVariableDefaultUnitAbbreviatedName" ng-show="isMobile"
+                    <select id="unitSelector" ng-model="variableObject.unit.abbreviatedName" ng-show="isMobile"
                             ng-options="unit.abbreviatedName as unit.name for unit in variableObject.availableDefaultUnits">
                     </select>
                 </div>

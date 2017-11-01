@@ -4,6 +4,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.state = $stateParams;
     $scope.state.searching = true;
     $scope.state.variableSearchResults = [];
+    //$scope.state.variableSearchParameters = {};  DON'T OVERWRITE $stateParams.variableSearchParameters
     $scope.state.variableSearchQuery = {name:''};
     if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
@@ -11,10 +12,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug(null, $state.current.name + ' beforeEnter...', null);
         $rootScope.hideNavigationMenu = false;
-        if(urlHelper.getParam('variableCategoryName')){
-            $scope.state.variableSearchParameters.variableCategoryName = urlHelper.getParam('variableCategoryName');
-        }
-        if ($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything') {
+        $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        if ($scope.state.variableSearchParameters.variableCategoryName) {
             $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
             $scope.state.noVariablesFoundCard.title = 'No ' + $scope.state.variableSearchParameters.variableCategoryName + ' Found';
@@ -31,8 +30,10 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     });
     $scope.selectVariable = function(variableObject) {
         qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
+        variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
+        $scope.state.variableSearchQuery.name = '';
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
             qmService.addToFavoritesUsingVariableObject(variableObject);
@@ -44,7 +45,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         } else if ($scope.state.nextState.indexOf('outcome') !== -1) {
             qmService.goToState($scope.state.nextState, {causeVariableName: variableObject.name});
         } else if ($scope.state.userTaggedVariableObject) {
-            if($scope.state.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($scope.state.userTaggedVariableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: $scope.state.userTaggedVariableObject,
                     fromState: $scope.state.fromState,
@@ -61,7 +62,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             }
         } else if($scope.state.userTagVariableObject) {
-            if($scope.state.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($scope.state.userTagVariableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: variableObject,
                     fromState: $scope.state.fromState,
@@ -187,7 +188,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;}
+        if($scope.state.variableSearchParameters.variableCategoryName){
+            variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;
+        }
         qmLogService.debug(null, $state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject), null);
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
