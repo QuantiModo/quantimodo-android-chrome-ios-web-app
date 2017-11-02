@@ -1,6 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Quantimodo = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -115,6 +113,8 @@ function fromByteArray (uint8) {
 
   return parts.join('')
 }
+
+},{}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
 /*!
@@ -1832,7 +1832,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":2,"ieee754":4}],4:[function(require,module,exports){
+},{"base64-js":1,"ieee754":4}],4:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -4087,7 +4087,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
   /**
    * @module ApiClient
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -4624,7 +4624,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 }));
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":3,"fs":1,"querystring":7,"superagent":9}],17:[function(require,module,exports){
+},{"buffer":3,"fs":2,"querystring":7,"superagent":9}],17:[function(require,module,exports){
 /**
  * quantimodo
  * We make it easy to retrieve and analyze normalized user data from a wide array of devices and applications. Check out our [docs and sdk's](https://github.com/QuantiModo/docs) or [contact us](https://help.quantimo.do).
@@ -4660,7 +4660,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Analytics service.
    * @module api/AnalyticsApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -5090,7 +5090,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Authentication service.
    * @module api/AuthenticationApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -5330,7 +5330,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Connectors service.
    * @module api/ConnectorsApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -5656,7 +5656,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Measurements service.
    * @module api/MeasurementsApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6040,7 +6040,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Notifications service.
    * @module api/NotificationsApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6170,7 +6170,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Reminders service.
    * @module api/RemindersApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6497,7 +6497,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Study service.
    * @module api/StudyApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6590,7 +6590,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Units service.
    * @module api/UnitsApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6722,7 +6722,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * User service.
    * @module api/UserApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -6882,7 +6882,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Variables service.
    * @module api/VariablesApi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -7414,7 +7414,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * </pre>
    * </p>
    * @module index
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
   var exports = {
     /**
@@ -8066,7 +8066,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The AggregatedCorrelation model module.
    * @module model/AggregatedCorrelation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9334,7 +9334,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The AggregatedCorrelationArray model module.
    * @module model/AggregatedCorrelationArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9414,7 +9414,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Animation model module.
    * @module model/Animation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9499,7 +9499,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Button model module.
    * @module model/Button
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9594,7 +9594,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Chart model module.
    * @module model/Chart
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9757,7 +9757,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ChartConfig model module.
    * @module model/ChartConfig
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9896,7 +9896,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ChartStyle model module.
    * @module model/ChartStyle
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -9981,7 +9981,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Column model module.
    * @module model/Column
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -10106,7 +10106,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonResponse model module.
    * @module model/CommonResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -10217,7 +10217,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonVariable model module.
    * @module model/CommonVariable
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -10425,6 +10425,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['sources'] = sources;
 
     _this['status'] = status;
+
     _this['subVariables'] = subVariables;
 
 
@@ -10783,6 +10784,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('status')) {
         obj['status'] = ApiClient.convertToType(data['status'], 'String');
+      }
+      if (data.hasOwnProperty('subtitle')) {
+        obj['subtitle'] = ApiClient.convertToType(data['subtitle'], 'String');
       }
       if (data.hasOwnProperty('subVariables')) {
         obj['subVariables'] = ApiClient.convertToType(data['subVariables'], [CommonVariable]);
@@ -11377,6 +11381,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['status'] = undefined;
   /**
+   * Based on sort filter and can be shown beneath variable name on search list
+   * @member {String} subtitle
+   */
+  exports.prototype['subtitle'] = undefined;
+  /**
    * Array of Variables that are sub variables to this Variable
    * @member {Array.<module:model/CommonVariable>} subVariables
    */
@@ -11520,7 +11529,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonVariableArray model module.
    * @module model/CommonVariableArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -11600,7 +11609,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Connector model module.
    * @module model/Connector
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -11961,7 +11970,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorArray model module.
    * @module model/ConnectorArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -12041,7 +12050,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorInstruction model module.
    * @module model/ConnectorInstruction
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -12143,7 +12152,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConversionStep model module.
    * @module model/ConversionStep
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -12255,7 +12264,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlation model module.
    * @module model/Correlation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -13452,7 +13461,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CorrelationArray model module.
    * @module model/CorrelationArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -13532,7 +13541,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Credit model module.
    * @module model/Credit
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -13617,7 +13626,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The DataSource model module.
    * @module model/DataSource
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -13822,7 +13831,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Explanation model module.
    * @module model/Explanation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -13945,7 +13954,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ExplanationStartTracking model module.
    * @module model/ExplanationStartTracking
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -14049,7 +14058,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetAggregatedCorrelationsResponse model module.
    * @module model/GetAggregatedCorrelationsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -14925,7 +14934,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetAggregatedCorrelationsResponseArray model module.
    * @module model/GetAggregatedCorrelationsResponseArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15005,7 +15014,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetConnectorsResponse model module.
    * @module model/GetConnectorsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15116,7 +15125,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetCorrelationsDataResponse model module.
    * @module model/GetCorrelationsDataResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15209,7 +15218,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetCorrelationsResponse model module.
    * @module model/GetCorrelationsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15320,7 +15329,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetMeasurementsResponse model module.
    * @module model/GetMeasurementsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15701,7 +15710,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetMeasurementsResponseArray model module.
    * @module model/GetMeasurementsResponseArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15781,7 +15790,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPairsResponse model module.
    * @module model/GetPairsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15910,7 +15919,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPairsResponseArray model module.
    * @module model/GetPairsResponseArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -15990,7 +15999,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPublicVariablesResponse model module.
    * @module model/GetPublicVariablesResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -16595,7 +16604,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPublicVariablesResponseArray model module.
    * @module model/GetPublicVariablesResponseArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -16675,7 +16684,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetStudyDataResponse model module.
    * @module model/GetStudyDataResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -16843,7 +16852,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetStudyResponse model module.
    * @module model/GetStudyResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -17076,7 +17085,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingReminderNotificationsResponse model module.
    * @module model/GetTrackingReminderNotificationsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -17187,7 +17196,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingRemindersResponse model module.
    * @module model/GetTrackingRemindersResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -17808,7 +17817,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingRemindersResponseArray model module.
    * @module model/GetTrackingRemindersResponseArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -17888,7 +17897,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Highchart model module.
    * @module model/Highchart
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -17998,7 +18007,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The HighchartArray model module.
    * @module model/HighchartArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18078,7 +18087,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Hover model module.
    * @module model/Hover
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18182,7 +18191,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Image model module.
    * @module model/Image
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18287,7 +18296,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The JsonErrorResponse model module.
    * @module model/JsonErrorResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18381,7 +18390,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Lang model module.
    * @module model/Lang
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18466,7 +18475,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Legend model module.
    * @module model/Legend
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18551,7 +18560,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Loading model module.
    * @module model/Loading
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18655,7 +18664,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTime model module.
    * @module model/LocalDailyReminderNotificationTime
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18739,7 +18748,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimeArray model module.
    * @module model/LocalDailyReminderNotificationTimeArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18819,7 +18828,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimesForAllReminder model module.
    * @module model/LocalDailyReminderNotificationTimesForAllReminder
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18903,7 +18912,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimesForAllReminderArray model module.
    * @module model/LocalDailyReminderNotificationTimesForAllReminderArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -18983,7 +18992,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Marker model module.
    * @module model/Marker
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -19087,7 +19096,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Measurement model module.
    * @module model/Measurement
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -19581,7 +19590,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementArray model module.
    * @module model/MeasurementArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -19661,7 +19670,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementDelete model module.
    * @module model/MeasurementDelete
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -19756,7 +19765,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementItem model module.
    * @module model/MeasurementItem
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -19860,7 +19869,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementSet model module.
    * @module model/MeasurementSet
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20010,7 +20019,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementUpdate model module.
    * @module model/MeasurementUpdate
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20122,7 +20131,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Option model module.
    * @module model/Option
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20287,7 +20296,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pair model module.
    * @module model/Pair
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20469,7 +20478,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairArray model module.
    * @module model/PairArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20549,7 +20558,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pairs model module.
    * @module model/Pairs
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20634,7 +20643,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairsOfAveragesForAllUser model module.
    * @module model/PairsOfAveragesForAllUser
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20727,7 +20736,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairsOfAveragesForAllUserArray model module.
    * @module model/PairsOfAveragesForAllUserArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20807,7 +20816,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ParticipantInstruction model module.
    * @module model/ParticipantInstruction
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20900,7 +20909,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PlotOption model module.
    * @module model/PlotOption
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -20993,7 +21002,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostCorrelation model module.
    * @module model/PostCorrelation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21107,7 +21116,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostMeasurementsDataResponse model module.
    * @module model/PostMeasurementsDataResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21190,7 +21199,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostMeasurementsResponse model module.
    * @module model/PostMeasurementsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21301,7 +21310,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostStudyPublishResponse model module.
    * @module model/PostStudyPublishResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21394,7 +21403,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostTrackingRemindersDataResponse model module.
    * @module model/PostTrackingRemindersDataResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21493,7 +21502,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostTrackingRemindersResponse model module.
    * @module model/PostTrackingRemindersResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21604,7 +21613,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostUserSettingsDataResponse model module.
    * @module model/PostUserSettingsDataResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21688,7 +21697,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostUserSettingsResponse model module.
    * @module model/PostUserSettingsResponse
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -21799,7 +21808,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ProcessedDailyMeasurement model module.
    * @module model/ProcessedDailyMeasurement
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22004,7 +22013,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Scatter model module.
    * @module model/Scatter
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22106,7 +22115,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Scope model module.
    * @module model/Scope
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22190,7 +22199,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ScopeArray model module.
    * @module model/ScopeArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22270,7 +22279,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Series model module.
    * @module model/Series
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22403,7 +22412,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The State model module.
    * @module model/State
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -22487,7 +22496,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Statistic model module.
    * @module model/Statistic
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24082,7 +24091,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Study model module.
    * @module model/Study
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24257,7 +24266,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Subtitle model module.
    * @module model/Subtitle
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24342,7 +24351,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Text model module.
    * @module model/Text
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24498,7 +24507,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Title model module.
    * @module model/Title
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24593,7 +24602,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Tooltip model module.
    * @module model/Tooltip
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -24688,7 +24697,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminder model module.
    * @module model/TrackingReminder
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -25420,7 +25429,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderArray model module.
    * @module model/TrackingReminderArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -25500,7 +25509,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderDelete model module.
    * @module model/TrackingReminderDelete
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -25585,7 +25594,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotification model module.
    * @module model/TrackingReminderNotification
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26273,7 +26282,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationActionArray model module.
    * @module model/TrackingReminderNotificationActionArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26388,7 +26397,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationArray model module.
    * @module model/TrackingReminderNotificationArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26468,7 +26477,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationPost model module.
    * @module model/TrackingReminderNotificationPost
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26594,7 +26603,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationTrackAllAction model module.
    * @module model/TrackingReminderNotificationTrackAllAction
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26709,7 +26718,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationsArray model module.
    * @module model/TrackingReminderNotificationsArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26789,7 +26798,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingRemindersArray model module.
    * @module model/TrackingRemindersArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -26869,7 +26878,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Unit model module.
    * @module model/Unit
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -27137,7 +27146,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitArray model module.
    * @module model/UnitArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -27217,7 +27226,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitCategory model module.
    * @module model/UnitCategory
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -27320,7 +27329,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The User model module.
    * @module model/User
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -27788,7 +27797,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserCorrelation model module.
    * @module model/UserCorrelation
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -28923,7 +28932,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserStudy model module.
    * @module model/UserStudy
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -30064,7 +30073,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTag model module.
    * @module model/UserTag
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -30169,7 +30178,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariable model module.
    * @module model/UserVariable
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -30302,6 +30311,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
     _this['price'] = price;
     _this['productUrl'] = productUrl;
+
 
 
 
@@ -30695,6 +30705,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('status')) {
         obj['status'] = ApiClient.convertToType(data['status'], 'String');
+      }
+      if (data.hasOwnProperty('subtitle')) {
+        obj['subtitle'] = ApiClient.convertToType(data['subtitle'], 'String');
       }
       if (data.hasOwnProperty('svgUrl')) {
         obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
@@ -31353,6 +31366,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['status'] = undefined;
   /**
+   * Based on sort filter and can be shown beneath variable name on search list
+   * @member {String} subtitle
+   */
+  exports.prototype['subtitle'] = undefined;
+  /**
    * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/treatments.svg
    * @member {String} svgUrl
    */
@@ -31555,7 +31573,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableArray model module.
    * @module model/UserVariableArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -31635,7 +31653,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableDelete model module.
    * @module model/UserVariableDelete
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -31720,7 +31738,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategory model module.
    * @module model/VariableCategory
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -32057,7 +32075,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategoryArray model module.
    * @module model/VariableCategoryArray
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -32137,7 +32155,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Vote model module.
    * @module model/Vote
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -32289,7 +32307,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VoteDelete model module.
    * @module model/VoteDelete
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -32384,7 +32402,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The XAxi model module.
    * @module model/XAxi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
@@ -32517,7 +32535,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The YAxi model module.
    * @module model/YAxi
-   * @version 5.8.1028
+   * @version 5.8.1102
    */
 
   /**
