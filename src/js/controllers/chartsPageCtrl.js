@@ -34,7 +34,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         $rootScope.hideNavigationMenu = false;
         $rootScope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
+        $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(null, getVariableName());
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');

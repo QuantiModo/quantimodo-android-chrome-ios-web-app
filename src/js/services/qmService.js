@@ -7290,6 +7290,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $stateParams.variableName = qm.getPrimaryOutcomeVariable().name;
         }
         return $stateParams.variableName;
+    };qmService.getVariableObjectActionSheet = function(variableObject, variableName){
+        if(!variableObject){variableObject = qmStorage.getUserVariableByName(variableName);}
+        return function() {
+            qmLogService.debug(null, 'variablePageCtrl.showActionSheetMenu:  variableObject: ', null, variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    qmService.actionSheetButtons.recordMeasurement,
+                    qmService.actionSheetButtons.addReminder,
+                    qmService.actionSheetButtons.history,
+                    qmService.actionSheetButtons.analysisSettings,
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+                buttonClicked: function(index) {
+                    qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+                    if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 3) {qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    qmService.showDeleteAllMeasurementsForVariablePopup(variableObject);
+                    return true;
+                }
+            });
+            $timeout(function() {hideSheet();}, 20000);
+        };
     };
     return qmService;
 }]);
