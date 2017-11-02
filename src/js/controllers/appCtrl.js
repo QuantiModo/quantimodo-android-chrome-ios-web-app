@@ -1,5 +1,5 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
-.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
+.controller('AppCtrl', ["$scope", "$timeout", "$ionicPopover", "$ionicLoading", "$state", "$ionicHistory", "$rootScope", "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService", "qmLogService", "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast", "wikipediaFactory", "appSettingsResponse", function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService, qmLogService,
                                 $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
@@ -463,4 +463,4 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         qmService.goToStudyPage(causeVariableName, effectVariableName);
     };
-});
+}]);

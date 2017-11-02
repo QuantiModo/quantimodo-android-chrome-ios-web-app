@@ -1,4 +1,4 @@
-angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
+angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams", function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
     $rootScope.hideNavigationMenu = true;
     $scope.reportedVariableValue = false;
@@ -61,4 +61,4 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
         }
     });
     $scope.init();
-});
+}]);

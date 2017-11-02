@@ -1,4 +1,4 @@
-angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
+angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state", "$rootScope", "$timeout", "$q", "$mdDialog", "$ionicLoading", "$stateParams", "$ionicHistory", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
                  $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
@@ -142,6 +142,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
         }
     };
+    TagVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
     $scope.openJoinVariableSearchDialog = function($event) {
         $mdDialog.show({
             controller: JoinVariableSearchCtrl,
@@ -224,6 +225,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
         }
     };
+    JoinVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
     var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
         var self = this;
         // list of `state` value/display objects
@@ -283,6 +285,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             });
         }
     };
+    SelectWikpdediaArticleController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
     $scope.searchWikipediaArticle = function (ev) {
         $mdDialog.show({
             controller: SelectWikpdediaArticleController,
@@ -358,4 +361,4 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             qmLogService.error(error);
         });
     };
-});
+}]);

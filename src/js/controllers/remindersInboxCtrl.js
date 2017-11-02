@@ -1,4 +1,4 @@
-angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService, qmLogService, $ionicLoading, $mdToast) {
+angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$filter", "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$ionicLoading", "$mdToast", function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService, qmLogService, $ionicLoading, $mdToast) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
 	qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
@@ -446,4 +446,4 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             .position(getUndoToastPosition());
         $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
     };
-});
+}]);

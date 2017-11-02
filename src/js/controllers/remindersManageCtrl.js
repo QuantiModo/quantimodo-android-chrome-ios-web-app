@@ -1,4 +1,4 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup,
+angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state", "$stateParams", "$ionicPopup", "$rootScope", "$timeout", "$ionicLoading", "$filter", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $stateParams, $ionicPopup,
 																	 $rootScope, $timeout, $ionicLoading, $filter,
 																	 $ionicActionSheet,  qmService, qmLogService) {
 	$scope.controller_name = "RemindersManageCtrl";
@@ -189,4 +189,4 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		});
 		$timeout(function() {hideSheet();}, 20000);
 	};
-});
+}]);

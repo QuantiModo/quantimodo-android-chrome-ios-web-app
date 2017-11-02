@@ -161,26 +161,26 @@ angular.module('starter')
         return track_factors[value]? track_factors[value] : 0;
     };
 })
-.filter('positiveImageByValue', function(qmService, qmLogService){
+.filter('positiveImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getPositiveImageByRatingValue(ratingValue);
     };
-})
-.filter('negativeImageByValue', function(qmService, qmLogService){
+}])
+.filter('negativeImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getNegativeImageByRatingValue(ratingValue);
     };
-})
-.filter('numericImageByValue', function(qmService, qmLogService){
+}])
+.filter('numericImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getNumericImageByRatingValue(ratingValue);
     };
-})
-.filter('PrimaryOutcomeVariableByNumber', function(qmService, qmLogService){
+}])
+.filter('PrimaryOutcomeVariableByNumber', ["qmService", "qmLogService", function(qmService, qmLogService){
     return function(value){
         return qmService.getPrimaryOutcomeVariableByNumber(value);
     };
-})
+}])
 .filter('time', function(){
     return function(time){
         if(time){
