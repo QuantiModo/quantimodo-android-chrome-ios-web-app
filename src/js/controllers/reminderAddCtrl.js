@@ -20,21 +20,11 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             variableId : null,
             variableName : null,
             combinationOperation : null
-        }
+        },
+        variableCategoryNames: qm.manualTrackingVariableCategoryNames
     };
     $scope.loading = true;
     $scope.variables = {
-        variableCategories : [
-            { id : 1, name : 'Emotions' },
-            { id : 2, name : 'Symptoms' },
-            { id : 3, name : 'Treatments' },
-            { id : 4, name : 'Foods' },
-            { id : 5, name : 'Vital Signs' },
-            { id : 6, name : 'Physical Activity' },
-            { id : 7, name : 'Sleep' },
-            { id : 8, name : 'Miscellaneous' },
-            { id : 9, name : 'Environment' }
-        ],
         frequencyVariables : [
             { id : 2, name : 'Daily'},  // Default Daily has to be first because As-Needed will be above the fold on Android
             { id : 1, name : 'As-Needed'},

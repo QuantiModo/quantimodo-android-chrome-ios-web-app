@@ -33,7 +33,18 @@ window.qm = {
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
     },
     globals: {},
-    userVariableHelper: {}
+    userVariableHelper: {},
+    manualTrackingVariableCategoryNames: [
+        'Emotions',
+        'Symptoms',
+        'Treatments',
+        'Foods',
+        'Vital Signs',
+        'Physical Activity',
+        'Sleep',
+        'Miscellaneous',
+        'Environment'
+    ]
 };
 window.qmNotifications = {};
 window.userHelper = {};
