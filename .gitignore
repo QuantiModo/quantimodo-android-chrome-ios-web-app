@@ -106,3 +106,5 @@ www/*
 !/www/gitkeep
 www/configs/*
 !/www/configs/gitkeep
+www/private_configs/*
+!/www/private_configs/gitkeep
