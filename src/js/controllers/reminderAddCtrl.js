@@ -6,7 +6,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     $scope.state = {
         units: qm.unitHelper.getProgressivelyMoreUnits(),
         showAddVariableCard : false,
-        showReminderFrequencyCard : false,
         showUnits: false,
         selectedFrequency : 'Daily',
         selectedReminder : false,
@@ -175,7 +174,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if (selectedVariable.variableName) {$scope.state.trackingReminder.variableName = selectedVariable.variableName;}
         setHideDefaultValueField();
         if (selectedVariable.valence) {$scope.state.trackingReminder.valence = selectedVariable.valence;}
-        $scope.state.showReminderFrequencyCard = true;
         showMoreUnitsIfNecessary();
     };
     var getFrequencyChart = function(){
@@ -360,7 +358,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($scope.state.trackingReminder.reminderFrequency !== null){
             $scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.trackingReminder.reminderFrequency];
         }
-        $scope.state.showReminderFrequencyCard = true;
         setHideDefaultValueField();
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
