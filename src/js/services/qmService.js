@@ -3916,7 +3916,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return variables;
     };
     qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
-        if(!variableName){variableName = qmService.getPrimaryOutcomeVariable().name;}
+        if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
             .then(function (variableObject) {
                 $rootScope.variableObject = variableObject;
@@ -3925,7 +3925,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
     };
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
-        if(!name){name = qmService.getPrimaryOutcomeVariable().name;}
+        if(!name){name = qm.getPrimaryOutcomeVariable().name;}
         var deferred = $q.defer();
         if(!refresh){
             var userVariable = qmStorage.getUserVariableByName(name);
