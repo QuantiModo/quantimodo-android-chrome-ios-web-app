@@ -539,15 +539,16 @@ function outputVersionCodeForApk(pathToApk) {
     });
 }
 function copyFiles(sourceFiles, destinationPath, excludedFolder) {
-    console.log("Copying " + sourceFiles + " to " + destinationPath);
     var srcArray = [sourceFiles];
-    if(excludedFolder){
+    if(excludedFolder && typeof excludedFolder === "string"){
         console.log("Excluding " + excludedFolder + " from copy.. ");
         srcArray.push('!' + excludedFolder);
         srcArray.push('!' + excludedFolder + '/**');
+    } else if (excludedFolder) {
+        srcArray = srcArray.concat(excludedFolder);
     }
-    return gulp.src(srcArray)
-        .pipe(gulp.dest(destinationPath));
+    console.log("Copying " + JSON.stringify(srcArray) + " to " + destinationPath);
+    return gulp.src(srcArray).pipe(gulp.dest(destinationPath));
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
@@ -1821,7 +1822,7 @@ gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
 gulp.task('copySrcToWww', [], function () {
-    return copyFiles('src/**/*', 'www', 'src/lib');
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
 });
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
