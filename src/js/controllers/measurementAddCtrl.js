@@ -18,18 +18,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         searchedUnits : [],
         defaultValueLabel : 'Value',
         defaultValuePlaceholderText : 'Enter a value',
-        variableCategories : [
-            { id : 1, name : 'Emotions' },
-            { id : 2, name : 'Symptoms' },
-            { id : 3, name : 'Treatments' },
-            { id : 4, name : 'Foods' },
-            { id : 5, name : 'Vital Signs' },
-            { id : 6, name : 'Physical Activity' },
-            { id : 7, name : 'Sleep' },
-            { id : 8, name : 'Miscellaneous' }
-        ],
         hideReminderMeButton : false,
-        editReminder : false
+        editReminder : false,
+        variableCategoryNames: qm.manualTrackingVariableCategoryNames
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
