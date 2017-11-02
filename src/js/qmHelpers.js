@@ -46,7 +46,7 @@ window.qm = {
         'Environment'
     ]
 };
-if(!window.config){window.config = {};}
+//if(!window.config){window.config = {};}
 window.qmNotifications = {};
 window.userHelper = {};
 window.qmItems = {
