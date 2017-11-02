@@ -1,8 +1,7 @@
-angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", "ionicDatePicker", "$ionicLoading", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, qmService, qmLogService, ionicTimePicker, ionicDatePicker, $ionicLoading) {
+angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope",
+    "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService",
+    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory, qmService, qmLogService) {
     $scope.controller_name = "MeasurementAddCtrl";
-    var variableCategoryName = $stateParams.variableCategoryName;
-    var variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {
         measurementIsSetup : false,
@@ -10,9 +9,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         showVariableCategorySelector: false,
         showUnits: false,
         unitCategories : [],
-        variableCategoryName: variableCategoryName,
-        variableCategoryObject : variableCategoryObject,
-        helpText: variableCategoryObject.helpText,
+        variableCategoryName: $stateParams.variableCategoryName,
+        variableCategoryObject : qmService.getVariableCategoryInfo($stateParams.variableCategoryName),
+        helpText: qmService.getVariableCategoryInfo($stateParams.variableCategoryName).helpText,
         unitAbbreviatedName : '',
         measurement : {},
         searchedUnits : [],
@@ -229,7 +228,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         } else if (variableObject.defaultUnitAbbreviatedName){
             setupUnit(variableObject.defaultUnitAbbreviatedName, variableObject.valence);
         } else if (variableObject.variableCategoryName){
-            setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
+            setupUnit(qmService.getVariableCategoryInfo(variableObject.variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
         }
         $scope.state.measurement.inputType = variableObject.inputType;
         $scope.state.measurement.variableName = variableObject.name;
