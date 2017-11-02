@@ -44,7 +44,11 @@ window.qm = {
         'Sleep',
         'Miscellaneous',
         'Environment'
-    ]
+    ],
+    getAppSettings: function () {
+        if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
+        return null;
+    }
 };
 //if(!window.config){window.config = {};}
 window.qmNotifications = {};
@@ -125,6 +129,70 @@ if(!window.qmUser){
     window.qmUser = localStorage.getItem(qmItems.user);
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
+qm.getPrimaryOutcomeVariable = function(){
+    if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){ return qm.getAppSettings().primaryOutcomeVariableDetails;}
+    var variables = {
+        "Overall Mood" : {
+            "id" : 1398,
+            "name" : "Overall Mood",
+            "variableName": "Overall Mood",
+            variableCategoryName : "Mood",
+            "userVariableDefaultUnitAbbreviatedName" : "/5",
+            unitAbbreviatedName : "/5",
+            "combinationOperation": "MEAN",
+            "valence": "positive",
+            "unitName": "1 to 5 Rating",
+            "ratingOptionLabels" : ["Depressed", "Sad", "OK", "Happy", "Ecstatic"],
+            "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
+            "ratingTextToValueConversionDataSet" : {"depressed" : 1, "sad" : 2, "ok" : 3, "happy" : 4, "ecstatic": 5},
+            trackingQuestion: "How are you?",
+            averageText:"Your average mood is ",
+        },
+        "Energy Rating" : {
+            id : 108092,
+            name : "Energy Rating",
+            variableName: "Energy Rating",
+            variableCategoryName : "Emotions",
+            unitAbbreviatedName : "/5",
+            combinationOperation: "MEAN",
+            positiveOrNegative: 'positive',
+            unitName: '1 to 5 Rating',
+            ratingOptionLabels : ['1', '2', '3', '4', '5'],
+            ratingValueToTextConversionDataSet: {1: "1", 2: "2", 3: "3", 4: "4", 5: "5"},
+            ratingTextToValueConversionDataSet : {"1" : 1, "2" : 2, "3" : 3, "4" : 4, "5" : 5},
+            trackingQuestion:"How is your energy level right now?",
+            averageText:"Your average energy level is ",
+        }
+    };
+    if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableName){return variables[qm.getAppSettings().primaryOutcomeVariableName];}
+    return variables['Overall Mood'];
+};
+qm.getPrimaryOutcomeVariableByNumber = function(num){
+    return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
+};
+qm.ratingImages = {
+    positive : [
+        'img/rating/face_rating_button_256_depressed.png',
+        'img/rating/face_rating_button_256_sad.png',
+        'img/rating/face_rating_button_256_ok.png',
+        'img/rating/face_rating_button_256_happy.png',
+        'img/rating/face_rating_button_256_ecstatic.png'
+    ],
+    negative : [
+        'img/rating/face_rating_button_256_ecstatic.png',
+        'img/rating/face_rating_button_256_happy.png',
+        'img/rating/face_rating_button_256_ok.png',
+        'img/rating/face_rating_button_256_sad.png',
+        'img/rating/face_rating_button_256_depressed.png'
+    ],
+    numeric : [
+        'img/rating/numeric_rating_button_256_1.png',
+        'img/rating/numeric_rating_button_256_2.png',
+        'img/rating/numeric_rating_button_256_3.png',
+        'img/rating/numeric_rating_button_256_4.png',
+        'img/rating/numeric_rating_button_256_5.png'
+    ]
+};
 qmNotifications.getFromGlobalsOrLocalStorage = function(){
     return qmStorage.getAsObject(qmItems.trackingReminderNotifications);
 };
@@ -208,7 +276,7 @@ function getClientIdFromQueryParameters() {
     return clientId;
 }
 function getQuantiModoClientId() {
-    if(onMobile()){
+    if(qm.platform.isMobile()){
         window.qmLog.debug(null, 'Using default.config.js because we\'re on mobile', null);
         return "default"; // On mobile
     }
@@ -234,9 +302,6 @@ function getQuantiModoClientId() {
     }
     window.qmLog.debug(null, 'Using subdomain as client id: ' + subdomain);
     return subdomain;
-}
-function onMobile() {
-    return window.location.href.indexOf('https://') === -1;
 }
 var appsManager = { // jshint ignore:line
     defaultApp : "default",
@@ -272,7 +337,7 @@ var appsManager = { // jshint ignore:line
     },
     shouldWeUseLocalConfig: function (clientId) {
         if(clientId === "default"){return true;}
-        if(onMobile()){return true;}
+        if(qm.platform.isMobile()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
         if(getClientIdFromQueryParameters() === 'app'){return true;}
@@ -408,7 +473,6 @@ function objectLength(obj) {
     }
     return result;
 }
-
 window.apiHelper.getRequestUrl = function(path) {
     var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
     console.log("Making API request to " + url);

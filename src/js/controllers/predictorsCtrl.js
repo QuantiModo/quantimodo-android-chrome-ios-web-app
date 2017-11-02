@@ -2,7 +2,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
-        variableName: qmService.getPrimaryOutcomeVariable().name,
+        variableName: qm.getPrimaryOutcomeVariable().name,
         correlationObjects: [],
         showLoadMoreButton: false
     };
@@ -17,7 +17,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
         if(urlHelper.getParam('causeVariableName')){ $stateParams.causeVariableName = urlHelper.getParam('causeVariableName', window.location.href, true); }
         if(urlHelper.getParam('effectVariableName')){ $stateParams.effectVariableName = urlHelper.getParam('effectVariableName', window.location.href, true); }
-        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = qmService.getPrimaryOutcomeVariable().name; }
+        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = qm.getPrimaryOutcomeVariable().name; }
         $scope.state.requestParams.offset = 0;
         $scope.state.requestParams.limit = 10;
         if ($stateParams.causeVariableName){

@@ -6,7 +6,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
     $rootScope.numberOfPendingNotifications = null;
-    $scope.primaryOutcomeVariableDetails = qmService.getPrimaryOutcomeVariable();
+    $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
         qmLogService.debug(null, 'appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);

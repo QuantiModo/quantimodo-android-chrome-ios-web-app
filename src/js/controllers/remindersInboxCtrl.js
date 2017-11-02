@@ -149,7 +149,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	function getWeekdayCharts() {
         if(!$scope.weekdayChartConfig){
             qmService.syncPrimaryOutcomeVariableMeasurements(60 * 60);
-            qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
+            qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
         }
     }
 	function getFavorites() {
@@ -256,14 +256,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         refreshIfRunningOutOfNotifications();
 	};
 	function wordClicked(word){
-		alert(word.text + " appears " + word.count + " times and the average " + qmService.getPrimaryOutcomeVariable().name +
-			" value when it is written is " + word.average + qmService.getPrimaryOutcomeVariable().unitAbbreviatedName + '.' );
+		alert(word.text + " appears " + word.count + " times and the average " + qm.getPrimaryOutcomeVariable().name +
+			" value when it is written is " + word.average + qm.getPrimaryOutcomeVariable().unitAbbreviatedName + '.' );
 	}
 	function createWordCloudFromNotes() {
 		$scope.height = window.innerHeight * 0.5;
 		$scope.width = window.innerWidth; //element.find('word-cloud')[0].offsetWidth;
 		$scope.wordClicked = wordClicked;
-		qmService.getNotesDeferred(qmService.getPrimaryOutcomeVariable().name).then(function (response) {
+		qmService.getNotesDeferred(qm.getPrimaryOutcomeVariable().name).then(function (response) {
 			$scope.words = response;
 		});
 	}
