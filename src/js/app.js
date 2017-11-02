@@ -32,7 +32,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
+.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService", function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
@@ -94,8 +94,8 @@ angular.module('starter',
         qmStorage.setItem(qmItems.introSeen, true);
         qmStorage.setItem(qmItems.onboarded, true);
     }
-})
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
+}])
+.config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider", "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider", function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
                  $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
     $opbeatProvider.config({
         orgId: '10d58117acb546c08a2cae66d650480d',
@@ -1224,7 +1224,7 @@ angular.module('starter',
         //console.debug("Intro seen so setting default route to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
-});
+}]);
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
         if (typeof Bugsnag !== "undefined") {

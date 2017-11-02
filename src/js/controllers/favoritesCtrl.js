@@ -1,4 +1,4 @@
-angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,
+angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$rootScope", "$stateParams", function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,
 										  $stateParams) {
     $scope.controller_name = "FavoritesCtrl";
     qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
@@ -52,4 +52,4 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
-});
+}]);

@@ -1,4 +1,4 @@
-angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, qmService, qmLogService, clipboard, $mdDialog) {
+angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, clipboard, $mdDialog) {
     $scope.state = {
         title: 'Create a Study',
         color: qmService.colors.blue,
@@ -88,6 +88,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             });
         }
     };
+    SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
     $scope.selectOutcomeVariable = function (ev) {
         $mdDialog.show({
             controller: SelectVariableDialogController,
@@ -138,4 +139,4 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             qmLogService.debug(null, 'User cancelled selection', null);
         });
     };
-});
+}]);

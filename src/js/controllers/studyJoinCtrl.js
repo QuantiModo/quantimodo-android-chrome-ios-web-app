@@ -1,4 +1,4 @@
-angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, qmService, qmLogService, $rootScope, $stateParams) {
+angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmService", "qmLogService", "$rootScope", "$stateParams", function($scope, $state, qmService, qmLogService, $rootScope, $stateParams) {
     $scope.controller_name = "StudyJoinCtrl";
     if(window.debugMode){qmLogService.debug(null, $scope.controller_name + ' first starting in state: ' + $state.current.name, null);}
     var green = { backgroundColor: "#0f9d58", circleColor: "#03c466" };
@@ -70,4 +70,4 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
         });
     };
     $scope.showMoreInfo = function () { qmService.showMaterialAlert($scope.state.title, $scope.state.moreInfo); };
-});
+}]);

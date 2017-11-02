@@ -1,5 +1,5 @@
 angular.module('starter')  // Handles all views that have an iFrame
-.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state, qmService, qmLogService) {
+.controller('ExternalCtrl', ["$scope", "$stateParams", "$rootScope", "$state", "qmService", "qmLogService", function($scope, $stateParams, $rootScope, $state, qmService, qmLogService) {
 	$scope.controller_name = "ExternalCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
 	// when page load completes
@@ -12,4 +12,4 @@ angular.module('starter')  // Handles all views that have an iFrame
 	$scope.$on('$ionicView.afterLeave', function(){
 		$rootScope.hideHelpButton = false;
 	});
-});
+}]);

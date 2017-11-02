@@ -1,5 +1,6 @@
-angular.module("starter").controller("StudyCtrl", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
+angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope", "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
                                       $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
+    VariableSettingsController.$inject = ["qmService", "qmLogService", "dataToPass"];
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on("$ionicView.beforeEnter", function() {
@@ -249,4 +250,4 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         var eyes = new TweenMax.to('#blueBotEyes',.5,{scale:1.1,transformOrigin:'50% 50%',ease:Sine.easeInOut,onComplete:function(){eyes.reverse()},onReverseComplete:function(){eyes.play()}})
     }
 
-});
+}]);

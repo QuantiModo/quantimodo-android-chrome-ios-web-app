@@ -1,5 +1,7 @@
-angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
+angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$mdDialog", "$rootScope", "$stateParams", "qmService", "qmLogService", "$locale", function ($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
                                                               $rootScope, $stateParams, qmService, qmLogService, $locale) {
+    WebUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
+    MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.signUpQuestions = [
         {
             question: "What do you do with my data?",
@@ -230,4 +232,4 @@ angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $i
             qmLogService.error(null, 'couldn\'t get product ' + getProductId(baseProductId) + ': ' + JSON.stringify(err));
         });
     };
-});
+}]);

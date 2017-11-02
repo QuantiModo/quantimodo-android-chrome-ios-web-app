@@ -1,4 +1,4 @@
-angular.module('starter').controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
+angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$stateParams", "$ionicLoading", "$filter", "$timeout", "$rootScope", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, qmService, qmLogService, ionicTimePicker) {
     $scope.controller_name = "ReminderAddCtrl";
     qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
@@ -499,4 +499,4 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         qmLogService.debug(null, 'Setting hideSheet timeout', null);
         $timeout(function() {hideSheet();}, 20000);
     };
-});
+}]);

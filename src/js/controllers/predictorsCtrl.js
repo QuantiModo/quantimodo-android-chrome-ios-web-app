@@ -1,4 +1,4 @@
-angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService,
+angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService", "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog", function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService,
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
@@ -214,4 +214,5 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             });
         }
     };
-});
+    CorrelationSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
+}]);

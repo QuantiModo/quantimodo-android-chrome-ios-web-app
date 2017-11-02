@@ -1,5 +1,5 @@
 /** @namespace window.qmLog */
-angular.module('starter').factory('qmLogService', function($state, $q, $rootScope) {
+angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope", function($state, $q, $rootScope) {
     // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
     // BLACK BOX THESE
     // \.min\.js$ — for all minified sources
@@ -68,4 +68,4 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
         }, function (error) {qmLogService.error(error);});
     };
     return qmLogService;
-});
+}]);

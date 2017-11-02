@@ -1,4 +1,4 @@
-angular.module('starter').controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout,
+angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$timeout", "$ionicActionSheet", "qmService", "qmLogService", "$ionicLoading", function($scope, $state, $stateParams, $rootScope, $timeout,
 																			$ionicActionSheet, qmService, qmLogService, $ionicLoading) {
 	$scope.controller_name = "historyAllMeasurementsCtrl";
 	$scope.state = {
@@ -161,4 +161,4 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		});
 		$timeout(function() {hideSheet();}, 20000);
 	};
-});
+}]);
