@@ -1,4 +1,4 @@
-angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
+angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse) {
 
     if(window.debugMode){qmLogService.debug(null, 'IntroCtrl first starting in state: ' + $state.current.name, null);}
@@ -52,4 +52,4 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
-});
+}]);

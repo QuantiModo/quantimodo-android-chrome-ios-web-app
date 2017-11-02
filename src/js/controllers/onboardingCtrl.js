@@ -1,4 +1,4 @@
-angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
+angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug(null, 'OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
@@ -81,4 +81,4 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
                 doneState: $state.current.name
             });
     };
-});
+}]);

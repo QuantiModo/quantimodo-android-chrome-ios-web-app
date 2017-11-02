@@ -1,4 +1,4 @@
-angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
+angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state", "$timeout", "$rootScope", "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "qmLogService", "clipboard", function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
     $scope.controller_name = "ChartsPageCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {title: "Charts"};
@@ -56,4 +56,4 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             qmService.openSharingUrl(sharingUrl);
         }
     };
-});
+}]);

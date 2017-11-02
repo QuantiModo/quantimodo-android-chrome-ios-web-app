@@ -34,7 +34,7 @@ angular.module('starter')
         }
     )
 
-.directive('variableSearch', function (QuantimodoSearchService) {
+.directive('variableSearch', ["QuantimodoSearchService", function (QuantimodoSearchService) {
         return {
             require: 'ngModel',
 
@@ -87,9 +87,9 @@ angular.module('starter')
                 });
             }
         };
-    })
+    }])
 
-.directive('onReadFile', function ($parse) {
+.directive('onReadFile', ["$parse", function ($parse) {
     return {
         restrict: 'A',
         scope: false,
@@ -119,7 +119,7 @@ angular.module('starter')
             });
         }
     };
-})
+}])
 
 .directive('fileModel', ['$parse', function ($parse) {
     return {

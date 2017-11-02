@@ -1,4 +1,4 @@
-angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
+angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$ionicLoading", "$ionicActionSheet", "$state", "$timeout", "$rootScope", "qmService", "qmLogService", function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
 													  $rootScope, qmService, qmLogService) {
 	$scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 	$scope.state = {history : []};
@@ -53,4 +53,4 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 		});
 		$timeout(function() {hideSheet();}, 20000);
 	};
-});
+}]);

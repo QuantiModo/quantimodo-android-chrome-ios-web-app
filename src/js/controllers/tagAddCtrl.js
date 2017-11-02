@@ -1,4 +1,4 @@
-angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
+angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "$ionicLoading", "qmService", "qmLogService", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLogService) {
     $scope.controller_name = "TagAddCtrl";
     $scope.state = { };
@@ -119,4 +119,4 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
 
     });
-});
+}]);

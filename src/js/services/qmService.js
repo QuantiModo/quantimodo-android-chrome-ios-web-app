@@ -1,7 +1,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qmNotifications */
 /** @namespace window.qmStorage */
-angular.module('starter').factory('qmService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
+angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout", "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading", "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
                                                         $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, 
                                                         $ionicActionSheet) {
     var qmService = {qmStorage: {}};
@@ -6164,6 +6164,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
     }
     qmService.showMaterialAlert = function(title, textContent, ev){
+        AlertDialogController.$inject = ["$scope", "$mdDialog", "dataToPass"];
         function AlertDialogController($scope, $mdDialog, dataToPass) {
             var self = this;
             self.title = dataToPass.title;
@@ -6190,6 +6191,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
     };
     qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev, noText){
+        ConfirmationDialogController.$inject = ["$scope", "$mdDialog", "dataToPass"];
         if(!noText){noText = 'Cancel';}
         function ConfirmationDialogController($scope, $mdDialog, dataToPass) {
             var self = this;
@@ -7344,4 +7346,4 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return $stateParams.variableName;
     };
     return qmService;
-});
+}]);

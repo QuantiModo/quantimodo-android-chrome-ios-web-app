@@ -1,4 +1,4 @@
-angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
+angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ionicPopover", "$ionicPopup", "$rootScope", "$http", "qmService", "qmLogService", "ionicTimePicker", "$stateParams", "$ionicHistory", "$ionicLoading", "$ionicPlatform", function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
 										  qmService, qmLogService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
@@ -315,4 +315,4 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
         }
     }
-});
+}]);

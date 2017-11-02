@@ -43,6 +43,7 @@ var useref = require('gulp-useref');
 var lazypipe = require('lazypipe');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
+var ngAnnotate = require('gulp-ng-annotate');
 
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
@@ -1245,10 +1246,12 @@ gulp.task('decryptBuildJson', [], function (callback) {
     var decryptedFilePath = 'build.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
-gulp.task('encryptPrivateConfig', [], function () {
-    encryptPrivateConfig();
-});
 
+gulp.task('ng-annotate', [], function() {
+    return gulp.src('src/js/**/*.js')
+        .pipe(ngAnnotate())
+        .pipe(gulp.dest('www/js'));
+});
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     logInfo("Running minify-js-generate-css-and-index-html...");
     var jsFilter = filter("**/*.js", { restore: true });
@@ -1706,14 +1709,15 @@ gulp.task('makeIosAppSimplified', function (callback) {
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
-    return replaceTextInFiles(['www/index.html'], commentedCordovaScript, uncommentedCordovaScript);
+    return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
 });
-gulp.task('removeCordovaJsFromIndexHtml', function () {
+gulp.task('commentOrUncommentCordovaJs', function () {
     if(process.env.BUILD_IOS || process.env.BUILD_ANDROID){
-        console.log("Not removing cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
-        return;
+        console.log("Uncommenting cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
+        return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
     }
-    return replaceTextInFiles(['www/index.html'], uncommentedCordovaScript, commentedCordovaScript);
+    console.log("Commenting cordova.js because neither process.env.BUILD_IOS or process.env.BUILD_ANDROID are true");
+    return replaceTextInFiles(['src/index.html'], uncommentedCordovaScript, commentedCordovaScript);
 });
 gulp.task('setVersionNumberInFiles', function () {
     var filesToUpdate = [
@@ -1919,8 +1923,8 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         'sass',
         'copySrcToWww',
+        'commentOrUncommentCordovaJs',
         'minify-js-generate-css-and-index-html',
-        'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
         'getUnits',
         'getAppConfigs',
