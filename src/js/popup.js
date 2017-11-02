@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if(window.urlHelper.getParam("trackingReminderNotificationId")){
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
-        window.qmNotifications.refreshIfEmpty()
     } else {
         window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
     }
@@ -182,4 +181,5 @@ document.addEventListener('DOMContentLoaded', function() {
     setFaceButtonListeners();
     qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.qmLog.setupBugsnag();
+    window.qmNotifications.refreshIfEmpty();
 });
