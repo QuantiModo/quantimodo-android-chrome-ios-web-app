@@ -1,4 +1,4 @@
-angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService) {
+angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService) {
     $scope.controller_name = "VariableSearchCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = $stateParams;
@@ -261,4 +261,4 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             });
         };
     };
-});
+}]);

@@ -1,4 +1,4 @@
-angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
+angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", "ionicDatePicker", "$ionicLoading", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, qmService, qmLogService, ionicTimePicker, ionicDatePicker, $ionicLoading) {
     $scope.controller_name = "MeasurementAddCtrl";
     var variableCategoryName = $stateParams.variableCategoryName;
@@ -390,4 +390,4 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         qmLogService.debug(null, 'Setting hideSheet timeout', null);
         $timeout(function() { hideSheet(); }, 20000);
     };
-});
+}]);

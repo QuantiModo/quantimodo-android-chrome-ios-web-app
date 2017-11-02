@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IframeScreenCtrl', function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, qmService, qmLogService) {
+.controller('IframeScreenCtrl', ["$stateParams", "$scope", "$ionicLoading", "$sce", "$state", "$rootScope", "qmService", "qmLogService", function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, qmService, qmLogService) {
     qmLogService.debug(null, 'IframeScreenCtrl works!', null);
     $rootScope.showFilterBarSearchIcon = false;
     var embedPlugin;
@@ -60,4 +60,4 @@ angular.module('starter')
         qmService.sendToLoginIfNecessaryAndComeBack();
         qmService.hideLoader();
     });
-});
+}]);

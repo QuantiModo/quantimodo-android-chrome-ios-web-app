@@ -1,5 +1,5 @@
 angular.module('starter') // Controls the settings page
-.controller('MapCtrl', function($scope, $cordovaGeolocation, $ionicLoading, $ionicPlatform, $rootScope) {
+.controller('MapCtrl', ["$scope", "$cordovaGeolocation", "$ionicLoading", "$ionicPlatform", "$rootScope", function($scope, $cordovaGeolocation, $ionicLoading, $ionicPlatform, $rootScope) {
 	$ionicPlatform.ready(function() {
 
 		$rootScope.showFilterBarSearchIcon = false;
@@ -56,4 +56,4 @@ angular.module('starter') // Controls the settings page
 
 
 	});
-});
+}]);

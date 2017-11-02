@@ -1,4 +1,5 @@
-angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
+angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector", "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog", function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
+    LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
@@ -318,4 +319,4 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             });
         };
     }
-});
+}]);

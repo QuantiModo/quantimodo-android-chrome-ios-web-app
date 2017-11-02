@@ -1,4 +1,4 @@
-angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLogService) {
+angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$state", "$timeout", "$rootScope", "$ionicLoading", "qmService", "qmLogService", function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLogService) {
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
     $rootScope.showFilterBarSearchIcon = false;
@@ -61,4 +61,4 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         qmLogService.debug(null, 'updateCharts broadcast received..', null);
         updateCharts();
     });
-});
+}]);
