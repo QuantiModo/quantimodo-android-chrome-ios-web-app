@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
-        <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
+        <ion-content scroll="{ isBrowserView : isWeb == false }" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
             <div ng-if="!correlationObject && !state.studyNotFound">
                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
