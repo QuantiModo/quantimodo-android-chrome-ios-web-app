@@ -8,6 +8,7 @@
 *.keystore
 *.mobileprovision
 .idea/
+!.idea/runConfigurations/*
 .vagrant/
 .vs/
 /android-armv7-debug/
