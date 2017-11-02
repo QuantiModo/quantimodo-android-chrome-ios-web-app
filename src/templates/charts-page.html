@@ -1,0 +1,62 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
+        <ion-refresher on-refresh="refreshCharts()"></ion-refresher>
+        <div ng-cloak>
+            <div ng-if="variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>
+            <div ng-if="variableObject" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
+            <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
+                <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
+                    <span class="input-label left-text"># of measurements</span>
+                    <span class="input-label right-text">{{variableObject.numberOfRawMeasurements}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.numberOfCorrelations">
+                    <span class="input-label left-text"># of correlations</span>
+                    <span class="input-label right-text">{{variableObject.numberOfCorrelations}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.numberOfUniqueDailyValues">
+                    <span class="input-label left-text"># of unique daily values</span>
+                    <span class="input-label right-text">{{variableObject.numberOfUniqueDailyValues}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.mean">
+                    <span class="input-label left-text">Mean</span>
+                    <span class="input-label right-text">{{variableObject.mean}} {{variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.median">
+                    <span class="input-label left-text">Median</span>
+                    <span class="input-label right-text">{{variableObject.median}} {{variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.mostCommonValue">
+                    <span class="input-label left-text">Most common value</span>
+                    <span class="input-label right-text">{{variableObject.mostCommonValue}} {{variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.standardDeviation">
+                    <span class="input-label left-text">Standard deviation</span>
+                    <span class="input-label right-text">{{variableObject.standardDeviation}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.variance">
+                    <span class="input-label left-text">Variance</span>
+                    <span class="input-label right-text">{{variableObject.variance}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.skewness">
+                    <span class="input-label left-text">Skewness</span>
+                    <span class="input-label right-text">{{variableObject.skewness}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.kurtosis">
+                    <span class="input-label left-text">Kurtosis</span>
+                    <span class="input-label right-text">{{variableObject.kurtosis}}</span>
+                </label>
+            </div>
+            <div class="list card" ng-click="recordMeasurementButtonClick()">
+                <a id="recordMeasurementButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Record Measurement </a>
+            </div>
+            <div class="list card" ng-click="addNewReminderButtonClick()">
+                <a id="addReminderButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Add Reminder </a>
+            </div>
+            <div class="list card" ng-click="editSettingsButtonClick()">
+                <a class="item item-icon-left"> <!--Find better icon in blue--> <i class="icon ion-settings positive"></i> Analysis Settings </a>
+            </div>
+        </div>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

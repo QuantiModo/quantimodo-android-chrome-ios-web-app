@@ -22,15 +22,14 @@
     <!--<script src="lib/templates.js"></script>-->
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
     <script src="lib/opbeat-angular/opbeat-angular.min.js"></script>
-    <!-- endbuild -->
     <script src="cordova.js"></script>   <!-- cordova script (this will be a 404 during development) -->
-      <!-- your app's js -->
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
     <script src="js/qmChrome.js"></script>
     <script src="js/app.js"></script>
     <script src="js/services/qmLogService.js"></script>
     <script src="js/services/qmService.js"></script>
+    <!-- Here we inject app builder files not needed in the normal end-user app -->
     <!-- inject:js -->
     <!-- endinject -->
     <script src="js/quantimodoFilters.js"></script>
@@ -65,6 +64,7 @@
     <script src="js/controllers/studyJoinCtrl.js"></script>
     <script src="js/controllers/studyCreationCtrl.js"></script>
     <script src="js/directives.js"></script>
+      <!-- endbuild -->
 <!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
           moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
       </script>-->

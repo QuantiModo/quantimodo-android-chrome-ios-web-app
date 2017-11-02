@@ -43,6 +43,7 @@ var useref = require('gulp-useref');
 var lazypipe = require('lazypipe');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
+var ngAnnotate = require('gulp-ng-annotate');
 
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
@@ -317,11 +318,6 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     logDebug('executing ' + cmd);
     execute(cmd, callback);
 }
-function encryptPrivateConfig(callback) {
-    var encryptedFilePath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
-    var fileToEncryptPath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-}
 function ionicUpload(callback) {
     var commandForGit = 'git log -1 HEAD --pretty=format:%s';
     execute(commandForGit, function (error, output) {
@@ -423,7 +419,9 @@ function obfuscateStringify(message, object) {
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
     return message;
 }
-function logDebug(message, object) {if(buildDebug){logInfo(message, object);}}
+function logDebug(message, object) {
+    if(buildDebug){logInfo("BUILD DEBUG: " + message, object);}
+}
 function logInfo(message, object) {console.log(obfuscateStringify(message, object));}
 function logError(message, object) {
     console.error(obfuscateStringify(message, object));
@@ -503,6 +501,11 @@ function replaceTextInFiles(filesArray, textToReplace, replacementText){
         .pipe(gulp.dest('./'));
 }
 function outputApiErrorResponse(err, options) {
+    if(!err || !err.response){
+        logError("No err.response provided to outputApiErrorResponse!  err: ", err);
+        logError("Request options: ", options);
+        return;
+    }
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     logError(options.uri + " error response", err.response.body);
 }
@@ -535,10 +538,17 @@ function outputVersionCodeForApk(pathToApk) {
         if (error !== null) {logError('ERROR: ' + error);}
     });
 }
-function copyFiles(sourceFiles, destinationPath) {
-    console.log("Copying " + sourceFiles + " to " + destinationPath);
-    return gulp.src([sourceFiles])
-        .pipe(gulp.dest(destinationPath));
+function copyFiles(sourceFiles, destinationPath, excludedFolder) {
+    var srcArray = [sourceFiles];
+    if(excludedFolder && typeof excludedFolder === "string"){
+        console.log("Excluding " + excludedFolder + " from copy.. ");
+        srcArray.push('!' + excludedFolder);
+        srcArray.push('!' + excludedFolder + '/**');
+    } else if (excludedFolder) {
+        srcArray = srcArray.concat(excludedFolder);
+    }
+    console.log("Copying " + JSON.stringify(srcArray) + " to " + destinationPath);
+    return gulp.src(srcArray).pipe(gulp.dest(destinationPath));
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
@@ -1237,26 +1247,11 @@ gulp.task('decryptBuildJson', [], function (callback) {
     var decryptedFilePath = 'build.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
-gulp.task('encryptPrivateConfig', [], function () {
-    encryptPrivateConfig();
-});
-gulp.task('encryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.json', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            encryptFile(files[i], files[i] + '.enc');
-        }
-    });
-});
-gulp.task('decryptAllPrivateConfigs', [], function () {
-    var glob = require('glob');
-    glob(privateConfigDirectoryPath + '*.enc', {}, function (er, files) {
-        logInfo(JSON.stringify(files));
-        for (var i = 0; i < files.length; i++) {
-            decryptFile(files[i], files[i].replace('.enc', ''));
-        }
-    });
+
+gulp.task('ng-annotate', [], function() {
+    return gulp.src('src/js/**/*.js')
+        .pipe(ngAnnotate())
+        .pipe(gulp.dest('www/js'));
 });
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     logInfo("Running minify-js-generate-css-and-index-html...");
@@ -1265,15 +1260,14 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
 
     var sourceMapsWriteOptions = {
-        sourceRoot: "src/lib/",
-        includeContent: false
+        //sourceRoot: "src/lib/",
+        includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
     return gulp.src("src/index.html")
         //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
-        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(jsFilter)
-        .pipe(uglify())             // Minify any javascript sources
+        .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(csso())               // Minify any CSS sources
@@ -1282,6 +1276,7 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(rev())                // Rename the concatenated files (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(revReplace())         // Substitute in new filenames
+        .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
@@ -1715,14 +1710,15 @@ gulp.task('makeIosAppSimplified', function (callback) {
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
-    return replaceTextInFiles(['www/index.html'], commentedCordovaScript, uncommentedCordovaScript);
+    return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
 });
-gulp.task('removeCordovaJsFromIndexHtml', function () {
+gulp.task('commentOrUncommentCordovaJs', function () {
     if(process.env.BUILD_IOS || process.env.BUILD_ANDROID){
-        console.log("Not removing cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
-        return;
+        console.log("Uncommenting cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
+        return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
     }
-    return replaceTextInFiles(['www/index.html'], uncommentedCordovaScript, commentedCordovaScript);
+    console.log("Commenting cordova.js because neither process.env.BUILD_IOS or process.env.BUILD_ANDROID are true");
+    return replaceTextInFiles(['src/index.html'], uncommentedCordovaScript, commentedCordovaScript);
 });
 gulp.task('setVersionNumberInFiles', function () {
     var filesToUpdate = [
@@ -1825,6 +1821,9 @@ gulp.task('copyAppResources', [
 gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
+gulp.task('copySrcToWww', [], function () {
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
+});
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
@@ -1924,8 +1923,9 @@ gulp.task('configureApp', [], function (callback) {
         'setClientId',
         'copyIonIconsToWww',
         'sass',
+        'copySrcToWww',
+        'commentOrUncommentCordovaJs',
         'minify-js-generate-css-and-index-html',
-        'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
         'getUnits',
         'getAppConfigs',
