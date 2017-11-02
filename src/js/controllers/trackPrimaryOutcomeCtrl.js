@@ -5,8 +5,8 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.showRatingFaces = true;
     $scope.averagePrimaryOutcomeVariableImage = false;
     $scope.averagePrimaryOutcomeVariableValue = false;
-    $scope.primaryOutcomeVariable = qmService.getPrimaryOutcomeVariable();
-    var syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
+    $scope.primaryOutcomeVariable = qm.getPrimaryOutcomeVariable();
+    var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         qmLogService.debug(null, 'TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
         $rootScope.hideNavigationMenu = false;
@@ -41,7 +41,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         var sum = 0;
         for (var j = 0; j <  $scope.state.primaryOutcomeMeasurements.length; j++) {sum += $scope.state.primaryOutcomeMeasurements[j].value;}
         $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / $scope.state.primaryOutcomeMeasurements.length);
-        $scope.averagePrimaryOutcomeVariableText = qmService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
+        $scope.averagePrimaryOutcomeVariableText = qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
     };
     var updateCharts = function(){
@@ -50,11 +50,11 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
         if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
         if( $scope.state.primaryOutcomeMeasurements) {
-            $scope.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable());
-            $scope.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable());
-            $scope.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable());
+            $scope.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+            $scope.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+            $scope.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
             updateAveragePrimaryOutcomeRatingView();
-            $scope.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable());
+            $scope.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
         }
     };
     $scope.$on('updateCharts', function(){

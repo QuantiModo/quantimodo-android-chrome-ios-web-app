@@ -89,7 +89,7 @@ angular.module('starter',
         ionic.Platform.exitApp();
     }, 100);
 
-    var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
+    var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
     if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser')) {
         qmStorage.setItem(qmItems.introSeen, true);
         qmStorage.setItem(qmItems.onboarded, true);

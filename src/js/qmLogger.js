@@ -181,7 +181,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
     if(qmLog.getDebugMode()){metaData.local_storage = window.qmStorage.getLocalStorageList(true);} // Too slow to do for every error
-    if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
+    if(qm.getAppSettings()){
         metaData.build_server = config.appSettings.buildServer;
         metaData.build_link = config.appSettings.buildLink;
     }
@@ -215,7 +215,7 @@ window.qmLog.setupBugsnag = function(){
         Bugsnag.releaseStage = qmLog.getEnv();
         if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
         Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
-        if(typeof config !== "undefined"){
+        if(qm.getAppSettings()){
             Bugsnag.appVersion = config.appSettings.versionNumber;
             Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
         }

@@ -68,9 +68,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         } else if($stateParams.variableCategoryName){
             $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
             setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-        } else if (qmService.getPrimaryOutcomeVariable()){
-            $rootScope.variableObject = qmService.getPrimaryOutcomeVariable();
-            setupByVariableObject(qmService.getPrimaryOutcomeVariable());
+        } else if (qm.getPrimaryOutcomeVariable()){
+            $rootScope.variableObject = qm.getPrimaryOutcomeVariable();
+            setupByVariableObject(qm.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
