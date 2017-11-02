@@ -141,14 +141,7 @@ angular.module('starter',
 
     var config_resolver = {
         appSettingsResponse: function($http){
-            var settingsUrl = 'configs/default.config.json';
-            var clientId = appsManager.getQuantiModoClientId();
-            if(!appsManager.shouldWeUseLocalConfig(clientId)){
-                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
-                if(window.designMode){settingsUrl += '&designMode=true';}
-            }
-            window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
-            return $http({method: 'GET', url: settingsUrl});
+            return $http({method: 'GET', url: qm.api.getAppSettingsUrl()});
         }
     };
     //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
