@@ -1396,7 +1396,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var primaryOutcomeMeasurements = [];
         if(measurementsQueue){
             for(var i = 0; i < measurementsQueue.length; i++){
-                if(measurementsQueue[i].variableName === qmService.getPrimaryOutcomeVariable().name){
+                if(measurementsQueue[i].variableName === qm.getPrimaryOutcomeVariable().name){
                     primaryOutcomeMeasurements.push(measurementsQueue[i]);
                 }
             }
@@ -1412,7 +1412,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.reject(errorMessage);
             return deferred.promise;
         }
-        var params = {variableName : qmService.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
+        var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
         qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
                 qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeMeasurementsFromApi));
@@ -1522,17 +1522,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.createPrimaryOutcomeMeasurement = function(numericRatingValue) {
         // if val is string (needs conversion)
         if(isNaN(parseFloat(numericRatingValue))){
-            numericRatingValue = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
-                qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
+            numericRatingValue = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
+                qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
         }
         var measurementObject = {
             id: null,
-            variable: qmService.getPrimaryOutcomeVariable().name,
-            variableName: qmService.getPrimaryOutcomeVariable().name,
-            variableCategoryName: qmService.getPrimaryOutcomeVariable().variableCategoryName,
-            valence: qmService.getPrimaryOutcomeVariable().valence,
+            variable: qm.getPrimaryOutcomeVariable().name,
+            variableName: qm.getPrimaryOutcomeVariable().name,
+            variableCategoryName: qm.getPrimaryOutcomeVariable().variableCategoryName,
+            valence: qm.getPrimaryOutcomeVariable().valence,
             startTimeEpoch: window.timeHelper.getUnixTimestampInSeconds(),
-            unitAbbreviatedName: qmService.getPrimaryOutcomeVariable().unitAbbreviatedName,
+            unitAbbreviatedName: qm.getPrimaryOutcomeVariable().unitAbbreviatedName,
             value: numericRatingValue,
             note: null
         };
@@ -1593,7 +1593,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.addToMeasurementsQueue(measurementInfo);
         }
         qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
-        if(measurementInfo.variableName === qmService.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
+        if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var value = trackingReminder.defaultValue;
@@ -1714,7 +1714,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     };
     qmService.getClientId = function(){
-        if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
+        if(qm.getAppSettings() && $rootScope.appSettings.clientId){
             if(urlHelper.getParam('clientIdDebug')){qmLogService.debug(null, '$rootScope.appSettings.clientId is ' + $rootScope.appSettings.clientId, null);}
             return $rootScope.appSettings.clientId;
         } else {
@@ -2613,41 +2613,41 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var ratingInfo =
             {
                 1 : {
-                    displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
-                    positiveImage: qmService.ratingImages.positive[0],
-                    negativeImage: qmService.ratingImages.negative[0],
-                    numericImage:  qmService.ratingImages.numeric[0],
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                    positiveImage: qm.ratingImages.positive[0],
+                    negativeImage: qm.ratingImages.negative[0],
+                    numericImage:  qm.ratingImages.numeric[0],
                 },
                 2 : {
-                    displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
-                    positiveImage: qmService.ratingImages.positive[1],
-                    negativeImage: qmService.ratingImages.negative[1],
-                    numericImage:  qmService.ratingImages.numeric[1],
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                    positiveImage: qm.ratingImages.positive[1],
+                    negativeImage: qm.ratingImages.negative[1],
+                    numericImage:  qm.ratingImages.numeric[1],
                 },
                 3 : {
-                    displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
-                    positiveImage: qmService.ratingImages.positive[2],
-                    negativeImage: qmService.ratingImages.negative[2],
-                    numericImage:  qmService.ratingImages.numeric[2],
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                    positiveImage: qm.ratingImages.positive[2],
+                    negativeImage: qm.ratingImages.negative[2],
+                    numericImage:  qm.ratingImages.numeric[2],
                 },
                 4 : {
-                    displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
-                    positiveImage: qmService.ratingImages.positive[3],
-                    negativeImage: qmService.ratingImages.negative[3],
-                    numericImage:  qmService.ratingImages.numeric[3],
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                    positiveImage: qm.ratingImages.positive[3],
+                    negativeImage: qm.ratingImages.negative[3],
+                    numericImage:  qm.ratingImages.numeric[3],
                 },
                 5 : {
-                    displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
-                    positiveImage: qmService.ratingImages.positive[4],
-                    negativeImage: qmService.ratingImages.negative[4],
-                    numericImage:  qmService.ratingImages.numeric[4],
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                    positiveImage: qm.ratingImages.positive[4],
+                    negativeImage: qm.ratingImages.negative[4],
+                    numericImage:  qm.ratingImages.numeric[4],
                 }
             };
         return ratingInfo;
     };
-    qmService.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-        if(shouldShowNumbers || !qmService.getPrimaryOutcomeVariable().ratingOptionLabels){return ['1',  '2',  '3',  '4', '5'];
-        } else {return qmService.getPrimaryOutcomeVariable().ratingOptionLabels;}
+    qm.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
+        if(shouldShowNumbers || !qm.getPrimaryOutcomeVariable().ratingOptionLabels){return ['1',  '2',  '3',  '4', '5'];
+        } else {return qm.getPrimaryOutcomeVariable().ratingOptionLabels;}
     };
     qmService.getPositiveImageByRatingValue = function(numericValue){
         var positiveRatingOptions = qmService.getPositiveRatingOptions();
@@ -2664,9 +2664,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var filteredList = numericRatingOptions.filter(function(option){return option.numericValue === numericValue;});
         return filteredList.length? filteredList[0].img || false : false;
     };
-    qmService.getPrimaryOutcomeVariableByNumber = function(num){
-        return qmService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qmService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
-    };
     qmService.getRatingFaceImageByText = function(lowerCaseRatingTextDescription){
         var positiveRatingOptions = qmService.getPositiveRatingOptions();
         var filteredList = positiveRatingOptions.filter(
@@ -2677,33 +2674,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return [
             {
                 numericValue: 1,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
-                lowerCaseTextDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
-                img: qmService.ratingImages.positive[0]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                lowerCaseTextDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
+                img: qm.ratingImages.positive[0]
             },
             {
                 numericValue: 2,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
-                lowerCaseTextDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
-                img: qmService.ratingImages.positive[1]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                lowerCaseTextDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
+                img: qm.ratingImages.positive[1]
             },
             {
                 numericValue: 3,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
-                lowerCaseTextDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
-                img: qmService.ratingImages.positive[2]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                lowerCaseTextDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
+                img: qm.ratingImages.positive[2]
             },
             {
                 numericValue: 4,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
-                lowerCaseTextDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
-                img: qmService.ratingImages.positive[3]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                lowerCaseTextDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
+                img: qm.ratingImages.positive[3]
             },
             {
                 numericValue: 5,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
-                lowerCaseTextDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
-                img: qmService.ratingImages.positive[4]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                lowerCaseTextDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
+                img: qm.ratingImages.positive[4]
             }
         ];
     };
@@ -2711,43 +2708,43 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return [
             {
                 numericValue: 1,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
-                value: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
-                img: qmService.ratingImages.negative[0]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                value: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
+                img: qm.ratingImages.negative[0]
             },
             {
                 numericValue: 2,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
-                value: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
-                img: qmService.ratingImages.negative[1]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                value: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
+                img: qm.ratingImages.negative[1]
             },
             {
                 numericValue: 3,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
-                value: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
-                img: qmService.ratingImages.negative[2]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                value: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
+                img: qm.ratingImages.negative[2]
             },
             {
                 numericValue: 4,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
-                value: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
-                img: qmService.ratingImages.negative[3]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                value: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
+                img: qm.ratingImages.negative[3]
             },
             {
                 numericValue: 5,
-                displayDescription: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
-                value: qmService.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
-                img: qmService.ratingImages.negative[4]
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                value: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
+                img: qm.ratingImages.negative[4]
             }
         ];
     };
     qmService.getNumericRatingOptions = function() {
         return [
-            {numericValue: 1, img: qmService.ratingImages.numeric[0]},
-            {numericValue: 2, img: qmService.ratingImages.numeric[1]},
-            {numericValue: 3, img: qmService.ratingImages.numeric[2]},
-            {numericValue: 4, img: qmService.ratingImages.numeric[3]},
-            {numericValue: 5, img: qmService.ratingImages.numeric[4]}
+            {numericValue: 1, img: qm.ratingImages.numeric[0]},
+            {numericValue: 2, img: qm.ratingImages.numeric[1]},
+            {numericValue: 3, img: qm.ratingImages.numeric[2]},
+            {numericValue: 4, img: qm.ratingImages.numeric[3]},
+            {numericValue: 5, img: qm.ratingImages.numeric[4]}
         ];
     };
     function parseJsonIfPossible(str) {
@@ -2772,8 +2769,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
-            if(measurements[index].variableName === qmService.getPrimaryOutcomeVariable().name){
-                measurements[index].valence = qmService.getPrimaryOutcomeVariable().valence;
+            if(measurements[index].variableName === qm.getPrimaryOutcomeVariable().name){
+                measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
             measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
@@ -2799,7 +2796,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         deferred.resolve(qmService.processDataAndConfigureWeekdayChart(
             qmStorage.getAsObject('primaryOutcomeVariableMeasurements'),
-            qmService.getPrimaryOutcomeVariable()));
+            qm.getPrimaryOutcomeVariable()));
         return deferred.promise;
     };
     qmService.generateDistributionArray = function(allMeasurements){
@@ -2909,7 +2906,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return averageValueByMonthlyArray;
     };
     var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
-        return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qmService.getPrimaryOutcomeVariable().name;
+        return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
     };
     function setChartExportingOptions(chartConfig){
         chartConfig.exporting = {enabled: $rootScope.isWeb};
@@ -2941,7 +2938,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             data.push(dataAndLabels2[i].value);
         }
         if(shouldWeUsePrimaryOutcomeLabels(variableObject)) {
-            xAxisLabels = qmService.getPrimaryOutcomeVariableOptionLabels();
+            xAxisLabels = qm.getPrimaryOutcomeVariableOptionLabels();
             xAxisTitle = '';
         }
         var chartConfig = {
@@ -4640,7 +4637,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             at.setUTCSeconds(epochSecondsPlus15Minutes);
             notificationSettings.at = at;
         }
-        if(!notificationSettings.id){notificationSettings.id = qmService.getPrimaryOutcomeVariable().id;}
+        if(!notificationSettings.id){notificationSettings.id = qm.getPrimaryOutcomeVariable().id;}
         notificationSettings.title = "How are you?";
         notificationSettings.text = "Open reminder inbox";
         if($rootScope.isIOS){notificationSettings.sound = "file://sound/silent.ogg";}
@@ -5800,67 +5797,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return false;
     };
-    qmService.getPrimaryOutcomeVariable = function(){
-        if(config.appSettings.primaryOutcomeVariableDetails){ return config.appSettings.primaryOutcomeVariableDetails;}
-        var variables = {
-            "Overall Mood" : {
-                "id" : 1398,
-                "name" : "Overall Mood",
-                "variableName": "Overall Mood",
-                variableCategoryName : "Mood",
-                "userVariableDefaultUnitAbbreviatedName" : "/5",
-                unitAbbreviatedName : "/5",
-                "combinationOperation": "MEAN",
-                "valence": "positive",
-                "unitName": "1 to 5 Rating",
-                "ratingOptionLabels" : ["Depressed", "Sad", "OK", "Happy", "Ecstatic"],
-                "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
-                "ratingTextToValueConversionDataSet" : {"depressed" : 1, "sad" : 2, "ok" : 3, "happy" : 4, "ecstatic": 5},
-                trackingQuestion: "How are you?",
-                averageText:"Your average mood is ",
-            },
-            "Energy Rating" : {
-                id : 108092,
-                name : "Energy Rating",
-                variableName: "Energy Rating",
-                variableCategoryName : "Emotions",
-                unitAbbreviatedName : "/5",
-                combinationOperation: "MEAN",
-                positiveOrNegative: 'positive',
-                unitName: '1 to 5 Rating',
-                ratingOptionLabels : ['1', '2', '3', '4', '5'],
-                ratingValueToTextConversionDataSet: {1: "1", 2: "2", 3: "3", 4: "4", 5: "5"},
-                ratingTextToValueConversionDataSet : {"1" : 1, "2" : 2, "3" : 3, "4" : 4, "5" : 5},
-                trackingQuestion:"How is your energy level right now?",
-                averageText:"Your average energy level is ",
-            }
-        };
-        if(config.appSettings.primaryOutcomeVariableName){return variables[config.appSettings.primaryOutcomeVariableName];}
-        return variables['Overall Mood'];
-    };
-    qmService.ratingImages = {
-        positive : [
-            'img/rating/face_rating_button_256_depressed.png',
-            'img/rating/face_rating_button_256_sad.png',
-            'img/rating/face_rating_button_256_ok.png',
-            'img/rating/face_rating_button_256_happy.png',
-            'img/rating/face_rating_button_256_ecstatic.png'
-        ],
-        negative : [
-            'img/rating/face_rating_button_256_ecstatic.png',
-            'img/rating/face_rating_button_256_happy.png',
-            'img/rating/face_rating_button_256_ok.png',
-            'img/rating/face_rating_button_256_sad.png',
-            'img/rating/face_rating_button_256_depressed.png'
-        ],
-        numeric : [
-            'img/rating/numeric_rating_button_256_1.png',
-            'img/rating/numeric_rating_button_256_2.png',
-            'img/rating/numeric_rating_button_256_3.png',
-            'img/rating/numeric_rating_button_256_4.png',
-            'img/rating/numeric_rating_button_256_5.png'
-        ]
-    };
     qmService.addToFavoritesUsingVariableObject = function (variableObject) {
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
@@ -6292,7 +6228,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // Delete all measurements for a variable
         qmService.deleteAllMeasurementsForVariableDeferred(variableObject.id).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
-            if ($rootScope.variableName === qmService.getPrimaryOutcomeVariable().name) {
+            if ($rootScope.variableName === qm.getPrimaryOutcomeVariable().name) {
                 qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements',[]);
                 qmService.qmStorage.setItem('measurementsQueue',[]);
                 qmService.qmStorage.setItem('averagePrimaryOutcomeVariableValue',0);
@@ -7144,7 +7080,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(reportedVariable === "repeat_rating"){
                     val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
                 } else {
-                    val = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
+                    val = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
                 }
                 if(val){
                     localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
@@ -7350,8 +7286,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $stateParams.variableName = $rootScope.variableObject.name;
         } else if ($stateParams.trackingReminder){
             $stateParams.variableName = $stateParams.trackingReminder.variableName;
-        } else if (qmService.getPrimaryOutcomeVariable()){
-            $stateParams.variableName = qmService.getPrimaryOutcomeVariable().name;
+        } else if (qm.getPrimaryOutcomeVariable()){
+            $stateParams.variableName = qm.getPrimaryOutcomeVariable().name;
         }
         return $stateParams.variableName;
     };
