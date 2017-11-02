@@ -961,9 +961,6 @@ window.qmNotifications.addToSyncQueue = function(trackingReminderNotification){
     qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
-    if(qm.platform.isWeb()){
-
-    }
     if(!qmNotifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
     if(qmNotifications.getMostRecentRatingNotificationNotInSyncQueue()) {
         window.drawOverAppsRatingNotification(qmNotifications.getMostRecentRatingNotificationNotInSyncQueue());
