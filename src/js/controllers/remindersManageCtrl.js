@@ -152,6 +152,9 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 		else { qmService.goToState('app.measurementAddSearch'); }
 	};
+	$scope.addMeasurementForReminder = function (trackingReminder) {
+        qmService.goToState('app.measurementAdd', {trackingReminder: trackingReminder, variableName: trackingReminder.variableName});
+	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
 		qmService.qmStorage.deleteById('trackingReminders', reminder.trackingReminderId);
