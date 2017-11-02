@@ -36,14 +36,14 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         };
         var reminderToSchedule = {
             reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
-            variableId: qmService.getPrimaryOutcomeVariable().id,
+            variableId: qm.getPrimaryOutcomeVariable().id,
             defaultValue: 3
         };
         qmService.addToTrackingReminderSyncQueue(reminderToSchedule);
         $scope.showIntervalCard = false;
     }
     $scope.storeRatingLocally = function(ratingValue){
-        $scope.reportedVariableValue = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
+        $scope.reportedVariableValue = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
         var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(ratingValue);
         qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         $scope.hidePrimaryOutcomeVariableCard = true;

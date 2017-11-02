@@ -46,7 +46,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             setupFromVariableName($stateParams.variableName);
         }
         if (!$scope.state.measurementIsSetup) {setupFromUrlParameters();}
-        if(!$scope.state.measurementIsSetup){setupFromVariableObject(qmService.getPrimaryOutcomeVariable());}
+        if(!$scope.state.measurementIsSetup){setupFromVariableObject(qm.getPrimaryOutcomeVariable());}
     });
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug(null, '$ionicView.enter ' + $state.current.name, null);

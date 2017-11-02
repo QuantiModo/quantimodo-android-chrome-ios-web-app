@@ -178,7 +178,7 @@ angular.module('starter')
 }])
 .filter('PrimaryOutcomeVariableByNumber', ["qmService", "qmLogService", function(qmService, qmLogService){
     return function(value){
-        return qmService.getPrimaryOutcomeVariableByNumber(value);
+        return qm.getPrimaryOutcomeVariableByNumber(value);
     };
 }])
 .filter('time', function(){
