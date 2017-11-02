@@ -46,6 +46,7 @@ window.qm = {
         'Environment'
     ]
 };
+//if(!window.config){window.config = {};}
 window.qmNotifications = {};
 window.userHelper = {};
 window.qmItems = {
@@ -357,7 +358,7 @@ qm.api.get = function(url, successHandler, errorHandler){
     };
     xobj.send(null);
 };
-function loadAppSettingsFromLocalConfigFile() {  // I think adding appSettings to the chrome manifest breaks installation
+function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     qm.api.get('configs/default.config.json', function (parsedResponse) {
         window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
         appSettings = parsedResponse;
@@ -365,7 +366,17 @@ function loadAppSettingsFromLocalConfigFile() {  // I think adding appSettings t
         qmLog.error("Could not get appSettings from configs/default.config.json");
     });
 }
-if(!window.urlHelper.getParam('clientId')){loadAppSettingsFromLocalConfigFile();}
+qm.api.getAppSettingsUrl = function () {
+    var settingsUrl = 'configs/default.config.json';
+    var clientId = appsManager.getQuantiModoClientId();
+    if(!appsManager.shouldWeUseLocalConfig(clientId)){
+        settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+        if(window.designMode){settingsUrl += '&designMode=true';}
+    }
+    window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
+    return settingsUrl;
+};
+if(!window.urlHelper.getParam('clientId')){loadAppSettings();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
