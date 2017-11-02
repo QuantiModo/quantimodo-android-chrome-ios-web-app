@@ -1803,6 +1803,9 @@ gulp.task('cleanCombinedFiles', [], function () {
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
 });
+gulp.task('cleanWwwLibFolder', [], function () {
+    return cleanFolder('www/lib');
+});
 gulp.task('copyAppResources', [
     //'cleanResources'
 ], function () {
@@ -1888,7 +1891,7 @@ gulp.task('prepareIosApp', function (callback) {
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
-    return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
+    return zipAFolder('www', getChromeExtensionZipFilename(), buildPath);
 });
 gulp.task('zipBuild', [], function () {
     return zipAFolder(process.env.BUDDYBUILD_WORKSPACE, "buddybuild.zip", './');
@@ -1956,6 +1959,26 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         'post-app-status',
         callback);
 });
+gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
+    if(!appSettings.appStatus.buildEnabled.chromeExtension){
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
+            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
+        return;
+    }
+    runSequence(
+        'downloadIcon',
+        'resizeIcons',
+        'verifyExistenceOfDefaultConfig',
+        'copyIconsToWwwImg',
+        'setVersionNumberInFiles',
+        'createChromeManifestInWwwFolder',
+        'zipChromeExtension',
+        'unzipChromeExtension',
+        'validateChromeManifest',
+        'upload-chrome-extension-to-s3',
+        'post-app-status',
+        callback);
+});
 gulp.task('prepareMoodiModoIos', function (callback) {
     runSequence(
         'setMoodiModoEnvs',
@@ -2000,12 +2023,16 @@ gulp.task('buildMediModoAndroid', function (callback) {
 });
 gulp.task('buildAllChromeExtensions', function (callback) {
     runSequence(
+        'cleanWwwLibFolder',
+        'cleanBuildFolder',
+        'bowerInstall',
         'setMediModoEnvs',
-        'buildChromeExtension',
+        'configureApp',
+        'buildChromeExtensionWithoutCleaning',
         'setMoodiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         'setQuantiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         callback);
 });
 gulp.task('downloadAllChromeExtensions', function (callback) {
@@ -2046,13 +2073,13 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
         'cleanBuildFolder',
         'prepareRepositoryForAndroid',
         'setMediModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
         'setMoodiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         //'buildAndroidApp',
         'setQuantiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
         callback);
 });
@@ -2061,13 +2088,13 @@ gulp.task('buildAllChromeExtensionsAndAndroidAppsWithoutCleaning', function (cal
         'cleanBuildFolder',
         'prepareRepositoryForAndroidWithoutCleaning',
         'setMediModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
         'setMoodiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         //'buildAndroidApp',
         'setQuantiModoEnvs',
-        'buildChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
         callback);
 });
