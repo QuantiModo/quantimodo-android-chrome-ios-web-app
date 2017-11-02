@@ -335,22 +335,37 @@ qmNotifications.getNumberInGlobalsOrLocalStorage = function(){
     if(notifications){return notifications.length;}
     return 0;
 };
-function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
+qm.api.get = function(url, successHandler, errorHandler){
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'configs/default.config.json', true);
+    xobj.open('GET', url, true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState === 4) {
             var json = xobj.responseText;
-            window.qmLog.debug('Got appSettings from configs/default.config.json', null, json, null);
-            appSettings = JSON.parse(json);
+            if(json.indexOf('DOCTYPE html') > -1){
+                qmLog.error("Could not get " + url);
+                if(errorHandler){errorHandler(json);}
+            } else {
+                window.qmLog.debug('Got appSettings from configs/default.config.json', null, json);
+                var parsedResponse = JSON.parse(json);
+                if(successHandler){successHandler(parsedResponse);}
+            }
+
         } else {
             window.qmLog.debug('Could not get appSettings from configs/default.config.json! xobj.readyState:' + xobj.readyState);
         }
     };
     xobj.send(null);
+};
+function loadAppSettingsFromLocalConfigFile() {  // I think adding appSettings to the chrome manifest breaks installation
+    qm.api.get('configs/default.config.json', function (parsedResponse) {
+        window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
+        appSettings = parsedResponse;
+    }, function () {
+        qmLog.error("Could not get appSettings from configs/default.config.json");
+    });
 }
-if(!window.urlHelper.getParam('clientId')){loadAppSettings();}
+if(!window.urlHelper.getParam('clientId')){loadAppSettingsFromLocalConfigFile();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
