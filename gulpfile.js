@@ -1266,7 +1266,7 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
-        .pipe(uglify())             // Minify any javascript sources
+        .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(csso())               // Minify any CSS sources
