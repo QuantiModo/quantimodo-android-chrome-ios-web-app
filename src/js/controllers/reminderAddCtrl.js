@@ -7,7 +7,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         units: qm.unitHelper.getProgressivelyMoreUnits(),
         showAddVariableCard : false,
         showUnits: false,
-        selectedFrequency : 'Daily',
+        selectedFrequencyName : 'Daily',
         selectedReminder : false,
         measurementSynonymSingularLowercase : 'measurement',
         defaultValueLabel : 'Default Value',
@@ -166,27 +166,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if (selectedVariable.valence) {$scope.state.trackingReminder.valence = selectedVariable.valence;}
         showMoreUnitsIfNecessary();
     };
-    var getFrequencyChart = function(){
-        return {
-            "As-Needed": 0,
-            "Every 12 hours" : 12*60*60,
-            "Every 8 hours": 8*60*60,
-            "Every 6 hours": 6*60*60,
-            "Every 4 hours": 4*60*60,
-            "Every 3 hours" : 180*60,
-            "Every 30 minutes": 30*60,
-            "Every minute": 60,
-            "Hourly":60*60,
-            "Daily": 24*60*60,
-            "Twice a day" : 12*60*60,
-            "Three times a day": 8*60*60,
-            "Minutely": 60,
-            "Every other day": 172800,
-            'Weekly': 7 * 86400,
-            'Every 2 weeks': 14 * 86400,
-            'Every 4 weeks': 28 * 86400
-        };
-    };
     $scope.showAdditionalReminderTime = function(){
         if(!$scope.state.secondReminderStartTimeEpochTime){
             $scope.openReminderStartTimePicker('second');
@@ -266,6 +245,28 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         updatedTrackingReminder.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
         return updatedTrackingReminder;
     };
+    function getFrequencySecondsFromFrequencyName(frequencyName) {
+        var frequencyChart = {
+                "As-Needed": 0,
+                "Every 12 hours" : 12*60*60,
+                "Every 8 hours": 8*60*60,
+                "Every 6 hours": 6*60*60,
+                "Every 4 hours": 4*60*60,
+                "Every 3 hours" : 180*60,
+                "Every 30 minutes": 30*60,
+                "Every minute": 60,
+                "Hourly":60*60,
+                "Daily": 24*60*60,
+                "Twice a day" : 12*60*60,
+                "Three times a day": 8*60*60,
+                "Minutely": 60,
+                "Every other day": 172800,
+                'Weekly': 7 * 86400,
+                'Every 2 weeks': 14 * 86400,
+                'Every 4 weeks': 28 * 86400
+            };
+        return frequencyChart[frequencyName];
+    }
     $scope.save = function(){
         qmLogService.info(null, 'Clicked save reminder', null);
         if($stateParams.favorite){
@@ -273,8 +274,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
         }
         if(!validReminderSettings()){return false;}
-        $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
-        $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+        $scope.state.trackingReminder.reminderFrequency = getFrequencySecondsFromFrequencyName($scope.state.selectedFrequencyName);
+        $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequencyName;
         var dateFormat = 'YYYY-MM-DD';
         $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
         if($scope.state.selectedStopTrackingDate){$scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);}
@@ -316,18 +317,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             });
         });
     };
-    var setupEditReminder = function(trackingReminder){
-        $scope.state.trackingReminder = trackingReminder;
-        setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-        $scope.state.trackingReminder.firstDailyReminderTime = null;
-        $scope.state.trackingReminder.secondDailyReminderTime = null;
-        $scope.state.trackingReminder.thirdDailyReminderTime = null;
-        $scope.state.firstReminderStartTimeLocal = qmService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
-        $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
-        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
-        //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
-        if(trackingReminder.stopTrackingDate){$scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);}
-        if(trackingReminder.startTrackingDate){$scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);}
+    function getFrequencyNameFromFrequencySeconds(frequencyName) {
         var reverseFrequencyChart = {
             604800: 'Weekly',
             1209600: 'Every 2 weeks',
@@ -345,8 +335,22 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             60: "Every minute",
             0: "As-Needed"
         };
+        return reverseFrequencyChart[frequencyName];
+    }
+    var setupEditReminder = function(trackingReminder){
+        $scope.state.trackingReminder = trackingReminder;
+        setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+        $scope.state.trackingReminder.firstDailyReminderTime = null;
+        $scope.state.trackingReminder.secondDailyReminderTime = null;
+        $scope.state.trackingReminder.thirdDailyReminderTime = null;
+        $scope.state.firstReminderStartTimeLocal = qmService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+        $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
+        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
+        //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
+        if(trackingReminder.stopTrackingDate){$scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);}
+        if(trackingReminder.startTrackingDate){$scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);}
         if($scope.state.trackingReminder.reminderFrequency !== null){
-            $scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.trackingReminder.reminderFrequency];
+            $scope.state.selectedFrequencyName = getFrequencyNameFromFrequencySeconds($scope.state.trackingReminder.reminderFrequency);
         }
         setHideDefaultValueField();
     };
@@ -416,7 +420,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     }
     var setTitle = function(){
         if($stateParams.favorite){
-            $scope.state.selectedFrequency = 'As-Needed';
+            $scope.state.selectedFrequencyName = 'As-Needed';
             if($stateParams.reminder) {
                 if($stateParams.variableCategoryName === 'Treatments'){$scope.state.title = "Modify As-Needed Med";} else {$scope.state.title = "Edit Favorite";}
             } else {
@@ -452,6 +456,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.trackingReminder.unitId = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;
         }
         setHideDefaultValueField();
+    };
+    $scope.frequencySelected = function(){
+        $scope.state.trackingReminder.reminderFrequency = getFrequencySecondsFromFrequencyName($scope.state.selectedFrequencyName);
     };
     $scope.showUnitsDropDown = function(){$scope.showUnitsDropDown = true;};
     $rootScope.showActionSheetMenu = function() {
