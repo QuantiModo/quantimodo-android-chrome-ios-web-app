@@ -160,6 +160,11 @@ function updateQuestion(variableName) {
 }
 document.addEventListener('DOMContentLoaded', function() {
     qmLog.info("popup.js DOMContentLoaded");
+    var wDiff = (380 - window.innerWidth);
+    var hDiff = (70 - window.innerHeight);
+    window.resizeBy(wDiff, hDiff);
+    ratingPopupHeight = window.innerHeight;
+    ratingPopupWidth = window.innerWidth;
     if(window.urlHelper.getParam("trackingReminderNotificationId")){
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
@@ -173,11 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
         hidePopup();
         qmNotifications.refreshNotifications(updateQuestion, closePopup);
     }
-    var wDiff = (380 - window.innerWidth);
-    var hDiff = (70 - window.innerHeight);
-    window.resizeBy(wDiff, hDiff);
-    ratingPopupHeight = window.innerHeight;
-    ratingPopupWidth = window.innerWidth;
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
     qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
