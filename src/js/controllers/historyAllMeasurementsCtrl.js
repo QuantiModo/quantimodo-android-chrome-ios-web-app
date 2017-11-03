@@ -26,19 +26,25 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
         $scope.state.offset = 0;
-
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
         }
         if ($stateParams.variableCategoryName) {setupVariableCategoryActionSheet();}
         if ($stateParams.variableObject) {
-            $scope.state.title = $stateParams.variableObject.name + ' History';
             $rootScope.variableObject = $stateParams.variableObject;
         }
-        if ($stateParams.variableName || $stateParams.variableObject) {$rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;}
+        if (getVariableName()) {
+            $scope.state.title = getVariableName() + ' History';
+        	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
+        }
         $scope.getHistory();
     });
+    function getVariableName() {
+        if($stateParams.variableName){return $stateParams.variableName;}
+        if($stateParams.variableObject){return $stateParams.variableObject.name;}
+		qmLog.info("Could not get variableName")
+    }
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
@@ -51,12 +57,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	$scope.getHistory = function(concat, refresh){
 		var params = {offset: $scope.state.offset, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
-		if($stateParams.variableObject){params.variableName = $stateParams.variableObject.name;}
-		if($stateParams.variableName){params.variableName = $stateParams.variableName;}
+		if(getVariableName()){params.variableName = getVariableName();}
         if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
-		if(params.variableName){
+		if(getVariableName()){
 			if(!$rootScope.variableObject){
-				qmService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
+				qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
 					$rootScope.variableObject = variables[0];
 				}, function (error) {qmLogService.error(error);});
 			}
