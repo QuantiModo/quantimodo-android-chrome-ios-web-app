@@ -1327,7 +1327,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return true;
             },
             destructiveButtonClicked: function() {
-                qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject);
+                qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject.name);
                 return true;
             }
         });
