@@ -4,8 +4,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     $scope.state = {title: "Charts"};
     function getVariableName() {
         if($scope.variableName){return $scope.variableName;}
-        $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
-        if($scope.variableName){return $scope.variableName;}
+        if(urlHelper.getParam('variableName')){return urlHelper.getParam('variableName');}
+        if($stateParams.variableName){return $stateParams.variableName;}
+        if($stateParams.variableObject){return $stateParams.variableObject.name;}
+        if($rootScope.variableObject){return $rootScope.variableObject.name;}
         $scope.goBack();
     }
     function getScopedVariableObject() {
@@ -32,9 +34,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     $scope.refreshCharts = function () {getCharts(true);};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        $rootScope.variableName = getVariableName();
+        $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
+        $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');

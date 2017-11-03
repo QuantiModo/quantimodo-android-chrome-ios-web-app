@@ -146,10 +146,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.trackTrackingReminderNotificationDeferred(trackingReminderNotification);
         refreshIfRunningOutOfNotifications();
 	};
-	function getWeekdayCharts() {
-        if(!$scope.weekdayChartConfig){
+    function getWeekdayCharts() {
+        if(false && !$scope.weekdayChartConfig){
             qmService.syncPrimaryOutcomeVariableMeasurements(60 * 60);
-            qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
+            qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable())
+                .then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
+        }
+        if(!$rootScope.variableObject || !$rootScope.variableObject.charts){
+            qmService.setRootScopeVariableWithCharts();
         }
     }
 	function getFavorites() {

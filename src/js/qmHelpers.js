@@ -413,10 +413,15 @@ qm.api.get = function(url, successHandler, errorHandler){
                 if(errorHandler){errorHandler(json);}
             } else {
                 window.qmLog.debug('Got appSettings from configs/default.config.json', null, json);
-                var parsedResponse = JSON.parse(json);
+                try {
+                    var parsedResponse = JSON.parse(json);
+                } catch (error) {
+                    qmLog.error(error, "Could not parse:" + json, {});
+                    if(errorHandler){errorHandler(json);}
+                    return;
+                }
                 if(successHandler){successHandler(parsedResponse);}
             }
-
         } else {
             window.qmLog.debug('Could not get appSettings from configs/default.config.json! xobj.readyState:' + xobj.readyState);
         }
