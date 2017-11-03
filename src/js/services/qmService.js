@@ -562,10 +562,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.resetUserVariable = function(body, successHandler, errorHandler) {
         qmService.post('api/v3/userVariables/reset', ['variableId'], body, successHandler, errorHandler);
     };
-    qmService.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
-        qmService.qmStorage.deleteByProperty('userVariables', 'variableId', variableId);
-        qmService.qmStorage.deleteById('commonVariables', variableId);
-        qmService.post('api/v3/userVariables/delete', ['variableId'], {variableId: variableId}, successHandler, errorHandler);
+    qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler) {
+        qmService.qmStorage.deleteByProperty('userVariables', 'variableName', variableName);
+        qmService.qmStorage.deleteByProperty('commonVariables', 'variableName', variableName);
+        qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
     };
     qmService.getConnectorsFromApi = function(params, successHandler, errorHandler){
         qmService.get('api/v3/connectors/list', [], params, successHandler, errorHandler);
@@ -3983,11 +3983,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.deleteAllMeasurementsForVariableDeferred = function(variableId) {
+    qmService.deleteAllMeasurementsForVariableDeferred = function(variableName) {
         var deferred = $q.defer();
-        qmService.deleteUserVariableMeasurements(variableId, function() {
+        qmService.deleteUserVariableMeasurements(variableName, function() {
             // Delete user variable from local storage
-            qmService.qmStorage.deleteById('userVariables', variableId);
+            qmService.qmStorage.deleteByProperty('userVariables', 'variableName', variableName);
             deferred.resolve();
         }, function(error) {
             qmLogService.error(error);
@@ -6223,12 +6223,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return a;
     };
-    var deleteAllMeasurementsForVariable = function(variableObject) {
+    var deleteAllMeasurementsForVariable = function(variableName) {
         qmService.showBlackRingLoader();
         // Delete all measurements for a variable
-        qmService.deleteAllMeasurementsForVariableDeferred(variableObject.id).then(function() {
+        qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
-            if ($rootScope.variableName === qm.getPrimaryOutcomeVariable().name) {
+            if (variableName === qm.getPrimaryOutcomeVariable().name) {
                 qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements',[]);
                 qmService.qmStorage.setItem('measurementsQueue',[]);
                 qmService.qmStorage.setItem('averagePrimaryOutcomeVariableValue',0);
@@ -6236,16 +6236,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             qmService.hideLoader();
             qmService.goToState(config.appSettings.appDesign.defaultState);
-            qmLogService.debug(null, 'All measurements for ' + variableObject.name + ' deleted!', null);
+            qmLogService.debug(null, 'All measurements for ' + variableName + ' deleted!', null);
         }, function(error) {
             qmService.hideLoader();
             qmLogService.debug(null, 'Error deleting measurements: ' + JSON.stringify(error), null);
         });
     };
-    qmService.showDeleteAllMeasurementsForVariablePopup = function(variableObject, ev){
-        var title = 'Delete all ' + variableObject.name + " measurements?";
+    qmService.showDeleteAllMeasurementsForVariablePopup = function(variableName, ev){
+        var title = 'Delete all ' + variableName + " measurements?";
         var textContent = 'This cannot be undone!';
-        function yesCallback() {deleteAllMeasurementsForVariable(variableObject);}
+        function yesCallback() {deleteAllMeasurementsForVariable(variableName);}
         function noCallback() {}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
@@ -7290,10 +7290,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $stateParams.variableName = qm.getPrimaryOutcomeVariable().name;
         }
         return $stateParams.variableName;
-    };qmService.getVariableObjectActionSheet = function(variableObject, variableName){
-        if(!variableObject){variableObject = qmStorage.getUserVariableByName(variableName);}
+    };
+    qmService.getVariableObjectActionSheet = function(variableName){
+        var variableObject = qmStorage.getUserVariableByName(variableName);
+        if(!variableObject){window.qmLog.error("Could not get variable for action sheet");}
+        var stateParams = {variableName: variableName};
+        if(variableObject){stateParams.variableObject = variableObject;}
+        qmLog.info("Getting action sheet for variable " + variableName);
         return function() {
-            qmLogService.debug(null, 'variablePageCtrl.showActionSheetMenu:  variableObject: ', null, variableObject);
+            qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     qmService.actionSheetButtons.recordMeasurement,
@@ -7306,14 +7311,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
                 buttonClicked: function(index) {
                     qmLogService.debug(null, 'BUTTON CLICKED', null, index);
-                    if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
-                    if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
-                    if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
-                    if(index === 3) {qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});} // Need variable name to populate in url
+                    if(index === 0) {qmService.goToState('app.measurementAddVariable', stateParams);} // Need variable name to populate in url
+                    if(index === 1) {qmService.goToState('app.reminderAdd', stateParams);} // Need variable name to populate in url
+                    if(index === 2) {qmService.goToState('app.historyAllVariable', stateParams);} // Need variable name to populate in url
+                    if(index === 3) {qmService.goToState('app.variableSettings', stateParams);} // Need variable name to populate in url
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    qmService.showDeleteAllMeasurementsForVariablePopup(variableObject);
+                    qmService.showDeleteAllMeasurementsForVariablePopup(variableName);
                     return true;
                 }
             });

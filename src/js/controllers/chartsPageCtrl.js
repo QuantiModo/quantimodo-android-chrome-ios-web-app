@@ -25,6 +25,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
             .then(function (variableObject) {
                 $rootScope.variableObject = variableObject;
+                $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
             });
