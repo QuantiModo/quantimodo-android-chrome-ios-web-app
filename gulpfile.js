@@ -980,7 +980,7 @@ gulp.task('sass', function (done) {
         .pipe(gulp.dest('./src/css/'))
         .pipe(minifyCss({keepSpecialComments: 0}))
         .pipe(rename({extname: '.min.css'}))
-        .pipe(gulp.dest('./www/css/'))
+        .pipe(gulp.dest('./src/css/'))
         .on('end', done);
 });
 gulp.task('watch', function () {gulp.watch(paths.sass, ['sass']);});
