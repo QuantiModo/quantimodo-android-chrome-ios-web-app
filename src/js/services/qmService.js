@@ -6947,7 +6947,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.debug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                        var force = true;
+                        var force = false;
                         qmService.drawOverAppsRatingNotification(data.additionalData, force);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
