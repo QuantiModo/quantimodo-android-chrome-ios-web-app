@@ -3,6 +3,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {title: "Charts"};
     function getVariableName() {
+        if($stateParams.variableName){
+            $scope.variableName = $stateParams.variableName;
+            return $stateParams.variableName;
+        }
         if($scope.variableName){return $scope.variableName;}
         $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
         if($scope.variableName){return $scope.variableName;}
