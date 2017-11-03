@@ -35,7 +35,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $rootScope.variableObject = $stateParams.variableObject;
         }
         if (getVariableName()) {
-            $scope.state.title = $stateParams.variableObject.name + ' History';
+            $scope.state.title = getVariableName() + ' History';
         	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
         }
         $scope.getHistory();
