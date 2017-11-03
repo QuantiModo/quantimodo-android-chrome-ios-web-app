@@ -55,7 +55,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                 return true;
             },
-            destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject); return true;}
+            destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject.name); return true;}
         });
         qmLogService.debug(null, 'Setting hideSheet timeout', null);
         $timeout(function() { hideSheet(); }, 20000);
