@@ -1,5 +1,7 @@
-angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$stateParams", "$ionicLoading", "$filter", "$timeout", "$rootScope", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, qmService, qmLogService, ionicTimePicker) {
+angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$stateParams", "$ionicLoading",
+    "$filter", "$timeout", "$rootScope", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", "$interval",
+    function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope, $ionicActionSheet, $ionicHistory,
+             qmService, qmLogService, ionicTimePicker, $interval) {
     $scope.controller_name = "ReminderAddCtrl";
     qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
     $rootScope.showFilterBarSearchIcon = false;
@@ -23,7 +25,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         },
         variableCategoryNames: qm.manualTrackingVariableCategoryNames
     };
-    $scope.loading = true;
     $scope.variables = {
         frequencyVariables : [
             { id : 2, name : 'Daily'},  // Default Daily has to be first because As-Needed will be above the fold on Android
@@ -72,6 +73,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $rootScope.variableObject = qm.getPrimaryOutcomeVariable();
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
+    });
+    $scope.$on('$ionicView.afterEnter', function(){ qmLogService.info(null, 'ReminderAddCtrl beforeEnter...', null);
+        qmService.hideLoader();
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
@@ -393,10 +397,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                     qmLogService.debug(null, 'setupReminderEditingFromVariableId got this variable object ' + JSON.stringify($rootScope.variableObject), null);
                     setupByVariableObject($rootScope.variableObject);
                     qmService.hideLoader();
-                    $scope.loading = false;
                 }, function () {
                     qmService.hideLoader();
-                    $scope.loading = false;
                     qmLogService.error('ERROR: failed to get variable with id ' + variableId);
                 });
         }
@@ -411,10 +413,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 $stateParams.reminder = reminders[0];
                 setupEditReminder($stateParams.reminder);
                 qmService.hideLoader();
-                $scope.loading = false;
             }, function () {
                 qmService.hideLoader();
-                $scope.loading = false;
                 qmLogService.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
             });
     }
@@ -493,4 +493,11 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmLogService.debug(null, 'Setting hideSheet timeout', null);
         $timeout(function() {hideSheet();}, 20000);
     };
+    $scope.resetSaveAnimation = (function fn() {
+        $scope.value = 0;
+        $interval(function() {
+            $scope.value++;
+        }, 50, 100);
+        return fn;
+    })();
 }]);
