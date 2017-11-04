@@ -238,19 +238,25 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
-        if(!modifiedReminderValue){modifiedReminderValue = trackingReminder.defaultValue;}
-        if(trackingReminder.unitAbbreviatedName !== '/5') {
-            if(trackingReminder.combinationOperation === "SUM"){trackingReminder.total = trackingReminder.total + modifiedReminderValue;} else {trackingReminder.total = modifiedReminderValue;}
-            trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
-        } else {trackingReminder.displayTotal = "Recorded " + modifiedReminderValue + '/5';}
+        if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){modifiedReminderValue = trackingReminder.defaultValue;}
+        if(trackingReminder.combinationOperation === "SUM"){
+            trackingReminder.total = trackingReminder.total + modifiedReminderValue;
+        } else {
+            trackingReminder.total = modifiedReminderValue;
+        }
+        trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
         if(!trackingReminder.tally){trackingReminder.tally = 0;}
-        if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}
+        if(trackingReminder.combinationOperation === "SUM"){
+            trackingReminder.tally += modifiedReminderValue;
+        } else {
+            trackingReminder.tally = modifiedReminderValue;
+        }
         $timeout(function() {
             if(typeof trackingReminder === "undefined"){
                 qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                 return;
             }
-            if(trackingReminder.tally) {
+            if(trackingReminder.tally !== null) {
                 qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                     .then(function () {
                         qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
@@ -258,7 +264,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         qmLogService.error(error);
                         qmLogService.error('Failed to Track by favorite! ', trackingReminder);
                     });
-                trackingReminder.tally = 0;
+                trackingReminder.tally = null;
             }
         }, 2000);
     };
