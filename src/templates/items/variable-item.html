@@ -1,0 +1,10 @@
+<div class="item item-avatar item-button-right">
+    <img ng-click="showActionSheet(trackingReminder)" ng-src="{{trackingReminder.pngPath}}" style="border-radius: 0">
+    <h2 ng-click="showActionSheet(trackingReminder)"  style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
+    <p ng-click="showActionSheet(trackingReminder)"  style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+    <div class="buttons">
+        <button class="button button-positive" ng-click="trackingReminder.addMeasurement = true"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp
+        <button class="button button-assertive" ng-click="edit(trackingReminder)"> <md-tooltip md-direction="down">Edit settings</md-tooltip> <i class="icon ion-android-notifications-none"></i> </button>&nbsp
+        <button class="button button-dark" ng-click="showActionSheet(trackingReminder)"> <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-android-arrow-forward"></i> </button>
+    </div>
+</div>
