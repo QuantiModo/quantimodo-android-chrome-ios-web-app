@@ -40,7 +40,8 @@ var inboxButtonClicked = function() {
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
-    hidePopup();
+    //hidePopup();
+    showLoader();
     if(window.notificationsSyncQueue){
         qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
         window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
@@ -93,12 +94,19 @@ function hidePopup() {
     window.qmLog.info('hidePopup: resizing to ' + ratingPopupWidth + " x 0 ");
     window.resizeTo(ratingPopupWidth, 0);
 }
+function showLoader(){
+    var sectionRate = getRatingElement();
+    var loader = document.getElementById("loader");
+    loader.style.display = "block";
+    sectionRate.style.display = "none";
+    getQuestionElement().style.display = "none";
+}
 function unHidePopup() {
     window.qmLog.info('unHidePopup: resizing to ' + ratingPopupWidth + " x " + ratingPopupHeight);
     window.resizeTo(ratingPopupWidth, ratingPopupHeight);
 }
 // function hideLoader() {
-//     var sectionRate = document.getElementById("sectionRate");
+//     var sectionRate = getRatingElement();
 //     var loader = document.getElementById("loader");
 //     loader.className = "invisible";
 //     loader.style.display = "none";
@@ -106,7 +114,7 @@ function unHidePopup() {
 //     sectionRate.className = "visible";
 // }
 function displaySendingTextAndPostMeasurements() {
-    var sectionRate = document.getElementById("sectionRate");
+    var sectionRate = getRatingElement();
     var sectionSendingMood = document.getElementById("sectionSendingMood");
     sectionRate.className = "invisible";
     setTimeout(function() {
@@ -148,15 +156,21 @@ function updateQuestion(variableName) {
     }
     var questionText = "How is your " + variableName.toLowerCase() + "?";
     window.qmLog.info(null, 'Updating question to ' + questionText);
-    document.getElementById("question").innerHTML = questionText;
+    getQuestionElement().innerHTML = questionText;
     document.title = questionText;
     if(qm.platform.isChromeExtension()){
         window.qmLog.info(null, 'Setting question display to none ');
-        document.getElementById("question").style.display = "none";
+        getQuestionElement().style.display = "none";
     } else {
         window.qmLog.info(null, 'NOT setting question display to none because not on Chrome', null);
     }
     unHidePopup();
+}
+function getQuestionElement() {
+    return document.getElementById("question");
+}
+function getRatingElement() {
+    return document.getElementById("sectionRate");
 }
 document.addEventListener('DOMContentLoaded', function() {
     qmLog.info("popup.js DOMContentLoaded");
