@@ -224,7 +224,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert('Whoops!', message);
         qmLogService.error(message);
     };
-    $scope.trackFavoriteByValueField = function(trackingReminder, $index){
+    $scope.trackFavoriteByValueField = function(trackingReminder){
         if(trackingReminder.total === null){
             $scope.favoriteValidationFailure('Please specify a value for ' + trackingReminder.variableName);
             return;
