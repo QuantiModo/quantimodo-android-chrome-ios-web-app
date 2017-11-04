@@ -195,5 +195,5 @@ document.addEventListener('DOMContentLoaded', function() {
     setFaceButtonListeners();
     qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.qmLog.setupBugsnag();
-    window.qmNotifications.refreshIfEmpty();
+    window.qmNotifications.refreshIfEmptyOrStale();
 });
