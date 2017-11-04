@@ -12,7 +12,7 @@
                 <div ng-hide="hideNavigationMenu" class="item item-divider" style="">{{divider.name}}</div>
                 <div class="list card" ng-show="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
-                        <div id="notification-icon" ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="row">
+                        <div id="notification-icon" ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
                             <div class="col col-20" style="padding-top: 0px;">
                                 <i ng-if="!trackingReminderNotification.pngPath"  style="font-size: 40px;" class="icon positive {{trackingReminderNotification.ionIcon}}"></i>
                                 <img ng-if="trackingReminderNotification.pngPath" ng-src="{{trackingReminderNotification.pngPath}}" style="max-width: 40px;">
@@ -28,15 +28,15 @@
                                 <i class="ion-android-cancel"> &nbsp; Skip</i>
                             </button>
                             <button id="notification-snooze" class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'" style="text-overflow: clip; font-size: 12px;"
-                                    ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                    ng-click="snooze(trackingReminderNotification, $event)">
                                 <i class="ion-android-notifications-off"> &nbsp; Snooze</i>
                             </button>
                             <button id="notification-edit" class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'" style="text-overflow: clip; font-size: 12px;"
-                                    ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+                                    ng-click="editMeasurement(trackingReminderNotification)">
                                 <i class="ion-edit"> &nbsp; Note</i>
                             </button>
                             <button id="notification-settings" class="button button-clear button-calm"
-                                    ng-click="editReminderSettingsByNotification(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)"
+                                    ng-click="editReminderSettingsByNotification(trackingReminderNotification)"
                                     style="text-overflow: clip;  font-size: 12px;">
                                 <i class="ion-settings"> &nbsp; Settings</i>
                             </button>
@@ -53,12 +53,12 @@
                             <div class="button-bar">
                                 <button ng-show="trackingReminderNotification.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;"
                                         on-hold="trackAllWithConfirmation(trackingReminderNotification, 0, $event)"
-                                        ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                        ng-click="track(trackingReminderNotification, 0, $event)">
                                     <i class="ion-android-done"> &nbsp; Record 0</i>
                                 </button>
                                 <button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;"
                                         on-hold="trackAllWithConfirmation(trackingReminderNotification, trackingReminderNotification.defaultValue, $event)"
-                                        ng-click="track(trackingReminderNotification, trackingReminderNotification.defaultValue, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                        ng-click="track(trackingReminderNotification, trackingReminderNotification.defaultValue, $event)">
                                     <i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i>
                                 </button>
                             </div>
@@ -68,34 +68,34 @@
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img id="{{'numericRatingOptions' + option.numericValue}}" ng-repeat="option in numericRatingOptions"
                                      on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-                                     ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)" ng-src="{{option.img}}">
+                                     ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}">
                             </div>
                         </div>
                         <div class="primary-outcome-variable-reporting" ng-if="trackingReminderNotification.inputType === 'happiestFaceIsFive'">
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img id="{{'positiveRatingOptions' + option.numericValue}}" ng-repeat="option in positiveRatingOptions"
                                      on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-                                     ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)" ng-src="{{option.img}}">
+                                     ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}">
                             </div>
                         </div>
                         <div class="primary-outcome-variable-reporting" ng-if="trackingReminderNotification.inputType === 'saddestFaceIsFive'">
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img id="{{'negativeRatingOptions' + option.numericValue}}"  ng-repeat="option in negativeRatingOptions"
                                      on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-                                     ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)" ng-src="{{option.img}}">
+                                     ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}">
                             </div>
                         </div>
                         <div class="row" ng-if="trackingReminderNotification.unitAbbreviatedName.indexOf('yes/no') !== -1 " >
                             <div class="button-bar">
                                 <button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;"
                                         on-hold="trackAllWithConfirmation(trackingReminderNotification, 0, $event)"
-                                        ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                        ng-click="track(trackingReminderNotification, 0, $event)">
                                     <i class="ion-android-done"> &nbsp; NO &nbsp</i>
                                 </button>
                                 <button class="button button-clear button-balanced"
                                         style="text-overflow: clip; font-size: 14px;"
                                         on-hold="trackAllWithConfirmation(trackingReminderNotification, 1, $event)"
-                                        ng-click="track(trackingReminderNotification, 1, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                        ng-click="track(trackingReminderNotification, 1, $event)">
                                     <i class="ion-android-done"> &nbsp; YES &nbsp</i>
                                 </button>
                             </div>
@@ -123,7 +123,7 @@
                         <div class="row" >
                             <div class="button-bar">
                                 <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;"
-                                        ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+                                        ng-click="editMeasurement(trackingReminderNotification)">
                                     <i class="ion-edit"> &nbsp; Other Value/Time/Note</i>
                                 </button>
                             </div>
