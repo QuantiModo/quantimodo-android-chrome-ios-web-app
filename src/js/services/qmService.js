@@ -6883,6 +6883,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qmStorage.getItem(qmItems.deviceTokenOnServer)){template = template + '\r\n' + "deviceTokenOnServer: " + qmStorage.getItem(qmItems.deviceTokenOnServer) + '\r\n' + '\r\n';}
             if(qmStorage.getItem(qmItems.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qmStorage.getItem(qmItems.deviceTokenToSync) + '\r\n' + '\r\n';}
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+            template = template + "Built " + timeHelper.getTimeSinceString(config.appSettings.builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + userHelper.getUser().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qmPush.getTimeSinceLastPushString() + '\r\n';
             template = template + "drawOverAppsEnabled: " + qmNotifications.drawOverAppsEnabled() + '\r\n';
@@ -6894,7 +6895,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //template = template + "App Settings: " + prettyJsonStringify(config.appSettings) + '\r\n';
             template = template + "inAppPurchase installed: " + (typeof window.inAppPurchase !== "undefined") + '\r\n';
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
-            template = template + "Splashscreen plugin installed: " + (navigator && navigator.splashscreen) + '\r\n';
+            template = template + "Splashscreen plugin installed: " + (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed" + '\r\n';
             template = addSnapShotList(template);
             // TODO: Maybe fix me
             //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});

@@ -592,6 +592,25 @@ function generateConfigXmlFromTemplate(callback) {
         }
     });
 }
+var timeHelper = {
+    getUnixTimestampInSeconds: function(dateTimeString) {
+        if(!dateTimeString){dateTimeString = new Date().getTime();}
+        return Math.round(timeHelper.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+    },
+    getUnixTimestampInMilliseconds:function(dateTimeString) {
+        if(!dateTimeString){return new Date().getTime();}
+        return new Date(dateTimeString).getTime();
+    },
+    getTimeSinceString:function(unixTimestamp) {
+        if(!unixTimestamp){return "never";}
+        var secondsAgo = timeHelper.secondsAgo(unixTimestamp);
+        if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
+        if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
+        if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
+        return secondsAgo + " seconds ago";
+    },
+    secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
+};
 // Setup platforms to build that are supported on current hardware
 // See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
 //var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
@@ -809,6 +828,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         appSettings.buildLink = getBuildLink();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
         delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */

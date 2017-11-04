@@ -68,4 +68,19 @@
             </div>
         </div>
     </div>
+    <div class="row" ng-if="trackingReminder.unitAbbreviatedName.indexOf('yes/no') !== -1 " >
+        <div class="button-bar">
+            <button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;"
+                    on-hold="trackAllWithConfirmation(trackingReminder, 0, $event)"
+                    ng-click="trackByFavorite(trackingReminder, 0)">
+                <i class="ion-android-done"> &nbsp; NO &nbsp</i>
+            </button>
+            <button class="button button-clear button-balanced"
+                    style="text-overflow: clip; font-size: 14px;"
+                    on-hold="trackAllWithConfirmation(trackingReminder, 1, $event)"
+                    ng-click="trackByFavorite(trackingReminder, 1)">
+                <i class="ion-android-done"> &nbsp; YES &nbsp</i>
+            </button>
+        </div>
+    </div>
 </div>
