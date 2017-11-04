@@ -942,8 +942,17 @@ window.qmNotifications.refreshIfEmpty = function(callback){
     if(!qmNotifications.getNumberInGlobalsOrLocalStorage()){
         window.qmLog.info('No notifications in local storage');
         qmNotifications.refreshNotifications(callback);
+        return true;
+    }
+    window.qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
+    return false
+};
+window.qmNotifications.refreshIfEmptyOrStale = function(callback){
+    if (!qmNotifications.getNumberInGlobalsOrLocalStorage() || qmNotifications.getSecondsSinceLastNotificationsRefresh() > 3600){
+        window.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
+        qmNotifications.refreshNotifications(callback);
     } else {
-        window.qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
+        window.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
     }
 };
 window.qmStorage.deleteTrackingReminderNotification = function(body){
@@ -1069,6 +1078,10 @@ window.qmNotifications.getLastNotificationsRefreshTime = function(){
     var lastTime = window.qmStorage.getLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
     qmLog.info("Last notifications refresh " + timeHelper.getTimeSinceString(lastTime));
     return lastTime;
+};
+window.qmNotifications.getSecondsSinceLastNotificationsRefresh = function(){
+    qmLog.info("Last notifications refresh " + timeHelper.getTimeSinceString(qmNotifications.getLastNotificationsRefreshTime()));
+    return timeHelper.getUnixTimestampInSeconds() - qmNotifications.getLastNotificationsRefreshTime();
 };
 window.qmStorage.setLastRequestTime = function(type, route){
     window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
