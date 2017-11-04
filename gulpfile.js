@@ -592,6 +592,12 @@ function generateConfigXmlFromTemplate(callback) {
         }
     });
 }
+var timeHelper = {
+    getUnixTimestampInSeconds: function(dateTimeString) {
+        if(!dateTimeString){dateTimeString = new Date().getTime();}
+        return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+    }
+};
 // Setup platforms to build that are supported on current hardware
 // See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
 //var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
@@ -809,6 +815,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         appSettings.buildLink = getBuildLink();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
         delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
