@@ -1,4 +1,4 @@
-<div class="item">
+<div class="item" style="padding:0" >
     <div class="row">
         <div id="favoriteItemIcon" ng-click="showFavoriteActionSheet(trackingReminder)" class="col col-10" style="text-align: left;">
             <img ng-src="{{trackingReminder.pngPath}}" style="max-width: 20px" ng-if="trackingReminder.unitAbbreviatedName !== '/5'">
@@ -24,7 +24,9 @@
                ng-click="onTextClick($event)"
                placeholder="Enter value"
                style="text-align: center">
-        <span on-tap="trackFavoriteByValueField(trackingReminder, $index)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
+        <span on-tap="trackFavoriteByValueField(trackingReminder)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp
+            <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
+        </span>
     </div>
     <div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'oneToFiveNumbers'">
         <div class="primary-outcome-variable-rating-buttons-small" >
