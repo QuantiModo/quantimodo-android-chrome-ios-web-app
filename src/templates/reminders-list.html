@@ -11,7 +11,7 @@
 		</div>
 		<div class="list" id="remindersList" ng-cloak>
 			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
-			<div class="item" id="favoriteItem" style="padding:0" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites track by $index"
+			<div id="favoriteItem" style="padding:0" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites track by $index"
 				 on-hold="showFavoriteActionSheet(favorite, $index)">
 				<div ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
