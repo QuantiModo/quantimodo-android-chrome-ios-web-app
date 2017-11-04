@@ -16,18 +16,10 @@
 				<div ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
 			<div class="item item-divider"  ng-if="state.trackingReminders && state.trackingReminders.length" >Scheduled</div>
-			<div ng-if="!trackingReminder.hide" class="item item-avatar item-button-right"
-				 ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index">
-				<img ng-click="showActionSheet(trackingReminder)" ng-src="{{trackingReminder.pngPath}}" style="border-radius: 0">
-				<h2 ng-click="showActionSheet(trackingReminder)"  style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
-				<p ng-click="showActionSheet(trackingReminder)"  style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
-				<div class="buttons">
-					<button class="button button-positive" ng-click="addMeasurementForReminder(trackingReminder)"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp
-					<button class="button button-assertive" ng-click="edit(trackingReminder)"> <md-tooltip md-direction="down">Edit settings</md-tooltip> <i class="icon ion-android-notifications-none"></i> </button>&nbsp
-					<button class="button button-dark" ng-click="showActionSheet(trackingReminder)"> <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-android-arrow-forward"></i> </button>
-				</div>
-				<!--<button id="menu-help-button" class="button button-icon ion-compose" ng-click="addMeasurementForReminder(trackingReminder)"><md-tooltip md-direction="down">Record a measurement</md-tooltip></button>-->
-			</div>
+            <div ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index" ng-if="!trackingReminder.hide" >
+                <div ng-if="!trackingReminder.addMeasurement" ng-include="'templates/items/variable-item.html'"></div>
+                <div ng-if="trackingReminder.addMeasurement" ng-include="'templates/items/favorite-item.html'"></div>
+            </div>
 			<div class="item item-divider" ng-if="state.archivedTrackingReminders && state.archivedTrackingReminders.length">Archived</div>
 			<div ng-click="showActionSheet(trackingReminder)" class="item item-avatar" ng-if="!trackingReminder.hide" style="opacity: 0.6"
 				 ng-repeat="trackingReminder in state.archivedTrackingReminders | orderBy:reminderOrderParameter track by $index">
