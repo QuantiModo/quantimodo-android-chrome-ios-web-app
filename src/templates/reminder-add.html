@@ -102,12 +102,24 @@
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
             </label>
             <div class="button-row-margin row">
-                <div class="col col-50"><md-button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="goBack()">Cancel</md-button></div>
-                <div class="col col-50"><md-button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="save()">Save</md-button></div>
+                <div class="col col-50">
+                    <md-button id="cancelButton" class="button" ng-click="goBack()">
+                        <md-button class="md-fab" aria-label="Cancel">
+                            <md-icon style="font-size: 20px;" md-font-icon="ion-close-round" class="ion-close-round"></md-icon>
+                        </md-button>
+                        <span style="color: black;"> &nbsp &nbsp Cancel &nbsp &nbsp</span>
+                    </md-button>
+                </div>
+                <div class="col col-50">
+                    <md-button id="saveButton" class="button" ng-click="save()">
+                        <md-fab-progress icon="'file_upload'" icon-done="'check'" value="value" do-action="resetSaveAnimation()"></md-fab-progress>
+                        <span style="color: black;"> &nbsp &nbsp Save &nbsp &nbsp</span>
+                    </md-button>
+                </div>
             </div>
-            <div class="row">
+            <div class="row" ng-if="state.trackingReminder && state.trackingReminder.id" >
                 <div class="col">
-                    <md-button ng-show="state.trackingReminder.id" ng-click="deleteReminder()" class="button button-outline button-block icon-left ion-trash-a button-assertive">Delete</md-button>
+                    <md-button ng-click="deleteReminder()" class="button button-outline button-block icon-left ion-trash-a button-assertive">Delete</md-button>
                 </div>
             </div>
         </div>

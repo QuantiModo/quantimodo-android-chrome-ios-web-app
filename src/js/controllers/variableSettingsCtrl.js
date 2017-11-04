@@ -33,7 +33,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         });
     }
     $rootScope.showActionSheetMenu = function() {
-        qmLogService.debug(null, 'variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, $rootScope.variableObject);
+        qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.recordMeasurement,
