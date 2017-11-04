@@ -225,16 +225,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmLogService.error(message);
     };
     $scope.trackFavoriteByValueField = function(trackingReminder){
-        if(trackingReminder.total === null){
+        if(trackingReminder.modifiedValue === null){
             $scope.favoriteValidationFailure('Please specify a value for ' + trackingReminder.variableName);
             return;
         }
-        trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
-        qmService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
+        trackingReminder.displayTotal =
+            qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
+        qmService.postMeasurementByReminder(trackingReminder, trackingReminder.modifiedValue)
             .then(function () {
-                qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
+                qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
             }, function(error) {
-                qmLogService.error('Failed to track favorite! ', trackingReminder);
+                qmLogService.error('Failed to track favorite! error: ' + error, null, trackingReminder);
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
