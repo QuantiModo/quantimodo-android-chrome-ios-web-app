@@ -1598,6 +1598,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
+        var deferred = $q.defer();
         var value = trackingReminder.defaultValue;
         if(typeof modifiedValue !== "undefined" && modifiedValue !== null){value = modifiedValue;}
         var measurementSet = [
@@ -1616,14 +1617,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         ];
         measurementSet[0].measurements[0] = addLocationDataToMeasurement(measurementSet[0].measurements[0]);
-        var deferred = $q.defer();
         if(!qmService.valueIsValid(trackingReminder, value)){
             deferred.reject('Value is not valid');
             return deferred.promise;
         }
         qmService.postMeasurementsToApi(measurementSet, function(response){
             if(response.success) {
-                qmLogService.debug(null, 'qmService.postMeasurementsToApi success: ' + JSON.stringify(response), null);
+                qmLogService.debug('qmService.postMeasurementsToApi success: ' + JSON.stringify(response));
                 if(response && response.data && response.data.userVariables){
                     qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', response.data.userVariables);
                 }
