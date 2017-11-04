@@ -2,7 +2,7 @@
 /** @namespace window.qmNotifications */
 /** @namespace window.qmStorage */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout", "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading", "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
-                                                        $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, 
+                                                        $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
                                                         $ionicActionSheet) {
     var qmService = {qmStorage: {}};
     qmService.ionIcons = {
@@ -221,7 +221,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         var bodyString = JSON.stringify(body);
-        if(!window.qmLog.getDebugMode()){bodyString = bodyString.substring(0, 140);}
+        if(!window.qmLog.isDebugMode()){bodyString = bodyString.substring(0, 140);}
         qmLogService.info(null, 'qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, null, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
@@ -242,7 +242,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
             }
             function generalSuccessHandler(response){
-                qmLogService.info(null, 'Response from POST ' + route + ': ' + JSON.stringify(response), null);
+                var responseString = JSON.stringify(response);
+                if(!qmLog.isDebugMode()){responseString = responseString.substring(0, 140) + '...';}
+                qmLogService.info('Response from POST ' + route + ': ' + responseString);
                 if(successHandler){successHandler(response);}
             }
             $http(request).success(generalSuccessHandler).error(function(data, status, headers){
@@ -1804,7 +1806,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshConnectors = function(){
         var stackTrace = qmLog.getStackTrace();
-        if(window.qmLog.getDebugMode()){qmLogService.debug(null, 'Called refresh connectors: ' + stackTrace, null);}
+        if(window.qmLog.isDebugMode()){qmLogService.debug(null, 'Called refresh connectors: ' + stackTrace, null);}
         var deferred = $q.defer();
         qmService.getConnectorsFromApi({stackTrace: qmLog.getStackTrace()}, function(response){
             qmService.qmStorage.setItem('connectors', JSON.stringify(response.connectors));
@@ -6595,7 +6597,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
-        if(window.qmLog.getDebugMode()){ qmLogService.debug(null, 'convertUrlAndParamsToHref ', null, menuItem); }
+        if(window.qmLog.isDebugMode()){ qmLogService.debug(null, 'convertUrlAndParamsToHref ', null, menuItem); }
         return menuItem;
     }
     function convertStateNameAndParamsToHref(menuItem) {
