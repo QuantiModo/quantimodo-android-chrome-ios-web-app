@@ -251,17 +251,24 @@ function uploadToS3(filePath) {
         logInfo("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
         return;
     }
-    logInfo("Uploading " + filePath);
-    return gulp.src([filePath]).pipe(s3({
-        Bucket: 'quantimodo',
-        ACL: 'public-read',
-        keyTransform: function(relative_filename) {
-            return getS3RelativePath(filePath);
+    fs.stat(filePath, function (err, stat) {
+        if (!err) {
+            logInfo("Uploading " + filePath + "...");
+            return gulp.src([filePath]).pipe(s3({
+                Bucket: 'quantimodo',
+                ACL: 'public-read',
+                keyTransform: function(relative_filename) {
+                    return getS3RelativePath(filePath);
+                }
+            }, {
+                maxRetries: 5,
+                logger: console
+            }));
+        } else {
+            logError('Could not find ' + filePath);
+            logError(err);
         }
-    }, {
-        maxRetries: 5,
-        logger: console
-    }));
+    });
 }
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
 function execute(command, callback, suppressErrors) {
