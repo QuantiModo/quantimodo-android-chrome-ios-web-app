@@ -1954,7 +1954,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         'sass',
         'copySrcToWww',
-        'commentOrUncommentCordovaJs',
+        //'commentOrUncommentCordovaJs',
         'minify-js-generate-css-and-index-html',
         'getCommonVariables',
         'getUnits',
