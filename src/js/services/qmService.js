@@ -7002,55 +7002,55 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 window.trackYesAction = function (data){
                     qmLog.pushDebug('trackYesAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackNoAction = function (data){
                     qmLog.pushDebug('trackNoAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackZeroAction = function (data){
                     qmLog.pushDebug('trackZeroAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackOneRatingAction = function (data){
                     qmLog.pushDebug('trackOneRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackTwoRatingAction = function (data){
                     qmLog.pushDebug('trackTwoRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThreeRatingAction = function (data){
                     qmLog.pushDebug('trackThreeRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFourRatingAction = function (data){
                     qmLog.pushDebug('trackFourRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFiveRatingAction = function (data){
                     qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackDefaultValueAction = function (data){
                     qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.snoozeAction = function (data){
@@ -7062,19 +7062,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 window.trackLastValueAction = function (data){
                     qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackSecondToLastValueAction = function (data){
                     qmLog.pushDebug('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThirdToLastValueAction = function (data){
                     qmLog.pushDebug('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
-                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
             }
