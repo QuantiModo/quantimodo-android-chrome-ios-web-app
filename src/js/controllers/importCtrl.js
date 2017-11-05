@@ -92,7 +92,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             button.text = "Uploading...";
             qmService.showBasicLoader();
             var body = {file: file, "connectorName": connector.name};
-            file.upload = Upload.upload({url: qmService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
+            file.upload = Upload.upload({url: qm.api.getBaseUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
                 "&access_token=" + $rootScope.user.accessToken, data: body});
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
@@ -197,7 +197,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 'social',
                 'weight'
             ];
-            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -207,7 +207,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = [];
-            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -217,7 +217,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = ['time_data', 'category_data', 'productivity_data'];
-            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -227,7 +227,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = [];
-            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
