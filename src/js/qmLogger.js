@@ -315,3 +315,11 @@ window.qmLog.authDebug = function(message) {
     var authDebug = false;
     if(authDebug){qmLog.debug(message, message, null);}
 };
+window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
+    var pushDebug = true;
+    if(pushDebug){
+        qmLog.error(name, message, metaData, stackTrace);
+    } else {
+        qmLog.info(name, message, metaData, stackTrace);
+    }
+};
