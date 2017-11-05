@@ -318,8 +318,8 @@ window.qmLog.authDebug = function(message) {
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
     var pushDebug = true;
     if(pushDebug){
-        qmLog.error(name, message, metaData, stackTrace);
+        qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
-        qmLog.info(name, message, metaData, stackTrace);
+        qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);
     }
 };
