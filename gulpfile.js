@@ -1855,7 +1855,7 @@ gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
 });
 gulp.task('copySrcToAndroidWww', [], function () {
-    return copyFiles('src/**/*', 'platforms/android/assets/www');
+    return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
@@ -2183,6 +2183,7 @@ gulp.task('prepareQuantiModoIos', function (callback) {
 
 gulp.task('copySrcAndEmulateAndroid', function (callback) {
     runSequence(
+        'uncommentCordovaJsInIndexHtml',
         'copySrcToAndroidWww',
         'ionicEmulateAndroid',
         callback);
