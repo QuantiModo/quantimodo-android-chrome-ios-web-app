@@ -956,7 +956,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var qmApiClient = Quantimodo.ApiClient.instance;
         var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
-        qmApiClient.basePath = qmService.getApiUrl() + '/api';
+        qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
@@ -978,7 +978,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         apiInstance.getMeasurements(params, callback);
     };
     qmService.generateV1OAuthUrl = function(register) {
-        var url = qmService.getApiUrl() + "/api/oauth2/authorize?";
+        var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
         // add params
         url += "response_type=code";
         url += "&client_id=" + qmService.getClientId();
@@ -1239,7 +1239,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
         if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
         qmLogService.debug(null, 'sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', null, loginUrl);
-        var apiUrlMatchesHostName = qmService.getApiUrl().indexOf(window.location.hostname);
+        var apiUrlMatchesHostName = qm.api.getBaseUrl().indexOf(window.location.hostname);
         if(apiUrlMatchesHostName === -1 || !$rootScope.isChromeExtension) {
             console.warn("sendToNonOAuthBrowserLoginUrl: API url doesn't match auth base url");
         }
@@ -1747,7 +1747,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getRedirectUri = function () {
         if(config.appSettings.redirectUri){return config.appSettings.redirectUri;}
-        return qmService.getApiUrl() +  '/ionic/Modo/www/callback/';
+        return qm.api.getBaseUrl() +  '/ionic/Modo/www/callback/';
     };
     qmService.getProtocol = function () {
         if (typeof ionic !== "undefined") {
@@ -1756,17 +1756,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return 'https';
     };
-    qmService.getApiUrl = function () {
-        //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
-        if(config.appSettings.apiUrl){
-            if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
-            return config.appSettings.apiUrl;
-        }
-        return appsManager.getQuantiModoApiUrl();
-    };
+
     qmService.getQuantiModoUrl = function (path) {
         if(typeof path === "undefined") {path = "";}
-        return qmService.getApiUrl() + "/" + path;
+        return qm.api.getBaseUrl() + "/" + path;
     };
     // returns bool
     // if a string starts with substring
@@ -5690,7 +5683,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
         var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
-        var studyLinkStatic = qmService.getApiUrl() + "/api/v2/study?causeVariableName=" +
+        var studyLinkStatic = qm.api.getBaseUrl() + "/api/v2/study?causeVariableName=" +
             encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
         var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
         return {
@@ -5701,7 +5694,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     };
     qmService.getStudyLinkByVariableNames = function (causeVariableName, effectVariableName) {
-        return qmService.getApiUrl() + '/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
+        return qm.api.getBaseUrl() + '/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
     };
     qmService.getWikipediaArticle = function(title){
         var deferred = $q.defer();
