@@ -4067,44 +4067,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function localNotificationsPluginInstalled() {
         var installed = true;
         if(typeof cordova === "undefined"){
-            qmLogService.info(null, 'cordova is undefined!', null);
+            qmLogService.debug('cordova is undefined!');
             installed = false;
         } else if (typeof cordova.plugins === "undefined"){
-            qmLogService.info(null, 'cordova.plugins is undefined', null);
+            qmLogService.debug('cordova.plugins is undefined');
             installed = false;
         } else if (typeof cordova.plugins.notification === "undefined"){
-            qmLogService.info(null, 'cordova.plugins.notification is undefined', null);
+            qmLogService.debug('cordova.plugins.notification is undefined');
             installed = false;
         }
-        qmLogService.info(null, 'localNotificationsPluginInstalled: ' + installed, null);
+        qmLogService.debug('localNotificationsPluginInstalled: ' + installed);
         return installed;
     }
-    qmService.shouldWeUseIonicLocalNotifications = function(){
-        return $rootScope.isAndroid;
-        return localNotificationsPluginInstalled();
-        $ionicPlatform.ready(function () {
-            qmLogService.info(null, '$ionicPlatform.ready', null);
-            if($rootScope.isAndroid){config.appSettings.appDesign.cordovaLocalNotificationsEnabled = true;}
-            qmLogService.info(null, 'config.appSettings.appDesign.cordovaLocalNotificationsEnabled is ' + config.appSettings.appDesign.cordovaLocalNotificationsEnabled, null);
-            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled){
-                if(localNotificationsPluginInstalled()){
-                    cordova.plugins.notification.local.cancelAll(function () {
-                        qmLogService.info(null, 'cancelAllNotifications: notifications have been cancelled', null);
-                        cordova.plugins.notification.local.getAll(function (notifications) {
-                            qmLogService.info(null, 'cancelAllNotifications: All notifications after cancelling', null, notifications);
-                        });
-                    })
-                }
-                qmLogService.info(null, 'cordova.plugins.notification disabled', null);
-                return false;
-            }
-            qmLogService.info(null, 'cordova.plugins.notification enabled', null);
-            return true;
-        });
-    };
     qmService.setOnUpdateActionForLocalNotifications = function(){
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4119,7 +4096,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.setOnClickActionForLocalNotifications = function(qmService, qmLogService) {
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4167,7 +4144,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.updateBadgesAndTextOnAllNotifications = function () {
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4204,7 +4181,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.setOnTriggerActionForLocalNotifications = function() {
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4220,7 +4197,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     /** @namespace window.chrome.browserAction */
                     qmChrome.updateChromeBadge(response.data.length);
                     if (!$rootScope.numberOfPendingNotifications) {
-                        if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
+                        if(!localNotificationsPluginInstalled()) {return;}
                         qmLogService.debug(null, 'onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications', null);
                         cordova.plugins.notification.local.clearAll(function () {
                             qmLogService.debug(null, 'onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications', null);
@@ -4322,7 +4299,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.updateOrRecreateNotifications = function() {
         qmLogService.info(null, 'updateOrRecreateNotifications', null);
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4413,7 +4390,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         }
         function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
-            if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
+            if(!localNotificationsPluginInstalled()) {return;}
             cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
                 qmLogService.debug(null, 'cancelIonicNotificationsForDeletedReminders: notification.local.getAll ' +
                     'scheduledNotifications: ', null, scheduledNotifications);
@@ -4464,7 +4441,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
             var deferred = $q.defer();
-            if(!qmService.shouldWeUseIonicLocalNotifications()) {
+            if(!localNotificationsPluginInstalled()) {
                 deferred.resolve();
                 return deferred.promise;
             }
@@ -4682,7 +4659,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.cancelIonicNotificationById = function(notificationId){
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4699,7 +4676,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes = function(trackingReminders){
         var deferred = $q.defer();
-        if(!qmService.shouldWeUseIonicLocalNotifications()) {
+        if(!localNotificationsPluginInstalled()) {
             deferred.resolve();
             return deferred.promise;
         }
@@ -4728,7 +4705,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         if($rootScope.isMobile){
-            if(!qmService.shouldWeUseIonicLocalNotifications()) {
+            if(!localNotificationsPluginInstalled()) {
                 deferred.resolve();
                 return deferred.promise;
             }
@@ -6746,8 +6723,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
     }
     function initializeLocalNotifications(){
-        qmLogService.info(null, 'initializeLocalNotifications: shouldWeUseIonicLocalNotifications returns: ' + qmService.shouldWeUseIonicLocalNotifications(), null);
-        if (qmService.shouldWeUseIonicLocalNotifications()) {
+        qmLogService.info(null, 'initializeLocalNotifications: shouldWeUseIonicLocalNotifications returns: ' + localNotificationsPluginInstalled(), null);
+        if (localNotificationsPluginInstalled()) {
             qmLogService.info(null, 'Going to try setting on trigger and on click actions for notifications when device is ready', null);
             $ionicPlatform.ready(function () {
                 qmService.scheduleAllNotificationsByTrackingReminders();
