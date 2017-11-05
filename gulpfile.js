@@ -1854,6 +1854,9 @@ gulp.task('copyIonIconsToWww', [], function () {
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
 });
+gulp.task('copySrcToAndroidWww', [], function () {
+    return copyFiles('src/**/*', 'platforms/android/assets/www');
+});
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
@@ -2177,11 +2180,21 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
+
+gulp.task('copySrcAndEmulateAndroid', function (callback) {
+    runSequence(
+        'copySrcToAndroidWww',
+        'ionicEmulateAndroid',
+        callback);
+});
 gulp.task('ionicResourcesAndroid', [], function (callback) {
     return execute('ionic resources android', callback);
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
     return execute('ionic run android', callback);
+});
+gulp.task('ionicEmulateAndroid', [], function (callback) {
+    return execute('ionic emulate android', callback);
 });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
