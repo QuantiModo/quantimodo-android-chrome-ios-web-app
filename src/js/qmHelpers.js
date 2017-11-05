@@ -455,7 +455,13 @@ window.pushMeasurements = function(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 };
 qmNotifications.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
+    qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
     if(!qm.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
+    if(!onDoneListener){
+        onDoneListener = function (response) {
+            qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
+        }
+    }
     postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
 };
 function postToQuantiModo(body, path, onDoneListener) {
