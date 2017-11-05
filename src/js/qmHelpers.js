@@ -454,7 +454,8 @@ function getAppHostName() {
 window.pushMeasurements = function(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 };
-window.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
+qmNotifications.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
+    if(!qm.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
     postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
 };
 function postToQuantiModo(body, path, onDoneListener) {
@@ -709,7 +710,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
+    qmLog.pushDebug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
