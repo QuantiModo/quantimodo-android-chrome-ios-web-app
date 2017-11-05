@@ -356,11 +356,11 @@ function getAppVersion() {
     if(appSettings){return appSettings.versionNumber;}
     return window.urlHelper.getParam('appVersion');
 }
-qm.auth.getAccessTokenFromCurrentUrl = function(){
-    qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-    var accessTokenFromUrl = (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
+qm.auth.getAndSaveAccessTokenFromCurrentUrl = function(){
+    qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+    var accessTokenFromUrl = qm.api.getAccessTokenFromCurrentUrl();
     if(accessTokenFromUrl){
-        qmLog.authDebug("getAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
+        qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
         qm.auth.saveAccessToken(accessTokenFromUrl);
     }
     return accessTokenFromUrl;
@@ -372,7 +372,7 @@ qm.auth.saveAccessToken = function(accessToken){
     }
 };
 qm.auth.getAccessTokenFromUrlUserOrStorage = function() {
-    if(qm.auth.getAccessTokenFromCurrentUrl()){return qm.auth.getAccessTokenFromCurrentUrl();}
+    if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
     if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
     if(qmStorage.getItem(qmItems.accessToken)){return qmStorage.getItem(qmItems.accessToken);}
     qmLog.info("No access token or user!");
@@ -1204,6 +1204,10 @@ qm.api.getBaseUrl = function () {
         return config.appSettings.apiUrl;
     }
     return appsManager.getQuantiModoApiUrl();
+};
+qm.auth.getAccessTokenFromCurrentUrl = function(){
+    qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+    return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
 };
 qm.unitHelper.getNonAdvancedUnits = function(){
     var nonAdvancedUnitObjects = [];
