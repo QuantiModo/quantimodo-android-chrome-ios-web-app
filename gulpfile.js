@@ -1905,10 +1905,10 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
 gulp.task('prepareIosApp', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     runSequence(
+        'uncommentCordovaJsInIndexHtml',
         'cleanPlugins',
         'configureApp',
         //'copyAppResources',
-        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
         'removeTransparentPsd',
@@ -1954,7 +1954,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         'sass',
         'copySrcToWww',
-        'commentOrUncommentCordovaJs',
+        //'commentOrUncommentCordovaJs',
         'minify-js-generate-css-and-index-html',
         'getCommonVariables',
         'getUnits',
@@ -2197,6 +2197,7 @@ gulp.task('resizeIcons', function (callback) {
 gulp.task('prepareRepositoryForAndroid', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
+        'uncommentCordovaJsInIndexHtml',
         'setAppEnvs',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
@@ -2242,11 +2243,11 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
     outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
+        'uncommentCordovaJsInIndexHtml',
         'copyAndroidLicenses',
         'bowerInstall',
         'configureApp',
         'copyAppResources',
-        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',

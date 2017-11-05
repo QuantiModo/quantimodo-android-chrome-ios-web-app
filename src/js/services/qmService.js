@@ -1797,7 +1797,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         var connectors = qmStorage.getAsObject('connectors');
         if(connectors){
-            connectors = hideBrokenConnectors(connectors);
+            connectors = hideUnavailableConnectors(connectors);
             deferred.resolve(connectors);
         } else {
             qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
@@ -1810,7 +1810,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.getConnectorsFromApi({stackTrace: qmLog.getStackTrace()}, function(response){
             qmService.qmStorage.setItem('connectors', JSON.stringify(response.connectors));
-            var connectors = hideBrokenConnectors(response.connectors);
+            var connectors = hideUnavailableConnectors(response.connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -1842,9 +1842,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){qmService.refreshConnectors();}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    function hideBrokenConnectors(connectors){
+    function hideUnavailableConnectors(connectors){
         for(var i = 0; i < connectors.length; i++){
             //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
+            if(connectors[i].spreadsheetUpload && $rootScope.isMobile) {connectors[i].hide = true;}
         }
         return connectors;
     }
