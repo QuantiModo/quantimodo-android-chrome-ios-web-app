@@ -453,7 +453,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function callback(error, data, response) {
             if(data){
                 qmStorage.setItem('units', data);
-                addUnitsToRootScope(data);
             }
             qmSdkApiResponseHandler(error, data, response);
         }
@@ -468,7 +467,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getCommonVariables(params, callback);
-        var options = {};
+        //var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
@@ -678,6 +677,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response && response.data){
                 if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
                 if(response.data.trackingReminders){qmService.qmStorage.setItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
+                /** @namespace response.data.causeUserVariable */
+                /** @namespace response.data.effectUserVariable */
                 if(response.data.causeUserVariable && response.data.effectUserVariable){
                     qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', [response.data.causeUserVariable, response.data.effectUserVariable]);
                 }
@@ -689,7 +690,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postUserTagDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.postUserTag(tagData, function(response){
+            /** @namespace response.data.userTaggedVariable */
             qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
+            /** @namespace response.data.userTagVariable */
             qmService.addVariableToLocalStorage(response.data.userTagVariable);
             deferred.resolve(response);
         }, function(error){deferred.reject(error);});
@@ -1056,6 +1059,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $http(request).success(function (response) {
             if(response.error){
                 qmLogService.error(response);
+                /** @namespace response.error_description */
                 alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                 deferred.reject(response);
             } else {
@@ -1221,6 +1225,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function sendToDefaultStateIfNecessary() {
         if($state.current.name === 'app.login'){
+            /** @namespace config.appSettings.appDesign.defaultState */
+            /** @namespace config.appSettings.appDesign */
             qmService.goToState(config.appSettings.appDesign.defaultState);
             return true;
         }
