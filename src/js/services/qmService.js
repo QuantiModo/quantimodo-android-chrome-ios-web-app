@@ -312,8 +312,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function getPathWithoutQuery(request) {
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-        var pathWithoutQuery = pathWithQuery.split("?")[0];
-        return pathWithoutQuery;
+        return pathWithQuery.split("?")[0];
     }
     function generalApiErrorHandler(data, status, headers, request, options){
         if(status === 302){return qmLogService.debug(null, 'Got 302 response from ' + JSON.stringify(request), null, options.stackTrace);}
@@ -337,22 +336,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var onRequestFailed = function(error){
         qmLogService.error("Request error : " + error);
     };
-    function getCurrentFunctionName() {
-        var myName = arguments.callee.toString();
-        myName = myName.substr('function '.length);
-        myName = myName.substr(0, myName.indexOf('('));
-        alert(myName);
-    }
-    function getCache(cacheName, minutesToLive){
-        var cacheOptions = {deleteOnExpire: 'aggressive', recycleFreq: 60000, maxAge: minutesToLive * 60 * 1000};
-        if (!CacheFactory.get(cacheName)) {CacheFactory.createCache(cacheName, cacheOptions);}
-        return CacheFactory.get(cacheName);
-    }
-    function deleteCache(cacheName) {
-        if (!CacheFactory.get(cacheName)) {return;}
-        var dataCache = CacheFactory.get(cacheName);
-        dataCache.destroy();
-    }
     qmService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
         configureQmApiClient();
         var apiInstance = new Quantimodo.MeasurementsApi();
@@ -413,11 +396,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getMeasurements(params, callback);
         //qmService.get('api/v3/measurements/daily', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
-    };
-    qmService.getMeasurementsDailyFromApiDeferred = function(params, successHandler, errorHandler){
-        var deferred = $q.defer();
-        qmService.getMeasurementsDailyFromApi(params, function(dailyHistory){deferred.resolve(dailyHistory);}, function(error){deferred.reject(error);});
-        return deferred.promise;
     };
     qmService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
         qmService.post('api/v3/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
