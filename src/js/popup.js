@@ -44,7 +44,7 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     showLoader();
     if(window.notificationsSyncQueue){
         qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
-        window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+        qmNotifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
     } else {
         closePopup();
     }
