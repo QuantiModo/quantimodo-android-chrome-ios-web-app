@@ -40,8 +40,8 @@ var inboxButtonClicked = function() {
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
-    //hidePopup();
-    showLoader();
+    hidePopup();
+    //showLoader();
     if(window.notificationsSyncQueue){
         qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
         qmNotifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
