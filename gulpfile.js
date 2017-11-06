@@ -129,7 +129,8 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
-var pathToIcons = "www/img/icons";
+var pathToWwwIcons = "www/img/icons";
+var pathToSrcIcons = "src/img/icons";
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials;
 var privateConfigDirectoryPath = 'www/private_configs/';
@@ -344,7 +345,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function resizeIcon(callback, resolution) {
-    var outputIconPath = pathToIcons + '/icon_' + resolution + '.png';
+    var outputIconPath = pathToWwwIcons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
     return execute(command, function (error) {
         if (error) {
@@ -759,6 +760,9 @@ function createChromeManifest(outputPath) {
 }
 gulp.task('createChromeManifestInWwwFolder', ['getAppConfigs'], function () {
     createChromeManifest('www/manifest.json');
+});
+gulp.task('createChromeManifestInSrcFolder', ['getAppConfigs'], function () {
+    createChromeManifest('src/manifest.json');
 });
 gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToChromeExtension'], function () {
     appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
@@ -1858,7 +1862,10 @@ gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copyIconsToWwwImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToWwwIcons);
+});
+gulp.task('copyIconsToSrcImg', [], function () {
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToSrcIcons);
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -1885,7 +1892,10 @@ gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
-    return copyFiles(pathToIcons + "/*", chromeExtensionBuildPath + '/img/icons');
+    return copyFiles(pathToWwwIcons + "/*", chromeExtensionBuildPath + '/img/icons');
+});
+gulp.task('copyWwwIconsToSrc', [], function () {
+    return copyFiles(pathToWwwIcons + "/*", pathToSrcIcons);
 });
 gulp.task('removeTransparentPng', [], function () {
     return gulp.src('resources/icon.png', {read: false}).pipe(clean());

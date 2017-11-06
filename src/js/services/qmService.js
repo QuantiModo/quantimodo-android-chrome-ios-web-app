@@ -160,7 +160,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
-        if($state.current.name === 'app.intro' && !params.force && !qmService.getAccessTokenFromCurrentUrl()){
+        if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
             qmLogService.debug(null, 'Not making request to ' + route + ' user because we are in the intro state', null, options.stackTrace);
             return;
         }
@@ -806,14 +806,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(variableCategoryName && variableCategoryName !== "Anything"){return variableCategoryName;}
         return null;
     };
-    qmService.getAccessTokenFromCurrentUrl = function(){
-        qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
-    };
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
             qmLog.authDebug("getAccessTokenFromUrl: No previous $rootScope.accessTokenFromUrl");
-            $rootScope.accessTokenFromUrl = qmService.getAccessTokenFromCurrentUrl();
+            $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
             if($rootScope.accessTokenFromUrl){
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
@@ -6214,7 +6210,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function sendToLogin() {
         if(urlHelper.getParam('access_token')){
-            if(!qmService.getAccessTokenFromCurrentUrl()){
+            if(!qm.auth.getAccessTokenFromCurrentUrl()){
                 qmLogService.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
             }
             qmLogService.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
@@ -6850,7 +6846,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //template = template + "App Settings: " + prettyJsonStringify(config.appSettings) + '\r\n';
             template = template + "inAppPurchase installed: " + (typeof window.inAppPurchase !== "undefined") + '\r\n';
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
-            template = template + "Splashscreen plugin installed: " + (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed" + '\r\n';
+            var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
+            template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
             template = addSnapShotList(template);
             // TODO: Maybe fix me
             //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});
