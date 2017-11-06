@@ -358,7 +358,7 @@ function getAppVersion() {
 }
 qm.auth.getAndSaveAccessTokenFromCurrentUrl = function(){
     qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
-    var accessTokenFromUrl = qm.api.getAccessTokenFromCurrentUrl();
+    var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
     if(accessTokenFromUrl){
         qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
         qm.auth.saveAccessToken(accessTokenFromUrl);
