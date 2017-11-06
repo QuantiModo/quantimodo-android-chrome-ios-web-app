@@ -6846,7 +6846,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //template = template + "App Settings: " + prettyJsonStringify(config.appSettings) + '\r\n';
             template = template + "inAppPurchase installed: " + (typeof window.inAppPurchase !== "undefined") + '\r\n';
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
-            template = template + "Splashscreen plugin installed: " + (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed" + '\r\n';
+            var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
+            template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
             template = addSnapShotList(template);
             // TODO: Maybe fix me
             //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});
