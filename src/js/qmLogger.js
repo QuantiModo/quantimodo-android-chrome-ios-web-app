@@ -316,7 +316,7 @@ window.qmLog.authDebug = function(message) {
     if(authDebug){qmLog.debug(message, message, null);}
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
-    var pushDebug = true;
+    var pushDebug = false;
     if(pushDebug){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
