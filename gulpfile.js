@@ -2202,6 +2202,13 @@ gulp.task('copySrcAndEmulateAndroid', function (callback) {
         'ionicEmulateAndroid',
         callback);
 });
+gulp.task('copySrcAndRunAndroid', function (callback) {
+    runSequence(
+        'uncommentCordovaJsInIndexHtml',
+        'copySrcToAndroidWww',
+        'ionicRunAndroid',
+        callback);
+});
 gulp.task('ionicResourcesAndroid', [], function (callback) {
     return execute('ionic resources android', callback);
 });
