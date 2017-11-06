@@ -6951,80 +6951,80 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, data.additionalData.notId);
                 };
                 window.trackYesAction = function (data){
-                    qmLog.pushDebug('trackYesAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
+                    qmLog.pushDebug('trackYesAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackNoAction = function (data){
-                    qmLog.pushDebug('trackNoAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                    qmLog.pushDebug('trackNoAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackZeroAction = function (data){
-                    qmLog.pushDebug('trackZeroAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                    qmLog.pushDebug('trackZeroAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackOneRatingAction = function (data){
-                    qmLog.pushDebug('trackOneRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
+                    qmLog.pushDebug('trackOneRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackTwoRatingAction = function (data){
-                    qmLog.pushDebug('trackTwoRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
+                    qmLog.pushDebug('trackTwoRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThreeRatingAction = function (data){
-                    qmLog.pushDebug('trackThreeRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
+                    qmLog.pushDebug('trackThreeRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFourRatingAction = function (data){
-                    qmLog.pushDebug('trackFourRatingAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
+                    qmLog.pushDebug('trackFourRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFiveRatingAction = function (data){
-                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
+                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackDefaultValueAction = function (data){
-                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
+                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.snoozeAction = function (data){
-                    qmLog.pushDebug('snoozeAction', ' push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
+                    qmLog.pushDebug('snoozeAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmService.snoozeTrackingReminderNotificationDeferred(body);
                     finishPush(data);
                 };
                 window.trackLastValueAction = function (data){
-                    qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
+                    qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackSecondToLastValueAction = function (data){
-                    qmLog.pushDebug('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
+                    qmLog.pushDebug('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThirdToLastValueAction = function (data){
-                    qmLog.pushDebug('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), data);
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
+                    qmLog.pushDebug('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qmNotifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
