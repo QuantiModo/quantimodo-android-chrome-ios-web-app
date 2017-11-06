@@ -497,7 +497,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.value = 0;
         $interval(function() {
             $scope.value++;
-        }, 50, 100);
+        }, 5, 100);
         return fn;
     })();
 }]);

@@ -1856,7 +1856,7 @@ gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
 gulp.task('copyMaterialIconsToWww', [], function () {
-    return copyFiles('src/lib/angular-material-icons/angular-material-icons.css', 'www/lib/angular-material-icons');
+    return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
@@ -1968,7 +1968,7 @@ gulp.task('configureApp', [], function (callback) {
         //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
         'copyIonIconsToWww',
-        'copyMaterialIconsToWww',
+        //'copyMaterialIconsToWww',
         'sass',
         'copySrcToWww',
         //'commentOrUncommentCordovaJs',
