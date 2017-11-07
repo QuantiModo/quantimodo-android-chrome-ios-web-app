@@ -5031,8 +5031,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.qmStorage.clearEverything = function(){
         qmLogService.debug(null, 'Clearing local storage!', null);
         qmStorage.clear();
-        //putCommonVariablesInLocalStorageUsingJsonFile();
         putCommonVariablesInLocalStorageUsingApi();
+        qmService.getUnitsFromApi();
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
