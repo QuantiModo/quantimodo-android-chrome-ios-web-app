@@ -828,9 +828,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
     return makeApiRequest(options);
 });
-function generateDefaultConfigJson(appSettings) {
-    writeToFile(paths.www.devCredentials, prettyJSONStringify(appSettings));
-}
+function generateDefaultConfigJson(appSettings) {writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));}
 gulp.task('getAppConfigs', ['setClientId'], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
