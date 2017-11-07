@@ -45,9 +45,32 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    objectHelper: {
+        copyPropertiesFromOneObjectToAnother: function(source, destination){
+            for (var prop in source) {
+                if (source.hasOwnProperty(prop)) {
+                    destination[prop] = source[prop];
+                }
+            }
+            return destination;
+        }
+    },
+    stringHelper: {
+        removeSpecialCharacters: function (str) {
+            return str.replace(/[^A-Z0-9]+/ig, "_");
+        }
+    },
     getAppSettings: function () {
         if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
         return null;
+    }
+};
+window.qmGlobals = {
+    setStudy: function(study){
+        qmStorage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
+    },
+    getStudy: function(causeVariableName, effectVariableName){
+        qmStorage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
     }
 };
 //if(!window.config){window.config = {};}
