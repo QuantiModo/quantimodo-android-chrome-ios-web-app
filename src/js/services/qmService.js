@@ -16,7 +16,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
-        if(!response){
+        if(!response && $state.current.name !== 'app.login'){
             qmLogService.error("No response provided to qmSdkApiResponseHandler");
             return;
         }
@@ -255,7 +255,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function setAfterLoginGoToUrlAndSendToLogin(){
         if($state.current.name.indexOf('login') !== -1){
-            qmLogService.errorOrInfoIfTesting(null, 'Why are we sending to login from login state?');
+            qmLogService.info('Why are we sending to login from login state?');
             return;
         }
         setAfterLoginGoToUrl();
@@ -5031,8 +5031,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.qmStorage.clearEverything = function(){
         qmLogService.debug(null, 'Clearing local storage!', null);
         qmStorage.clear();
-        //putCommonVariablesInLocalStorageUsingJsonFile();
         putCommonVariablesInLocalStorageUsingApi();
+        qmService.getUnitsFromApi();
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
@@ -5721,7 +5721,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function setAfterLoginGoToState(afterLoginGoToState){
         if(afterLoginGoToState.indexOf('login') !== -1){
-            qmLogService.errorOrInfoIfTesting(null, 'Why are we sending to login from login state?');
+            qmLogService.info('Why are we sending to login from login state?');
             return;
         }
         qmLogService.debug(null, 'Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ', null);
@@ -5730,7 +5730,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
         if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
         if(afterLoginGoToUrl.indexOf('login') !== -1){
-            qmLogService.errorOrInfoIfTesting(null, 'Why are we sending to login from login state?');
+            qmLogService.info('Why are we sending to login from login state?');
             return;
         }
         qmLogService.debug(null, 'Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.', null);

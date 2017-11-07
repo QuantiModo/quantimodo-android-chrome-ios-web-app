@@ -592,7 +592,7 @@ function deleteFromArrayByProperty(localStorageItemArray, propertyName, property
 window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.error('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
         qmStorage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
     }
@@ -600,7 +600,7 @@ window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName
 window.qmStorage.deleteByPropertyInArray = function (localStorageItemName, propertyName, objectsArray){
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.error('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
         var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
         for (var i=0; i < arrayOfValuesForProperty.length; i++) {
@@ -613,7 +613,15 @@ function addQueryParameter(url, name, value){
     if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
     return url + "&" + name + "=" + value;
 }
-window.qmStorage.getLocalStorageList = function(summary){
+window.qmStorage.getLocalStorageList = function(){
+    var localStorageItemsArray = [];
+    for (var i = 0; i < localStorage.length; i++){
+        var key = localStorage.key(i);
+        localStorageItemsArray.push({name: key});
+    }
+    return localStorageItemsArray;
+};
+window.qmStorage.getAllLocalStorageData = function(summary){
     var localStorageItemsArray = [];
     for (var i = 0; i < localStorage.length; i++){
         var key = localStorage.key(i);
@@ -716,7 +724,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.pushDebug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
+    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
