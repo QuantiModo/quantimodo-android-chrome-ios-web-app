@@ -180,7 +180,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
         "last popup": qmNotifications.getTimeSinceLastPopupString()
     };
-    if(qmLog.isDebugMode()){metaData.local_storage = window.qmStorage.getLocalStorageList(true);} // Too slow to do for every error
+    if(qmLog.isDebugMode()){metaData.local_storage = window.qmStorage.getLocalStorageList();} // Too slow to do for every error
     if(qm.getAppSettings()){
         metaData.build_server = config.appSettings.buildServer;
         metaData.build_link = config.appSettings.buildLink;
