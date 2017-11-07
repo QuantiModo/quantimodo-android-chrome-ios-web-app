@@ -8,7 +8,7 @@
 //     ~ — home for dependencies in Webpack bundle
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
-window.qmLog = {};
+window.qmLog = {debugMode:false};
 Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 var logMetaData = false;
 if(!window.qmUser){
@@ -28,6 +28,7 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
+    if(qmLog.debugMode){return "debug";}
     if(qmLog.loglevel){return qmLog.loglevel;}
     if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
         qmLog.loglevel = "debug";
@@ -230,9 +231,9 @@ window.qmLog.setupUserVoice = function() {
         UserVoice.push(['identify', {
             email: qmUser.email, // User’s email address
             name: qmUser.displayName, // User’s real name
-            created_at: window.timeHelper.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
-            id: user.id, // Optional: Unique id of the user (if set, this should not change)
-            type: qm.getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+            created_at: window.timeHelper.getUnixTimestampInSeconds(userHelper.getUser().userRegistered), // Unix timestamp for the date the user signed up
+            id: userHelper.getUser().id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + userHelper.getUser().subscribed + ')', // Optional: segment your users by type
             account: {
                 //id: 123, // Optional: associate multiple users with a single account
                 name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
@@ -247,9 +248,9 @@ window.qmLog.setupUserVoice = function() {
 window.qmLog.setupIntercom = function() {
     window.intercomSettings = {
         app_id: "uwtx2m33",
-        name: user.displayName,
-        email: user.email,
-        user_id: user.id,
+        name: userHelper.getUser().displayName,
+        email: userHelper.getUser().email,
+        user_id: userHelper.getUser().id,
         app_name: config.appSettings.appDisplayName,
         app_version: config.appSettings.versionNumber,
         platform: qm.getPlatform()
@@ -313,11 +314,11 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
 };
 window.qmLog.authDebug = function(message) {
     var authDebug = false;
-    if(authDebug){qmLog.debug(message, message, null);}
+    if(authDebug || qmLog.debugMode){qmLog.debug(message, message, null);}
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
-    var pushDebug = true;
-    if(pushDebug){
+    var pushDebug = false;
+    if(pushDebug || qmLog.debugMode){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
         qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);

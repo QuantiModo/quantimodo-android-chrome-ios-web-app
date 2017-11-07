@@ -20,24 +20,19 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
         qmService.showBlackRingLoader();
-
         if($rootScope.variableObject.userTagVariables){
             $rootScope.variableObject.userTagVariables =
                 $rootScope.variableObject.userTagVariables.filter(function( obj ) {
                     return obj.id !== $scope.stateParams.userTagVariableObject.id;
                 });
         }
-
         if($rootScope.variableObject.userTaggedVariables){
             $rootScope.variableObject.userTaggedVariables =
                 $rootScope.variableObject.userTaggedVariables.filter(function( obj ) {
                     return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
-
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables',
-            $rootScope.variableObject);
-
+        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, $rootScope.variableObject);
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -46,7 +41,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         });
     };
     $scope.done = function(){
-
         if(!$scope.stateParams.tagConversionFactor){
             $scope.stateParams.tagConversionFactor = 1;
         }
@@ -55,7 +49,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id,
             conversionFactor: $scope.stateParams.tagConversionFactor
         };
-
         if($rootScope.variableObject.id === $scope.stateParams.userTagVariableObject.id){
             $scope.stateParams.userTaggedVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
             $scope.stateParams.userTaggedVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
@@ -68,7 +61,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             }
             $rootScope.variableObject.userTaggedVariables.push($scope.stateParams.userTaggedVariableObject);
         }
-
         if($rootScope.variableObject.id === $scope.stateParams.userTaggedVariableObject.id){
             $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
             $scope.stateParams.userTagVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
@@ -81,12 +73,9 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             }
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
-
         qmService.showBlackRingLoader();
-
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables',
+        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables,
             $rootScope.variableObject);
-
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -108,7 +97,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                 qmService.hideLoader();
             });
         }
-
         if(!$scope.stateParams.userTaggedVariableObject){
             qmService.showBlackRingLoader();
             qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
@@ -117,6 +105,5 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             });
         }
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
-
     });
 }]);

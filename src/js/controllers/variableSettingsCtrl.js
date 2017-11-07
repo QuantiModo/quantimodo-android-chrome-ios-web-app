@@ -122,7 +122,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          * Build `variables` list of key/value pairs
          */
         function loadAll(variables) {
-            if(!variables){ variables = qmStorage.getAsObject('userVariables'); }
+            if(!variables){ variables = qmStorage.getAsObject(qmItems.userVariables); }
             if(variables && $rootScope.variableObject.unit.abbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
@@ -201,7 +201,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          * Build `variables` list of key/value pairs
          */
         function loadAll(variables) {
-            if(!variables){variables = qmStorage.getAsObject('userVariables'); }
+            if(!variables){variables = qmStorage.getAsObject(qmItems.userVariables); }
             if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {

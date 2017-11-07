@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
+        $scope.debugMode = qmLog.debugMode;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
 		$rootScope.hideNavigationMenu = false;
 		if(urlHelper.getParam('userEmail')){
@@ -313,6 +314,9 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
             if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
             if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
-        }
+        };
     }
+    $scope.toggleDebugMode = function(){
+        $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
+    };
 }]);
