@@ -1903,7 +1903,7 @@ gulp.task('copyWwwFolderToAndroidApp', [], function () {
 gulp.task('copyIconsToChromeExtension', [], function () {
     return copyFiles(paths.www.icons + "/*", chromeExtensionBuildPath + '/img/icons');
 });
-gulp.task('copywww.iconsToSrc', [], function () {
+gulp.task('copyWwwIconsToSrc', [], function () {
     return copyFiles(paths.www.icons + "/*", paths.src.icons);
 });
 gulp.task('removeTransparentPng', [], function () {
