@@ -1340,6 +1340,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         if(urlHelper.getParam('aggregated')){params.aggregated = true;}
         qmLogService.debug(null, 'qmService.getStudy params: ' + prettyJsonStringify(params), null, qmLog.getStackTrace());
+        var studyFromGlobals = qmGlobals.getStudy(params.causeVariableName, params.effectVariableName);
+        if(qmGlobals.getStudy(params.causeVariableName, params.effectVariableName)){
+            deferred.resolve(studyFromGlobals);
+            return deferred.promise;
+        }
         qmService.getStudy(params, function (response) {
             qmLogService.debug(null, 'qmService.getStudy response: ' + prettyJsonStringify(response), null);
             var study;
@@ -1352,7 +1357,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     study.charts[i].chartConfig = setChartExportingOptions(study.charts[i].chartConfig);
                 }
             }
+            if(study.text){  // Hack to make consistent with basic correlations to use same HTML template
+                study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics);
+                delete study.text;
+            }
             qmService.qmStorage.setItem('lastStudy', JSON.stringify(study));
+            qmGlobals.setStudy(study);
             deferred.resolve(study);
         }, function (error) {
             qmLogService.error("qmService.getStudy error: " + error);
