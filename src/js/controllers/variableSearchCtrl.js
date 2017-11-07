@@ -31,7 +31,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.selectVariable = function(variableObject) {
         qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
-        if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variableObject);}
+        if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
         $scope.state.variableSearchQuery.name = '';
         var userTagData;
