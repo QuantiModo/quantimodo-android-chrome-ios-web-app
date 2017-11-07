@@ -164,16 +164,23 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			qmLogService.error('Failed to Delete Reminder: ' + error);
 		});
 	};
+
 	$scope.showActionSheet = function(trackingReminder) {
 		var variableObject = qmService.convertTrackingReminderToVariableObject(trackingReminder);
+        var buttons = [
+            { text: '<i class="icon ion-android-notifications-none"></i>Edit'},
+            qmService.actionSheetButtons.recordMeasurement,
+            qmService.actionSheetButtons.charts,
+            qmService.actionSheetButtons.history,
+            qmService.actionSheetButtons.analysisSettings
+        ];
+        for(var i=0; i < trackingReminder.actionArray.length; i++){
+            if(trackingReminder.actionArray[i].action !== "snooze"){
+                buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + trackingReminder.actionArray[i].title});
+            }
+        }
 		var hideSheet = $ionicActionSheet.show({
-			buttons: [
-				{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
-				qmService.actionSheetButtons.recordMeasurement,
-				qmService.actionSheetButtons.charts,
-				qmService.actionSheetButtons.history,
-				qmService.actionSheetButtons.analysisSettings
-			],
+			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
@@ -184,6 +191,13 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 4){qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});}
+                var buttonIndex = 5;
+                for(var i=0; i < trackingReminder.actionArray.length; i++){
+                    if(trackingReminder.actionArray[i].action !== "snooze"){
+                        if(index === buttonIndex){$scope.trackByFavorite(trackingReminder, trackingReminder.actionArray[i].modifiedValue);}
+                        buttonIndex++;
+                    }
+                }
 				return true;
 			},
 			destructiveButtonClicked: function() {
