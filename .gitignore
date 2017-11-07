@@ -9,6 +9,10 @@
 *.mobileprovision
 .idea/
 !.idea/runConfigurations/*
+!.idea/dictionaries/*
+!.idea/libraries/*
+!.idea/modules/*
+!.idea/inspectionProfiles/*
 .vagrant/
 .vs/
 /android-armv7-debug/
