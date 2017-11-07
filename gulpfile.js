@@ -218,8 +218,8 @@ function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtens
 function getPathToUnzippedChromeExtension() {return buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension';}
 function readDevCredentials(){
     try{
-        devCredentials = JSON.parse(fs.readFileSync(paths.www.devCredentials));
-        logInfo("Using dev credentials from " + paths.www.devCredentials + ". This file is ignored in .gitignore and should never be committed to any repository.");
+        devCredentials = JSON.parse(fs.readFileSync(paths.src.devCredentials));
+        logInfo("Using dev credentials from " + paths.src.devCredentials + ". This file is ignored in .gitignore and should never be committed to any repository.");
     } catch (error){
         logInfo('No existing dev credentials found');
         devCredentials = {};
@@ -548,7 +548,7 @@ function outputApiErrorResponse(err, options) {
         logError("Request options: ", options);
         return;
     }
-    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + paths.www.devCredentials + " and try again.";}
+    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + paths.src.devCredentials + " and try again.";}
     logError(options.uri + " error response", err.response.body);
 }
 function getFileNameFromUrl(url) {
@@ -779,11 +779,11 @@ function writeToFile(filePath, stringContents) {
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
-gulp.task('deleteDevCredentials', function () {return clean([paths.www.devCredentials]);});
+gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
-    writeToFile(paths.www.devCredentials, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
+    writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
 });
 function downloadFile(url, filename, destinationFolder) {
@@ -865,13 +865,13 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
                 logDebug(err);
             }
         }
-        writeToFile(paths.www.devCredentials, prettyJSONStringify(appSettings));
+        writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
         try {
-            writeToFile(chromeExtensionBuildPath + '/' + paths.www.devCredentials, prettyJSONStringify(appSettings));
+            writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
         } catch (err){
             logDebug(err);
         }
-        logDebug("Writing to " + paths.www.devCredentials + ": " + prettyJSONStringify(appSettings));
+        logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
         writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         /** @namespace response.allConfigs */
         if(response.allConfigs){
@@ -949,7 +949,7 @@ gulp.task('validateChromeManifest', function () {
     return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
-    return verifyExistenceOfFile(paths.www.devCredentials);
+    return verifyExistenceOfFile(paths.www.defaultConfig);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
     if(buildSettings.xwalkMultipleApk){
@@ -1033,7 +1033,7 @@ gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
     if(devCredentials.accessToken){
         process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken;
-        logInfo("Using username " + devCredentials.accessToken + " from " + paths.www.devCredentials);
+        logInfo("Using username " + devCredentials.accessToken + " from " + paths.src.devCredentials);
         deferred.resolve();
         return deferred.promise;
     }
@@ -1757,7 +1757,7 @@ gulp.task('commentOrUncommentCordovaJs', function () {
 });
 gulp.task('setVersionNumberInFiles', function () {
     var filesToUpdate = [
-        paths.www.devCredentials,
+        paths.www.defaultConfig,
         '.travis.yml',
         'resources/chrome_app/manifest.json'
     ];
