@@ -716,7 +716,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.pushDebug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
+    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
