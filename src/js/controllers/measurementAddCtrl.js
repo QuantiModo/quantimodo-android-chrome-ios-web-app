@@ -220,7 +220,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     var setupFromVariableObject = function(variableObject){
         $stateParams.variableObject = variableObject;
         // Gets version from local storage in case we just updated unit in variable settings
-        var userVariables = qmService.qmStorage.getElementsWithRequestParams('userVariables', {name: variableObject.name});
+        var userVariables = qmService.qmStorage.getElementsWithRequestParams(qmItems.userVariables, {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $rootScope.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
