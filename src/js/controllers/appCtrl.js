@@ -252,6 +252,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {
             trackingReminder.tally = modifiedReminderValue;
         }
+        qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
         $timeout(function() {
             if(typeof trackingReminder === "undefined"){
                 qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
