@@ -921,7 +921,7 @@ angular.module('starter',
         })
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
-            cache: false,
+            cache: true,
             params: {
                 title: 'Reminder Inbox',
                 reminderFrequency: null,
@@ -1219,7 +1219,7 @@ angular.module('starter',
     }
 }])
 .component("mdFabProgress", {
-    template: "<md-button class='md-fab' ng-click='$ctrl.onClick()' ng-class=\"{'is-done': $ctrl.done}\"><md-icon class=\"icon\">{{$ctrl.icon}}</md-icon><md-icon class=\"icon-done\">{{$ctrl.iconDone}}</md-icon></md-button><md-progress-circular ng-class=\"{'is-active': $ctrl.active}\" value='{{$ctrl.value}}' md-mode='determinate' md-diameter='68'></md-progress-circular>",
+    template: "<md-button class='md-fab' ng-click='$ctrl.onClick()' ng-class=\"{'is-done': $ctrl.done}\"><md-icon ng-if='!done' class=\"ion-checkmark\" md-font-icon=\"ion-checkmark\"></md-icon><md-icon ng-if='done' class=\"ion-upload\" md-font-icon=\"ion-upload\"></md-icon></md-button><md-progress-circular ng-class=\"{'is-active': $ctrl.active}\" value='{{$ctrl.value}}' md-mode='determinate' md-diameter='68'></md-progress-circular>",
     bindings: {
         "icon": "<",
         "iconDone": "<",
@@ -1227,22 +1227,17 @@ angular.module('starter',
         "doAction": "&"
     },
     controller: function($scope) {
-
         var that = this;
-
         that.active = false;
         that.done = false;
-
         that.onClick = function() {
             if (!that.active) {
                 that.doAction();
             }
         };
-
         $scope.$watch(function() {
             return that.value;
         }, function(newValue) {
-
             if (newValue >= 100) {
                 that.done = true;
                 that.active = false;

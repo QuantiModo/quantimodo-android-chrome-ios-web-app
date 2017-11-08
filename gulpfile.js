@@ -1,10 +1,86 @@
+var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
+var appSettings, privateConfig, devCredentials;
+var androidX86ReleaseName = 'android-x86-release';
+var androidArm7DebugApkName = 'android-armv7-debug';
+var androidX86DebugApkName = 'android-x86-debug';
+var androidArm7ReleaseApkName = 'android-armv7-release';
+var androidX86ReleaseApkName = 'android-x86-release';
+var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
+var buildPath = 'build';
+var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
+var chromeExtensionBuildPath = buildPath + '/chrome_extension';
+var platformCurrentlyBuildingFor;
+var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
+// Setup platforms to build that are supported on current hardware
+// See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
+//var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
+var winPlatforms = ['windows'],
+    linuxPlatforms = ['android'],
+    osxPlatforms = ['ios'],
+    platformsToBuild = process.platform === 'darwin' ? osxPlatforms :
+        (process.platform === 'linux' ? linuxPlatforms : winPlatforms),
+    // Build config to use for build - Use Pascal case to match paths set by VS
+    buildConfig = 'Release',
+    // Arguments for build by platform. Warning: Omit the extra "--" when referencing platform
+    // specific options (Ex:"-- --gradleArg" is "--gradleArg").
+    buildArgs = {
+        android: ['--' + buildConfig.toLocaleLowerCase(), '--device', '--gradleArg=--no-daemon'],
+        ios: ['--' + buildConfig.toLocaleLowerCase(), '--device'],
+        windows: ['--' + buildConfig.toLocaleLowerCase(), '--device']
+    },
+    // Paths used by build
+    buildPaths = {
+        tsconfig: 'scripts/tsconfig.json',
+        ts: './scripts/**/*.ts',
+        apk: ['./platforms/android/ant-build/*.apk',
+            './platforms/android/bin/*.apk',
+            './platforms/android/build/outputs/apk/*.apk'],
+        binApk: './bin/Android/' + buildConfig,
+        ipa: ['./platforms/ios/build/device/*.ipa',
+            './platforms/ios/build/device/*.app.dSYM'],
+        binIpa: './bin/iOS/' + buildConfig,
+        appx: './platforms/windows/AppPackages/**/*',
+        binAppx: './bin/Windows/' + buildConfig
+    };
+var appIds = {
+    'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
+    'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
+    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob',
+    'quantimodo': true,
+    'medimodo': true
+};
+var paths = {
+    apk: {
+        combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
+        combinedDebug: "platforms/android/build/outputs/apk/android-debug.apk",
+        arm7Release: "platforms/android/build/outputs/apk/android-arm7-release.apk",
+        x86Release: "platforms/android/build/outputs/apk/android-x86-release.apk",
+        outputFolder: "platforms/android/build/outputs/apk",
+    },
+    sass: ['./src/scss/**/*.scss'],
+    src:{
+        appConfigs: "src/configs/",
+        devCredentials: "src/private_configs/dev-credentials.json",
+        privateConfigs: "src/private_configs/",
+        defaultConfig: "src/configs/default.config.json",
+        defaultPrivateConfig: "src/private_configs/default.private_config.json",
+        icons: "src/img/icons"
+    },
+    www: {
+        appConfigs: "www/configs/",
+        devCredentials: "www/private_configs/dev-credentials.json",
+        privateConfigs: "www/private_configs/",
+        defaultConfig: "www/configs/default.config.json",
+        defaultPrivateConfig: "www/private_configs/default.private_config.json",
+        icons: "www/img/icons"
+    }
+};
 var gulp = require('gulp'),
     ts = require('gulp-typescript'),
     es = require('event-stream'),
     cordovaBuild = require('taco-team-build');
 var gutil = require('gulp-util');
 var bower = require('bower');
-var concat = require('gulp-concat');
 var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
@@ -30,7 +106,6 @@ var git = require('gulp-git'),
     jeditor = require('gulp-json-editor'),
     source = require('vinyl-source-stream'),
     streamify = require('gulp-streamify');
-var directoryMap = require('gulp-directory-map');
 var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var rp = require('request-promise');
@@ -45,10 +120,28 @@ var filter = require('gulp-filter');
 var csso = require('gulp-csso');
 var ngAnnotate = require('gulp-ng-annotate');
 
+var majorMinorVersionNumbers = '2.7.';
+var date = new Date();
+function getPatchVersionNumber() {
+    var date = new Date();
+    var monthNumber = (date.getMonth() + 1).toString();
+    var dayOfMonth = ('0' + date.getDate()).slice(-2);
+    return monthNumber + dayOfMonth;
+}
+function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
+function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
+var versionNumbers = {
+    iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.0',
+    //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
+    androidVersionCode: getLongDateFormat() + appendLeadingZero(date.getHours()),
+    ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+};
+logInfo(JSON.stringify(versionNumbers));
+
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 bugsnag.releaseStage = getCurrentServerContext();
-process.on('unhandledRejection', function (err, promise) {
+process.on('unhandledRejection', function (err) {
     console.error("Unhandled rejection: " + (err && err.stack || err));
     bugsnag.notify(err);
 });
@@ -65,12 +158,10 @@ var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 
-
-
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
-var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
+
 logInfo("Environmental Variables:", process.env);
 function getCurrentServerContext() {
     var currentServerContext = "local";
@@ -121,71 +212,14 @@ function setClientId(callback) {
         if (callback) {callback();}
     }
 }
-//setClientId();  // Don't want to do this here because it's logs interrupt dev credential entry
-var appIds = {
-    'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
-    'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
-    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob',
-    'quantimodo': true,
-    'medimodo': true
-};
-var pathToWwwIcons = "www/img/icons";
-var pathToSrcIcons = "src/img/icons";
-var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
-var appSettings, privateConfig, devCredentials;
-var privateConfigDirectoryPath = 'www/private_configs/';
-var appConfigDirectoryPath = 'www/configs/';
-var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
-var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
-var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
-var pathToOutputApks = 'platforms/android/build/outputs/apk';
-var pathToCombinedReleaseApk = pathToOutputApks + '/android-release.apk';
-var pathToCombinedDebugApk = pathToOutputApks + '/android-debug.apk';
-var androidArm7ReleaseApkName = 'android-armv7-release';
-var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '.apk';
-var androidX86ReleaseApkName = 'android-x86-release';
-var pathToReleasex86Apk = pathToOutputApks + '/' + androidX86ReleaseApkName + '.apk';
-var androidArm7DebugApkName = 'android-armv7-debug';
-var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '.apk';
-var androidX86DebugApkName = 'android-x86-debug';
-var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
-var buildPath = 'build';
-var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
-var chromeExtensionBuildPath = buildPath + '/chrome_extension';
-var platformCurrentlyBuildingFor;
-var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
-var majorMinorVersionNumbers = '2.7.';
-var date = new Date();
-var paths = {
-    sass: ['./src/scss/**/*.scss']
-};
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 function getChromeExtensionZipFilename() {return process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
 function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtensionZipFilename();}
 function getPathToUnzippedChromeExtension() {return buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension';}
-function getPatchVersionNumber() {
-    var date = new Date();
-    var monthNumber = (date.getMonth() + 1).toString();
-    var dayOfMonth = ('0' + date.getDate()).slice(-2);
-    return monthNumber + dayOfMonth;
-}
-function appendLeadingZero(integer) {
-    return ('0' + integer).slice(-2);
-}
-function getLongDateFormat(){
-    return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());
-}
-var versionNumbers = {
-    iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.0',
-    //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
-    androidVersionCode: getLongDateFormat() + appendLeadingZero(date.getHours()),
-    ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
-};
-logInfo(JSON.stringify(versionNumbers));
 function readDevCredentials(){
     try{
-        devCredentials = JSON.parse(fs.readFileSync(devCredentialsPath));
-        logInfo("Using dev credentials from " + devCredentialsPath + ". This file is ignored in .gitignore and should never be committed to any repository.");
+        devCredentials = JSON.parse(fs.readFileSync(paths.src.devCredentials));
+        logInfo("Using dev credentials from " + paths.src.devCredentials + ". This file is ignored in .gitignore and should never be committed to any repository.");
     } catch (error){
         logInfo('No existing dev credentials found');
         devCredentials = {};
@@ -345,7 +379,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function resizeIcon(callback, resolution) {
-    var outputIconPath = pathToWwwIcons + '/icon_' + resolution + '.png';
+    var outputIconPath = paths.www.icons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
     return execute(command, function (error) {
         if (error) {
@@ -370,9 +404,9 @@ function fastlaneSupply(track, callback) {
     /** @namespace appSettings.additionalSettings */
     /** @namespace buildSettings.xwalkMultipleApk */
     if(buildSettings.xwalkMultipleApk) {
-        apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
+        apk_paths = paths.apk.arm7Release + ',' + paths.apk.x86Release;
     } else {
-        apk_paths = pathToCombinedReleaseApk;
+        apk_paths = paths.apk.combinedRelease;
     }
     /** @namespace appSettings.additionalSettings.appIds.appIdentifier */
     /** @namespace appSettings.additionalSettings.appIds */
@@ -514,7 +548,7 @@ function outputApiErrorResponse(err, options) {
         logError("Request options: ", options);
         return;
     }
-    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
+    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + paths.src.devCredentials + " and try again.";}
     logError(options.uri + " error response", err.response.body);
 }
 function getFileNameFromUrl(url) {
@@ -619,37 +653,6 @@ var timeHelper = {
     },
     secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
 };
-// Setup platforms to build that are supported on current hardware
-// See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
-//var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
-var winPlatforms = ['windows'],
-    linuxPlatforms = ['android'],
-    osxPlatforms = ['ios'],
-    platformsToBuild = process.platform === 'darwin' ? osxPlatforms :
-        (process.platform === 'linux' ? linuxPlatforms : winPlatforms),
-    // Build config to use for build - Use Pascal case to match paths set by VS
-    buildConfig = 'Release',
-    // Arguments for build by platform. Warning: Omit the extra "--" when referencing platform
-    // specific options (Ex:"-- --gradleArg" is "--gradleArg").
-    buildArgs = {
-        android: ['--' + buildConfig.toLocaleLowerCase(), '--device', '--gradleArg=--no-daemon'],
-        ios: ['--' + buildConfig.toLocaleLowerCase(), '--device'],
-        windows: ['--' + buildConfig.toLocaleLowerCase(), '--device']
-    },
-    // Paths used by build
-    buildPaths = {
-        tsconfig: 'scripts/tsconfig.json',
-        ts: './scripts/**/*.ts',
-        apk: ['./platforms/android/ant-build/*.apk',
-            './platforms/android/bin/*.apk',
-            './platforms/android/build/outputs/apk/*.apk'],
-        binApk: './bin/Android/' + buildConfig,
-        ipa: ['./platforms/ios/build/device/*.ipa',
-            './platforms/ios/build/device/*.app.dSYM'],
-        binIpa: './bin/iOS/' + buildConfig,
-        appx: './platforms/windows/AppPackages/**/*',
-        binAppx: './bin/Windows/' + buildConfig
-    };
 // Set the default to the build task
 gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
@@ -776,10 +779,11 @@ function writeToFile(filePath, stringContents) {
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
+gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
-    writeToFile(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
+    writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
 });
 function downloadFile(url, filename, destinationFolder) {
@@ -824,9 +828,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
     return makeApiRequest(options);
 });
-function generateDefaultConfigJson(appSettings) {
-    writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
-}
+function generateDefaultConfigJson(appSettings) {writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));}
 gulp.task('getAppConfigs', ['setClientId'], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
@@ -856,25 +858,25 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         /** @namespace response.privateConfig */
         if(response.privateConfig){
             privateConfig = response.privateConfig;
-            writeToFile(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+            writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
             try {
-                writeToFile(chromeExtensionBuildPath + '/' + defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
             } catch (err){
                 logDebug(err);
             }
         }
-        writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
         try {
-            writeToFile(chromeExtensionBuildPath + '/' + defaultAppConfigPath, prettyJSONStringify(appSettings));
+            writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
         } catch (err){
             logDebug(err);
         }
-        logDebug("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
-        writeToFile(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
+        writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         /** @namespace response.allConfigs */
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
-                writeToFile(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+                writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
             }
         }
     }
@@ -947,16 +949,16 @@ gulp.task('validateChromeManifest', function () {
     return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
-    return verifyExistenceOfFile(defaultAppConfigPath);
+    return verifyExistenceOfFile(paths.www.defaultConfig);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
     if(buildSettings.xwalkMultipleApk){
-        return verifyExistenceOfFile(pathToReleasex86Apk);
+        return verifyExistenceOfFile(paths.apk.x86Release);
     }
 });
 gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
     if(buildSettings.xwalkMultipleApk){
-        return verifyExistenceOfFile(pathToReleaseArmv7Apk);
+        return verifyExistenceOfFile(paths.apk.arm7Release);
     }
 });
 gulp.task('verifyExistenceOfChromeExtension', function () {
@@ -982,24 +984,24 @@ gulp.task('getUnits', function () {
 });
 gulp.task('getSHA1FromAPK', function () {
     logInfo('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
-    var cmd = 'keytool -list -printcert -jarfile ' + pathToReleaseArmv7Apk + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
+    var cmd = 'keytool -list -printcert -jarfile ' + paths.apk.arm7Release + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
     return execute(cmd, function (error) {
-        if (error !== null) {logError('ERROR: ' + error);} else {logInfo('DECRYPTED to ' + pathToReleaseArmv7Apk);}
+        if (error !== null) {logError('ERROR: ' + error);} else {logInfo('DECRYPTED to ' + paths.apk.arm7Release);}
     });
 });
 gulp.task('outputX86ApkVersionCode', function () {
     if(buildSettings.xwalkMultipleApk){
-        return outputVersionCodeForApk(pathToReleasex86Apk);
+        return outputVersionCodeForApk(paths.apk.x86Release);
     }
 });
 gulp.task('outputArmv7ApkVersionCode', function () {
     if(buildSettings.xwalkMultipleApk){
-        return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+        return outputVersionCodeForApk(paths.apk.arm7Release);
     }
 });
 gulp.task('outputCombinedApkVersionCode', function () {
     if(!buildSettings.xwalkMultipleApk){
-        return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+        return outputVersionCodeForApk(paths.apk.arm7Release);
     }
 });
 gulp.task('unzipChromeExtension', function () {
@@ -1024,11 +1026,14 @@ gulp.task('deleteNodeModules', function () {
         'task again.');
     return cleanFolder('node_modules');
 });
+gulp.task('deleteWwwPrivateConfigs', function () {
+    return cleanFolder(paths.www.privateConfigs);
+});
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
     if(devCredentials.accessToken){
         process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken;
-        logInfo("Using username " + devCredentials.accessToken + " from " + devCredentialsPath);
+        logInfo("Using username " + devCredentials.accessToken + " from " + paths.src.devCredentials);
         deferred.resolve();
         return deferred.promise;
     }
@@ -1136,22 +1141,22 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
 gulp.task("upload-chrome-extension-to-s3", function() {return uploadBuildToS3(getPathToChromeExtensionZip());});
 gulp.task("upload-x86-release-apk-to-s3", function() {
     if(buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(pathToReleasex86Apk);
+        return uploadBuildToS3(paths.apk.x86Release);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
     if(buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(pathToReleaseArmv7Apk);
+        return uploadBuildToS3(paths.apk.arm7Release);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(pathToCombinedReleaseApk);
+        return uploadBuildToS3(paths.apk.combinedRelease);
     }
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(pathToCombinedDebugApk);
+        return uploadBuildToS3(paths.apk.combinedDebug);
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
@@ -1278,7 +1283,6 @@ gulp.task('decryptBuildJson', [], function (callback) {
     var decryptedFilePath = 'build.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
-
 gulp.task('ng-annotate', [], function() {
     return gulp.src('src/js/**/*.js')
         .pipe(ngAnnotate())
@@ -1753,7 +1757,7 @@ gulp.task('commentOrUncommentCordovaJs', function () {
 });
 gulp.task('setVersionNumberInFiles', function () {
     var filesToUpdate = [
-        defaultAppConfigPath,
+        paths.www.defaultConfig,
         '.travis.yml',
         'resources/chrome_app/manifest.json'
     ];
@@ -1855,6 +1859,9 @@ gulp.task('copyAppResources', [
 gulp.task('copyIonIconsToWww', [], function () {
     return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
+gulp.task('copyMaterialIconsToWww', [], function () {
+    return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
+});
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
 });
@@ -1862,10 +1869,10 @@ gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copyIconsToWwwImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToWwwIcons);
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
 gulp.task('copyIconsToSrcImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToSrcIcons);
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -1880,7 +1887,7 @@ gulp.task('copyAndroidResources', [], function () {
 gulp.task('copyAndroidBuild', [], function () {
     if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
     var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    return copyFiles(pathToOutputApks + '/*.apk', buildFolderPath);
+    return copyFiles(paths.apk.outputFolder + '/*.apk', buildFolderPath);
 });
 gulp.task('copyIonicCloudLibrary', [], function () {
     return copyFiles('node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js', 'www/lib');
@@ -1892,10 +1899,10 @@ gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
-    return copyFiles(pathToWwwIcons + "/*", chromeExtensionBuildPath + '/img/icons');
+    return copyFiles(paths.www.icons + "/*", chromeExtensionBuildPath + '/img/icons');
 });
 gulp.task('copyWwwIconsToSrc', [], function () {
-    return copyFiles(pathToWwwIcons + "/*", pathToSrcIcons);
+    return copyFiles(paths.www.icons + "/*", paths.src.icons);
 });
 gulp.task('removeTransparentPng', [], function () {
     return gulp.src('resources/icon.png', {read: false}).pipe(clean());
@@ -1965,6 +1972,7 @@ gulp.task('configureApp', [], function (callback) {
         //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
         'copyIonIconsToWww',
+        //'copyMaterialIconsToWww',
         'sass',
         'copySrcToWww',
         //'commentOrUncommentCordovaJs',
@@ -2012,6 +2020,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'copyIconsToWwwImg',
         'setVersionNumberInFiles',
         'createChromeManifestInWwwFolder',
+        'deleteWwwPrivateConfigs',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
@@ -2190,12 +2199,18 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
-
 gulp.task('copySrcAndEmulateAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'copySrcToAndroidWww',
         'ionicEmulateAndroid',
+        callback);
+});
+gulp.task('copySrcAndRunAndroid', function (callback) {
+    runSequence(
+        'uncommentCordovaJsInIndexHtml',
+        'copySrcToAndroidWww',
+        'ionicRunAndroid',
         callback);
 });
 gulp.task('ionicResourcesAndroid', [], function (callback) {

@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
+        $scope.debugMode = qmLog.debugMode;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
 		$rootScope.hideNavigationMenu = false;
 		if(urlHelper.getParam('userEmail')){
@@ -59,7 +60,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	};
 	$scope.postIdea = function() {
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
-		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
+		} else {window.open('https://help.quantimo.do/forums/211661-general', '_blank');}
 	};
 	$scope.combineNotificationChange = function(ev) {
 		qmService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
@@ -313,6 +314,12 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
             if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
             if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
-        }
+        };
     }
+    $scope.toggleDebugMode = function(){
+        $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
+    };
+    $scope.upgradeToggle = function(){
+        qmService.setUser($rootScope.user);
+    };
 }]);
