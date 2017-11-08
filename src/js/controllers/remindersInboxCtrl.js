@@ -60,10 +60,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
 				buttonClicked: function(index) {
 					qmLogService.debug(null, 'BUTTON CLICKED', null, index);
-                    if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 3){qmService.goToState('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: getVariableCategoryName()});}
+                    if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : getVariableCategoryName()});}
+                    if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : getVariableCategoryName()});}
+                    if(index === 3){qmService.goToState('app.chartSearch', {variableCategoryName : getVariableCategoryName()});}
                     if(index === 4){qmService.goToState('app.settings');}
                     if(index === 5){qmService.goToState('app.help');}
 					return true;
@@ -99,18 +99,18 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	});
 	var setPageTitle = function(){
 		if($stateParams.today) {
-			if($stateParams.variableCategoryName === 'Treatments') {
+			if(getVariableCategoryName() === 'Treatments') {
 				$scope.state.title = "Today's Scheduled Meds";
 				$scope.state.favoritesTitle = "As-Needed Meds";
-			} else if ($stateParams.variableCategoryName) {
-				$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
+			} else if (getVariableCategoryName()) {
+				$scope.state.title = "Today's Scheduled " + getVariableCategoryName();
 			} else {$scope.state.title = "Today's Reminder Notifications";}
 		} else {
-			if($stateParams.variableCategoryName === 'Treatments') {
+			if(getVariableCategoryName() === 'Treatments') {
 				$scope.state.title = 'Overdue Meds';
 				$scope.state.favoritesTitle = "As-Needed Meds";
-			} else if ($stateParams.variableCategoryName) {
-				$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+			} else if (getVariableCategoryName()) {
+				$scope.state.title = $filter('wordAliases')(getVariableCategoryName()) + " " + $filter('wordAliases')("Reminder Inbox");
 			} else {$scope.state.title = 'Inbox';}
 		}
 	};
@@ -165,7 +165,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     }
 	function getFavorites() {
 		if(!$scope.favoritesArray){
-            qmService.qmStorage.getFavorites($stateParams.variableCategoryName)
+            qmService.qmStorage.getFavorites(getVariableCategoryName())
 				.then(function(favorites){
             		$scope.favoritesArray = favorites;
 				});
@@ -173,10 +173,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     }
 	var getFallbackInboxContent = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
-            if($stateParams.variableCategoryName){
-                qmLogService.info(null, 'Falling back to getTrackingReminderNotificationsFromApi request for category ' + $stateParams.variableCategoryName, null);
-				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: $stateParams.variableCategoryName, onlyPast: true}, function (response) {
-                    qmLogService.info(null, 'getTrackingReminderNotificationsFromApi response for ' + $stateParams.variableCategoryName + ': ' + JSON.stringify(response), null);
+            if(getVariableCategoryName()){
+                qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
+				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: getVariableCategoryName(), onlyPast: true}, function (response) {
+                    qmLogService.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() + ': ' + JSON.stringify(response));
                     $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
                 });
             }
@@ -279,8 +279,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		});
 	}
 	var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
-		var trackingReminderNotifications = qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName, 20);
+		var trackingReminderNotifications = qmStorage.getTrackingReminderNotifications(getVariableCategoryName(), 20);
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
@@ -302,7 +301,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		$scope.loading = false;
 	};
 	var getFilteredTodayTrackingReminderNotifications = function(){
-		qmService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
+		qmService.getTodayTrackingReminderNotificationsDeferred(getVariableCategoryName())
 			.then(function (trackingReminderNotifications) {
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 				$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
@@ -457,4 +456,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             .position(getUndoToastPosition());
         $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
     };
+    function getVariableCategoryName() {
+        if($stateParams.variableCategoryName){return $stateParams.variableCategoryName;}
+        if(urlHelper.getParam('variableCategoryName')){return urlHelper.getParam('variableCategoryName');}
+    }
 }]);
