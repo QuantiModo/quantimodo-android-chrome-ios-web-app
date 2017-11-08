@@ -6,7 +6,15 @@ window.qm = {
     apiPaths: {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
-    api: {},
+    api: {
+        configureClient: function () {
+            var qmApiClient = Quantimodo.ApiClient.instance;
+            var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+            qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
+            quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            return qmApiClient;
+        }
+    },
     auth: {},
     unitHelper: {},
     trackingReminderNotifications : [],
