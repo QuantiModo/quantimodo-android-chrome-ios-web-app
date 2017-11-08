@@ -711,9 +711,7 @@ window.qmStorage.getTrackingReminderNotifications = function(variableCategoryNam
     if(!limit){
         notificationsToReturn = trackingReminderNotifications;
     } else {
-        for (var i = 0; i < limit; i++) {
-            notificationsToReturn.push(trackingReminderNotifications[i]);
-        }
+        notificationsToReturn = trackingReminderNotifications.slice(0, limit);
     }
     if(!notificationsToReturn){ notificationsToReturn = []; }
     if(notificationsToReturn.length){
