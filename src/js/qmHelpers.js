@@ -394,12 +394,20 @@ qm.auth.saveAccessToken = function(accessToken){
         qmStorage.setItem(qmItems.accessToken, accessToken);
     }
 };
+//qmNotifications.convertNotificationToMeasurement
 qm.auth.getAccessTokenFromUrlUserOrStorage = function() {
     if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
     if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
     if(qmStorage.getItem(qmItems.accessToken)){return qmStorage.getItem(qmItems.accessToken);}
     qmLog.info("No access token or user!");
     return null;
+};
+qm.api.configureClient = function() {
+    var qmApiClient = Quantimodo.ApiClient.instance;
+    var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+    qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
+    quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+    return qmApiClient;
 };
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
