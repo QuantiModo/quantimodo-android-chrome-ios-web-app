@@ -49,9 +49,10 @@
                 </p>
             </div>
         </ion-list>
-      <div class="button-bar" ng-show="state.showLoadMoreButton">
-        <a class="button button-clear button-positive" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
-      </div>
+         <ion-infinite-scroll
+             on-infinite="getHistory()"
+             distance="10%">
+         </ion-infinite-scroll>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

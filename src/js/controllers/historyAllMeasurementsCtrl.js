@@ -1,8 +1,8 @@
-angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$timeout", "$ionicActionSheet", "qmService", "qmLogService", "$ionicLoading", function($scope, $state, $stateParams, $rootScope, $timeout,
-																			$ionicActionSheet, qmService, qmLogService, $ionicLoading) {
+angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope",
+    "$timeout", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $stateParams, $rootScope, $timeout,
+																			$ionicActionSheet, qmService, qmLogService) {
 	$scope.controller_name = "historyAllMeasurementsCtrl";
 	$scope.state = {
-		offset : 0,
 		limit : 50,
 		history : [],
 		units : [],
@@ -17,6 +17,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.$broadcast('scroll.refreshComplete');
         $scope.state.loading = false;
         qmService.hideLoader();
+        $scope.$broadcast('scroll.infiniteScrollComplete');
     }
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $rootScope.hideHistoryPageInstructionsCard = qmStorage.getAsString('hideHistoryPageInstructionsCard');
@@ -25,7 +26,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         qmLogService.debug(null, $state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
-        $scope.state.offset = 0;
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
@@ -38,7 +38,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $scope.state.title = getVariableName() + ' History';
         	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
         }
-        $scope.getHistory();
+        //$scope.getHistory();  // Gotten by infinite scroll
     });
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
@@ -50,12 +50,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	};
 	$scope.refreshHistory = function(){
-		var concat = false;
-		var refresh = true;
-		$scope.getHistory(concat, refresh);
+        $scope.state.history = [];
+		$scope.getHistory();
 	};
-	$scope.getHistory = function(concat, refresh){
-		var params = {offset: $scope.state.offset, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
+	$scope.getHistory = function(){
+		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
         if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
@@ -68,19 +67,17 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		}
 		function successHandler(measurements) {
             measurements = qmService.addInfoAndImagesToMeasurements(measurements);
-            if(!measurements || !measurements.length){
-            	$scope.state.showLoadMoreButton = false;
+            if(!qm.variableIsArray($scope.state.history)){
+                qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
+                $scope.state.history = measurements;
             } else {
-            	$scope.state.showLoadMoreButton = true;
-                if (concat) {
-                    if(!($scope.state.history.constructor instanceof Array)){
-                        qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
-                        $scope.state.history = measurements;
-                    } else {
-                        $scope.state.history = $scope.state.history.concat(measurements);
-					}
-                } else {
-                    $scope.state.history = measurements;
+                if(!$scope.state.history){$scope.state.history = [];}
+                try {
+                    $scope.state.history = $scope.state.history.concat(measurements);
+                } catch (error) {
+                    qmLog.error(error);
+                    $scope.state.history = JSON.parse(JSON.stringify($scope.state.history));
+                    $scope.state.history = $scope.state.history.concat(measurements);
                 }
             }
             hideLoader();
@@ -124,11 +121,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 			$timeout(function() {hideSheet();}, 20000);
 		};
 	}
-	$scope.getNext = function(){
-		$scope.state.offset += $scope.state.limit;
-		$scope.getHistory(true);
-	};
-
 	$scope.deleteMeasurement = function(measurement){
 		measurement.hide = true;
 		qmService.deleteMeasurementFromServer(measurement);
