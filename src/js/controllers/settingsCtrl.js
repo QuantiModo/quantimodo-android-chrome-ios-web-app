@@ -60,7 +60,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	};
 	$scope.postIdea = function() {
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
-		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
+		} else {window.open('https://help.quantimo.do/forums/211661-general', '_blank');}
 	};
 	$scope.combineNotificationChange = function(ev) {
 		qmService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
