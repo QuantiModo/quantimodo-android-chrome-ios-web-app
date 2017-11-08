@@ -6,7 +6,26 @@ window.qm = {
     apiPaths: {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
-    api: {},
+    api: {
+        configureClient: function () {
+            var qmApiClient = Quantimodo.ApiClient.instance;
+            var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+            qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
+            quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            return qmApiClient;
+        },
+        cacheSet: function(params, data, functionName){
+            var key = qm.api.getCacheName(functionName, params);
+            qmGlobals.setItem(key, data);
+        },
+        cacheGet: function(params, functionName){
+            var key = qm.api.getCacheName(functionName, params);
+            return qmGlobals.getItem(key);
+        },
+        getCacheName: function(functionName, params){
+            return qm.stringHelper.removeSpecialCharacters(functionName + JSON.stringify(params));
+        }
+    },
     auth: {},
     unitHelper: {},
     trackingReminderNotifications : [],
@@ -71,6 +90,12 @@ window.qmGlobals = {
     },
     getStudy: function(causeVariableName, effectVariableName){
         qmStorage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
+    },
+    setItem: function(key, value){
+        qmStorage.setGlobal(key, value);
+    },
+    getItem: function(key){
+        return qmStorage.getGlobal(key);
     }
 };
 //if(!window.config){window.config = {};}
