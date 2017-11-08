@@ -2187,13 +2187,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.qmStorage.getTrackingReminderNotifications = function (variableCategoryName) {
-        var trackingReminderNotifications = window.qmStorage.getTrackingReminderNotifications (variableCategoryName);
-        if(trackingReminderNotifications.length){
-            $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
-        }
-        return trackingReminderNotifications;
-    };
     qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
         var deferred = $q.defer();
         var options = {};
@@ -6432,7 +6425,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.hideLoader = function(delay){
         if(urlHelper.getParam('loaderDebug')){
-            qmLogService.debug(null, 'Called hideLoader in ' + $state.current.name, null, qmLog.getStackTrace());
+            qmLogService.debug('Called hideLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         }
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);

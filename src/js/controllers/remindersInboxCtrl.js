@@ -273,7 +273,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	}
 	var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
 		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
-		var trackingReminderNotifications = qmService.qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName);
+		var trackingReminderNotifications = qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName, 20);
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
