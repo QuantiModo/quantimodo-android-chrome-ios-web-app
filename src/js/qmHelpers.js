@@ -707,20 +707,15 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
 };
 window.qmStorage.getTrackingReminderNotifications = function(variableCategoryName, limit) {
     var trackingReminderNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
-    var notificationsToReturn = [];
-    if(!limit){
-        notificationsToReturn = trackingReminderNotifications;
-    } else {
-        notificationsToReturn = trackingReminderNotifications.slice(0, limit);
-    }
-    if(!notificationsToReturn){ notificationsToReturn = []; }
-    if(notificationsToReturn.length){
+    if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
+    if(limit){trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);}
+    if(trackingReminderNotifications.length){
         if (qm.platform.isChromeExtension()) {
             //noinspection JSUnresolvedFunction
-            qmChrome.updateChromeBadge(notificationsToReturn.length);
+            qmChrome.updateChromeBadge(trackingReminderNotifications.length);
         }
     }
-    return notificationsToReturn;
+    return trackingReminderNotifications;
 };
 window.qmStorage.getAsString = function(key) {
     var item = qmStorage.getItem(key);
