@@ -1,7 +1,7 @@
 angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$filter", "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$ionicLoading", "$mdToast", function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService, qmLogService, $ionicLoading, $mdToast) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
-	qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
+	qmLogService.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.state = {
 		showMeasurementBox : false,
@@ -29,8 +29,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmLogService.debug(null, 'RemindersInboxCtrl beforeEnter ', null);
-        if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
+		qmLogService.debug('RemindersInboxCtrl beforeEnter');
 		$scope.loading = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
@@ -136,7 +135,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
 		$scope.lastAction = qmService.formatValueUnitDisplayText(lastAction);
 	};
-	function refreshIfRunningOutOfNotifications() {if($scope.state.numberOfDisplayedNotifications < 2){$scope.refreshTrackingReminderNotifications();}}
+	function refreshIfRunningOutOfNotifications() {
+	    if($scope.state.numberOfDisplayedNotifications < 2){
+	        if(qmNotifications.getNumberInGlobalsOrLocalStorage()){
+	            getTrackingReminderNotifications()
+            } else {
+                $scope.refreshTrackingReminderNotifications();
+            }
+	    }
+	}
 	$scope.trackByValueField = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
         if(!qmService.valueIsValid(trackingReminderNotification, trackingReminderNotification.modifiedValue)){return false;}
@@ -273,7 +280,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	}
 	var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
 		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
-		var trackingReminderNotifications = qmService.qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName);
+		var trackingReminderNotifications = qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName, 20);
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
