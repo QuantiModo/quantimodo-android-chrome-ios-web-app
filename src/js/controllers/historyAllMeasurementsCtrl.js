@@ -25,7 +25,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug(null, $state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
-        $scope.state.loading = true;
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
@@ -38,7 +37,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $scope.state.title = getVariableName() + ' History';
         	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
         }
-        //$scope.getHistory();  // Gotten by infinite scroll
+        $scope.getHistory();
     });
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
@@ -54,6 +53,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		$scope.getHistory();
 	};
 	$scope.getHistory = function(){
+	    if($scope.state.loading){
+	        qmLog.info("Already getting measurements");
+	        return;
+        }
+        $scope.state.loading = true;
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
