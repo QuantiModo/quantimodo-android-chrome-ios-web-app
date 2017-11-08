@@ -19,6 +19,7 @@ window.qm = {
             qmGlobals.setItem(key, data);
         },
         cacheGet: function(params, functionName){
+            if(params.refresh){return null;}
             var key = qm.api.getCacheName(functionName, params);
             return qmGlobals.getItem(key);
         },

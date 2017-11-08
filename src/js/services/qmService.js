@@ -343,8 +343,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
         if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
+            successHandler(cachedData);
+            return;
         }
         configureQmApiClient();
         var apiInstance = new Quantimodo.MeasurementsApi();
@@ -352,7 +352,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
         }
         apiInstance.getMeasurements(params, callback);
-        //qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
@@ -1002,20 +1001,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(response.error.message, null, {apiResponse: response});
         }
     }
-    qmService.getMeasurements = function(params, successHandler, errorHandler){
-        params = addGlobalUrlParamsToObject(params);
-        var cachedData = qm.api.cacheGet(params, 'getMeasurements');
-        if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
-        }
-        configureQmApiClient();
-        var apiInstance = new Quantimodo.MeasurementsApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurements');
-        }
-        apiInstance.getMeasurements(params, callback);
-    };
     qmService.generateV1OAuthUrl = function(register) {
         var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
         // add params
