@@ -1,4 +1,6 @@
-angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state", "$timeout", "$rootScope", "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "qmLogService", "clipboard", function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
+angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state", "$timeout", "$rootScope",
+    "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "qmLogService", "clipboard",
+    function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
     $scope.controller_name = "ChartsPageCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {title: "Charts"};
@@ -47,10 +49,13 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmLogService.debug(null, 'addNewReminderButtonClick', null);
         qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
     };
+    $scope.compareButtonClick = function() {
+        qmLogService.debug('compareButtonClick');
+        qmService.goToStudyCreationForVariable($rootScope.variableObject);
+    };
     $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
         {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
-    $scope.editSettingsButtonClick = function() {qmService.goToState('app.variableSettings',
-        {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});};
+    $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($rootScope.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){
             qmService.showShareVariableConfirmation(variableObject, sharingUrl, ev);

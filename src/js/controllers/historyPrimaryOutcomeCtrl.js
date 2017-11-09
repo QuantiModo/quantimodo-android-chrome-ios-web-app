@@ -47,7 +47,7 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$i
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.track');}
-				if(index === 3){qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
+				if(index === 3){qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
 				return true;
 			},
 		});

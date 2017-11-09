@@ -2,64 +2,65 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                  $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
+    $scope.state = {variableObject: null};
     function getVariableName() {
+        if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}
+        if($stateParams.variableObject){$scope.variableName = $stateParams.variableObject.name;}
         if($scope.variableName){return $scope.variableName;}
-        $scope.variableName = qmService.getVariableNameFromStateParamsRootScopeOrUrl($stateParams, $scope);
-        if($scope.variableName){return $scope.variableName;}
+        qmLog.error("No variable name in variable settings page!");
         $scope.goBack();
     }
-    function getLocalVariableObject() {
-        if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
-        if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
-        if(!$rootScope.variableObject){$rootScope.variableObject = qmStorage.getUserVariableByName(getVariableName());}
-        return $rootScope.variableObject;
+    function getUserVariableWithTags() {
+        qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+            if(userVariables && userVariables[0]){
+                setVariableObject(userVariables[0]);
+            }
+        })
     }
-    function initializeVariableSettings() {
-        if(!getLocalVariableObject()){
-            qmService.showBlackRingLoader();
-            refreshUserVariable();
-        } else {
-            qmService.hideLoader();
-        }
+    function setVariableObject(variableObject) {
+        $rootScope.variableObject = $scope.state.variableObject = variableObject;
+        setShowActionSheetMenu(variableObject);
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
-        initializeVariableSettings();
+        if($stateParams.variableObject){
+            setVariableObject($stateParams.variableObject);
+            getUserVariableWithTags();
+        } else {
+            qmService.showBlackRingLoader();
+            getUserVariableWithTags();
+        }
     });
-    function refreshUserVariable(variableName) {
-        qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){
-            qmService.hideLoader();
-            $rootScope.variableObject = userVariable;
-        });
+    function setShowActionSheetMenu(variableObject) {
+        $rootScope.showActionSheetMenu = function() {
+            qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    qmService.actionSheetButtons.recordMeasurement,
+                    qmService.actionSheetButtons.addReminder,
+                    qmService.actionSheetButtons.charts,
+                    qmService.actionSheetButtons.history,
+                    { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
+                    { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() { qmLogService.debug(null, 'CANCELLED', null); },
+                buttonClicked: function(index) {
+                    if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: variableObject, variableName: variableObject.name});}
+                    if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});}
+                    if(index === 2) {qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
+                    if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+                    if(index === 4) {qmService.goToState('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: variableObject}); }
+                    if(index === 5) {$scope.tagAnotherVariable(variableObject);}
+                    return true;
+                },
+                destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup(variableObject.name); return true;}
+            });
+            qmLogService.debug(null, 'Setting hideSheet timeout', null);
+            $timeout(function() { hideSheet(); }, 20000);
+        };
     }
-    $rootScope.showActionSheetMenu = function() {
-        qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, $rootScope.variableObject);
-        var hideSheet = $ionicActionSheet.show({
-            buttons: [
-                qmService.actionSheetButtons.recordMeasurement,
-                qmService.actionSheetButtons.addReminder,
-                qmService.actionSheetButtons.charts,
-                qmService.actionSheetButtons.history,
-                { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName($rootScope.variableObject.name)},
-                { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
-            ],
-            destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
-            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLogService.debug(null, 'CANCELLED', null); },
-            buttonClicked: function(index) {
-                if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 4) {qmService.goToState('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject}); }
-                if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
-                return true;
-            },
-            destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject.name); return true;}
-        });
-        qmLogService.debug(null, 'Setting hideSheet timeout', null);
-        $timeout(function() { hideSheet(); }, 20000);
-    };
     $scope.openTagVariableSearchDialog = function($event) {
         $mdDialog.show({
             controller: TagVariableSearchCtrl,
