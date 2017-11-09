@@ -1,4 +1,5 @@
-angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, clipboard, $mdDialog) {
+angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", "$stateParams",
+    function($scope, $state, qmService, qmLogService, clipboard, $mdDialog, $stateParams) {
     $scope.state = {
         title: 'Create a Study',
         color: qmService.colors.blue,
@@ -9,8 +10,13 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmLogService.debug(null, 'Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
+    $scope.$on('$ionicView.beforeEnter', function(){
+        qmLogService.debug('StudyCreationCtrl beforeEnter in state ' + $state.current.name);
+        if($stateParams.causeVariable){setPredictorVariable($stateParams.causeVariable);}
+        if($stateParams.effectVariable){setOutcomeVariable($stateParams.effectVariable);}
+    });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug(null, 'StudyCreationCtrl afterEnter in state ' + $state.current.name, null);
+        qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
     });
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
@@ -88,6 +94,16 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             });
         }
     };
+    function setOutcomeVariable(variable) {
+        $scope.outcomeVariable = variable;
+        $scope.outcomeVariableName = variable.name;
+        qmLogService.debug('Selected outcome ' + variable.name);
+    }
+    function setPredictorVariable(variable) {
+        $scope.predictorVariable = variable;
+        $scope.predictorVariableName = variable.name;
+        qmLogService.debug('Selected predictor ' + variable.name);
+    }
     SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
     $scope.selectOutcomeVariable = function (ev) {
         $mdDialog.show({
@@ -108,10 +124,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 }
             }
         }).then(function(variable) {
-            $scope.outcomeVariable = variable;
-            $scope.outcomeVariableName = variable.name;
-            qmLogService.debug(null, 'Selected outcome ' + variable.name, null);
-        }, function() {qmLogService.debug(null, 'User cancelled selection', null);});
+            setOutcomeVariable(variable);
+        }, function() {qmLogService.debug('User cancelled selection');});
     };
     $scope.selectPredictorVariable = function (ev) {
         $mdDialog.show({
@@ -132,11 +146,9 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 }
             }
         }).then(function(variable) {
-            $scope.predictorVariable = variable;
-            $scope.predictorVariableName = variable.name;
-            qmLogService.debug(null, 'Selected predictor ' + variable.name, null);
+            setPredictorVariable(variable);
         }, function() {
-            qmLogService.debug(null, 'User cancelled selection', null);
+            qmLogService.debug('User cancelled selection');
         });
     };
 }]);

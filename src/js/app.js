@@ -162,7 +162,11 @@ angular.module('starter',
         closeOnSelect: false
     };
     ionicDatePickerProvider.configDatePicker(datePickerObj);
-
+    window.qmStates = {
+        predictorsList: 'app.predictorsAll',
+        outcomesList: 'app.outcomesAll',
+        studyCreation: 'app.studyCreation',
+    };
     $stateProvider
         .state('intro', {
             cache: true,
@@ -411,7 +415,7 @@ angular.module('starter',
                 variableSearchPlaceholderText: "Search for an outcome...",
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
-                nextState: 'app.predictorsAll',
+                nextState: qmStates.predictorsList,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -524,7 +528,7 @@ angular.module('starter',
                 variableSearchPlaceholderText: "Search for an predictor...",
                 helpText: "Search for a predictor like a food or treatment that you want to know the effects of...",
                 variableCategoryName: null,
-                nextState: 'app.outcomesAll',
+                nextState: qmStates.outcomesList,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -608,7 +612,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsAll', {
+        .state(qmStates.predictorsList, {
             url: "/predictors/:effectVariableName",
             params: {
                 aggregated: false,
@@ -627,7 +631,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.outcomesAll', {
+        .state(qmStates.outcomesList, {
             url: "/outcomes/:causeVariableName",
             params: {
                 aggregated: false,
@@ -792,11 +796,13 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.studyCreation', {
+        .state(qmStates.studyCreation, {
             cache: false,
             url: "/study-creation",
             params: {
-                correlationObject: null
+                correlationObject: null,
+                causeVariable: null,
+                effectVariable: null
             },
             views: {
                 'menuContent': {
