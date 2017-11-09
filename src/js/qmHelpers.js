@@ -733,7 +733,15 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
 window.qmStorage.getTrackingReminderNotifications = function(variableCategoryName, limit) {
     var trackingReminderNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
     if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
-    if(limit){trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);}
+    if(limit){
+        try {
+            trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+        } catch (error) {
+            qmLog.error(error, null, {trackingReminderNotifications: trackingReminderNotifications});
+            trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
+            trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+        }
+    }
     if(trackingReminderNotifications.length){
         if (qm.platform.isChromeExtension()) {
             //noinspection JSUnresolvedFunction
