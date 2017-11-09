@@ -439,8 +439,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         var cachedData = qm.api.cacheGet(params, 'getAggregatedCorrelationsFromApi');
         if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
+            successHandler(cachedData);
+            return;
         }
         configureQmApiClient();
         var apiInstance = new Quantimodo.AnalyticsApi();
@@ -492,8 +492,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         var cachedData = qm.api.cacheGet(params, 'getUserCorrelationsFromApi');
         if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
+            successHandler(cachedData);
+            return;
         }
         configureQmApiClient();
         var apiInstance = new Quantimodo.AnalyticsApi();
