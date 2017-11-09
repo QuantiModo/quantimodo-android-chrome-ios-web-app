@@ -3943,6 +3943,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.goToStudyCreationForPredictor = function(variable){
         qmService.goToState(qmStates.studyCreation, {causeVariable: variable});
     };
+    qmService.goToStudyCreationForVariable = function(variable){
+        if(variable.outcome){
+            qmService.goToStudyCreationForOutcome(variable);
+        } else {
+            qmService.goToStudyCreationForPredictor(variable);
+        }
+    };
     qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
         if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
@@ -7329,13 +7336,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(index === 1) {qmService.goToState('app.reminderAdd', stateParams);} // Need variable name to populate in url
                     if(index === 2) {qmService.goToState('app.historyAllVariable', stateParams);} // Need variable name to populate in url
                     if(index === 3) {qmService.goToState('app.variableSettings', stateParams);} // Need variable name to populate in url
-                    if(index === 4 && variableObject){
-                        if(variableObject.outcome){
-                            qmService.goToStudyCreationForOutcome(variableObject);
-                        } else {
-                            qmService.goToStudyCreationForPredictor(variableObject);
-                        }
-                    }
+                    if(index === 4 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
                     if(index === 5 && variableObject){
                         if(variableObject.outcome){
                             qmService.goToPredictorsList(variableObject.name);
