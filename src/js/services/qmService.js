@@ -3915,7 +3915,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
-                qmLog.error("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
+                qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
                 //putCommonVariablesInLocalStorageUsingJsonFile();
                 putCommonVariablesInLocalStorageUsingApi();
             }
