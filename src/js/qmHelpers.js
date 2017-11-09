@@ -239,7 +239,6 @@ window.qmItems = {
     lastPushTimestamp: 'lastPushTimestamp',
     measurementsQueue: 'measurementsQueue',
     mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
-    notifications: 'trackingReminderNotifications',
     notificationInterval: 'notificationInterval',
     notificationsSyncQueue: 'notificationsSyncQueue',
     onboarded: 'onboarded',
@@ -1046,7 +1045,7 @@ window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
         {groupingHash: groupingHash}, "error");
 };
 qmNotifications.deleteByVariableName = function(variableName){
-    qmStorage.deleteByProperty(qmItems.notifications, 'variableName', variableName);
+    qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', variableName);
 };
 function getUnique(array, propertyName) {
     var flags = [], output = [], l = array.length, i;
@@ -1088,7 +1087,7 @@ window.qmNotifications.getMostRecentRatingNotification = function (){
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
         //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        //qmStorage.deleteByProperty(qmItems.notifications, 'variableName', notification.variableName);
+        //qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', notification.variableName);
         return notification;
     } else {
         console.info('No rating notifications for popup');
