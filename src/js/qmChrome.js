@@ -150,12 +150,12 @@ if(qm.platform.isChromeExtension()) {
         }
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
-        window.qmLog.info(null, 'onAlarm Listener heard this alarm ', null, alarm);
-        window.qmChrome.showRatingOrInboxPopup(alarm);
+        window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
+        qmNotifications.refreshIfEmptyOrStale(window.qmChrome.showRatingOrInboxPopup(alarm));
     });
     if(userHelper.getUser()){window.qmChrome.showRatingOrInboxPopup();}
     if (!qmStorage.getItem(qmItems.introSeen)) {
-        window.qmLog.info(null, 'introSeen false on chrome extension so opening intro window popup', null);
+        window.qmLog.info('introSeen false on chrome extension so opening intro window popup');
         window.qmStorage.setItem('introSeen', true);
         openOrFocusChromePopupWindow(qmChrome.introWindowParams);
     }

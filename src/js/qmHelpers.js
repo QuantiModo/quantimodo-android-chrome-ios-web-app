@@ -15,16 +15,23 @@ window.qm = {
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
-            var key = qm.api.getCacheName(functionName, params);
-            qmGlobals.setItem(key, data);
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
+            var key = qm.api.getCacheName(params);
+            qm.api.cache[functionName][key] = data;
         },
         cacheGet: function(params, functionName){
-            var key = qm.api.getCacheName(functionName, params);
-            return qmGlobals.getItem(key);
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
+            var key = qm.api.getCacheName(params);
+            if(!qm.api.cache[functionName][key]){return null;}
+            return qm.api.cache[functionName][key];
         },
-        getCacheName: function(functionName, params){
-            return qm.stringHelper.removeSpecialCharacters(functionName + JSON.stringify(params));
-        }
+        cacheRemove: function(functionName){
+            return qm.api.cache[functionName] = null;
+        },
+        getCacheName: function(params){
+            return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
+        },
+        cache: {}
     },
     auth: {},
     unitHelper: {},
@@ -52,7 +59,11 @@ window.qm = {
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
     },
     globals: {},
-    userVariableHelper: {},
+    userVariableHelper: {
+        addUserVariablesToLocalStorage: function(userVariables){
+            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables);
+        }
+    },
     manualTrackingVariableCategoryNames: [
         'Emotions',
         'Symptoms',
@@ -254,7 +265,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
     }
-    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
+    qm.userVariableHelper.addUserVariablesToLocalStorage(userVariable);
     return userVariable;
 };
 // returns bool | string
@@ -733,7 +744,15 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
 window.qmStorage.getTrackingReminderNotifications = function(variableCategoryName, limit) {
     var trackingReminderNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
     if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
-    if(limit){trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);}
+    if(limit){
+        try {
+            trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+        } catch (error) {
+            qmLog.error(error, null, {trackingReminderNotifications: trackingReminderNotifications});
+            trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
+            trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+        }
+    }
     if(trackingReminderNotifications.length){
         if (qm.platform.isChromeExtension()) {
             //noinspection JSUnresolvedFunction
@@ -942,7 +961,7 @@ qmNotifications.getAllUniqueRatingNotifications = function() {
     qmLog.info("Called getAllUniqueRatingNotifications");
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
-        qmLog.info("No rating notifications in storage. Refreshing if empty");
+        qmLog.info("No rating notifications in storage!");
         return null;
     }
     qmLog.info("Got " + ratingNotifications.length + " total NON-UNIQUE rating notification from storage");
@@ -1012,6 +1031,7 @@ window.qmNotifications.refreshIfEmpty = function(callback){
     return false
 };
 window.qmNotifications.refreshIfEmptyOrStale = function(callback){
+    qmLog.info("qmNotifications.refreshIfEmptyOrStale");
     if (!qmNotifications.getNumberInGlobalsOrLocalStorage() || qmNotifications.getSecondsSinceLastNotificationsRefresh() > 3600){
         window.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
         qmNotifications.refreshNotifications(callback);
