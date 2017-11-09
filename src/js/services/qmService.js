@@ -7280,7 +7280,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getVariableObjectActionSheet = function(variableName){
         var variableObject = qmStorage.getUserVariableByName(variableName);
-        if(!variableObject){window.qmLog.error("Could not get variable for action sheet");}
+        if(!variableObject){window.qmLog.info("Could not get variable for action sheet");}
         var stateParams = {variableName: variableName};
         if(variableObject){stateParams.variableObject = variableObject;}
         qmLog.info("Getting action sheet for variable " + variableName);
