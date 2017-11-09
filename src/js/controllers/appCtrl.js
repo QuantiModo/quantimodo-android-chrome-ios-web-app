@@ -47,8 +47,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     });
     $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
         /** @namespace correlationObject.causeVariable */
-        if(correlationObject.causeVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
-        } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.causeVariableName}); }
+        if(correlationObject.causeVariable){
+            qmService.goToState('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
+        } else {
+            qmService.goToState('app.variableSettings', {variableName: correlationObject.causeVariableName});
+        }
     };
     $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
         /** @namespace correlationObject.effectVariable */
@@ -131,8 +134,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showHelpInfoPopup = function (explanationId, ev) {
         qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
     };
-    $scope.tagAnotherVariable = function () {
-        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
+    $scope.tagAnotherVariable = function (variableObject) {
+        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;
@@ -296,7 +299,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
                 if(index === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
                 if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
-                if(index === 4){qmService.goToState('app.variableSettings', {variableName: favorite.variableName});}
+                if(index === 4){qmService.goToVariableSettingsByName(favorite.variableName);}
                 return true;
             },
             destructiveButtonClicked: function() {

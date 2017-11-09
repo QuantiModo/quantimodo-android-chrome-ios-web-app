@@ -350,7 +350,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                variableName : null
             },
             views: {
                 'menuContent': {

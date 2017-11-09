@@ -151,8 +151,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null); },
             buttonClicked: function(index) {
-                if(index === 0){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
-                if(index === 1){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
+                if(index === 0){ qmService.goToVariableSettingsByObject($rootScope.correlationObject.causeVariable); }
+                if(index === 1){ qmService.goToVariableSettingsByObject($rootScope.correlationObject.effectVariable); }
                 if(index === 2){ $scope.upVote($rootScope.correlationObject); }
                 return true;
             },
