@@ -2,30 +2,33 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                  $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.state = {
-        variableObject: null
-    };
+    $scope.state = {variableObject: null};
     function getVariableName() {
         if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}
+        if($stateParams.variableObject){$scope.variableName = $stateParams.variableObject.name;}
         if($scope.variableName){return $scope.variableName;}
         qmLog.error("No variable name in variable settings page!");
         $scope.goBack();
     }
+    function getUserVariableWithTags() {
+        qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+            if(userVariables && userVariables[0]){
+                setVariableObject(userVariables[0]);
+            }
+        })
+    }
+    function setVariableObject(variableObject) {
+        $rootScope.variableObject = $scope.state.variableObject = variableObject;
+        setShowActionSheetMenu(variableObject);
+    }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
         if($stateParams.variableObject){
-            $rootScope.variableObject = $scope.state.variableObject = $stateParams.variableObject;
-            setShowActionSheetMenu($scope.state.variableObject);
+            setVariableObject($stateParams.variableObject);
+            getUserVariableWithTags();
         } else {
             qmService.showBlackRingLoader();
-            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName()).then(function (userVariable) {
-                $rootScope.variableObject = $scope.state.variableObject = userVariable;
-                setShowActionSheetMenu(userVariable);
-                if(!$scope.state.variableObject){
-                    qmLog.error("Could not get local user variable " + getVariableName());
-                    $scope.goBack();
-                }
-            });
+            getUserVariableWithTags();
         }
     });
     function setShowActionSheetMenu(variableObject) {
@@ -58,7 +61,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             $timeout(function() { hideSheet(); }, 20000);
         };
     }
-
     $scope.openTagVariableSearchDialog = function($event) {
         $mdDialog.show({
             controller: TagVariableSearchCtrl,
