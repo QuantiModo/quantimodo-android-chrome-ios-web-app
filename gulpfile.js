@@ -1154,7 +1154,11 @@ gulp.task("upload-combined-release-apk-to-s3", function() {
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.combinedDebug);
+        if(buildDebug){
+            return uploadBuildToS3(paths.apk.combinedDebug);
+        } else {
+            return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
+        }
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
@@ -2278,7 +2282,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
-    outputPluginVersionNumber('cordova-plugin-local-notifications');
+    //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'copyAndroidLicenses',

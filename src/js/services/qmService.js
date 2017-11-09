@@ -16,11 +16,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
-        if(!response && $state.current.name !== 'app.login'){
-            qmLogService.error("No response provided to qmSdkApiResponseHandler");
+        if(!response){
+            if($state.current.name !== 'app.login' && $state.current.name !== 'app.intro'){
+                qmLogService.error("No response provided to qmSdkApiResponseHandler");
+            }
             return;
         }
-        window.qmLog.debug(null, response.status + ' response from ' + response.req.url, null);
+        window.qmLog.debug(response.status + ' response from ' + response.req.url);
         if (error) {
             qmApiGeneralErrorHandler(error, data, response);
             if(errorHandler){errorHandler(error);}
@@ -2408,7 +2410,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                     break;
                                 }
                             }
-                            if(!notificationExists){
+                            if(!notificationExists && trackingReminderSyncQueue[0].reminderFrequency){
                                 qmLogService.error("Notification not found for reminder we just created!", null, {'reminder': trackingReminderSyncQueue[0]});
                             }
                             qmStorage.setTrackingReminderNotifications(notifications);
@@ -3913,7 +3915,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
-                qmLog.error("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
+                qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
                 //putCommonVariablesInLocalStorageUsingJsonFile();
                 putCommonVariablesInLocalStorageUsingApi();
             }
@@ -7280,7 +7282,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getVariableObjectActionSheet = function(variableName){
         var variableObject = qmStorage.getUserVariableByName(variableName);
-        if(!variableObject){window.qmLog.error("Could not get variable for action sheet");}
+        if(!variableObject){window.qmLog.info("Could not get variable for action sheet");}
         var stateParams = {variableName: variableName};
         if(variableObject){stateParams.variableObject = variableObject;}
         qmLog.info("Getting action sheet for variable " + variableName);
