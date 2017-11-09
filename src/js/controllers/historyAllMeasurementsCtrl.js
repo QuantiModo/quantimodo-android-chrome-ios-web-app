@@ -93,7 +93,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             hideLoader();
         }
         //qmService.showBasicLoader();
-        qmService.getMeasurements(params, successHandler, errorHandler);
+        qmService.getMeasurementsFromApi(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {

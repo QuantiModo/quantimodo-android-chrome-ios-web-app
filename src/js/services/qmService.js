@@ -1002,20 +1002,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(response.error.message, null, {apiResponse: response});
         }
     }
-    qmService.getMeasurements = function(params, successHandler, errorHandler){
-        params = addGlobalUrlParamsToObject(params);
-        var cachedData = qm.api.cacheGet(params, 'getMeasurements');
-        if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
-        }
-        configureQmApiClient();
-        var apiInstance = new Quantimodo.MeasurementsApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurements');
-        }
-        apiInstance.getMeasurements(params, callback);
-    };
     qmService.generateV1OAuthUrl = function(register) {
         var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
         // add params
