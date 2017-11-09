@@ -551,7 +551,7 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                nextState: 'app.predictors',
+                nextState: 'app.predictorsAll',
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 variableSearchParameters: {
@@ -573,7 +573,7 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                nextState: 'app.predictors',
+                nextState: 'app.predictorsAll',
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 variableSearchParameters: {
