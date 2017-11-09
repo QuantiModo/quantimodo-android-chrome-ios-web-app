@@ -15,16 +15,23 @@ window.qm = {
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
-            var key = qm.api.getCacheName(functionName, params);
-            qmGlobals.setItem(key, data);
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
+            var key = qm.api.getCacheName(params);
+            qm.api.cache[functionName][key] = data;
         },
         cacheGet: function(params, functionName){
-            var key = qm.api.getCacheName(functionName, params);
-            return qmGlobals.getItem(key);
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
+            var key = qm.api.getCacheName(params);
+            if(!qm.api.cache[functionName][key]){return null;}
+            return qm.api.cache[functionName][key];
         },
-        getCacheName: function(functionName, params){
-            return qm.stringHelper.removeSpecialCharacters(functionName + JSON.stringify(params));
-        }
+        cacheRemove: function(functionName){
+            return qm.api.cache[functionName] = null;
+        },
+        getCacheName: function(params){
+            return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
+        },
+        cache: {}
     },
     auth: {},
     unitHelper: {},
