@@ -59,7 +59,11 @@ window.qm = {
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
     },
     globals: {},
-    userVariableHelper: {},
+    userVariableHelper: {
+        addUserVariablesToLocalStorage: function(userVariables){
+            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables);
+        }
+    },
     manualTrackingVariableCategoryNames: [
         'Emotions',
         'Symptoms',
@@ -261,7 +265,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
     }
-    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariable);
+    qm.userVariableHelper.addUserVariablesToLocalStorage(userVariable);
     return userVariable;
 };
 // returns bool | string
