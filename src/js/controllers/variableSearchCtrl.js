@@ -168,9 +168,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.getUserVariablesFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
+                    //var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
                     // Put user variables at top of list
-                    userVariables = qmService.sortByProperty(userVariables, sort);
+                    //userVariables = qmService.sortByProperty(userVariables, sort);
                     $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
