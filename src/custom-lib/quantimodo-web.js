@@ -4087,7 +4087,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
   /**
    * @module ApiClient
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -4660,7 +4660,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Analytics service.
    * @module api/AnalyticsApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -5090,7 +5090,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Authentication service.
    * @module api/AuthenticationApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -5330,7 +5330,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Connectors service.
    * @module api/ConnectorsApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -5656,7 +5656,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Measurements service.
    * @module api/MeasurementsApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6042,7 +6042,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Notifications service.
    * @module api/NotificationsApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6172,7 +6172,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Reminders service.
    * @module api/RemindersApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6499,7 +6499,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Study service.
    * @module api/StudyApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6592,7 +6592,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Units service.
    * @module api/UnitsApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6724,7 +6724,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * User service.
    * @module api/UserApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -6884,7 +6884,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Variables service.
    * @module api/VariablesApi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -7416,7 +7416,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * </pre>
    * </p>
    * @module index
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
   var exports = {
     /**
@@ -8038,7 +8038,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Animation model module.
    * @module model/Animation
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8123,7 +8123,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Button model module.
    * @module model/Button
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8218,7 +8218,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Chart model module.
    * @module model/Chart
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8381,7 +8381,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ChartConfig model module.
    * @module model/ChartConfig
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8520,7 +8520,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ChartStyle model module.
    * @module model/ChartStyle
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8605,7 +8605,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Column model module.
    * @module model/Column
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8730,7 +8730,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonResponse model module.
    * @module model/CommonResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -8841,7 +8841,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonVariable model module.
    * @module model/CommonVariable
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10153,7 +10153,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonVariableArray model module.
    * @module model/CommonVariableArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10233,7 +10233,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Connector model module.
    * @module model/Connector
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10594,7 +10594,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorArray model module.
    * @module model/ConnectorArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10674,7 +10674,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorInstruction model module.
    * @module model/ConnectorInstruction
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10776,7 +10776,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConversionStep model module.
    * @module model/ConversionStep
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10888,7 +10888,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlation model module.
    * @module model/Correlation
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -10904,19 +10904,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param averageEffectFollowingLowCauseExplanation {String} Example: Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
    * @param averageForwardPearsonCorrelationOverOnsetDelays {Number} Example: 0.396
    * @param averageReversePearsonCorrelationOverOnsetDelays {Number} Example: 0.453667
-   * @param averageVote {String} Example: 0.9855
+   * @param averageVote {Number} Example: 0.9855
    * @param causeChanges {Number} Example: 164
    * @param causeUserVariableShareUserMeasurements {Number} Example: 1
-   * @param causeVariableCategoryId {Number} Example: 6
-   * @param causeVariableCategoryName {String} Example: Sleep
-   * @param causeVariableCombinationOperation {String} Example: MEAN
-   * @param causeVariableUnitAbbreviatedName {String} Example: /5
-   * @param causeVariableUnitId {Number} Example: 10
-   * @param causeVariableUnitName {String} Example: 1 to 5 Rating
-   * @param causeVariableId {Number} Example: 1448
-   * @param causeVariableImageUrl {String} Example: https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png
-   * @param causeVariableIonIcon {String} Example: ion-ios-cloudy-night-outline
-   * @param causeVariableMostCommonConnectorId {Number} Example: 6
    * @param causeVariableName {String} Example: Sleep Quality
    * @param confidenceInterval {Number} Example: 0.14344467795996
    * @param confidenceLevel {String} Example: high
@@ -10925,26 +10915,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param criticalTValue {Number} Example: 1.646
    * @param dataAnalysis {String} Example: It was assumed that 0 hours would pass before a change in Sleep Quality would produce an observable change in Overall Mood.  It was assumed that Sleep Quality could produce an observable change in Overall Mood for as much as 7 days after the stimulus event.
    * @param dataSources {String} Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.<br>Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
-   * @param dataSourcesParagraphForCause {String} Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
-   * @param dataSourcesParagraphForEffect {String} Example: Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
    * @param direction {String} Example: higher
    * @param durationOfAction {Number} Example: 604800
    * @param durationOfActionInHours {Number} Example: 168
    * @param effectChanges {Number} Example: 193
    * @param effectSize {String} Example: moderately positive
    * @param effectUnit {String} Example: /5
-   * @param effectUserVariableShareUserMeasurements {Number} Example: 1
-   * @param effectVariableCategoryId {Number} Example: 1
-   * @param effectVariableCategoryName {String} Example: Emotions
-   * @param effectVariableCombinationOperation {String} Example: MEAN
-   * @param effectVariableCommonAlias {String} Example: Mood_(psychology)
-   * @param effectVariableUnitAbbreviatedName {String} Example: /5
-   * @param effectVariableUnitId {Number} Example: 10
-   * @param effectVariableUnitName {String} Example: 1 to 5 Rating
-   * @param effectVariableId {Number} Example: 1398
-   * @param effectVariableImageUrl {String} Example: https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png
-   * @param effectVariableIonIcon {String} Example: ion-happy-outline
-   * @param effectVariableMostCommonConnectorId {Number} Example: 10
    * @param effectVariableName {String} Example: Overall Mood
    * @param experimentEndTime {Date} Example: 2014-07-30 12:50:00
    * @param experimentStartTime {Date} Example: 2012-05-06 21:15:00
@@ -10952,8 +10928,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param gaugeImage {String} Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship.png
    * @param gaugeImageSquare {String} Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png
    * @param imageUrl {String} Example: https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png
-   * @param instructionsForCause {String} Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.
-   * @param instructionsForEffect {String} Example: <a href=\"https://quantimo.do\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\"https://quantimo.do\">QuantiModo</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.
    * @param numberOfPairs {Number} Example: 298
    * @param onsetDelay {Number} Example: 0
    * @param onsetDelayInHours {Number} Example: 0
@@ -10993,7 +10967,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param studyObjective {String} Example: The objective of this study is to determine the nature of the relationship (if any) between the Sleep Quality and the Overall Mood. Additionally, we attempt to determine the Sleep Quality values most likely to produce optimal Overall Mood values.
    * @param studyResults {String} Example: This analysis suggests that higher Sleep Quality (Sleep) generally predicts higher Overall Mood (p = 0).  Overall Mood is, on average, 17%  higher after around 4.14 Sleep Quality.  After an onset delay of 168 hours, Overall Mood is, on average, 11%  lower than its average over the 168 hours following around 3.03 Sleep Quality.  298 data points were used in this analysis.  The value for Sleep Quality changed 164 times, effectively running 82 separate natural experiments.  The top quartile outcome values are preceded by an average 4.14 /5 of Sleep Quality.  The bottom quartile outcome values are preceded by an average 3.03 /5 of Sleep Quality.  Forward Pearson Correlation Coefficient was 0.538 (p=0, 95% CI 0.395 to 0.681 onset delay = 0 hours, duration of action = 168 hours) .  The Reverse Pearson Correlation Coefficient was 0 (P=0, 95% CI -0.143 to 0.143, onset delay = -0 hours, duration of action = -168 hours). When the Sleep Quality value is closer to 4.14 /5 than 3.03 /5, the Overall Mood value which follows is, on average, 17%  percent higher than its typical value.  When the Sleep Quality value is closer to 3.03 /5 than 4.14 /5, the Overall Mood value which follows is 0% lower than its typical value.  Overall Mood is 3.55/5 (15% higher) on average after days with around 4.19/5 Sleep Quality  Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
    * @param studyTitle {String} Example: N1 Study: Sleep Quality Predicts Higher Overall Mood
-   * @param timestamp {Number} Example: 1494085127
    * @param tValue {Number} Example: 9.6986079652717
    * @param updatedAt {Date} Example: 2017-05-06 15:40:38
    * @param userId {Number} Example: 230
@@ -11003,7 +10976,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param valuePredictingLowOutcome {Number} Example: 3.03
    * @param valuePredictingLowOutcomeExplanation {String} Example: Overall Mood, on average, 11% lower after around 3.03/5 Sleep Quality
    */
-  var exports = function(averageDailyHighCause, averageDailyLowCause, averageEffect, averageEffectFollowingHighCause, averageEffectFollowingHighCauseExplanation, averageEffectFollowingLowCause, averageEffectFollowingLowCauseExplanation, averageForwardPearsonCorrelationOverOnsetDelays, averageReversePearsonCorrelationOverOnsetDelays, averageVote, causeChanges, causeUserVariableShareUserMeasurements, causeVariableCategoryId, causeVariableCategoryName, causeVariableCombinationOperation, causeVariableUnitAbbreviatedName, causeVariableUnitId, causeVariableUnitName, causeVariableId, causeVariableImageUrl, causeVariableIonIcon, causeVariableMostCommonConnectorId, causeVariableName, confidenceInterval, confidenceLevel, correlationCoefficient, createdAt, criticalTValue, dataAnalysis, dataSources, dataSourcesParagraphForCause, dataSourcesParagraphForEffect, direction, durationOfAction, durationOfActionInHours, effectChanges, effectSize, effectUnit, effectUserVariableShareUserMeasurements, effectVariableCategoryId, effectVariableCategoryName, effectVariableCombinationOperation, effectVariableCommonAlias, effectVariableUnitAbbreviatedName, effectVariableUnitId, effectVariableUnitName, effectVariableId, effectVariableImageUrl, effectVariableIonIcon, effectVariableMostCommonConnectorId, effectVariableName, experimentEndTime, experimentStartTime, forwardSpearmanCorrelationCoefficient, gaugeImage, gaugeImageSquare, imageUrl, instructionsForCause, instructionsForEffect, numberOfPairs, onsetDelay, onsetDelayInHours, onsetDelayWithStrongestPearsonCorrelation, onsetDelayWithStrongestPearsonCorrelationInHours, optimalPearsonProduct, outcomeFillingValue, pearsonCorrelationWithNoOnsetDelay, predictivePearsonCorrelation, predictivePearsonCorrelationCoefficient, predictorDataSources, predictorExplanation, predictorFillingValue, predictorMaximumAllowedValue, predictorMinimumAllowedValue, predictsHighEffectChange, predictsHighEffectChangeSentenceFragment, predictsLowEffectChange, predictsLowEffectChangeSentenceFragment, qmScore, reversePearsonCorrelationCoefficient, shareUserMeasurements, significanceExplanation, significantDifference, statisticalSignificance, strengthLevel, strongestPearsonCorrelationCoefficient, studyAbstract, studyDesign, studyLimitations, studyLinkDynamic, studyLinkEmail, studyLinkFacebook, studyLinkGoogle, studyLinkStatic, studyLinkTwitter, studyObjective, studyResults, studyTitle, timestamp, tValue, updatedAt, userId, userVote, valuePredictingHighOutcome, valuePredictingHighOutcomeExplanation, valuePredictingLowOutcome, valuePredictingLowOutcomeExplanation) {
+  var exports = function(averageDailyHighCause, averageDailyLowCause, averageEffect, averageEffectFollowingHighCause, averageEffectFollowingHighCauseExplanation, averageEffectFollowingLowCause, averageEffectFollowingLowCauseExplanation, averageForwardPearsonCorrelationOverOnsetDelays, averageReversePearsonCorrelationOverOnsetDelays, averageVote, causeChanges, causeUserVariableShareUserMeasurements, causeVariableName, confidenceInterval, confidenceLevel, correlationCoefficient, createdAt, criticalTValue, dataAnalysis, dataSources, direction, durationOfAction, durationOfActionInHours, effectChanges, effectSize, effectUnit, effectVariableName, experimentEndTime, experimentStartTime, forwardSpearmanCorrelationCoefficient, gaugeImage, gaugeImageSquare, imageUrl, numberOfPairs, onsetDelay, onsetDelayInHours, onsetDelayWithStrongestPearsonCorrelation, onsetDelayWithStrongestPearsonCorrelationInHours, optimalPearsonProduct, outcomeFillingValue, pearsonCorrelationWithNoOnsetDelay, predictivePearsonCorrelation, predictivePearsonCorrelationCoefficient, predictorDataSources, predictorExplanation, predictorFillingValue, predictorMaximumAllowedValue, predictorMinimumAllowedValue, predictsHighEffectChange, predictsHighEffectChangeSentenceFragment, predictsLowEffectChange, predictsLowEffectChangeSentenceFragment, qmScore, reversePearsonCorrelationCoefficient, shareUserMeasurements, significanceExplanation, significantDifference, statisticalSignificance, strengthLevel, strongestPearsonCorrelationCoefficient, studyAbstract, studyDesign, studyLimitations, studyLinkDynamic, studyLinkEmail, studyLinkFacebook, studyLinkGoogle, studyLinkStatic, studyLinkTwitter, studyObjective, studyResults, studyTitle, tValue, updatedAt, userId, userVote, valuePredictingHighOutcome, valuePredictingHighOutcomeExplanation, valuePredictingLowOutcome, valuePredictingLowOutcomeExplanation) {
     var _this = this;
 
     _this['averageDailyHighCause'] = averageDailyHighCause;
@@ -11019,16 +10992,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['causeChanges'] = causeChanges;
 
     _this['causeUserVariableShareUserMeasurements'] = causeUserVariableShareUserMeasurements;
-    _this['causeVariableCategoryId'] = causeVariableCategoryId;
-    _this['causeVariableCategoryName'] = causeVariableCategoryName;
-    _this['causeVariableCombinationOperation'] = causeVariableCombinationOperation;
-    _this['causeVariableUnitAbbreviatedName'] = causeVariableUnitAbbreviatedName;
-    _this['causeVariableUnitId'] = causeVariableUnitId;
-    _this['causeVariableUnitName'] = causeVariableUnitName;
-    _this['causeVariableId'] = causeVariableId;
-    _this['causeVariableImageUrl'] = causeVariableImageUrl;
-    _this['causeVariableIonIcon'] = causeVariableIonIcon;
-    _this['causeVariableMostCommonConnectorId'] = causeVariableMostCommonConnectorId;
+
+
+
+
+
+
+
+
     _this['causeVariableName'] = causeVariableName;
     _this['confidenceInterval'] = confidenceInterval;
     _this['confidenceLevel'] = confidenceLevel;
@@ -11038,8 +11009,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['criticalTValue'] = criticalTValue;
     _this['dataAnalysis'] = dataAnalysis;
     _this['dataSources'] = dataSources;
-    _this['dataSourcesParagraphForCause'] = dataSourcesParagraphForCause;
-    _this['dataSourcesParagraphForEffect'] = dataSourcesParagraphForEffect;
     _this['direction'] = direction;
     _this['durationOfAction'] = durationOfAction;
     _this['durationOfActionInHours'] = durationOfActionInHours;
@@ -11047,27 +11016,26 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
     _this['effectSize'] = effectSize;
     _this['effectUnit'] = effectUnit;
-    _this['effectUserVariableShareUserMeasurements'] = effectUserVariableShareUserMeasurements;
-    _this['effectVariableCategoryId'] = effectVariableCategoryId;
-    _this['effectVariableCategoryName'] = effectVariableCategoryName;
-    _this['effectVariableCombinationOperation'] = effectVariableCombinationOperation;
-    _this['effectVariableCommonAlias'] = effectVariableCommonAlias;
-    _this['effectVariableUnitAbbreviatedName'] = effectVariableUnitAbbreviatedName;
-    _this['effectVariableUnitId'] = effectVariableUnitId;
-    _this['effectVariableUnitName'] = effectVariableUnitName;
-    _this['effectVariableId'] = effectVariableId;
-    _this['effectVariableImageUrl'] = effectVariableImageUrl;
-    _this['effectVariableIonIcon'] = effectVariableIonIcon;
-    _this['effectVariableMostCommonConnectorId'] = effectVariableMostCommonConnectorId;
+
+
+
+
+
+
+
+
+
+
+
+
     _this['effectVariableName'] = effectVariableName;
     _this['experimentEndTime'] = experimentEndTime;
     _this['experimentStartTime'] = experimentStartTime;
     _this['forwardSpearmanCorrelationCoefficient'] = forwardSpearmanCorrelationCoefficient;
     _this['gaugeImage'] = gaugeImage;
     _this['gaugeImageSquare'] = gaugeImageSquare;
+
     _this['imageUrl'] = imageUrl;
-    _this['instructionsForCause'] = instructionsForCause;
-    _this['instructionsForEffect'] = instructionsForEffect;
     _this['numberOfPairs'] = numberOfPairs;
     _this['onsetDelay'] = onsetDelay;
     _this['onsetDelayInHours'] = onsetDelayInHours;
@@ -11092,7 +11060,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
     _this['qmScore'] = qmScore;
     _this['reversePearsonCorrelationCoefficient'] = reversePearsonCorrelationCoefficient;
+
     _this['shareUserMeasurements'] = shareUserMeasurements;
+
+
     _this['significanceExplanation'] = significanceExplanation;
     _this['significantDifference'] = significantDifference;
     _this['statisticalSignificance'] = statisticalSignificance;
@@ -11110,7 +11081,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['studyObjective'] = studyObjective;
     _this['studyResults'] = studyResults;
     _this['studyTitle'] = studyTitle;
-    _this['timestamp'] = timestamp;
     _this['tValue'] = tValue;
     _this['updatedAt'] = updatedAt;
     _this['userId'] = userId;
@@ -11119,41 +11089,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['valuePredictingHighOutcomeExplanation'] = valuePredictingHighOutcomeExplanation;
     _this['valuePredictingLowOutcome'] = valuePredictingLowOutcome;
     _this['valuePredictingLowOutcomeExplanation'] = valuePredictingLowOutcomeExplanation;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -11219,7 +11154,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         obj['averageReversePearsonCorrelationOverOnsetDelays'] = ApiClient.convertToType(data['averageReversePearsonCorrelationOverOnsetDelays'], 'Number');
       }
       if (data.hasOwnProperty('averageVote')) {
-        obj['averageVote'] = ApiClient.convertToType(data['averageVote'], 'String');
+        obj['averageVote'] = ApiClient.convertToType(data['averageVote'], 'Number');
       }
       if (data.hasOwnProperty('causeChanges')) {
         obj['causeChanges'] = ApiClient.convertToType(data['causeChanges'], 'Number');
@@ -11241,12 +11176,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('causeVariableUnitAbbreviatedName')) {
         obj['causeVariableUnitAbbreviatedName'] = ApiClient.convertToType(data['causeVariableUnitAbbreviatedName'], 'String');
-      }
-      if (data.hasOwnProperty('causeVariableUnitId')) {
-        obj['causeVariableUnitId'] = ApiClient.convertToType(data['causeVariableUnitId'], 'Number');
-      }
-      if (data.hasOwnProperty('causeVariableUnitName')) {
-        obj['causeVariableUnitName'] = ApiClient.convertToType(data['causeVariableUnitName'], 'String');
       }
       if (data.hasOwnProperty('causeVariableId')) {
         obj['causeVariableId'] = ApiClient.convertToType(data['causeVariableId'], 'Number');
@@ -11286,12 +11215,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('dataSources')) {
         obj['dataSources'] = ApiClient.convertToType(data['dataSources'], 'String');
-      }
-      if (data.hasOwnProperty('dataSourcesParagraphForCause')) {
-        obj['dataSourcesParagraphForCause'] = ApiClient.convertToType(data['dataSourcesParagraphForCause'], 'String');
-      }
-      if (data.hasOwnProperty('dataSourcesParagraphForEffect')) {
-        obj['dataSourcesParagraphForEffect'] = ApiClient.convertToType(data['dataSourcesParagraphForEffect'], 'String');
       }
       if (data.hasOwnProperty('direction')) {
         obj['direction'] = ApiClient.convertToType(data['direction'], 'String');
@@ -11368,14 +11291,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('gaugeImageSquare')) {
         obj['gaugeImageSquare'] = ApiClient.convertToType(data['gaugeImageSquare'], 'String');
       }
+      if (data.hasOwnProperty('gaugeSharingImageUrl')) {
+        obj['gaugeSharingImageUrl'] = ApiClient.convertToType(data['gaugeSharingImageUrl'], 'String');
+      }
       if (data.hasOwnProperty('imageUrl')) {
         obj['imageUrl'] = ApiClient.convertToType(data['imageUrl'], 'String');
-      }
-      if (data.hasOwnProperty('instructionsForCause')) {
-        obj['instructionsForCause'] = ApiClient.convertToType(data['instructionsForCause'], 'String');
-      }
-      if (data.hasOwnProperty('instructionsForEffect')) {
-        obj['instructionsForEffect'] = ApiClient.convertToType(data['instructionsForEffect'], 'String');
       }
       if (data.hasOwnProperty('numberOfPairs')) {
         obj['numberOfPairs'] = ApiClient.convertToType(data['numberOfPairs'], 'Number');
@@ -11449,8 +11369,17 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('reversePearsonCorrelationCoefficient')) {
         obj['reversePearsonCorrelationCoefficient'] = ApiClient.convertToType(data['reversePearsonCorrelationCoefficient'], 'Number');
       }
+      if (data.hasOwnProperty('robotSharingImageUrl')) {
+        obj['robotSharingImageUrl'] = ApiClient.convertToType(data['robotSharingImageUrl'], 'String');
+      }
       if (data.hasOwnProperty('shareUserMeasurements')) {
         obj['shareUserMeasurements'] = ApiClient.convertToType(data['shareUserMeasurements'], 'Boolean');
+      }
+      if (data.hasOwnProperty('sharingDescription')) {
+        obj['sharingDescription'] = ApiClient.convertToType(data['sharingDescription'], 'String');
+      }
+      if (data.hasOwnProperty('sharingTitle')) {
+        obj['sharingTitle'] = ApiClient.convertToType(data['sharingTitle'], 'String');
       }
       if (data.hasOwnProperty('significanceExplanation')) {
         obj['significanceExplanation'] = ApiClient.convertToType(data['significanceExplanation'], 'String');
@@ -11503,9 +11432,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('studyTitle')) {
         obj['studyTitle'] = ApiClient.convertToType(data['studyTitle'], 'String');
       }
-      if (data.hasOwnProperty('timestamp')) {
-        obj['timestamp'] = ApiClient.convertToType(data['timestamp'], 'Number');
-      }
       if (data.hasOwnProperty('tValue')) {
         obj['tValue'] = ApiClient.convertToType(data['tValue'], 'Number');
       }
@@ -11530,9 +11456,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('valuePredictingLowOutcomeExplanation')) {
         obj['valuePredictingLowOutcomeExplanation'] = ApiClient.convertToType(data['valuePredictingLowOutcomeExplanation'], 'String');
       }
-      if (data.hasOwnProperty('causalityFactor')) {
-        obj['causalityFactor'] = ApiClient.convertToType(data['causalityFactor'], 'Number');
-      }
       if (data.hasOwnProperty('outcomeDataSources')) {
         obj['outcomeDataSources'] = ApiClient.convertToType(data['outcomeDataSources'], 'String');
       }
@@ -11551,26 +11474,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('studyQuestion')) {
         obj['studyQuestion'] = ApiClient.convertToType(data['studyQuestion'], 'String');
       }
-      if (data.hasOwnProperty('allPairsSignificance')) {
-        obj['allPairsSignificance'] = ApiClient.convertToType(data['allPairsSignificance'], 'Number');
-      }
       if (data.hasOwnProperty('averagePearsonCorrelationCoefficientOverOnsetDelays')) {
         obj['averagePearsonCorrelationCoefficientOverOnsetDelays'] = ApiClient.convertToType(data['averagePearsonCorrelationCoefficientOverOnsetDelays'], 'String');
       }
       if (data.hasOwnProperty('calculationStartTime')) {
         obj['calculationStartTime'] = ApiClient.convertToType(data['calculationStartTime'], 'Date');
       }
-      if (data.hasOwnProperty('causeChangesStatisticalSignificance')) {
-        obj['causeChangesStatisticalSignificance'] = ApiClient.convertToType(data['causeChangesStatisticalSignificance'], 'Number');
-      }
-      if (data.hasOwnProperty('causeNumberOfProcessedDailyMeasurements')) {
-        obj['causeNumberOfProcessedDailyMeasurements'] = ApiClient.convertToType(data['causeNumberOfProcessedDailyMeasurements'], 'Number');
-      }
       if (data.hasOwnProperty('causeNumberOfRawMeasurements')) {
         obj['causeNumberOfRawMeasurements'] = ApiClient.convertToType(data['causeNumberOfRawMeasurements'], 'Number');
-      }
-      if (data.hasOwnProperty('causeValueSpread')) {
-        obj['causeValueSpread'] = ApiClient.convertToType(data['causeValueSpread'], 'Number');
       }
       if (data.hasOwnProperty('correlationsOverDurationsOfAction')) {
         obj['correlationsOverDurationsOfAction'] = ApiClient.convertToType(data['correlationsOverDurationsOfAction'], 'String');
@@ -11581,89 +11492,17 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('correlationsOverOnsetDelaysChartConfig')) {
         obj['correlationsOverOnsetDelaysChartConfig'] = ApiClient.convertToType(data['correlationsOverOnsetDelaysChartConfig'], 'String');
       }
-      if (data.hasOwnProperty('dataPoints')) {
-        obj['dataPoints'] = ApiClient.convertToType(data['dataPoints'], 'String');
-      }
       if (data.hasOwnProperty('degreesOfFreedom')) {
         obj['degreesOfFreedom'] = ApiClient.convertToType(data['degreesOfFreedom'], 'Number');
-      }
-      if (data.hasOwnProperty('distanceFromMiddleToBeHightLowEffect')) {
-        obj['distanceFromMiddleToBeHightLowEffect'] = ApiClient.convertToType(data['distanceFromMiddleToBeHightLowEffect'], 'Number');
       }
       if (data.hasOwnProperty('effectNumberOfProcessedDailyMeasurements')) {
         obj['effectNumberOfProcessedDailyMeasurements'] = ApiClient.convertToType(data['effectNumberOfProcessedDailyMeasurements'], 'Number');
       }
-      if (data.hasOwnProperty('effectNumberOfRawMeasurements')) {
-        obj['effectNumberOfRawMeasurements'] = ApiClient.convertToType(data['effectNumberOfRawMeasurements'], 'Number');
-      }
-      if (data.hasOwnProperty('effectValueSpread')) {
-        obj['effectValueSpread'] = ApiClient.convertToType(data['effectValueSpread'], 'Number');
-      }
       if (data.hasOwnProperty('error')) {
         obj['error'] = ApiClient.convertToType(data['error'], 'String');
       }
-      if (data.hasOwnProperty('maximumCauseValue')) {
-        obj['maximumCauseValue'] = ApiClient.convertToType(data['maximumCauseValue'], 'Number');
-      }
-      if (data.hasOwnProperty('maximumEffectValue')) {
-        obj['maximumEffectValue'] = ApiClient.convertToType(data['maximumEffectValue'], 'Number');
-      }
-      if (data.hasOwnProperty('medianOfLowerHalfOfEffectMeasurements')) {
-        obj['medianOfLowerHalfOfEffectMeasurements'] = ApiClient.convertToType(data['medianOfLowerHalfOfEffectMeasurements'], 'String');
-      }
-      if (data.hasOwnProperty('medianOfUpperHalfOfEffectMeasurements')) {
-        obj['medianOfUpperHalfOfEffectMeasurements'] = ApiClient.convertToType(data['medianOfUpperHalfOfEffectMeasurements'], 'String');
-      }
-      if (data.hasOwnProperty('minimumCauseValue')) {
-        obj['minimumCauseValue'] = ApiClient.convertToType(data['minimumCauseValue'], 'Number');
-      }
-      if (data.hasOwnProperty('minimumEffectValue')) {
-        obj['minimumEffectValue'] = ApiClient.convertToType(data['minimumEffectValue'], 'Number');
-      }
-      if (data.hasOwnProperty('minimumProbability')) {
-        obj['minimumProbability'] = ApiClient.convertToType(data['minimumProbability'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfCauseChangesForOptimalValues')) {
-        obj['numberOfCauseChangesForOptimalValues'] = ApiClient.convertToType(data['numberOfCauseChangesForOptimalValues'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfDays')) {
-        obj['numberOfDays'] = ApiClient.convertToType(data['numberOfDays'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfDaysSignificance')) {
-        obj['numberOfDaysSignificance'] = ApiClient.convertToType(data['numberOfDaysSignificance'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfEffectChangesForOptimalValues')) {
-        obj['numberOfEffectChangesForOptimalValues'] = ApiClient.convertToType(data['numberOfEffectChangesForOptimalValues'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfHighEffectPairs')) {
-        obj['numberOfHighEffectPairs'] = ApiClient.convertToType(data['numberOfHighEffectPairs'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfLowEffectPairs')) {
-        obj['numberOfLowEffectPairs'] = ApiClient.convertToType(data['numberOfLowEffectPairs'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfSamples')) {
-        obj['numberOfSamples'] = ApiClient.convertToType(data['numberOfSamples'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfUniqueCauseValuesForOptimalValues')) {
-        obj['numberOfUniqueCauseValuesForOptimalValues'] = ApiClient.convertToType(data['numberOfUniqueCauseValuesForOptimalValues'], 'Number');
-      }
-      if (data.hasOwnProperty('numberOfUniqueEffectValuesForOptimalValues')) {
-        obj['numberOfUniqueEffectValuesForOptimalValues'] = ApiClient.convertToType(data['numberOfUniqueEffectValuesForOptimalValues'], 'Number');
-      }
       if (data.hasOwnProperty('numberOfUsers')) {
-        obj['numberOfUsers'] = ApiClient.convertToType(data['numberOfUsers'], 'String');
-      }
-      if (data.hasOwnProperty('optimalChangeSpread')) {
-        obj['optimalChangeSpread'] = ApiClient.convertToType(data['optimalChangeSpread'], 'Number');
-      }
-      if (data.hasOwnProperty('optimalChangeSpreadSignificance')) {
-        obj['optimalChangeSpreadSignificance'] = ApiClient.convertToType(data['optimalChangeSpreadSignificance'], 'Number');
-      }
-      if (data.hasOwnProperty('pairsOverTimeChartConfig')) {
-        obj['pairsOverTimeChartConfig'] = ApiClient.convertToType(data['pairsOverTimeChartConfig'], 'Date');
-      }
-      if (data.hasOwnProperty('perDaySentenceFragment')) {
-        obj['perDaySentenceFragment'] = ApiClient.convertToType(data['perDaySentenceFragment'], 'String');
+        obj['numberOfUsers'] = ApiClient.convertToType(data['numberOfUsers'], 'Number');
       }
       if (data.hasOwnProperty('rawCauseMeasurementSignificance')) {
         obj['rawCauseMeasurementSignificance'] = ApiClient.convertToType(data['rawCauseMeasurementSignificance'], 'Number');
@@ -11680,24 +11519,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('aggregateQMScore')) {
         obj['aggregateQMScore'] = ApiClient.convertToType(data['aggregateQMScore'], 'Number');
       }
-      if (data.hasOwnProperty('causeUnit')) {
-        obj['causeUnit'] = ApiClient.convertToType(data['causeUnit'], 'String');
-      }
-      if (data.hasOwnProperty('causeVariableCommonAlias')) {
-        obj['causeVariableCommonAlias'] = ApiClient.convertToType(data['causeVariableCommonAlias'], 'String');
-      }
-      if (data.hasOwnProperty('causeVariableInformationalUrl')) {
-        obj['causeVariableInformationalUrl'] = ApiClient.convertToType(data['causeVariableInformationalUrl'], 'String');
-      }
-      if (data.hasOwnProperty('causeVariableProductUrl')) {
-        obj['causeVariableProductUrl'] = ApiClient.convertToType(data['causeVariableProductUrl'], 'String');
-      }
-      if (data.hasOwnProperty('effectVariableInformationalUrl')) {
-        obj['effectVariableInformationalUrl'] = ApiClient.convertToType(data['effectVariableInformationalUrl'], 'String');
-      }
-      if (data.hasOwnProperty('effectVariableProductUrl')) {
-        obj['effectVariableProductUrl'] = ApiClient.convertToType(data['effectVariableProductUrl'], 'String');
-      }
       if (data.hasOwnProperty('forwardPearsonCorrelationCoefficient')) {
         obj['forwardPearsonCorrelationCoefficient'] = ApiClient.convertToType(data['forwardPearsonCorrelationCoefficient'], 'Number');
       }
@@ -11705,7 +11526,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         obj['numberOfCorrelations'] = ApiClient.convertToType(data['numberOfCorrelations'], 'Number');
       }
       if (data.hasOwnProperty('vote')) {
-        obj['vote'] = ApiClient.convertToType(data['vote'], 'String');
+        obj['vote'] = ApiClient.convertToType(data['vote'], 'Number');
       }
     }
     return obj;
@@ -11758,7 +11579,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   exports.prototype['averageReversePearsonCorrelationOverOnsetDelays'] = undefined;
   /**
    * Example: 0.9855
-   * @member {String} averageVote
+   * @member {Number} averageVote
    */
   exports.prototype['averageVote'] = undefined;
   /**
@@ -11795,16 +11616,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} causeVariableUnitAbbreviatedName
    */
   exports.prototype['causeVariableUnitAbbreviatedName'] = undefined;
-  /**
-   * Example: 10
-   * @member {Number} causeVariableUnitId
-   */
-  exports.prototype['causeVariableUnitId'] = undefined;
-  /**
-   * Example: 1 to 5 Rating
-   * @member {String} causeVariableUnitName
-   */
-  exports.prototype['causeVariableUnitName'] = undefined;
   /**
    * Example: 1448
    * @member {Number} causeVariableId
@@ -11870,16 +11681,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} dataSources
    */
   exports.prototype['dataSources'] = undefined;
-  /**
-   * Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
-   * @member {String} dataSourcesParagraphForCause
-   */
-  exports.prototype['dataSourcesParagraphForCause'] = undefined;
-  /**
-   * Example: Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
-   * @member {String} dataSourcesParagraphForEffect
-   */
-  exports.prototype['dataSourcesParagraphForEffect'] = undefined;
   /**
    * Example: higher
    * @member {String} direction
@@ -12005,20 +11806,15 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['gaugeImageSquare'] = undefined;
   /**
+   * Image with gauge and category images
+   * @member {String} gaugeSharingImageUrl
+   */
+  exports.prototype['gaugeSharingImageUrl'] = undefined;
+  /**
    * Example: https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png
    * @member {String} imageUrl
    */
   exports.prototype['imageUrl'] = undefined;
-  /**
-   * Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.
-   * @member {String} instructionsForCause
-   */
-  exports.prototype['instructionsForCause'] = undefined;
-  /**
-   * Example: <a href=\"https://quantimo.do\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\"https://quantimo.do\">QuantiModo</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.
-   * @member {String} instructionsForEffect
-   */
-  exports.prototype['instructionsForEffect'] = undefined;
   /**
    * Example: 298
    * @member {Number} numberOfPairs
@@ -12140,10 +11936,25 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['reversePearsonCorrelationCoefficient'] = undefined;
   /**
+   * Image with robot and category images
+   * @member {String} robotSharingImageUrl
+   */
+  exports.prototype['robotSharingImageUrl'] = undefined;
+  /**
    * Example: 1
    * @member {Boolean} shareUserMeasurements
    */
   exports.prototype['shareUserMeasurements'] = undefined;
+  /**
+   * Example: N1 Study: Sleep Quality Predicts Higher Overall Mood
+   * @member {String} sharingDescription
+   */
+  exports.prototype['sharingDescription'] = undefined;
+  /**
+   * Example: N1 Study: Sleep Quality Predicts Higher Overall Mood
+   * @member {String} sharingTitle
+   */
+  exports.prototype['sharingTitle'] = undefined;
   /**
    * Example: Using a two-tailed t-test with alpha = 0.05, it was determined that the change in Overall Mood is statistically significant at 95% confidence interval.
    * @member {String} significanceExplanation
@@ -12230,11 +12041,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['studyTitle'] = undefined;
   /**
-   * Example: 1494085127
-   * @member {Number} timestamp
-   */
-  exports.prototype['timestamp'] = undefined;
-  /**
    * Example: 9.6986079652717
    * @member {Number} tValue
    */
@@ -12275,11 +12081,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['valuePredictingLowOutcomeExplanation'] = undefined;
   /**
-   * 
-   * @member {Number} causalityFactor
-   */
-  exports.prototype['causalityFactor'] = undefined;
-  /**
    * original name of the cause.
    * @member {String} outcomeDataSources
    */
@@ -12310,11 +12111,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['studyQuestion'] = undefined;
   /**
-   * Example: 0.99994982531794
-   * @member {Number} allPairsSignificance
-   */
-  exports.prototype['allPairsSignificance'] = undefined;
-  /**
    * Example: 
    * @member {String} averagePearsonCorrelationCoefficientOverOnsetDelays
    */
@@ -12325,25 +12121,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['calculationStartTime'] = undefined;
   /**
-   * Example: 0.9999299755903
-   * @member {Number} causeChangesStatisticalSignificance
-   */
-  exports.prototype['causeChangesStatisticalSignificance'] = undefined;
-  /**
-   * Example: 1364
-   * @member {Number} causeNumberOfProcessedDailyMeasurements
-   */
-  exports.prototype['causeNumberOfProcessedDailyMeasurements'] = undefined;
-  /**
    * Example: 14764
    * @member {Number} causeNumberOfRawMeasurements
    */
   exports.prototype['causeNumberOfRawMeasurements'] = undefined;
-  /**
-   * Example: 99032.44787234
-   * @member {Number} causeValueSpread
-   */
-  exports.prototype['causeValueSpread'] = undefined;
   /**
    * Example: 
    * @member {String} correlationsOverDurationsOfAction
@@ -12360,145 +12141,25 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['correlationsOverOnsetDelaysChartConfig'] = undefined;
   /**
-   * Example: 
-   * @member {String} dataPoints
-   */
-  exports.prototype['dataPoints'] = undefined;
-  /**
    * Example: 200
    * @member {Number} degreesOfFreedom
    */
   exports.prototype['degreesOfFreedom'] = undefined;
-  /**
-   * Example: 25
-   * @member {Number} distanceFromMiddleToBeHightLowEffect
-   */
-  exports.prototype['distanceFromMiddleToBeHightLowEffect'] = undefined;
   /**
    * Example: 145
    * @member {Number} effectNumberOfProcessedDailyMeasurements
    */
   exports.prototype['effectNumberOfProcessedDailyMeasurements'] = undefined;
   /**
-   * Example: 4045
-   * @member {Number} effectNumberOfRawMeasurements
-   */
-  exports.prototype['effectNumberOfRawMeasurements'] = undefined;
-  /**
-   * Example: 20.2
-   * @member {Number} effectValueSpread
-   */
-  exports.prototype['effectValueSpread'] = undefined;
-  /**
    * Example: optimalPearsonProduct is not defined
    * @member {String} error
    */
   exports.prototype['error'] = undefined;
   /**
-   * Example: 104300
-   * @member {Number} maximumCauseValue
-   */
-  exports.prototype['maximumCauseValue'] = undefined;
-  /**
-   * Example: 20.38
-   * @member {Number} maximumEffectValue
-   */
-  exports.prototype['maximumEffectValue'] = undefined;
-  /**
    * Example: 
-   * @member {String} medianOfLowerHalfOfEffectMeasurements
-   */
-  exports.prototype['medianOfLowerHalfOfEffectMeasurements'] = undefined;
-  /**
-   * Example: 
-   * @member {String} medianOfUpperHalfOfEffectMeasurements
-   */
-  exports.prototype['medianOfUpperHalfOfEffectMeasurements'] = undefined;
-  /**
-   * Example: 5267.5521276596
-   * @member {Number} minimumCauseValue
-   */
-  exports.prototype['minimumCauseValue'] = undefined;
-  /**
-   * Example: 0.18
-   * @member {Number} minimumEffectValue
-   */
-  exports.prototype['minimumEffectValue'] = undefined;
-  /**
-   * Example: 0.05
-   * @member {Number} minimumProbability
-   */
-  exports.prototype['minimumProbability'] = undefined;
-  /**
-   * Example: 287
-   * @member {Number} numberOfCauseChangesForOptimalValues
-   */
-  exports.prototype['numberOfCauseChangesForOptimalValues'] = undefined;
-  /**
-   * Example: 425
-   * @member {Number} numberOfDays
-   */
-  exports.prototype['numberOfDays'] = undefined;
-  /**
-   * Example: 0.99999929612614
-   * @member {Number} numberOfDaysSignificance
-   */
-  exports.prototype['numberOfDaysSignificance'] = undefined;
-  /**
-   * Example: 295
-   * @member {Number} numberOfEffectChangesForOptimalValues
-   */
-  exports.prototype['numberOfEffectChangesForOptimalValues'] = undefined;
-  /**
-   * Example: 27
-   * @member {Number} numberOfHighEffectPairs
-   */
-  exports.prototype['numberOfHighEffectPairs'] = undefined;
-  /**
-   * Example: 57
-   * @member {Number} numberOfLowEffectPairs
-   */
-  exports.prototype['numberOfLowEffectPairs'] = undefined;
-  /**
-   * Example: 297
-   * @member {Number} numberOfSamples
-   */
-  exports.prototype['numberOfSamples'] = undefined;
-  /**
-   * Example: 201
-   * @member {Number} numberOfUniqueCauseValuesForOptimalValues
-   */
-  exports.prototype['numberOfUniqueCauseValuesForOptimalValues'] = undefined;
-  /**
-   * Example: 264
-   * @member {Number} numberOfUniqueEffectValuesForOptimalValues
-   */
-  exports.prototype['numberOfUniqueEffectValuesForOptimalValues'] = undefined;
-  /**
-   * Example: 
-   * @member {String} numberOfUsers
+   * @member {Number} numberOfUsers
    */
   exports.prototype['numberOfUsers'] = undefined;
-  /**
-   * Example: 83.44
-   * @member {Number} optimalChangeSpread
-   */
-  exports.prototype['optimalChangeSpread'] = undefined;
-  /**
-   * Example: 0.99999999999917
-   * @member {Number} optimalChangeSpreadSignificance
-   */
-  exports.prototype['optimalChangeSpreadSignificance'] = undefined;
-  /**
-   * Example: 
-   * @member {Date} pairsOverTimeChartConfig
-   */
-  exports.prototype['pairsOverTimeChartConfig'] = undefined;
-  /**
-   * Example: 
-   * @member {String} perDaySentenceFragment
-   */
-  exports.prototype['perDaySentenceFragment'] = undefined;
   /**
    * Example: 1
    * @member {Number} rawCauseMeasurementSignificance
@@ -12525,36 +12186,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['aggregateQMScore'] = undefined;
   /**
-   * Unit of the predictor variable
-   * @member {String} causeUnit
-   */
-  exports.prototype['causeUnit'] = undefined;
-  /**
-   * Example: 
-   * @member {String} causeVariableCommonAlias
-   */
-  exports.prototype['causeVariableCommonAlias'] = undefined;
-  /**
-   * Example: 
-   * @member {String} causeVariableInformationalUrl
-   */
-  exports.prototype['causeVariableInformationalUrl'] = undefined;
-  /**
-   * Example: 
-   * @member {String} causeVariableProductUrl
-   */
-  exports.prototype['causeVariableProductUrl'] = undefined;
-  /**
-   * Example: 
-   * @member {String} effectVariableInformationalUrl
-   */
-  exports.prototype['effectVariableInformationalUrl'] = undefined;
-  /**
-   * Example: 
-   * @member {String} effectVariableProductUrl
-   */
-  exports.prototype['effectVariableProductUrl'] = undefined;
-  /**
    * Example: 0.0333
    * @member {Number} forwardPearsonCorrelationCoefficient
    */
@@ -12566,7 +12197,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   exports.prototype['numberOfCorrelations'] = undefined;
   /**
    * Example: 
-   * @member {String} vote
+   * @member {Number} vote
    */
   exports.prototype['vote'] = undefined;
 
@@ -12616,7 +12247,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CorrelationArray model module.
    * @module model/CorrelationArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -12696,7 +12327,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Credit model module.
    * @module model/Credit
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -12781,7 +12412,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The DataSource model module.
    * @module model/DataSource
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -12986,7 +12617,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Explanation model module.
    * @module model/Explanation
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13109,7 +12740,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ExplanationStartTracking model module.
    * @module model/ExplanationStartTracking
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13213,7 +12844,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetConnectorsResponse model module.
    * @module model/GetConnectorsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13324,7 +12955,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetCorrelationsDataResponse model module.
    * @module model/GetCorrelationsDataResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13417,7 +13048,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetCorrelationsResponse model module.
    * @module model/GetCorrelationsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13528,7 +13159,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetMeasurementsResponse model module.
    * @module model/GetMeasurementsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13909,7 +13540,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetMeasurementsResponseArray model module.
    * @module model/GetMeasurementsResponseArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -13989,7 +13620,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPairsResponse model module.
    * @module model/GetPairsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -14118,7 +13749,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPairsResponseArray model module.
    * @module model/GetPairsResponseArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -14198,7 +13829,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPublicVariablesResponse model module.
    * @module model/GetPublicVariablesResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -14803,7 +14434,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetPublicVariablesResponseArray model module.
    * @module model/GetPublicVariablesResponseArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -14883,7 +14514,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetStudyDataResponse model module.
    * @module model/GetStudyDataResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -15051,7 +14682,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetStudyResponse model module.
    * @module model/GetStudyResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -15284,7 +14915,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingReminderNotificationsResponse model module.
    * @module model/GetTrackingReminderNotificationsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -15395,7 +15026,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingRemindersResponse model module.
    * @module model/GetTrackingRemindersResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16025,7 +15656,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The GetTrackingRemindersResponseArray model module.
    * @module model/GetTrackingRemindersResponseArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16105,7 +15736,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Highchart model module.
    * @module model/Highchart
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16215,7 +15846,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The HighchartArray model module.
    * @module model/HighchartArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16295,7 +15926,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Hover model module.
    * @module model/Hover
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16399,7 +16030,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Image model module.
    * @module model/Image
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16504,7 +16135,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The JsonErrorResponse model module.
    * @module model/JsonErrorResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16598,7 +16229,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Lang model module.
    * @module model/Lang
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16683,7 +16314,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Legend model module.
    * @module model/Legend
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16768,7 +16399,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Loading model module.
    * @module model/Loading
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16872,7 +16503,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTime model module.
    * @module model/LocalDailyReminderNotificationTime
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -16956,7 +16587,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimeArray model module.
    * @module model/LocalDailyReminderNotificationTimeArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17036,7 +16667,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimesForAllReminder model module.
    * @module model/LocalDailyReminderNotificationTimesForAllReminder
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17120,7 +16751,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The LocalDailyReminderNotificationTimesForAllReminderArray model module.
    * @module model/LocalDailyReminderNotificationTimesForAllReminderArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17200,7 +16831,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Marker model module.
    * @module model/Marker
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17304,7 +16935,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Measurement model module.
    * @module model/Measurement
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17798,7 +17429,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementArray model module.
    * @module model/MeasurementArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17878,7 +17509,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementDelete model module.
    * @module model/MeasurementDelete
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -17973,7 +17604,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementItem model module.
    * @module model/MeasurementItem
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18077,7 +17708,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementSet model module.
    * @module model/MeasurementSet
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18227,7 +17858,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementUpdate model module.
    * @module model/MeasurementUpdate
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18339,7 +17970,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Option model module.
    * @module model/Option
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18504,7 +18135,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pair model module.
    * @module model/Pair
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18686,7 +18317,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairArray model module.
    * @module model/PairArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18766,7 +18397,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pairs model module.
    * @module model/Pairs
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18851,7 +18482,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairsOfAveragesForAllUser model module.
    * @module model/PairsOfAveragesForAllUser
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -18944,7 +18575,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PairsOfAveragesForAllUserArray model module.
    * @module model/PairsOfAveragesForAllUserArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19024,7 +18655,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ParticipantInstruction model module.
    * @module model/ParticipantInstruction
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19117,7 +18748,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PlotOption model module.
    * @module model/PlotOption
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19210,7 +18841,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostCorrelation model module.
    * @module model/PostCorrelation
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19324,7 +18955,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostMeasurementsDataResponse model module.
    * @module model/PostMeasurementsDataResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19407,7 +19038,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostMeasurementsResponse model module.
    * @module model/PostMeasurementsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19518,7 +19149,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostStudyPublishResponse model module.
    * @module model/PostStudyPublishResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19611,7 +19242,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostTrackingRemindersDataResponse model module.
    * @module model/PostTrackingRemindersDataResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19710,7 +19341,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostTrackingRemindersResponse model module.
    * @module model/PostTrackingRemindersResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19821,7 +19452,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostUserSettingsDataResponse model module.
    * @module model/PostUserSettingsDataResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -19905,7 +19536,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostUserSettingsResponse model module.
    * @module model/PostUserSettingsResponse
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20016,7 +19647,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ProcessedDailyMeasurement model module.
    * @module model/ProcessedDailyMeasurement
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20221,7 +19852,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Scatter model module.
    * @module model/Scatter
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20323,7 +19954,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Scope model module.
    * @module model/Scope
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20407,7 +20038,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ScopeArray model module.
    * @module model/ScopeArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20487,7 +20118,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Series model module.
    * @module model/Series
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20620,7 +20251,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The State model module.
    * @module model/State
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20704,7 +20335,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Study model module.
    * @module model/Study
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20879,7 +20510,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Subtitle model module.
    * @module model/Subtitle
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -20964,7 +20595,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Text model module.
    * @module model/Text
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -21120,7 +20751,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Title model module.
    * @module model/Title
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -21215,7 +20846,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Tooltip model module.
    * @module model/Tooltip
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -21310,7 +20941,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminder model module.
    * @module model/TrackingReminder
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -21330,6 +20961,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['unitAbbreviatedName'] = unitAbbreviatedName;
+
 
 
 
@@ -21504,6 +21136,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('numberOfUniqueValues')) {
         obj['numberOfUniqueValues'] = ApiClient.convertToType(data['numberOfUniqueValues'], 'Number');
+      }
+      if (data.hasOwnProperty('outcome')) {
+        obj['outcome'] = ApiClient.convertToType(data['outcome'], 'Boolean');
       }
       if (data.hasOwnProperty('pngPath')) {
         obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
@@ -21784,6 +21419,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['numberOfUniqueValues'] = undefined;
   /**
+   * Indicates whether or not the variable is usually an outcome of interest such as a symptom or emotion
+   * @member {Boolean} outcome
+   */
+  exports.prototype['outcome'] = undefined;
+  /**
    * Example: img/variable_categories/symptoms.png
    * @member {String} pngPath
    */
@@ -22042,7 +21682,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderArray model module.
    * @module model/TrackingReminderArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -22122,7 +21762,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderDelete model module.
    * @module model/TrackingReminderDelete
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -22207,7 +21847,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotification model module.
    * @module model/TrackingReminderNotification
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -22240,6 +21880,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['fillingValue'] = fillingValue;
 
     _this['id'] = id;
+
 
 
 
@@ -22386,6 +22027,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('numberOfUniqueValues')) {
         obj['numberOfUniqueValues'] = ApiClient.convertToType(data['numberOfUniqueValues'], 'Number');
+      }
+      if (data.hasOwnProperty('outcome')) {
+        obj['outcome'] = ApiClient.convertToType(data['outcome'], 'Boolean');
       }
       if (data.hasOwnProperty('pngPath')) {
         obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
@@ -22647,6 +22291,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['numberOfUniqueValues'] = undefined;
   /**
+   * Indicates whether or not the variable is usually an outcome of interest such as a symptom or emotion
+   * @member {Boolean} outcome
+   */
+  exports.prototype['outcome'] = undefined;
+  /**
    * Example: img/variable_categories/emotions.png
    * @member {String} pngPath
    */
@@ -22904,7 +22553,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationActionArray model module.
    * @module model/TrackingReminderNotificationActionArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23019,7 +22668,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationArray model module.
    * @module model/TrackingReminderNotificationArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23099,7 +22748,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationPost model module.
    * @module model/TrackingReminderNotificationPost
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23225,7 +22874,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationTrackAllAction model module.
    * @module model/TrackingReminderNotificationTrackAllAction
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23340,7 +22989,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationsArray model module.
    * @module model/TrackingReminderNotificationsArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23420,7 +23069,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingRemindersArray model module.
    * @module model/TrackingRemindersArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23500,7 +23149,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Unit model module.
    * @module model/Unit
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23768,7 +23417,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitArray model module.
    * @module model/UnitArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23848,7 +23497,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitCategory model module.
    * @module model/UnitCategory
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -23951,7 +23600,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The User model module.
    * @module model/User
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -24419,7 +24068,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserStudy model module.
    * @module model/UserStudy
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -25569,7 +25218,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTag model module.
    * @module model/UserTag
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -25674,7 +25323,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariable model module.
    * @module model/UserVariable
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27069,7 +26718,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableArray model module.
    * @module model/UserVariableArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27149,7 +26798,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableDelete model module.
    * @module model/UserVariableDelete
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27234,7 +26883,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategory model module.
    * @module model/VariableCategory
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27571,7 +27220,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategoryArray model module.
    * @module model/VariableCategoryArray
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27651,7 +27300,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Vote model module.
    * @module model/Vote
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27803,7 +27452,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VoteDelete model module.
    * @module model/VoteDelete
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -27898,7 +27547,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The XAxi model module.
    * @module model/XAxi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
@@ -28031,7 +27680,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The YAxi model module.
    * @module model/YAxi
-   * @version 5.8.1105
+   * @version 5.8.1109
    */
 
   /**
