@@ -3937,6 +3937,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.goToOutcomesList = function(variableName){
         qmService.goToState(qmStates.outcomesList, {causeVariableName: variableName});
     };
+    qmService.goToCorrelationsListForVariable = function(variable){
+        if(variable.outcome){
+            qmService.goToPredictorsList(variable.name);
+        } else {
+            qmService.goToOutcomesList(variable.name);
+        }
+    };
     qmService.goToStudyCreationForOutcome = function(variable){
         qmService.goToState(qmStates.studyCreation, {effectVariable: variable});
     };
@@ -7329,7 +7336,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 buttons: buttons,
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+                cancel: function() {qmLogService.debug('CANCELLED');},
                 buttonClicked: function(index) {
                     qmLogService.debug(null, 'BUTTON CLICKED', null, index);
                     if(index === 0) {qmService.goToState('app.measurementAddVariable', stateParams);} // Need variable name to populate in url
@@ -7337,13 +7344,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(index === 2) {qmService.goToState('app.historyAllVariable', stateParams);} // Need variable name to populate in url
                     if(index === 3) {qmService.goToState('app.variableSettings', stateParams);} // Need variable name to populate in url
                     if(index === 4 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
-                    if(index === 5 && variableObject){
-                        if(variableObject.outcome){
-                            qmService.goToPredictorsList(variableObject.name);
-                        } else {
-                            qmService.goToOutcomesList(variableObject.name);
-                        }
-                    }
+                    if(index === 5 && variableObject){qmService.goToCorrelationsListForVariable(variableObject);}
                     return true;
                 },
                 destructiveButtonClicked: function() {
