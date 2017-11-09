@@ -50,15 +50,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	};
 	$scope.refreshHistory = function(){
         $scope.state.history = [];
-		$scope.getHistory();
+		$scope.getHistory(true);
 	};
-	$scope.getHistory = function(){
+	$scope.getHistory = function(refresh){
 	    if($scope.state.loading){
 	        qmLog.info("Already getting measurements");
 	        return;
         }
         $scope.state.loading = true;
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
+		if(refresh){params.refresh = true;}
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
         if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}

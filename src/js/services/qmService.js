@@ -345,8 +345,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
         if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
+            successHandler(cachedData);
+            return;
         }
         configureQmApiClient();
         var apiInstance = new Quantimodo.MeasurementsApi();
@@ -354,7 +354,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
         }
         apiInstance.getMeasurements(params, callback);
-        //qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
