@@ -31,11 +31,79 @@ window.qm = {
         getCacheName: function(params){
             return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
         },
-        cache: {}
+        cache: {},
+        generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
+            if(!response){
+                qmLog.error("No response provided to qmSdkApiResponseHandler");
+                return;
+            }
+            qmLog.debug(response.status + ' response from ' + response.req.url);
+            if (error) {
+                qm.api.generalErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                if(data && params){
+                    qm.api.cacheSet(params, data, functionName);
+                }
+                if(successHandler){
+                    successHandler(data, response);
+                }
+            }
+        },
+        generalErrorHandler: function(error, data, response, options){
+            if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
+                {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
+            if(response.status === 401){
+                if(!options || !options.doNotSendToLogin){
+                    qmLog.error("Not authenticated!")
+                }
+            } else {
+                qmLogService.error(response.error.message, null, {apiResponse: response});
+            }
+        },
+        addGlobalParams: function (urlParams) {
+            urlParams.appName = encodeURIComponent(config.appSettings.appDisplayName);
+            if(config.appSettings.versionNumber){
+                urlParams.appVersion = encodeURIComponent(config.appSettings.versionNumber);
+            } else {
+                qmLog.debug('Version number not specified!', null, 'Version number not specified on config.appSettings');
+            }
+            urlParams.clientId = encodeURIComponent(qm.api.getClientId());
+            if(window.devCredentials){
+                if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
+                if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
+            } else {
+                qmLog.debug(null, 'No dev credentials', null);
+            }
+            var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
+            for(var i = 0; i < passableUrlParameters.length; i++){
+                if(urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = urlHelper.getParam(passableUrlParameters[i]);}
+            }
+            return urlParams;
+        },
+        getClientId: function(){
+            if(appSettings){return appSettings.clientId;}
+            if(config && config.appSettings){return config.appSettings.clientId;}
+            return window.urlHelper.getParam('clientId');
+        }
     },
     auth: {},
     unitHelper: {},
     trackingReminderNotifications : [],
+    reminderHelper: {
+        getNumberOfTrackingRemindersInLocalStorage: function () {
+            var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
+            return 0;
+        },
+        getTrackingRemindersFromLocalStorage: function(){
+            return qmStorage.getItem(qmItems.trackingReminders);
+        },
+        saveToLocalStorage: function(trackingReminders){
+            qmStorage.setItem(qmItems.trackingReminders, trackingReminders);
+            qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
+        }
+    },
     platform: {
         isChromeExtension: function (){
             if(typeof chrome === "undefined"){
@@ -62,6 +130,34 @@ window.qm = {
     userVariableHelper: {
         addUserVariablesToLocalStorage: function(userVariables){
             qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables);
+        },
+        getNumberOfUserVariablesInLocalStorage: function () {
+            var userVariables = qm.userVariableHelper.getUserVariablesFromLocalStorage();
+            if(userVariables && userVariables.length){return userVariables.length;}
+            return 0;
+        },
+        getUserVariablesFromLocalStorage: function(){
+            return qmStorage.getItem(qmItems.userVariables);
+        },
+        refreshIfLessThanNumberOfReminders: function(){
+            if(qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage() > qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage()){
+                qm.userVariableHelper.refreshUserVariables();
+            }
+        },
+        refreshUserVariables: function(){
+            function successHandler(data) {
+                qmStorage.setItem(qmItems.userVariables, data);
+            }
+            qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
+        },
+        getFromApi: function(params, successHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+            }
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getUserVariables(params, callback);
         }
     },
     manualTrackingVariableCategoryNames: [
