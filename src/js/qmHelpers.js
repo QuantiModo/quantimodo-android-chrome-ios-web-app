@@ -139,8 +139,14 @@ window.qm = {
         getUserVariablesFromLocalStorage: function(){
             return qmStorage.getItem(qmItems.userVariables);
         },
+        updateLatestMeasurementTime: function(variableName, lastValue){
+            qmStorage.getUserVariableByName(variableName, true, lastValue);
+        },
         refreshIfLessThanNumberOfReminders: function(){
-            if(qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage() > qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage()){
+            var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
+            qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
+            if(numberOfReminders > numberOfUserVariables){
                 qm.userVariableHelper.refreshUserVariables();
             }
         },
@@ -413,9 +419,6 @@ qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
-};
-qm.userVariableHelper.updateLatestMeasurementTime = function(variableName, lastValue){
-    qmStorage.getUserVariableByName(variableName, true, lastValue);
 };
 function getSubDomain(){
     var full = window.location.host;
