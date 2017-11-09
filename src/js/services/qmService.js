@@ -1,9 +1,12 @@
 /** @namespace window.qmLog */
 /** @namespace window.qmNotifications */
 /** @namespace window.qmStorage */
-angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout", "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading", "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
-                                                        $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
-                                                        $ionicActionSheet) {
+angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
+    "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
+    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
+    function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
+             $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
+             $ionicActionSheet) {
     var qmService = {qmStorage: {}};
     qmService.ionIcons = {
         history: 'ion-ios-list-outline',
@@ -12,7 +15,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         charts: 'ion-arrow-graph-up-right',
         settings: 'ion-settings',
         help: 'ion-help',
-        refresh: 'ion-android-refresh'
+        refresh: 'ion-android-refresh',
+        predictors: 'ion-log-in',
+        outcomes: 'ion-log-out',
+        study: 'ion-ios-book'
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
@@ -3925,6 +3931,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //variables = addVariableCategoryInfo(variables);
         return variables;
     };
+    qmService.goToPredictorsList = function(variableName){
+        qmService.goToState(qmStates.predictorsList, {effectVariableName: variableName});
+    };
+    qmService.goToOutcomesList = function(variableName){
+        qmService.goToState(qmStates.outcomesList, {causeVariableName: variableName});
+    };
+    qmService.goToStudyCreationForOutcome = function(variable){
+        qmService.goToState(qmStates.studyCreation, {effectVariable: variable});
+    };
+    qmService.goToStudyCreationForPredictor = function(variable){
+        qmService.goToState(qmStates.studyCreation, {causeVariable: variable});
+    };
     qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
         if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
@@ -6012,7 +6030,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         charts: { text: '<i class="icon ' + qmService.ionIcons.charts + '"></i>Charts'},
         settings: { text: '<i class="icon ' + qmService.ionIcons.settings + '"></i>Settings'},
         help: { text: '<i class="icon ' + qmService.ionIcons.help + '"></i>Help'},
-        refresh: { text: '<i class="icon ' + qmService.ionIcons.refresh + '"></i>Refresh'}
+        refresh: { text: '<i class="icon ' + qmService.ionIcons.refresh + '"></i>Refresh'},
+        predictors: { text: '<i class="icon ' + qmService.ionIcons.predictors + '"></i>Top Predictors'},
+        outcomes: { text: '<i class="icon ' + qmService.ionIcons.outcomes + '"></i>Top Outcomes'},
+        compare: { text: '<i class="icon ' + qmService.ionIcons.study + '"></i>Compare Another Variable'},
+        studyCreation: { text: '<i class="icon ' + qmService.ionIcons.study + '"></i>Create Study'}
     };
     qmService.getHistoryActionSheetButton = function(variableName){
         if(!variableName){variableName = '';}
@@ -7288,13 +7310,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.info("Getting action sheet for variable " + variableName);
         return function() {
             qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+            var buttons = [
+                qmService.actionSheetButtons.recordMeasurement,
+                qmService.actionSheetButtons.addReminder,
+                qmService.actionSheetButtons.history,
+                qmService.actionSheetButtons.analysisSettings,
+            ];
+            if(variableObject){buttons.push(qmService.actionSheetButtons.compare);}
+            if(variableObject && variableObject.outcome){buttons.push(qmService.actionSheetButtons.predictors);} else {buttons.push(qmService.actionSheetButtons.outcomes);}
             var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    qmService.actionSheetButtons.recordMeasurement,
-                    qmService.actionSheetButtons.addReminder,
-                    qmService.actionSheetButtons.history,
-                    qmService.actionSheetButtons.analysisSettings,
-                ],
+                buttons: buttons,
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
@@ -7304,6 +7329,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(index === 1) {qmService.goToState('app.reminderAdd', stateParams);} // Need variable name to populate in url
                     if(index === 2) {qmService.goToState('app.historyAllVariable', stateParams);} // Need variable name to populate in url
                     if(index === 3) {qmService.goToState('app.variableSettings', stateParams);} // Need variable name to populate in url
+                    if(index === 4 && variableObject){
+                        if(variableObject.outcome){
+                            qmService.goToStudyCreationForOutcome(variableObject);
+                        } else {
+                            qmService.goToStudyCreationForPredictor(variableObject);
+                        }
+                    }
+                    if(index === 5 && variableObject){
+                        if(variableObject.outcome){
+                            qmService.goToPredictorsList(variableObject.name);
+                        } else {
+                            qmService.goToOutcomesList(variableObject.name);
+                        }
+                    }
                     return true;
                 },
                 destructiveButtonClicked: function() {
