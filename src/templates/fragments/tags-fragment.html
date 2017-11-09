@@ -1,9 +1,9 @@
 <div class="card variable-settings" >
-    <div ng-show="variableObject.userTagVariables" class="item item-divider ng-binding">{{variableName}} Tags</div>
+    <div ng-show="state.variableObject.userTagVariables" class="item item-divider ng-binding">{{state.variableObject.name}} Tags</div>
     <ion-list >
-        <ion-item ng-show="variableObject.userTagVariables && variableObject.userTagVariables.length" ng-click="editTag(item)"
+        <ion-item ng-show="state.variableObject.userTagVariables && state.variableObject.userTagVariables.length" ng-click="editTag(item)"
                   class="item item-text-wrap"
-                  ng-repeat="item in variableObject.userTagVariables">
+                  ng-repeat="item in state.variableObject.userTagVariables">
             <p>{{item.tagDisplayText}}</p>
         </ion-item>
         <div class="row">
@@ -12,11 +12,11 @@
             </div>
         </div>
     </ion-list>
-    <div ng-show="variableObject.commonTagVariables && variableObject.commonTagVariables.length" class="item item-divider ng-binding">Common Tags</div>
-    <ion-list ng-show="variableObject.commonTagVariables && variableObject.commonTagVariables.length">
+    <div ng-show="state.variableObject.commonTagVariables && state.variableObject.commonTagVariables.length" class="item item-divider ng-binding">Common Tags</div>
+    <ion-list ng-show="state.variableObject.commonTagVariables && state.variableObject.commonTagVariables.length">
         <ion-item ng-click="editTag(item)"
                   class="item item-text-wrap"
-                  ng-repeat="item in variableObject.commonTagVariables">
+                  ng-repeat="item in state.variableObject.commonTagVariables">
             <p >{{item.tagDisplayText}}</p>
         </ion-item>
     </ion-list>

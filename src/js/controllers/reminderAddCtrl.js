@@ -481,7 +481,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3) {qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminder.variableName});}
+                if(index === 3) {qmService.goToVariableSettingsByName($scope.state.trackingReminder.variableName);}
                 if(index === 4) {showMoreUnits();}
                 return true;
             },

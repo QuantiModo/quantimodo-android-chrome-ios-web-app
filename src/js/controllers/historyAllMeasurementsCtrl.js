@@ -152,7 +152,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
 				if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-				if(index === 4){qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
+				if(index === 4){qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
 				return true;
 			},
 			destructiveButtonClicked: function() {
