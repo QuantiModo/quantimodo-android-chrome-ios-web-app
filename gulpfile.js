@@ -2282,7 +2282,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
-    outputPluginVersionNumber('cordova-plugin-local-notifications');
+    //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'copyAndroidLicenses',
