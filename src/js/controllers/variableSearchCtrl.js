@@ -24,7 +24,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug(null, $state.current.name + ' enter...', null);
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
-        populateCommonVariables();
+        //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
     });
