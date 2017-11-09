@@ -701,7 +701,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.joinStudy(body, function(response){
             if(response && response.data){
                 if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
-                if(response.data.trackingReminders){qmService.qmStorage.setItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
+                if(response.data.trackingReminders){qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);}
                 /** @namespace response.data.causeUserVariable */
                 /** @namespace response.data.effectUserVariable */
                 if(response.data.causeUserVariable && response.data.effectUserVariable){
@@ -2406,7 +2406,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmLogService.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
                         } else {
                             qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
-                            qmService.qmStorage.setItem('trackingReminders', JSON.stringify(response.data.trackingReminders));
+                            qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
                         }
                         if(!response.data.trackingReminderNotifications){
                             qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
@@ -2443,8 +2443,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.info(null, 'syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                qmService.qmStorage.setItem(qmItems.trackingReminders, trackingReminders);
                 qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
-                qmService.qmStorage.setItem('trackingReminders', JSON.stringify(trackingReminders));
                 deferred.resolve(trackingReminders);
             }, function(error){
                 qmLogService.error(error);
