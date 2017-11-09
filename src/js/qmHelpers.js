@@ -950,7 +950,7 @@ qmNotifications.getAllUniqueRatingNotifications = function() {
     qmLog.info("Called getAllUniqueRatingNotifications");
     var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
-        qmLog.info("No rating notifications in storage. Refreshing if empty");
+        qmLog.info("No rating notifications in storage!");
         return null;
     }
     qmLog.info("Got " + ratingNotifications.length + " total NON-UNIQUE rating notification from storage");
@@ -1020,6 +1020,7 @@ window.qmNotifications.refreshIfEmpty = function(callback){
     return false
 };
 window.qmNotifications.refreshIfEmptyOrStale = function(callback){
+    qmLog.info("qmNotifications.refreshIfEmptyOrStale");
     if (!qmNotifications.getNumberInGlobalsOrLocalStorage() || qmNotifications.getSecondsSinceLastNotificationsRefresh() > 3600){
         window.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
         qmNotifications.refreshNotifications(callback);
