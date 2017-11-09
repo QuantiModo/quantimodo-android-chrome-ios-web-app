@@ -192,7 +192,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				if(index === 1){qmService.goToState('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
-				if(index === 4){qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 4){qmService.goToVariableSettingsByObject(variableObject);}
                 if(index === 5){qmService.goToCorrelationsListForVariable(variableObject);}
                 if(index === 6 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
                 var buttonIndex = 7;

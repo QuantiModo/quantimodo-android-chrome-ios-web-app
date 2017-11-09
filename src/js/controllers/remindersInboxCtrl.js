@@ -415,7 +415,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
                 if(index === buttonIndex){skipAllForVariable(trackingReminderNotification);}
                 buttonIndex++;
-                if(index === buttonIndex){qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
+                if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
 				return true;
 			},
 			destructiveButtonClicked: function() {

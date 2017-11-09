@@ -528,6 +528,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
     };
     qmService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
+        if(!params){params = {};}
         params.name = variableName;
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
@@ -887,6 +888,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.goToState = function(to, params, options){
         qmLogService.debug(null, 'Called goToState: ' + to, null, qmLog.getStackTrace());
         $state.go(to, params, options);
+    };
+    qmService.goToVariableSettingsByObject = function(variableObject){
+        qmService.goToState("app.variableSettings", {variableObject: variableObject});
+    };
+    qmService.goToVariableSettingsByName = function(variableName){
+        qmService.goToState("app.variableSettings", {variableName: variableName});
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
@@ -3967,6 +3974,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
     };
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
+        if(!params){params = {};}
         if(!name){name = qm.getPrimaryOutcomeVariable().name;}
         var deferred = $q.defer();
         if(!refresh){
@@ -7342,7 +7350,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(index === 0) {qmService.goToState('app.measurementAddVariable', stateParams);} // Need variable name to populate in url
                     if(index === 1) {qmService.goToState('app.reminderAdd', stateParams);} // Need variable name to populate in url
                     if(index === 2) {qmService.goToState('app.historyAllVariable', stateParams);} // Need variable name to populate in url
-                    if(index === 3) {qmService.goToState('app.variableSettings', stateParams);} // Need variable name to populate in url
+                    if(index === 3) {qmService.goToVariableSettingsByObject(variableObject);} // Need variable name to populate in url
                     if(index === 4 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
                     if(index === 5 && variableObject){qmService.goToCorrelationsListForVariable(variableObject);}
                     return true;

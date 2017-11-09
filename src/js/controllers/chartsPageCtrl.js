@@ -55,8 +55,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     };
     $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
         {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
-    $scope.editSettingsButtonClick = function() {qmService.goToState('app.variableSettings',
-        {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});};
+    $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($rootScope.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){
             qmService.showShareVariableConfirmation(variableObject, sharingUrl, ev);
