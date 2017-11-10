@@ -6,8 +6,9 @@
             <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
             <label class="item item-input item-select" ng-if="state.showAddVariableCard">
                 <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
-                    <option ng-repeat="variableCategoryName in state.variableCategoryNames" value="{{state.trackingReminder.variableCategoryName}}">{{variableCategoryName}}</option>
+                <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName"
+                        ng-options="variableCategoryName as variableCategoryName for variableCategoryName in state.variableCategoryNames"
+                        ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
                 </select>
             </label>
             <label ng-if="!state.hideDefaultValueField" class="item item-input">
@@ -16,7 +17,8 @@
             </label>
             <label id="unitSelectorBlock" class="item item-input item-select" ng-if="!state.hideDefaultValueField">
                 <div class="input-label">Unit</div>
-                <select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()"> </select>
+                <select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName"
+                        ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()"> </select>
             </label>
             <label class="item item-input item-select" ng-if="!stateParams.favorite">
                 <div class="input-label">Frequency</div>
