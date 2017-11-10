@@ -157,7 +157,7 @@ window.qm = {
             }
             qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
         },
-        getFromApi: function(params, successHandler){
+        getFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
