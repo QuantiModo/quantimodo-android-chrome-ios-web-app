@@ -66,6 +66,12 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             $scope.state.showLoadMoreButton = false;
         }
     }
+    function hideLoader(){
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+        qmService.hideLoader();
+        $scope.searching = false;
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+    }
     function populateCorrelationList() {
         $scope.searching = true;
         var params = $scope.state.requestParams;
@@ -81,14 +87,9 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 } else {
                     $scope.state.noCorrelations = true;
                 }
-                qmService.hideLoader();
-                $scope.searching = false;
-                $scope.$broadcast('scroll.infiniteScrollComplete');
+                hideLoader();
             }, function (error) {
-                qmService.hideLoader();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $scope.searching = false;
+                hideLoader();
                 qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
