@@ -2,32 +2,40 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
-        variableName: qm.getPrimaryOutcomeVariable().name,
+        variableName: null,
         correlationObjects: [],
         showLoadMoreButton: false
     };
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
+    function getEffectVariableName() {
+        if(urlHelper.getParam('effectVariableName')){ return urlHelper.getParam('effectVariableName', window.location.href, true); }
+        if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
+        if(!getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
+    }
+    function getCauseVariableName() {
+        if(urlHelper.getParam('causeVariableName')){ return urlHelper.getParam('causeVariableName', window.location.href, true); }
+        if($stateParams.causeVariableName){return $stateParams.causeVariableName;}
+    }
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
+    });
+    // Have to get url params after entering.  Otherwise, we get params from study if coming back
+    $scope.$on('$ionicView.afterEnter', function(e) {
+        qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
-        if(urlHelper.getParam('causeVariableName')){ $stateParams.causeVariableName = urlHelper.getParam('causeVariableName', window.location.href, true); }
-        if(urlHelper.getParam('effectVariableName')){ $stateParams.effectVariableName = urlHelper.getParam('effectVariableName', window.location.href, true); }
-        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = qm.getPrimaryOutcomeVariable().name; }
-        $scope.state.requestParams.offset = 0;
-        $scope.state.requestParams.limit = 10;
-        if ($stateParams.causeVariableName){
-            $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
-            $rootScope.variableName = $stateParams.causeVariableName;
+        if (getCauseVariableName()){
+            $scope.state.requestParams.causeVariableName = getCauseVariableName();
+            $scope.state.variableName = getCauseVariableName();
             $scope.outcomeList = true;
         }
-        if ($stateParams.effectVariableName) {
-            $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
-            $rootScope.variableName = $stateParams.effectVariableName;
+        if (getEffectVariableName()) {
+            $scope.state.requestParams.effectVariableName = getEffectVariableName();
+            $scope.state.variableName = getEffectVariableName();
             $scope.predictorList = true;
         }
         if($stateParams.valence === 'positive'){$scope.state.requestParams.correlationCoefficient = "(gt)0";}
@@ -60,7 +68,10 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     }
     function populateCorrelationList() {
         $scope.searching = true;
-        qmService.getCorrelationsDeferred($scope.state.requestParams)
+        var params = $scope.state.requestParams;
+        params.limit = 10;
+        params.offset = $scope.state.correlationObjects.length;
+        qmService.getCorrelationsDeferred(params)
             .then(function (data) {
                 if(data.correlations.length) {
                     $scope.state.correlationsExplanation = data.explanation;
