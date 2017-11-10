@@ -673,6 +673,7 @@ window.apiHelper.getRequestUrl = function(path) {
     return url;
 };
 qmStorage.setTrackingReminderNotifications = function(notifications){
+    qmLog.info("Saving " + notifications.length() + " notifications to local storage", null, {notifications: notifications});
     qmNotifications.setLastNotificationsRefreshTime();
     qmChrome.updateChromeBadge(notifications.length);
     qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
