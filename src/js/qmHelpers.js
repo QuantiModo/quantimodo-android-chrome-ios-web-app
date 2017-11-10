@@ -87,6 +87,23 @@ window.qm = {
             return window.urlHelper.getParam('clientId');
         }
     },
+    arrayHelper: {
+        variableIsArray: function(variable){
+            var isAnArray = Array.isArray(variable);
+            if(isAnArray){return true;}
+            var constructorArray = variable.constructor === Array;
+            if(constructorArray){return true;}
+            var instanceOfArray = variable instanceof Array;
+            if(instanceOfArray){return true;}
+            var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
+            if(prototypeArray){return true;}
+            return false;
+        },
+        convertToArrayIfNecessary: function(variable){
+            if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
+            return variable;
+        }
+    },
     auth: {},
     unitHelper: {},
     trackingReminderNotifications : [],
@@ -128,8 +145,15 @@ window.qm = {
     },
     globals: {},
     userVariableHelper: {
-        addUserVariablesToLocalStorage: function(userVariables){
-            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables);
+        saveUserVariablesToLocalStorage: function(userVariables){
+            userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
+            var definitelyUserVariables = [];
+            for (var i = 0; i < userVariables.length; i++) {
+                if(userVariables[i].userId){
+                    definitelyUserVariables.push(userVariables[i]);
+                }
+            }
+            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, definitelyUserVariables);
         },
         getNumberOfUserVariablesInLocalStorage: function () {
             var userVariables = qm.userVariableHelper.getUserVariablesFromLocalStorage();
@@ -367,7 +391,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
     }
-    qm.userVariableHelper.addUserVariablesToLocalStorage(userVariable);
+    qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
     return userVariable;
 };
 // returns bool | string
@@ -614,7 +638,7 @@ window.pushMeasurements = function(measurements, onDoneListener) {
 };
 qmNotifications.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
     qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
-    if(!qm.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
+    if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
     if(!onDoneListener){
         onDoneListener = function (response) {
             qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
@@ -1096,19 +1120,9 @@ window.qmNotifications.getMostRecentRatingNotification = function (){
         return null;
     }
 };
-qm.variableIsArray = function(variable) {
-    var isAnArray = Array.isArray(variable);
-    if(isAnArray){return true;}
-    var constructorArray = variable.constructor === Array;
-    if(constructorArray){return true;}
-    var instanceOfArray = variable instanceof Array;
-    if(instanceOfArray){return true;}
-    var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
-    if(prototypeArray){return true;}
-    return false;
-};
+
 window.sortByProperty = function(arrayToSort, propertyName){
-    if(!qm.variableIsArray(arrayToSort)){
+    if(!qm.arrayHelper.variableIsArray(arrayToSort)){
         qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
         return arrayToSort;
     }
