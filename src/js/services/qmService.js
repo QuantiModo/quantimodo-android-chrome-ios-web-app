@@ -2010,13 +2010,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var message;
         if(!$rootScope.user){
             message = 'Not logging location because we do not have a user';
-            qmLogService.debug(null, message, null);
+            qmLogService.debug(message);
             deferred.reject(message);
             return deferred.promise;
         }
         if(!$rootScope.user.trackLocation){
             message = 'Location tracking disabled for this user';
-            qmLogService.debug(null, message, null);
+            qmLogService.debug( message);
             deferred.reject(message);
             return deferred.promise;
         }
@@ -2025,12 +2025,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var secondsSinceLastPostedLocation = currentTimestamp - lastLocationPostUnixtime;
         if(lastLocationPostUnixtime && secondsSinceLastPostedLocation < 300){
             message = 'Already posted location ' + secondsSinceLastPostedLocation + " seconds ago";
-            qmLogService.debug(null, message, null);
+            qmLogService.debug(message);
             deferred.reject(message);
             return deferred.promise;
         }
         $ionicPlatform.ready(function() {
-            qmStorage.setItem('lastLocationPostUnixtime', currentTimestamp);
+            qmStorage.setItem(qmItems.lastLocationPostUnixtime, currentTimestamp);
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
                 qmService.forecastIoWeather(position.coords);
@@ -5396,16 +5396,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
         var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
         url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + getYesterdayNoonTimestamp() + '?callback=JSON_CALLBACK';
-        qmLogService.debug(null, 'Checking weather forecast at ' + url, null);
+        qmLogService.debug( 'Checking weather forecast at ' + url);
         $http.jsonp(url).success(function(data) {
             var measurementSets = getWeatherMeasurementSets(data);
             qmService.postMeasurementsToApi(measurementSets, function (response) {
-                qmLogService.debug(null, 'posted weather measurements', null);
+                qmLogService.debug( 'posted weather measurements');
                 if(response && response.data && response.data.userVariables){
                     qm.userVariableHelper.addUserVariablesToLocalStorage(response.data.userVariables);
                 }
                 qmService.qmStorage.setItem('lastPostedWeatherAt', window.timeHelper.getUnixTimestampInSeconds());
-            }, function (error) {qmLogService.debug(null, 'could not post weather measurements: ' + error, null);});
+            }, function (error) {qmLogService.error('could not post weather measurements: ' + error);});
         }).error(function (error) {
             qmLog.error(null, 'forecast.io request failed!  error: ' + error, {error_response: error, request_url: url});
         });
