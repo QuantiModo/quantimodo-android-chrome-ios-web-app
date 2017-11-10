@@ -5,6 +5,8 @@ var androidArm7DebugApkName = 'android-armv7-debug';
 var androidX86DebugApkName = 'android-x86-debug';
 var androidArm7ReleaseApkName = 'android-armv7-release';
 var androidX86ReleaseApkName = 'android-x86-release';
+/** @namespace process.env.DEBUG_BUILD */
+/** @namespace process.env.BUILD_DEBUG */
 var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
@@ -1851,7 +1853,7 @@ gulp.task('copyAppResources', [
         process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
     }
     logInfo('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
-    var sourcePath = 'apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'
+    var sourcePath = 'apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*';
     logInfo("Copying " + sourcePath + "...");
     //return copyFiles(sourcePath, '.');
     return gulp.src([sourcePath], {
@@ -1865,7 +1867,7 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWww', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**']);
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
 });
 gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
