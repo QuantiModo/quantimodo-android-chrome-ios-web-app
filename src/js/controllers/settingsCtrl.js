@@ -9,6 +9,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
+        $scope.backgroundLocationTracking = !!(qmStorage.getItem('bgGPS'));
 		$rootScope.hideNavigationMenu = false;
 		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
@@ -321,5 +322,19 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     };
     $scope.upgradeToggle = function(){
         qmService.setUser($rootScope.user);
+    };
+    $scope.backgroundLocationChange = function() {
+        $scope.backgroundLocationTracking = !$scope.backgroundLocationTracking;
+        if($scope.backgroundLocationTracking){
+            qmStorage.setItem('bgGPS', 1);
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
+            qmService.backgroundGeolocationInit();
+            qmService.showInfoToast('Background location tracking enabled');
+            qmService.updateLocationVariablesAndPostMeasurementIfChanged();
+        } else  {
+            qmStorage.setItem('bgGPS', 0);
+            qmService.showInfoToast('Background location tracking disabled');
+            qmService.backgroundGeolocationStop();
+        }
     };
 }]);
