@@ -139,8 +139,15 @@ window.qm = {
         getUserVariablesFromLocalStorage: function(){
             return qmStorage.getItem(qmItems.userVariables);
         },
+        updateLatestMeasurementTime: function(variableName, lastValue){
+            qmStorage.getUserVariableByName(variableName, true, lastValue);
+        },
         refreshIfLessThanNumberOfReminders: function(){
-            if(qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage() > qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage()){
+            var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
+            qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
+            if(numberOfReminders > numberOfUserVariables){
+                qmLog.error("Refreshing user variables because we have more tracking reminders");
                 qm.userVariableHelper.refreshUserVariables();
             }
         },
@@ -232,7 +239,6 @@ window.qmItems = {
     lastPushTimestamp: 'lastPushTimestamp',
     measurementsQueue: 'measurementsQueue',
     mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
-    notifications: 'trackingReminderNotifications',
     notificationInterval: 'notificationInterval',
     notificationsSyncQueue: 'notificationsSyncQueue',
     onboarded: 'onboarded',
@@ -413,9 +419,6 @@ qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
-};
-qm.userVariableHelper.updateLatestMeasurementTime = function(variableName, lastValue){
-    qmStorage.getUserVariableByName(variableName, true, lastValue);
 };
 function getSubDomain(){
     var full = window.location.host;
@@ -1042,7 +1045,7 @@ window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
         {groupingHash: groupingHash}, "error");
 };
 qmNotifications.deleteByVariableName = function(variableName){
-    qmStorage.deleteByProperty(qmItems.notifications, 'variableName', variableName);
+    qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', variableName);
 };
 function getUnique(array, propertyName) {
     var flags = [], output = [], l = array.length, i;
@@ -1084,7 +1087,7 @@ window.qmNotifications.getMostRecentRatingNotification = function (){
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
         //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        //qmStorage.deleteByProperty(qmItems.notifications, 'variableName', notification.variableName);
+        //qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', notification.variableName);
         return notification;
     } else {
         console.info('No rating notifications for popup');
