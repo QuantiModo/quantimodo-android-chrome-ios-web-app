@@ -2443,7 +2443,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.info(null, 'syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
-                qmService.qmStorage.setItem(qmItems.trackingReminders, trackingReminders);
+                qm.reminderHelper.saveToLocalStorage(trackingReminders);
                 qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 deferred.resolve(trackingReminders);
             }, function(error){
