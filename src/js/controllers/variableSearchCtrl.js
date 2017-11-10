@@ -24,14 +24,14 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug(null, $state.current.name + ' enter...', null);
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
-        populateCommonVariables();
+        //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
         qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
-        if(variableObject.lastValue !== null){qm.userVariableHelper.addUserVariablesToLocalStorage(variableObject);}
+        if(variableObject.lastValue !== null){qm.userVariableHelper.saveUserVariablesToLocalStorage(variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
         $scope.state.variableSearchQuery.name = '';
         var userTagData;
@@ -168,9 +168,10 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.getUserVariablesFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
+                    // Don't sort because it overwrites the order from local storage and from the API
+                    //var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
                     // Put user variables at top of list
-                    userVariables = qmService.sortByProperty(userVariables, sort);
+                    //userVariables = qmService.sortByProperty(userVariables, sort);
                     $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;

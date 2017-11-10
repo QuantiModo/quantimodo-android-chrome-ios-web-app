@@ -87,6 +87,23 @@ window.qm = {
             return window.urlHelper.getParam('clientId');
         }
     },
+    arrayHelper: {
+        variableIsArray: function(variable){
+            var isAnArray = Array.isArray(variable);
+            if(isAnArray){return true;}
+            var constructorArray = variable.constructor === Array;
+            if(constructorArray){return true;}
+            var instanceOfArray = variable instanceof Array;
+            if(instanceOfArray){return true;}
+            var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
+            if(prototypeArray){return true;}
+            return false;
+        },
+        convertToArrayIfNecessary: function(variable){
+            if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
+            return variable;
+        }
+    },
     auth: {},
     unitHelper: {},
     trackingReminderNotifications : [],
@@ -128,8 +145,15 @@ window.qm = {
     },
     globals: {},
     userVariableHelper: {
-        addUserVariablesToLocalStorage: function(userVariables){
-            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables);
+        saveUserVariablesToLocalStorage: function(userVariables){
+            userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
+            var definitelyUserVariables = [];
+            for (var i = 0; i < userVariables.length; i++) {
+                if(userVariables[i].userId){
+                    definitelyUserVariables.push(userVariables[i]);
+                }
+            }
+            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, definitelyUserVariables);
         },
         getNumberOfUserVariablesInLocalStorage: function () {
             var userVariables = qm.userVariableHelper.getUserVariablesFromLocalStorage();
@@ -139,8 +163,15 @@ window.qm = {
         getUserVariablesFromLocalStorage: function(){
             return qmStorage.getItem(qmItems.userVariables);
         },
+        updateLatestMeasurementTime: function(variableName, lastValue){
+            qmStorage.getUserVariableByName(variableName, true, lastValue);
+        },
         refreshIfLessThanNumberOfReminders: function(){
-            if(qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage() > qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage()){
+            var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
+            qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
+            if(numberOfReminders > numberOfUserVariables){
+                qmLog.error("Refreshing user variables because we have more tracking reminders");
                 qm.userVariableHelper.refreshUserVariables();
             }
         },
@@ -150,7 +181,7 @@ window.qm = {
             }
             qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
         },
-        getFromApi: function(params, successHandler){
+        getFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
@@ -232,7 +263,6 @@ window.qmItems = {
     lastPushTimestamp: 'lastPushTimestamp',
     measurementsQueue: 'measurementsQueue',
     mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
-    notifications: 'trackingReminderNotifications',
     notificationInterval: 'notificationInterval',
     notificationsSyncQueue: 'notificationsSyncQueue',
     onboarded: 'onboarded',
@@ -361,7 +391,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
     }
-    qm.userVariableHelper.addUserVariablesToLocalStorage(userVariable);
+    qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
     return userVariable;
 };
 // returns bool | string
@@ -413,9 +443,6 @@ qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
     if(window.location.href.indexOf('https://') !== -1){return "web";}
     return 'mobile';
-};
-qm.userVariableHelper.updateLatestMeasurementTime = function(variableName, lastValue){
-    qmStorage.getUserVariableByName(variableName, true, lastValue);
 };
 function getSubDomain(){
     var full = window.location.host;
@@ -611,7 +638,7 @@ window.pushMeasurements = function(measurements, onDoneListener) {
 };
 qmNotifications.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
     qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
-    if(!qm.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
+    if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
     if(!onDoneListener){
         onDoneListener = function (response) {
             qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
@@ -1042,7 +1069,7 @@ window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
         {groupingHash: groupingHash}, "error");
 };
 qmNotifications.deleteByVariableName = function(variableName){
-    qmStorage.deleteByProperty(qmItems.notifications, 'variableName', variableName);
+    qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', variableName);
 };
 function getUnique(array, propertyName) {
     var flags = [], output = [], l = array.length, i;
@@ -1084,7 +1111,7 @@ window.qmNotifications.getMostRecentRatingNotification = function (){
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
         //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        //qmStorage.deleteByProperty(qmItems.notifications, 'variableName', notification.variableName);
+        //qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', notification.variableName);
         return notification;
     } else {
         console.info('No rating notifications for popup');
@@ -1093,19 +1120,9 @@ window.qmNotifications.getMostRecentRatingNotification = function (){
         return null;
     }
 };
-qm.variableIsArray = function(variable) {
-    var isAnArray = Array.isArray(variable);
-    if(isAnArray){return true;}
-    var constructorArray = variable.constructor === Array;
-    if(constructorArray){return true;}
-    var instanceOfArray = variable instanceof Array;
-    if(instanceOfArray){return true;}
-    var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
-    if(prototypeArray){return true;}
-    return false;
-};
+
 window.sortByProperty = function(arrayToSort, propertyName){
-    if(!qm.variableIsArray(arrayToSort)){
+    if(!qm.arrayHelper.variableIsArray(arrayToSort)){
         qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
         return arrayToSort;
     }
@@ -1444,6 +1461,7 @@ qm.unitHelper.indexByAbbreviatedName = function(){
     return qm.unitsIndexedByAbbreviatedName;
 };
 qm.unitHelper.getUnitArrayContaining = function(currentUnitAbbreviatedName){
+    if(!currentUnitAbbreviatedName || currentUnitAbbreviatedName === ""){return qm.unitHelper.getNonAdvancedUnits();}
     if(qm.unitHelper.inNonAdvancedUnitAbbreviatedNames(currentUnitAbbreviatedName)){return qm.unitHelper.getNonAdvancedUnits();}
     if(qm.unitHelper.inManualTrackingUnitUnitAbbreviatedNames(currentUnitAbbreviatedName)){return qm.unitHelper.getManualTrackingUnits();}
     return qm.unitHelper.getAllUnits();

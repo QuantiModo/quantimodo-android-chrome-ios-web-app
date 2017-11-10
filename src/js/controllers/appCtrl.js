@@ -381,11 +381,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.trackLocationChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
-        qmLogService.debug(null, 'trackLocation', null, $rootScope.user.trackLocation);
+        qmLogService.debug('trackLocation', null, $rootScope.user.trackLocation);
         qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
         if($rootScope.user && $rootScope.user.trackLocation){
-            qmLogService.debug(null, 'Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready', null);
-            qmService.backgroundGeolocationInit();
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
         }
         if($rootScope.user.trackLocation){
             qmService.showInfoToast('Location tracking enabled');
@@ -393,10 +392,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
         if(!$rootScope.user.trackLocation) {
             qmService.showInfoToast('Location tracking disabled');
-            qmService.backgroundGeolocationStop();
-            qmLogService.debug(null, 'Do not track location', null);
+            qmLogService.debug('Do not track location');
         }
     };
+
     $scope.$on('$stateChangeSuccess', function() {
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
