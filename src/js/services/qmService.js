@@ -2049,7 +2049,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
-        qmService.qmStorage.setItem('bgGPS', 1);
+        qmStorage.setItem('bgGPS', 1);
         //qmLogService.debug('Starting qmService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             qmLogService.debug(null, 'background location is ' + JSON.stringify(coordinates), null);
@@ -2083,7 +2083,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.backgroundGeolocationInit = function () {
         var deferred = $q.defer();
         //qmLogService.debug('Starting qmService.backgroundGeolocationInit');
-        if ($rootScope.user && $rootScope.user.trackLocation) {
+        if (qmStorage.getItem('bgGPS')) {
             $ionicPlatform.ready(function() { qmService.backgroundGeolocationStart(); });
             deferred.resolve();
         } else {
@@ -2095,7 +2095,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.backgroundGeolocationStop = function () {
         if(typeof backgroundGeoLocation !== "undefined"){
-            qmService.qmStorage.setItem('bgGPS', 0);
+            qmStorage.setItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         }
     };
