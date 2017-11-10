@@ -1447,6 +1447,7 @@ qm.unitHelper.indexByAbbreviatedName = function(){
     return qm.unitsIndexedByAbbreviatedName;
 };
 qm.unitHelper.getUnitArrayContaining = function(currentUnitAbbreviatedName){
+    if(!currentUnitAbbreviatedName || currentUnitAbbreviatedName === ""){return qm.unitHelper.getNonAdvancedUnits();}
     if(qm.unitHelper.inNonAdvancedUnitAbbreviatedNames(currentUnitAbbreviatedName)){return qm.unitHelper.getNonAdvancedUnits();}
     if(qm.unitHelper.inManualTrackingUnitUnitAbbreviatedNames(currentUnitAbbreviatedName)){return qm.unitHelper.getManualTrackingUnits();}
     return qm.unitHelper.getAllUnits();
