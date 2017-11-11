@@ -73,7 +73,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.showBlackRingLoader();
             qmService.postStudyDeferred(body).then(function () {
                 qmService.hideLoader();
-                if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
+                if(sharingUrl){
+                    shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
+                }
             }, function (error) {
                 qmService.hideLoader();
                 qmLogService.error(error);
@@ -98,6 +100,30 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleStudyShare = function (correlationObject, ev) {
         if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
     };
+
+    function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
+        if ($rootScope.isMobile){
+            // this is the complete list of currently supported params you can pass to the plugin (all optional)
+            var options = {
+                //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
+                //subject: correlationObject.sharingTitle, // fi. for email
+                //files: ['', ''], // an array of filenames either locally or remotely
+                url: correlationObject.studyLinkStatic.replace('local.q', 'app.q'),
+                chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+            };
+            var onSuccess = function(result) {
+                //qmLog.error("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                qmLog.error("Share to " + result.app + ' completed: ' + result.completed); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+            };
+            var onError = function(msg) {
+                qmLog.error("Sharing failed with message: " + msg);
+            };
+            window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+        } else {
+            qmService.openSharingUrl(sharingUrl);
+        }
+    }
+
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
@@ -108,7 +134,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
         }
-        qmService.openSharingUrl(sharingUrl);
+        shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
     };
     $scope.openSharingUrl = function(sharingUrl){ qmService.openSharingUrl(sharingUrl); };
     $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
