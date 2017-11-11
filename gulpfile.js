@@ -1837,7 +1837,7 @@ gulp.task('cleanChromeBuildFolder', [], function () {
 });
 gulp.task('cleanCombinedFiles', [], function () {
     logInfo("Running cleanCombinedFiles...");
-    return cleanFiles(['www/css/combined*.css', 'www/scripts/combined*.js']);
+    return cleanFiles(['www/css/combined*', 'www/scripts/combined*']);
 });
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
