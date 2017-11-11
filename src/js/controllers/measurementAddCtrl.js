@@ -24,7 +24,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         $rootScope.bloodPressure = {diastolicValue: null, systolicValue: null, show: false};
         $scope.state.title = 'Record a Measurement';
         $scope.state.selectedDate = moment();
