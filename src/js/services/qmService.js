@@ -3940,10 +3940,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return variables;
     };
     qmService.goToPredictorsList = function(variableName){
-        qmService.goToState(qmStates.predictorsList, {effectVariableName: variableName});
+        qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
     qmService.goToOutcomesList = function(variableName){
-        qmService.goToState(qmStates.outcomesList, {causeVariableName: variableName});
+        qmService.goToState(qmStates.outcomesAll, {causeVariableName: variableName});
     };
     qmService.goToCorrelationsListForVariable = function(variable){
         if(variable.outcome){
