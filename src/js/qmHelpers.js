@@ -215,6 +215,9 @@ window.qm = {
     stringHelper: {
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
+        },
+        prettyJsonStringify: function (jsonObject) {
+            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
         }
     },
     getAppSettings: function () {
