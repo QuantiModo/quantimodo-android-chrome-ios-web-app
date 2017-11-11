@@ -165,7 +165,69 @@ angular.module('starter',
     window.qmStates = {
         predictorsList: 'app.predictorsAll',
         outcomesList: 'app.outcomesAll',
-        studyCreation: 'app.studyCreation',
+        "intro": "app.intro",
+        "app": "app",
+        "welcome": "app.welcome",
+        "login": "app.login",
+        "track": "app.track",
+        "measurementAddSearch": "app.measurementAddSearch",
+        "reminderSearch": "app.reminderSearch",
+        "favoriteSearch": "app.favoriteSearch",
+        "measurementAdd": "app.measurementAdd",
+        "measurementAddVariable": "app.measurementAddVariable",
+        "variableSettings": "app.variableSettings",
+        "import": "app.import",
+        "importNative": "app.importNative",
+        "chartSearch": "app.chartSearch",
+        "predictorSearch": "app.predictorSearch",
+        "tageeSearch": "app.tageeSearch",
+        "tagSearch": "app.tagSearch",
+        "tagAdd": "app.tagAdd",
+        "outcomeSearch": "app.outcomeSearch",
+        "searchVariablesWithUserPredictors": "app.searchVariablesWithUserPredictors",
+        "searchVariablesWithCommonPredictors": "app.searchVariablesWithCommonPredictors",
+        "charts": "app.charts",
+        "predictorsAll": "app.predictorsAll",
+        "outcomesAll": "app.outcomesAll",
+        "predictorsPositive": "app.predictorsPositive",
+        "predictorsPositiveVariable": "app.predictorsPositiveVariable",
+        "predictorsNegative": "app.predictorsNegative",
+        "predictorsNegativeVariable": "app.predictorsNegativeVariable",
+        "predictorsUser": "app.predictorsUser",
+        "predictorsAggregated": "app.predictorsAggregated",
+        "study": "app.study",
+        "studyJoin": "app.studyJoin",
+        "studyCreation": "app.studyCreation",
+        "settings": "app.settings",
+        "notificationPreferences": "app.notificationPreferences",
+        "map": "app.map",
+        "help": "app.help",
+        "feedback": "app.feedback",
+        "contact": "app.contact",
+        "history": "app.history",
+        "historyAll": "app.historyAll",
+        "historyAllCategory": "app.historyAllCategory",
+        "historyAllVariable": "app.historyAllVariable",
+        "remindersInbox": "app.remindersInbox",
+        "remindersInboxCompact": "app.remindersInboxCompact",
+        "favorites": "app.favorites",
+        "configurationClientId": "app.configurationClientId",
+        "configuration": "app.configuration",
+        "remindersInboxToday": "app.remindersInboxToday",
+        "manageScheduledMeds": "app.manageScheduledMeds",
+        "todayMedSchedule": "app.todayMedSchedule",
+        "asNeededMeds": "app.asNeededMeds",
+        "remindersManage": "app.remindersManage",
+        "remindersManageCategory": "app.remindersManageCategory",
+        "remindersList": "app.remindersList",
+        "remindersListCategory": "app.remindersListCategory",
+        "variableList": "app.variableList",
+        "variableListCategory": "app.variableListCategory",
+        "reminderAdd": "app.reminderAdd",
+        "onboarding": "app.onboarding",
+        "upgrade": "app.upgrade",
+        "tabs": "app.tabs",
+        "favoriteAdd": "app.favoriteAdd"
     };
     $stateProvider
         .state('intro', {
@@ -181,7 +243,7 @@ angular.module('starter',
             controller: 'AppCtrl',
             resolve : config_resolver
         })
-        .state('app.welcome', {
+        .state(qmStates.welcome, {
             cache: true,
             url: "/welcome",
             views: {
@@ -191,7 +253,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.login', {
+        .state(qmStates.login, {
             url: "/login",
             params: {
                 fromState : null,
@@ -204,7 +266,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.intro', {
+        .state(qmStates.intro, {
             cache: true,
             url: "/intro",
             params: {
@@ -218,7 +280,7 @@ angular.module('starter',
             },
             resolve : config_resolver
         })
-        .state('app.track', {
+        .state(qmStates.track, {
             url: "/track",
             cache: false,
             views: {
@@ -228,14 +290,14 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.measurementAddSearch', {
+        .state(qmStates.measurementAddSearch, {
             url: "/measurement-add-search",
             params: {
                 reminder : null,
                 fromState : null,
                 measurement : null,
                 variableObject : null,
-                nextState: 'app.measurementAdd',
+                nextState: qmStates.measurementAdd,
                 variableCategoryName: null,
                 excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
@@ -253,7 +315,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.reminderSearch', {
+        .state(qmStates.reminderSearch, {
             url: "/reminder-search",
             params: {
                 variableCategoryName : null,
@@ -261,7 +323,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd',
+                nextState: qmStates.reminderAdd,
                 excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
@@ -279,7 +341,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoriteSearch', {
+        .state(qmStates.favoriteSearch, {
             url: "/favorite-search",
             params: {
                 variableCategoryName : null,
@@ -287,7 +349,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 favoriteSearch: true,
-                nextState: 'app.favoriteAdd',
+                nextState: qmStates.favoriteAdd,
                 pageTitle: 'Add a favorite',
                 excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
@@ -305,7 +367,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.measurementAdd', {
+        .state(qmStates.measurementAdd, {
             url: "/measurement-add",
             cache: false,
             params: {
@@ -324,7 +386,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.measurementAddVariable', {
+        .state(qmStates.measurementAddVariable, {
             url: "/measurement-add-variable-name/:variableName",
             cache: false,
             params: {
@@ -342,7 +404,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableSettings', {
+        .state(qmStates.variableSettings, {
             url: "/variable-settings/:variableName",
             cache: false,
             params: {
@@ -360,7 +422,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.import', {
+        .state(qmStates.import, {
             url: "/import",
             cache: false,
             views: {
@@ -370,7 +432,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.importNative', {
+        .state(qmStates.importNative, {
             url: "/import-native",
             cache: false,
             params: {
@@ -383,7 +445,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.chartSearch', {
+        .state(qmStates.chartSearch, {
             url: "/chart-search",
             cache: false,
             params: {
@@ -391,7 +453,7 @@ angular.module('starter',
                 fromState: null,
                 fromUrl: null,
                 measurement: null,
-                nextState: 'app.charts',
+                nextState: qmStates.charts,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 variableSearchParameters: {
@@ -408,7 +470,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorSearch', {
+        .state(qmStates.predictorSearch, {
             url: "/predictor-search",
             cache: false,
             params: {
@@ -439,7 +501,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.tageeSearch', {
+        .state(qmStates.tageeSearch, {
             url: "/tagee-search",
             cache: false,
             params: {
@@ -447,7 +509,7 @@ angular.module('starter',
                 title: "Select Tagee", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a variable to tag...",
                 variableCategoryName: null,
-                nextState: 'app.tagAdd',
+                nextState: qmStates.tagAdd,
                 fromState: null,
                 fromStateParams: null,
                 doNotShowAddVariableButton: true,
@@ -468,7 +530,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.tagSearch', {
+        .state(qmStates.tagSearch, {
             url: "/tag-search",
             cache: false,
             params: {
@@ -476,7 +538,7 @@ angular.module('starter',
                 title: "Tags", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a tag...",
                 variableCategoryName: null,
-                nextState: 'app.tagAdd',
+                nextState: qmStates.tagAdd,
                 fromState: null,
                 fromStateParams: null,
                 doNotShowAddVariableButton: true,
@@ -497,7 +559,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.tagAdd', {
+        .state(qmStates.tagAdd, {
             url: "/tag-add",
             cache: false,
             params: {
@@ -521,7 +583,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.outcomeSearch', {
+        .state(qmStates.outcomeSearch, {
             url: "/outcome-search",
             cache: false,
             params: {
@@ -551,12 +613,12 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.searchVariablesWithUserPredictors', {
+        .state(qmStates.searchVariablesWithUserPredictors, {
             url: "/search-variables-with-user-predictors",
             cache: false,
             params: {
                 variableCategoryName: null,
-                nextState: 'app.predictorsAll',
+                nextState: qmStates.predictorsAll,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 variableSearchParameters: {
@@ -573,12 +635,12 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.searchVariablesWithCommonPredictors', {
+        .state(qmStates.searchVariablesWithCommonPredictors, {
             url: "/search-variables-with-common-predictors",
             cache: false,
             params: {
                 variableCategoryName: null,
-                nextState: 'app.predictorsAll',
+                nextState: qmStates.predictorsAll,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 variableSearchParameters: {
@@ -595,7 +657,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.charts', {
+        .state(qmStates.charts, {
             url: "/charts/:variableName",
             cache: false,
             params: {
@@ -651,7 +713,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsPositive', {
+        .state(qmStates.predictorsPositive, {
             url: "/predictors-positive",
             params: {
                 aggregated: false,
@@ -671,7 +733,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsPositiveVariable', {
+        .state(qmStates.predictorsPositiveVariable, {
             url: "/predictors-positive-variable/:effectVariableName",
             params: {
                 aggregated: false,
@@ -691,7 +753,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsNegative', {
+        .state(qmStates.predictorsNegative, {
             url: "/predictors-negative",
             params: {
                 aggregated: false,
@@ -711,7 +773,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsNegativeVariable', {
+        .state(qmStates.predictorsNegativeVariable, {
             url: "/predictors-negative-variable/:effectVariableName",
             params: {
                 aggregated: false,
@@ -731,7 +793,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsUser', {
+        .state(qmStates.predictorsUser, {
             url: "/predictors/user/:effectVariableName",
             params: {
                 aggregated: false,
@@ -750,7 +812,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictorsAggregated', {
+        .state(qmStates.predictorsAggregated, {
             url: "/predictors/aggregated/:effectVariableName",
             params: {
                 aggregated: true,
@@ -769,7 +831,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.study', {
+        .state(qmStates.study, {
             cache: true,
             url: "/study",
             params: {
@@ -784,7 +846,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.studyJoin', {
+        .state(qmStates.studyJoin, {
             cache: false,
             url: "/study-join",
             params: {
@@ -812,7 +874,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.settings', {
+        .state(qmStates.settings, {
             url: "/settings",
             views: {
                 'menuContent': {
@@ -821,7 +883,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.notificationPreferences', {
+        .state(qmStates.notificationPreferences, {
             url: "/notificationPreferences",
             views: {
                 'menuContent': {
@@ -830,7 +892,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.map', {
+        .state(qmStates.map, {
             url: "/map",
             views: {
                 'menuContent': {
@@ -839,7 +901,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.help', {
+        .state(qmStates.help, {
             url: "/help",
             views: {
                 'menuContent': {
@@ -848,7 +910,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.feedback', {
+        .state(qmStates.feedback, {
             url: "/feedback",
             views: {
                 'menuContent': {
@@ -857,7 +919,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.contact', {
+        .state(qmStates.contact, {
             url: "/contact",
             views: {
                 'menuContent': {
@@ -868,7 +930,7 @@ angular.module('starter',
         })
         // Broken; redirecting to help page instead
         /*
-        .state('app.postIdea', {
+        .state(qmStates.postIdea, {
             url: "/postidea",
             views: {
                 'menuContent': {
@@ -878,7 +940,7 @@ angular.module('starter',
             }
         })
         */
-        .state('app.history', {
+        .state(qmStates.history, {
             url: "/history",
             views: {
                 'menuContent': {
@@ -887,7 +949,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.historyAll', {
+        .state(qmStates.historyAll, {
             url: "/history-all",
             cache: true,
             params: {
@@ -902,7 +964,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.historyAllCategory', {
+        .state(qmStates.historyAllCategory, {
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {},
@@ -913,7 +975,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.historyAllVariable', {
+        .state(qmStates.historyAllVariable, {
             url: "/history-all-variable/:variableName",
             cache: true,
             params: {
@@ -926,7 +988,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersInbox', {
+        .state(qmStates.remindersInbox, {
             url: "/reminders-inbox",
             cache: true,
             params: {
@@ -946,7 +1008,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersInboxCompact', {
+        .state(qmStates.remindersInboxCompact, {
             url: "/reminders-inbox-compact",
             cache: false,
             params: {
@@ -967,7 +1029,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favorites', {
+        .state(qmStates.favorites, {
             url: "/favorites",
             cache: false,
             params: {
@@ -985,7 +1047,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.configurationClientId', {
+        .state(qmStates.configurationClientId, {
             cache: true,
             url: "/configuration/:clientId",
             views: {
@@ -995,7 +1057,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.configuration', {
+        .state(qmStates.configuration, {
             cache: true,
             url: "/configuration",
             views: {
@@ -1005,7 +1067,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersInboxToday', {
+        .state(qmStates.remindersInboxToday, {
             url: "/reminders-inbox-today",
             params: {
                 unit: null,
@@ -1022,7 +1084,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.manageScheduledMeds', {
+        .state(qmStates.manageScheduledMeds, {
             url: "/manage-scheduled-meds",
             params: {
                 title: "Manage Scheduled Meds",
@@ -1037,7 +1099,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.todayMedSchedule', {
+        .state(qmStates.todayMedSchedule, {
             url: "/today-med-schedule",
             params: {
                 title: "Today's Med Schedule",
@@ -1052,7 +1114,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.asNeededMeds', {
+        .state(qmStates.asNeededMeds, {
             url: "/as-needed-meds",
             params: {
                 title: "As Needed Meds",
@@ -1065,7 +1127,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersManage', {
+        .state(qmStates.remindersManage, {
             cache: false,
             url: "/reminders-manage",
             views: {
@@ -1078,7 +1140,7 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
-        .state('app.remindersManageCategory', {
+        .state(qmStates.remindersManageCategory, {
             cache: false,
             url: "/reminders-manage-category/:variableCategoryName",
             views: {
@@ -1089,7 +1151,7 @@ angular.module('starter',
             },
             params: {}
         })
-        .state('app.remindersList', {
+        .state(qmStates.remindersList, {
             cache: false,
             url: "/reminders-list",
             views: {
@@ -1102,7 +1164,7 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
-        .state('app.remindersListCategory', {
+        .state(qmStates.remindersListCategory, {
             cache: false,
             url: "/reminders-list-category/:variableCategoryName",
             views: {
@@ -1113,7 +1175,7 @@ angular.module('starter',
             },
             params: {}
         })
-        .state('app.variableList', {
+        .state(qmStates.variableList, {
             cache: true,
             url: "/variable-list",
             params: {
@@ -1126,7 +1188,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableListCategory', {
+        .state(qmStates.variableListCategory, {
             cache: true,
             url: "/variable-list-category/:variableCategoryName",
             params: {},
@@ -1137,7 +1199,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.reminderAdd', {
+        .state(qmStates.reminderAdd, {
             url: "/reminder-add/:variableName",
             cache: false,
             params: {
@@ -1157,7 +1219,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.onboarding', {
+        .state(qmStates.onboarding, {
             url: "/onboarding",
             cache: true,
             params: { },
@@ -1168,7 +1230,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.upgrade', {
+        .state(qmStates.upgrade, {
             url: "/upgrade",
             cache: true,
             params: {
@@ -1181,7 +1243,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.tabs', {
+        .state(qmStates.tabs, {
             url: "/tabs",
             cache: true,
             params: { },
@@ -1192,7 +1254,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoriteAdd', {
+        .state(qmStates.favoriteAdd, {
             url: "/favorite-add",
             cache: false,
             params: {
