@@ -7,7 +7,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);
-        if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
+        if(typeof $rootScope.hideNavigationMenu === "undefined") {
+            qmService.unHideNavigationMenu();
+        }
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
         if(!userCanConnect()){
@@ -29,7 +31,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
 				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
-				$rootScope.hideNavigationMenu = false;
+                qmService.unHideNavigationMenu();
 				//noinspection JSCheckFunctionSignatures
 				qmService.goToState(config.appSettings.appDesign.defaultState);
 			} else {
@@ -37,7 +39,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 				if(accessToken){ targetUrl += "access_token=" + accessToken; }
 				var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 				ref.addEventListener('exit', function(){
-					$rootScope.hideNavigationMenu = false;
+                    qmService.unHideNavigationMenu();
 					//noinspection JSCheckFunctionSignatures
 					qmService.goToState(config.appSettings.appDesign.defaultState);
 				});

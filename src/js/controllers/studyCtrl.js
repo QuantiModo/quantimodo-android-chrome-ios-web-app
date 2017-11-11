@@ -15,7 +15,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.enter", function() {
         qmLogService.debug(null, 'enter state ' + $state.current.name, null);
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         if($stateParams.correlationObject){
             qmService.qmStorage.setItem('lastStudy', JSON.stringify($stateParams.correlationObject));
             $rootScope.correlationObject = $stateParams.correlationObject;

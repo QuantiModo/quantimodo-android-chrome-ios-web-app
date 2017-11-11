@@ -16,7 +16,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     };
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
             $scope.variableCategoryName = $stateParams.variableCategoryName;
