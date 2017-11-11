@@ -21,7 +21,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
     });
     // Have to get url params after entering.  Otherwise, we get params from study if coming back

@@ -32,7 +32,8 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService", function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
+.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
+    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
@@ -80,7 +81,7 @@ angular.module('starter',
             return;
         }
         if(qmStorage.getItem(qmItems.user)){
-            $rootScope.hideNavigationMenu = false;
+            qmService.unHideNavigationMenu();
             window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
             qmService.goToState(config.appSettings.appDesign.defaultState);
             return;

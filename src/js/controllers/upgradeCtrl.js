@@ -24,7 +24,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         if($rootScope.isChromeExtension){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = qmService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         qmService.setupUpgradePages();
         qmService.hideLoader();
     });

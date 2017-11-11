@@ -10,7 +10,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.debugMode = qmLog.debugMode;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
         $scope.backgroundLocationTracking = !!(qmStorage.getItem('bgGPS'));
-		$rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
 		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();

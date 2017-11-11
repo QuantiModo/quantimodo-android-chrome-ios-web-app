@@ -33,7 +33,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.info(null, 'beforeEnter RemindersManageCtrl', null);
 		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
 		qmService.showBasicLoader();
-		$rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
 		$scope.stateParams = $stateParams;
 		var actionButtons = [
 			{ text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
