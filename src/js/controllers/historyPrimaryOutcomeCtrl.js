@@ -18,7 +18,7 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$i
         });
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
-		$rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
 		qmLogService.debug(null, 'HistoryPrimaryOutcomeCtrl beforeEnter...', null);
 		$scope.refreshMeasurementHistory();
 	});

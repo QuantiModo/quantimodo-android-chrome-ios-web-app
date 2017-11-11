@@ -34,7 +34,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
-        if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
+        if ($stateParams.hideNavigationMenu !== true){
+            qmService.unHideNavigationMenu();
+        }
 		setPageTitle();
 	});
 	$scope.$on('$ionicView.enter', function(e) {
