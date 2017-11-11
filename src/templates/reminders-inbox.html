@@ -5,7 +5,11 @@
         <ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
         <div id="aboveAverageWords" ng-if="words"><word-cloud words="words.aboveAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
         <div id="belowAverageWords" ng-if="words"><word-cloud words="words.belowAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
-        <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" ><div ng-include="'templates/fragments/help-info-card-fragment.html'"></div></div>
+        <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" >
+            <div ng-repeat="helpCard in defaultHelpCards | limitTo:1">
+                <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+            </div>
+        </div>
         <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
