@@ -35,7 +35,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     }
     $scope.refreshCharts = function () {getCharts(true);};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name);
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
         $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
