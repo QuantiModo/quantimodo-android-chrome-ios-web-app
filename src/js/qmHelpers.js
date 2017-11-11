@@ -673,8 +673,13 @@ window.apiHelper.getRequestUrl = function(path) {
     return url;
 };
 qmStorage.setTrackingReminderNotifications = function(notifications){
+    if(!notifications){
+        qmLog.error("No notifications provided to qmStorage.setTrackingReminderNotifications");
+        return;
+    }
+    qmLog.info("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
     qmNotifications.setLastNotificationsRefreshTime();
-    qmChrome.updateChromeBadge(notifications.length);
+    window.qmChrome.updateChromeBadge(notifications.length);
     qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
 };
 qmNotifications.refreshNotifications = function(successHandler, errorHandler) {
