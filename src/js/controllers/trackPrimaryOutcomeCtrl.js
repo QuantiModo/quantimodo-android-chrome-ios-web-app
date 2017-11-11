@@ -9,7 +9,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         qmLogService.debug(null, 'TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
-        $rootScope.hideNavigationMenu = false;
+        qmService.unHideNavigationMenu();
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;

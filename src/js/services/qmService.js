@@ -6822,6 +6822,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
         if($rootScope.isAndroid && qmStorage.getItem(qmItems.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
+    qmService.unHideNavigationMenu = function(){
+        if(!urlHelper.getParam('hideMenu')){
+            $rootScope.hideNavigationMenu = false;
+        }
+    };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
             function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
