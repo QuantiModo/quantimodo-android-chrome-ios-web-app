@@ -2161,7 +2161,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.skipAllTrackingReminderNotificationsDeferred = function(params){
         var deferred = $q.defer();
-        qmStorage.removeItem(qmItems.trackingReminderNotifications);
+        if(!params.trackingReminderId){
+            qmStorage.removeItem(qmItems.trackingReminderNotifications);
+        } else {
+            qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'trackingReminderId', params.trackingReminderId);
+        }
         qmService.skipAllTrackingReminderNotifications(params, function(response){
             if(response.success) {deferred.resolve();} else {deferred.reject();}
         }, function(error){
@@ -2248,7 +2252,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var params = {};
             params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
             params.sort = '-reminderTime';
-            params.limit = 20; // Limit to notifications to 20 to improve inbox performance (Not sure how much it helps though)
+            params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
