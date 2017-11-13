@@ -91,8 +91,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug(null, 'RemindersInboxCtrl afterEnter', null);
-        if(!$rootScope.numberOfPendingNotifications){$scope.refreshTrackingReminderNotifications();}
+        var numberInGlobalsOrLocalStorage = qmNotifications.getNumberInGlobalsOrLocalStorage();
+        qmLogService.debug('RemindersInboxCtrl afterEnter: ' + numberInGlobalsOrLocalStorage +  " notifications in globals or local storage");
+        if(!numberInGlobalsOrLocalStorage){
+            $scope.refreshTrackingReminderNotifications();
+        } else {
+            $scope.refreshTrackingReminderNotifications(300);
+        }
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
