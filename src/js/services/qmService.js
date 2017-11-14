@@ -87,15 +87,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function addVariableCategoryInfo(array){
         angular.forEach(array, function(value, key) {
             if(!value){qmLogService.error("no value for key " + key + " in array " + JSON.stringify(array));}
-            if(value && value.variableCategoryName && typeof value.moreInfo === "undefined" && qmService.variableCategories[value.variableCategoryName]){
-                value.iconClass = 'icon positive ' + qmService.variableCategories[value.variableCategoryName].ionIcon;
-                value.ionIcon = qmService.variableCategories[value.variableCategoryName].ionIcon;
-                value.moreInfo = qmService.variableCategories[value.variableCategoryName].moreInfo;
-                value.image = {
-                    url: qmService.variableCategories[value.variableCategoryName].imageUrl,
-                    height: "96",
-                    width: "96"
-                };
+            if(value && value.variableCategoryName && qmService.variableCategories[value.variableCategoryName]){
+                if(typeof value.iconClass === "undefined"){
+                    value.iconClass = 'icon positive ' + qmService.variableCategories[value.variableCategoryName].ionIcon;
+                }
+                if(typeof value.ionIcon === "undefined"){
+                    value.ionIcon = qmService.variableCategories[value.variableCategoryName].ionIcon;
+                }
+                if(typeof value.moreInfo === "undefined"){
+                    value.moreInfo = qmService.variableCategories[value.variableCategoryName].moreInfo;
+                }
+                if(typeof value.image === "undefined"){
+                    qmLog.info("Updating image to " + value.variableCategoryName);
+                    value.image = {
+                        url: qmService.variableCategories[value.variableCategoryName].imageUrl,
+                        height: "96",
+                        width: "96"
+                    };
+                }
             }
         });
         return array;
