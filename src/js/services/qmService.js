@@ -435,6 +435,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     // post new Measurements for user
     qmService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
+        measurementSet = addLocationAndSourceDataToMeasurement(measurementSet);
         qmService.post('api/v3/measurements',
             //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
             [], measurementSet, successHandler, errorHandler);
@@ -1584,7 +1585,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
         return measurementObject;
     };
-
     var addLocationAndSourceDataToMeasurement = function(measurementObject){
         addLocationDataToMeasurement(measurementObject);
         if(!measurementObject.sourceName){measurementObject.sourceName = qm.getSourceName();}
