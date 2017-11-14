@@ -88,5 +88,6 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
                 qmLogService.info('qmService.postMeasurementsToApi success: ' + JSON.stringify(response));
             }
         });
+        $scope.hideOnboardingPage();
     };
 }]);
