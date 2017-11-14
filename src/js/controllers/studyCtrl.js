@@ -119,12 +119,22 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }).catch(function (error) { qmLogService.error(null, error); });
     }
     $scope.weightedPeriod = 5;
+    function getCorrelationObjectIfNecessary(){
+        if($rootScope.correlationObject || $stateParams.correlationObject){return;}
+        qmService.getCorrelationsDeferred($scope.state.requestParams)
+            .then(function (data) {
+                if(data.correlations.length && !$rootScope.correlationObject) {$rootScope.correlationObject = data.correlations[0];}
+            }, function (error) {
+                qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+            });
+    }
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
             qmLogService.error(null, 'Cannot get study. Missing cause or effect variable name.');
             qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
+        getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
