@@ -29,6 +29,14 @@
             <md-button id="goToInboxButton" class="button circle-page-button" ng-if="circlePage.id === 'allDoneCard'" ng-click="doneOnboarding()">
                 <i class="ion-ios-filing-outline"> &nbsp; GO TO INBOX &nbsp;</i>
             </md-button>
+            <md-button id="yesButton" class="button circle-page-button" ng-if="circlePage.unitAbbreviatedName === 'yes/no'"
+                       ng-click="postMeasurement(circlePage, 1)">
+                <i class="ion-ios-filing-outline"> &nbsp; Yes &nbsp;</i>
+            </md-button>
+            <md-button id="noButton" class="button circle-page-button" ng-if="circlePage.unitAbbreviatedName === 'yes/no'"
+                       ng-click="postMeasurement(circlePage, 0)">
+                <i class="ion-ios-filing-outline"> &nbsp; No &nbsp;</i>
+            </md-button>
             <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
                 <br>
                 &nbsp&nbsp<i ng-click="openEditAppSettingsModal('onboarding', circlePage)" ><i class="icon ion-edit"></i></i>
