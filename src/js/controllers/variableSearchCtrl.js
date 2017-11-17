@@ -13,6 +13,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug(null, $state.current.name + ' beforeEnter...', null);
         qmService.unHideNavigationMenu();
         $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        $scope.showBarcodeScanner = $rootScope.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName,
+            ['Anything', 'Foods', 'Treatments']));
         if ($scope.state.variableSearchParameters.variableCategoryName) {
             $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
@@ -243,7 +245,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             if(!checkNameExists(item)){return false;}
             if(item.variableCategoryName){
                 if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
-                    if(item.variableCategoryName.indexOf('Location') !== -1 || item.variableCategoryName.indexOf('Software') !== -1 || item.variableCategoryName.indexOf('Environment') !== -1){
+                    if(item.variableCategoryName.indexOf('Location') !== -1 ||
+                        item.variableCategoryName.indexOf('Software') !== -1 ||
+                        item.variableCategoryName.indexOf('Environment') !== -1){
                         return false;
                     }
                 }
@@ -262,4 +266,35 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             });
         };
     };
+    if($rootScope.isMobile){
+        // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
+        $scope.scanBarcode = function () {
+            cordova.plugins.barcodeScanner.scan(function (result) {
+                    console.log("We got a barcode: " + result.text );
+                    alert("We got a barcode\n" +
+                        "Result: " + result.text + "\n" +
+                        "Format: " + result.format + "\n" +
+                        "Cancelled: " + result.cancelled);
+                    $scope.state.variableSearchQuery.name = result.text;
+                    $scope.onVariableSearch();
+                },
+                function (error) {
+                    alert("Scanning failed: " + error);
+                },
+                {
+                    //preferFrontCamera : true, // iOS and Android
+                    showFlipCameraButton : true, // iOS and Android
+                    showTorchButton : true, // iOS and Android
+                    torchOn: true, // Android, launch with the torch switched on (if available)
+                    //saveHistory: true, // Android, save scan history (default false)
+                    prompt : "Place a barcode inside the scan area", // Android
+                    //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+                    //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+                    //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+                    //disableAnimations : true, // iOS
+                    //disableSuccessBeep: false // iOS and Android
+                }
+            );
+        }
+    }
 }]);
