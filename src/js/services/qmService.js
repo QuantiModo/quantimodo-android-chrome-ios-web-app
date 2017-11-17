@@ -5766,6 +5766,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
     qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
+        qmService.postVoteDeferred({causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName, vote: 1});
         var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
         var studyLinkStatic = qm.api.getBaseUrl() + "/api/v2/study?causeVariableName=" +
             encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
