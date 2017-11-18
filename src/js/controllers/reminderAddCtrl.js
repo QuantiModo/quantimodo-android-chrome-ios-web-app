@@ -166,6 +166,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if (selectedVariable.id) {$scope.state.trackingReminder.variableId = selectedVariable.id;}
         if (selectedVariable.name) {$scope.state.trackingReminder.variableName = selectedVariable.name;}
         if (selectedVariable.variableName) {$scope.state.trackingReminder.variableName = selectedVariable.variableName;}
+        if(selectedVariable.upc){$scope.state.trackingReminder.upc = selectedVariable.upc;}
         setHideDefaultValueField();
         if (selectedVariable.valence) {$scope.state.trackingReminder.valence = selectedVariable.valence;}
         showMoreUnitsIfNecessary();

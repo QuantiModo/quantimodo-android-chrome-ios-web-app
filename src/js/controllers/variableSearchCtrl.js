@@ -31,6 +31,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
+        variableObject = addUpcToVariableObject(variableObject);
         qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qm.userVariableHelper.saveUserVariablesToLocalStorage(variableObject);}
@@ -115,7 +116,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             }
         }
     }
-    function showNoVariablesFoundCardIfNecessary() {
+    function showNoVariablesFoundCardIfNecessary(errorHandler) {
         if ($scope.state.variableSearchResults.length || !$scope.state.doNotShowAddVariableButton) {
             $scope.state.noVariablesFoundCard.show = false;
             return;
@@ -126,12 +127,13 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         } else {
             $scope.state.noVariablesFoundCard.body = "You don't have any data for " + $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
         }
+        if(errorHandler){errorHandler();}
         $scope.state.noVariablesFoundCard.show = true;
     }
-    $scope.onVariableSearch = function(){
+    $scope.onVariableSearch = function(errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
-        qmLogService.debug(null, $state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
+        qmLogService.debug($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
             qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
@@ -141,8 +143,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     $scope.state.variableSearchResults = variables;
                     qmLogService.debug(null, 'variable search results', null, variables);
                     $scope.state.searching = false;
-                    showAddVariableButtonIfNecessary(variables);
-                    showNoVariablesFoundCardIfNecessary();
+                    if(!errorHandler){showAddVariableButtonIfNecessary(variables, errorHandler);}
+                    showNoVariablesFoundCardIfNecessary(errorHandler);
                 });
         } else {
             populateUserVariables();
@@ -188,8 +190,15 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             }
         }, function (error) {qmLogService.error(null, error);});
     };
+    function addUpcToVariableObject(variableObject) {
+        if($scope.upc){
+            variableObject.upc = $scope.upc;
+            $scope.upc = null;
+        }
+    }
     $scope.addNewVariable = function(){
         var variableObject = {};
+        variableObject = addUpcToVariableObject(variableObject);
         variableObject.name = $scope.state.variableSearchQuery.name;
         if($scope.state.variableSearchParameters.variableCategoryName){
             variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;
@@ -270,16 +279,20 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
         $scope.scanBarcode = function () {
             cordova.plugins.barcodeScanner.scan(function (result) {
-                    console.log("We got a barcode: " + result.text );
-                    alert("We got a barcode\n" +
+                    $scope.upc = result.text;
+                    qmLog.pushDebug("We got a barcode\n" +
                         "Result: " + result.text + "\n" +
                         "Format: " + result.format + "\n" +
                         "Cancelled: " + result.cancelled);
                     $scope.state.variableSearchQuery.name = result.text;
-                    $scope.onVariableSearch();
+                    $scope.onVariableSearch(function(){
+                        qmService.showMaterialAlert("Couldn't find anything matching barcode.  Try a manual search and " +
+                            " I'll link the code to your selected variable so scanning should work in the future. ")
+                    });
                 },
                 function (error) {
-                    alert("Scanning failed: " + error);
+                    qmLog.error("Barcode scan failure!  error: " + error);
+                    qmService.showMaterialAlert("Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
                 },
                 {
                     //preferFrontCamera : true, // iOS and Android
