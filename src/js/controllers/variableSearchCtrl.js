@@ -10,11 +10,10 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
     if(!$scope.state.variableSearchPlaceholderText) {$scope.state.variableSearchPlaceholderText = "Search for a variable here...";}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmLogService.debug(null, $state.current.name + ' beforeEnter...', null);
+        qmLogService.debug($state.current.name + ' beforeEnter...');
         qmService.unHideNavigationMenu();
         $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
-        $scope.showBarcodeScanner = $rootScope.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName,
-            ['Anything', 'Foods', 'Treatments']));
+        //$scope.showBarcodeScanner = $rootScope.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName, ['Anything', 'Foods', 'Treatments']));
         if ($scope.state.variableSearchParameters.variableCategoryName) {
             $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
@@ -23,7 +22,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         setHelpText();
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLogService.debug(null, $state.current.name + ' enter...', null);
+        qmLogService.debug($state.current.name + ' enter...');
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
         //populateCommonVariables();
@@ -32,7 +31,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     });
     $scope.selectVariable = function(variableObject) {
         variableObject = addUpcToVariableObject(variableObject);
-        qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
+        qmLogService.debug($state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
         variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qm.userVariableHelper.saveUserVariablesToLocalStorage(variableObject);}
         qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
@@ -191,10 +190,12 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         }, function (error) {qmLogService.error(null, error);});
     };
     function addUpcToVariableObject(variableObject) {
+        if(!variableObject){return;}
         if($scope.upc){
             variableObject.upc = $scope.upc;
             $scope.upc = null;
         }
+        return variableObject;
     }
     $scope.addNewVariable = function(){
         var variableObject = {};
@@ -203,7 +204,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchParameters.variableCategoryName){
             variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;
         }
-        qmLogService.debug(null, $state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject), null);
+        qmLogService.debug($state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject));
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
             qmService.goToState($scope.state.nextState, $scope.state);
