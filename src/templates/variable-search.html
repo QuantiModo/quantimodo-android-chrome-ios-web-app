@@ -2,11 +2,7 @@
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content style="background-color: #f2f2f2">
         <div class="card" >
-            <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}
-                <md-button ng-if="showBarcodeScanner" class="md-fab" aria-label="barcode" ng-click="scanBarcode()">
-                    <md-icon style="font-size: 20px;" md-font-icon="ion-ios-barcode-outline" class="ion-ios-barcode-outline"></md-icon>
-                </md-button>
-            </div>
+            <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}</div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
                 <input ng-model="state.variableSearchQuery.name"
@@ -15,6 +11,10 @@
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
+                <a style="font-size: 35px;" ng-if="state.variableSearchQuery.name == '' && isMobile" on-touch="scanBarcode()">
+                    <i class="icon ion-ios-camera placeholder-icon"></i>
+                    &nbsp
+                </a>
                 <a ng-if="state.variableSearchQuery.name != ''"
                    on-touch="state.variableSearchQuery.name=''">
                     <i class="icon ion-close-round placeholder-icon"></i>
