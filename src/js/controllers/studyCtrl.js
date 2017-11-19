@@ -139,6 +139,10 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
+            if(study.highcharts){
+                study.charts = study.highcharts;
+                delete study.highcharts;
+            }
             $scope.study = study;
             $scope.loadingCharts = false;
             $rootScope.correlationObject = study.statistics;
