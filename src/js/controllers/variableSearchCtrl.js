@@ -307,7 +307,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                         $scope.state.variableSearchQuery.name = '';
                         var errorMessage = "Couldn't find anything matching barcode " + $scope.upc;
                         qmLog.error(errorMessage);
-                        qmService.showMaterialAlert(errorMessage + ".  Try a manual search and " +
+                        qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
                             "I'll link the code to your selected variable so scanning should work in the future. ")
                     }
                     function successHandler() {
@@ -321,7 +321,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 },
                 function (error) {
                     qmLog.error("Barcode scan failure!  error: " + error);
-                    qmService.showMaterialAlert("Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
+                    qmService.showMaterialAlert("Barcode scan failed!",
+                        "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
                 },
                 {
                     //preferFrontCamera : true, // iOS and Android
