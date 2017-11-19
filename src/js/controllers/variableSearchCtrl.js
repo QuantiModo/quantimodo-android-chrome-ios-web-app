@@ -28,6 +28,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
+        var upcTest = false;
+        if(upcTest){
+            $scope.upc = $scope.state.variableSearchQuery.name = "028400064057";
+            $scope.onVariableSearch(function(){});
+        }
     });
     $scope.selectVariable = function(variableObject) {
         variableObject = addUpcToVariableObject(variableObject);
@@ -89,7 +94,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.goToStateFromVariableSearch = function(stateName){qmService.goToState(stateName, $stateParams);};
     // when a query is searched in the search box
     function showAddVariableButtonIfNecessary(variables) {
-        if($scope.state.doNotShowAddVariableButton){
+        if($scope.state.doNotShowAddVariableButton || $scope.upc){
             $scope.state.showAddVariableButton = false;
             return;
         }
@@ -252,6 +257,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     };
     $scope.matchEveryWord = function() {
         return function( item ) {
+            if($scope.upc){return true;} // Name's not going to match the number
             if(!checkNameExists(item)){return false;}
             if(item.variableCategoryName){
                 if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
@@ -285,6 +291,12 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                         "Result: " + result.text + "\n" +
                         "Format: " + result.format + "\n" +
                         "Cancelled: " + result.cancelled);
+                    var localMatches = qmStorage.getWithFilters(qmItems.userVariables, 'upc', result.text);
+                    if(localMatches && localMatches.length){
+                        $scope.variableSearchResults = localMatches;
+                        qmLog.info("Found local match", null, localMatches);
+                        return;
+                    }
                     $scope.state.variableSearchQuery.name = result.text;
                     $scope.onVariableSearch(function(){
                         qmService.showMaterialAlert("Couldn't find anything matching barcode.  Try a manual search and " +
