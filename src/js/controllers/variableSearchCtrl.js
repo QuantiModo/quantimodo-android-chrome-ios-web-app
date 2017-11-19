@@ -1,4 +1,5 @@
-angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService) {
+angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$timeout",
+    "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService) {
     $scope.controller_name = "VariableSearchCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = $stateParams;
@@ -134,7 +135,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(errorHandler){errorHandler();}
         $scope.state.noVariablesFoundCard.show = true;
     }
-    $scope.onVariableSearch = function(errorHandler){
+    $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
         qmLogService.debug($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
@@ -142,12 +143,14 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.searching = true;
             qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
                 .then(function(variables){
+                    if(successHandler && variables && variables.length){successHandler();}
+                    if(errorHandler && (!variables || !variables.length)){errorHandler();}
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
                     qmLogService.debug(null, 'variable search results', null, variables);
                     $scope.state.searching = false;
-                    if(!errorHandler){showAddVariableButtonIfNecessary(variables, errorHandler);}
+                    if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
                     showNoVariablesFoundCardIfNecessary(errorHandler);
                 });
         } else {
@@ -297,11 +300,24 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                         qmLog.info("Found local match", null, localMatches);
                         return;
                     }
+                    var doneSearching = false;
+                    function errorHandler() {
+                        doneSearching = true;
+                        qmService.hideLoader();
+                        $scope.state.variableSearchQuery.name = '';
+                        var errorMessage = "Couldn't find anything matching barcode " + $scope.upc;
+                        qmLog.error(errorMessage);
+                        qmService.showMaterialAlert(errorMessage + ".  Try a manual search and " +
+                            "I'll link the code to your selected variable so scanning should work in the future. ")
+                    }
+                    function successHandler() {
+                        doneSearching = true;
+                        qmService.hideLoader();
+                    }
+                    $timeout(function() {if(!doneSearching){errorHandler();}}, 15000);
+                    qmService.showBlackRingLoader();
                     $scope.state.variableSearchQuery.name = result.text;
-                    $scope.onVariableSearch(function(){
-                        qmService.showMaterialAlert("Couldn't find anything matching barcode.  Try a manual search and " +
-                            " I'll link the code to your selected variable so scanning should work in the future. ")
-                    });
+                    $scope.onVariableSearch(successHandler, errorHandler);
                 },
                 function (error) {
                     qmLog.error("Barcode scan failure!  error: " + error);
