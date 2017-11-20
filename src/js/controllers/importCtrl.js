@@ -94,8 +94,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             button.text = "Uploading...";
             qmService.showBasicLoader();
             var body = {file: file, "connectorName": connector.name};
-            file.upload = Upload.upload({url: qm.api.getBaseUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
-                "&access_token=" + $rootScope.user.accessToken, data: body});
+            file.upload = Upload.upload({url: qm.api.getBaseUrl() + '/api/v2/spreadsheetUpload?clientId=' +
+                $rootScope.appSettings.clientId + "&access_token=" + $rootScope.user.accessToken, data: body});
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";
@@ -104,7 +104,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 qmService.hideLoader();
             }, function (response) {
                 qmService.hideLoader();
-                if (response.status > 0){$scope.errorMsg = response.status + ': ' + response.data;}
+                button.text = "Upload Complete";
+                qmService.showMaterialAlert("Upload complete!",  "You should see the data on your history page within an hour or so");
+                if (response.status > 0){
+                    button.text = "Upload Failed";
+                    qmLog.error("Upload failed!");
+                    qmService.showMaterialAlert("Upload failed!",  "Please contact mike@quantimo.do and he'll fix it. ");
+                    $scope.errorMsg = response.status + ': ' + response.data;
+                }
             }, function (evt) {
                 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
             });
