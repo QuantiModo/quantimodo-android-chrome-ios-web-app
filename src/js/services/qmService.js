@@ -1408,7 +1408,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(study.charts){
                 study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
                 for(var i=0; i < study.charts.length; i++){
-                    study.charts[i].chartConfig = setChartExportingOptions(study.charts[i].chartConfig);
+                    study.charts[i].highchartConfig = setChartExportingOptions(study.charts[i].highchartConfig);
                 }
             }
             if(study.text){  // Hack to make consistent with basic correlations to use same HTML template
