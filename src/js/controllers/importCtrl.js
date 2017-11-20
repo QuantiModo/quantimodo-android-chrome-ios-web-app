@@ -22,7 +22,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	};
 	var goToWebImportDataPage = function() {
 		qmLogService.debug(null, 'importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
-		qmService.goToState(config.appSettings.appDesign.defaultState);
+		qmService.goToDefaultState();
 		qmService.getAccessTokenFromAnySource().then(function(accessToken){
 			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
@@ -33,7 +33,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
                 qmService.unHideNavigationMenu();
 				//noinspection JSCheckFunctionSignatures
-				qmService.goToState(config.appSettings.appDesign.defaultState);
+				qmService.goToDefaultState();
 			} else {
 				var targetUrl = qmService.getQuantiModoUrl("api/v1/connect/mobile", true);
 				if(accessToken){ targetUrl += "access_token=" + accessToken; }
@@ -41,7 +41,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 				ref.addEventListener('exit', function(){
                     qmService.unHideNavigationMenu();
 					//noinspection JSCheckFunctionSignatures
-					qmService.goToState(config.appSettings.appDesign.defaultState);
+					qmService.goToDefaultState();
 				});
 			}
 		}, function(){
