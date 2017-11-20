@@ -783,7 +783,7 @@ gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.de
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
-    writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
+    writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
     return makeApiRequest(options);
 });
 function downloadFile(url, filename, destinationFolder) {
@@ -853,7 +853,9 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
         if(!response.privateConfig && devCredentials.accessToken){
-            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
+            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+                " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
         }
         /** @namespace response.privateConfig */
         if(response.privateConfig){
@@ -1033,7 +1035,7 @@ gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
     if(devCredentials.accessToken){
         process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken;
-        logInfo("Using username " + devCredentials.accessToken + " from " + paths.src.devCredentials);
+        logInfo("Using accessToken " + devCredentials.accessToken + " from " + paths.src.devCredentials);
         deferred.resolve();
         return deferred.promise;
     }
@@ -1050,8 +1052,8 @@ gulp.task('devSetup', [], function (callback) {
         'getDevAccessTokenFromUserInput',
         'getClientIdFromUserInput',
         'validateAndSaveDevCredentials',
-        //'configureApp',
-        //'ionicServe',
+        'configureApp',
+        'ionicServe',
         callback);
 });
 gulp.task('getClientIdFromUserInput', function () {
