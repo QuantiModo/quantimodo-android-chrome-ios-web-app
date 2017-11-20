@@ -33,7 +33,7 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.qmStorage.setItem(qmItems.onboarded, true);
-        qmService.goToState(config.appSettings.appDesign.defaultState);
+        qmService.goToDefaultState();
     };
     $scope.goToReminderSearchFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
@@ -66,7 +66,7 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
         } else {
             $rootScope.hideMenuButton = true;
         }

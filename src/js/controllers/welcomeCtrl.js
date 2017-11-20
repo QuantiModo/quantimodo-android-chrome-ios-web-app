@@ -57,7 +57,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     $scope.$on('$ionicView.beforeEnter', function(){
         if($rootScope.user){
             qmLogService.debug(null, 'Already have user so no need to welcome. Going to default state.', null);
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
         }
     });
     $scope.init();

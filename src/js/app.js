@@ -69,7 +69,7 @@ angular.module('starter',
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
             return;
         }
         if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
@@ -83,7 +83,7 @@ angular.module('starter',
         if(qmStorage.getItem(qmItems.user)){
             qmService.unHideNavigationMenu();
             window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
             return;
         }
         window.qmLog.debug(null, 'registerBackButtonAction: Closing the app', null);
