@@ -143,6 +143,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 study.charts = study.highcharts;
                 delete study.highcharts;
             }
+            study.charts = qm.arrayHelper.convertObjectToArray(study.charts);
+            study.causeVariable.charts = qm.arrayHelper.convertObjectToArray(study.causeVariable.charts);
+            study.effectVariable.charts = qm.arrayHelper.convertObjectToArray(study.effectVariable.charts);
             $scope.study = study;
             $scope.loadingCharts = false;
             $rootScope.correlationObject = study.statistics;
