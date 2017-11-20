@@ -231,6 +231,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         } else if (variableObject.variableCategoryName){
             setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
         }
+        if(variableObject.upc){$scope.state.measurement.upc = variableObject.upc;}
         $scope.state.measurement.inputType = variableObject.inputType;
         $scope.state.measurement.variableName = variableObject.name;
         $scope.state.measurement.maximumAllowedValue = variableObject.maximumAllowedValue;
