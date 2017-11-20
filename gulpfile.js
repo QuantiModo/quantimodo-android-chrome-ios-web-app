@@ -548,7 +548,9 @@ function outputApiErrorResponse(err, options) {
         logError("Request options: ", options);
         return;
     }
-    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + paths.src.devCredentials + " and try again.";}
+    if(err.response.statusCode === 401){
+        throw "Credentials invalid.  Please correct them in " + paths.src.devCredentials + " and try again.";
+    }
     logError(options.uri + " error response", err.response.body);
 }
 function getFileNameFromUrl(url) {
@@ -781,10 +783,12 @@ gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');}
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
 gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
-gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
+gulp.task('validateDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
-    writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
     return makeApiRequest(options);
+});
+gulp.task('saveDevCredentials', ['setClientId'], function () {
+    return writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
 });
 function downloadFile(url, filename, destinationFolder) {
     logInfo("Downloading  " + url + " to " + destinationFolder + "/" + filename);
@@ -1051,7 +1055,8 @@ gulp.task('devSetup', [], function (callback) {
     runSequence(
         'getDevAccessTokenFromUserInput',
         'getClientIdFromUserInput',
-        'validateAndSaveDevCredentials',
+        'validateDevCredentials',
+        'saveDevCredentials',
         'configureApp',
         'ionicServe',
         callback);
