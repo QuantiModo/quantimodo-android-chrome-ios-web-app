@@ -109,6 +109,13 @@ window.qm = {
                 if(haystack[i] === needle) return true;
             }
             return false;
+        },
+        convertObjectToArray: function (object) {
+            if(qm.arrayHelper.variableIsArray(object)){return object;}
+            var result = Object.keys(obj).map(function(key) {
+                return obj[key];
+            });
+            return result;
         }
     },
     auth: {},
