@@ -66,7 +66,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
                     if ($scope.state.fromState) {qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
-                    } else {qmService.goToState(config.appSettings.appDesign.defaultState);}
+                    } else {qmService.goToDefaultState();}
                 });
             }
         } else if($scope.state.userTagVariableObject) {
@@ -83,7 +83,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
                     if ($scope.state.fromState) {qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
-                    } else {qmService.goToState(config.appSettings.appDesign.defaultState);}
+                    } else {qmService.goToDefaultState();}
                 });
             }
         } else {

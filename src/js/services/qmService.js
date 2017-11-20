@@ -896,8 +896,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     qmService.goToState = function(to, params, options){
-        qmLogService.debug(null, 'Called goToState: ' + to, null, qmLog.getStackTrace());
+        qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
         $state.go(to, params, options);
+    };
+    qmService.goToDefaultState = function(params, options){
+        qmLogService.info('Called goToDefaultState: ' + to, null, qmLog.getStackTrace());
+        qmService.goToDefaultState(params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
         qmService.goToState("app.variableSettings", {variableObject: variableObject});
@@ -1229,7 +1233,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.updateUserTimeZoneIfNecessary();
     };
     qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState = function () {
-        if(!qmService.afterLoginGoToUrlOrState()){qmService.goToState(config.appSettings.appDesign.defaultState);}
+        if(!qmService.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
     };
     function sendToAfterLoginGoToUrlIfNecessary() {
         var afterLoginGoToUrl = qmStorage.getAsString('afterLoginGoToUrl');
@@ -1255,7 +1259,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($state.current.name === 'app.login'){
             /** @namespace config.appSettings.appDesign.defaultState */
             /** @namespace config.appSettings.appDesign */
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
             return true;
         }
     }
@@ -6281,7 +6285,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.qmStorage.setItem('lastMeasurementSyncTime', 0);
             }
             qmService.hideLoader();
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
             qmLogService.debug(null, 'All measurements for ' + variableName + ' deleted!', null);
         }, function(error) {
             qmService.hideLoader();
@@ -6559,7 +6563,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.accessToken && !$rootScope.user){
                     qmLogService.info(null, 'Using access token from dev-credentials.json', null);
                     qm.auth.saveAccessTokenResponse(response.accessToken);
-                    qmService.refreshUser().then(function () {qmService.goToState(config.appSettings.appDesign.defaultState);});
+                    qmService.refreshUser().then(function () {qmService.goToDefaultState();});
                 }
             } else {
                 qmLogService.debug(null, 'dev-credentials.json response is a string', null);
