@@ -3998,7 +3998,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!refresh){
             var userVariable = qmStorage.getUserVariableByName(name);
             if(userVariable){
-                if(typeof params.includeCharts === "undefined" || userVariable.charts){
+                if(typeof params.includeCharts === "undefined" ||
+                    (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
                     deferred.resolve(userVariable);
                     return deferred.promise;
                 }
