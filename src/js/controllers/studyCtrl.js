@@ -131,7 +131,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
             qmLogService.error(null, 'Cannot get study. Missing cause or effect variable name.');
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
             return;
         }
         getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
@@ -143,6 +143,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 study.charts = study.highcharts;
                 delete study.highcharts;
             }
+            study.charts = qm.arrayHelper.convertObjectToArray(study.charts);
+            study.causeVariable.charts = qm.arrayHelper.convertObjectToArray(study.causeVariable.charts);
+            study.effectVariable.charts = qm.arrayHelper.convertObjectToArray(study.effectVariable.charts);
             $scope.study = study;
             $scope.loadingCharts = false;
             $rootScope.correlationObject = study.statistics;

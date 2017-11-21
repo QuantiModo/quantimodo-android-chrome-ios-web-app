@@ -364,7 +364,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
                 stateId = backView.stateName;
                 //$ionicHistory.goBack(-2);
-                //qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
+                //qmService.goToDefaultState(stateParams);
                 //return;
             }
             if(stateParams){
@@ -377,7 +377,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmLogService.debug(null, 'Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
             $ionicHistory.goBack();
         } else {
-            qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
+            qmService.goToDefaultState(stateParams);
         }
     };
 

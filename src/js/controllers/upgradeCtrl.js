@@ -35,7 +35,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
             $rootScope.hideMenuButton = false;
-            qmService.goToState(config.appSettings.appDesign.defaultState);
+            qmService.goToDefaultState();
         } else { $rootScope.hideMenuButton = true; }
     };
     if(!$scope.productId){ $scope.productId = 'monthly7'; }
