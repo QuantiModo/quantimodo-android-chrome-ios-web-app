@@ -5,7 +5,9 @@
         <img style="max-width: 40px; max-height: 40px;" ng-if="helpCard.image.url" ng-src="{{helpCard.image.url}}">
     </span>
         <p style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: black; font-size: 18px;">{{helpCard.title}}</p>
-        <i class="icon assertive ion-close-round" style="position: absolute; top: 15px; right: 15px; font-size: 30px;" ng-click="hideHelpCard(helpCard)"></i>
+        <button id="closeButton" class="button button-clear button-assertive" ng-click="hideHelpCard(helpCard)"
+                style="position: absolute; top: 10px; right: 10px; font-size: 25px;" ><i class="ion-close-round"></i>
+        </button>
     </div>
     <div class="item item-body item-borderless" style="text-align: center;">{{helpCard.bodyText}}</div>
     <div ng-repeat="button in helpCard.buttons" >
