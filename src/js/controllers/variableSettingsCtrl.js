@@ -11,6 +11,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         $scope.goBack();
     }
     function getUserVariableWithTags() {
+        if(!$rootScope.variableObject){qmService.showBlackRingLoader();}
         qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);
@@ -22,12 +23,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         setShowActionSheetMenu(variableObject);
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
+        qmService.sendToLoginIfNecessaryAndComeBack();
         $rootScope.hideNavigationMenu = false;
         if($stateParams.variableObject){
             setVariableObject($stateParams.variableObject);
             getUserVariableWithTags();
         } else {
-            qmService.showBlackRingLoader();
             getUserVariableWithTags();
         }
     });
