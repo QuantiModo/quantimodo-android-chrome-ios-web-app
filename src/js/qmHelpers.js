@@ -253,12 +253,32 @@ window.qmGlobals = {
         return qmStorage.getGlobal(key);
     }
 };
+window.timeHelper = {
+    getUnixTimestampInSeconds: function(dateTimeString) {
+        if(!dateTimeString){dateTimeString = new Date().getTime();}
+        return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+    },
+    getTimeSinceString: function(unixTimestamp) {
+        if(!unixTimestamp){return "never";}
+        var secondsAgo = timeHelper.secondsAgo(unixTimestamp);
+        if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
+        if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
+        if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
+        return secondsAgo + " seconds ago";
+    },
+    secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));},
+    minutesAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/60));},
+    hoursAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/3600));},
+    daysAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/86400));},
+    getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();}
+};
 //if(!window.config){window.config = {};}
 window.qmNotifications = {};
 window.userHelper = {};
 window.qmItems = {
     accessToken: 'accessToken',
     apiUrl: 'apiUrl',
+    appSettingsRevisions: 'appSettingsRevisions',
     chromeWindowId: 'chromeWindowId',
     clientId: 'clientId',
     defaultHelpCards: 'defaultHelpCards',
@@ -294,7 +314,6 @@ window.qmItems = {
     userVariables: 'userVariables'
 };
 window.qmStorage = {};
-window.timeHelper = {};
 window.apiHelper = {};
 window.qmPush = {};
 window.qmNotifications = {};
@@ -1283,10 +1302,7 @@ qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingRemi
     }
     return shortestInterval/60;
 };
-window.timeHelper.getUnixTimestampInSeconds = function(dateTimeString) {
-    if(!dateTimeString){dateTimeString = new Date().getTime();}
-    return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
-};
+
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
@@ -1308,18 +1324,6 @@ window.qmStorage.setLastRequestTime = function(type, route){
 window.qmStorage.getLastRequestTime = function(type, route){
     return window.qmStorage.getItem(getLocalStorageNameForRequest(type, route));
 };
-timeHelper.getTimeSinceString = function(unixTimestamp) {
-    if(!unixTimestamp){return "never";}
-    var secondsAgo = timeHelper.secondsAgo(unixTimestamp);
-    if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
-    if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
-    if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
-    return secondsAgo + " seconds ago";
-};
-timeHelper.secondsAgo = function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));};
-timeHelper.minutesAgo = function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/60));};
-timeHelper.hoursAgo = function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/3600));};
-timeHelper.daysAgo = function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/86400));};
 window.canWeMakeRequestYet = function(type, route, options){
     function getSecondsSinceLastRequest(type, route){
         var secondsSinceLastRequest = 99999999;
