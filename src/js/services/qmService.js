@@ -900,7 +900,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $state.go(to, params, options);
     };
     qmService.goToDefaultState = function(params, options){
-        qmLogService.info('Called goToDefaultState', null, qmLog.getStackTrace());
+        qmLogService.info('Called goToDefaultState');
         qmService.goToDefaultState(params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
