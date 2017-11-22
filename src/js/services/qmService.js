@@ -900,8 +900,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $state.go(to, params, options);
     };
     qmService.goToDefaultState = function(params, options){
-        qmLogService.info('Called goToDefaultState', null, qmLog.getStackTrace());
-        qmService.goToDefaultState(params, options);
+        qmLogService.info('Called goToDefaultState');
+        qmService.goToState(config.appSettings.defaultState, params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
         qmService.goToState("app.variableSettings", {variableObject: variableObject});
@@ -1412,6 +1412,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(study.charts){
                 study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
                 for(var i=0; i < study.charts.length; i++){
+                    if(!study.charts[i].highchartConfig){
+                        study.charts[i].highchartConfig = study.charts[i].chartConfig
+                    }
+                    if(!study.charts[i].highchartConfig){
+                        qmLog.error("highchartConfig not defined for: ", null, {chart: study.charts[i]})
+                        continue;
+                    }
                     study.charts[i].highchartConfig = setChartExportingOptions(study.charts[i].highchartConfig);
                 }
             }
