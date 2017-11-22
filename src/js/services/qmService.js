@@ -1412,6 +1412,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(study.charts){
                 study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
                 for(var i=0; i < study.charts.length; i++){
+                    if(!study.charts[i].highchartConfig){
+                        study.charts[i].highchartConfig = study.charts[i].chartConfig
+                    }
+                    if(!study.charts[i].highchartConfig){
+                        qmLog.error("highchartConfig not defined for: ", null, {chart: study.charts[i]})
+                        continue;
+                    }
                     study.charts[i].highchartConfig = setChartExportingOptions(study.charts[i].highchartConfig);
                 }
             }
