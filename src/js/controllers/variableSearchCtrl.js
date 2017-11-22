@@ -311,7 +311,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     //"UPC_E," + // False positives on Android
                     "UPC_A," +
                     "EAN_8," +
-                    "EAN_13," +
+                    //"EAN_13," + // False positives on Android
                     "CODE_128," +
                     "CODE_39," +
                     "ITF"
