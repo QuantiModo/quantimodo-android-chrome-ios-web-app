@@ -981,13 +981,19 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
 };
 window.qmStorage.setGlobal = function(key, value){qm.globals[key] = value;};
 window.qmStorage.setItem = function(key, value){
+    if(typeof value === "undefined"){
+        qmLog.error("value provided to qmStorage.setItem is undefined!");
+        return;
+    }
     if(value === qmStorage.getGlobal(key)){
         qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + JSON.stringify(value));
         return;
     }
     qmStorage.setGlobal(key, value);
     if(typeof value !== "string"){value = JSON.stringify(value);}
-    window.qmLog.debug('Setting localStorage.' + key + ' to ' + value.substring(0, 18) + '...');
+    var summaryValue = value;
+    if(summaryValue){summaryValue = value.substring(0, 18);}
+    window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
     try {
         localStorage.setItem(key, value);
     } catch (error) {
