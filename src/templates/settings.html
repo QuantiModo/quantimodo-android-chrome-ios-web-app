@@ -129,7 +129,7 @@
         </div>
         <div class="card sign-in" ng-if="user.administrator" >
             <div class="item item-divider" >Upgrade &nbsp;</div>
-            <ion-toggle ng-model="user.stripeActive">
+            <ion-toggle ng-model="user.stripeActive" ng-change="upgradeToggle()">
                 <div ng-if="user.stripeActive"><i class="icon ion-cash"></i> &nbsp Premium Mode &nbsp</div>
                 <div ng-if="!user.stripeActive"><i class="icon ion-cash"></i> &nbsp Free Mode &nbsp</div>
             </ion-toggle>

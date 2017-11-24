@@ -321,6 +321,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
     };
     $scope.upgradeToggle = function(){
+        qmService.premiumModeDisabledForTesting = !$rootScope.user.stripeActive;
         qmService.setUser($rootScope.user);
     };
     $scope.backgroundLocationChange = function() {
