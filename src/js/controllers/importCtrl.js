@@ -3,7 +3,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
     function userCanConnect() {
-	    return $rootScope.user.stripeActive || !config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
+        if(qmService.premiumModeDisabledForTesting){return false;}
+        if($rootScope.user.stripeActive){return true;}
+        return !config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);
