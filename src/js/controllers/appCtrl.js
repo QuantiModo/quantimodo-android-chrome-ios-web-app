@@ -108,7 +108,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
                 //subject: correlationObject.sharingTitle, // fi. for email
                 //files: ['', ''], // an array of filenames either locally or remotely
-                url: correlationObject.studyLinkStatic.replace('local.q', 'app.q'),
+                url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
                 chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
             };
             var onSuccess = function(result) {
