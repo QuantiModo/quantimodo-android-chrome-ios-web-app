@@ -65,14 +65,14 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if(causeVariableName && effectVariableName){studyLink = qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName);}
         if($rootScope.correlationObject){
             /** @namespace $rootScope.correlationObject.studyLinkStatic */
-            if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
+            if($rootScope.correlationObject.studyLinks.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
             /** @namespace $rootScope.correlationObject.userStudy */
-            if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.userStudy.studyLinkStatic;
+            if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinks.studyLinkStatic){
+                studyLink = $rootScope.correlationObject.userStudy.studyLinks.studyLinkStatic;
             }
             /** @namespace $rootScope.correlationObject.publicStudy */
-            if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.publicStudy.studyLinkStatic;
+            if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinks.studyLinkStatic){
+                studyLink = $rootScope.correlationObject.publicStudy.studyLinks.studyLinkStatic;
             }
         }
         clipboard.copyText(studyLink);
