@@ -1028,7 +1028,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(response.status === 401){
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
-            qmLogService.error(response.error.message, null, {apiResponse: response});
+            var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
+            qmLogService.error(errorMessage, null, {apiResponse: response}, error.stack);
         }
     }
     qmService.generateV1OAuthUrl = function(register) {
@@ -2578,12 +2579,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     // ChartService
     var useLocalImages = function (correlationObjects) {
         for(var i = 0; i < correlationObjects.length; i++){
-            correlationObjects[i].gaugeImage = correlationObjects[i].gaugeImage.substring(correlationObjects[i].gaugeImage.lastIndexOf("/") + 1);
-            correlationObjects[i].gaugeImage = 'img/gauges/246-120/' + correlationObjects[i].gaugeImage;
-            correlationObjects[i].causeVariableImageUrl = correlationObjects[i].causeVariableImageUrl.substring(correlationObjects[i].causeVariableImageUrl.lastIndexOf("/") + 1);
-            correlationObjects[i].causeVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].causeVariableImageUrl;
-            correlationObjects[i].effectVariableImageUrl = correlationObjects[i].effectVariableImageUrl.substring(correlationObjects[i].effectVariableImageUrl.lastIndexOf("/") + 1);
-            correlationObjects[i].effectVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].effectVariableImageUrl;
+            var studyImages = correlationObjects[i].studyImages;
+            studyImages.gaugeImage = studyImages.gaugeImage.substring(studyImages.gaugeImage.lastIndexOf("/") + 1);
+            studyImages.gaugeImage = 'img/gauges/246-120/' + studyImages.gaugeImage;
+            studyImages.causeVariableImageUrl = studyImages.causeVariableImageUrl.substring(studyImages.causeVariableImageUrl.lastIndexOf("/") + 1);
+            studyImages.causeVariableImageUrl = 'img/variable_categories/' + studyImages.causeVariableImageUrl;
+            studyImages.effectVariableImageUrl = studyImages.effectVariableImageUrl.substring(studyImages.effectVariableImageUrl.lastIndexOf("/") + 1);
+            studyImages.effectVariableImageUrl = 'img/variable_categories/' + studyImages.effectVariableImageUrl;
         }
         return correlationObjects;
     };
@@ -2599,7 +2601,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
-            correlationObjects = useLocalImages(correlationObjects);
+            try {
+                correlationObjects = useLocalImages(correlationObjects);
+            } catch (error) {
+                qmLog.error(error);
+            }
             qmService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
             deferred.resolve(correlationObjects);
         }, function(error){
@@ -2626,7 +2632,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getUserCorrelationsFromApi(params, function(response){
-            response.data.correlations = useLocalImages(response.data.correlations);
+            try {
+                response.data.correlations = useLocalImages(response.data.correlations);
+            } catch (error) {
+                qmLog.error(error);
+            }
             qmService.storeCachedResponse('correlations', params, response.data);
             deferred.resolve(response.data);
         }, function(error){
