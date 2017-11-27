@@ -2163,8 +2163,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     var scheduleNotificationSync = function (delayBeforePostingNotificationsInMilliseconds) {
         if(!delayBeforePostingNotificationsInMilliseconds){
-            //delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
-            delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
+            delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+            //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
         }
         var trackingReminderNotificationSyncScheduled = qmStorage.getItem(qmItems.trackingReminderNotificationSyncScheduled);
         if(!trackingReminderNotificationSyncScheduled ||
