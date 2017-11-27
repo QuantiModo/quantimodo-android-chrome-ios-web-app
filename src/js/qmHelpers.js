@@ -89,6 +89,10 @@ window.qm = {
     },
     arrayHelper: {
         variableIsArray: function(variable){
+            if(!variable){
+                qmLog.info(variable + " provided to variableIsArray");
+                return false;
+            }
             var isAnArray = Array.isArray(variable);
             if(isAnArray){return true;}
             var constructorArray = variable.constructor === Array;
@@ -111,6 +115,10 @@ window.qm = {
             return false;
         },
         convertObjectToArray: function (object) {
+            if(!object){
+                qmLog.info(object + " provided to convertObjectToArray");
+                return object;
+            }
             if(qm.arrayHelper.variableIsArray(object)){return object;}
             var result = Object.keys(obj).map(function(key) {
                 return obj[key];
