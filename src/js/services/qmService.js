@@ -1028,7 +1028,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(response.status === 401){
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
-            qmLogService.error(response.error.message, null, {apiResponse: response});
+            var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
+            qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);
         }
     }
     qmService.generateV1OAuthUrl = function(register) {
