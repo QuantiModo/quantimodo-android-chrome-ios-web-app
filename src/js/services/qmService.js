@@ -899,9 +899,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
         $state.go(to, params, options);
     };
+    function getDefaultState() {
+        return config.appSettings.appDesign.defaultState || qmStates.remindersInbox;
+    }
     qmService.goToDefaultState = function(params, options){
-        qmLogService.info('Called goToDefaultState');
-        qmService.goToState(config.appSettings.defaultState, params, options);
+        qmLogService.info('Called goToDefaultState: ' + getDefaultState());
+        qmService.goToState(getDefaultState(), params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
         qmService.goToState("app.variableSettings", {variableObject: variableObject});
@@ -2160,13 +2163,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     var scheduleNotificationSync = function (delayBeforePostingNotificationsInMilliseconds) {
         if(!delayBeforePostingNotificationsInMilliseconds){
-            delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+            //delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+            delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
         }
         var trackingReminderNotificationSyncScheduled = qmStorage.getItem(qmItems.trackingReminderNotificationSyncScheduled);
         if(!trackingReminderNotificationSyncScheduled ||
             parseInt(trackingReminderNotificationSyncScheduled) < window.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
             qmService.qmStorage.setItem('trackingReminderNotificationSyncScheduled', window.getUnixTimestampInMilliseconds());
-            qmLog.info("Scheduling notifications sync.. ");
+            qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
             $timeout(function() {
                 qmLog.info("Notifications sync countdown completed.  Syncing now... ");
                 qmStorage.removeItem('trackingReminderNotificationSyncScheduled');
@@ -5898,7 +5902,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
     };
     qmService.addToRemindersUsingVariableObject = function (variableObject, options) {
-        var doneState = config.appSettings.appDesign.defaultState;
+        var doneState = getDefaultState();
         if(options.doneState){doneState = options.doneState;}
         if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
             $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
