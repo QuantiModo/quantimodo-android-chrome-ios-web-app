@@ -1,15 +1,15 @@
 <div style="padding: 5px;">
-    <p ng-if="correlationObject.studyText.valuePredictingHighOutcomeExplanation &&
-        !correlationObject.studyText.averageEffectFollowingHighCauseExplanation" >
-        {{correlationObject.studyText.valuePredictingHighOutcomeExplanation}}
+    <p ng-if="state.study.studyText.valuePredictingHighOutcomeExplanation &&
+        !state.study.studyText.averageEffectFollowingHighCauseExplanation" >
+        {{state.study.studyText.valuePredictingHighOutcomeExplanation}}
     </p>
-    <p ng-if="correlationObject.studyText.valuePredictingLowOutcomeExplanation" >
-        {{correlationObject.studyText.valuePredictingLowOutcomeExplanation}}
+    <p ng-if="state.study.studyText.valuePredictingLowOutcomeExplanation" >
+        {{state.study.studyText.valuePredictingLowOutcomeExplanation}}
     </p>
-    <p ng-if="correlationObject.studyText.averageEffectFollowingHighCauseExplanation" >
-        {{correlationObject.studyText.averageEffectFollowingHighCauseExplanation}}
+    <p ng-if="state.study.studyText.averageEffectFollowingHighCauseExplanation" >
+        {{state.study.studyText.averageEffectFollowingHighCauseExplanation}}
     </p>
-    <p ng-if="correlationObject.studyText.averageEffectFollowingLowCauseExplanation" >
-        {{correlationObject.studyText.averageEffectFollowingLowCauseExplanation}}
+    <p ng-if="state.study.studyText.averageEffectFollowingLowCauseExplanation" >
+        {{state.study.studyText.averageEffectFollowingLowCauseExplanation}}
     </p>
 </div>

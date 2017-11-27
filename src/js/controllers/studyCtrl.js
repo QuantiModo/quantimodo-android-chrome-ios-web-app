@@ -14,67 +14,88 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         qmService.hideLoader(); // Hide before robot is called in afterEnter
     });
     $scope.$on("$ionicView.enter", function() {
-        qmLogService.debug(null, 'enter state ' + $state.current.name, null);
+        qmLogService.debug('enter state ' + $state.current.name);
         qmService.unHideNavigationMenu();
         if($stateParams.correlationObject){
-            qmService.qmStorage.setItem('lastStudy', JSON.stringify($stateParams.correlationObject));
-            $rootScope.correlationObject = $stateParams.correlationObject;
+            setAllStatePropertiesAndSaveToLocalStorage($stateParams.correlationObject);
         }
         setupRequestParams();
-        if(!$rootScope.correlationObject){
-            var lastStudy = qmStorage.getAsObject("lastStudy");
-            if(lastStudy){
-                if((!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName) ||
-                    (lastStudy.causeVariableName === $scope.state.requestParams.causeVariableName && lastStudy.effectVariableName === $scope.state.requestParams.effectVariableName)){
-                    $rootScope.correlationObject = lastStudy;
-                    setupRequestParams();
-                }
-            }
-        }
+        fallbackToLastStudyIfNecessary();
         getStudy();
     });
     $scope.$on("$ionicView.afterEnter", function() {
         robots();
     });
-    function setupRequestParams() {
-        if(urlHelper.getParam("causeVariableName")){ $scope.state.requestParams.causeVariableName = urlHelper.getParam("causeVariableName", window.location.href, true); }
-        if(urlHelper.getParam("effectVariableName")){ $scope.state.requestParams.effectVariableName = urlHelper.getParam("effectVariableName", window.location.href, true); }
-        if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
-        if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
-        if(urlHelper.getParam("userId")){$scope.state.requestParams.userId = urlHelper.getParam("userId");}
-        if($rootScope.correlationObject && !$scope.state.requestParams.causeVariableName){
-            $scope.state.requestParams = {
-                causeVariableName: $rootScope.correlationObject.causeVariableName,
-                effectVariableName: $rootScope.correlationObject.effectVariableName
-            };
+    function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
+        if(!studyOrCorrelation.statistics){studyOrCorrelation.statistics = JSON.parse(JSON.stringify(studyOrCorrelation));}
+        delete studyOrCorrelation.statistics.studyText;
+        delete studyOrCorrelation.statistics.charts;
+        delete studyOrCorrelation.statistics.highcharts;
+        studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        qmStorage.setItem('lastStudy', studyOrCorrelation);
+        $scope.state.study = studyOrCorrelation;
+    }
+    function fallbackToLastStudyIfNecessary() {
+        if(!getScopedStudy()){
+            var lastStudy = qmStorage.getAsObject("lastStudy");
+            if(lastStudy){
+                if((!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName) ||
+                    (lastStudy.causeVariableName === $scope.state.requestParams.causeVariableName &&
+                        lastStudy.effectVariableName === $scope.state.requestParams.effectVariableName)){
+                    setAllStatePropertiesAndSaveToLocalStorage(lastStudy);
+                    setupRequestParams();
+                }
+            }
         }
+    }
+    function getScopedStudy() {
+        if($stateParams.correlationObject){return $stateParams.correlationObject;}
+        if($scope.state.study){return $scope.state.study;}
+        if($rootScope.correlationObject){return $rootScope.correlationObject;}
+    }
+
+    function getStatistics() {
+        if($scope.state.study && $scope.state.study.statistics){return $scope.state.study.statistics;}
+        if($rootScope.correlationObject){ return $rootScope.correlationObject;}
+        if($stateParams.correlationObject){ return $stateParams.correlationObject;}
+    }
+
+    function getStateOrUrlOrRootScopeCorrelationOrRequestParam(paramName) {
+        if(window.urlHelper.getParam(paramName)){return window.urlHelper.getParam(paramName, window.location.href, true);}
+        if($stateParams[paramName]){ return $stateParams[paramName]; }
+        if($scope.state.requestParams && $scope.state.requestParams[paramName]){return $scope.state.requestParams[paramName];}
+        if($rootScope.correlationObject && $rootScope.correlationObject[paramName]){return $rootScope.correlationObject[paramName];}
+        return null;
+    }
+    function setupRequestParams() {
+        $scope.state.requestParams.causeVariableName = getStateOrUrlOrRootScopeCorrelationOrRequestParam("causeVariableName");
+        $scope.state.requestParams.effectVariableName = getStateOrUrlOrRootScopeCorrelationOrRequestParam("effectVariableName");
+        $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
         getStudy();
     };
-    $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
+    $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
         qmLogService.debug(null, 'Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
+    function getStudyLinks() {
+        if($scope.state.study.studyLinks){return $scope.state.study.studyLinks;}
+        if($rootScope.correlationObject && $rootScope.correlationObject.studyLinks){
+            return $rootScope.correlationObject.studyLinks;
+        }
+    }
+    function getStudyLinkStatic() {
+        if(getStudyLinks()){return getStudyLinks().studyLinkStatic;}
+    }
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = "Copied!";
         var studyLink;
         if(causeVariableName && effectVariableName){studyLink = qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName);}
-        if($rootScope.correlationObject){
-            /** @namespace $rootScope.correlationObject.studyLinkStatic */
-            if($rootScope.correlationObject.studyLinks.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
-            /** @namespace $rootScope.correlationObject.userStudy */
-            if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinks.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.userStudy.studyLinks.studyLinkStatic;
-            }
-            /** @namespace $rootScope.correlationObject.publicStudy */
-            if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinks.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.publicStudy.studyLinks.studyLinkStatic;
-            }
-        }
+        if(getStudyLinkStatic()){studyLink = getStudyLinkStatic(); }
         clipboard.copyText(studyLink);
     };
     function addWikipediaInfo() {
@@ -82,7 +103,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.causeWikiImage = null;
         $scope.effectWikiEntry = null;
         $scope.effectWikiImage = null;
-        var causeSearchTerm = $rootScope.correlationObject.causeVariableCommonAlias;
+        var causeSearchTerm = getStatistics().causeVariableCommonAlias;
         if(!causeSearchTerm){ causeSearchTerm = $scope.state.requestParams.causeVariableName; }
         wikipediaFactory.searchArticlesByTitle({
             term: causeSearchTerm,
@@ -100,7 +121,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             }
         }).catch(function (error) { qmLogService.error(null, error); });
         /** @namespace $rootScope.correlationObject.effectVariableCommonAlias */
-        var effectSearchTerm = $rootScope.correlationObject.effectVariableCommonAlias;
+        var effectSearchTerm = getStatistics().effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
         wikipediaFactory.searchArticlesByTitle({
             term: effectSearchTerm,
@@ -120,10 +141,10 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     $scope.weightedPeriod = 5;
     function getCorrelationObjectIfNecessary(){
-        if($rootScope.correlationObject || $stateParams.correlationObject){return;}
+        if(getStatistics() || $stateParams.correlationObject){return;}
         qmService.getCorrelationsDeferred($scope.state.requestParams)
             .then(function (data) {
-                if(data.correlations.length && !$rootScope.correlationObject) {$rootScope.correlationObject = data.correlations[0];}
+                if(data.correlations.length) {setAllStatePropertiesAndSaveToLocalStorage(data.correlations[0]);}
             }, function (error) {
                 qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
@@ -139,16 +160,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
-            if(study.highcharts){
-                study.charts = study.highcharts;
-                delete study.highcharts;
-            }
-            study.charts = qm.arrayHelper.convertObjectToArray(study.charts);
-            study.causeVariable.charts = qm.arrayHelper.convertObjectToArray(study.causeVariable.charts);
-            study.effectVariable.charts = qm.arrayHelper.convertObjectToArray(study.effectVariable.charts);
-            $scope.study = study;
+            setAllStatePropertiesAndSaveToLocalStorage(study);
             $scope.loadingCharts = false;
-            $rootScope.correlationObject = study.statistics;
         }, function (error) {
             qmLogService.error(null, error);
             qmService.hideLoader();
@@ -157,24 +170,28 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.state.title = "Not Enough Data, Yet";
         });
     }
+    function getCauseVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariableName');}
+    function getEffectVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariableName');}
+    function getCauseVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariable');}
+    function getEffectVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariable');}
     $rootScope.showActionSheetMenu = function() {
         var hideSheet = $ionicActionSheet.show({
             buttons: [
-                { text: '<i class="icon ion-log-in"></i>' + $rootScope.correlationObject.causeVariableName.substring(0,15) + ' Settings' },
-                { text: '<i class="icon ion-log-out"></i>' + $rootScope.correlationObject.effectVariableName.substring(0,15) + ' Settings' },
+                { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
+                { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
                 { text: '<i class="icon ion-thumbsup"></i> Seems Right' }
             ],
             destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null); },
             buttonClicked: function(index) {
-                if(index === 0){ qmService.goToVariableSettingsByObject($rootScope.correlationObject.causeVariable); }
-                if(index === 1){ qmService.goToVariableSettingsByObject($rootScope.correlationObject.effectVariable); }
-                if(index === 2){ $scope.upVote($rootScope.correlationObject); }
+                if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
+                if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }
+                if(index === 2){ $scope.upVote(getStatistics()); }
                 return true;
             },
             destructiveButtonClicked: function() {
-                $scope.downVote($rootScope.correlationObject);
+                $scope.downVote(getStatistics());
                 return true;
             }
         });
