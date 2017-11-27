@@ -2600,7 +2600,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
-            correlationObjects = useLocalImages(correlationObjects);
+            try {
+                correlationObjects = useLocalImages(correlationObjects);
+            } catch (error) {
+                qmLog.error(error);
+            }
             qmService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
             deferred.resolve(correlationObjects);
         }, function(error){
@@ -2627,7 +2631,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getUserCorrelationsFromApi(params, function(response){
-            response.data.correlations = useLocalImages(response.data.correlations);
+            try {
+                response.data.correlations = useLocalImages(response.data.correlations);
+            } catch (error) {
+                qmLog.error(error);
+            }
             qmService.storeCachedResponse('correlations', params, response.data);
             deferred.resolve(response.data);
         }, function(error){
