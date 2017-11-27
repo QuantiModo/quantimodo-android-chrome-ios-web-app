@@ -505,4 +505,20 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         qmService.goToStudyPage(causeVariableName, effectVariableName);
     };
+    $scope.showGeneralVariableSearchDialog = function (ev) {
+        function selectVariable(variable) {
+            $scope.variableObject = variable;
+            qmLogService.debug('Selected variable: ' + variable.name);
+            var showActionSheet = qmService.getVariableObjectActionSheet(variable.name, variable);
+            showActionSheet();
+        }
+        var dataToPass = {
+            title: 'Select Variable',
+            helpText: "Search for a variable to add a measurement, reminder, view history, or see relationships",
+            placeholder: "Search for a variable...",
+            buttonText: "Select Variable",
+            requestParams: {includePublic: true}
+        };
+        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, ev);
+    };
 }]);

@@ -7369,9 +7369,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return $stateParams.variableName;
     };
-    qmService.getVariableObjectActionSheet = function(variableName){
-        var variableObject = qmStorage.getUserVariableByName(variableName);
+    qmService.getVariableObjectActionSheet = function(variableName, variableObject){
+        if(!variableObject){variableObject = qmStorage.getUserVariableByName(variableName);}
         if(!variableObject){window.qmLog.info("Could not get variable for action sheet");}
+        if(!variableName){variableName = variableObject.name;}
         var stateParams = {variableName: variableName};
         if(variableObject){stateParams.variableObject = variableObject;}
         qmLog.info("Getting action sheet for variable " + variableName);
@@ -7381,10 +7382,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.actionSheetButtons.recordMeasurement,
                 qmService.actionSheetButtons.addReminder,
                 qmService.actionSheetButtons.history,
-                qmService.actionSheetButtons.analysisSettings,
+                qmService.actionSheetButtons.analysisSettings
             ];
             if(variableObject){buttons.push(qmService.actionSheetButtons.compare);}
-            if(variableObject && variableObject.outcome){buttons.push(qmService.actionSheetButtons.predictors);} else {buttons.push(qmService.actionSheetButtons.outcomes);}
+            if(variableObject && variableObject.outcome){
+                buttons.push(qmService.actionSheetButtons.predictors);
+            } else {
+                buttons.push(qmService.actionSheetButtons.outcomes);
+            }
             var hideSheet = $ionicActionSheet.show({
                 buttons: buttons,
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
