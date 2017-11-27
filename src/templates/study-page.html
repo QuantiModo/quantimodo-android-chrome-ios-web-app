@@ -54,19 +54,19 @@
                 </div>
                 <div ng-show="loadingCharts" style="text-align: center"> <br> <ion-spinner icon="android"></ion-spinner> <br> <br> <br> </div>
                 <div id="studyCharts">
-                    <div ng-repeat="chart in study.charts">
+                    <div ng-repeat="chart in study.charts" ng-if="chart.highchartConfig">
                         <h2>{{chart.chartTitle}}</h2>
                         <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
                         <p ng-if="chart.explanation">{{chart.explanation}}</p>
                         <br>
                     </div>
-                    <div ng-repeat="chart in study.causeVariable.charts">
+                    <div ng-repeat="chart in study.causeVariable.charts"  ng-if="chart.highchartConfig">
                         <h2>{{chart.chartTitle}}</h2>
                         <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
                         <p ng-if="chart.explanation">{{chart.explanation}}</p>
                         <br>
                     </div>
-                    <div ng-repeat="chart in study.effectVariable.charts">
+                    <div ng-repeat="chart in study.effectVariable.charts"  ng-if="chart.highchartConfig">
                         <h2>{{chart.chartTitle}}</h2>
                         <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
                         <p ng-if="chart.explanation">{{chart.explanation}}</p>
