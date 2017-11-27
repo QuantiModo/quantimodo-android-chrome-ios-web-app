@@ -2956,9 +2956,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
         return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
     };
-    function setChartExportingOptions(chartConfig){
-        chartConfig.exporting = {enabled: $rootScope.isWeb};
-        return chartConfig;
+    function setChartExportingOptions(highchartConfig){
+        if(!highchartConfig){
+            qmLog.info("No highchartConfig provided to setChartExportingOptions");
+            return highchartConfig;
+        }
+        highchartConfig.exporting = {enabled: $rootScope.isWeb};
+        return highchartConfig;
     }
     qmService.configureDistributionChart = function(dataAndLabels, variableObject){
         var xAxisLabels = [];
