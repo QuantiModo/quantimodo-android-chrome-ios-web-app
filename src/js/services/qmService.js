@@ -2124,6 +2124,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.qmStorage.setItem('lastGotNotificationsAtMilliseconds', window.getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qmStorage.setTrackingReminderNotifications(trackingReminderNotifications);
+        qmLog.info("Broadcasting qmStorage.getTrackingReminderNotifications");
         $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');
         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
@@ -2165,11 +2166,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!trackingReminderNotificationSyncScheduled ||
             parseInt(trackingReminderNotificationSyncScheduled) < window.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
             qmService.qmStorage.setItem('trackingReminderNotificationSyncScheduled', window.getUnixTimestampInMilliseconds());
+            qmLog.info("Scheduling notifications sync.. ");
             $timeout(function() {
+                qmLog.info("Notifications sync countdown completed.  Syncing now... ");
                 qmStorage.removeItem('trackingReminderNotificationSyncScheduled');
                 // Post notification queue in 5 minutes if it's still there
                 qmService.postTrackingReminderNotificationsDeferred();
             }, delayBeforePostingNotificationsInMilliseconds);
+        } else {
+            qmLog.error("Not scheduling sync because one is already scheduled " +
+                timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
         }
     };
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
@@ -2488,7 +2494,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminderNotifications));
             return;
         } else {
-            qmLogService.debug('trackingReminderNotifications is an array', null);
+            qmLogService.debug('trackingReminderNotifications is an array of size: ' + trackingReminderNotifications.length);
         }
         var result = [];
         var reference = moment().local();
