@@ -11,7 +11,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         $scope.goBack();
     }
     function getUserVariableWithTags() {
-        if(!$rootScope.variableObject){qmService.showBlackRingLoader();}
+        if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
         qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
             qmService.hideLoader();
             if(userVariables && userVariables[0]){
@@ -20,7 +20,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         })
     }
     function setVariableObject(variableObject) {
-        $rootScope.variableObject = $scope.state.variableObject = variableObject;
+        $scope.state.variableObject = $scope.state.variableObject = variableObject;
         setShowActionSheetMenu(variableObject);
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
@@ -35,7 +35,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     });
     function setShowActionSheetMenu(variableObject) {
         $rootScope.showActionSheetMenu = function() {
-            qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, variableObject);
+            qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     qmService.actionSheetButtons.measurementAddVariable,
@@ -79,12 +79,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         self.querySearch   = querySearch;
         self.selectedItemChange = selectedItemChange;
         self.searchTextChange   = searchTextChange;
-        self.variableObject = $rootScope.variableObject;
+        self.variableObject = $scope.state.variableObject;
         self.title = "Add a Tag";
         self.helpText = "Search for a variable like an ingredient or category " +
-            "that you'd like to tag " + $rootScope.variableObject.name.toUpperCase() + " with.  Then " +
+            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
             "when your tag variable is analyzed, measurements from " +
-            $rootScope.variableObject.name.toUpperCase() + " will be included.";
+            $scope.state.variableObject.name.toUpperCase() + " will be included.";
         self.placeholder = "Search for a tag...";
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
@@ -94,18 +94,18 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var userTagData;
-            if($rootScope.variableObject.unit.abbreviatedName !== '/5'){
+            if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState('app.tagAdd', {
-                    userTaggedVariableObject: $rootScope.variableObject,
+                    userTaggedVariableObject: $scope.state.variableObject,
                     fromState: $state.current.name,
-                    fromStateParams: {variableObject: $rootScope.variableObject},
+                    fromStateParams: {variableObject: $scope.state.variableObject},
                     userTagVariableObject: self.selectedItem.variable
                 });
             } else {
-                userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
+                userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $scope.state.variableObject.id, conversionFactor: 1};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function (response) {
-                    $rootScope.variableObject = response.data.userTaggedVariable;
+                    $scope.state.variableObject = response.data.userTaggedVariable;
                     qmService.hideLoader();
                 });
             }
@@ -114,8 +114,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
-            var requestParams = {defaultUnitCategoryName:  $rootScope.variableObject.defaultUnitCategoryName};
-            if($rootScope.variableObject.defaultUnitCategoryName !== "Rating"){requestParams.defaultUnitCategoryName = "(ne)Rating";}
+            var requestParams = {defaultUnitCategoryName:  $scope.state.variableObject.defaultUnitCategoryName};
+            if($scope.state.variableObject.defaultUnitCategoryName !== "Rating"){requestParams.defaultUnitCategoryName = "(ne)Rating";}
             qmService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }
@@ -131,7 +131,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          */
         function loadAll(variables) {
             if(!variables){ variables = qmStorage.getAsObject(qmItems.userVariables); }
-            if(variables && $rootScope.variableObject.unit.abbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
+            if(variables && $scope.state.variableObject.unit.abbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $scope.state.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
                 return {value: variable.name.toLowerCase(), name: variable.name, variable: variable};
@@ -147,7 +147,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          * Create filter function for a query string
          */
         function excludeParentVariable() {
-            return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
+            return function filterFn(item) { return (item.id !== $scope.state.variableObject.id); };
         }
     };
     TagVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
@@ -167,7 +167,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         self.querySearch   = querySearch;
         self.selectedItemChange = selectedItemChange;
         self.searchTextChange   = searchTextChange;
-        self.variableObject = $rootScope.variableObject;
+        self.variableObject = $scope.state.variableObject;
         self.title = "Join a Variable";
         self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
             self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
@@ -182,14 +182,14 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var variableData = {
-                parentVariableId: $rootScope.variableObject.id,
+                parentVariableId: $scope.state.variableObject.id,
                 joinedVariableId: self.selectedItem.variable.id,
                 conversionFactor: 1
             };
             qmService.showBlackRingLoader();
             qmService.postVariableJoinDeferred(variableData).then(function (response) {
                 qmService.hideLoader();
-                $rootScope.variableObject = response.data.parentVariable;
+                $scope.state.variableObject = response.data.parentVariable;
             }, function (error) {
                 qmService.hideLoader();
                 qmLogService.error(null, error);
@@ -199,7 +199,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
-            qmService.searchUserVariablesDeferred(query, {tagVariableId: $rootScope.variableObject.defaultUnitId})
+            qmService.searchUserVariablesDeferred(query, {tagVariableId: $scope.state.variableObject.defaultUnitId})
                 .then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }
@@ -215,7 +215,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          */
         function loadAll(variables) {
             if(!variables){variables = qmStorage.getAsObject(qmItems.userVariables); }
-            if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
+            if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $scope.state.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
                 return {
@@ -235,7 +235,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
          * Create filter function for a query string
          */
         function excludeParentVariable() {
-            return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
+            return function filterFn(item) { return (item.id !== $scope.state.variableObject.id); };
         }
     };
     JoinVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
@@ -284,8 +284,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         }
         function searchTextChange(text) { qmLogService.debug(null, 'Text changed to ' + text, null); }
         function selectedItemChange(item) {
-            $rootScope.variableObject.wikipediaPage = item.page;
-            $rootScope.variableObject.wikipediaExtract = item.page.extract;
+            $scope.state.variableObject.wikipediaPage = item.page;
+            $scope.state.variableObject.wikipediaExtract = item.page.extract;
             self.selectedItem = item;
             self.buttonText = dataToPass.buttonText;
         }
@@ -319,11 +319,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     helpText: "Change the search query until you see a relevant article in the search results.  This article will be included in studies involving this variable.",
                     placeholder: "Search for a Wikipedia article...",
                     buttonText: "Select Article",
-                    variableName: $rootScope.variableObject.name
+                    variableName: $scope.state.variableObject.name
                 }
             },
         }).then(function(page) {
-            $rootScope.variableObject.wikipediaPage = page;
+            $scope.state.variableObject.wikipediaPage = page;
         }, function() {
             qmLogService.debug(null, 'User cancelled selection', null);
         });
@@ -332,8 +332,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         // Populate fields with original settings for variable
         qmService.showBlackRingLoader();
         qmService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
-            $rootScope.variableObject = userVariable;
-            //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
+            $scope.state.variableObject = userVariable;
+            //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
         });
     };
     $scope.saveVariableSettings = function(variableObject){
