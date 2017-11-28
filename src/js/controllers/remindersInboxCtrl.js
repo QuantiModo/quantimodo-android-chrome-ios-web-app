@@ -29,7 +29,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmLogService.debug('RemindersInboxCtrl beforeEnter');
+		qmLogService.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
 		$scope.loading = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
@@ -40,7 +40,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		setPageTitle();
 	});
 	$scope.$on('$ionicView.enter', function(e) {
-        qmLogService.debug(null, 'RemindersInboxCtrl enter', null);
+        qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
         $scope.defaultHelpCards = qmService.setupHelpCards();
         getTrackingReminderNotifications();
         getFavorites();
@@ -50,9 +50,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-                    qmService.actionSheetButtons.history,
-					qmService.actionSheetButtons.addReminder,
-                    qmService.actionSheetButtons.recordMeasurement,
+                    qmService.actionSheetButtons.historyAll,
+					qmService.actionSheetButtons.reminderAdd,
+                    qmService.actionSheetButtons.measurementAddSearch,
             		qmService.actionSheetButtons.charts,
                     qmService.actionSheetButtons.settings,
                     qmService.actionSheetButtons.help
@@ -91,8 +91,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug(null, 'RemindersInboxCtrl afterEnter', null);
-        if(!$rootScope.numberOfPendingNotifications){$scope.refreshTrackingReminderNotifications();}
+        qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
+        if(!qmStorage.getItem(qmItems.trackingReminderNotifications) || !qmStorage.getItem(qmItems.trackingReminderNotifications).length){
+            $scope.refreshTrackingReminderNotifications();
+        }
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
@@ -177,7 +179,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(!$scope.state.numberOfDisplayedNotifications){
             if(getVariableCategoryName()){
                 qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
-				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: getVariableCategoryName(), onlyPast: true}, function (response) {
+				qmService.refreshTrackingReminderNotifications(3, {variableCategoryName: getVariableCategoryName(), onlyPast: true}, function (response) {
                     qmLogService.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() + ': ' + JSON.stringify(response));
                     $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
                 });
@@ -285,14 +287,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
-		//qmLogService.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
+		qmLogService.info('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 		$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 		if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}
 		if($state.current.name === "app.remindersInboxCompact"){
 			$scope.trackingReminderNotifications = trackingReminderNotifications;
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-			//qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
+			qmLogService.info('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
 			getFallbackInboxContent();
 		}
 	};
@@ -317,11 +319,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			});
 	};
 	$scope.$on('qmStorage.getTrackingReminderNotifications', function(){
-		qmLogService.debug(null, 'qmStorage.getTrackingReminderNotifications broadcast received..', null);
+		qmLogService.info('qmStorage.getTrackingReminderNotifications broadcast received..');
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});
 	var getTrackingReminderNotifications = function () {
-		qmLogService.debug(null, 'Getting notifications from local storage', null);
+        qmLogService.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
 		if($stateParams.today){getFilteredTodayTrackingReminderNotifications();} else {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	};
 	function shouldWeShowZeroButton(trackingReminderNotification){
@@ -392,13 +394,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history
+            qmService.actionSheetButtons.historyAllVariable
         ];
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
         buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
-        buttons.push(qmService.actionSheetButtons.analysisSettings);
+        buttons.push(qmService.actionSheetButtons.variableSettings);
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',

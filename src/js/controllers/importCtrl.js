@@ -67,7 +67,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	};
     $scope.showActionSheetForConnector = function(connector) {
         var buttons = [
-            qmService.getHistoryActionSheetButton(connector.displayName)
+            {text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + connector.displayName + ' History'}
         ];
         var hideSheetForNotification = $ionicActionSheet.show({
             buttons: buttons,
@@ -75,7 +75,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
             buttonClicked: function(index) {
-                if(index === 0){qmService.goToState('app.historyAll', {connectorName: connector.name});}
+                if(index === 0){qmService.goToState(qmStates.historyAll, {connectorName: connector.name});}
                 return true;
             },
             destructiveButtonClicked: function() {}
