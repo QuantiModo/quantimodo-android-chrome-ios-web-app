@@ -176,11 +176,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         ];
         buttons.push(qmService.actionSheetButtons.compare);
         if(variableObject.outcome){buttons.push(qmService.actionSheetButtons.predictors);} else {buttons.push(qmService.actionSheetButtons.outcomes);}
-        for(var i=0; i < trackingReminder.actionArray.length; i++){
-            if(trackingReminder.actionArray[i].action !== "snooze"){
-                buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + trackingReminder.actionArray[i].title});
-            }
-        }
+        buttons = qmService.addActionArrayButtonsToActionSheet(trackingReminder.actionArray, buttons);
 		var hideSheet = $ionicActionSheet.show({
 			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
