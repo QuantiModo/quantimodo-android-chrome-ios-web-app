@@ -7523,5 +7523,38 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('User cancelled selection');
         });
     };
+    qmService.scanBarcode = function (successHandler) {
+        var scannerConfig = {
+            //preferFrontCamera : true, // iOS and Android
+            showFlipCameraButton : true, // iOS and Android
+            showTorchButton : true, // iOS and Android
+            torchOn: true, // Android, launch with the torch switched on (if available)
+            //saveHistory: true, // Android, save scan history (default false)
+            prompt : "Place a barcode inside the scan area", // Android
+            //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+            //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+            //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+            //disableAnimations : true, // iOS
+            //disableSuccessBeep: false // iOS and Android
+        };
+        if($rootScope.isAndroid){
+            scannerConfig.formats =
+                "QR_CODE," +
+                "DATA_MATRIX," +
+                //"UPC_E," + // False positives on Android
+                "UPC_A," +
+                "EAN_8," +
+                //"EAN_13," + // False positives on Android
+                "CODE_128," +
+                "CODE_39," +
+                "ITF"
+        }
+        function errorHandler(error) {
+            qmLog.error("Barcode scan failure!  error: " + error);
+            qmService.showMaterialAlert("Barcode scan failed!",
+                "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
+        };
+        cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
+    };
     return qmService;
 }]);
