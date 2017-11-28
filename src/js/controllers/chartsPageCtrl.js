@@ -9,13 +9,18 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         if(urlHelper.getParam('variableName')){return urlHelper.getParam('variableName');}
         if($stateParams.variableName){return $stateParams.variableName;}
         if($stateParams.variableObject){return $stateParams.variableObject.name;}
-        if($rootScope.variableObject){return $rootScope.variableObject.name;}
+        if($scope.state.variableObject){return $scope.state.variableObject.name;}
         $scope.goBack();
     }
     function getScopedVariableObject() {
-        if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
-        if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
-        return $rootScope.variableObject;
+        if($scope.state.variableObject && $scope.state.variableObject.name === getVariableName()){return $scope.state.variableObject;}
+        if($stateParams.variableObject){
+            return $scope.state.variableObject = $stateParams.variableObject;
+        }
+        if(qm.userVariableHelper.getUserVariablesFromLocalStorage(getVariableName())){
+            return $scope.state.variableObject = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(getVariableName());
+        }
+        return $scope.state.variableObject;
     }
     function initializeCharts() {
         if(!getScopedVariableObject() || !getScopedVariableObject().charts){
@@ -28,7 +33,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     function getCharts(refresh) {
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
             .then(function (variableObject) {
-                $rootScope.variableObject = variableObject;
+                $scope.state.variableObject = variableObject;
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -38,7 +43,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmService.unHideNavigationMenu();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
+        $rootScope.showActionSheetMenu = function setActionSheet() {
+            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+        };
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
@@ -47,15 +54,15 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     });
     $scope.addNewReminderButtonClick = function() {
         qmLogService.debug(null, 'addNewReminderButtonClick', null);
-        qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
+        qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, fromState: $state.current.name});
     };
     $scope.compareButtonClick = function() {
         qmLogService.debug('compareButtonClick');
-        qmService.goToStudyCreationForVariable($rootScope.variableObject);
+        qmService.goToStudyCreationForVariable($scope.state.variableObject);
     };
     $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
-        {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
-    $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($rootScope.variableObject);};
+        {variableObject: $scope.state.variableObject, fromState: $state.current.name});};
+    $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($scope.state.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){
             qmService.showShareVariableConfirmation(variableObject, sharingUrl, ev);

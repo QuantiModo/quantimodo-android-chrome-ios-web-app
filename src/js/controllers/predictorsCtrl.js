@@ -176,6 +176,11 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             self.placeholder = "Search for a predictor...";
         }
         self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
+        self.getHelp = function(){
+            if(self.helpText && !self.showHelp){return self.showHelp = true;}
+            qmService.goToState(window.qmStates.help);
+            $mdDialog.cancel();
+        };
         self.cancel = function() { $mdDialog.cancel(); };
         self.finish = function() {
             qmService.goToStudyPageViaCorrelationObject(self.correlationObject);

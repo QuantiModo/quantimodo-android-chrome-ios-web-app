@@ -89,6 +89,10 @@ window.qm = {
     },
     arrayHelper: {
         variableIsArray: function(variable){
+            if(!variable){
+                qmLog.info(variable + " provided to variableIsArray");
+                return false;
+            }
             var isAnArray = Array.isArray(variable);
             if(isAnArray){return true;}
             var constructorArray = variable.constructor === Array;
@@ -111,6 +115,10 @@ window.qm = {
             return false;
         },
         convertObjectToArray: function (object) {
+            if(!object){
+                qmLog.info(object + " provided to convertObjectToArray");
+                return object;
+            }
             if(qm.arrayHelper.variableIsArray(object)){return object;}
             var result = Object.keys(obj).map(function(key) {
                 return obj[key];
@@ -176,6 +184,9 @@ window.qm = {
         },
         getUserVariablesFromLocalStorage: function(){
             return qmStorage.getItem(qmItems.userVariables);
+        },
+        getUserVariablesFromLocalStorageByName: function(variableName){
+            return qmStorage.getUserVariableByName(variableName);
         },
         updateLatestMeasurementTime: function(variableName, lastValue){
             qmStorage.getUserVariableByName(variableName, true, lastValue);
@@ -634,7 +645,9 @@ qm.api.get = function(url, successHandler, errorHandler){
                 try {
                     var parsedResponse = JSON.parse(json);
                 } catch (error) {
-                    qmLog.error(error, "Could not parse:" + json, {});
+                    if(url !== "configs/default.config.json"){
+                        qmLog.error(url + " error: " + error, "Could not parse json from " + url + "!  json: " + json, {});
+                    }
                     if(errorHandler){errorHandler(json);}
                     return;
                 }
@@ -815,7 +828,7 @@ function deleteFromArrayByProperty(localStorageItemArray, propertyName, property
 window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.error('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
         qmStorage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
     }
@@ -823,7 +836,7 @@ window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName
 window.qmStorage.deleteByPropertyInArray = function (localStorageItemName, propertyName, objectsArray){
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.error('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
         var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
         for (var i=0; i < arrayOfValuesForProperty.length; i++) {
@@ -879,8 +892,11 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
     if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
         if(matchingElements){unfilteredElementArray = matchingElements;}
         matchingElements = [];
+        if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
         for(i = 0; i < unfilteredElementArray.length; i++){
-            if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+            var currentPropertyValue = unfilteredElementArray[i][filterPropertyName];
+            if(typeof currentPropertyValue === "string"){currentPropertyValue = currentPropertyValue.toLowerCase();}
+            if(currentPropertyValue === filterPropertyValue){
                 matchingElements.push(unfilteredElementArray[i]);
             }
         }
@@ -1018,7 +1034,7 @@ window.qmStorage.getGlobal = function(key){
 };
 window.qmStorage.getItem = function(key){
     if(!key){
-        qmLog.error("No key provided to qmStorage.getItem")
+        qmLog.error("No key provided to qmStorage.getItem");
         return null;
     }
     if(qmStorage.getGlobal(key)){

@@ -38,10 +38,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    qmService.actionSheetButtons.recordMeasurement,
-                    qmService.actionSheetButtons.addReminder,
-                    qmService.actionSheetButtons.charts,
-                    qmService.actionSheetButtons.history,
+                    qmService.actionSheetButtons.measurementAddVariable,
+                    qmService.actionSheetButtons.reminderAdd,
+                    qmService.actionSheetButtons.chartSearch,
+                    qmService.actionSheetButtons.historyAllVariable,
                     { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
                     { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                 ],
@@ -86,6 +86,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             "when your tag variable is analyzed, measurements from " +
             $rootScope.variableObject.name.toUpperCase() + " will be included.";
         self.placeholder = "Search for a tag...";
+        self.getHelp = function(){
+            if(self.helpText && !self.showHelp){return self.showHelp = true;}
+            qmService.goToState(window.qmStates.help);
+            $mdDialog.cancel();
+        };
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var userTagData;
@@ -169,6 +174,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             self.variableObject.name + ".  You can only join variables that have the same unit " +
             self.variableObject.unit.abbreviatedName + ".";
         self.placeholder = "What variable would you like to join?";
+        self.getHelp = function(){
+            if(self.helpText && !self.showHelp){return self.showHelp = true;}
+            qmService.goToState(window.qmStates.help);
+            $mdDialog.cancel();
+        };
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var variableData = {
@@ -239,6 +249,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         self.title = dataToPass.title;
         self.helpText = dataToPass.helpText;
         self.placeholder = dataToPass.placeholder;
+        self.getHelp = function(){
+            if(self.helpText && !self.showHelp){return self.showHelp = true;}
+            qmService.goToState(window.qmStates.help);
+            $mdDialog.cancel();
+        };
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event, variableName) { $mdDialog.hide($scope.variable); };
         function querySearch (query) {

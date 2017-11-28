@@ -8,6 +8,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
+
     $rootScope.numberOfPendingNotifications = null;
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
@@ -32,6 +33,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             e.targetScope.controller_name === "ConfigurationCtrl"
         ) { $scope.showMoreMenuButton = true;
         } else { $scope.showMoreMenuButton = false; }
+    });
+    $scope.$on('$ionicView.afterEnter', function (e) {
+        qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
+        qmService.postTrackingReminderNotificationsDeferred();
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
@@ -100,7 +105,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleStudyShare = function (correlationObject, ev) {
         if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
     };
-
     function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
         if ($rootScope.isMobile){
             // this is the complete list of currently supported params you can pass to the plugin (all optional)
@@ -108,7 +112,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
                 //subject: correlationObject.sharingTitle, // fi. for email
                 //files: ['', ''], // an array of filenames either locally or remotely
-                url: correlationObject.studyLinkStatic.replace('local.q', 'app.q'),
+                url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
                 chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
             };
             var onSuccess = function(result) {
@@ -123,7 +127,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.openSharingUrl(sharingUrl);
         }
     }
-
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
@@ -271,36 +274,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
-        if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){modifiedReminderValue = trackingReminder.defaultValue;}
-        if(trackingReminder.combinationOperation === "SUM"){
-            trackingReminder.total = trackingReminder.total + modifiedReminderValue;
-        } else {
-            trackingReminder.total = modifiedReminderValue;
-        }
-        trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
-        if(!trackingReminder.tally){trackingReminder.tally = 0;}
-        if(trackingReminder.combinationOperation === "SUM"){
-            trackingReminder.tally += modifiedReminderValue;
-        } else {
-            trackingReminder.tally = modifiedReminderValue;
-        }
-        qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
-        $timeout(function() {
-            if(typeof trackingReminder === "undefined"){
-                qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
-                return;
-            }
-            if(trackingReminder.tally !== null) {
-                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
-                    .then(function () {
-                        qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
-                    }, function(error) {
-                        qmLogService.error(error);
-                        qmLogService.error('Failed to Track by favorite! ', trackingReminder);
-                    });
-                trackingReminder.tally = null;
-            }
-        }, 2000);
+        qmService.trackByFavorite(trackingReminder, modifiedReminderValue);
     };
     // Triggered on a button click, or some other target
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
@@ -309,8 +283,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             { text: '<i class="icon ion-gear-a"></i>Edit' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history,
-            qmService.actionSheetButtons.analysisSettings
+            qmService.actionSheetButtons.historyAllVariable,
+            qmService.actionSheetButtons.variableSettings
         ];
         /** @namespace config.appSettings.favoritesController */
         if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
@@ -380,7 +354,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToDefaultState(stateParams);
         }
     };
-
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
             qmLogService.error('No variable name provided to $scope.getUserVariableByName');
@@ -424,7 +397,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmLogService.debug('Do not track location');
         }
     };
-
     $scope.$on('$stateChangeSuccess', function() {
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -504,5 +476,21 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         qmService.goToStudyPage(causeVariableName, effectVariableName);
+    };
+    $scope.showGeneralVariableSearchDialog = function (ev) {
+        function selectVariable(variable) {
+            $scope.variableObject = variable;
+            qmLogService.debug('Selected variable: ' + variable.name);
+            var showActionSheet = qmService.getVariableObjectActionSheet(variable.name, variable);
+            showActionSheet();
+        }
+        var dataToPass = {
+            title: 'Select Variable',
+            helpText: "Search for a variable to add a measurement, reminder, view history, or see relationships",
+            placeholder: "Search for a variable...",
+            buttonText: "Select Variable",
+            requestParams: {includePublic: true}
+        };
+        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, ev);
     };
 }]);
