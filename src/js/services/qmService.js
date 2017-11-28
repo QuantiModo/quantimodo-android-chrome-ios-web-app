@@ -7426,13 +7426,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     };
     qmService.showVariableSearchDialog = function(dataToPass, successHandler, errorHandler, ev){
-        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
+        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
+                                                      qmLogService, $q, $log, dataToPass) {
             var self = this;
             // list of `state` value/display objects
             self.items        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
+            self.isMobile = $rootScope.isMobile;
             self.title = dataToPass.title;
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
@@ -7479,7 +7481,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.addVariableToLocalStorage(item.variable);
                 qmLogService.debug(null, 'Item changed to ' + item.variable.name, null);
             }
-
             /**
              * Build `variables` list of key/value pairs
              */
@@ -7496,7 +7497,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         };
-        SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
+        SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
+            "qmService", "qmLogService", "$q", "$log", "dataToPass"];
         $mdDialog.show({
             controller: SelectVariableDialogController,
             controllerAs: 'ctrl',
@@ -7504,7 +7506,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,
-            fullscreen: false,
+            fullscreen: !!($rootScope.isMobile),
             locals: {dataToPass: dataToPass}
         }).then(function(variable) {
             successHandler(variable);
