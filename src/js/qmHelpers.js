@@ -185,6 +185,9 @@ window.qm = {
         getUserVariablesFromLocalStorage: function(){
             return qmStorage.getItem(qmItems.userVariables);
         },
+        getUserVariablesFromLocalStorageByName: function(variableName){
+            return qmStorage.getUserVariableByName(variableName);
+        },
         updateLatestMeasurementTime: function(variableName, lastValue){
             qmStorage.getUserVariableByName(variableName, true, lastValue);
         },
@@ -889,8 +892,11 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
     if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
         if(matchingElements){unfilteredElementArray = matchingElements;}
         matchingElements = [];
+        if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
         for(i = 0; i < unfilteredElementArray.length; i++){
-            if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+            var currentPropertyValue = unfilteredElementArray[i][filterPropertyName];
+            if(typeof currentPropertyValue === "string"){currentPropertyValue = currentPropertyValue.toLowerCase();}
+            if(currentPropertyValue === filterPropertyValue){
                 matchingElements.push(unfilteredElementArray[i]);
             }
         }

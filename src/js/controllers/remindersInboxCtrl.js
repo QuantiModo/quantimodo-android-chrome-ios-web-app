@@ -50,9 +50,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-                    qmService.actionSheetButtons.history,
-					qmService.actionSheetButtons.addReminder,
-                    qmService.actionSheetButtons.recordMeasurement,
+                    qmService.actionSheetButtons.historyAll,
+					qmService.actionSheetButtons.reminderAdd,
+                    qmService.actionSheetButtons.measurementAddSearch,
             		qmService.actionSheetButtons.charts,
                     qmService.actionSheetButtons.settings,
                     qmService.actionSheetButtons.help
@@ -394,13 +394,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history
+            qmService.actionSheetButtons.historyAllVariable
         ];
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
         buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
-        buttons.push(qmService.actionSheetButtons.analysisSettings);
+        buttons.push(qmService.actionSheetButtons.variableSettings);
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',

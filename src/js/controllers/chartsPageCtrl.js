@@ -14,7 +14,12 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     }
     function getScopedVariableObject() {
         if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
-        if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
+        if($stateParams.variableObject){
+            return $rootScope.variableObject = $stateParams.variableObject;
+        }
+        if(qm.userVariableHelper.getUserVariablesFromLocalStorage(getVariableName())){
+            return $rootScope.variableObject = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(getVariableName());
+        }
         return $rootScope.variableObject;
     }
     function initializeCharts() {
@@ -38,7 +43,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmService.unHideNavigationMenu();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
+        $rootScope.showActionSheetMenu = function setActionSheet() {
+            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+        };
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
