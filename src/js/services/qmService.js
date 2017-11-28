@@ -526,12 +526,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
         if(query){params.name = "%" + query + "%";}
+        params = addGlobalUrlParamsToObject(params);
+        var cachedData = qm.api.cacheGet(params, 'searchUserVariablesFromApi');
+        if(cachedData && successHandler){
+            successHandler(cachedData);
+            return;
+        }
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'searchUserVariablesFromApi');
         }
-        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserVariables(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
