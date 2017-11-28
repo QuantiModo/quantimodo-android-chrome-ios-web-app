@@ -7486,7 +7486,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.buttonText = "Select " + item.variable.name;
                 $scope.variable = item.variable;
                 qmService.addVariableToLocalStorage(item.variable);
-                qmLogService.debug(null, 'Item changed to ' + item.variable.name, null);
+                qmLogService.debug('Item changed to ' + item.variable.name);
+                self.finish();
             }
             /**
              * Build `variables` list of key/value pairs
