@@ -466,7 +466,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $rootScope.variableObject = $scope.state.trackingReminder;
         $rootScope.variableObject.id = $scope.state.trackingReminder.variableId;
         $rootScope.variableObject.name = $scope.state.trackingReminder.variableName;
-        qmLogService.debug(null, 'ReminderAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ', null, $rootScope.variableObject);
+        qmLogService.debug(null, 'ReminderAddCtrl.showActionSheetMenu:   variableObject: ', null, $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.measurementAddVariable,
