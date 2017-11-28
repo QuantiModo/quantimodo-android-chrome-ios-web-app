@@ -7388,6 +7388,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var stateParams = {variableName: variableName};
         if(variableObject){stateParams.variableObject = variableObject;}
         qmLog.info("Getting action sheet for variable " + variableName);
+        if(variableObject.userId){
+            return qmService.getUserVariableActionSheet(variableName, variableObject, stateParams);
+        } else {
+            return qmService.getCommonVariableActionSheet(variableName, variableObject, stateParams);
+        }
+    };
+    qmService.getUserVariableActionSheet = function(variableName, variableObject, stateParams){
         return function() {
             qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
             var buttons = [
@@ -7415,6 +7422,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(index === 3) {qmService.goToVariableSettingsByObject(variableObject);} // Need variable name to populate in url
                     if(index === 4 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
                     if(index === 5 && variableObject){qmService.goToCorrelationsListForVariable(variableObject);}
+                    var buttonIndex = 6;
+                    for(var i=0; i < variableObject.actionArray.length; i++){
+                        if(variableObject.actionArray[i].action !== "snooze"){
+                            if(index === buttonIndex){$scope.trackByFavorite(variableObject, variableObject.actionArray[i].modifiedValue);}
+                            buttonIndex++;
+                        }
+                    }
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -7424,6 +7438,45 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             $timeout(function() {hideSheet();}, 20000);
         };
+    };
+    qmService.getCommonVariableActionSheet = function(variableName, variableObject, stateParams){
+        return function() {
+            qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+            var buttons = [
+                qmService.actionSheetButtons.recordMeasurement,
+                qmService.actionSheetButtons.addReminder,
+            ];
+            if(variableObject){buttons.push(qmService.actionSheetButtons.compare);}
+            if(variableObject && variableObject.outcome){
+                buttons.push(qmService.actionSheetButtons.predictors);
+            } else {
+                buttons.push(qmService.actionSheetButtons.outcomes);
+            }
+            var hideSheet = $ionicActionSheet.show({
+                buttons: buttons,
+                //destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {qmLogService.debug('CANCELLED');},
+                buttonClicked: function(index) {
+                    qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+                    if(index === 0) {qmService.goToState('app.measurementAddVariable', stateParams);} // Need variable name to populate in url
+                    if(index === 1) {qmService.goToState('app.reminderAdd', stateParams);} // Need variable name to populate in url
+                    if(index === 2 && variableObject){qmService.goToStudyCreationForVariable(variableObject);}
+                    if(index === 3 && variableObject){qmService.goToCorrelationsListForVariable(variableObject);}
+                    return true;
+                },
+                destructiveButtonClicked: function() {return true;}
+            });
+            $timeout(function() {hideSheet();}, 20000);
+        };
+    };
+    qmService.addActionArrayButtonsToActionSheet = function(actionArray, buttons){
+        for(var i=0; i < actionArray.length; i++){
+            if(actionArray[i].action !== "snooze"){
+                buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + actionArray[i].title});
+            }
+        }
+        return buttons;
     };
     qmService.showVariableSearchDialog = function(dataToPass, successHandler, errorHandler, ev){
         var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
