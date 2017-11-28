@@ -8,6 +8,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
+
     $rootScope.numberOfPendingNotifications = null;
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
