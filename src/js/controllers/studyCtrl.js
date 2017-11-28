@@ -232,6 +232,11 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if(qmService.explanations[dataToPass.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dataToPass.propertyToUpdate].unitName;}
         self.value = dataToPass.variable[dataToPass.propertyToUpdate];
         self.unitName = qmService.explanations[dataToPass.propertyToUpdate].unitName;
+        self.getHelp = function(){
+            if(self.helpText && !self.showHelp){return self.showHelp = true;}
+            qmService.goToState(window.qmStates.help);
+            $mdDialog.cancel();
+        };
         self.cancel = function() {
             self.items = null;
             $mdDialog.cancel();
