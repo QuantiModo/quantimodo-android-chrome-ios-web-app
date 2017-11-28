@@ -36,9 +36,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$i
 			buttons: [
 				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
 				//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-				qmService.actionSheetButtons.addReminder,
+				qmService.actionSheetButtons.reminderAdd,
 				qmService.actionSheetButtons.charts,
-				qmService.actionSheetButtons.analysisSettings
+				qmService.actionSheetButtons.variableSettings
 			],
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
