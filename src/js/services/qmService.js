@@ -6098,10 +6098,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.actionSheetButtons[propertyName].text + '</span>';
         }
     }
-    qmService.getHistoryActionSheetButton = function(variableName){
-        if(!variableName){variableName = '';}
-        return { icon: qmService.ionIcons.history + '"></i>' + variableName + ' History'};
-    };
     qmService.addImagePaths = function(object){
         if(object.variableCategoryName){
             var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
