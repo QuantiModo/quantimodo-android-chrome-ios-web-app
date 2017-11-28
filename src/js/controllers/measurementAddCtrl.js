@@ -133,7 +133,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             startTimeEpoch : parseInt($scope.state.selectedDate.format("X")),
             unitAbbreviatedName : $scope.state.measurement.unitAbbreviatedName,
             variableCategoryName : $scope.state.measurement.variableCategoryName,
-            combinationOperation : $rootScope.variableObject.combinationOperation
+            combinationOperation : $scope.state.variableObject.combinationOperation
         };
         // Assign measurement value if it does not exist
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
@@ -222,7 +222,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         // Gets version from local storage in case we just updated unit in variable settings
         var userVariables = qmService.qmStorage.getElementsWithRequestParams(qmItems.userVariables, {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
-        $rootScope.variableObject = variableObject;
+        $scope.state.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
         if(variableObject.unit && variableObject.unit.abbreviatedName){
             setupUnit(variableObject.unit.abbreviatedName, variableObject.valence);
@@ -281,7 +281,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     };
     $scope.goToAddReminder = function(){
         qmService.goToState('app.reminderAdd', {
-            variableObject: $rootScope.variableObject,
+            variableObject: $scope.state.variableObject,
             fromState: $state.current.name,
             fromUrl: window.location.href,
             measurement: $stateParams.measurement
@@ -297,7 +297,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.state.measurement.inputType = qmService.getInputType(unitAbbreviatedName, valence, variableName);
     }
     function setVariableObjectFromMeasurement() {
-        $rootScope.variableObject = {
+        $scope.state.variableObject = {
             unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
             variableCategoryName: $scope.state.measurement.variableCategoryName ? $scope.state.measurement.variableCategoryName : null,
             id: $scope.state.measurement.variableId ? $scope.state.measurement.variableId : null,
@@ -306,8 +306,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
     }
     function setVariableObject() {
-        if (!$rootScope.variableObject || $rootScope.variableObject !== $scope.state.measurement.variableName ) {
-            if ($stateParams.variableObject) {$rootScope.variableObject = $stateParams.variableObject;} else { setVariableObjectFromMeasurement(); }
+        if (!$scope.state.variableObject || $scope.state.variableObject !== $scope.state.measurement.variableName ) {
+            if ($stateParams.variableObject) {$scope.state.variableObject = $stateParams.variableObject;} else { setVariableObjectFromMeasurement(); }
         }
     }
     var setupTrackingByMeasurement = function(measurementObject){
@@ -338,11 +338,11 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             setVariableObject();
         }
         // Create variableObject
-        if (!$rootScope.variableObject) {
+        if (!$scope.state.variableObject) {
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
-                $rootScope.variableObject = $stateParams.variableObject;
+                $scope.state.variableObject = $stateParams.variableObject;
             } else if (reminderNotification) {
-                $rootScope.variableObject = {
+                $scope.state.variableObject = {
                     unitAbbreviatedName : reminderNotification.unitAbbreviatedName,
                     combinationOperation : reminderNotification.combinationOperation,
                     userId : reminderNotification.userId,
@@ -354,7 +354,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
     };
     $rootScope.showActionSheetMenu = function() {
-        qmLogService.debug(null, $state.current.name + ': ' + 'measurementAddCtrl.showActionSheetMenu:  variableObject: ', null, $rootScope.variableObject);
+        qmLogService.debug(null, $state.current.name + ': ' + 'measurementAddCtrl.showActionSheetMenu:  $scope.state.variableObject: ', null, $scope.state.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.reminderAdd,
@@ -367,9 +367,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
             buttonClicked: function(index) {
-                if(index === 0){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 0){qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
+                if(index === 1){qmService.goToState('app.charts', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
+                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 3) {qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
                 if(index === 4) { showMoreUnits(); }
                 return true;
