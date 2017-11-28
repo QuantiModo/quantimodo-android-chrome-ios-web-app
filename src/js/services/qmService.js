@@ -7493,7 +7493,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
                 if(!query){
-                    qmLogService.debug(null, 'Why are we searching without a query?', null);
+                    qmLogService.debug('Why are we searching without a query?');
                     if(!self.items || self.items.length < 10){self.items = loadAll();}
                     deferred.resolve(self.items);
                     return deferred.promise;
@@ -7506,10 +7506,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return deferred.promise;
                     }
                 }
+                if(query === self.lastApiQuery && self.lastResults){
+                    qmLog.debug("Why are we researching with the same query?");
+                    deferred.resolve(loadAll(self.lastResults));
+                    return deferred.promise;
+                }
+                self.lastApiQuery = query;
                 qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                     .then(function(results){
-                        qmLogService.debug(null, 'Got ' + results.length + ' results matching ' + query, null);
-                        deferred.resolve(loadAll(results));
+                        self.lastResults = results;
+                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        deferred.resolve(loadAll(self.lastResults));
                     });
                 return deferred.promise;
             }
