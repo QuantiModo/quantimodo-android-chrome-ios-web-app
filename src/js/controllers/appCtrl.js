@@ -274,36 +274,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
-        if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){modifiedReminderValue = trackingReminder.defaultValue;}
-        if(trackingReminder.combinationOperation === "SUM"){
-            trackingReminder.total = trackingReminder.total + modifiedReminderValue;
-        } else {
-            trackingReminder.total = modifiedReminderValue;
-        }
-        trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
-        if(!trackingReminder.tally){trackingReminder.tally = 0;}
-        if(trackingReminder.combinationOperation === "SUM"){
-            trackingReminder.tally += modifiedReminderValue;
-        } else {
-            trackingReminder.tally = modifiedReminderValue;
-        }
-        qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
-        $timeout(function() {
-            if(typeof trackingReminder === "undefined"){
-                qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
-                return;
-            }
-            if(trackingReminder.tally !== null) {
-                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
-                    .then(function () {
-                        qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
-                    }, function(error) {
-                        qmLogService.error(error);
-                        qmLogService.error('Failed to Track by favorite! ', trackingReminder);
-                    });
-                trackingReminder.tally = null;
-            }
-        }, 2000);
+        qmService.trackByFavorite(trackingReminder, modifiedReminderValue);
     };
     // Triggered on a button click, or some other target
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
@@ -312,8 +283,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             { text: '<i class="icon ion-gear-a"></i>Edit' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history,
-            qmService.actionSheetButtons.analysisSettings
+            qmService.actionSheetButtons.historyAllVariable,
+            qmService.actionSheetButtons.variableSettings
         ];
         /** @namespace config.appSettings.favoritesController */
         if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
