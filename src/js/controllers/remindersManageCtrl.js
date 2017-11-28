@@ -43,8 +43,8 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
 			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add a Variable"; }
             if(!$scope.stateParams.addMeasurementButtonText) { $scope.stateParams.addMeasurementButtonText = "Record Measurement"; }
-			actionButtons[2] = qmService.actionSheetButtons.history;
-            actionButtons[3] = qmService.actionSheetButtons.addReminder;
+			actionButtons[2] = qmService.actionSheetButtons.historyAllCategory;
+            actionButtons[3] = qmService.actionSheetButtons.reminderSearch;
 		} else {
 			$scope.state.noRemindersTitle = "Add " + $stateParams.variableCategoryName;
 			$scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders here, yet.";
@@ -54,10 +54,11 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				$scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 			}
 			$scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
-            actionButtons[2] = { text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
+            actionButtons[2] = { text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' +
+                $stateParams.variableCategoryName + ' History'};
             actionButtons[3] = { text: '<i class="icon ' + qmService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
-        actionButtons[4] = qmService.actionSheetButtons.recordMeasurement;
+        actionButtons[4] = qmService.actionSheetButtons.measurementAddSearch;
         actionButtons[5] = qmService.actionSheetButtons.charts;
         actionButtons[6] = qmService.actionSheetButtons.refresh;
 		$scope.state.showButtons = true;
@@ -169,18 +170,14 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		var variableObject = qmService.convertTrackingReminderToVariableObject(trackingReminder);
         var buttons = [
             { text: '<i class="icon ion-android-notifications-none"></i>Edit'},
-            qmService.actionSheetButtons.recordMeasurement,
+            qmService.actionSheetButtons.measurementAdd,
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history,
-            qmService.actionSheetButtons.analysisSettings
+            qmService.actionSheetButtons.historyAllVariable,
+            qmService.actionSheetButtons.variableSettings
         ];
         buttons.push(qmService.actionSheetButtons.compare);
         if(variableObject.outcome){buttons.push(qmService.actionSheetButtons.predictors);} else {buttons.push(qmService.actionSheetButtons.outcomes);}
-        for(var i=0; i < trackingReminder.actionArray.length; i++){
-            if(trackingReminder.actionArray[i].action !== "snooze"){
-                buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + trackingReminder.actionArray[i].title});
-            }
-        }
+        buttons = qmService.addActionArrayButtonsToActionSheet(trackingReminder.actionArray, buttons);
 		var hideSheet = $ionicActionSheet.show({
 			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
