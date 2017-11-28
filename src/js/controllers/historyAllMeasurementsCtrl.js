@@ -33,7 +33,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         getScopedVariableObject();
         if (getVariableName()) {
             $scope.state.title = getVariableName() + ' History';
-        	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            $rootScope.showActionSheetMenu = function setActionSheet() {
+                return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            };
         }
         $scope.getHistory();
     });
