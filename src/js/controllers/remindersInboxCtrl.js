@@ -179,7 +179,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(!$scope.state.numberOfDisplayedNotifications){
             if(getVariableCategoryName()){
                 qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
-				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: getVariableCategoryName(), onlyPast: true}, function (response) {
+				qmService.refreshTrackingReminderNotifications(3, {variableCategoryName: getVariableCategoryName(), onlyPast: true}, function (response) {
                     qmLogService.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() + ': ' + JSON.stringify(response));
                     $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
                 });

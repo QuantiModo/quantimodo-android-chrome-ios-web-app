@@ -2139,14 +2139,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
-        var trackingReminderNotificationsArray = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
-        qmLogService.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray), null);
-        qmStorage.removeItem(qmItems.notificationsSyncQueue);
+        var trackingReminderNotificationsArray = qmStorage.getItem(qmItems.notificationsSyncQueue);
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
             deferred.resolve();
             return deferred.promise;
         }
+        qmLogService.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' +
+            JSON.stringify(trackingReminderNotificationsArray));
+        qmStorage.removeItem(qmItems.notificationsSyncQueue);
         qmService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(response){
             if(successHandler){successHandler(response);}
             deferred.resolve(response);
@@ -2266,7 +2267,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
+    qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests, params){
         var deferred = $q.defer();
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
@@ -2280,7 +2281,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         qmService.postTrackingReminderNotificationsDeferred(function(){
             var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
-            var params = {};
+            if(!params){params = {};}
             params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
             params.sort = '-reminderTime';
             params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
