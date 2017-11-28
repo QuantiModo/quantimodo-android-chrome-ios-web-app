@@ -7390,7 +7390,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return true;
             }
             if(button.action){
-                qmService.trackByFavorite(button.variableObject, button.action.modifiedValue);
+                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
             }
             if(button.id === qmService.actionSheetButtons.compare.id){
                 qmService.goToStudyCreationForVariable(variableObject);
@@ -7422,15 +7422,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(variableObject.actionArray) {
                 for (var i = 0; i < variableObject.actionArray.length; i++) {
-                    if (variableObject.actionArray[i].action !== "snooze") {
-                        var button = qmService.actionSheetButtons.lastValuesAction;
-                        button.action = variableObject.actionArray[i].action;
-                        button.variableObject = variableObject;
-                        qmService.actionSheetButtons[propertyName].text = '<span id="' + button.action.modifiedValue +
-                            '"><i class="icon ' + qmService.ionIcons.recordMeasurement + '"></i>' + button.action.title + '</span>';
-                        buttons.push(button);
+                    var actionArrayItem = variableObject.actionArray[i];
+                    qmLog.info("Action array item: " + JSON.stringify(actionArrayItem));
+                    if (actionArrayItem.action !== "snooze") {
+                        buttons.push({
+                            action: actionArrayItem,
+                            id: actionArrayItem.callback,
+                            text:  '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
+                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.title + '</span>'
+                        });
                     }
                 }
+            }
+            for (var j = 0; j < buttons.length; j++) {
+                qmLog.info("Button text: " + buttons[j].text)
             }
             var actionSheetParams = {
                 buttons: buttons,

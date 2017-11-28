@@ -14,7 +14,12 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     }
     function getScopedVariableObject() {
         if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
-        if($stateParams.variableObject){$rootScope.variableObject = $stateParams.variableObject;}
+        if($stateParams.variableObject){
+            return $rootScope.variableObject = $stateParams.variableObject;
+        }
+        if(qm.userVariableHelper.getUserVariablesFromLocalStorage(getVariableName())){
+            return $rootScope.variableObject = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(getVariableName());
+        }
         return $rootScope.variableObject;
     }
     function initializeCharts() {
