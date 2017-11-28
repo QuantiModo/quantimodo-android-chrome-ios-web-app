@@ -1,6 +1,7 @@
 <ion-side-menus enable-menu-with-back-views="true">
     <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}">
-        <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}" ng-show="hideNavigationMenu === false || appSettings.designMode" >
+        <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}"
+                     ng-show="hideNavigationMenu === false || appSettings.designMode" >
             <ion-nav-buttons side="left">
                 <button id="menu-toggle-button" ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
                 <button id="menu-close-button" ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
@@ -15,7 +16,8 @@
                         <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>
                     <a  id="navBarAvatar" href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" ng-src="{{user.avatar}}"> </a>
-                    <button id="menu-search-button" class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
+                    <button id="menu-search-button" class="button button-icon ion-ios-search"
+                            ng-click="showGeneralVariableSearchDialog($event)"></button>
                     <a ng-if="finishUrl" href="{{finishUrl}}">
                         <button id="menu-finish-button" ng-show="finishUrl" class="button button-icon ion-android-close"></button>
                     </a>
@@ -25,16 +27,23 @@
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;" style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
-        <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
+        <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
+             style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span>
+            <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
+        <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-header-bar class="bar-positive">
-            <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')" ng-if="user && user.displayName && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)">
-                <a ng-if="user && user.avatar" class="button button-clear" ><img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a> <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
+            <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')"
+                 ng-if="user && user.displayName && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)">
+                <a ng-if="user && user.avatar" class="button button-clear" >
+                    <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a> <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
             </div>
-            <div id="menu-upgrade" style="cursor:pointer;" ng-if="user && user.displayName && !user.stripeActive && !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled" ng-click="goToState('app.upgrade')">
+            <div id="menu-upgrade" style="cursor:pointer;"
+                 ng-if="user && user.displayName && !user.stripeActive && !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled"
+                 ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
             </div>
         </ion-header-bar>
