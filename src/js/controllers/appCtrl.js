@@ -33,6 +33,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         ) { $scope.showMoreMenuButton = true;
         } else { $scope.showMoreMenuButton = false; }
     });
+    $scope.$on('$ionicView.afterEnter', function (e) {
+        qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
+        qmService.postTrackingReminderNotificationsDeferred();
+    });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
     }, function (ratio) {
@@ -100,7 +104,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleStudyShare = function (correlationObject, ev) {
         if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
     };
-
     function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
         if ($rootScope.isMobile){
             // this is the complete list of currently supported params you can pass to the plugin (all optional)
@@ -108,7 +111,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
                 //subject: correlationObject.sharingTitle, // fi. for email
                 //files: ['', ''], // an array of filenames either locally or remotely
-                url: correlationObject.studyLinkStatic.replace('local.q', 'app.q'),
+                url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
                 chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
             };
             var onSuccess = function(result) {
@@ -123,7 +126,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.openSharingUrl(sharingUrl);
         }
     }
-
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
@@ -380,7 +382,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToDefaultState(stateParams);
         }
     };
-
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
             qmLogService.error('No variable name provided to $scope.getUserVariableByName');
@@ -424,7 +425,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmLogService.debug('Do not track location');
         }
     };
-
     $scope.$on('$stateChangeSuccess', function() {
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

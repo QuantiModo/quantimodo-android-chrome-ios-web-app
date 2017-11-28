@@ -61,8 +61,8 @@
          style="text-align: center"
          ng-repeat="correlationObject in state.correlationObjects">
         <div ng-if="outcomeList || predictorList" id="correlationHeader" class="item item-avatar" ng-click="goToStudyPage(correlationObject)">
-            <img ng-if="predictorList" ng-src="{{correlationObject.causeVariableImageUrl}}">
-            <img ng-if="outcomeList" ng-src="{{correlationObject.effectVariableImageUrl}}">
+            <img ng-if="predictorList" ng-src="{{correlationObject.studyImages.causeVariableImageUrl}}">
+            <img ng-if="outcomeList" ng-src="{{correlationObject.studyImages.effectVariableImageUrl}}">
             <p style="height: 40px; line-height: 40px; color: black; font-size: 18px; margin-left: -40px; padding-left: 15px;">
                 <span ng-if="outcomeList">{{correlationObject.effectVariableName}}</span>
                 <span ng-if="predictorList">{{correlationObject.causeVariableName}}</span>
@@ -70,11 +70,11 @@
         </div>
         <div ng-if="!outcomeList && !predictorList" id="predictorExplanationHeader" class="item"
              ng-click="goToStudyPage(correlationObject)">
-            <span style="white-space: normal;">{{correlationObject.predictorExplanation}}</span>
+            <span style="white-space: normal;">{{correlationObject.studyText.predictorExplanation}}</span>
         </div>
         <div id="correlationBody" class="item item-body">
-            <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
-            <p ng-if="outcomeList || predictorList">{{correlationObject.predictorExplanation}}</p>
+            <img ng-src="{{correlationObject.studyImages.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
+            <p ng-if="outcomeList || predictorList">{{correlationObject.studyText.predictorExplanation}}</p>
             <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
             <div ng-include="'templates/buttons/join-study-button.html'"></div>
