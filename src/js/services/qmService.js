@@ -7427,7 +7427,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         button.action = variableObject.actionArray[i].action;
                         button.variableObject = variableObject;
                         qmService.actionSheetButtons[propertyName].text = '<span id="' + button.action.modifiedValue +
-                            '"><i class="icon ' + qmService.ionIcon.recordMeasurement + '"></i>' + button.action.title + '</span>';
+                            '"><i class="icon ' + qmService.ionIcons.recordMeasurement + '"></i>' + button.action.title + '</span>';
                         buttons.push(button);
                     }
                 }
