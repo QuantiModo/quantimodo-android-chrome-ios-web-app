@@ -30,15 +30,20 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
         }
         if ($stateParams.variableCategoryName) {setupVariableCategoryActionSheet();}
-        if ($stateParams.variableObject) {
-            $rootScope.variableObject = $stateParams.variableObject;
-        }
+        getScopedVariableObject();
         if (getVariableName()) {
             $scope.state.title = getVariableName() + ' History';
-        	$rootScope.showActionSheetMenu = qmService.getVariableObjectActionSheet(getVariableName());
+            $rootScope.showActionSheetMenu = function setActionSheet() {
+                return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            };
         }
         $scope.getHistory();
     });
+    function getScopedVariableObject() {
+        if($rootScope.variableObject && $rootScope.variableObject.name === getVariableName()){return $rootScope.variableObject;}
+        if($stateParams.variableObject){return $rootScope.variableObject = $stateParams.variableObject;}
+        return null;
+    }
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
         if($stateParams.variableObject){return $stateParams.variableObject.name;}
@@ -138,10 +143,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		var hideSheet = $ionicActionSheet.show({
 			buttons: [
 				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
-				qmService.actionSheetButtons.addReminder,
+				qmService.actionSheetButtons.reminderAdd,
 				qmService.actionSheetButtons.charts,
-				qmService.actionSheetButtons.history,
-				qmService.actionSheetButtons.analysisSettings
+				qmService.actionSheetButtons.historyAllVariable,
+				qmService.actionSheetButtons.variableSettings
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',

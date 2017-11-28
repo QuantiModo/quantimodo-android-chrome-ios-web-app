@@ -469,10 +469,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmLogService.debug(null, 'ReminderAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ', null, $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
-                qmService.actionSheetButtons.recordMeasurement,
+                qmService.actionSheetButtons.measurementAddVariable,
                 qmService.actionSheetButtons.charts,
-                qmService.actionSheetButtons.history,
-                qmService.actionSheetButtons.analysisSettings,
+                qmService.actionSheetButtons.historyAllVariable,
+                qmService.actionSheetButtons.variableSettings,
                 { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',

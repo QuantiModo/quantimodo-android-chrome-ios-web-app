@@ -291,71 +291,40 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     if($rootScope.isMobile){
         // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
         $scope.scanBarcode = function () {
-            var scannerConfig = {
-                //preferFrontCamera : true, // iOS and Android
-                showFlipCameraButton : true, // iOS and Android
-                showTorchButton : true, // iOS and Android
-                torchOn: true, // Android, launch with the torch switched on (if available)
-                //saveHistory: true, // Android, save scan history (default false)
-                prompt : "Place a barcode inside the scan area", // Android
-                //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
-                //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
-                //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
-                //disableAnimations : true, // iOS
-                //disableSuccessBeep: false // iOS and Android
+            function scanSuccessHandler(result) {
+                $scope.state.variableSearchQuery.barcode = result.text;
+                $scope.state.variableSearchQuery.barcodeFormat = result.format;
+                qmLog.pushDebug("We got a barcode\n" +
+                    "Result: " + $scope.state.variableSearchQuery.barcode + "\n" +
+                    "Format: " + $scope.state.variableSearchQuery.barcodeFormat + "\n" +
+                    "Cancelled: " + result.cancelled);
+                var localMatches = qmStorage.getWithFilters(qmItems.userVariables, 'upc', $scope.state.variableSearchQuery.barcode);
+                if(localMatches && localMatches.length){
+                    $scope.variableSearchResults = localMatches;
+                    qmLog.info("Found local match", null, localMatches);
+                    return;
+                }
+                var doneSearching = false;
+                function variableSearchErrorHandler() {
+                    doneSearching = true;
+                    qmService.hideLoader();
+                    $scope.state.variableSearchQuery.name = '';
+                    var errorMessage = "Couldn't find anything matching barcode " + $scope.state.variableSearchQuery.barcodeFormat
+                        + " " + $scope.state.variableSearchQuery.barcode;
+                    qmLog.error(errorMessage);
+                    qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
+                        "I'll link the code to your selected variable so scanning should work in the future. ")
+                }
+                function variableSearchSuccessHandler() {
+                    doneSearching = true;
+                    qmService.hideLoader();
+                }
+                $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
+                qmService.showBlackRingLoader();
+                $scope.state.variableSearchQuery.name = $scope.state.variableSearchQuery.barcode;
+                $scope.onVariableSearch(variableSearchSuccessHandler, variableSearchErrorHandler);
             };
-            if($rootScope.isAndroid){
-                scannerConfig.formats =
-                    "QR_CODE," +
-                    "DATA_MATRIX," +
-                    //"UPC_E," + // False positives on Android
-                    "UPC_A," +
-                    "EAN_8," +
-                    //"EAN_13," + // False positives on Android
-                    "CODE_128," +
-                    "CODE_39," +
-                    "ITF"
-            }
-            cordova.plugins.barcodeScanner.scan(function (result) {
-                    $scope.state.variableSearchQuery.barcode = result.text;
-                    $scope.state.variableSearchQuery.barcodeFormat = result.format;
-                    qmLog.pushDebug("We got a barcode\n" +
-                        "Result: " + $scope.state.variableSearchQuery.barcode + "\n" +
-                        "Format: " + $scope.state.variableSearchQuery.barcodeFormat + "\n" +
-                        "Cancelled: " + result.cancelled);
-                    var localMatches = qmStorage.getWithFilters(qmItems.userVariables, 'upc', $scope.state.variableSearchQuery.barcode);
-                    if(localMatches && localMatches.length){
-                        $scope.variableSearchResults = localMatches;
-                        qmLog.info("Found local match", null, localMatches);
-                        return;
-                    }
-                    var doneSearching = false;
-                    function errorHandler() {
-                        doneSearching = true;
-                        qmService.hideLoader();
-                        $scope.state.variableSearchQuery.name = '';
-                        var errorMessage = "Couldn't find anything matching barcode " + $scope.state.variableSearchQuery.barcodeFormat
-                            + " " + $scope.state.variableSearchQuery.barcode;
-                        qmLog.error(errorMessage);
-                        qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                            "I'll link the code to your selected variable so scanning should work in the future. ")
-                    }
-                    function successHandler() {
-                        doneSearching = true;
-                        qmService.hideLoader();
-                    }
-                    $timeout(function() {if(!doneSearching){errorHandler();}}, 15000);
-                    qmService.showBlackRingLoader();
-                    $scope.state.variableSearchQuery.name = $scope.state.variableSearchQuery.barcode;
-                    $scope.onVariableSearch(successHandler, errorHandler);
-                },
-                function (error) {
-                    qmLog.error("Barcode scan failure!  error: " + error);
-                    qmService.showMaterialAlert("Barcode scan failed!",
-                        "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
-                }, scannerConfig
-
-            );
+            qmService.scanBarcode(scanSuccessHandler);
         }
     }
 }]);
