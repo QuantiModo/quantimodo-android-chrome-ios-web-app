@@ -2,14 +2,14 @@
     <ion-nav-title>Study</ion-nav-title>
         <ion-content scroll="{ isBrowserView : isWeb == false }" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div ng-if="!state.study.statistics && !state.studyNotFound">
+            <div ng-if="!state.study && !state.studyNotFound">
                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
                 <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
                 <div class="bottom-block"> <h1 style="text-align: center;">Analyzing data...</h1> </div>
             </div>
-            <div ng-cloak ng-show="state.study.statistics" class="item-text-wrap card-item" style="border-style:hidden; text-align: center"><br>
-                <h2 id="predictorExplanation">{{state.study.studyText.predictorExplanation}}</h2><br>
-                <img ng-src="{{state.study.studyImages.gaugeImage}}"><br>
+            <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden; text-align: center"><br>
+                <h2 id="predictorExplanation">{{state.study.studyText.studyTitle}}</h2><br>
+                <img style="max-height: 200px" ng-src="{{state.study.studyImages.gaugeImage}}"><br>
 <!--                        Doesn't look right yet
                 <img ng-src="{{state.study.causeVariableImageUrl}}">
                 <img ng-src="{{state.study.effectVariableImageUrl}}">-->
