@@ -9,7 +9,7 @@
     <md-dialog-content ng-cloak>
         <div class="md-dialog-content">
             <form ng-submit="$event.preventDefault()">
-                <p>{{ctrl.helpText}}</p>
+                <p ng-if="!ctrl.isMobile">{{ctrl.helpText}}</p>
                 <md-autocomplete id="variable-search-box"
                         md-no-cache="true"
                         md-selected-item="ctrl.selectedItem"
@@ -32,7 +32,7 @@
             </form>
         </div>
     </md-dialog-content>
-    <md-dialog-actions>
+    <md-dialog-actions ng-if="ctrl.selectedItem">
         <md-button id="select-variable-button" ng-if="ctrl.buttonText" aria-label="Finished" ng-click="ctrl.finish($event, item)">
             <i ng-if="ctrl.selectedItem.ionIcon" class="icon {{ctrl.selectedItem.ionIcon}}"></i>  &nbsp;  {{ctrl.buttonText}}
         </md-button>
