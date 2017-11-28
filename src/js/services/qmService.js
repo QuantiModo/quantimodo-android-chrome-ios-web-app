@@ -7444,7 +7444,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $timeout(function() {hideSheet();}, 20000);
         };
     };
-
     qmService.addActionArrayButtonsToActionSheet = function(actionArray, buttons){
         for(var i=0; i < actionArray.length; i++){
             if(actionArray[i].action !== "snooze"){
@@ -7463,10 +7462,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
             self.isMobile = $rootScope.isMobile;
+            self.showHelp = !($rootScope.isMobile);
             self.title = dataToPass.title;
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
             self.newVariable = newVariable;
+            self.getHelp = function(){
+                if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                qmService.goToState(window.qmStates.help);
+                $mdDialog.cancel();
+            };
             self.cancel = function() {
                 self.items = null;
                 $mdDialog.cancel();
@@ -7504,7 +7509,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function selectedItemChange(item) {
                 if(!item){return;}
                 self.selectedItem = item;
-                self.buttonText = dataToPass.buttonText;
+                self.buttonText = "Select " + item.variable.name;
                 $scope.variable = item.variable;
                 qmService.addVariableToLocalStorage(item.variable);
                 qmLogService.debug(null, 'Item changed to ' + item.variable.name, null);
@@ -7544,38 +7549,75 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('User cancelled selection');
         });
     };
-    qmService.trackByFavorite = function(trackingReminder, modifiedReminderValue){
-            if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){modifiedReminderValue = trackingReminder.defaultValue;}
-            if(trackingReminder.combinationOperation === "SUM"){
-                trackingReminder.total = trackingReminder.total + modifiedReminderValue;
-            } else {
-                trackingReminder.total = modifiedReminderValue;
+    qmService.trackByFavorite = function(trackingReminder, modifiedReminderValue) {
+        if (typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null) {
+            modifiedReminderValue = trackingReminder.defaultValue;
+        }
+        if (trackingReminder.combinationOperation === "SUM") {
+            trackingReminder.total = trackingReminder.total + modifiedReminderValue;
+        } else {
+            trackingReminder.total = modifiedReminderValue;
+        }
+        trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
+        if (!trackingReminder.tally) {
+            trackingReminder.tally = 0;
+        }
+        if (trackingReminder.combinationOperation === "SUM") {
+            trackingReminder.tally += modifiedReminderValue;
+        } else {
+            trackingReminder.tally = modifiedReminderValue;
+        }
+        qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
+        $timeout(function () {
+            if (typeof trackingReminder === "undefined") {
+                qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                return;
             }
-            trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
-            if(!trackingReminder.tally){trackingReminder.tally = 0;}
-            if(trackingReminder.combinationOperation === "SUM"){
-                trackingReminder.tally += modifiedReminderValue;
-            } else {
-                trackingReminder.tally = modifiedReminderValue;
+            if (trackingReminder.tally !== null) {
+                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
+                    .then(function () {
+                        qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' +
+                            JSON.stringify(trackingReminder), null);
+                    }, function (error) {
+                        qmLogService.error(error);
+                        qmLogService.error('Failed to Track by favorite! ', trackingReminder);
+                    });
+                trackingReminder.tally = null;
             }
-            qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
-            $timeout(function() {
-                if(typeof trackingReminder === "undefined"){
-                    qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
-                    return;
-                }
-                if(trackingReminder.tally !== null) {
-                    qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
-                        .then(function () {
-                            qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' +
-                                JSON.stringify(trackingReminder), null);
-                        }, function(error) {
-                            qmLogService.error(error);
-                            qmLogService.error('Failed to Track by favorite! ', trackingReminder);
-                        });
-                    trackingReminder.tally = null;
-                }
-            }, 2000);
+        }, 2000);
+    }
+    qmService.scanBarcode = function (successHandler) {
+        var scannerConfig = {
+            //preferFrontCamera : true, // iOS and Android
+            showFlipCameraButton : true, // iOS and Android
+            showTorchButton : true, // iOS and Android
+            torchOn: true, // Android, launch with the torch switched on (if available)
+            //saveHistory: true, // Android, save scan history (default false)
+            prompt : "Place a barcode inside the scan area", // Android
+            //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+            //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+            //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+            //disableAnimations : true, // iOS
+            //disableSuccessBeep: false // iOS and Android
         };
+        if($rootScope.isAndroid){
+            scannerConfig.formats =
+                "QR_CODE," +
+                "DATA_MATRIX," +
+                //"UPC_E," + // False positives on Android
+                "UPC_A," +
+                "EAN_8," +
+                //"EAN_13," + // False positives on Android
+                "CODE_128," +
+                "CODE_39," +
+                "ITF"
+        }
+        function errorHandler(error) {
+            qmLog.error("Barcode scan failure!  error: " + error);
+            qmService.showMaterialAlert("Barcode scan failed!",
+                "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
+        };
+        cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
+    };
     return qmService;
 }]);
