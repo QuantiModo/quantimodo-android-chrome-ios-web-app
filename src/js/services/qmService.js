@@ -1800,6 +1800,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $rootScope.currentPlatform = ionic.Platform.platform();
         $rootScope.currentPlatformVersion = ionic.Platform.version();
         $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS) && !$rootScope.isWeb;
+        $rootScope.isMobile = true;
         $rootScope.isWindows = window.location.href.indexOf('ms-appx') > -1;
         $rootScope.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
         $rootScope.localNotificationsEnabled = $rootScope.isChromeExtension;
@@ -7435,10 +7436,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
             self.isMobile = $rootScope.isMobile;
+            self.showHelp = !($rootScope.isMobile);
             self.title = dataToPass.title;
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
             self.newVariable = newVariable;
+            self.getHelp = function(){
+                if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                qmService.goToState(window.qmStates.help);
+                $mdDialog.cancel();
+            };
             self.cancel = function() {
                 self.items = null;
                 $mdDialog.cancel();
@@ -7476,7 +7483,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function selectedItemChange(item) {
                 if(!item){return;}
                 self.selectedItem = item;
-                self.buttonText = dataToPass.buttonText;
+                self.buttonText = "Select " + item.variable.name;
                 $scope.variable = item.variable;
                 qmService.addVariableToLocalStorage(item.variable);
                 qmLogService.debug(null, 'Item changed to ' + item.variable.name, null);
