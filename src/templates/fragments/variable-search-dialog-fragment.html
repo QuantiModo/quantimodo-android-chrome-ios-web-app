@@ -3,7 +3,7 @@
         <div class="md-toolbar-tools">
             <h2 style="color: white;">{{ctrl.title}}</h2>
             <span flex></span>
-            <md-button id="barcode-button" class="md-icon-button" ng-click="ctrl.scanBarcode()" ng-if="isMobile">
+            <md-button id="barcode-button" class="md-icon-button" ng-click="ctrl.scanBarcode()" ng-if="ctrl.isMobile">
                 <md-icon md-svg-src="img/material-icons/ic_camera_enhance_white_24px.svg" aria-label="Help"></md-icon>
             </md-button>
             <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
