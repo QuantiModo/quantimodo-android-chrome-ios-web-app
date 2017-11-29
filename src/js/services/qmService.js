@@ -7424,7 +7424,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(variableObject.actionArray) {
                 for (var i = 0; i < variableObject.actionArray.length; i++) {
                     var actionArrayItem = variableObject.actionArray[i];
-                    qmLog.info("Action array item: " + JSON.stringify(actionArrayItem));
+                    qmLog.debug("Action array item: " + JSON.stringify(actionArrayItem));
                     if (actionArrayItem.action !== "snooze") {
                         buttons.push({
                             action: actionArrayItem,
@@ -7433,11 +7433,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.title + '</span>'
                         });
                     }
+                    if(buttons.length > 8){break;}
                 }
             }
-            for (var j = 0; j < buttons.length; j++) {
-                qmLog.info("Button text: " + buttons[j].text)
-            }
+            for (var j = 0; j < buttons.length; j++) {qmLog.debug("Button text: " + buttons[j].text)}
             var actionSheetParams = {
                 buttons: buttons,
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
