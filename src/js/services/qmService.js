@@ -7493,8 +7493,42 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.items = null;
                 $mdDialog.hide($scope.variable);
             };
+            self.scanBarcode = function() {
+                function scanSuccessHandler(result) {
+                    self.barcode = result.text;
+                    self.barcodeFormat = result.format;
+                    qmLog.pushDebug("We got a barcode\n" +
+                        "Result: " + self.barcode + "\n" +
+                        "Format: " + self.barcodeFormat + "\n" +
+                        "Cancelled: " + result.cancelled);
+                    var localMatches = qmStorage.getWithFilters(qmItems.userVariables, 'upc', self.barcode);
+                    if(localMatches && localMatches.length){
+                        self.items = localMatches;
+                        qmLog.info("Found local match", null, localMatches);
+                        return;
+                    }
+                    var doneSearching = false;
+                    function variableSearchErrorHandler() {
+                        doneSearching = true;
+                        qmService.hideLoader();
+                        self.querySearch = '';
+                        var errorMessage = "Couldn't find anything matching barcode " + self.barcodeFormat + " " + self.barcode;
+                        qmLog.error(errorMessage);
+                        qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
+                            "I'll link the code to your selected variable so scanning should work in the future. ")
+                    }
+                    function variableSearchSuccessHandler() {
+                        doneSearching = true;
+                        qmService.hideLoader();
+                    }
+                    $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
+                    qmService.showBlackRingLoader();
+                    querySearch(self.barcode, variableSearchSuccessHandler, variableSearchErrorHandler);
+                };
+                qmService.scanBarcode(scanSuccessHandler);
+            };
             function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
-            function querySearch (query) {
+            function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
                 if(!query){
@@ -7519,9 +7553,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.lastApiQuery = query;
                 qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                     .then(function(results){
-                        self.lastResults = results;
-                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                        deferred.resolve(loadAll(self.lastResults));
+                        if(results && results.length){
+                            self.lastResults = results;
+                            qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                            deferred.resolve(loadAll(self.lastResults));
+                            if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
+                        } else {
+                            if(variableSearchErrorHandler){variableSearchErrorHandler();}
+                        }
                     });
                 return deferred.promise;
             }
@@ -7530,6 +7569,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(!item){return;}
                 self.selectedItem = item;
                 self.buttonText = "Select " + item.variable.name;
+                if(self.barcode){
+                    item.variable.barcode = item.variable.upc = self.barcode;
+                    item.variable.barcodeFormat = self.barcodeFormat;
+                }
                 $scope.variable = item.variable;
                 qmService.addVariableToLocalStorage(item.variable);
                 qmLogService.debug('Item changed to ' + item.variable.name);
