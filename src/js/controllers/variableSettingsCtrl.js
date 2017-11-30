@@ -146,7 +146,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             $mdDialog.hide();
         }
         var dataToPass = {
-            title: 'Add a Tag',
+            title: 'Join a Duplicate',
             helpText: "Search for a duplicated or synonymous variable that you'd like to join to " +
                 $scope.state.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
                 $scope.state.variableObject.name + ".  You can only join variables that have the same unit " +
