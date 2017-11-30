@@ -14,25 +14,25 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         }
     };
     // delete measurement
-    $scope.deleteTag = function(){
+    $scope.deleteTag = function(variableObject){
         var userTagData = {
             userTagVariableId: $scope.stateParams.userTagVariableObject.id,
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
         qmService.showBlackRingLoader();
-        if($rootScope.variableObject.userTagVariables){
-            $rootScope.variableObject.userTagVariables =
-                $rootScope.variableObject.userTagVariables.filter(function( obj ) {
+        if(variableObject.userTagVariables){
+            variableObject.userTagVariables =
+                variableObject.userTagVariables.filter(function( obj ) {
                     return obj.id !== $scope.stateParams.userTagVariableObject.id;
                 });
         }
-        if($rootScope.variableObject.userTaggedVariables){
-            $rootScope.variableObject.userTaggedVariables =
-                $rootScope.variableObject.userTaggedVariables.filter(function( obj ) {
+        if(variableObject.userTaggedVariables){
+            variableObject.userTaggedVariables =
+                variableObject.userTaggedVariables.filter(function( obj ) {
                     return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
-        qm.userVariableHelper.saveUserVariablesToLocalStorage($rootScope.variableObject);
+        qm.userVariableHelper.saveUserVariablesToLocalStorage(variableObject);
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
