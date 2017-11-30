@@ -208,7 +208,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	var notificationAction = function(trackingReminderNotification){
 		trackingReminderNotification.hide = true;
-        $rootScope.numberOfPendingNotifications--;
+        qmService.numberOfPendingNotifications--;
         $scope.state.numberOfDisplayedNotifications--;
         if($state.current.name === "app.remindersInboxCompact"){
             if(!$scope.state.numberOfDisplayedNotifications){window.close();}
@@ -226,7 +226,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
-        qmService.logEventToGA(qmAnalytics.eventCategories.inbox, "track", null, modifiedReminderValue);
+		// I think this slows down inbox
+        //qmService.logEventToGA(qmAnalytics.eventCategories.inbox, "track", null, modifiedReminderValue);
 		qmService.trackTrackingReminderNotificationDeferred(body, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
@@ -347,7 +348,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		$rootScope.numberOfPendingNotifications--;
+		qmService.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		qmNotifications.deleteById(trackingReminderNotification.id);
 		qmService.goToState('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
@@ -356,7 +357,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		$rootScope.numberOfPendingNotifications--;
+		qmService.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		var trackingReminder = trackingReminderNotification;
 		trackingReminder.id = trackingReminderNotification.trackingReminderId;

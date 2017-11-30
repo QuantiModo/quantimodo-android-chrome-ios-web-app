@@ -9,7 +9,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
 
-    $rootScope.numberOfPendingNotifications = null;
+    qmService.numberOfPendingNotifications = null;
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
