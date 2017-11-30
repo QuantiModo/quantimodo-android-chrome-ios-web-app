@@ -43,7 +43,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
         $scope.defaultHelpCards = qmService.setupHelpCards();
         getTrackingReminderNotifications();
-        getFavorites();
+        //getFavorites();  Not sure why we need to do this here?
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
 		$scope.stateParams = $stateParams;
 		$rootScope.showActionSheetMenu = function() {
@@ -184,6 +184,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
                 });
             }
+            getFavorites();
 			getWeekdayCharts();
             getDiscoveries();
 		}
