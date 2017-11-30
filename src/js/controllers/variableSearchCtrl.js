@@ -165,7 +165,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getCommonVariablesDeferred($scope.state.variableSearchParameters).then(function (commonVariables) {
+        var params = JSON.parse(JSON.stringify($scope.state.variableSearchParameters));
+        params.commonOnly = true;
+        qmService.getCommonVariablesDeferred(params).then(function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));

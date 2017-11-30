@@ -12,7 +12,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     function getEffectVariableName() {
         if(urlHelper.getParam('effectVariableName')){ return urlHelper.getParam('effectVariableName', window.location.href, true); }
         if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
-        if(!getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
+        if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
     }
     function getCauseVariableName() {
         if(urlHelper.getParam('causeVariableName')){ return urlHelper.getParam('causeVariableName', window.location.href, true); }

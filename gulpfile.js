@@ -754,7 +754,7 @@ function createChromeManifest(outputPath) {
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js'],
+            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'],
             'persistent': false
         }
     };
