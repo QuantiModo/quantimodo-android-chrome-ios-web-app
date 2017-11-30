@@ -1,19 +1,14 @@
 <div class="card variable-settings" >
     <div ng-show="state.variableObject.userTaggedVariables" class="item item-divider ng-binding">Tagged with {{state.variableObject.name}}</div>
-    <ion-list >
-        <ion-item ng-show="state.variableObject.userTaggedVariables && state.variableObject.userTaggedVariables.length"
-                  ng-click="editTagged(item)"
-                  class="item item-text-wrap"
-                  ng-repeat="item in state.variableObject.userTaggedVariables">
-            <p>{{item.tagDisplayText}}</p>
-        </ion-item>
-        <div class="row">
-            <div class="col">
-                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
-                        ng-click="tagAnotherVariable(state.variableObject)">Tag a different variable</md-button>
-            </div>
-        </div>
-    </ion-list>
+    <md-chips ng-model="state.variableObject.userTaggedVariables" name="taggedVariable"
+              md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
+        <md-chip-template>
+            <strong>{{$chip.name}}</strong>
+            <em>({{$chip.tagDisplayText}})</em>
+        </md-chip-template>
+    </md-chips>
+    <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+            ng-click="tagAnotherVariable(state.variableObject)">Tag a different variable</md-button>
     <div ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length"
          class="item item-divider ng-binding">Common Tagged Variables</div>
     <ion-list ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length">

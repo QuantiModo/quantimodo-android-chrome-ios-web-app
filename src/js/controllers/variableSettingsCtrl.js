@@ -1,5 +1,7 @@
-angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state", "$rootScope", "$timeout", "$q", "$mdDialog", "$ionicLoading", "$stateParams", "$ionicHistory", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
-                 $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLogService) {
+angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state", "$rootScope", "$timeout", "$q",
+    "$mdDialog", "$ionicLoading", "$stateParams", "$ionicHistory", "$ionicActionSheet", "qmService", "qmLogService",
+    function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading, $stateParams, $ionicHistory,
+             $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {variableObject: null};
@@ -64,129 +66,76 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
     }
     $scope.openTagVariableSearchDialog = function($event) {
-        $mdDialog.show({
-            controller: TagVariableSearchCtrl,
-            controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
-            parent: angular.element(document.body),
-            targetEvent: $event,
-            clickOutsideToClose:true
-        });
-    };
-    var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log) {
-        var self = this;
-        self.variables        = loadAll();
-        self.querySearch   = querySearch;
-        self.selectedItemChange = selectedItemChange;
-        self.searchTextChange   = searchTextChange;
-        self.variableObject = $scope.state.variableObject;
-        self.title = "Add a Tag";
-        self.helpText = "Search for a variable like an ingredient or category " +
-            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
-            "when your tag variable is analyzed, measurements from " +
-            $scope.state.variableObject.name.toUpperCase() + " will be included.";
-        self.placeholder = "Search for a tag...";
-        self.getHelp = function(){
-            if(self.helpText && !self.showHelp){return self.showHelp = true;}
-            qmService.goToState(window.qmStates.help);
-            $mdDialog.cancel();
-        };
-        self.cancel = function($event) { $mdDialog.cancel(); };
-        self.finish = function($event) {
+        function selectVariable(selectedVariable) {
             var userTagData;
             if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
                 qmService.goToState('app.tagAdd', {
                     userTaggedVariableObject: $scope.state.variableObject,
                     fromState: $state.current.name,
                     fromStateParams: {variableObject: $scope.state.variableObject},
-                    userTagVariableObject: self.selectedItem.variable
+                    userTagVariableObject: selectedVariable
                 });
             } else {
-                userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $scope.state.variableObject.id, conversionFactor: 1};
+                userTagData = {userTagVariableId: selectedVariable.id, userTaggedVariableId: $scope.state.variableObject.id, conversionFactor: 1};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function (response) {
                     $scope.state.variableObject = response.data.userTaggedVariable;
                     qmService.hideLoader();
                 });
             }
-            $mdDialog.hide();
+        }
+        var dataToPass = {
+            title: 'Add a Tag',
+            helpText: "Search for a variable like an ingredient or category " +
+            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
+            "when your tag variable is analyzed, measurements from " +
+            $scope.state.variableObject.name.toUpperCase() + " will be included.",
+            placeholder: "Search for a tag...",
+            buttonText: "Select Variable",
+            requestParams: {includePublic: true, taggedVariableId: $scope.state.variableObject.id},
+            excludeLocal: true // Necessary because API does complex filtering
         };
-        function querySearch (query) {
-            self.notFoundText = "No variables matching " + query + " were found.";
-            var deferred = $q.defer();
-            var requestParams = {defaultUnitCategoryName:  $scope.state.variableObject.defaultUnitCategoryName};
-            if($scope.state.variableObject.defaultUnitCategoryName !== "Rating"){requestParams.defaultUnitCategoryName = "(ne)Rating";}
-            qmService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
-            return deferred.promise;
-        }
-        function searchTextChange(text) { $log.info(null, 'Text changed to ' + text, null); }
-        function selectedItemChange(item) {
-            self.selectedItem = item;
-            self.buttonText = "Tag Variable";
-            qmService.addVariableToLocalStorage(item.variable);
-            $log.info(null, 'Item changed to ' + JSON.stringify(item), null);
-        }
-        /**
-         * Build `variables` list of key/value pairs
-         */
-        function loadAll(variables) {
-            if(!variables){ variables = qmStorage.getAsObject(qmItems.userVariables); }
-            if(variables && $scope.state.variableObject.unit.abbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $scope.state.variableObject.defaultUnitId)); }
-            if(variables){ variables = variables.filter(excludeParentVariable()); }
-            return variables.map( function (variable) {
-                return {value: variable.name.toLowerCase(), name: variable.name, variable: variable};
-            });
-        }
-        /**
-         * Create filter function for a query string
-         */
-        function filterByProperty(filterPropertyName, allowedFilterValue) {
-            return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
-        }
-        /**
-         * Create filter function for a query string
-         */
-        function excludeParentVariable() {
-            return function filterFn(item) { return (item.id !== $scope.state.variableObject.id); };
-        }
+        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
-    TagVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
+    $scope.openTagVariableSearchDialog = function($event) {
+        function selectVariable(selectedVariable) {
+            var userTagData;
+            if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
+                qmService.goToState('app.tagAdd', {
+                    userTagVariableObject: $scope.state.variableObject,
+                    fromState: $state.current.name,
+                    fromStateParams: {variableObject: $scope.state.variableObject},
+                    userTaggedVariableObject: selectedVariable
+                });
+            } else {
+                userTagData = {userTaggedVariableId: selectedVariable.id, userTagVariableId: $scope.state.variableObject.id, conversionFactor: 1};
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred(userTagData).then(function (response) {
+                    $scope.state.variableObject = response.data.userTagVariable;
+                    qmService.hideLoader();
+                });
+            }
+        }
+        var dataToPass = {
+            title: 'Tag another variable',
+            helpText: "Search for a variable " +
+            " for which " + $scope.state.variableObject.name.toUpperCase() + " is an ingredient or category.  Then " +
+            "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
+            "your tagged variable will also be included.",
+            placeholder: "Search for a variable to tag...",
+            buttonText: "Select Variable",
+            requestParams: {includePublic: true, tagVariableId: $scope.state.variableObject.id},
+            excludeLocal: true // Necessary because API does complex filtering
+        };
+        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
+    };
     $scope.openJoinVariableSearchDialog = function($event) {
-        $mdDialog.show({
-            controller: JoinVariableSearchCtrl,
-            controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
-            parent: angular.element(document.body),
-            targetEvent: $event,
-            clickOutsideToClose:true
-        });
-    };
-    var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log) {
-        var self = this;
-        self.variables        = loadAll();
-        self.querySearch   = querySearch;
-        self.selectedItemChange = selectedItemChange;
-        self.searchTextChange   = searchTextChange;
-        self.variableObject = $scope.state.variableObject;
-        self.title = "Join a Variable";
-        self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
-            self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
-            self.variableObject.name + ".  You can only join variables that have the same unit " +
-            self.variableObject.unit.abbreviatedName + ".";
-        self.placeholder = "What variable would you like to join?";
-        self.getHelp = function(){
-            if(self.helpText && !self.showHelp){return self.showHelp = true;}
-            qmService.goToState(window.qmStates.help);
-            $mdDialog.cancel();
-        };
-        self.cancel = function($event) { $mdDialog.cancel(); };
-        self.finish = function($event) {
+        function selectVariable(selectedVariable) {
             var variableData = {
                 parentVariableId: $scope.state.variableObject.id,
-                joinedVariableId: self.selectedItem.variable.id,
+                joinedVariableId: selectedVariable.id,
                 conversionFactor: 1
             };
-            qmService.showBlackRingLoader();
             qmService.postVariableJoinDeferred(variableData).then(function (response) {
                 qmService.hideLoader();
                 $scope.state.variableObject = response.data.parentVariable;
@@ -195,51 +144,21 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 qmLogService.error(null, error);
             });
             $mdDialog.hide();
+        }
+        var dataToPass = {
+            title: 'Add a Tag',
+            helpText: "Search for a duplicated or synonymous variable that you'd like to join to " +
+                $scope.state.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
+                $scope.state.variableObject.name + ".  You can only join variables that have the same unit " +
+                $scope.state.variableObject.unit.abbreviatedName + ".",
+            placeholder: "What variable would you like to join?",
+            buttonText: "Select Variable",
+            requestParams: {includePublic: true, joinVariableId: $scope.state.variableObject.id},
+            excludeLocal: true // Necessary because API does complex filtering
         };
-        function querySearch (query) {
-            self.notFoundText = "No variables matching " + query + " were found.";
-            var deferred = $q.defer();
-            qmService.searchUserVariablesDeferred(query, {tagVariableId: $scope.state.variableObject.defaultUnitId})
-                .then(function(results){ deferred.resolve(loadAll(results)); });
-            return deferred.promise;
-        }
-        function searchTextChange(text) { $log.info(null, 'Text changed to ' + text, null); }
-        function selectedItemChange(item) {
-            self.selectedItem = item;
-            self.buttonText = "Join Variable";
-            qmService.addVariableToLocalStorage(item.variable);
-            $log.info(null, 'Item changed to ' + JSON.stringify(item), null);
-        }
-        /**
-         * Build `variables` list of key/value pairs
-         */
-        function loadAll(variables) {
-            if(!variables){variables = qmStorage.getAsObject(qmItems.userVariables); }
-            if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $scope.state.variableObject.defaultUnitId)); }
-            if(variables){ variables = variables.filter(excludeParentVariable()); }
-            return variables.map( function (variable) {
-                return {
-                    value: variable.name.toLowerCase(),
-                    name: variable.name,
-                    variable: variable
-                };
-            });
-        }
-        /**
-         * Create filter function for a query string
-         */
-        function filterByProperty(filterPropertyName, allowedFilterValue) {
-            return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
-        }
-        /**
-         * Create filter function for a query string
-         */
-        function excludeParentVariable() {
-            return function filterFn(item) { return (item.id !== $scope.state.variableObject.id); };
-        }
+        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
-    JoinVariableSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
-    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
+    var SelectWikipediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
         var self = this;
         // list of `state` value/display objects
         self.items        = loadAll();
@@ -303,10 +222,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
         }
     };
-    SelectWikpdediaArticleController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
+    SelectWikipediaArticleController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
     $scope.searchWikipediaArticle = function (ev) {
         $mdDialog.show({
-            controller: SelectWikpdediaArticleController,
+            controller: SelectWikipediaArticleController,
             controllerAs: 'ctrl',
             templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
             parent: angular.element(document.body),
@@ -378,5 +297,15 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmService.hideLoader();
             qmLogService.error(error);
         });
+    };
+    $scope.deleteTaggedVariable = function(taggedVariable) {
+        taggedVariable.hide = true;
+        var userTagData = {userTagVariableId: $scope.state.variableObject.id, userTaggedVariableId: taggedVariable.id};
+        qmService.deleteUserTagDeferred(userTagData);
+    };
+    $scope.deleteTagVariable = function(tagVariable) {
+        tagVariable.hide = true;
+        var userTagData = {userTaggedVariableId: $scope.state.variableObject.id, userTagVariableId: tagVariable.id};
+        qmService.deleteUserTagDeferred(userTagData);
     };
 }]);

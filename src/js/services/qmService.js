@@ -447,6 +447,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
         params = addGlobalUrlParamsToObject(params);
+        params.commonOnly = true;
         var cachedData = qm.api.cacheGet(params, 'getAggregatedCorrelationsFromApi');
         if(cachedData && successHandler){
             successHandler(cachedData);
@@ -457,7 +458,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAggregatedCorrelationsFromApi');
         }
-        apiInstance.getAggregatedCorrelations(params, callback);
+        apiInstance.getCorrelations(params, callback);
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
@@ -480,6 +481,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getCommonVariablesFromApi = function(params, successHandler, errorHandler){
         params = addGlobalUrlParamsToObject(params);
+        params.commonOnly = true;
         var cachedData = qm.api.cacheGet(params, 'getCommonVariablesFromApi');
         if(cachedData && successHandler){
             //successHandler(cachedData);
@@ -490,7 +492,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCommonVariablesFromApi');
         }
-        apiInstance.getCommonVariables(params, callback);
+        apiInstance.getVariables(params, callback);
         //var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
@@ -510,7 +512,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserCorrelationsFromApi');
         }
-        apiInstance.getUserCorrelations(params, callback);
+        apiInstance.getCorrelations(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
@@ -537,7 +539,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'searchUserVariablesFromApi');
         }
-        apiInstance.getUserVariables(params, callback);
+        apiInstance.getVariables(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
@@ -556,7 +558,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         params = addGlobalUrlParamsToObject(params);
-        apiInstance.getUserVariables(params, callback);
+        apiInstance.getVariables(params, callback);
         //var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
@@ -569,7 +571,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var params = {id: variableId};
         params = addGlobalUrlParamsToObject(params);
-        apiInstance.getUserVariables(params, callback);
+        apiInstance.getVariables(params, callback);
         //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
     qmService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
@@ -3918,15 +3920,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return !haveEnough && !exactMatch;
     }
     // get user variables (without public)
-    qmService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
+    qmService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params, excludeLocal){
         var deferred = $q.defer();
-        var variables = qmService.qmStorage.searchLocalStorage(qmItems.userVariables, 'name', variableSearchQuery, params);
-        if(params.includePublic){
+        var variables;
+        if(!excludeLocal){
+            variables = qmService.qmStorage.searchLocalStorage(qmItems.userVariables, 'name', variableSearchQuery, params);
+        }
+        if(params.includePublic && !excludeLocal){
             if(!variables){variables = [];}
             var commonVariables = qmService.qmStorage.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
             variables = variables.concat(commonVariables);
         }
-        if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
+        if(!excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
             deferred.resolve(variables);
             return deferred.promise;
         }
@@ -7469,7 +7474,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                                       qmLogService, $q, $log, dataToPass) {
             var self = this;
             // list of `state` value/display objects
-            self.items        = loadAll();
+            self.dataToPass = dataToPass;
+            self.items        = loadAll(null, self.dataToPass.excludeLocal);
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
@@ -7523,7 +7529,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
                     qmService.showBlackRingLoader();
                     querySearch(self.barcode, variableSearchSuccessHandler, variableSearchErrorHandler);
-                };
+                }
                 qmService.scanBarcode(scanSuccessHandler);
             };
             function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
@@ -7532,7 +7538,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var deferred = $q.defer();
                 if(!query){
                     qmLogService.debug('Why are we searching without a query?');
-                    if(!self.items || self.items.length < 10){self.items = loadAll();}
+                    if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
@@ -7546,16 +7552,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 if(query === self.lastApiQuery && self.lastResults){
                     qmLog.debug("Why are we researching with the same query?");
-                    deferred.resolve(loadAll(self.lastResults));
+                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                     return deferred.promise;
                 }
                 self.lastApiQuery = query;
-                qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
+                qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, self.dataToPass.excludeLocal)
                     .then(function(results){
                         if(results && results.length){
                             self.lastResults = results;
                             qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                            deferred.resolve(loadAll(self.lastResults));
+                            deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
                         } else {
                             if(variableSearchErrorHandler){variableSearchErrorHandler();}
@@ -7580,8 +7586,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             /**
              * Build `variables` list of key/value pairs
              */
-            function loadAll(variables) {
-                if(!variables){variables = qmService.qmStorage.getVariables(dataToPass.requestParams);}
+            function loadAll(variables, excludeLocal) {
+                if(!variables && !excludeLocal){
+                    variables = qmService.qmStorage.getVariables(dataToPass.requestParams);
+                }
                 if(!variables || !variables[0]){ return []; }
                 return variables.map( function (variable) {
                     return {
