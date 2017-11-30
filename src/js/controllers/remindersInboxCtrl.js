@@ -208,7 +208,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	var notificationAction = function(trackingReminderNotification){
 		trackingReminderNotification.hide = true;
-        $rootScope.numberOfPendingNotifications--;
+        qmService.numberOfPendingNotifications--;
         $scope.state.numberOfDisplayedNotifications--;
         if($state.current.name === "app.remindersInboxCompact"){
             if(!$scope.state.numberOfDisplayedNotifications){window.close();}
@@ -347,7 +347,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		$rootScope.numberOfPendingNotifications--;
+		qmService.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		qmNotifications.deleteById(trackingReminderNotification.id);
 		qmService.goToState('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
@@ -356,7 +356,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		$rootScope.numberOfPendingNotifications--;
+		qmService.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		var trackingReminder = trackingReminderNotification;
 		trackingReminder.id = trackingReminderNotification.trackingReminderId;

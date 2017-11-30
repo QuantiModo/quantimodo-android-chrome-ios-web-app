@@ -2109,7 +2109,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmStorage.setTrackingReminderNotifications(trackingReminderNotifications);
         qmLog.info("Broadcasting qmStorage.getTrackingReminderNotifications");
         $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');
-        $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+        qmService.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
     };
     qmService.getSecondsSinceWeLastGotNotifications = function () {
@@ -2165,7 +2165,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
-        $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
+        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'skip';
         qmNotifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
@@ -2202,7 +2202,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminderNotification = notificationFromLocalStorage;
             }
         }
-        $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
+        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'track';
         if(trackAll){trackingReminderNotification.action = 'trackAll';}
         qmNotifications.addToSyncQueue(trackingReminderNotification);
@@ -2211,7 +2211,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.snoozeTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
-        $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
+        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'snooze';
         qmNotifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
@@ -2471,7 +2471,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.qmStorage.deleteTrackingReminderNotification = function(body){
-        $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
+        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         window.qmStorage.deleteTrackingReminderNotification(body);
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
@@ -4250,24 +4250,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //return;
         }
         $ionicPlatform.ready(function () {
-            if(!$rootScope.numberOfPendingNotifications){$rootScope.numberOfPendingNotifications = 0;}
+            if(!qmService.numberOfPendingNotifications){qmService.numberOfPendingNotifications = 0;}
             cordova.plugins.notification.local.getAll(function (notifications) {
                 qmLogService.debug(null, 'onTrigger.updateBadgesAndTextOnAllNotifications: ' + 'All notifications ', null, notifications);
                 for (var i = 0; i < notifications.length; i++) {
-                    if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
-                        console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because $rootScope.numberOfPendingNotifications" +
+                    if(notifications[i].badge === qmService.numberOfPendingNotifications){
+                        console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because qmService.numberOfPendingNotifications" +
                             " === notifications[i].badge", notifications[i]);
                         continue;
                     }
                     qmLogService.debug(null, 'onTrigger.updateBadgesAndTextOnAllNotifications' + ':Updating notification', null, notifications[i]);
                     var notificationSettings = {
                         id: notifications[i].id,
-                        badge: $rootScope.numberOfPendingNotifications,
+                        badge: qmService.numberOfPendingNotifications,
                         title: "Time to track!",
                         text: "Add a tracking reminder!"
                     };
-                    if($rootScope.numberOfPendingNotifications > 0){
-                        notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+                    if(qmService.numberOfPendingNotifications > 0){
+                        notificationSettings.text = qmService.numberOfPendingNotifications + " tracking reminder notifications";
                     }
                     cordova.plugins.notification.local.update(notificationSettings);
                 }
@@ -4293,7 +4293,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     /** @namespace window.chrome */
                     /** @namespace window.chrome.browserAction */
                     qmChrome.updateChromeBadge(response.data.length);
-                    if (!$rootScope.numberOfPendingNotifications) {
+                    if (!qmService.numberOfPendingNotifications) {
                         if(!localNotificationsPluginInstalled()) {return;}
                         qmLogService.debug(null, 'onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications', null);
                         cordova.plugins.notification.local.clearAll(function () {
@@ -4382,15 +4382,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.decrementNotificationBadges = function(){
-        if($rootScope.numberOfPendingNotifications > 0){
-            qmChrome.updateChromeBadge($rootScope.numberOfPendingNotifications);
+        if(qmService.numberOfPendingNotifications > 0){
+            qmChrome.updateChromeBadge(qmService.numberOfPendingNotifications);
             this.updateOrRecreateNotifications();
         }
     };
     qmService.setNotificationBadge = function(numberOfPendingNotifications){
         qmLogService.debug(null, 'setNotificationBadge: numberOfPendingNotifications is ' + numberOfPendingNotifications, null);
-        $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
-        qmChrome.updateChromeBadge($rootScope.numberOfPendingNotifications);
+        qmService.numberOfPendingNotifications = numberOfPendingNotifications;
+        qmChrome.updateChromeBadge(qmService.numberOfPendingNotifications);
         this.updateOrRecreateNotifications();
     };
     qmService.updateOrRecreateNotifications = function() {
@@ -4575,9 +4575,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 icon: 'ic_stat_icon_bw',
                 id: trackingReminder.id
             };
-            if($rootScope.numberOfPendingNotifications){
+            if(qmService.numberOfPendingNotifications){
                 notificationSettings.badge = 1; // Less stressful
-                //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                //notificationSettings.badge = qmService.numberOfPendingNotifications;
             }
             var dayInMinutes = 24 * 60;
             notificationSettings.every = dayInMinutes;
@@ -4610,8 +4610,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var everyString = 'day';
             if (intervalInMinutes === 1) {everyString = 'minute';}
             var numberOfPendingNotifications = 0;
-            if($rootScope.numberOfPendingNotifications){
-                numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
+            if(qmService.numberOfPendingNotifications){
+                numberOfPendingNotifications = qmService.numberOfPendingNotifications;
             }
             var notificationSettings = {
                 //autoClear: true,  iOS doesn't recognize this property
@@ -4704,10 +4704,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isIOS){notificationSettings.sound = "file://sound/silent.ogg";}
         if($rootScope.isAndroid){notificationSettings.sound = null;}
         notificationSettings.badge = 0;
-        if($rootScope.numberOfPendingNotifications > 0) {
-            //notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+        if(qmService.numberOfPendingNotifications > 0) {
+            //notificationSettings.text = qmService.numberOfPendingNotifications + " tracking reminder notifications";
             notificationSettings.badge = 1; // Less stressful
-            //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+            //notificationSettings.badge = qmService.numberOfPendingNotifications;
         }
         if($rootScope.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
         if($rootScope.isIOS){
@@ -4861,9 +4861,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmLogService.debug(null, 'No existing local notification so scheduling ', null, JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
                             notificationSettings.at = at;
                             notificationSettings.id = parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""));
-                            if($rootScope.numberOfPendingNotifications > 0) {
+                            if(qmService.numberOfPendingNotifications > 0) {
                                 notificationSettings.badge = 1; // Less stressful
-                                //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                                //notificationSettings.badge = qmService.numberOfPendingNotifications;
                             }
                             if($rootScope.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
                             if($rootScope.isIOS){notificationSettings.every = 'day';}
