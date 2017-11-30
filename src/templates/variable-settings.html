@@ -2,88 +2,89 @@
     <ion-nav-title>Variable Settings</ion-nav-title>
     <ion-content ng-class="{ isBrowserView : isWeb == true }" ng-cloak>
         <ion-refresher on-refresh="refreshUserVariable()"></ion-refresher>
-        <div id="variablePropertiesCard" ng-show="state.variableObject" class="card variable-settings" >
-            <div class="list">
-                <div class="item item-divider ng-binding">Variable Properties</div>
-                <!--FIXME Use this once variable aliasing is implemented-->
-                <!--
-                    <div class="item item-input">
-                        <span class="input-label left-span">Variable Alias:</span>
-                        <span class="right-span"><input class="right-input" type="text" ng-model="state.userVariableAlias"></span>
+        <div ng-show="state.variableObject">
+            <div id="variablePropertiesCard" class="card variable-settings" >
+                <div class="list">
+                    <div class="item item-divider ng-binding">Variable Properties</div>
+                    <!--FIXME Use this once variable aliasing is implemented-->
+                    <!--
+                        <div class="item item-input">
+                            <span class="input-label left-span">Variable Alias:</span>
+                            <span class="right-span"><input class="right-input" type="text" ng-model="state.userVariableAlias"></span>
+                        </div>
+                    -->
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+                        <span class="input-label left-text">Variable Name</span>
+                        <span class="input-label right-text " id="variableName">{{variableName}}</span>
+                    </label>
+                </div>
+            </div>
+            <md-card ng-cloak ng-show="state.variableObject">
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Display Settings</span>
+                        <span class="md-subhead">Modify how the data is displayed in charts and the history pages.</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <div ng-if="state.variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
+                        <span>Default Unit</span>
+                        <md-select ng-model="state.variableObject.userVariableDefaultUnitId" ng-show="!isMobile">
+                            <md-option ng-repeat="unit in state.variableObject.availableDefaultUnits" ng-value="unit.id" >{{unit.name}}</md-option>
+                        </md-select>
+                        <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="isMobile"
+                                ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableDefaultUnits">
+                        </select>
                     </div>
-                -->
-                <label class="item item-content" style="padding: 6px 10px 5px 16px;">
-                    <span class="input-label left-text">Variable Name</span>
-                    <span class="input-label right-text " id="variableName">{{variableName}}</span>
-                </label>
+                    <div ng-if="state.variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
+                        <span>Variable Category</span>
+                        <md-select ng-model="state.variableObject.userVariableVariableCategoryName" ng-show="!isMobile">
+                            <md-option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName" >{{variableCategoryName}}</md-option>
+                        </md-select>
+                        <select id="variableCategorySelector" ng-show="isMobile" ng-model="state.variableObject.userVariableVariableCategoryName">
+                            <option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName">{{variableCategoryName}}</option>
+                        </select>
+                    </div>
+                </md-card-content>
+            </md-card>
+            <div ng-include="'templates/fragments/variable-analysis-settings-fragment.html'"></div>
+            <div ng-show="state.variableObject.unitCategoryName !== 'Rating'" ng-include="'templates/fragments/tags-fragment.html'"></div>
+            <div ng-show="state.variableObject.unitCategoryName !== 'Rating'" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
+            <div class="row">
+                <div class="col">
+                    <md-button class="button button-outline button-block icon-left ion-link button-positive"
+                               id="joinButton"
+                               ng-click="openJoinVariableSearchDialog($event)">
+                        Join a Duplicate Variable
+                    </md-button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-50">
+                    <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                               id="cancelButton"
+                               ng-click="goBack()">
+                        Cancel
+                    </md-button>
+                </div>
+                <div class="col col-50">
+                    <md-button class="button button-outline button-block icon-left ion-android-done button-positive"
+                               id="saveButton"
+                               ng-click="saveVariableSettings(state.variableObject)">
+                        Save
+                    </md-button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                               id="resetButton"
+                               ng-click="resetVariableToDefaultSettings(state.variableObject)">
+                        Reset to Default Settings
+                    </md-button>
+                </div>
             </div>
         </div>
 
-        <md-card ng-cloak ng-show="state.variableObject">
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">Display Settings</span>
-                    <span class="md-subhead">Modify how the data is displayed in charts and the history pages.</span>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-content>
-                <div ng-if="state.variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
-                    <span>Default Unit</span>
-                    <md-select ng-model="state.variableObject.userVariableDefaultUnitId" ng-show="!isMobile">
-                        <md-option ng-repeat="unit in state.variableObject.availableDefaultUnits" ng-value="unit.id" >{{unit.name}}</md-option>
-                    </md-select>
-                    <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="isMobile"
-                            ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableDefaultUnits">
-                    </select>
-                </div>
-                <div ng-if="state.variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
-                    <span>Variable Category</span>
-                    <md-select ng-model="state.variableObject.userVariableVariableCategoryName" ng-show="!isMobile">
-                        <md-option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName" >{{variableCategoryName}}</md-option>
-                    </md-select>
-                    <select id="variableCategorySelector" ng-show="isMobile" ng-model="state.variableObject.userVariableVariableCategoryName">
-                        <option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName">{{variableCategoryName}}</option>
-                    </select>
-                </div>
-            </md-card-content>
-        </md-card>
-
-        <div ng-include="'templates/fragments/variable-analysis-settings-fragment.html'"></div>
-        <div ng-show="state.variableObject" ng-include="'templates/fragments/tags-fragment.html'"></div>
-        <div ng-show="state.variableObject" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
-        <div ng-show="state.variableObject" class="row">
-            <div class="col">
-                <md-button class="button button-outline button-block icon-left ion-link button-positive"
-                        id="joinButton"
-                        ng-click="openJoinVariableSearchDialog($event)">
-                    Join a Duplicate Variable
-                </md-button>
-            </div>
-        </div>
-        <div ng-show="state.variableObject" class="row">
-            <div class="col col-50">
-                <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
-                        id="cancelButton"
-                        ng-click="goBack()">
-                    Cancel
-                </md-button>
-            </div>
-            <div class="col col-50">
-                <md-button class="button button-outline button-block icon-left ion-android-done button-positive"
-                        id="saveButton"
-                        ng-click="saveVariableSettings(state.variableObject)">
-                    Save
-                </md-button>
-            </div>
-        </div>
-        <div ng-show="state.variableObject" class="row">
-            <div class="col">
-                <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
-                        id="resetButton"
-                        ng-click="resetVariableToDefaultSettings(state.variableObject)">
-                    Reset to Default Settings
-                </md-button>
-            </div>
-        </div>
     </ion-content>
 </ion-view>
