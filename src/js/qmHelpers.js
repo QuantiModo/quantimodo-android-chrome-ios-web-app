@@ -213,7 +213,7 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
             }
             params = qm.api.addGlobalParams(params);
-            apiInstance.getUserVariables(params, callback);
+            apiInstance.getVariables(params, callback);
         }
     },
     manualTrackingVariableCategoryNames: [
