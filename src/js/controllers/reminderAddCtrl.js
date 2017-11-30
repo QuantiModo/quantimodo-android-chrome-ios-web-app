@@ -82,25 +82,25 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
         $scope.state.firstReminderStartTimeEpochTime =
             qmService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
-        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
+        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000).toDate();
     } else { qmLogService.error($state.current.name + ': $rootScope.user is not defined!'); }
     $scope.openReminderStartTimePicker = function(order) {
         var a = new Date();
         if(order === 'first'){
             $scope.state.firstReminderStartTimeEpochTime = a.getTime() / 1000;
             $scope.state.firstReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-            $scope.state.firstReminderStartTimeMoment = moment(a);
+            $scope.state.firstReminderStartTimeMoment = moment(a).toDate();
         }
         if(order === 'second'){
             $scope.state.secondReminderStartTimeEpochTime = a.getTime() / 1000;
             $scope.state.secondReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-            $scope.state.secondReminderStartTimeMoment = moment(a);
+            $scope.state.secondReminderStartTimeMoment = moment(a).toDate();
         }
         if(order === 'third'){
             $scope.state.hideAdditionalReminderTimeButton = true;
             $scope.state.thirdReminderStartTimeEpochTime = a.getTime() / 1000;
             $scope.state.thirdReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-            $scope.state.thirdReminderStartTimeMoment = moment(a);
+            $scope.state.thirdReminderStartTimeMoment = moment(a).toDate();
         }
     };
     $scope.oldOpenReminderStartTimePicker = function(order) {
@@ -130,18 +130,18 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                     if(order === 'first'){
                         $scope.state.firstReminderStartTimeEpochTime = a.getTime() / 1000;
                         $scope.state.firstReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-                        $scope.state.firstReminderStartTimeMoment = moment(a);
+                        $scope.state.firstReminderStartTimeMoment = moment(a).toDate();
                     }
                     if(order === 'second'){
                         $scope.state.secondReminderStartTimeEpochTime = a.getTime() / 1000;
                         $scope.state.secondReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-                        $scope.state.secondReminderStartTimeMoment = moment(a);
+                        $scope.state.secondReminderStartTimeMoment = moment(a).toDate();
                     }
                     if(order === 'third'){
                         $scope.state.hideAdditionalReminderTimeButton = true;
                         $scope.state.thirdReminderStartTimeEpochTime = a.getTime() / 1000;
                         $scope.state.thirdReminderStartTimeLocal = moment(a).format('HH:mm:ss');
-                        $scope.state.thirdReminderStartTimeMoment = moment(a);
+                        $scope.state.thirdReminderStartTimeMoment = moment(a).toDate();
                     }
                 }
             },
@@ -350,7 +350,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.trackingReminder.thirdDailyReminderTime = null;
         $scope.state.firstReminderStartTimeLocal = qmService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
         $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
-        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
+        $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000).toDate();
         //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
         if(trackingReminder.stopTrackingDate){$scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);}
         if(trackingReminder.startTrackingDate){$scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);}

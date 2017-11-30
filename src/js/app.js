@@ -28,7 +28,8 @@ angular.module('starter',
         'angular-cache',
         'angular-d3-word-cloud',
         'ngFileUpload',
-        'ngOpbeat'
+        'ngOpbeat',
+        'mdPickers'
         //'ui-iconpicker'
     ]
 )

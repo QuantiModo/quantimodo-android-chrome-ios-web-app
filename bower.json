@@ -32,6 +32,7 @@
     "ionic-timepicker": "0.6.0",
     "Ionicons": "ionicons#^2.0.1",
     "jquery": "~2.1.4",
+    "mdPickers": "0.7.5",
     "moment": "~2.10.3",
     "ng-cordova-oauth": "git+https://github.com/mikepsinn/ng-cordova-oauth.git#802be8d1363253572f4dadbdfdcdf5f0b7e576d5",
     "ng-material-floating-button": "ng-mfb#^0.6.2",
@@ -47,6 +48,7 @@
     "angular": "1.6.1",
     "angular-material": "1.1.1",
     "jquery": "~2.1.4",
-    "d3": "~4.6.0"
+    "d3": "~4.6.0",
+    "moment": "~2.11.1"
   }
 }

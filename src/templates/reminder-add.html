@@ -27,8 +27,10 @@
             <label class="item item-input" ng-hide="state.trackingReminder.reminderFrequency < 86400" ><div class="reminder-row row">
                 <div class="col"><div class="input-label" >Reminder time</div></div></div>
                 <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialFirstReminderStartTime" short-time="true" placeholder="Time"
-                           min-date="minDate" format="h:mm a" ng-model="state.firstReminderStartTimeMoment" class="md-input reminder-time">
+<!--                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false"
+                           time="true" type="text" id="materialFirstReminderStartTime" short-time="true" placeholder="Time"
+                           min-date="minDate" format="h:mm a" ng-model="state.firstReminderStartTimeMoment" class="md-input reminder-time">-->
+                    <mdp-time-picker mdp-auto-switch="true" ng-model="state.firstReminderStartTimeMoment"></mdp-time-picker>
                 </div>
             </label>
             <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
@@ -41,8 +43,11 @@
             <label ng-show="state.secondReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
                 <div class="reminder-row row"><div class="col"><div class="input-label" >2nd reminder time</div></div></div>
                 <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialSecondReminderStartTime" short-time="true" placeholder="Time"
-                           min-date="minDate" format="h:mm a" ng-model="state.secondReminderStartTimeMoment" class=" md-input reminder-time">
+                    <mdp-time-picker mdp-auto-switch="true" ng-model="state.secondReminderStartTimeMoment"></mdp-time-picker>
+<!--                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text"
+                           id="materialSecondReminderStartTime" short-time="true" placeholder="Time"
+                           min-date="minDate" format="h:mm a" ng-model="state.secondReminderStartTimeMoment"
+                           class=" md-input reminder-time">-->
                 </div>
             </label>
             <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
@@ -55,8 +60,11 @@
             <label ng-show="state.thirdReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
                 <div class="reminder-row row"><div class="col"><div class="input-label" >3nd reminder time</div></div></div>
                 <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialThirdReminderStartTime" short-time="true" placeholder="Time" min-date="minDate" format="h:mm a"
-                           ng-model="state.thirdReminderStartTimeMoment" class="md-input reminder-time">
+                    <mdp-time-picker mdp-auto-switch="true" ng-model="state.thirdReminderStartTimeMoment"></mdp-time-picker>
+<!--                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text"
+                           id="materialThirdReminderStartTime" short-time="true" placeholder="Time"
+                           min-date="minDate" format="h:mm a"
+                           ng-model="state.thirdReminderStartTimeMoment" class="md-input reminder-time">-->
                 </div>
             </label>
             <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
