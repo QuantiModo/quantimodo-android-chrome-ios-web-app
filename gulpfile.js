@@ -1868,7 +1868,7 @@ gulp.task('copyAppResources', [
     }).pipe(gulp.dest('.'));
 });
 gulp.task('copyIonIconsToWww', [], function () {
-    return copyFiles('src/lib/Ionicons/css/**/*', 'www/lib/Ionicons/css');
+    return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
 gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
