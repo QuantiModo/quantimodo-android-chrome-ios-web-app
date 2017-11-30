@@ -191,7 +191,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 if(repsonse.data.query) {
                     deferred.resolve(loadAll(repsonse.data.query.pages));
                     $scope.causeWikiEntry = repsonse.data.query.pages[0].extract;
-                    //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
                     if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
                 } else {
                     var error = 'Wiki not found for ' + query;
