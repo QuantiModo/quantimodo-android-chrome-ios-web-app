@@ -2151,7 +2151,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!trackingReminderNotificationSyncScheduled ||
             parseInt(trackingReminderNotificationSyncScheduled) < window.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
             qmService.qmStorage.setItem('trackingReminderNotificationSyncScheduled', window.getUnixTimestampInMilliseconds());
-            qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
+            if(!$rootScope.isMobile){ // Better performance
+                qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
+            }
             $timeout(function() {
                 qmLog.info("Notifications sync countdown completed.  Syncing now... ");
                 qmStorage.removeItem('trackingReminderNotificationSyncScheduled');
@@ -2159,8 +2161,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.postTrackingReminderNotificationsDeferred();
             }, delayBeforePostingNotificationsInMilliseconds);
         } else {
-            qmLog.error("Not scheduling sync because one is already scheduled " +
-                timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
+            if(!$rootScope.isMobile){ // Better performance
+                qmLog.info("Not scheduling sync because one is already scheduled " +
+                    timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
+            }
         }
     };
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
@@ -2192,7 +2196,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
      */
     qmService.trackTrackingReminderNotificationDeferred = function(trackingReminderNotification, trackAll){
         var deferred = $q.defer();
-        qmLogService.info('qmService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(trackingReminderNotification), null);
+        if(!$rootScope.isMobile){
+            qmLogService.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ' +
+                JSON.stringify(trackingReminderNotification));
+        }
         if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
             var notificationFromLocalStorage = qmStorage.getElementOfLocalStorageItemById(qmItems.trackingReminderNotifications, trackingReminderNotification.trackingReminderNotificationId);
             if(notificationFromLocalStorage){
