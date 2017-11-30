@@ -226,7 +226,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
-        qmService.logEventToGA(qmAnalytics.eventCategories.inbox, "track", null, modifiedReminderValue);
+		// I think this slows down inbox
+        //qmService.logEventToGA(qmAnalytics.eventCategories.inbox, "track", null, modifiedReminderValue);
 		qmService.trackTrackingReminderNotificationDeferred(body, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
