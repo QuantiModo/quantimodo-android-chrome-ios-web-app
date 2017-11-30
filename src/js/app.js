@@ -213,6 +213,7 @@ angular.module('starter',
         "searchVariablesWithUserPredictors": "app.searchVariablesWithUserPredictors",
         "settings": "app.settings",
         "study": "app.study",
+        "studies": "app.studies",
         "studyCreation": "app.studyCreation",
         "studyJoin": "app.studyJoin",
         "tabs": "app.tabs",
@@ -670,6 +671,25 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/charts-page.html",
                     controller: 'ChartsPageCtrl'
+                }
+            }
+        })
+        .state(qmStates.studies, {
+            url: "/studies",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
                 }
             }
         })
