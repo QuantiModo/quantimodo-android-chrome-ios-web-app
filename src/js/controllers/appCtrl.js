@@ -73,7 +73,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
         function yesCallback() {
             correlationObject.shareUserMeasurements = true;
-            qmService.qmStorage.setItem('lastStudy', JSON.stringify(correlationObject));
+            qm.studyHelper.saveLastStudy(correlationObject);
             var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
             qmService.showBlackRingLoader();
             qmService.postStudyDeferred(body).then(function () {
@@ -471,9 +471,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
         qmLogService.debug(null, 'Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
-        if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
-            $rootScope.correlationObject = null;
-        }
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         qmService.goToStudyPage(causeVariableName, effectVariableName);
     };

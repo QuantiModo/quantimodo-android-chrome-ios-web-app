@@ -1410,7 +1410,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics);
                 delete study.text;
             }
-            qmService.qmStorage.setItem('lastStudy', JSON.stringify(study));
+            qm.studyHelper.saveLastStudy(study);
             qmGlobals.setStudy(study);
             deferred.resolve(study);
         }, function (error) {
@@ -4049,7 +4049,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.userVariables){userVariable = response.userVariables[0];}
             if(response.userVariable){userVariable = response.userVariable;}
             qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
-            qmStorage.removeItem('lastStudy');
+            qm.studyHelper.deleteLastStudy();
             $rootScope.variableObject = userVariable;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug(null, 'qmService.postUserVariableDeferred: success: ' + JSON.stringify(userVariable), null);
@@ -6378,9 +6378,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return smoothedMeasurements;
     }
     qmService.goToStudyPageViaCorrelationObject = function(correlationObject){
-        $rootScope.correlationObject = correlationObject;
-        qmService.qmStorage.setItem('lastStudy', JSON.stringify(correlationObject));
-        //qmService.goToState('app.study', {correlationObject: correlationObject});
+        qm.studyHelper.saveLastStudy(correlationObject);
+        //qmService.goToState('app.study', {correlationObject: correlationObject});  // We use the url instead so it's copyable
         qmService.goToStudyPage(correlationObject.causeVariableName, correlationObject.effectVariableName);
     };
     qmService.goToStudyPage = function(causeVariableName, effectVariableName) {
