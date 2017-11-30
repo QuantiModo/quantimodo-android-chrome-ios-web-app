@@ -739,6 +739,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(gt)0'
                 }
@@ -759,6 +760,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(gt)0'
                 }
@@ -779,6 +781,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(lt)0'
                 }
@@ -799,6 +802,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(lt)0'
                 }
@@ -818,6 +822,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: null
                 }
@@ -835,6 +840,7 @@ angular.module('starter',
             params: {
                 aggregated: true,
                 variableObject : null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     causeVariableName: null,
                     effectVariableName: null,
