@@ -213,7 +213,7 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
             }
             params = qm.api.addGlobalParams(params);
-            apiInstance.getUserVariables(params, callback);
+            apiInstance.getVariables(params, callback);
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -248,6 +248,23 @@ window.qm = {
     getAppSettings: function () {
         if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
         return null;
+    },
+    studyHelper: {
+        getLastStudy: function(){
+            return qmStorage.getItem(qmItems.lastStudy);
+        },
+        getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName) {
+            var lastStudy = qm.studyHelper.getLastStudy();
+            if(lastStudy.causeVariableName === causeVariableName && lastStudy.effectVariableName === effectVariableName){
+                return lastStudy;
+            }
+        },
+        saveLastStudy: function(study){
+            qmStorage.setItem(qmItems.lastStudy, study);
+        },
+        deleteLastStudy: function(){
+            qmStorage.removeItem(qmItems.lastStudy);
+        }
     }
 };
 window.qmGlobals = {
@@ -307,6 +324,7 @@ window.qmItems = {
     lastLocationResultType: 'lastLocationResultType',
     lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
     lastLongitude: 'lastLongitude',
+    lastStudy: 'lastStudy',
     lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
     lastPushTimestamp: 'lastPushTimestamp',
     measurementsQueue: 'measurementsQueue',
