@@ -213,6 +213,7 @@ angular.module('starter',
         "searchVariablesWithUserPredictors": "app.searchVariablesWithUserPredictors",
         "settings": "app.settings",
         "study": "app.study",
+        "studies": "app.studies",
         "studyCreation": "app.studyCreation",
         "studyJoin": "app.studyJoin",
         "tabs": "app.tabs",
@@ -673,6 +674,25 @@ angular.module('starter',
                 }
             }
         })
+        .state(qmStates.studies, {
+            url: "/studies",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
         .state(qmStates.predictorsAll, {
             url: "/predictors/:effectVariableName",
             params: {
@@ -719,6 +739,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(gt)0'
                 }
@@ -739,6 +760,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(gt)0'
                 }
@@ -759,6 +781,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(lt)0'
                 }
@@ -779,6 +802,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: '(lt)0'
                 }
@@ -798,6 +822,7 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     correlationCoefficient: null
                 }
@@ -815,6 +840,7 @@ angular.module('starter',
             params: {
                 aggregated: true,
                 variableObject : null,
+                fallBackToPrimaryOutcome: true,
                 requestParams : {
                     causeVariableName: null,
                     effectVariableName: null,
