@@ -9,7 +9,7 @@
                 &nbsp Variable is Public
             </i>
         </ion-toggle>
-        <label ng-click="copyChartsUrlToClipboard()" class="item item-content"
+        <label ng-click="copyToClipboard(variableObject.chartsLinkStatic)" class="item item-content"
                ng-if="isWeb && variableObject.shareUserMeasurements === true && variableObject.chartsLinkStatic">
             <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
         </label>

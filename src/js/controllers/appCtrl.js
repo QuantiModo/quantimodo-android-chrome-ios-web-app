@@ -174,22 +174,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
     $scope.welcomeText = config.appSettings.welcomeText;
-    $scope.editTag = function(userTagVariable){
-        qmService.goToState('app.tagAdd', {
-            tagConversionFactor: userTagVariable.tagConversionFactor,
-            userTaggedVariableObject: $rootScope.variableObject,
-            fromState: $state.current.name,
-            userTagVariableObject: userTagVariable
-        });
-    };
-    $scope.editTagged = function(userTaggedVariable){
-        qmService.goToState('app.tagAdd', {
-            tagConversionFactor: userTaggedVariable.tagConversionFactor,
-            userTaggedVariableObject: userTaggedVariable,
-            fromState: $state.current.name,
-            userTagVariableObject: $rootScope.variableObject
-        });
-    };
     $scope.downVote = function(correlationObject, $index, ev){
         if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
         var title, textContent, yesCallback, noCallback;
@@ -354,33 +338,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToDefaultState(stateParams);
         }
     };
-    $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
-        if(!variableName){
-            qmLogService.error('No variable name provided to $scope.getUserVariableByName');
-            return;
-        }
-        if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
-        if(!hideLoader){ qmService.showBlackRingLoader(); }
-        var params = {includeTags : true};
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
-            qmService.hideLoader();
-            $rootScope.variableObject = variableObject;
-            //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            qmService.setupVariableByVariableObject(variableObject);
-        }, function (error) {
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
-            qmService.hideLoader();
-            qmLogService.error(error);
-        });
-    };
-    $scope.refreshUserVariable = function (hideLoader) {
-        var refresh = true;
-        if($rootScope.variableObject){ $rootScope.variableName = $rootScope.variableObject.name; }
-        $scope.getUserVariableByName($rootScope.variableName, refresh, hideLoader);
-    };
     $scope.trackLocationChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
         qmLogService.debug('trackLocation', null, $rootScope.user.trackLocation);
@@ -407,11 +364,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(title, textContent, ev);
     };
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-    $scope.copyChartsUrlToClipboard = function () {
+    $scope.copyToClipboard = function (text) {
         $scope.copyLinkText = 'Copied!';
-        /** @namespace $rootScope.variableObject.chartsUrl */
-        clipboard.copyText($rootScope.variableObject.chartsLinkStatic);
-        qmService.showInfoToast('Copied link!');
+        /** @namespace $scope.state.variableObject.chartsUrl */
+        clipboard.copyText(text);
+        qmService.showInfoToast('Copied ' + text + ' to clipboard!');
     };
     var verifyEmailAddressAndExecuteCallback = function (callback) {
         if($rootScope.user.email || $rootScope.user.userEmail){
