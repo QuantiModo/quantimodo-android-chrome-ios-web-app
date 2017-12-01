@@ -50,15 +50,18 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
         if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
         if( $scope.state.primaryOutcomeMeasurements) {
-            $scope.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-            $scope.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-            $scope.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-            updateAveragePrimaryOutcomeRatingView();
-            $scope.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+            $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
+            $timeout(function() {
+                $scope.state.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                $scope.state.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                $scope.state.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                $scope.state.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                updateAveragePrimaryOutcomeRatingView();
+            }, 1);
         }
     };
     $scope.$on('updateCharts', function(){
-        qmLogService.debug(null, 'updateCharts broadcast received..', null);
+        qmLogService.debug('updateCharts broadcast received..');
         updateCharts();
     });
 }]);

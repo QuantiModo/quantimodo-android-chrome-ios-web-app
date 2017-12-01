@@ -24,10 +24,10 @@
             </div>
         </div>
         <div ng-show="loadingCharts" style="text-align: center"><br><ion-spinner icon="android"></ion-spinner><br></div>
-        <div class="card" ng-if="distributionChartConfig"><highchart id="distributionChart" config="distributionChartConfig"></highchart></div>
-        <div class="card" ng-if="lineChartConfig"><highchart id="lineChart" config="lineChartConfig"></highchart></div>
-        <div class="card" ng-if="weekdayChartConfig"><highchart id="weekdayChart" config="weekdayChartConfig"></highchart></div>
-        <div class="card" ng-if="hourlyChartConfig"><highchart id="hourlyChart" config="hourlyChartConfig"></highchart></div>
+        <div class="card" ng-if="state.distributionChartConfig"><highchart id="distributionChart" config="state.distributionChartConfig"></highchart></div>
+        <div class="card" ng-if="state.lineChartConfig"><highchart id="lineChart" config="state.lineChartConfig"></highchart></div>
+        <div class="card" ng-if="state.weekdayChartConfig"><highchart id="weekdayChart" config="state.weekdayChartConfig"></highchart></div>
+        <div class="card" ng-if="state.hourlyChartConfig"><highchart id="hourlyChart" config="state.hourlyChartConfig"></highchart></div>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>
