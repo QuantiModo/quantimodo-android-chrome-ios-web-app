@@ -8,6 +8,44 @@ window.qmChrome = {
     compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
     inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
     signInNotificationParams: { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2},
+    scheduleGenericChromeExtensionNotification: function(intervalInMinutes) {
+        qmLog.info('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
+        var alarmInfo = {periodInMinutes: intervalInMinutes};
+        qmLog.info('scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm');
+        chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
+        qmLog.info('scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm', null, alarmInfo);
+        chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
+        qmLog.info('Alarm set, every ' + intervalInMinutes + ' minutes');
+    },
+    scheduleChromeExtensionNotificationWithTrackingReminder: function(trackingReminder) {
+        var alarmInfo = {};
+        function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
+            return {
+                trackingReminderId: trackingReminder.id,
+                variableName: trackingReminder.variableName,
+                defaultValue: trackingReminder.defaultValue,
+                unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
+                periodInMinutes: trackingReminder.reminderFrequency / 60,
+                reminderStartTime: trackingReminder.reminderStartTime,
+                startTrackingDate: trackingReminder.startTrackingDate,
+                variableCategoryName: trackingReminder.variableCategoryName,
+                valence: trackingReminder.valence,
+                reminderEndTime: trackingReminder.reminderEndTime
+            };
+        }
+        alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
+        alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
+        var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
+        alarmName = JSON.stringify(alarmName);
+        chrome.alarms.getAll(function(alarms) {
+            var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
+            if (hasAlarm) {qmLog.info(null, 'Already have an alarm for ' + alarmName, null);}
+            if (!hasAlarm) {
+                chrome.alarms.create(alarmName, alarmInfo);
+                qmLog.info(null, 'Created alarm for alarmName ' + alarmName, null, alarmInfo);
+            }
+        });
+    }
 };
 function showSignInNotification() {
     if(!qm.platform.isChromeExtension()){return;}
@@ -140,14 +178,7 @@ window.qmChrome.showRatingOrInboxPopup = function (alarm) {
 if(qm.platform.isChromeExtension()) {
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
         var notificationInterval = parseInt(qmStorage.getItem(qmItems.notificationInterval) || "60");
-        if (notificationInterval === -1) {
-            chrome.alarms.clear("moodReportAlarm");
-            window.qmLog.debug(null, 'Alarm cancelled', null);
-        } else {
-            var alarmInfo = {periodInMinutes: notificationInterval};
-            chrome.alarms.create("moodReportAlarm", alarmInfo);
-            window.qmLog.debug(null, 'Alarm set, every ' + notificationInterval + ' minutes', null);
-        }
+        qmChrome.scheduleGenericChromeExtensionNotification(notificationInterval);
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
