@@ -163,8 +163,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable())
                 .then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
         }
-        if(!$rootScope.variableObject || !$rootScope.variableObject.charts){
-            qmService.setRootScopeVariableWithCharts();
+        if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
+            qmService.getVariableWithCharts(qm.getPrimaryOutcomeVariable().name, false, function(variableObject){
+                $scope.state.variableObject = variableObject;
+            });
         }
     }
 	function getFavorites() {
@@ -368,7 +370,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         trackingReminderNotification.hide = true;
         qmLogService.debug(null, 'Skipping all notifications for trackingReminder', null, trackingReminderNotification);
         var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
-        //qmService.showInfoToast('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+        //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
         qmService.skipAllTrackingReminderNotificationsDeferred(params)
             .then(function(){
                 hideInboxLoader();
@@ -388,9 +390,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		$scope.state.trackingReminderNotification = trackingReminderNotification;
 		$scope.state.trackingReminder = trackingReminderNotification;
 		$scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
-		$rootScope.variableObject = trackingReminderNotification;
-		$rootScope.variableObject.id = trackingReminderNotification.variableId;
-		$rootScope.variableObject.name = trackingReminderNotification.variableName;
+		$scope.state.variableObject = trackingReminderNotification;
+		$scope.state.variableObject.id = trackingReminderNotification.variableId;
+		$scope.state.variableObject.name = trackingReminderNotification.variableName;
 		// Show the action sheet
 		var buttons = [
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
@@ -412,8 +414,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				qmLogService.debug(null, 'BUTTON CLICKED', null, index);
                 if(index === 0){qmLogService.debug(null, 'clicked variable name', null);}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
-				if(index === 2){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+				if(index === 2){qmService.goToState('app.charts', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
+                if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 var buttonIndex = 4;
                 for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
                     if(index === buttonIndex){trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);}
