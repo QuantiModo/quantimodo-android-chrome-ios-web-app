@@ -4004,11 +4004,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.goToStudyCreationForPredictor(variable);
         }
     };
-    qmService.setRootScopeVariableWithCharts = function(variableName, refresh, successHandler) {
+    qmService.getVariableWithCharts = function(variableName, refresh, successHandler) {
         if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
             .then(function (variableObject) {
-                $rootScope.variableObject = variableObject;
                 qmService.hideLoader();
                 if(successHandler){successHandler(variableObject);}
             });
@@ -4050,7 +4049,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.userVariable){userVariable = response.userVariable;}
             qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
             qm.studyHelper.deleteLastStudy();
-            $rootScope.variableObject = userVariable;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug(null, 'qmService.postUserVariableDeferred: success: ' + JSON.stringify(userVariable), null);
             deferred.resolve(userVariable);
@@ -7192,7 +7190,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
-        $rootScope.variableObject = variableObject;
     };
     // qmService.autoUpdateApp = function () {
     //     var appUpdatesDisabled = true;
@@ -7372,8 +7369,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $stateParams.variableName = urlHelper.getParam('variableName', window.location.href, true);
         } else if ($stateParams.variableObject) {
             $stateParams.variableName = $stateParams.variableObject.name;
-        } else if ($rootScope.variableObject) {
-            $stateParams.variableName = $rootScope.variableObject.name;
         } else if ($stateParams.trackingReminder){
             $stateParams.variableName = $stateParams.trackingReminder.variableName;
         } else if (qm.getPrimaryOutcomeVariable()){
