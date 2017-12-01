@@ -3134,7 +3134,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             xAxis : {categories : xAxisLabels},
             yAxis : {
-                title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+                title : {text : 'Average Value (' + variableObject.unitAbbreviatedName + ')'},
                 min : minimum,
                 max : maximum
             },
@@ -3185,7 +3185,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             xAxis : {categories : xAxisLabels},
             yAxis : {
-                title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+                title : {text : 'Average Value (' + variableObject.unitAbbreviatedName + ')'},
                 min : minimum,
                 max : maximum
             },
@@ -3264,7 +3264,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             title : {text : 'Average  ' + variableObject.name + ' by Hour of Day'},
             xAxis : {categories : xAxisLabels},
             yAxis : {
-                title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+                title : {text : 'Average Value (' + variableObject.unitAbbreviatedName + ')'},
                 min : minimum,
                 max : maximum
             },
@@ -3367,7 +3367,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
         if(millisecondsBetweenLatestAndEarliest < 86400*1000){
             console.warn('Need at least a day worth of data for line chart');
-            return;
+            //return;
         }
         var chartConfig = {
             title: {
@@ -3441,7 +3441,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
         if(millisecondsBetweenLatestAndEarliest < 86400*1000){
             console.warn('Need at least a day worth of data for line chart');
-            return;
+            //return;
         }
         var config = {
             title: {
@@ -3497,7 +3497,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
         if(millisecondsBetweenLatestAndEarliest < 86400*1000){
             console.warn('Need at least a day worth of data for line chart');
-            return;
+            //return;
         }
         var config = {
             title: {
@@ -3824,7 +3824,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
         if(millisecondsBetweenLatestAndEarliest < 86400*1000){
             console.warn('Need at least a day worth of data for line chart');
-            return;
+            //return;
         }
         var chartConfig = {
             useHighStocks: true,
@@ -3893,7 +3893,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 tooltip: {valueDecimals: 2}
             }]
         };
-        var doNotConnectPoints = variableObject.userVariableDefaultUnitCategoryName !== 'Rating';
+        var doNotConnectPoints = variableObject.unitCategoryName !== 'Rating';
         if(doNotConnectPoints){
             chartConfig.series.marker = {enabled: true, radius: 2};
             chartConfig.series.lineWidth = 0;
