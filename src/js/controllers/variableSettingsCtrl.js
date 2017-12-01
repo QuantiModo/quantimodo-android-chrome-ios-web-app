@@ -307,4 +307,39 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         var userTagData = {userTaggedVariableId: $scope.state.variableObject.id, userTagVariableId: tagVariable.id};
         qmService.deleteUserTagDeferred(userTagData);
     };
+    $scope.editTag = function(userTagVariable){
+        qmService.goToState('app.tagAdd', {
+            tagConversionFactor: userTagVariable.tagConversionFactor,
+            userTaggedVariableObject: $scope.state.variableObject,
+            fromState: $state.current.name,
+            userTagVariableObject: userTagVariable
+        });
+    };
+    $scope.editTagged = function(userTaggedVariable){
+        qmService.goToState('app.tagAdd', {
+            tagConversionFactor: userTaggedVariable.tagConversionFactor,
+            userTaggedVariableObject: userTaggedVariable,
+            fromState: $state.current.name,
+            userTagVariableObject: $scope.state.variableObject
+        });
+    };
+    $scope.refreshUserVariable = function (hideLoader) {
+        var refresh = true;
+        if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){ $scope.state.variableObject = null; }
+        if(!hideLoader){ qmService.showBlackRingLoader(); }
+        var params = {includeTags : true};
+        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+            qmService.hideLoader();
+            $scope.state.variableObject = variableObject;
+            //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
+            qmService.setupVariableByVariableObject(variableObject);
+        }, function (error) {
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+            qmService.hideLoader();
+            qmLogService.error(error);
+        });
+    };
 }]);
