@@ -3,45 +3,45 @@
         <div class="row"> <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p> </div>
     </div>
 </div>
-<div ng-if="variableObject.charts.lineChartWithoutSmoothing.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.lineChartWithoutSmoothing.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.lineChartWithoutSmoothing.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.lineChartWithoutSmoothing.chartId}}" config="variableObject.charts.lineChartWithoutSmoothing.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.lineChartWithoutSmoothing.explanation" style="text-align: center">{{variableObject.charts.lineChartWithoutSmoothing.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.lineChartWithoutSmoothing.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.lineChartWithoutSmoothing.chartId}}" config="state.variableObject.charts.lineChartWithoutSmoothing.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.lineChartWithoutSmoothing.explanation" style="text-align: center">{{state.variableObject.charts.lineChartWithoutSmoothing.explanation}}</p>
     </div>
 </div>
-<div ng-if="variableObject.charts.lineChartWithSmoothing.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.lineChartWithSmoothing.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.lineChartWithSmoothing.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.lineChartWithSmoothing.chartId}}" config="variableObject.charts.lineChartWithSmoothing.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.lineChartWithSmoothing.explanation" style="text-align: center">{{variableObject.charts.lineChartWithSmoothing.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.lineChartWithSmoothing.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.lineChartWithSmoothing.chartId}}" config="state.variableObject.charts.lineChartWithSmoothing.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.lineChartWithSmoothing.explanation" style="text-align: center">{{state.variableObject.charts.lineChartWithSmoothing.explanation}}</p>
     </div>
 </div>
-<div ng-if="variableObject.charts.hourlyColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.hourlyColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.hourlyColumnChart.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.hourlyColumnChart.chartId}}" config="variableObject.charts.hourlyColumnChart.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.hourlyColumnChart.explanation" style="text-align: center">{{variableObject.charts.hourlyColumnChart.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.hourlyColumnChart.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.hourlyColumnChart.chartId}}" config="state.variableObject.charts.hourlyColumnChart.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.hourlyColumnChart.explanation" style="text-align: center">{{state.variableObject.charts.hourlyColumnChart.explanation}}</p>
     </div>
 </div>
-<div ng-if="variableObject.charts.weekdayColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.weekdayColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.weekdayColumnChart.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.weekdayColumnChart.chartId}}" config="variableObject.charts.weekdayColumnChart.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.weekdayColumnChart.explanation" style="text-align: center">{{variableObject.charts.weekdayColumnChart.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.weekdayColumnChart.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.weekdayColumnChart.chartId}}" config="state.variableObject.charts.weekdayColumnChart.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.weekdayColumnChart.explanation" style="text-align: center">{{state.variableObject.charts.weekdayColumnChart.explanation}}</p>
     </div>
 </div>
-<div ng-if="variableObject.charts.monthlyColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.monthlyColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.monthlyColumnChart.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.monthlyColumnChart.chartId}}" config="variableObject.charts.monthlyColumnChart.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.monthlyColumnChart.explanation" style="text-align: center">{{variableObject.charts.monthlyColumnChart.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.monthlyColumnChart.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.monthlyColumnChart.chartId}}" config="state.variableObject.charts.monthlyColumnChart.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.monthlyColumnChart.explanation" style="text-align: center">{{state.variableObject.charts.monthlyColumnChart.explanation}}</p>
     </div>
 </div>
-<div ng-if="variableObject.charts.distributionColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
+<div ng-if="state.variableObject.charts.distributionColumnChart.highchartConfig" class="card primary-outcome-variable-reporting-chart">
     <div class="item item-text-wrap">
-        <h2 style="text-align: center">{{variableObject.charts.distributionColumnChart.chartTitle}}</h2>
-        <highchart id="{{variableObject.charts.distributionColumnChart.chartId}}" config="variableObject.charts.distributionColumnChart.highchartConfig"></highchart>
-        <p ng-if="variableObject.charts.distributionColumnChart.explanation" style="text-align: center">{{variableObject.charts.distributionColumnChart.explanation}}</p>
+        <h2 style="text-align: center">{{state.variableObject.charts.distributionColumnChart.chartTitle}}</h2>
+        <highchart id="{{state.variableObject.charts.distributionColumnChart.chartId}}" config="state.variableObject.charts.distributionColumnChart.highchartConfig"></highchart>
+        <p ng-if="state.variableObject.charts.distributionColumnChart.explanation" style="text-align: center">{{state.variableObject.charts.distributionColumnChart.explanation}}</p>
     </div>
 </div>

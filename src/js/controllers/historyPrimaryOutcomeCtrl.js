@@ -28,9 +28,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$i
 	});
 	$scope.showActionSheet = function(measurement) {
 		$scope.state.measurement = measurement;
-		$rootScope.variableObject = measurement;
-		$rootScope.variableObject.id = measurement.variableId;
-		$rootScope.variableObject.name = measurement.variableName;
+		var variableObject = JSON.parse(JSON.stringify(measurement));
+        variableObject.id = measurement.variableId;
+        variableObject.name = measurement.variableName;
 		// Show the action sheet
 		var hideSheet = $ionicActionSheet.show({
 			buttons: [
@@ -44,8 +44,8 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', ["$scope", "$i
 			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
 			buttonClicked: function(index) {
 				qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
-				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
-				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
+				if(index === 0){$scope.editMeasurement(variableObject);}
+				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.track');}
 				if(index === 3){qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
 				return true;
