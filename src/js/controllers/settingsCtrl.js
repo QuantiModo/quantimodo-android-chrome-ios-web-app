@@ -8,6 +8,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
+        $scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
         $scope.backgroundLocationTracking = !!(qmStorage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();

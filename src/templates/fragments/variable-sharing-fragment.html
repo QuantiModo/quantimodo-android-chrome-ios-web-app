@@ -1,15 +1,15 @@
-<div ng-show="variableObject.userId && user && variableObject.userId === user.id" >
+<div ng-show="state.variableObject.userId && user && state.variableObject.userId === user.id" >
     <div class="card">
-        <ion-toggle ng-model="variableObject.shareUserMeasurements"
+        <ion-toggle ng-model="state.variableObject.shareUserMeasurements"
                     ng-change="toggleVariableShare(variableObject)">
-            <i ng-if="variableObject.shareUserMeasurements === false" class="icon ion-locked">
+            <i ng-if="state.variableObject.shareUserMeasurements === false" class="icon ion-locked">
                 &nbsp Variable is Private
             </i>
-            <i ng-if="variableObject.shareUserMeasurements === true" class="icon ion-unlocked">
+            <i ng-if="state.variableObject.shareUserMeasurements === true" class="icon ion-unlocked">
                 &nbsp Variable is Public
             </i>
         </ion-toggle>
-        <label ng-click="copyChartsUrlToClipboard()" class="item item-content"
+        <label ng-click="copyToClipboard(variableObject.chartsLinkStatic)" class="item item-content"
                ng-if="isWeb && variableObject.shareUserMeasurements === true && variableObject.chartsLinkStatic">
             <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
         </label>

@@ -33,6 +33,13 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     function getCharts(refresh) {
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
             .then(function (variableObject) {
+                if(!variableObject.charts){
+                    qmLog.error("No charts!");
+                    if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
+                        qmService.goToDefaultState();
+                        return;
+                    }
+                }
                 $scope.state.variableObject = variableObject;
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
