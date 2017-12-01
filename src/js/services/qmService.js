@@ -4154,20 +4154,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     }
     // NOTIFICATION SERVICE
-    function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
-        return {
-            trackingReminderId: trackingReminder.id,
-            variableName: trackingReminder.variableName,
-            defaultValue: trackingReminder.defaultValue,
-            unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
-            periodInMinutes: trackingReminder.reminderFrequency / 60,
-            reminderStartTime: trackingReminder.reminderStartTime,
-            startTrackingDate: trackingReminder.startTrackingDate,
-            variableCategoryName: trackingReminder.variableCategoryName,
-            valence: trackingReminder.valence,
-            reminderEndTime: trackingReminder.reminderEndTime
-        };
-    }
     function localNotificationsPluginInstalled() {
         var installed = true;
         if(typeof cordova === "undefined"){
@@ -4453,7 +4439,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.info(null, 'scheduleSingleMostFrequentLocalNotification: Notification settings haven\'t changed so no need to scheduleGenericNotification', null, notificationSettings);
                 return;
             }
-            qmLogService.info(null, 'scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification', null, notificationSettings);
+            qmLogService.info('scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification', null, notificationSettings);
             qmService.qmStorage.setItem('previousSingleNotificationSettings', notificationSettings);
             this.scheduleGenericNotification(notificationSettings);
         }
@@ -4655,21 +4641,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        function scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder) {
-            var alarmInfo = {};
-            alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
-            alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-            var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
-            alarmName = JSON.stringify(alarmName);
-            chrome.alarms.getAll(function(alarms) {
-                var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
-                if (hasAlarm) {qmLogService.debug(null, 'Already have an alarm for ' + alarmName, null);}
-                if (!hasAlarm) {
-                    chrome.alarms.create(alarmName, alarmInfo);
-                    qmLogService.debug(null, 'Created alarm for alarmName ' + alarmName, null, alarmInfo);
-                }
-            });
-        }
         if(trackingReminder.reminderFrequency > 0){
             $ionicPlatform.ready(function () {
                 //qmLogService.debug('Ionic is ready to schedule notifications');
@@ -4688,7 +4659,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             });
-            if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);}
+            if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                qmChrome.scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
+            }
         }
     };
     qmService.scheduleGenericNotification = function(notificationSettings){
@@ -4727,15 +4700,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
             notificationSettings.every = everyString;
         }
-        function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
-            qmLogService.debug(null, 'scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes', null);
-            var alarmInfo = {periodInMinutes: intervalInMinutes};
-            qmLogService.debug(null, 'scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm', null);
-            chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
-            qmLogService.debug(null, 'scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm', null, alarmInfo);
-            chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
-            qmLogService.debug(null, 'Alarm set, every ' + intervalInMinutes + ' minutes', null);
-        }
         $ionicPlatform.ready(function () {
             if (localNotificationsPluginInstalled()) {
                 cordova.plugins.notification.local.getAll(function (notifications) {
@@ -4756,7 +4720,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         });
         if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-            scheduleGenericChromeExtensionNotification(notificationSettings.every);
+            qmChrome.scheduleGenericChromeExtensionNotification(notificationSettings.every);
             deferred.resolve();
         }
         return deferred.promise;
