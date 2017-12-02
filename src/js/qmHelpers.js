@@ -329,6 +329,7 @@ window.qmItems = {
     appSettingsRevisions: 'appSettingsRevisions',
     chromeWindowId: 'chromeWindowId',
     clientId: 'clientId',
+    commonVariables: 'commonVariables',
     defaultHelpCards: 'defaultHelpCards',
     deviceTokenOnServer: 'deviceTokenOnServer',
     deviceTokenToSync: 'deviceTokenToSync',
