@@ -6824,7 +6824,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.configureAppSettings(appSettings);
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
-        putCommonVariablesInLocalStorageUsingApi();
+        if(!qmStorage.getItem(qmItems.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(userHelper.getUser());
