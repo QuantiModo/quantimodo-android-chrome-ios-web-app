@@ -3936,7 +3936,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(params.includePublic && !excludeLocal){
             if(!variables){variables = [];}
             var commonVariables = qmService.qmStorage.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
-            variables = variables.concat(commonVariables);
+            variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
         }
         if(!excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
             deferred.resolve(variables);
@@ -6824,7 +6824,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.configureAppSettings(appSettings);
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
-        putCommonVariablesInLocalStorageUsingApi();
+        if(!qmStorage.getItem(qmItems.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(userHelper.getUser());
@@ -7519,6 +7519,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.debug("Why are we researching with the same query?");
                     deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                     return deferred.promise;
+                }
+                if(self.lastResults && self.lastResults.length){
+                    var matches = qm.arrayHelper.getContaining(query, self.lastResults);
+                    if(matches && matches.length){
+                        deferred.resolve(loadAll(matches, self.dataToPass.excludeLocal));
+                        return deferred.promise;
+                    }
                 }
                 self.lastApiQuery = query;
                 qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, self.dataToPass.excludeLocal)

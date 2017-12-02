@@ -124,6 +124,26 @@ window.qm = {
                 return obj[key];
             });
             return result;
+        },
+        getContaining: function(searchTerm, array){
+            searchTerm = searchTerm.toLowerCase();
+            var matches = [];
+            for (var i = 0; i < array.length; i++) {
+                if(JSON.stringify(array[i]).toLowerCase().indexOf(searchTerm) > -1){
+                    matches.push(array[i]);
+                }
+            }
+            return matches;
+        },
+        concatenateUniqueId: function (preferred, secondary) {
+            var a = preferred.concat(secondary);
+            for(var i=0; i<a.length; ++i) {
+                for(var j=i+1; j<a.length; ++j) {
+                    if(a[i].id === a[j].id)
+                        a.splice(j--, 1);
+                }
+            }
+            return a;
         }
     },
     auth: {},
@@ -309,6 +329,7 @@ window.qmItems = {
     appSettingsRevisions: 'appSettingsRevisions',
     chromeWindowId: 'chromeWindowId',
     clientId: 'clientId',
+    commonVariables: 'commonVariables',
     defaultHelpCards: 'defaultHelpCards',
     deviceTokenOnServer: 'deviceTokenOnServer',
     deviceTokenToSync: 'deviceTokenToSync',
