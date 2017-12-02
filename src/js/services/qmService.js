@@ -3936,7 +3936,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(params.includePublic && !excludeLocal){
             if(!variables){variables = [];}
             var commonVariables = qmService.qmStorage.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
-            variables = variables.concat(commonVariables);
+            variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
         }
         if(!excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
             deferred.resolve(variables);
