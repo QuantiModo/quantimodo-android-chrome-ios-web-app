@@ -7520,6 +7520,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                     return deferred.promise;
                 }
+                if(self.lastResults && self.lastResults.length){
+                    var matches = qm.arrayHelper.getContaining(query, self.lastResults);
+                    if(matches && matches.length){
+                        deferred.resolve(loadAll(matches, self.dataToPass.excludeLocal));
+                        return deferred.promise;
+                    }
+                }
                 self.lastApiQuery = query;
                 qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, self.dataToPass.excludeLocal)
                     .then(function(results){

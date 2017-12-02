@@ -124,6 +124,16 @@ window.qm = {
                 return obj[key];
             });
             return result;
+        },
+        getContaining: function(searchTerm, array){
+            searchTerm = searchTerm.toLowerCase();
+            var matches = [];
+            for (var i = 0; i < array.length; i++) {
+                if(JSON.stringify(array[i]).toLowerCase().indexOf(searchTerm) > -1){
+                    matches.push(array[i]);
+                }
+            }
+            return matches;
         }
     },
     auth: {},
