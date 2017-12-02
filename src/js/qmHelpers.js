@@ -125,6 +125,16 @@ window.qm = {
             });
             return result;
         },
+        getContaining: function(searchTerm, array){
+            searchTerm = searchTerm.toLowerCase();
+            var matches = [];
+            for (var i = 0; i < array.length; i++) {
+                if(JSON.stringify(array[i]).toLowerCase().indexOf(searchTerm) > -1){
+                    matches.push(array[i]);
+                }
+            }
+            return matches;
+        },
         concatenateUniqueId: function (preferred, secondary) {
             var a = preferred.concat(secondary);
             for(var i=0; i<a.length; ++i) {
