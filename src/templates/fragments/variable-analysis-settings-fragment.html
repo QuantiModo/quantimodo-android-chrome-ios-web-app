@@ -8,18 +8,18 @@
                 <option value="MEAN" name="group">Average</option>
             </select>
         </label>
-        <div ng-hide="state.variableObject.defaultUnitCategoryName === 'Rating'" class="item item-input">
+        <div ng-hide="state.variableObject.unitAbbreviatedName === '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('minimumAllowedValue', $event)">
-                Minimum Value &nbsp; <i class="icon ion-help-circled"></i>
+                Minimum Value  &nbsp;({{state.variableObject.unitAbbreviatedName}})&nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span">
                 <input id="minimumAllowedValue" class="right-input" ng-model="state.variableObject.minimumAllowedValue"
                        type="number" placeholder="-Infinity">
             </span>
         </div>
-        <div ng-hide="state.variableObject.defaultUnitCategoryName === 'Rating'" class="item item-input">
+        <div ng-hide="state.variableObject.unitAbbreviatedName === '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('maximumAllowedValue', $event)">
-                Maximum Value &nbsp; <i class="icon ion-help-circled"></i>
+                Maximum Value ({{state.variableObject.unitAbbreviatedName}})&nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span">
                 <input id="maximumAllowedValue" class="right-input" ng-model="state.variableObject.maximumAllowedValue"
