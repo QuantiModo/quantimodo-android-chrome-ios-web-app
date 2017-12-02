@@ -1,5 +1,6 @@
-angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService", "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog", function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService,
-                                           $rootScope, $ionicActionSheet, $mdDialog) {
+angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
+    "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog",
+    function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService, $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
         variableName: null,
@@ -79,8 +80,8 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         params.offset = $scope.state.correlationObjects.length;
         qmService.getCorrelationsDeferred(params)
             .then(function (data) {
+                if(data){$scope.state.correlationsExplanation = data.explanation;}
                 if(data.correlations.length) {
-                    $scope.state.correlationsExplanation = data.explanation;
                     if($scope.state.requestParams.offset){$scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
                     } else {$scope.state.correlationObjects = data.correlations;}
                     showLoadMoreButtonIfNecessary();
