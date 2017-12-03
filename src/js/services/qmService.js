@@ -6352,7 +6352,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         window.location.href = getStudyUrl(causeVariableName, effectVariableName);
     };
     function getStudyUrl(causeVariableName, effectVariableName) {
-        return getBaseAppUrl() + "#/app/study?causeVariableName=" + causeVariableName + "&effectVariableName=" + effectVariableName;
+        return getBaseAppUrl() + "#/app/study?causeVariableName=" + encodeURIComponent(causeVariableName) +
+            "&effectVariableName=" + encodeURIComponent(effectVariableName);
     }
     function getBaseAppUrl(){
         return window.location.origin + window.location.pathname;
