@@ -7000,10 +7000,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
                 push.on('notification', function(data) {
-                    if (data.additionalData.url) {
-                        qmLog.error("Opening data.additionalData.url: " + data.additionalData.url);
-                        document.location.href = data.additionalData.url;
-                    }
                     qmService.logEventToGA(qmAnalytics.eventCategories.pushNotifications, "received");
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
@@ -7023,6 +7019,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     // data.sound,
                     // data.image,
                     // data.additionalData
+                    if (data.additionalData.url) {
+                        qmLog.pushDebug("Opening data.additionalData.url: " + data.additionalData.url);
+                        document.location.href = data.additionalData.url;
+                    }
                     if(!finishPushes) {
                         qmLog.pushDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, null);
                         return;
