@@ -801,7 +801,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var timeZoneOffsetInMinutes = d.getTimezoneOffset();
         if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
             var params = {timeZoneOffset: timeZoneOffsetInMinutes};
-            qmLog.errorOrInfoIfTesting("User timeZoneOffset " + $rootScope.user.timeZoneOffset +
+            qmLogService.errorOrInfoIfTesting("User timeZoneOffset " + $rootScope.user.timeZoneOffset +
                 " does not match browser timeZoneOffset: " + timeZoneOffsetInMinutes);
             if(timeZoneOffsetInMinutes){  // We don't update if 0 because it causes an infinite loop because API doesn't accept it
                 qmService.updateUserSettingsDeferred(params);
@@ -1508,7 +1508,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
             if(qmStorage.getItem(localStorageItemName) && window.timeHelper.getUnixTimestampInSeconds() - qmStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                qmLogService.errorOrInfoIfTesting(null, errorMessage);
+                qmLogService.errorOrInfoIfTesting(errorMessage);
                 return false;
             }
             qmService.qmStorage.setItem(localStorageItemName, window.timeHelper.getUnixTimestampInSeconds());
