@@ -12,10 +12,18 @@
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
                 <div class="buttons">
+                    <div id="physician" style="cursor:pointer;" ng-click="switchBackToPhysician()" ng-if="physicianUser">
+                        <md-tooltip md-direction="down">Switch back to your account from {{user.displayName}}</md-tooltip>
+                        <a ng-if="user && user.avatar" class="button button-clear" >
+                            <img class="menu-avatar" id="patientAvatarRight" ng-src="{{user.avatar}}"></a>
+                        <button id="switch-button-right" class="button button-icon ion-arrow-swap"></button>
+                    </div>
                     <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
                         <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>
-                    <a  id="navBarAvatar" href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" ng-src="{{user.avatar}}"> </a>
+                    <a  id="navBarAvatar" href="#/app/settings" ng-if="!physicianUser && user && user.avatar && !isMobile" class="button button-clear" >
+                        <img class="menu-avatar" ng-src="{{user.avatar}}">
+                    </a>
                     <button id="menu-search-button" class="button button-icon ion-ios-search"
                             ng-click="showGeneralVariableSearchDialog($event)"></button>
                     <a ng-if="finishUrl" href="{{finishUrl}}">
