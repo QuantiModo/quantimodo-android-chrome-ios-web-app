@@ -883,7 +883,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qmService.qmStorage.setItem('onboarded', true);
                 qmService.qmStorage.setItem('introSeen', true);
-                qmLogService.info('Setting onboarded and introSeen to true', null);
+                qmLogService.info('Setting onboarded and introSeen to true');
                 if($state.current.name !== 'app.login'){
                     qmLogService.info(null, 'Setting afterLoginGoToState and afterLoginGoToUrl to null', null);
                     qmService.qmStorage.setItem('afterLoginGoToState', null);
@@ -933,7 +933,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
             var accessTokenFromLocalStorage = qmStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
-                qmService.qmStorage.clearEverything();
+                qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
             var user = qmStorage.getAsObject(qmItems.user);
@@ -947,7 +947,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
-                qmService.qmStorage.clearEverything();
+                qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
             }
             if(!urlHelper.getParam('doNotRemember')){
@@ -1326,7 +1326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $rootScope.user = null;
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
-        qmService.qmStorage.clearEverything();
+        qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
@@ -5110,10 +5110,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.sortByProperty = function(arrayToSort, propertyName){
         return window.sortByProperty(arrayToSort, propertyName);
     };
-    qmService.qmStorage.clearEverything = function(){
-        qmLogService.debug(null, 'Clearing local storage!', null);
+    qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables = function(){
+        qmLogService.info('Clearing local storage!');
+        var commonVariables = qmStorage.getItem(qmItems.commonVariables);
+        var units = qmStorage.getItem(qmItems.units);
         qmStorage.clear();
-        putCommonVariablesInLocalStorageUsingApi();
+        qmStorage.setItem(qmItems.commonVariables, commonVariables);
+        qmStorage.setItem(qmItems.units, units);
         qmService.getUnitsFromApi();
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
@@ -6534,7 +6537,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         qmLogService.debug(null, 'getUserFromLocalStorageOrRefreshIfNecessary', null);
         if(urlHelper.getParam('refreshUser')){
-            qmService.qmStorage.clearEverything();
+            qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.qmStorage.setItem('onboarded', true);
             qmService.qmStorage.setItem('introSeen', true);
             $rootScope.user = null;
@@ -7676,12 +7679,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.switchToPatient = function(patientUser){
         if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
-        var physicianUser = $rootScope.user;
+        $rootScope.physicianUser = $rootScope.user;
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
-        $rootScope.physicianUser = physicianUser;
-        qmStorage.setItem(qmItems.physicianUser, physicianUser);
+        qmStorage.setItem(qmItems.physicianUser, $rootScope.physicianUser);
         qmService.goToState(qmStates.historyAll);
     };
     qmService.switchBackToPhysician = function(){
