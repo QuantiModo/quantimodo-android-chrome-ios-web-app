@@ -1627,7 +1627,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return false;
     }
-    qmService.postMeasurementDeferred = function(measurementInfo){
+    qmService.postMeasurementDeferred = function(measurementInfo, successHandler){
         isStartTimeInMilliseconds(measurementInfo);
         measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
         if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
@@ -1639,7 +1639,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.addToMeasurementsQueue(measurementInfo);
         }
         qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
-        if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
+        if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){
+            qmService.syncPrimaryOutcomeVariableMeasurements();
+        } else {
+            qmService.postMeasurementQueueToServer(successHandler);
+        }
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var deferred = $q.defer();
