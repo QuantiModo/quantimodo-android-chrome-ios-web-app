@@ -141,7 +141,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
         qmLogService.debug(null, $state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
         // Measurement only - post measurement. This is for adding or editing
-        qmService.postMeasurementDeferred(measurementInfo).then(function(){
+        qmService.postMeasurementDeferred(measurementInfo, function(){
             if(unitChanged){
                 qmLog.error("Syncing reminders because unit changed");
                 qmStorage.removeItem(qmItems.trackingReminders);
