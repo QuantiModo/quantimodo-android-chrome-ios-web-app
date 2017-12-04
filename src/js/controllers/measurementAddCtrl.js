@@ -143,6 +143,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         // Measurement only - post measurement. This is for adding or editing
         qmService.postMeasurementDeferred(measurementInfo).then(function(){
             if(unitChanged){
+                qmLog.error("Syncing reminders because unit changed");
                 qmStorage.removeItem(qmItems.trackingReminders);
                 qmService.syncTrackingReminders();
             }
