@@ -7021,6 +7021,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     // data.additionalData
                     if (data.additionalData.url) {
                         qmLog.pushDebug("Opening data.additionalData.url: " + data.additionalData.url);
+                        document.location.href = '#/app/settings'; // Hack to deal with url not updating when only parameters change
                         document.location.href = data.additionalData.url;
                     }
                     if(!finishPushes) {
