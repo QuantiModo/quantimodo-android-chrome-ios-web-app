@@ -28,6 +28,9 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
+    if(window.location.href.indexOf('utopia.quantimo.do') > -1){
+        return "debug";
+    }
     if(qmLog.debugMode){return "debug";}
     if(qmLog.loglevel){return qmLog.loglevel;}
     if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
