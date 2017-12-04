@@ -7682,6 +7682,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
         $rootScope.physicianUser = physicianUser;
         qmStorage.setItem(qmItems.physicianUser, physicianUser);
+        qmService.goToState(qmStates.historyAll);
     };
     qmService.switchBackToPhysician = function(){
         if(!qmStorage.getItem(qmItems.physicianUser)){
