@@ -22,7 +22,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         editReminder : false,
         variableCategoryNames: qm.manualTrackingVariableCategoryNames
     };
+    var unitChanged = false;
     $scope.$on('$ionicView.beforeEnter', function(){
+        unitChanged = false;
         qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
         qmService.unHideNavigationMenu();
         $rootScope.bloodPressure = {diastolicValue: null, systolicValue: null, show: false};
@@ -139,11 +141,18 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
         qmLogService.debug(null, $state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
         // Measurement only - post measurement. This is for adding or editing
-        qmService.postMeasurementDeferred(measurementInfo);
+        qmService.postMeasurementDeferred(measurementInfo, function(){
+            if(unitChanged){
+                qmLog.error("Syncing reminders because unit changed");
+                qmStorage.removeItem(qmItems.trackingReminders);
+                qmService.syncTrackingReminders();
+                $scope.goBack();
+            }
+        });
         var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
         toastMessage = toastMessage.replace(' /', '/');
         qmService.showInfoToast(toastMessage);
-        $scope.goBack();
+        if(!unitChanged){$scope.goBack();}
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
         setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);
@@ -171,6 +180,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     $scope.unitSelected = function(){
         $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
         setupUnit($scope.state.measurement.unitAbbreviatedName);
+        unitChanged = true;
     };
     function showMoreUnits(){
         $scope.state.units = qm.unitHelper.getProgressivelyMoreUnits($scope.state.units);

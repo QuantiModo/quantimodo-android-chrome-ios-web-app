@@ -353,6 +353,7 @@ window.qmItems = {
     notificationInterval: 'notificationInterval',
     notificationsSyncQueue: 'notificationsSyncQueue',
     onboarded: 'onboarded',
+    physicianUser: 'physicianUser',
     refreshToken: 'refreshToken',
     trackingReminderNotifications: 'trackingReminderNotifications',
     trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
