@@ -7692,6 +7692,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
         qmStorage.setItem(qmItems.physicianUser, $rootScope.physicianUser);
         qmService.goToState(qmStates.historyAll);
+        qmService.showInfoToast("Now acting as " + patientUser.displayName + ". Click the icon at the top to switch back.");
     };
     qmService.switchBackToPhysician = function(){
         if(!qmStorage.getItem(qmItems.physicianUser)){
@@ -7706,6 +7707,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $rootScope.physicianUser = null;
         $rootScope.user = physicianUser;
         qmService.goToDefaultState();
+        qmService.showInfoToast("Switched back to your account");
     };
     function saveDeviceTokenToSyncWhenWeLogInAgain(){
         // Getting token so we can post as the new user if they log in again
