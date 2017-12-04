@@ -216,7 +216,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     var getProductsAndMakeInAppPurchase = function (baseProductId) {
         if(purchaseDebugMode){
             alert('Called makeInAppPurchase for ' + getProductId(baseProductId));
-            qmService.updateUserSettingsDeferred({ subscriptionProvider: getSubscriptionProvider(), productId: getProductId(baseProductId), trialEndsAt: moment().add(14, 'days').toISOString() });
+            qmService.updateUserSettingsDeferred({ subscriptionProvider: getSubscriptionProvider(),
+                productId: getProductId(baseProductId), trialEndsAt: moment().add(14, 'days').toISOString() });
         }
         qmService.showBlackRingLoader();
         //qmService.recordUpgradeProductPurchase(baseProductId, null, 1);

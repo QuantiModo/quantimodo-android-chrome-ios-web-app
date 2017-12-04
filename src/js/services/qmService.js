@@ -1332,6 +1332,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicHistory.clearCache();
     };
     qmService.updateUserSettingsDeferred = function(params){
+        if($rootScope.physicianUser){return false;} // Let's restrict settings updates to users
         var deferred = $q.defer();
         qmService.postUserSettings(params, function(response){
             if(!params.userEmail) {
@@ -7671,6 +7672,44 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
         };
         cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
+    };
+    qmService.switchToPatient = function(patientUser){
+        qmStorage.setItem(qmItems.physicianUser, $rootScope.user);
+        $rootScope.physicianUser = JSON.parse(JSON.stringify($rootScope.user));
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
+    };
+    function saveDeviceTokenToSyncWhenWeLogInAgain(){
+        // Getting token so we can post as the new user if they log in again
+        if(qmStorage.getItem(qmItems.deviceTokenOnServer)){
+            qmStorage.setItem(qmItems.deviceTokenToSync, qmStorage.getItem(qmItems.deviceTokenOnServer));
+            qmService.deleteDeviceTokenFromServer();
+        }
+    }
+    function logOutOfWebsite() {
+        var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+        //qmService.get(logoutUrl);
+        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
+        $http(request);
+        //window.location.replace(logoutUrl);
+    }
+    qmService.completelyResetAppStateAndLogout = function(){
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        logOutOfWebsite();
+        saveDeviceTokenToSyncWhenWeLogInAgain();
+        qmService.goToState('app.intro');
+    };
+    qmService.afterLogoutDoNotDeleteMeasurements = function(){
+        qmService.showBlackRingLoader();
+        $rootScope.user = null;
+        saveDeviceTokenToSyncWhenWeLogInAgain();
+        window.qmStorage.clearOAuthTokens();
+        logOutOfWebsite();
+        window.qmStorage.setItem(qmItems.introSeen, false);
+        window.qmStorage.setItem(qmItems.onboarded, false);
+        qmService.goToState('app.intro');
     };
     return qmService;
 }]);
