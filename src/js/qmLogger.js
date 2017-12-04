@@ -28,8 +28,8 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
-    if(window.location.href.indexOf('local.quantimo.do') > -1){
-        //return "debug";
+    if(window.location.href.indexOf('utopia.quantimo.do') > -1){
+        return "debug";
     }
     if(qmLog.debugMode){return "debug";}
     if(qmLog.loglevel){return qmLog.loglevel;}
