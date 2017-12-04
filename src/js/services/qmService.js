@@ -5641,6 +5641,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+        if(!emailBody){emailBody = "I love you!";}
         if(!cordova || !cordova.plugins.email){
             qmLogService.error('Trying to send with cordova.plugins.email even though it is not installed. ' +
                 ' Using qmService.sendWithMailTo instead.');
@@ -5679,6 +5680,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, false);
     };
     qmService.sendWithMailTo = function(subjectLine, emailBody, emailAddress){
+        if(!emailBody){emailBody = "I love you!";}
         var emailUrl = 'mailto:';
         if(emailAddress){emailUrl = emailUrl + emailAddress;}
         emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
