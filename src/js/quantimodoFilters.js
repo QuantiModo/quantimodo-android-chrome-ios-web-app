@@ -40,6 +40,14 @@ angular.module('starter')
         return "";
     };
 })
+.filter('fromNowISO8601', function(){
+    return function(isoString){
+        if(isoString){
+            return moment(isoString).fromNow();
+        }
+        return "";
+    };
+})
 .filter('unique', function() {
     return function(collection, keyname) {
         var output = [], keys = [];
