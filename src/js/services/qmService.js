@@ -911,6 +911,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $state.go(to, params, options);
     };
     function getDefaultState() {
+        if(window.designMode){return qmStates.configuration;}
         return config.appSettings.appDesign.defaultState || qmStates.remindersInbox;
     }
     qmService.goToDefaultState = function(params, options){
@@ -7691,11 +7692,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.debug("No physician to switch back to");
             return;
         }
+        var physicianUser = JSON.parse(JSON.stringify(qmStorage.getItem(qmItems.physicianUser)));
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
-        qmService.setUserInLocalStorageBugsnagIntercomPush(qmStorage.getItem(qmItems.physicianUser));
+        qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qmStorage.setItem(qmItems.physicianUser, null);
         $rootScope.physicianUser = null;
+        $rootScope.user = physicianUser;
+        qmService.goToDefaultState();
     };
     function saveDeviceTokenToSyncWhenWeLogInAgain(){
         // Getting token so we can post as the new user if they log in again
