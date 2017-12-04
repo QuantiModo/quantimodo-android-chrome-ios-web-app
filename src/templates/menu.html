@@ -55,7 +55,7 @@
                 <md-tooltip md-direction="down">Switch back to your account</md-tooltip>
                 <a ng-if="user && user.avatar" class="button button-clear" >
                     <img class="menu-avatar" id="patientAvatar" ng-src="{{user.avatar}}"></a>
-                <h1 class="title" style="position: fixed; bottom: 0;">Acting as {{user.displayName}}</h1>
+                <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
                 <button id="switch-button" class="button button-icon ion-arrow-swap"></button>
             </div>
             <div id="menu-upgrade" style="cursor:pointer;"
