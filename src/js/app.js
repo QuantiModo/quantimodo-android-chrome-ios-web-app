@@ -91,7 +91,7 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
-    if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser')) {
+    if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser') || window.designMode) {
         qmStorage.setItem(qmItems.introSeen, true);
         qmStorage.setItem(qmItems.onboarded, true);
     }
