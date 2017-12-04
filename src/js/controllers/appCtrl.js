@@ -447,4 +447,5 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, ev);
     };
+    $scope.switchToPatient = qmService.switchToPatient;
 }]);

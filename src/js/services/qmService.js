@@ -883,7 +883,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qmService.qmStorage.setItem('onboarded', true);
                 qmService.qmStorage.setItem('introSeen', true);
-                qmLogService.info('Setting onboarded and introSeen to true', null);
+                qmLogService.info('Setting onboarded and introSeen to true');
                 if($state.current.name !== 'app.login'){
                     qmLogService.info(null, 'Setting afterLoginGoToState and afterLoginGoToUrl to null', null);
                     qmService.qmStorage.setItem('afterLoginGoToState', null);
@@ -911,6 +911,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $state.go(to, params, options);
     };
     function getDefaultState() {
+        if(window.designMode){return qmStates.configuration;}
         return config.appSettings.appDesign.defaultState || qmStates.remindersInbox;
     }
     qmService.goToDefaultState = function(params, options){
@@ -933,7 +934,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
             var accessTokenFromLocalStorage = qmStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
-                qmService.qmStorage.clearEverything();
+                qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
             var user = qmStorage.getAsObject(qmItems.user);
@@ -947,7 +948,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
-                qmService.qmStorage.clearEverything();
+                qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
             }
             if(!urlHelper.getParam('doNotRemember')){
@@ -1326,12 +1327,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $rootScope.user = null;
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
-        qmService.qmStorage.clearEverything();
+        qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
     };
     qmService.updateUserSettingsDeferred = function(params){
+        if($rootScope.physicianUser || qmStorage.getItem(qmItems.physicianUser)){return false;} // Let's restrict settings updates to users
         var deferred = $q.defer();
         qmService.postUserSettings(params, function(response){
             if(!params.userEmail) {
@@ -1625,7 +1627,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return false;
     }
-    qmService.postMeasurementDeferred = function(measurementInfo){
+    qmService.postMeasurementDeferred = function(measurementInfo, successHandler){
         isStartTimeInMilliseconds(measurementInfo);
         measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
         if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
@@ -1637,7 +1639,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.addToMeasurementsQueue(measurementInfo);
         }
         qm.userVariableHelper.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
-        if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){qmService.syncPrimaryOutcomeVariableMeasurements();} else {qmService.postMeasurementQueueToServer();}
+        if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){
+            qmService.syncPrimaryOutcomeVariableMeasurements();
+        } else {
+            qmService.postMeasurementQueueToServer(successHandler);
+        }
     };
     qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var deferred = $q.defer();
@@ -5109,10 +5115,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.sortByProperty = function(arrayToSort, propertyName){
         return window.sortByProperty(arrayToSort, propertyName);
     };
-    qmService.qmStorage.clearEverything = function(){
-        qmLogService.debug(null, 'Clearing local storage!', null);
+    qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables = function(){
+        qmLogService.info('Clearing local storage!');
+        var commonVariables = qmStorage.getItem(qmItems.commonVariables);
+        var units = qmStorage.getItem(qmItems.units);
         qmStorage.clear();
-        putCommonVariablesInLocalStorageUsingApi();
+        qmStorage.setItem(qmItems.commonVariables, commonVariables);
+        qmStorage.setItem(qmItems.units, units);
         qmService.getUnitsFromApi();
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
@@ -6533,7 +6542,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         qmLogService.debug(null, 'getUserFromLocalStorageOrRefreshIfNecessary', null);
         if(urlHelper.getParam('refreshUser')){
-            qmService.qmStorage.clearEverything();
+            qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.qmStorage.setItem('onboarded', true);
             qmService.qmStorage.setItem('introSeen', true);
             $rootScope.user = null;
@@ -6827,6 +6836,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.config){return;}
         var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
         qmService.configureAppSettings(appSettings);
+        qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
         if(!qmStorage.getItem(qmItems.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
@@ -7671,6 +7681,60 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
         };
         cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
+    };
+    qmService.switchToPatient = function(patientUser){
+        if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
+        $rootScope.physicianUser = $rootScope.user;
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
+        qmStorage.setItem(qmItems.physicianUser, $rootScope.physicianUser);
+        qmService.goToState(qmStates.historyAll);
+    };
+    qmService.switchBackToPhysician = function(){
+        if(!qmStorage.getItem(qmItems.physicianUser)){
+            qmLog.debug("No physician to switch back to");
+            return;
+        }
+        var physicianUser = JSON.parse(JSON.stringify(qmStorage.getItem(qmItems.physicianUser)));
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
+        qmStorage.setItem(qmItems.physicianUser, null);
+        $rootScope.physicianUser = null;
+        $rootScope.user = physicianUser;
+        qmService.goToDefaultState();
+    };
+    function saveDeviceTokenToSyncWhenWeLogInAgain(){
+        // Getting token so we can post as the new user if they log in again
+        if(qmStorage.getItem(qmItems.deviceTokenOnServer)){
+            qmStorage.setItem(qmItems.deviceTokenToSync, qmStorage.getItem(qmItems.deviceTokenOnServer));
+            qmService.deleteDeviceTokenFromServer();
+        }
+    }
+    function logOutOfWebsite() {
+        var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+        //qmService.get(logoutUrl);
+        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
+        $http(request);
+        //window.location.replace(logoutUrl);
+    }
+    qmService.completelyResetAppStateAndLogout = function(){
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        logOutOfWebsite();
+        saveDeviceTokenToSyncWhenWeLogInAgain();
+        qmService.goToState('app.intro');
+    };
+    qmService.afterLogoutDoNotDeleteMeasurements = function(){
+        qmService.showBlackRingLoader();
+        $rootScope.user = null;
+        saveDeviceTokenToSyncWhenWeLogInAgain();
+        window.qmStorage.clearOAuthTokens();
+        logOutOfWebsite();
+        window.qmStorage.setItem(qmItems.introSeen, false);
+        window.qmStorage.setItem(qmItems.onboarded, false);
+        qmService.goToState('app.intro');
     };
     return qmService;
 }]);
