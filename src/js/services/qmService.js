@@ -1332,7 +1332,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicHistory.clearCache();
     };
     qmService.updateUserSettingsDeferred = function(params){
-        if($rootScope.physicianUser){return false;} // Let's restrict settings updates to users
+        if($rootScope.physicianUser || qmStorage.getItem(qmItems.physicianUser)){return false;} // Let's restrict settings updates to users
         var deferred = $q.defer();
         qmService.postUserSettings(params, function(response){
             if(!params.userEmail) {
