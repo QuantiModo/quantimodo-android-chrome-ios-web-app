@@ -45,8 +45,8 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
     };
     var updateCharts = function(){
-        $scope.state.primaryOutcomeMeasurements = qmStorage.getAsObject('primaryOutcomeVariableMeasurements');
-        var measurementsQueue = qmStorage.getAsObject('measurementsQueue');
+        $scope.state.primaryOutcomeMeasurements = qmStorage.getItem('primaryOutcomeVariableMeasurements');
+        var measurementsQueue = qmStorage.getItem('measurementsQueue');
         if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
         if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
         if( $scope.state.primaryOutcomeMeasurements) {
