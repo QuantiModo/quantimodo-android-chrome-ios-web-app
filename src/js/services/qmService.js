@@ -6828,6 +6828,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.config){return;}
         var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
         qmService.configureAppSettings(appSettings);
+        qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
         if(!qmStorage.getItem(qmItems.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
@@ -7674,11 +7675,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
     };
     qmService.switchToPatient = function(patientUser){
-        qmStorage.setItem(qmItems.physicianUser, $rootScope.user);
-        $rootScope.physicianUser = JSON.parse(JSON.stringify($rootScope.user));
+        if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
+        var physicianUser = $rootScope.user;
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
+        $rootScope.physicianUser = physicianUser;
+        qmStorage.setItem(qmItems.physicianUser, physicianUser);
+    };
+    qmService.switchBackToPhysician = function(){
+        if(!qmStorage.getItem(qmItems.physicianUser)){
+            qmLog.debug("No physician to switch back to");
+            return;
+        }
+        qmService.showBlackRingLoader();
+        qmService.completelyResetAppState();
+        qmService.setUserInLocalStorageBugsnagIntercomPush(qmStorage.getItem(qmItems.physicianUser));
+        qmStorage.setItem(qmItems.physicianUser, null);
+        $rootScope.physicianUser = null;
     };
     function saveDeviceTokenToSyncWhenWeLogInAgain(){
         // Getting token so we can post as the new user if they log in again
