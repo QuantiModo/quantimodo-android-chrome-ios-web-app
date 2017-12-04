@@ -801,7 +801,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var timeZoneOffsetInMinutes = d.getTimezoneOffset();
         if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
             var params = {timeZoneOffset: timeZoneOffsetInMinutes};
-            qmService.updateUserSettingsDeferred(params);
+            qmLogService.errorOrInfoIfTesting("User timeZoneOffset " + $rootScope.user.timeZoneOffset +
+                " does not match browser timeZoneOffset: " + timeZoneOffsetInMinutes);
+            if(timeZoneOffsetInMinutes){  // We don't update if 0 because it causes an infinite loop because API doesn't accept it
+                qmService.updateUserSettingsDeferred(params);
+            }
         }
     };
     qmService.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
@@ -1504,7 +1508,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
             if(qmStorage.getItem(localStorageItemName) && window.timeHelper.getUnixTimestampInSeconds() - qmStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                qmLogService.errorOrInfoIfTesting(null, errorMessage);
+                qmLogService.errorOrInfoIfTesting(errorMessage);
                 return false;
             }
             qmService.qmStorage.setItem(localStorageItemName, window.timeHelper.getUnixTimestampInSeconds());
@@ -6348,7 +6352,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         window.location.href = getStudyUrl(causeVariableName, effectVariableName);
     };
     function getStudyUrl(causeVariableName, effectVariableName) {
-        return getBaseAppUrl() + "#/app/study?causeVariableName=" + causeVariableName + "&effectVariableName=" + effectVariableName;
+        return getBaseAppUrl() + "#/app/study?causeVariableName=" + encodeURIComponent(causeVariableName) +
+            "&effectVariableName=" + encodeURIComponent(effectVariableName);
     }
     function getBaseAppUrl(){
         return window.location.origin + window.location.pathname;
@@ -7014,6 +7019,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     // data.sound,
                     // data.image,
                     // data.additionalData
+                    if (data.additionalData.url) {
+                        qmLog.pushDebug("Opening data.additionalData.url: " + data.additionalData.url);
+                        document.location.href = '#/app/settings'; // Hack to deal with url not updating when only parameters change
+                        document.location.href = data.additionalData.url;
+                    }
                     if(!finishPushes) {
                         qmLog.pushDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, null);
                         return;
