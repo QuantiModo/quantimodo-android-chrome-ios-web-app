@@ -174,47 +174,18 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		};
 		ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 	};
-	function saveDeviceTokenToSyncWhenWeLogInAgain(){
-		// Getting token so we can post as the new user if they log in again
-		if(qmStorage.getItem(qmItems.deviceTokenOnServer)){
-			qmStorage.setItem(qmItems.deviceTokenToSync, qmStorage.getItem(qmItems.deviceTokenOnServer));
-			qmService.deleteDeviceTokenFromServer();
-		}
-	}
-	function logOutOfWebsite() {
-		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-        //qmService.get(logoutUrl);
-        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
-        $http(request);
-		//window.location.replace(logoutUrl);
-	}
+
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
-		var completelyResetAppStateAndLogout = function(){
-			qmService.showBlackRingLoader();
-			qmService.completelyResetAppState();
-			logOutOfWebsite();
-			saveDeviceTokenToSyncWhenWeLogInAgain();
-			qmService.goToState('app.intro');
-		};
-		var afterLogoutDoNotDeleteMeasurements = function(){
-            qmService.showBlackRingLoader();
-			$rootScope.user = null;
-			saveDeviceTokenToSyncWhenWeLogInAgain();
-			window.qmStorage.clearOAuthTokens();
-			logOutOfWebsite();
-            window.qmStorage.setItem(qmItems.introSeen, false);
-            window.qmStorage.setItem(qmItems.onboarded, false);
-			qmService.goToState('app.intro');
-		};
+
 		var showDataClearPopup = function(ev){
             var title = 'Clear local storage?';
             var textContent = 'Do you want do delete all data from local storage?';
-            function yesCallback(){completelyResetAppStateAndLogout();}
-            function noCallback(){afterLogoutDoNotDeleteMeasurements();}
+            function yesCallback(){qmService.completelyResetAppStateAndLogout();}
+            function noCallback(){qmService.afterLogoutDoNotDeleteMeasurements();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
-		qmLogService.debug(null, 'Logging out...', null);
+		qmLogService.debug('Logging out...');
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};
