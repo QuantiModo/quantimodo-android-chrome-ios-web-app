@@ -1462,7 +1462,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
         qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
-                qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeMeasurementsFromApi));
+                qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements', primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
             }
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
@@ -2146,7 +2146,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(newNotificationsSyncQueue){
                 trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
             }
-            qmService.qmStorage.setItem(qmItems.notificationsSyncQueue, JSON.stringify(trackingReminderNotificationsArray));
+            qmService.qmStorage.setItem(qmItems.notificationsSyncQueue, trackingReminderNotificationsArray);
             if(errorHandler){errorHandler();}
             deferred.reject(error);
         });

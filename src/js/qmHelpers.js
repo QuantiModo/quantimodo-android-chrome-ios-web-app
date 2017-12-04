@@ -1012,7 +1012,8 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
     }
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray).substring(0,20)+'...');
+    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
+        JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
@@ -1032,7 +1033,7 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
             if(!found){elementsToKeep.push(localStorageItemArray[i]);}
         }
     }
-    qmStorage.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+    qmStorage.setItem(localStorageItemName, elementsToKeep);
     return elementsToKeep;
 };
 window.qmStorage.setGlobal = function(key, value){qm.globals[key] = value;};

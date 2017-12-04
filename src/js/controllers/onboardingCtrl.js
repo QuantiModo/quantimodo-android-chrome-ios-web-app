@@ -15,7 +15,7 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
     });
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
-        if(!$rootScope.appSettings.designMode){qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
+        if(!$rootScope.appSettings.designMode){qmService.qmStorage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);}
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     };
     $scope.onboardingGoToImportPage = function () {
