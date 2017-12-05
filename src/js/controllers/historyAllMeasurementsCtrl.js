@@ -23,7 +23,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $rootScope.hideHistoryPageInstructionsCard = qmStorage.getAsString('hideHistoryPageInstructionsCard');
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLogService.debug(null, $state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
+        qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
         qmService.unHideNavigationMenu();
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';

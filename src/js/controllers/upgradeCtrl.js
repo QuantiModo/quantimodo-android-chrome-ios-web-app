@@ -18,7 +18,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             "the most rigorous security standards, using the same technology used by online banks."
         },
     ];
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         $rootScope.showFilterBarSearchIcon = false;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
         if($rootScope.isChromeExtension){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
@@ -69,7 +69,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             qmService.postCreditCardDeferred(body).then(function (response) {
                 qmLogService.error(null, 'Got successful upgrade response from API');
                 qmService.hideLoader();
-                qmLogService.debug(null, JSON.stringify(response), null);
+                qmLogService.debug(JSON.stringify(response), null);
                 $mdDialog.show(
                     $mdDialog.alert()
                         .parent(angular.element(document.querySelector('#popupContainer')))
@@ -123,7 +123,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         };
     }
     function MobileUpgradeDialogController($scope, $mdDialog) {
-        qmLogService.debug(null, '$scope.productId is ' + $scope.productId, null);
+        qmLogService.debug('$scope.productId is ' + $scope.productId, null);
         $scope.productId = 'monthly7';
         $scope.hide = function(){$mdDialog.hide();};
         $scope.cancel = function() {
@@ -195,7 +195,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                     inAppPurchase.getReceipt()
                         .then(function (receipt) {
                             qmLogService.error(null, 'inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
-                            qmLogService.debug(null, 'inAppPurchase.getReceipt ' + receipt, null);
+                            qmLogService.debug('inAppPurchase.getReceipt ' + receipt, null);
                         }).catch(function (error) { qmLogService.error(null, 'inAppPurchase.getReceipt error response: ' + JSON.stringify(error)); });
                 }
                 handleSubscribeResponse(baseProductId, data);
