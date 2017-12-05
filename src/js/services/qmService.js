@@ -937,7 +937,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.qmStorage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
-            var user = qmStorage.getAsObject(qmItems.user);
+            var user = qmStorage.getItem(qmItems.user);
             if(!user){
                 user = $rootScope.user;
                 qmLog.authDebug("No user from local storage");
@@ -1427,7 +1427,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getLocalPrimaryOutcomeMeasurements = function(){
-        var primaryOutcomeVariableMeasurements = qmStorage.getAsObject('primaryOutcomeVariableMeasurements');
+        var primaryOutcomeVariableMeasurements = qmStorage.getItem('primaryOutcomeVariableMeasurements');
         if(!primaryOutcomeVariableMeasurements) {primaryOutcomeVariableMeasurements = [];}
         var measurementsQueue = getPrimaryOutcomeMeasurementsFromQueue();
         if(measurementsQueue){primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);}
@@ -1439,7 +1439,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return qmService.addInfoAndImagesToMeasurements(primaryOutcomeVariableMeasurements);
     };
     function getPrimaryOutcomeMeasurementsFromQueue() {
-        var measurementsQueue = qmStorage.getAsObject('measurementsQueue');
+        var measurementsQueue = qmStorage.getItem('measurementsQueue');
         var primaryOutcomeMeasurements = [];
         if(measurementsQueue){
             for(var i = 0; i < measurementsQueue.length; i++){
@@ -1462,7 +1462,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
         qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
-                qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeMeasurementsFromApi));
+                qmService.qmStorage.setItem('primaryOutcomeVariableMeasurements', primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
             }
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
@@ -1487,7 +1487,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             defer.reject(errorMessage);
             return defer.promise;
         }
-        var parsedMeasurementsQueue = qmStorage.getAsObject(qmItems.measurementsQueue);
+        var parsedMeasurementsQueue = qmStorage.getItem(qmItems.measurementsQueue);
         if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
             if(successHandler){successHandler();}
             return;
@@ -1605,7 +1605,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     // post a single measurement
     function updateMeasurementInQueue(measurementInfo) {
         var found = false;
-        qmStorage.getAsObject('measurementsQueue', function (measurementsQueue) {
+        qmStorage.getItem('measurementsQueue', function (measurementsQueue) {
             var i = 0;
             while (!found && i < measurementsQueue.length) {
                 if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
@@ -1615,7 +1615,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     measurementsQueue[i].note = measurementInfo.note;
                 }
             }
-            qmService.qmStorage.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+            qmService.qmStorage.setItem('measurementsQueue', measurementsQueue);
         });
     }
     function isStartTimeInMilliseconds(measurementInfo){
@@ -1836,7 +1836,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        var connectors = qmStorage.getAsObject('connectors');
+        var connectors = qmStorage.getItem('connectors');
         if(connectors){
             connectors = hideUnavailableConnectors(connectors);
             deferred.resolve(connectors);
@@ -2142,11 +2142,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(successHandler){successHandler(response);}
             deferred.resolve(response);
         }, function(error){
-            var newNotificationsSyncQueue = qmStorage.getAsObject(qmItems.notificationsSyncQueue);
+            var newNotificationsSyncQueue = qmStorage.getItem(qmItems.notificationsSyncQueue);
             if(newNotificationsSyncQueue){
                 trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
             }
-            qmService.qmStorage.setItem(qmItems.notificationsSyncQueue, JSON.stringify(trackingReminderNotificationsArray));
+            qmService.qmStorage.setItem(qmItems.notificationsSyncQueue, trackingReminderNotificationsArray);
             if(errorHandler){errorHandler();}
             deferred.reject(error);
         });
@@ -2350,7 +2350,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.qmStorage.deleteTrackingReminder = function(reminderToDelete){
-        var allTrackingReminders = qmStorage.getAsObject('trackingReminders');
+        var allTrackingReminders = qmStorage.getItem('trackingReminders');
         var trackingRemindersToKeep = [];
         angular.forEach(allTrackingReminders, function(reminderFromLocalStorage, key) {
             if(!(reminderFromLocalStorage.variableName === reminderToDelete.variableName &&
@@ -2424,7 +2424,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
-        var trackingReminderSyncQueue = qmStorage.getAsObject('trackingReminderSyncQueue');
+        var trackingReminderSyncQueue = qmStorage.getItem('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' + JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
             var postTrackingRemindersToApiAndHandleResponse = function(){
@@ -2542,12 +2542,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.qmStorage.getTrackingReminders = function (variableCategoryName){
         var deferred = $q.defer();
         var filteredReminders = [];
-        var unfilteredReminders = qmStorage.getAsObject(qmItems.trackingReminders);
+        var unfilteredReminders = qmStorage.getItem(qmItems.trackingReminders);
         if(!unfilteredReminders){
             deferred.resolve([]);
             return deferred.promise;
         }
-        var syncQueue = qmStorage.getAsObject(qmItems.trackingReminderSyncQueue);
+        var syncQueue = qmStorage.getItem(qmItems.trackingReminderSyncQueue);
         if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
         unfilteredReminders = qmService.attachVariableCategoryIcons(unfilteredReminders);
         if(unfilteredReminders) {
@@ -2861,7 +2861,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getWeekdayChartConfigForPrimaryOutcome = function () {
         var deferred = $q.defer();
         deferred.resolve(qmService.processDataAndConfigureWeekdayChart(
-            qmStorage.getAsObject('primaryOutcomeVariableMeasurements'),
+            qmStorage.getItem('primaryOutcomeVariableMeasurements'),
             qm.getPrimaryOutcomeVariable()));
         return deferred.promise;
     };
@@ -3971,10 +3971,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.qmStorage.getVariables = function(requestParams){
         var variables;
-        if(!variables){ variables = qmStorage.getAsObject(qmItems.userVariables); }
+        if(!variables){ variables = qmStorage.getItem(qmItems.userVariables); }
         if(requestParams.includePublic){
             if(!variables){variables = [];}
-            var commonVariables = qmStorage.getAsObject('commonVariables');
+            var commonVariables = qmStorage.getItem('commonVariables');
             if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
@@ -4106,7 +4106,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve([]);
             return deferred.promise;
         }
-        userVariables = qmStorage.getAsObject(qmItems.userVariables);
+        userVariables = qmStorage.getItem(qmItems.userVariables);
         if(userVariables && userVariables.length){
             qmLogService.debug(null, 'We already have userVariables that didn\'t match filters so no need to refresh them', null);
             deferred.resolve([]);
@@ -4121,7 +4121,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.refreshUserVariables = function(){
         var deferred = $q.defer();
         qmService.getUserVariablesFromApi({limit: 200, sort: "-latestMeasurementTime"}, function(userVariables){
-            qmService.qmStorage.setItem(qmItems.userVariables, JSON.stringify(userVariables));
+            qmService.qmStorage.setItem(qmItems.userVariables, userVariables);
             deferred.resolve(userVariables);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -4144,7 +4144,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.error('commonVariables.json is not present!');
                 deferred.reject('commonVariables.json is not present!');
             } else {
-                qmService.qmStorage.setItem('commonVariables', JSON.stringify(commonVariables));
+                qmService.qmStorage.setItem('commonVariables', commonVariables);
                 deferred.resolve(commonVariables);
             }
         });
@@ -4153,7 +4153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function putCommonVariablesInLocalStorageUsingApi(){
         var deferred = $q.defer();
         qmService.getCommonVariablesFromApi({}, function(commonVariables){
-            qmService.qmStorage.setItem('commonVariables', JSON.stringify(commonVariables));
+            qmService.qmStorage.setItem('commonVariables', commonVariables);
             deferred.resolve(commonVariables);
         }, function(error){
             qmLogService.error(error);
@@ -4442,7 +4442,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             var notificationSettings = {every: mostFrequentIntervalInMinutes, at: at};
-            var previousSettings = qmStorage.getAsObject('previousSingleNotificationSettings');
+            var previousSettings = qmStorage.getItem('previousSingleNotificationSettings');
             if(previousSettings && notificationSettings === previousSettings){
                 qmLogService.info(null, 'scheduleSingleMostFrequentLocalNotification: Notification settings haven\'t changed so no need to scheduleGenericNotification', null, notificationSettings);
                 return;
@@ -5066,8 +5066,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.qmStorage.setItem = function(key, value){
         var deferred = $q.defer();
-        if(typeof value !== "string"){value = JSON.stringify(value);}
         if ($rootScope.isChromeApp) {
+            if(typeof value !== "string"){value = JSON.stringify(value);}
             // Code running in a Chrome extension (content script, background page, etc.)
             var obj = {};
             obj[key] = value;
@@ -5129,7 +5129,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error('No params provided to getCachedResponse');
             return false;
         }
-        var cachedResponse = qmStorage.getAsObject(requestName);
+        var cachedResponse = qmStorage.getItem(requestName);
         if(!cachedResponse || !cachedResponse.expirationTimeMilliseconds){return false;}
         var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
         if(!paramsMatch){return false;}
@@ -5141,7 +5141,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storeCachedResponse = function(requestName, params, response){
         var cachedResponse = {requestParams: params, response: response, expirationTimeMilliseconds: Date.now() + 86400 * 1000};
-        qmService.qmStorage.setItem(requestName, JSON.stringify(cachedResponse));
+        qmService.qmStorage.setItem(requestName, cachedResponse);
     };
     qmService.deleteCachedResponse = function(requestName){qmStorage.removeItem(requestName);};
     qmService.qmStorage.getElementsWithRequestParams = function(localStorageItemName, requestParams) {
@@ -5437,7 +5437,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
     qmService.setupOnboardingPages = function (onboardingPages) {
-        var onboardingPagesFromLocalStorage = qmStorage.getAsObject('onboardingPages');
+        var onboardingPagesFromLocalStorage = qmStorage.getItem('onboardingPages');
         var activeOnboardingPages = $rootScope.appSettings.appDesign.onboarding.active;
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
             if(!$rootScope.appSettings.designMode){activeOnboardingPages = onboardingPagesFromLocalStorage;}
@@ -5607,7 +5607,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ]
             }
         ];
-        var upgradePagesFromLocalStorage = qmStorage.getAsObject('upgradePages');
+        var upgradePagesFromLocalStorage = qmStorage.getItem('upgradePages');
         if(upgradePagesFromLocalStorage && upgradePagesFromLocalStorage.length &&
             upgradePagesFromLocalStorage !== "undefined"){
             upgradePages = upgradePagesFromLocalStorage;
@@ -5880,7 +5880,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                 variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                 variableObject.variableCategoryName.toLowerCase() + '?';
-            qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+            qmService.qmStorage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
