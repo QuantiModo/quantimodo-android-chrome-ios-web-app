@@ -2187,7 +2187,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.skipAllTrackingReminderNotificationsDeferred = function(params){
         var deferred = $q.defer();
-        if(!params.trackingReminderId){
+        if(!params || !params.trackingReminderId){
             qmStorage.removeItem(qmItems.trackingReminderNotifications);
         } else {
             qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'trackingReminderId', params.trackingReminderId);
