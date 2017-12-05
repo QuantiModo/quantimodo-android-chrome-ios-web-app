@@ -46,7 +46,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     });
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
-        qmLogService.debug(null, $scope.data.search, null);
+        qmLogService.debug($scope.data.search, null);
         if($scope.outcomeList) {
             $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
                 return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
@@ -115,26 +115,26 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLogService.debug(null, 'CANCELLED', null); },
+            cancel: function() { qmLogService.debug('CANCELLED', null); },
             buttonClicked: function(index) {
-                qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+                qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){
-                    qmLogService.debug(null, 'Sort by Statistical Significance', null);
+                    qmLogService.debug('Sort by Statistical Significance', null);
                     $scope.state.requestParams.sort = '-statisticalSignificance';
                     populateCorrelationList();
                 }
                 if(index === 1){
-                    qmLogService.debug(null, 'Sort by QM Score', null);
+                    qmLogService.debug('Sort by QM Score', null);
                     $scope.state.requestParams.sort = '-qmScore';
                     populateCorrelationList();
                 }
                 if(index === 2){
-                    qmLogService.debug(null, 'Ascending Predictive Correlation', null);
+                    qmLogService.debug('Ascending Predictive Correlation', null);
                     $scope.state.requestParams.sort = 'correlationCoefficient';
                     populateCorrelationList();
                 }
                 if(index === 3){
-                    qmLogService.debug(null, 'Descending Predictive Correlation', null);
+                    qmLogService.debug('Descending Predictive Correlation', null);
                     $scope.state.requestParams.sort = '-correlationCoefficient';
                     populateCorrelationList();
                 }
@@ -143,7 +143,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         });
     };
     $scope.openStore = function(name){
-        qmLogService.debug(null, 'open store for ', null, name); // make url
+        qmLogService.debug('open store for ', null, name); // make url
         name = name.split(' ').join('+'); // launch inAppBrowser
         var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
         $scope.openUrl(url);

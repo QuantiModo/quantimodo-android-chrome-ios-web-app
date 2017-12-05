@@ -87,7 +87,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             return;
         }
         if(!file){
-            qmLogService.debug(null, 'No file provided to uploadAppFile', null);
+            qmLogService.debug('No file provided to uploadAppFile', null);
             return;
         }
         $scope.f = file;
@@ -101,7 +101,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";
-                qmLogService.debug(null, 'File upload response: ', null, response);
+                qmLogService.debug('File upload response: ', null, response);
                 $timeout(function () {file.result = response.data;});
                 qmService.hideLoader();
             }, function (response) {
@@ -133,10 +133,10 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         button.text = "Import Scheduled";
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
-            qmLogService.debug(null, 'Response Object -> ' + JSON.stringify(response), null);
+            qmLogService.debug('Response Object -> ' + JSON.stringify(response), null);
             var body = { connectorCredentials: {token: response}, connector: connector };
             qmService.connectConnectorWithTokenDeferred(body).then(function(result){
-                qmLogService.debug(null, JSON.stringify(result), null);
+                qmLogService.debug(JSON.stringify(result), null);
                 $scope.refreshConnectors();
             }, function (error) {
                 connectorErrorHandler(error);
@@ -144,7 +144,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
         };
         var connectWithAuthCode = function(authorizationCode, connector){
-            qmLogService.debug(null, connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
+            qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
             qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
                 $scope.refreshConnectors();
             }, function() {
@@ -160,7 +160,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                     'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                 }, function (response) {
-                    qmLogService.debug(null, 'window.plugins.googleplus.login response:' + JSON.stringify(response), null);
+                    qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response), null);
                     connectWithAuthCode(response.serverAuthCode, connector);
                 }, function (errorMessage) {
                     qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -482,14 +482,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     var webConnect = function (connector) {
         /** @namespace connector.connectInstructions */
         var url = connector.connectInstructions.url;
-        qmLogService.debug(null, 'targetUrl is ', null, url);
+        qmLogService.debug('targetUrl is ', null, url);
         var ref = window.open(url,'', "width=600,height=800");
-        qmLogService.debug(null, 'Opened ' + url, null);
+        qmLogService.debug('Opened ' + url, null);
     };
     function connectWithParams(params, lowercaseConnectorName) {
         qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
             .then(function(result){
-                qmLogService.debug(null, JSON.stringify(result), null);
+                qmLogService.debug(JSON.stringify(result), null);
                 $scope.refreshConnectors();
             }, function (error) {
                 connectorErrorHandler(error);

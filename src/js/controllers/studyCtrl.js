@@ -75,7 +75,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
-        qmLogService.debug(null, 'Sorry, copy to clipboard is not supported', null);
+        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
@@ -174,7 +174,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             ],
             destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null); },
+            cancel: function() { qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null); },
             buttonClicked: function(index) {
                 if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
                 if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }

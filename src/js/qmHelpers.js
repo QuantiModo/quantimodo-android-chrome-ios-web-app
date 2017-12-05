@@ -335,6 +335,7 @@ window.qmItems = {
     deviceTokenToSync: 'deviceTokenToSync',
     drawOverAppsEnabled: 'drawOverAppsEnabled',
     expiresAtMilliseconds: 'expiresAtMilliseconds',
+    hideImportHelpCard: 'hideImportHelpCard',
     introSeen: 'introSeen',
     lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
     lastLatitude: 'lastLatitude',

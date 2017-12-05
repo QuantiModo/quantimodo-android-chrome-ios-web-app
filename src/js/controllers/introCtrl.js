@@ -34,7 +34,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
-            qmLogService.debug(null, 'introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + config.appSettings.appDesign.defaultState, null);
+            qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + config.appSettings.appDesign.defaultState, null);
             qmService.goToDefaultState();
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
@@ -47,7 +47,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qmService.hideLoader();
         $rootScope.hideNavigationMenu = true;
         if(navigator && navigator.splashscreen) {
-            qmLogService.debug(null, 'introCtrl.afterEnter: Hiding splash screen because app is ready', null);
+            qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
