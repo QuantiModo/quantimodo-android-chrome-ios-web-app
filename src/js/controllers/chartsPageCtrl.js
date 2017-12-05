@@ -46,7 +46,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             });
     }
     $scope.refreshCharts = function () {getCharts(true);};
-    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name);
+    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
         qmService.unHideNavigationMenu();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
@@ -60,7 +60,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         }
     });
     $scope.addNewReminderButtonClick = function() {
-        qmLogService.debug(null, 'addNewReminderButtonClick', null);
+        qmLogService.debug('addNewReminderButtonClick', null);
         qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, fromState: $state.current.name});
     };
     $scope.compareButtonClick = function() {

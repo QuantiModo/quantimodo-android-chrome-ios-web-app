@@ -7,7 +7,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         bodyText: "One moment please..."
     };
     if (!clipboard.supported) {
-        qmLogService.debug(null, 'Sorry, copy to clipboard is not supported', null);
+        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.$on('$ionicView.beforeEnter', function(){

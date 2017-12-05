@@ -15,7 +15,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
     $scope.$on('$ionicView.beforeEnter', function(e) {
         if(window.debugMode){qmLogService.debug(null, $scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name, null);}
         if(!$rootScope.user){
-            qmLogService.debug(null, 'Hiding nav menu because we do not have a user', null);
+            qmLogService.debug('Hiding nav menu because we do not have a user', null);
             $rootScope.hideNavigationMenu = true;
         }
         $scope.requestParams = {
