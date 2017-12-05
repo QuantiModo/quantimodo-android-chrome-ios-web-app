@@ -1,7 +1,7 @@
 angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmLogService.debug(null, 'OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
+        qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         qmService.setupOnboardingPages();
@@ -10,7 +10,7 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug(null, 'OnboardingCtrl afterEnter in state ' + $state.current.name, null);
+        qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name, null);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
     var removeImportPage = function () {
@@ -62,7 +62,7 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
     };
     $scope.hideOnboardingPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;});
-        qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        qmService.qmStorage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;
