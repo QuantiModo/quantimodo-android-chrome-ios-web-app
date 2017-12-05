@@ -920,13 +920,13 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
     if(!matchingElements){return null;}
     if(matchingElements.length){
         if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-            window.qmLog.error(null, greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
+            window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
         }
         if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-            window.qmLog.error(null, filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
+            window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
         }
         if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-            window.qmLog.error(null, lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
+            window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
         }
     }
     if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
@@ -1036,7 +1036,12 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     qmStorage.setItem(localStorageItemName, elementsToKeep);
     return elementsToKeep;
 };
-window.qmStorage.setGlobal = function(key, value){qm.globals[key] = value;};
+window.qmStorage.setGlobal = function(key, value){
+    if(key === "userVariables" && typeof value === "string"){
+        qmLog.error("userVariables should not be a string!");
+    }
+    qm.globals[key] = value;
+};
 window.qmStorage.setItem = function(key, value){
     if(typeof value === "undefined"){
         qmLog.error("value provided to qmStorage.setItem is undefined!");

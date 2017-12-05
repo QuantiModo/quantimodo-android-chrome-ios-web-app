@@ -5066,8 +5066,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.qmStorage.setItem = function(key, value){
         var deferred = $q.defer();
-        if(typeof value !== "string"){value = JSON.stringify(value);}
         if ($rootScope.isChromeApp) {
+            if(typeof value !== "string"){value = JSON.stringify(value);}
             // Code running in a Chrome extension (content script, background page, etc.)
             var obj = {};
             obj[key] = value;
