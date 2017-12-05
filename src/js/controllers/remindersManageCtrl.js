@@ -138,7 +138,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				{text: 'OK', type: 'button-assertive'}
 			]
 		});
-		moreNotificationInfoPopup.then(function(res) { qmLogService.debug(null, 'Tapped!', null, res); });
+		moreNotificationInfoPopup.then(function(res) { qmLogService.debug('Tapped!', null, res); });
 	};
 	$scope.edit = function(trackingReminder){
 		trackingReminder.fromState = $state.current.name;

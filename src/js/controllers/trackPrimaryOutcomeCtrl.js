@@ -7,14 +7,14 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.averagePrimaryOutcomeVariableValue = false;
     $scope.primaryOutcomeVariable = qm.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
-    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
-        qmLogService.debug(null, 'TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
+    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
+        qmLogService.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
         qmService.unHideNavigationMenu();
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
         qmService.showInfoToast(syncDisplayText);
-        qmLogService.debug(null, $state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements', null);
+        qmLogService.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements', null);
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
             updateCharts();
             qmService.hideLoader();
