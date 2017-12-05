@@ -368,7 +368,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	function skipAllForVariable(trackingReminderNotification) {
         trackingReminderNotification.hide = true;
-        qmLogService.debug(null, 'Skipping all notifications for trackingReminder', null, trackingReminderNotification);
+        qmLogService.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
         var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
         //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
         qmService.skipAllTrackingReminderNotificationsDeferred(params)

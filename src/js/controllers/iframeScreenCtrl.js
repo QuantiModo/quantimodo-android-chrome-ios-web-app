@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('IframeScreenCtrl', ["$stateParams", "$scope", "$ionicLoading", "$sce", "$state", "$rootScope", "qmService", "qmLogService", function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, qmService, qmLogService) {
-    qmLogService.debug(null, 'IframeScreenCtrl works!', null);
+    qmLogService.debug('IframeScreenCtrl works!', null);
     $rootScope.showFilterBarSearchIcon = false;
     var embedPlugin;
     var urlParameters = '';
@@ -41,7 +41,7 @@ angular.module('starter')
         iFrameUrl = qm.api.getBaseUrl() + '/api/v1/connect/mobile';
         $scope.title = 'Your Variable Relationships';
     }
-    qmLogService.debug(null, 'iframeScreen.init: Going to qmService.getAccessTokenFromAnySource', null);
+    qmLogService.debug('iframeScreen.init: Going to qmService.getAccessTokenFromAnySource', null);
     qmService.getAccessTokenFromAnySource().then(function(accessToken) {
 
         if(accessToken){
@@ -56,7 +56,7 @@ angular.module('starter')
         );
         qmService.hideLoader();
     }, function(){
-        qmLogService.debug(null, 'iframeScreen: No access token. Need to log in.', null);
+        qmLogService.debug('iframeScreen: No access token. Need to log in.', null);
         qmService.sendToLoginIfNecessaryAndComeBack();
         qmService.hideLoader();
     });

@@ -13,7 +13,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
-        qmLogService.debug(null, 'appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
+        qmLogService.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
         //$scope.showHelpInfoPopupIfNecessary(e);
         if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
             $scope.showCalendarButton = true;
@@ -156,7 +156,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(variableObject.shareUserMeasurements){qmService.showShareVariableConfirmation(variableObject, ev);} else {qmService.showUnshareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
-        qmLogService.debug(null, 'Set ' + flagName + ' to true', null);
+        qmLogService.debug('Set ' + flagName + ' to true', null);
         $rootScope[flagName] = true;
         qmService.qmStorage.setItem(flagName, true);
     };
@@ -221,7 +221,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     function deleteVote(correlationObject, $index) {
         correlationObject.userVote = null;
         qmService.deleteVoteDeferred(correlationObject, function(response){
-            qmLogService.debug(null, 'deleteVote response', null, response);
+            qmLogService.debug('deleteVote response', null, response);
         }, function(response){
             qmLogService.error("deleteVote response", response);
         });
@@ -233,7 +233,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {this.$apply(fn);}
     };
     $scope.onTextClick = function ($event) {
-        qmLogService.debug(null, 'Auto selecting text so the user doesn\'t have to press backspace...', null);
+        qmLogService.debug('Auto selecting text so the user doesn\'t have to press backspace...', null);
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
@@ -281,7 +281,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
             buttonClicked: function(index) {
-                qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+                qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
                 if(index === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
@@ -305,7 +305,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
         qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
             .then(function () {
-                qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
             }, function(error) {
                 qmLogService.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
             });
@@ -332,7 +332,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 backView.stateParams = stateParams;
                 backView.stateId = stateId;
             }
-            qmLogService.debug(null, 'Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
+            qmLogService.debug('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
             $ionicHistory.goBack();
         } else {
             qmService.goToDefaultState(stateParams);
@@ -427,7 +427,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
-        qmLogService.debug(null, 'Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
+        qmLogService.debug('Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         qmService.goToStudyPage(causeVariableName, effectVariableName);
     };

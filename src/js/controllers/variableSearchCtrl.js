@@ -113,7 +113,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         // If no results or no exact match, show "+ Add [variable]" button for query
         if ((variables.length < 1 || !found)) {
             $scope.showSearchLoader = false;
-            qmLogService.debug(null, $state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
+            qmLogService.debug($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
             $scope.state.showAddVariableButton = true;
             if ($scope.state.nextState === "app.reminderAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
@@ -151,7 +151,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
-                    qmLogService.debug(null, 'variable search results', null, variables);
+                    qmLogService.debug('variable search results', null, variables);
                     $scope.state.searching = false;
                     if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
                     showNoVariablesFoundCardIfNecessary(errorHandler);
