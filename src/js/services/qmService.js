@@ -1615,7 +1615,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     measurementsQueue[i].note = measurementInfo.note;
                 }
             }
-            qmService.qmStorage.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+            qmService.qmStorage.setItem('measurementsQueue', measurementsQueue);
         });
     }
     function isStartTimeInMilliseconds(measurementInfo){
@@ -4121,7 +4121,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.refreshUserVariables = function(){
         var deferred = $q.defer();
         qmService.getUserVariablesFromApi({limit: 200, sort: "-latestMeasurementTime"}, function(userVariables){
-            qmService.qmStorage.setItem(qmItems.userVariables, JSON.stringify(userVariables));
+            qmService.qmStorage.setItem(qmItems.userVariables, userVariables);
             deferred.resolve(userVariables);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -4144,7 +4144,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.error('commonVariables.json is not present!');
                 deferred.reject('commonVariables.json is not present!');
             } else {
-                qmService.qmStorage.setItem('commonVariables', JSON.stringify(commonVariables));
+                qmService.qmStorage.setItem('commonVariables', commonVariables);
                 deferred.resolve(commonVariables);
             }
         });
@@ -4153,7 +4153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function putCommonVariablesInLocalStorageUsingApi(){
         var deferred = $q.defer();
         qmService.getCommonVariablesFromApi({}, function(commonVariables){
-            qmService.qmStorage.setItem('commonVariables', JSON.stringify(commonVariables));
+            qmService.qmStorage.setItem('commonVariables', commonVariables);
             deferred.resolve(commonVariables);
         }, function(error){
             qmLogService.error(error);
@@ -5141,7 +5141,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storeCachedResponse = function(requestName, params, response){
         var cachedResponse = {requestParams: params, response: response, expirationTimeMilliseconds: Date.now() + 86400 * 1000};
-        qmService.qmStorage.setItem(requestName, JSON.stringify(cachedResponse));
+        qmService.qmStorage.setItem(requestName, cachedResponse);
     };
     qmService.deleteCachedResponse = function(requestName){qmStorage.removeItem(requestName);};
     qmService.qmStorage.getElementsWithRequestParams = function(localStorageItemName, requestParams) {
@@ -5880,7 +5880,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                 variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                 variableObject.variableCategoryName.toLowerCase() + '?';
-            qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+            qmService.qmStorage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
