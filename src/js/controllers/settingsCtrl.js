@@ -6,7 +6,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.state = {};
 	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
-	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         $scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;
         $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
@@ -235,12 +235,12 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         qmService.showBlackRingLoader();
         qmService.postDowngradeSubscriptionDeferred().then(function (user) {
             qmService.hideLoader();
-            qmLogService.debug(null, JSON.stringify(user), null);
+            qmLogService.debug(JSON.stringify(user), null);
             qmService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             qmService.hideLoader();
             qmService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
-            qmLogService.debug(null, JSON.stringify(error), null);
+            qmLogService.debug(JSON.stringify(error), null);
         });
     };
     var androidDowngrade = function () {
@@ -252,7 +252,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         confirmPopup.then(function(res) {
             if(res) {
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    qmLogService.debug(null, JSON.stringify(user), null);
+                    qmLogService.debug(JSON.stringify(user), null);
                 }, function (error) { qmLogService.error(error); });
                 window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
@@ -265,7 +265,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if(res) {
                 $rootScope.user.stripeActive = false;
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    qmLogService.debug(null, JSON.stringify(user), null);
+                    qmLogService.debug(JSON.stringify(user), null);
                 }, function (error) { qmLogService.error(error); });
                 window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }

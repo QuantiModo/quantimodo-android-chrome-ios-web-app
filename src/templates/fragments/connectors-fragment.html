@@ -10,8 +10,13 @@
                     <h2 class="col col-90" style="white-space: normal; line-height: normal;"> {{connector.displayName}}</h2>
                     <div id="notification-more" ng-click="showActionSheetForConnector(connector, $event)" class="col col-10"><i style="font-size: 20px;" class="icon positive ion-more"></i></div>
                 </div>
-                <p class="col col-90" style="white-space: normal; line-height: normal;" ng-if="connector.message"> {{ connector.message }} </p>
+                <p class="col col-90" style="white-space: normal; line-height: normal;" ng-bind-html="connector.message" ng-if="!connector.updateError"></p>
             </div>
+        </div>
+        <div ng-if="connector.updateError" class="item item-avatar">
+            <img src="img/rating/face_rating_button_256_sad.png">
+            <h2>IMPORT ISSUE</h2>
+            <p ng-bind-html="connector.updateError"></p>
         </div>
         <div class="button-bar" ng-if="connector.spreadsheetUpload">
             <button ng-repeat="button in connector.buttons" class="button button-clear button-balanced"
