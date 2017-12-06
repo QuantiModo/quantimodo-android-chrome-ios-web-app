@@ -7727,9 +7727,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         window.qmStorage.setItem(qmItems.onboarded, false);
         qmService.goToState('app.intro');
     };
-    qmService.addTimeZoneOffsetProperty = function(){
+    qmService.addTimeZoneOffsetProperty = function(obj){
         var a = new Date();
-        return {timeZoneOffset: a.getTimezoneOffset()};
+        obj.timeZoneOffset = a.getTimezoneOffset();
+        return obj;
     };
     return qmService;
 }]);
