@@ -662,6 +662,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+        trackingReminderNotificationsArray[0] = qmService.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
         var options = {};
         options.doNotSendToLogin = false;
         options.doNotShowOfflineError = true;
@@ -698,8 +699,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.info(null, 'postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
-        var d = new Date();
-        for(var i = 0; i < trackingRemindersArray.length; i++){trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();}
+        trackingRemindersArray[0] = qmService.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
     };
     qmService.postStudy = function(body, successHandler, errorHandler){
@@ -795,18 +795,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserTags(params, callback);
         //qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
-    };
-    qmService.updateUserTimeZoneIfNecessary = function () {
-        var d = new Date();
-        var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-        if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-            var params = {timeZoneOffset: timeZoneOffsetInMinutes};
-            qmLogService.errorOrInfoIfTesting("User timeZoneOffset " + $rootScope.user.timeZoneOffset +
-                " does not match browser timeZoneOffset: " + timeZoneOffsetInMinutes);
-            if(timeZoneOffsetInMinutes){  // We don't update if 0 because it causes an infinite loop because API doesn't accept it
-                qmService.updateUserSettingsDeferred(params);
-            }
-        }
     };
     qmService.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
         var platform;
@@ -1246,7 +1234,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.sendReminderNotificationEmails = null;
         }
         qmService.afterLoginGoToUrlOrState();
-        qmService.updateUserTimeZoneIfNecessary();
     };
     qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState = function () {
         if(!qmService.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
@@ -7739,6 +7726,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         window.qmStorage.setItem(qmItems.introSeen, false);
         window.qmStorage.setItem(qmItems.onboarded, false);
         qmService.goToState('app.intro');
+    };
+    qmService.addTimeZoneOffsetProperty = function(){
+        var a = new Date();
+        return {timeZoneOffset: a.getTimezoneOffset()};
     };
     return qmService;
 }]);

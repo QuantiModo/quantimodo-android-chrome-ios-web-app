@@ -118,8 +118,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				if (typeof (val) === 'undefined') {
 					qmLogService.debug(null, 'Time not selected', null);
 				} else {
-					var a = new Date();
-					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
@@ -131,7 +129,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'Please change the latest reminder time and try again or select a different earliest reminder time.', ev);
 					} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 						$rootScope.user.earliestReminderTime = newEarliestReminderTime;
-						params.earliestReminderTime = $rootScope.user.earliestReminderTime;
+                        var params = qmService.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
 					}
@@ -149,8 +147,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				if (typeof (val) === 'undefined') {
 					qmLogService.debug(null, 'Time not selected', null);
 				} else {
-					var a = new Date();
-					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
@@ -162,7 +158,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'change the earliest reminder time and try again or select a different latest reminder time.', ev);
 					} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 						$rootScope.user.latestReminderTime = newLatestReminderTime;
-						params.latestReminderTime = $rootScope.user.latestReminderTime;
+                        var params = qmService.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
 					}
