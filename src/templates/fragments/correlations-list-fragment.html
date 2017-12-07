@@ -51,8 +51,8 @@
 <div ng-show="searching" style="text-align: center"><br><br><br><br><br><ion-spinner icon="android"></ion-spinner><br></div>
 <ion-list>
     <div id="correlationList" class="list card correlationResultList" style="text-align: center" ng-repeat="correlationObject in state.correlationObjects">
-        <div id="correlationBody" class="item item-body" ng-click="goToStudyPage(correlationObject)">
-            <p ng-bind-html="trustAsHtml(correlationObject.studyHtml.studyHeaderHtml)"></p>
+        <div id="correlationBody" class="item item-body">
+            <div ng-bind-html="trustAsHtml(correlationObject.studyHtml.studyHeaderHtml)" ng-click="goToStudyPage(correlationObject)"></div>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
             <div ng-include="'templates/buttons/join-study-button.html'"></div>
         </div>
