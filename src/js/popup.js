@@ -52,7 +52,7 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     //showLoader();
     if(window.notificationsSyncQueue){
         qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
-        qmNotifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+        qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
     } else {
         closePopup();
     }
@@ -90,8 +90,8 @@ var onFaceButtonClicked = function() {
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
     window.notificationsSyncQueue.push(window.trackingReminderNotification);
-    //window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
-    window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
+    //window.qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName);
+    window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
         updateQuestion(window.trackingReminderNotification.variableName);
     } else {
@@ -174,7 +174,7 @@ function closePopup() {
 function updateQuestion(variableName) {
     if(!variableName || typeof variableName !== "string"){
         if(!window.trackingReminderNotification){
-            window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
+            window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
             if(!window.trackingReminderNotification){
                 closePopup();
                 return;
@@ -244,18 +244,18 @@ document.addEventListener('DOMContentLoaded', function() {
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
     } else {
-        window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
+        window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     }
     if (window.trackingReminderNotification){
         updateQuestion(window.trackingReminderNotification.variableName);
     } else {
         hidePopup();
-        qmNotifications.refreshNotifications(updateQuestion, closePopup);
+        qm.notifications.refreshNotifications(updateQuestion, closePopup);
     }
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
     setLastValueButtonListeners();
-    qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
+    qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.qmLog.setupBugsnag();
-    window.qmNotifications.refreshIfEmptyOrStale();
+    window.qm.notifications.refreshIfEmptyOrStale();
 });
