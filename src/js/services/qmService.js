@@ -1497,7 +1497,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
             if(qmStorage.getItem(localStorageItemName) && window.timeHelper.getUnixTimestampInSeconds() - qmStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                qmLogService.errorOrInfoIfTesting(errorMessage);
+                qmLog.errorOrInfoIfTesting(errorMessage);
                 return false;
             }
             qmService.qmStorage.setItem(localStorageItemName, window.timeHelper.getUnixTimestampInSeconds());
