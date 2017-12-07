@@ -54,6 +54,7 @@
             </div>
         </ion-list>
          <ion-infinite-scroll
+             ng-if="state.moreDataCanBeLoaded"
              on-infinite="getHistory()"
              distance="10%">
          </ion-infinite-scroll>
