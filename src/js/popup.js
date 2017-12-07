@@ -15,6 +15,14 @@ function setFaceButtonListeners() {
     //document.getElementById('buttonInbox').onclick = inboxButtonClicked;
     document.getElementById('question').onclick = inboxButtonClicked;
 }
+function setLastValueButtonListeners() {
+    qmLog.debug("Setting face button listeners");
+    document.getElementById('lastValueButton').onclick = onLastValueButtonClicked;
+    document.getElementById('secondToLastValueButton').onclick = onLastValueButtonClicked;
+    document.getElementById('thirdToLastValueButton').onclick = onLastValueButtonClicked;
+    document.getElementById('snoozeButton').onclick = onLastValueButtonClicked;
+    document.getElementById('skipButton').onclick = onLastValueButtonClicked;
+}
 function getVariableName() {
     var variableName = window.urlHelper.getParam('variableName');
     if(variableName){
@@ -60,18 +68,7 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
     if(window.trackingReminderNotification){
-        window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = ratingValue;
-        if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
-        window.notificationsSyncQueue.push(window.trackingReminderNotification);
-        //window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
-        window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
-        if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
-            updateQuestion(window.trackingReminderNotification.variableName);
-        } else {
-            hidePopupPostNotificationsDeleteLocalAndClosePopup();
-        }
-        return;
+        return addToSyncQueueAndCloseOrUpdateQuestion();
     } else {
         qmLog.error("No window.trackingReminderNotification to post or add to queue!");
     }
@@ -90,12 +87,43 @@ var onFaceButtonClicked = function() {
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
     closePopup();
 };
+function addToSyncQueueAndCloseOrUpdateQuestion() {
+    if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
+    window.notificationsSyncQueue.push(window.trackingReminderNotification);
+    //window.qmNotifications.deleteByVariableName(window.trackingReminderNotification.variableName);
+    window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
+    if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
+        updateQuestion(window.trackingReminderNotification.variableName);
+    } else {
+        hidePopupPostNotificationsDeleteLocalAndClosePopup();
+    }
+}
+var onLastValueButtonClicked = function() {
+    var buttonId = this.id;
+    console.log('onLastValueButtonClicked');
+    window.qmLog.info('onLastValueButtonClicked buttonId ' + buttonId);
+    if (buttonId === "lastValue") {
+        window.trackingReminderNotification.action = 'track';
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.lastValue;
+    } else if (buttonId === "secondToLastValue") {
+        window.trackingReminderNotification.action = 'track';
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.secondToLastValue;
+    } else if (buttonId === "thirdToLastValue") {
+        window.trackingReminderNotification.action = 'track';
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.thirdToLastValue;
+    } else if (buttonId === "snooze") {
+        window.trackingReminderNotification.action = 'snooze';
+    } else if (buttonId === "skip") {
+        window.trackingReminderNotification.action = 'skip';
+    }
+    addToSyncQueueAndCloseOrUpdateQuestion();
+};
 function hidePopup() {
     window.qmLog.info('hidePopup: resizing to ' + ratingPopupWidth + " x 0 ");
     window.resizeTo(ratingPopupWidth, 0);
 }
 function showLoader(){
-    var sectionRate = getRatingElement();
+    var sectionRate = getRatingSectionElement();
     var loader = document.getElementById("loader");
     loader.style.display = "block";
     sectionRate.style.display = "none";
@@ -106,7 +134,7 @@ function unHidePopup() {
     window.resizeTo(ratingPopupWidth, ratingPopupHeight);
 }
 // function hideLoader() {
-//     var sectionRate = getRatingElement();
+//     var sectionRate = getRatingSectionElement();
 //     var loader = document.getElementById("loader");
 //     loader.className = "invisible";
 //     loader.style.display = "none";
@@ -114,7 +142,7 @@ function unHidePopup() {
 //     sectionRate.className = "visible";
 // }
 function displaySendingTextAndPostMeasurements() {
-    var sectionRate = getRatingElement();
+    var sectionRate = getRatingSectionElement();
     var sectionSendingMood = document.getElementById("sectionSendingMood");
     sectionRate.className = "invisible";
     setTimeout(function() {
@@ -146,7 +174,7 @@ function closePopup() {
 function updateQuestion(variableName) {
     if(!variableName || typeof variableName !== "string"){
         if(!window.trackingReminderNotification){
-            window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
+            window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
             if(!window.trackingReminderNotification){
                 closePopup();
                 return;
@@ -154,8 +182,28 @@ function updateQuestion(variableName) {
         }
         variableName = window.trackingReminderNotification.variableName;
     }
-    var questionText = "How is your " + variableName.toLowerCase() + "?";
-    window.qmLog.info(null, 'Updating question to ' + questionText);
+    var questionText;
+    if(trackingReminderNotification.unitAbbreviatedName === '/5'){
+        questionText= "How is your " + variableName.toLowerCase() + "?";
+        getRatingSectionElement().style.display = "block";
+        getLastValueSectionElement().style.display = "none";
+    } else {
+        function setLastValueButtonProperties(textElement, buttonElement, value) {
+            if(value !== null){
+                textElement.innerHTML = value;
+                buttonElement.style.display = "inline-block";
+            } else {
+                buttonElement.style.display = "none";
+            }
+        }
+        setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), trackingReminderNotification.lastValue);
+        setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), trackingReminderNotification.secondToLastValue);
+        setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), trackingReminderNotification.thirdToLastValue);
+        getRatingSectionElement().style.display = "none";
+        getLastValueSectionElement().style.display = "block";
+        questionText = "Record " + variableName + " (" + trackingReminderNotification.unitAbbreviatedName + ")";
+    }
+    window.qmLog.info('Updating question to ' + questionText);
     getQuestionElement().innerHTML = questionText;
     document.title = questionText;
     if(qm.platform.isChromeExtension()){
@@ -169,7 +217,20 @@ function updateQuestion(variableName) {
 function getQuestionElement() {
     return document.getElementById("question");
 }
-function getRatingElement() {
+function getLastValueElement() {return document.getElementById("lastValue");}
+function getSecondToLastValueElement() {
+    return document.getElementById("secondToLastValue");
+}
+function getThirdToLastValueElement() {
+    return document.getElementById("thirdToLastValue");
+}
+function getLastValueButtonElement() {return document.getElementById("lastValueButton");}
+function getSecondToLastValueButtonElement() {return document.getElementById("secondToLastValueButton");}
+function getThirdToLastValueButtonElement() {return document.getElementById("thirdToLastValueButton");}
+function getLastValueSectionElement() {
+    return document.getElementById("lastValueSection");
+}
+function getRatingSectionElement() {
     return document.getElementById("sectionRate");
 }
 document.addEventListener('DOMContentLoaded', function() {
@@ -183,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
     } else {
-        window.trackingReminderNotification = qmNotifications.getMostRecentRatingNotificationNotInSyncQueue();
+        window.trackingReminderNotification = qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue();
     }
     if (window.trackingReminderNotification){
         updateQuestion(window.trackingReminderNotification.variableName);
@@ -193,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
+    setLastValueButtonListeners();
     qmLog.info(qmNotifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
     window.qmLog.setupBugsnag();
     window.qmNotifications.refreshIfEmptyOrStale();
