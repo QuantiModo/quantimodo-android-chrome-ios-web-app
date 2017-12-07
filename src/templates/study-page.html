@@ -7,12 +7,13 @@
                 <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
                 <div class="bottom-block"> <h1 style="text-align: center;">Analyzing data...</h1> </div>
             </div>
-            <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden;"><br>
-                <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)" style="text-align: center;"></div><br>
+            <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
+                <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)" style="text-align: center;"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'" style="text-align: center;"></div><br>
                 <div ng-hide="user && state.study.userId === user.id" class="row">
                     <div class="col">
-                        <button class="button button-outline button-block icon-left ion-ios-people button-positive" id="joinStudyButton" ng-click="joinStudy(state.study.statistics)">
+                        <button class="button button-outline button-block icon-left ion-ios-people button-positive"
+                                id="joinStudyButton" ng-click="joinStudy(state.study.statistics)">
                             Join this Study
                         </button>
                     </div>
@@ -54,7 +55,7 @@
                         <br>
                     </div>
                 </div>
-                <div id="studyBody" style="padding: 20px;" ng-bind-html="trustAsHtml(state.study.studyHtml.studyTextHtml)"></div>
+                <div id="studyBody" ng-bind-html="trustAsHtml(state.study.studyHtml.studyTextHtml)"></div>
             </div>
             <div ng-show="state.study.statistics">
                 <div ng-include="'templates/fragments/statistics-fragment.html'"></div>
