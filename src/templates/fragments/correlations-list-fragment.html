@@ -23,7 +23,8 @@
         {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
         <br>
         <div class="button-bar">
-            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)" style="text-overflow: clip;"><i class="ion-information-circled">  Improve Predictions</i></a>
+            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)"
+               style="text-overflow: clip;"><i class="ion-information-circled">  Improve Predictions</i></a>
         </div>
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
@@ -47,35 +48,11 @@
         Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
     </div>
 </div>
-<div ng-show="searching" style="text-align: center">
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <ion-spinner icon="android"></ion-spinner>
-    <br>
-</div>
+<div ng-show="searching" style="text-align: center"><br><br><br><br><br><ion-spinner icon="android"></ion-spinner><br></div>
 <ion-list>
-    <div id="correlationList" class="list card correlationResultList"
-         style="text-align: center"
-         ng-repeat="correlationObject in state.correlationObjects">
-        <div ng-if="outcomeList || predictorList" id="correlationHeader" class="item item-avatar" ng-click="goToStudyPage(correlationObject)">
-            <img ng-if="predictorList" ng-src="{{correlationObject.studyImages.causeVariableImageUrl}}">
-            <img ng-if="outcomeList" ng-src="{{correlationObject.studyImages.effectVariableImageUrl}}">
-            <p style="height: 40px; line-height: 40px; color: black; font-size: 18px; margin-left: -40px; padding-left: 15px;">
-                <span ng-if="outcomeList">{{correlationObject.effectVariableName}}</span>
-                <span ng-if="predictorList">{{correlationObject.causeVariableName}}</span>
-            </p>
-        </div>
-        <div ng-if="!outcomeList && !predictorList" id="predictorExplanationHeader" class="item"
-             ng-click="goToStudyPage(correlationObject)">
-            <span style="white-space: normal;">{{correlationObject.studyText.predictorExplanation}}</span>
-        </div>
-        <div id="correlationBody" class="item item-body">
-            <img ng-src="{{correlationObject.studyImages.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
-            <p ng-if="outcomeList || predictorList">{{correlationObject.studyText.predictorExplanation}}</p>
-            <p ng-bind-html="trustAsHtml(correlationObject.studyText.studyAbstract)"></p>
+    <div id="correlationList" class="list card correlationResultList" style="text-align: center" ng-repeat="correlationObject in state.correlationObjects">
+        <div id="correlationBody" class="item item-body" ng-click="goToStudyPage(correlationObject)">
+            <p ng-bind-html="trustAsHtml(correlationObject.studyHtml.studyHeaderHtml)"></p>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
             <div ng-include="'templates/buttons/join-study-button.html'"></div>
         </div>
