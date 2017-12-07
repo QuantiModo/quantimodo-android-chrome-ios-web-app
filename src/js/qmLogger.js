@@ -181,8 +181,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "deviceTokenToSync": qmStorage.getItem(qmItems.deviceTokenToSync),
         "last_push": window.qmPush.getTimeSinceLastPushString(),
         "push enabled": qmPush.enabled(),
-        "draw over apps enabled": window.qmNotifications.drawOverAppsEnabled(),
-        "last popup": qmNotifications.getTimeSinceLastPopupString()
+        "draw over apps enabled": window.qm.notifications.drawOverAppsEnabled(),
+        "last popup": qm.notifications.getTimeSinceLastPopupString()
     };
     if(qmLog.isDebugMode()){metaData.local_storage = window.qmStorage.getLocalStorageList();} // Too slow to do for every error
     if(qm.getAppSettings()){
