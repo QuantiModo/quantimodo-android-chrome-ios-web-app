@@ -1196,6 +1196,18 @@ qmNotifications.getAllUniqueRatingNotifications = function() {
     qmLog.info("Got " + unique.length + " UNIQUE rating notifications");
     return unique;
 };
+qmNotifications.getAllUniqueNotifications = function() {
+    qmLog.info("Called getAllUniqueRatingNotifications");
+    var notifications = qmStorage.getItem(qmItems.trackingReminderNotifications);
+    if(!notifications){
+        qmLog.info("No notifications in storage!");
+        return null;
+    }
+    qmLog.info("Got " + notifications.length + " total NON-UNIQUE notification from storage");
+    var unique = getUnique(notifications, 'variableName');
+    qmLog.info("Got " + unique.length + " UNIQUE notifications");
+    return unique;
+};
 qmNotifications.deleteById = function(id){qmStorage.deleteById(qmItems.trackingReminderNotifications, id);};
 qmNotifications.undo = function(){
     var notificationsSyncQueue = qmStorage.getItem(qmItems.notificationsSyncQueue);
@@ -1474,6 +1486,22 @@ qmNotifications.getMostRecentRatingNotificationNotInSyncQueue = function(){
         }
     }
     qmLog.info("No uniqueRatingNotifications not in sync queue");
+    return null;
+};
+qmNotifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
+    var uniqueNotifications = qmNotifications.getAllUniqueNotifications();
+    if(!uniqueNotifications){
+        qmLog.info("No uniqueRatingNotifications in storage");
+        return null;
+    }
+    for (var i = 0; i < uniqueNotifications.length; i++) {
+        var notification = uniqueNotifications[i];
+        if(!qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+            qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
+            return notification;
+        }
+    }
+    qmLog.info("No uniqueNotifications not in sync queue");
     return null;
 };
 qm.api.getBaseUrl = function () {
