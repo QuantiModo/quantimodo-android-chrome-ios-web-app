@@ -10,9 +10,10 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             requestParams: {},
             hideStudyButton: true,
             loading: true,
-            study: getScopedStudyIfMatchesVariableNames()
+            study: null
         };
         qmService.hideLoader(); // Hide before robot is called in afterEnter
+        setAllStateProperties(getScopedStudyIfMatchesVariableNames());
     });
     $scope.$on("$ionicView.enter", function() {
         qmLogService.debug('enter state ' + $state.current.name);
@@ -26,7 +27,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     $scope.$on("$ionicView.afterEnter", function() {
         robots();
     });
-    function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
+    function setAllStateProperties(studyOrCorrelation) {
+        if(!studyOrCorrelation){return;}
         if(!studyOrCorrelation.statistics && studyOrCorrelation.correlationCoefficient){
             studyOrCorrelation.statistics = JSON.parse(JSON.stringify(studyOrCorrelation));
         }
@@ -34,10 +36,17 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             delete studyOrCorrelation.statistics.studyText;
             delete studyOrCorrelation.statistics.charts;
             delete studyOrCorrelation.statistics.highcharts;
+            $scope.correlationObject = studyOrCorrelation.statistics;
+        } else {
+            $scope.correlationObject = studyOrCorrelation;
         }
         studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
-        qm.studyHelper.saveLastStudy(studyOrCorrelation);
         $scope.state.study = studyOrCorrelation;
+    }
+    function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
+        if(!studyOrCorrelation){return;}
+        setAllStateProperties(studyOrCorrelation);
+        qm.studyHelper.saveLastStudy(studyOrCorrelation);
     }
     function matchesVariableNames(study) {
         if(!study){return false;}

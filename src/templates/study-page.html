@@ -7,16 +7,9 @@
                 <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
                 <div class="bottom-block"> <h1 style="text-align: center;">Analyzing data...</h1> </div>
             </div>
-            <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden; text-align: center"><br>
-                <h2 id="predictorExplanation">{{state.study.studyText.studyTitle}}</h2><br>
-                <img style="max-height: 200px" ng-src="{{state.study.studyImages.gaugeImage}}"><br>
-<!--                        Doesn't look right yet
-                <img ng-src="{{state.study.causeVariableImageUrl}}">
-                <img ng-src="{{state.study.effectVariableImageUrl}}">-->
-                <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
-                <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
-                <h3 id="studyAbstractTitle">Study Abstract</h3>
-                <p id="studyAbstractBody" style="padding: 5px;">{{state.study.studyText.studyAbstract}}</p><br>
+            <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden;"><br>
+                <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)" style="text-align: center;"></div><br>
+                <div ng-include="'templates/fragments/correlation-buttons-fragment.html'" style="text-align: center;"></div><br>
                 <div ng-hide="user && state.study.userId === user.id" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left ion-ios-people button-positive" id="joinStudyButton" ng-click="joinStudy(state.study.statistics)">
@@ -53,7 +46,7 @@
                     </label>
                 </div>
                 <div ng-show="loadingCharts" style="text-align: center"> <br> <ion-spinner icon="android"></ion-spinner> <br> <br> <br> </div>
-                <div id="studyCharts">
+                <div id="studyCharts" style="text-align: center;">
                     <div ng-repeat="chart in state.study.charts" ng-if="chart.highchartConfig">
                         <h2>{{chart.chartTitle}}</h2>
                         <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
@@ -61,41 +54,7 @@
                         <br>
                     </div>
                 </div>
-                <div id="studyBody" style="padding-left: 20px; padding-right: 20px;">
-                    <h3 ng-if="causeWikiEntry || effectWikiEntry || state.study.studyText.studyBackground" id="studyBackground"> Study Background </h3>
-                   <p ng-bind-html="state.study.studyText.studyBackground" ng-if="state.study.studyText.studyBackground" style="text-align: justify"> <br> </p>
-                    <div>
-                        <div ng-if="causeWikiImage" style="width: 100%"> <img hspace="20" style="float:right; padding: 5px" ng-show="causeWikiImage" ng-src="{{causeWikiImage}}" > </div>
-                        <div ng-if="causeWikiEntry"> <p ng-bind-html="causeWikiEntry" style="text-align: left"></p> </div>
-                    </div>
-                    <div>
-                        <div ng-if="effectWikiImage" style="width: 100%"> <img hspace="20" style="float:right; padding: 5px" ng-show="effectWikiImage" ng-src="{{effectWikiImage}}" > </div>
-                        <div ng-if="effectWikiEntry"> <p ng-bind-html="effectWikiEntry" style="text-align: left"></p> </div>
-                    </div>
-                    <h3 ng-show="state.study.studyText.studyObjective" id="studyObjective">Study Objective</h3>
-                       <p style="text-align: justify;" >{{state.study.studyText.studyObjective}}</p>
-                    <h3 ng-show="state.study.studyText.studyDesign" id="studyDesign">Study Design</h3>
-                       <p style="text-align: justify;" >{{state.study.studyText.studyDesign}}</p>
-                    <h3 ng-show="state.study.studyText.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
-                       <p style="text-align: justify;" >{{state.study.studyText.dataAnalysis}}</p>
-                    <h3 ng-show="state.study.studyText.dataSourcesParagraphForCause" id="causeDataSources">{{state.requestParams.statistics}} Data Sources</h3>
-                       <p style="text-align: justify;"  ng-bind-html="state.study.studyText.dataSourcesParagraphForCause"></p>
-                    <div style="display:block; margin: 0 auto;" ng-show="state.dataSourceImageForCause">
-                        <a href="{{state.dataSourceUrlForCause}}">
-                            <img style="max-width: 100px;" title="dataSourceImageForCause"
-                                 ng-src="{{state.dataSourceImageForCause}}" alt="dataSourceImageForCause">
-                        </a>
-                    </div>
-                    <h3 ng-show="state.study.studyText.dataSourcesParagraphForEffect" id="effectDataSources">{{state.requestParams.effectVariableName}} Data Sources</h3>
-                    <p style="text-align: justify;"  ng-bind-html="state.study.studyText.dataSourcesParagraphForEffect"></p> <br>
-                    <div style="display:block; margin: 0 auto;" ng-show="state.dataSourceImageForEffect">
-                        <a href="{{state.dataSourceUrlForEffect}}">
-                            <img style="max-width: 100px;" title="dataSourceImageForEffect" ng-src="{{state.dataSourceImageForEffect}}" alt="dataSourceImageForEffect">
-                        </a>
-                    </div>
-                    <h3 ng-show="state.study.studyText.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                        <p style="text-align: justify;" ng-bind-html="state.study.studyText.studyLimitations"></p>
-                </div>
+                <div id="studyBody" style="padding: 20px;" ng-bind-html="trustAsHtml(state.study.studyHtml.studyTextHtml)"></div>
             </div>
             <div ng-show="state.study.statistics">
                 <div ng-include="'templates/fragments/statistics-fragment.html'"></div>

@@ -75,7 +75,7 @@
         <div id="correlationBody" class="item item-body">
             <img ng-src="{{correlationObject.studyImages.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
             <p ng-if="outcomeList || predictorList">{{correlationObject.studyText.predictorExplanation}}</p>
-            <p >{{correlationObject.studyText.studyAbstract}}</p>
+            <p ng-bind-html="trustAsHtml(correlationObject.studyText.studyAbstract)"></p>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
             <div ng-include="'templates/buttons/join-study-button.html'"></div>
         </div>
