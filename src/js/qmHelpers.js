@@ -897,7 +897,7 @@ window.qmStorage.getLocalStorageList = function(){
     }
     return localStorageItemsArray;
 };
-window.qmStorage.getAllLocalStorageData = function(summary){
+window.qmStorage.getAllLocalStorageDataWithSizes = function(summary){
     var localStorageItemsArray = [];
     for (var i = 0; i < localStorage.length; i++){
         var key = localStorage.key(i);
@@ -1064,8 +1064,9 @@ window.qmStorage.setItem = function(key, value){
                 if(localStorageItemsArray[i].kB > 2000){ qmStorage.removeItem(localStorageItemsArray[i].name); }
             }
         }
-        var metaData = { localStorageItems: qmStorage.getLocalStorageList() };
-        var name = 'Error saving ' + key + ' to local storage';
+        var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes(true) };
+        metaData['size_of_'+key] = Math.round(JSON.stringify(value).length*16/(8*1024));
+        var name = 'Error saving ' + key + ' to local storage: ' + error;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
         qmStorage.setItem(key, value);
