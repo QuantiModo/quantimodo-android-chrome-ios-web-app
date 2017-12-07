@@ -217,7 +217,7 @@ window.qm = {
             var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
             qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
             if(numberOfReminders > numberOfUserVariables){
-                qmLog.error("Refreshing user variables because we have more tracking reminders");
+                qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
                 qm.userVariableHelper.refreshUserVariables();
             }
         },
