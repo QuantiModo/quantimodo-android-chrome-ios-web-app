@@ -1,11 +1,11 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
 .controller('AppCtrl', ["$scope", "$timeout", "$ionicPopover", "$ionicLoading", "$state", "$ionicHistory", "$rootScope",
     "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService", "qmLogService",
-    "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast",
+    "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast", "$sce",
     "wikipediaFactory", "appSettingsResponse", function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService, qmLogService,
                                 $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
-                                $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
+                                $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
 
@@ -448,4 +448,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, ev);
     };
     $scope.switchToPatient = qmService.switchToPatient;
+    $scope.trustAsHtml = function(string) {
+        return $sce.trustAsHtml(string);
+    };
 }]);

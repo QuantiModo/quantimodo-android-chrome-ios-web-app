@@ -61,6 +61,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         actionButtons[4] = qmService.actionSheetButtons.measurementAddSearch;
         actionButtons[5] = qmService.actionSheetButtons.charts;
         actionButtons[6] = qmService.actionSheetButtons.refresh;
+        actionButtons[7] = qmService.actionSheetButtons.settings;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
 		$rootScope.showActionSheetMenu = function() {
@@ -77,6 +78,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                     if(index === 4){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 5){qmService.goToState('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 6){$scope.refreshReminders();}
+                    if(index === 7){qmService.goToState(qmStates.settings);}
 					return true;
 				}
 			});

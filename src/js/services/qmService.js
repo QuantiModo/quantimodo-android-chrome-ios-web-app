@@ -1,5 +1,5 @@
 /** @namespace window.qmLog */
-/** @namespace window.qmNotifications */
+/** @namespace window.qm.notifications */
 /** @namespace window.qmStorage */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
@@ -2168,7 +2168,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'skip';
-        qmNotifications.addToSyncQueue(trackingReminderNotification);
+        qm.notifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
         return deferred.promise;
     };
@@ -2209,7 +2209,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'track';
         if(trackAll){trackingReminderNotification.action = 'trackAll';}
-        qmNotifications.addToSyncQueue(trackingReminderNotification);
+        qm.notifications.addToSyncQueue(trackingReminderNotification);
         if(trackAll){scheduleNotificationSync(1);} else {scheduleNotificationSync();}
         return deferred.promise;
     };
@@ -2217,7 +2217,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         trackingReminderNotification.action = 'snooze';
-        qmNotifications.addToSyncQueue(trackingReminderNotification);
+        qm.notifications.addToSyncQueue(trackingReminderNotification);
         scheduleNotificationSync();
         return deferred.promise;
     };
@@ -4420,7 +4420,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
         if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
-            var mostFrequentIntervalInMinutes = qmNotifications.getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
+            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
             if(trackingRemindersFromApi){
                 for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                     if(trackingRemindersFromApi[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
@@ -6051,25 +6051,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return variableObject;
     };
     qmService.actionSheetButtons = {
-        historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
-        historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
-        variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
-        recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.measurementAdd, text: 'Record Measurement'},
-        reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
-        reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
         charts: { state: qmStates.charts,  icon: qmService.ionIcons.charts, text: 'Charts'},
         chartSearch: { state: qmStates.chartSearch,  icon: qmService.ionIcons.charts, text: 'Charts'},
-        settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
-        help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
-        refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
-        predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
-        outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
         compare: { icon: qmService.ionIcons.study, text: 'Compare Another Variable'},
-        studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
+        help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
+        historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
+        historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
+        historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
         lastValuesAction: { icon: qmService.ionIcons.recordMeasurement },
+        measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.measurementAdd, text: 'Record Measurement'},
+        measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+        measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+        outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
+        predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
+        recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+        refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
+        reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
+        reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
+        settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
+        studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
+        variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
     };
     for (var propertyName in qmService.actionSheetButtons) {
         if( qmService.actionSheetButtons.hasOwnProperty(propertyName) ) {
@@ -6938,8 +6939,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "Built " + timeHelper.getTimeSinceString(config.appSettings.builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + userHelper.getUser().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qmPush.getTimeSinceLastPushString() + '\r\n';
-            template = template + "drawOverAppsEnabled: " + qmNotifications.drawOverAppsEnabled() + '\r\n';
-            template = template + "last popup: " + qmNotifications.getTimeSinceLastPopupString() + '\r\n';
+            template = template + "drawOverAppsEnabled: " + qm.notifications.drawOverAppsEnabled() + '\r\n';
+            template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
             template = template + "User ID: " + $rootScope.user.id + '\r\n';
@@ -7059,55 +7060,55 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 window.trackYesAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
                     qmLog.pushDebug('trackYesAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackNoAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
                     qmLog.pushDebug('trackNoAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackZeroAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
                     qmLog.pushDebug('trackZeroAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackOneRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
                     qmLog.pushDebug('trackOneRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackTwoRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
                     qmLog.pushDebug('trackTwoRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThreeRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
                     qmLog.pushDebug('trackThreeRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFourRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
                     qmLog.pushDebug('trackFourRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackFiveRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
                     qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackDefaultValueAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                     qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.snoozeAction = function (data){
@@ -7119,19 +7120,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 window.trackLastValueAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
                     qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackSecondToLastValueAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
                     qmLog.pushDebug('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
                 window.trackThirdToLastValueAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
                     qmLog.pushDebug('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                    qmNotifications.postTrackingReminderNotifications(body);
+                    qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
             }
@@ -7279,7 +7280,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
             var noText = 'No';
             function yesCallback() {
-                qmNotifications.setLastPopupTime(null);
+                qm.notifications.setLastPopupTime(null);
                 qmService.qmStorage.setItem(qmItems.drawOverAppsEnabled, true);
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
@@ -7294,7 +7295,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function noCallback() {disablePopups();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
         }
-        if(qmNotifications.drawOverAppsEnabled()){
+        if(qm.notifications.drawOverAppsEnabled()){
             disablePopups();
         } else {
             showEnablePopupsConfirmation();
