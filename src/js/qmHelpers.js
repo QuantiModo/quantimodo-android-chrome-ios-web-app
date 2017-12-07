@@ -1064,7 +1064,7 @@ window.qmStorage.setItem = function(key, value){
                 if(localStorageItemsArray[i].kB > 2000){ qmStorage.removeItem(localStorageItemsArray[i].name); }
             }
         }
-        var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes() };
+        var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes(true) };
         var name = 'Error saving ' + key + ' to local storage: ' + error;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
