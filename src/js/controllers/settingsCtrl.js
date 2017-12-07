@@ -9,7 +9,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         $scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;
-        $scope.drawOverAppsEnabled = qmNotifications.drawOverAppsEnabled();
+        $scope.drawOverAppsEnabled = qm.notifications.drawOverAppsEnabled();
         $scope.backgroundLocationTracking = !!(qmStorage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();
 		if(urlHelper.getParam('userEmail')){
@@ -175,8 +175,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		$rootScope.accessTokenFromUrl = null;
 
 		var showDataClearPopup = function(ev){
-            var title = 'Clear local storage?';
-            var textContent = 'Do you want do delete all data from local storage?';
+            var title = 'Log Out';
+            var textContent = "Are you sure you want to log out? I'll miss you dearly!";
             function yesCallback(){qmService.completelyResetAppStateAndLogout();}
             function noCallback(){qmService.afterLogoutDoNotDeleteMeasurements();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
