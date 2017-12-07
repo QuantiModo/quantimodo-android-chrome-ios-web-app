@@ -10,15 +10,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    function getEffectVariableName() {
-        if(urlHelper.getParam('effectVariableName')){ return urlHelper.getParam('effectVariableName', window.location.href, true); }
-        if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
-        if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
-    }
-    function getCauseVariableName() {
-        if(urlHelper.getParam('causeVariableName')){ return urlHelper.getParam('causeVariableName', window.location.href, true); }
-        if($stateParams.causeVariableName){return $stateParams.causeVariableName;}
-    }
+
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
@@ -29,6 +21,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.$on('$ionicView.afterEnter', function(e) {
         qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
+        if(!variablesHaveChanged()){return;}
         if (getCauseVariableName()){
             $scope.state.requestParams.causeVariableName = getCauseVariableName();
             $scope.state.variableName = getCauseVariableName();
@@ -44,6 +37,27 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         if($stateParams.effectVariableName){$scope.state.title = "Predictors";} else {$scope.state.title = "Outcomes";}
         populateCorrelationList();
     });
+    function variablesHaveChanged() {
+        if(!$scope.state.correlationObjects || !$scope.state.correlationObjects.length){return true;}
+        if(getEffectVariableName() && $scope.state.requestParams.effectVariableName &&
+            getEffectVariableName() !== $scope.state.requestParams.effectVariableName){
+            return true;
+        }
+        if(getCauseVariableName() && $scope.state.requestParams.causeVariableName &&
+            getCauseVariableName() !== $scope.state.requestParams.causeVariableName){
+            return true;
+        }
+        return false;
+    }
+    function getEffectVariableName() {
+        if(urlHelper.getParam('effectVariableName')){ return urlHelper.getParam('effectVariableName', window.location.href, true); }
+        if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
+        if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
+    }
+    function getCauseVariableName() {
+        if(urlHelper.getParam('causeVariableName')){ return urlHelper.getParam('causeVariableName', window.location.href, true); }
+        if($stateParams.causeVariableName){return $stateParams.causeVariableName;}
+    }
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
         qmLogService.debug($scope.data.search, null);
@@ -82,8 +96,11 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             .then(function (data) {
                 if(data){$scope.state.correlationsExplanation = data.explanation;}
                 if(data.correlations.length) {
-                    if($scope.state.requestParams.offset){$scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
-                    } else {$scope.state.correlationObjects = data.correlations;}
+                    if($scope.state.requestParams.offset){
+                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
+                    } else {
+                        $scope.state.correlationObjects = data.correlations;
+                    }
                     showLoadMoreButtonIfNecessary();
                 } else {
                     $scope.state.noCorrelations = true;
