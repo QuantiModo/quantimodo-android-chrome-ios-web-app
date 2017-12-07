@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ratingPopupWidth = window.innerWidth;
     if(window.urlHelper.getParam("trackingReminderNotificationId")){
         window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
-            variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
+            variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
     } else {
         window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     }

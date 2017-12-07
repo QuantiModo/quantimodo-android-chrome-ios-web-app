@@ -23,6 +23,7 @@
     "bugsnag": "3.0.2",
     "d3": "^4.7.3",
     "d3-cloud": "^1.2.4",
+    "Font-Awesome": "4.7.0",
     "gsap": "1.19.1",
     "highcharts": "5.0.14",
     "highcharts-ng": "1.1.0",
