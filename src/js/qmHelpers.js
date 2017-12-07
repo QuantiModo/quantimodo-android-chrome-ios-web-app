@@ -1065,7 +1065,7 @@ window.qmStorage.setItem = function(key, value){
             }
         }
         var metaData = { localStorageItems: qmStorage.getLocalStorageList() };
-        var name = 'Error saving ' + key + ' to local storage';
+        var name = 'Error saving ' + key + ' to local storage: ' + error;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
         qmStorage.setItem(key, value);
