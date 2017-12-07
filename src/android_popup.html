@@ -30,15 +30,38 @@
 		from { -webkit-transform: rotate(0deg) scale(1.02) skew(0deg); opacity: 0; }
 		to { -webkit-transform: rotate(0deg) scale(1) skew(0deg); opacity: 1; }
 	}
-	</style>
+    .btn-circle.btn-xl {
+        width: 70px;
+        height: 70px;
+        padding: 10px 16px;
+        border-radius: 35px;
+        font-size: 24px;
+        line-height: 1.33;
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        padding: 6px 0px;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.42857;
+    }
+
+    </style>
 	<script src="cordova.js"></script>
 	<script src="custom-lib/bugsnag.js"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
 	<script src="js/qmLogger.js"></script>
 	<script src="js/qmHelpers.js"></script>
 	  <script src="js/qmChrome.js"></script>
 	<script src="js/popup.js"></script>
+      <link rel="stylesheet prefetch" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+      <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+
   </head>
   <body>
+
 	  <!--<img style="width: 24px; left:10px; position: absolute;" src="https://app.quantimo.do/ionic/Modo/www/img/intro/inbox.svg" id="buttonInbox">-->
 	  <p style="text-align: center; font-size: 20px;" id="question">How are you?</p>
 	  <section id="sectionRate">
@@ -48,6 +71,13 @@
 		  <img src="img/rating/face_rating_button_256_happy.png" id="buttonMoodHappy"><span>&nbsp;</span>
 		  <img src="img/rating/face_rating_button_256_ecstatic.png" id="buttonMoodEcstatic">
 	  </section>
+      <section id="lastValueSection">
+          <button id="lastValueButton" type="button" class="btn btn-primary btn-circle btn-xl"><span style="text-align: center; font-size: 20px;" id="lastValue">How are you?</span></button>
+          <button id="secondToLastValueButton" type="button" class="btn btn-success btn-circle btn-xl"><span style="text-align: center; font-size: 20px;" id="secondToLastValue">How are you?</span></button>
+          <button id="thirdToLastValueButton" type="button" class="btn btn-info btn-circle btn-xl"><span style="text-align: center; font-size: 20px;" id="thirdToLastValue">How are you?</span></button>
+          <button id="snoozeButton" type="button" class="btn btn-warning btn-circle btn-xl"><i class="fa fa-clock-o"></i></button>
+          <button id="skipButton" type="button" class="btn btn-danger btn-circle btn-xl"><i class="fa fa-times-circle"></i></button>
+      </section>
 	  <section id="loader">
 		  <!--<img src="img/loaders/rainbow-loader.gif" id="popTartCat">-->
           <img style="max-height: 100%" src="img/loaders/purple-upload-check-loader_cropped_56px.gif" id="purpleLoader">
