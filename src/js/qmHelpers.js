@@ -188,6 +188,10 @@ window.qm = {
     },
     globals: {},
     userVariableHelper: {
+        saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
+            userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);
+            qm.userVariableHelper.saveUserVariablesToLocalStorage([userVariable]);
+        },
         saveUserVariablesToLocalStorage: function(userVariables){
             userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
             var definitelyUserVariables = [];
@@ -256,7 +260,31 @@ window.qm = {
                 }
             }
             return destination;
+        },
+        getSizeInKb: function(object) {
+            var string;
+            if(typeof object === "string"){
+                string = object;
+            } else {
+                string = JSON.stringify(object);
+            }
+            return qm.objectHelper.getSizeOfStringInKb(string);
+        },
+        getSizeOfStringInKb: function(string) {
+            return Math.round(string.length / 1000);
+        },
+        unsetPropertiesWithSizeGreaterThanForObject: function(maximumKb, object) {
+            object = JSON.parse(JSON.stringify(object));  // Decouple
+            for (var property in object) {
+                if (object.hasOwnProperty(property)) {
+                    if(qm.objectHelper.getSizeInKb(object[property]) > maximumKb){
+                        delete object[property];
+                    }
+                }
+            }
+            return object;
         }
+
     },
     stringHelper: {
         removeSpecialCharacters: function (str) {
@@ -478,7 +506,7 @@ qmStorage.getUserVariableByName = function (variableName, updateLatestMeasuremen
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
     }
-    qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
+    qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
     return userVariable;
 };
 // returns bool | string
