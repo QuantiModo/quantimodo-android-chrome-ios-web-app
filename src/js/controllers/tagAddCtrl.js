@@ -32,7 +32,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                     return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
-        qm.userVariableHelper.saveUserVariablesToLocalStorage(variableObject);
+        qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variableObject);
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -74,7 +74,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
         qmService.showBlackRingLoader();
-        qm.userVariableHelper.saveUserVariablesToLocalStorage($rootScope.variableObject);
+        qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties($rootScope.variableObject);
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
