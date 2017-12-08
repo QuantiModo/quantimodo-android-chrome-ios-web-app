@@ -1066,7 +1066,7 @@ window.qmStorage.setItem = function(key, value){
         }
         var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes(true) };
         metaData['size_of_'+key] = Math.round(JSON.stringify(value).length*16/(8*1024));
-        var name = 'Error saving ' + key + ' to local storage: ' + error;
+        var name = 'Error saving ' + key + ' to local storage: ' + error.message;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
         qmStorage.setItem(key, value);
