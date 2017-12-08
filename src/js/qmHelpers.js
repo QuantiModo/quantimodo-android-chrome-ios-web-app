@@ -1042,6 +1042,10 @@ window.qmStorage.setGlobal = function(key, value){
     }
     qm.globals[key] = value;
 };
+function getSizeInKiloBytes(string) {
+    if(typeof value !== "string"){string = JSON.stringify(string);}
+    return Math.round(string.length*16/(8*1024));
+}
 window.qmStorage.setItem = function(key, value){
     if(typeof value === "undefined"){
         qmLog.error("value provided to qmStorage.setItem is undefined!");
@@ -1053,6 +1057,10 @@ window.qmStorage.setItem = function(key, value){
     }
     qmStorage.setGlobal(key, value);
     if(typeof value !== "string"){value = JSON.stringify(value);}
+    var sizeInKb = getSizeInKiloBytes(value);
+    if(sizeInKb > 2000){
+        return qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage")
+    }
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
     window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
@@ -1065,7 +1073,7 @@ window.qmStorage.setItem = function(key, value){
             }
         }
         var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes(true) };
-        metaData['size_of_'+key] = Math.round(JSON.stringify(value).length*16/(8*1024));
+        metaData['size_of_'+key+"_in_kb"] = sizeInKb;
         var name = 'Error saving ' + key + ' to local storage: ' + error.message;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
