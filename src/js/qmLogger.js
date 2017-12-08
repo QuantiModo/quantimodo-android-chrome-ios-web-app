@@ -124,6 +124,16 @@ window.qmLog.getEnv = function(){
 qmLog.envIsTesting = function(){
     return qmLog.getEnv() === 'testing';
 };
+qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
+    message = message || name;
+    name = name || message;
+    metaData = metaData || null;
+    if(qmLog.envIsTesting()){
+        qmLog.info(name, message, metaData, stackTrace);
+    } else {
+        qmLog.error(name, message, metaData, stackTrace);
+    }
+};
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
     function obfuscateSecrets(object){
