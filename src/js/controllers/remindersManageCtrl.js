@@ -161,7 +161,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
-		qmService.qmStorage.deleteById('trackingReminders', reminder.trackingReminderId);
+		qmService.storage.deleteById('trackingReminders', reminder.trackingReminderId);
 			//.then(function(){getTrackingReminders();});
 		qmService.deleteTrackingReminderDeferred(reminder).then(function(){qmLogService.debug(null, 'Reminder deleted', null);}, function(error){
 			qmLogService.error('Failed to Delete Reminder: ' + error);

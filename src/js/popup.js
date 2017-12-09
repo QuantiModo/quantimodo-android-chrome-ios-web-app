@@ -2,7 +2,7 @@
 var ratingPopupHeight, ratingPopupWidth;
 function clearNotifications() {
     if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
-    qmChrome.updateChromeBadge(0);
+    qm.chrome.updateChromeBadge(0);
     chrome.notifications.clear("moodReportNotification", function() {});
 }
 function setFaceButtonListeners() {
@@ -43,15 +43,15 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.qmLog.error('OverApps not defined');
-        qmChrome.fullInboxWindowParams.focused = true;
-        openOrFocusChromePopupWindow(qmChrome.fullInboxWindowParams);
+        qm.chrome.fullInboxWindowParams.focused = true;
+        openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     hidePopup();
     //showLoader();
     if(window.notificationsSyncQueue){
-        qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
+        qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
         qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
     } else {
         closePopup();

@@ -3,7 +3,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     $rootScope.hideNavigationMenu = true;
     $scope.reportedVariableValue = false;
     $rootScope.showFilterBarSearchIcon = false;
-    qmService.qmStorage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
+    qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
         function(primaryOutcomeRatingFrequencyDescription) {
             if (primaryOutcomeRatingFrequencyDescription) {$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
             if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}

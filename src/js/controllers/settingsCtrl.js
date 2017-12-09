@@ -10,7 +10,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.debugMode = qmLog.debugMode;
         $scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;
         $scope.drawOverAppsEnabled = qm.notifications.drawOverAppsEnabled();
-        $scope.backgroundLocationTracking = !!(qmStorage.getItem('bgGPS'));
+        $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();
 		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
@@ -32,7 +32,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
     $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
-	qmService.qmStorage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+	qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){
 			if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
@@ -40,7 +40,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
 			) {
 				$scope.primaryOutcomeRatingFrequencyDescription = 'day';
-				qmService.qmStorage.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
+				qmService.storage.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
 			}
 		}
 	});
@@ -74,7 +74,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
-				if(!qmStorage.getItem(qmItems.deviceTokenOnServer)){
+				if(!qm.storage.getItem(qm.items.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
 					qmService.syncTrackingReminders();
 				}
@@ -295,13 +295,13 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     $scope.backgroundLocationChange = function() {
         $scope.backgroundLocationTracking = !$scope.backgroundLocationTracking;
         if($scope.backgroundLocationTracking){
-            qmStorage.setItem('bgGPS', 1);
+            qm.storage.setItem('bgGPS', 1);
             qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
             qmService.backgroundGeolocationInit();
             qmService.showInfoToast('Background location tracking enabled');
             qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         } else  {
-            qmStorage.setItem('bgGPS', 0);
+            qm.storage.setItem('bgGPS', 0);
             qmService.showInfoToast('Background location tracking disabled');
             qmService.backgroundGeolocationStop();
         }
