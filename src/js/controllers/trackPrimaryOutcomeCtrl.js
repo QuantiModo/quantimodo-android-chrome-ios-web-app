@@ -26,7 +26,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
         $scope.timeRemaining = true;
         $scope.showRatingFaces = false;
-        qmChrome.updateChromeBadge(0);
+        qm.chrome.updateChromeBadge(0);
         var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
         qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         updateCharts();
@@ -45,8 +45,8 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
     };
     var updateCharts = function(){
-        $scope.state.primaryOutcomeMeasurements = qmStorage.getItem('primaryOutcomeVariableMeasurements');
-        var measurementsQueue = qmStorage.getItem('measurementsQueue');
+        $scope.state.primaryOutcomeMeasurements = qm.storage.getItem('primaryOutcomeVariableMeasurements');
+        var measurementsQueue = qm.storage.getItem('measurementsQueue');
         if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
         if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
         if( $scope.state.primaryOutcomeMeasurements) {

@@ -144,7 +144,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         qmService.postMeasurementDeferred(measurementInfo, function(){
             if(unitChanged){
                 qmLog.error("Syncing reminders because unit changed");
-                qmStorage.removeItem(qmItems.trackingReminders);
+                qm.storage.removeItem(qm.items.trackingReminders);
                 qmService.syncTrackingReminders();
                 $scope.goBack();
             }
@@ -230,7 +230,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     var setupFromVariableObject = function(variableObject){
         $stateParams.variableObject = variableObject;
         // Gets version from local storage in case we just updated unit in variable settings
-        var userVariables = qmService.qmStorage.getElementsWithRequestParams(qmItems.userVariables, {name: variableObject.name});
+        var userVariables = qmService.storage.getElementsWithRequestParams(qm.items.userVariables, {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $scope.state.variableObject = variableObject;
         $scope.state.title = "Record Measurement";

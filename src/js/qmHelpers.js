@@ -1,5 +1,5 @@
 /** @namespace window.qmLog */
-/** @namespace window.qmChrome */
+/** @namespace window.qm.chrome */
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
@@ -147,6 +147,48 @@ window.qm = {
         }
     },
     auth: {},
+    items: {
+        accessToken: 'accessToken',
+        apiUrl: 'apiUrl',
+        appSettingsRevisions: 'appSettingsRevisions',
+        chromeWindowId: 'chromeWindowId',
+        clientId: 'clientId',
+        commonVariables: 'commonVariables',
+        defaultHelpCards: 'defaultHelpCards',
+        deviceTokenOnServer: 'deviceTokenOnServer',
+        deviceTokenToSync: 'deviceTokenToSync',
+        drawOverAppsEnabled: 'drawOverAppsEnabled',
+        expiresAtMilliseconds: 'expiresAtMilliseconds',
+        hideImportHelpCard: 'hideImportHelpCard',
+        introSeen: 'introSeen',
+        lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
+        lastLatitude: 'lastLatitude',
+        lastLocationAddress: 'lastLocationAddress',
+        lastLocationName: 'lastLocationName',
+        lastLocationNameAndAddress: 'lastLocationNameAndAddress',
+        lastLocationPostUnixtime: 'lastLocationPostUnixtime',
+        lastLocationResultType: 'lastLocationResultType',
+        lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
+        lastLongitude: 'lastLongitude',
+        lastStudy: 'lastStudy',
+        lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
+        lastPushTimestamp: 'lastPushTimestamp',
+        measurementsQueue: 'measurementsQueue',
+        mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
+        notificationInterval: 'notificationInterval',
+        notificationsSyncQueue: 'notificationsSyncQueue',
+        onboarded: 'onboarded',
+        physicianUser: 'physicianUser',
+        refreshToken: 'refreshToken',
+        trackingReminderNotifications: 'trackingReminderNotifications',
+        trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
+        trackingReminders: 'trackingReminders',
+        trackingReminderSyncQueue: ' trackingReminderSyncQueue',
+        units: 'units',
+        user: 'user',
+        useSmallInbox: 'useSmallInbox',
+        userVariables: 'userVariables'
+    },
     unitHelper: {},
     trackingReminderNotifications : [],
     reminderHelper: {
@@ -156,10 +198,10 @@ window.qm = {
             return 0;
         },
         getTrackingRemindersFromLocalStorage: function(){
-            return qmStorage.getItem(qmItems.trackingReminders);
+            return qm.storage.getItem(qm.items.trackingReminders);
         },
         saveToLocalStorage: function(trackingReminders){
-            qmStorage.setItem(qmItems.trackingReminders, trackingReminders);
+            qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
             qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
         }
     },
@@ -187,6 +229,7 @@ window.qm = {
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
     },
     globals: {},
+    storage: {},
     userVariableHelper: {
         saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
             userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);
@@ -200,7 +243,7 @@ window.qm = {
                     definitelyUserVariables.push(userVariables[i]);
                 }
             }
-            qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, definitelyUserVariables);
+            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.userVariables, definitelyUserVariables);
         },
         getNumberOfUserVariablesInLocalStorage: function () {
             var userVariables = qm.userVariableHelper.getUserVariablesFromLocalStorage();
@@ -208,13 +251,13 @@ window.qm = {
             return 0;
         },
         getUserVariablesFromLocalStorage: function(){
-            return qmStorage.getItem(qmItems.userVariables);
+            return qm.storage.getItem(qm.items.userVariables);
         },
         getUserVariablesFromLocalStorageByName: function(variableName){
-            return qmStorage.getUserVariableByName(variableName);
+            return qm.storage.getUserVariableByName(variableName);
         },
         updateLatestMeasurementTime: function(variableName, lastValue){
-            qmStorage.getUserVariableByName(variableName, true, lastValue);
+            qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
         refreshIfLessThanNumberOfReminders: function(){
             var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
@@ -227,7 +270,7 @@ window.qm = {
         },
         refreshUserVariables: function(){
             function successHandler(data) {
-                qmStorage.setItem(qmItems.userVariables, data);
+                qm.storage.setItem(qm.items.userVariables, data);
             }
             qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
         },
@@ -300,7 +343,7 @@ window.qm = {
     },
     studyHelper: {
         getLastStudy: function(){
-            return qmStorage.getItem(qmItems.lastStudy);
+            return qm.storage.getItem(qm.items.lastStudy);
         },
         getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName) {
             var lastStudy = qm.studyHelper.getLastStudy();
@@ -309,107 +352,55 @@ window.qm = {
             }
         },
         saveLastStudy: function(study){
-            qmStorage.setItem(qmItems.lastStudy, study);
+            qm.storage.setItem(qm.items.lastStudy, study);
         },
         deleteLastStudy: function(){
-            qmStorage.removeItem(qmItems.lastStudy);
+            qm.storage.removeItem(qm.items.lastStudy);
         }
-    }
-};
-window.qmGlobals = {
-    setStudy: function(study){
-        qmStorage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
     },
-    getStudy: function(causeVariableName, effectVariableName){
-        qmStorage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
+    userHelper: {},
+    timeHelper: {
+        getUnixTimestampInSeconds: function(dateTimeString) {
+            if(!dateTimeString){dateTimeString = new Date().getTime();}
+            return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+        },
+        getTimeSinceString: function(unixTimestamp) {
+            if(!unixTimestamp){return "never";}
+            var secondsAgo = qm.timeHelper.secondsAgo(unixTimestamp);
+            if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
+            if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
+            if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
+            return secondsAgo + " seconds ago";
+        },
+        secondsAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));},
+        minutesAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/60));},
+        hoursAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/3600));},
+        daysAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));},
+        getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();}
     },
-    setItem: function(key, value){
-        qmStorage.setGlobal(key, value);
+    apiHelper: {},
+    push: {},
+    analytics: {
+        eventCategories: {
+            pushNotifications: "pushNotifications",
+            inbox: "inbox"
+        }
     },
-    getItem: function(key){
-        return qmStorage.getGlobal(key);
-    }
-};
-window.timeHelper = {
-    getUnixTimestampInSeconds: function(dateTimeString) {
-        if(!dateTimeString){dateTimeString = new Date().getTime();}
-        return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+    globalHelper: {
+        setStudy: function(study){
+            qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
+        },
+        getStudy: function(causeVariableName, effectVariableName){
+            qm.storage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
+        },
+        setItem: function(key, value){
+            qm.storage.setGlobal(key, value);
+        },
+        getItem: function(key){
+            return qm.storage.getGlobal(key);
+        }
     },
-    getTimeSinceString: function(unixTimestamp) {
-        if(!unixTimestamp){return "never";}
-        var secondsAgo = timeHelper.secondsAgo(unixTimestamp);
-        if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
-        if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
-        if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
-        return secondsAgo + " seconds ago";
-    },
-    secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));},
-    minutesAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/60));},
-    hoursAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/3600));},
-    daysAgo: function(unixTimestamp) {return Math.round((timeHelper.secondsAgo(unixTimestamp)/86400));},
-    getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();}
-};
-//if(!window.config){window.config = {};}
-window.userHelper = {};
-window.qmItems = {
-    accessToken: 'accessToken',
-    apiUrl: 'apiUrl',
-    appSettingsRevisions: 'appSettingsRevisions',
-    chromeWindowId: 'chromeWindowId',
-    clientId: 'clientId',
-    commonVariables: 'commonVariables',
-    defaultHelpCards: 'defaultHelpCards',
-    deviceTokenOnServer: 'deviceTokenOnServer',
-    deviceTokenToSync: 'deviceTokenToSync',
-    drawOverAppsEnabled: 'drawOverAppsEnabled',
-    expiresAtMilliseconds: 'expiresAtMilliseconds',
-    hideImportHelpCard: 'hideImportHelpCard',
-    introSeen: 'introSeen',
-    lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
-    lastLatitude: 'lastLatitude',
-    lastLocationAddress: 'lastLocationAddress',
-    lastLocationName: 'lastLocationName',
-    lastLocationNameAndAddress: 'lastLocationNameAndAddress',
-    lastLocationPostUnixtime: 'lastLocationPostUnixtime',
-    lastLocationResultType: 'lastLocationResultType',
-    lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
-    lastLongitude: 'lastLongitude',
-    lastStudy: 'lastStudy',
-    lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
-    lastPushTimestamp: 'lastPushTimestamp',
-    measurementsQueue: 'measurementsQueue',
-    mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
-    notificationInterval: 'notificationInterval',
-    notificationsSyncQueue: 'notificationsSyncQueue',
-    onboarded: 'onboarded',
-    physicianUser: 'physicianUser',
-    refreshToken: 'refreshToken',
-    trackingReminderNotifications: 'trackingReminderNotifications',
-    trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
-    trackingReminders: 'trackingReminders',
-    trackingReminderSyncQueue: ' trackingReminderSyncQueue',
-    units: 'units',
-    user: 'user',
-    useSmallInbox: 'useSmallInbox',
-    userVariables: 'userVariables'
-};
-window.qmStorage = {};
-window.apiHelper = {};
-window.qmPush = {};
-window.qmAnalytics = {
-    eventCategories: {
-        pushNotifications: "pushNotifications",
-        inbox: "inbox"
-    }
-};
-window.qmChrome = {
-    introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-    facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
-    loginWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-    fullInboxWindowParams: { url: "index.html#/app/reminders-inbox", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
-    compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
-    inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
-    signInNotificationParams: { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2},
+    user: null
 };
 // SubDomain : Filename
 var appConfigFileNames = {
@@ -425,9 +416,9 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
-if(!window.qmUser){
-    window.qmUser = localStorage.getItem(qmItems.user);
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
+if(!window.qm.user){
+    window.qm.user = localStorage.getItem(qm.items.user);
+    if(window.qm.user){window.qm.user = JSON.parse(window.qm.user);}
 }
 qm.getPrimaryOutcomeVariable = function(){
     if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){ return qm.getAppSettings().primaryOutcomeVariableDetails;}
@@ -494,14 +485,14 @@ qm.ratingImages = {
     ]
 };
 qm.notifications.getFromGlobalsOrLocalStorage = function(){
-    return qmStorage.getItem(qmItems.trackingReminderNotifications);
+    return qm.storage.getItem(qm.items.trackingReminderNotifications);
 };
-qmStorage.getUserVariableByName = function (variableName, updateLatestMeasurementTime, lastValue) {
-    var userVariables = qmStorage.getWithFilters(qmItems.userVariables, 'name', variableName);
+qm.storage.getUserVariableByName = function (variableName, updateLatestMeasurementTime, lastValue) {
+    var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
     if(!userVariables || !userVariables.length){return null;}
     var userVariable = userVariables[0];
-    userVariable.lastAccessedUnixtime = timeHelper.getUnixTimestampInSeconds();
-    if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();}
+    userVariable.lastAccessedUnixtime = qm.timeHelper.getUnixTimestampInSeconds();
+    if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();}
     if(lastValue){
         userVariable.lastValue = lastValue;
         userVariable.lastValueInUserUnit = lastValue;
@@ -550,9 +541,9 @@ window.urlHelper = {
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
 qm.getSourceName = function(){return config.appSettings.appDisplayName + " for " + qm.getPlatform();};
-qmPush.enabled = function () {
-    if(!userHelper.getUser()){return false;}
-    return userHelper.getUser().pushNotificationsEnabled;
+qm.push.enabled = function () {
+    if(!qm.userHelper.getUser()){return false;}
+    return qm.userHelper.getUser().pushNotificationsEnabled;
 };
 qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
@@ -569,7 +560,7 @@ function getClientIdFromQueryParameters() {
     if(!clientId){clientId = window.urlHelper.getParam('appName');}
     if(!clientId){clientId = window.urlHelper.getParam('lowerCaseAppName');}
     if(!clientId){clientId = window.urlHelper.getParam('quantimodoClientId');}
-    if(clientId){qmStorage.setItem('clientId', clientId);}
+    if(clientId){qm.storage.setItem('clientId', clientId);}
     return clientId;
 }
 function getQuantiModoClientId() {
@@ -582,7 +573,7 @@ function getQuantiModoClientId() {
         window.qmLog.debug(null, 'Using clientIdFromQueryParams: ' + clientId, null);
         return clientId;
     }
-    if(!clientId){clientId = qmStorage.getItem(qmItems.clientId);}
+    if(!clientId){clientId = qm.storage.getItem(qm.items.clientId);}
     if(clientId){
         window.qmLog.debug(null, 'Using clientId From localStorage: ' + clientId, null);
         return clientId;
@@ -621,8 +612,8 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = window.urlHelper.getParam(qmItems.apiUrl);
-        if(!apiUrl){apiUrl = qmStorage.getItem(qmItems.apiUrl);}
+        var apiUrl = window.urlHelper.getParam(qm.items.apiUrl);
+        if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
@@ -665,13 +656,13 @@ qm.auth.getAndSaveAccessTokenFromCurrentUrl = function(){
 qm.auth.saveAccessToken = function(accessToken){
     if(!urlHelper.getParam('doNotRemember')){
         qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
-        qmStorage.setItem(qmItems.accessToken, accessToken);
+        qm.storage.setItem(qm.items.accessToken, accessToken);
     }
 };
 qm.auth.getAccessTokenFromUrlUserOrStorage = function() {
     if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
-    if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
-    if(qmStorage.getItem(qmItems.accessToken)){return qmStorage.getItem(qmItems.accessToken);}
+    if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
+    if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
     qmLog.info("No access token or user!");
     return null;
 };
@@ -765,7 +756,7 @@ qm.notifications.postTrackingReminderNotifications = function(trackingReminderNo
 };
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  window.apiHelper.getRequestUrl(path), true);
+    xhr.open("POST",  window.qm.apiHelper.getRequestUrl(path), true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {  // If the request is completed
             console.log("POST " + path + " response:" + xhr.responseText);
@@ -784,20 +775,20 @@ function objectLength(obj) {
     }
     return result;
 }
-window.apiHelper.getRequestUrl = function(path) {
+window.qm.apiHelper.getRequestUrl = function(path) {
     var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
     console.log("Making API request to " + url);
     return url;
 };
-qmStorage.setTrackingReminderNotifications = function(notifications){
+qm.storage.setTrackingReminderNotifications = function(notifications){
     if(!notifications){
-        qmLog.error("No notifications provided to qmStorage.setTrackingReminderNotifications");
+        qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
         return;
     }
     qmLog.info("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
     qm.notifications.setLastNotificationsRefreshTime();
-    window.qmChrome.updateChromeBadge(notifications.length);
-    qmStorage.setItem(qmItems.trackingReminderNotifications, notifications);
+    window.qm.chrome.updateChromeBadge(notifications.length);
+    qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
 };
 qm.notifications.refreshNotifications = function(successHandler, errorHandler) {
     var type = "GET";
@@ -807,13 +798,13 @@ qm.notifications.refreshNotifications = function(successHandler, errorHandler) {
         return;
     }
     var xhr = new XMLHttpRequest();
-    xhr.open(type, window.apiHelper.getRequestUrl(route), false);
+    xhr.open(type, window.qm.apiHelper.getRequestUrl(route), false);
     xhr.onreadystatechange = function () {
         if (xhr.status === 401) {
             showSignInNotification();
         } else if (xhr.readyState === 4) {
             var responseObject = JSON.parse(xhr.responseText);
-            qmStorage.setTrackingReminderNotifications(responseObject.data);
+            qm.storage.setTrackingReminderNotifications(responseObject.data);
             if(successHandler){successHandler(responseObject.data);}
         }
     };
@@ -825,24 +816,24 @@ qm.notifications.refreshAndShowPopupIfNecessary = function(notificationParams) {
         var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
         if(ratingNotification){
             openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
-            qmChrome.updateChromeBadge(0);
+            qm.chrome.updateChromeBadge(0);
         } else if (numberOfWaitingNotifications > 0) {
-            qmChrome.createSmallNotificationAndOpenInboxInBackground();
+            qm.chrome.createSmallNotificationAndOpenInboxInBackground();
         }
     });
     return notificationParams;
 };
-window.userHelper = {
+window.qm.userHelper = {
     getUser: function(){
-        if(window.qmUser){return window.qmUser;}
-        window.qmUser = qmStorage.getItem('user');
-        return window.qmUser;
+        if(window.qm.user){return window.qm.user;}
+        window.qm.user = qm.storage.getItem('user');
+        return window.qm.user;
     },
     setUser: function(user){
-        window.qmUser = user;
-        qmStorage.setItem(qmItems.user, user);
+        window.qm.user = user;
+        qm.storage.setItem(qm.items.user, user);
         if(!user){return;}
-        window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
+        window.qmLog.debug(window.qm.user.displayName + ' is logged in.');
         if(urlHelper.getParam('doNotRemember')){return;}
         qmLog.setupUserVoice();
         if(!user.accessToken){
@@ -852,11 +843,11 @@ window.userHelper = {
         }
     },
     withinAllowedNotificationTimes: function(){
-        if(userHelper.getUser()){
+        if(qm.userHelper.getUser()){
             var now = new Date();
             var hours = now.getHours();
             var currentTime = hours + ':00:00';
-            if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
+            if(currentTime > qm.user.latestReminderTime || currentTime < qm.user.earliestReminderTime ){
                 window.qmLog.info('Not showing notification because outside allowed time range');
                 return false;
             }
@@ -867,9 +858,9 @@ window.userHelper = {
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
     if(!qm.platform.isChromeExtension()){return;}
 	window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
-    if(!userHelper.withinAllowedNotificationTimes()){return false;}
+    if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
     if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
-        qmChrome.createSmallNotificationAndOpenInboxInBackground();
+        qm.chrome.createSmallNotificationAndOpenInboxInBackground();
     } else {
         qm.notifications.refreshAndShowPopupIfNecessary();
     }
@@ -893,31 +884,31 @@ function deleteFromArrayByProperty(localStorageItemArray, propertyName, property
     }
     return elementsToKeep;
 }
-window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
-    var localStorageItemArray = qmStorage.getItem(localStorageItemName);
+window.qm.storage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
+    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
     } else {
-        qmStorage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
+        qm.storage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
     }
 };
-window.qmStorage.deleteByPropertyInArray = function (localStorageItemName, propertyName, objectsArray){
-    var localStorageItemArray = qmStorage.getItem(localStorageItemName);
+window.qm.storage.deleteByPropertyInArray = function (localStorageItemName, propertyName, objectsArray){
+    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
     if(!localStorageItemArray){
-        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
+        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
     } else {
         var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
         for (var i=0; i < arrayOfValuesForProperty.length; i++) {
             localStorageItemArray = deleteFromArrayByProperty(localStorageItemArray, propertyName, arrayOfValuesForProperty[i]);
         }
-        qmStorage.setItem(localStorageItemName, localStorageItemArray);
+        qm.storage.setItem(localStorageItemName, localStorageItemArray);
     }
 };
 function addQueryParameter(url, name, value){
     if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
     return url + "&" + name + "=" + value;
 }
-window.qmStorage.getLocalStorageList = function(){
+window.qm.storage.getLocalStorageList = function(){
     var localStorageItemsArray = [];
     for (var i = 0; i < localStorage.length; i++){
         var key = localStorage.key(i);
@@ -925,7 +916,7 @@ window.qmStorage.getLocalStorageList = function(){
     }
     return localStorageItemsArray;
 };
-window.qmStorage.getAllLocalStorageDataWithSizes = function(summary){
+window.qm.storage.getAllLocalStorageDataWithSizes = function(summary){
     var localStorageItemsArray = [];
     for (var i = 0; i < localStorage.length; i++){
         var key = localStorage.key(i);
@@ -939,12 +930,12 @@ window.qmStorage.getAllLocalStorageDataWithSizes = function(summary){
     }
     return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
 };
-window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyName, filterPropertyValue,
+window.qm.storage.getWithFilters = function(localStorageItemName, filterPropertyName, filterPropertyValue,
                                                                  lessThanPropertyName, lessThanPropertyValue,
                                                                  greaterThanPropertyName, greaterThanPropertyValue) {
     var unfilteredElementArray = [];
     var i;
-    var matchingElements = qmStorage.getItem(localStorageItemName);
+    var matchingElements = qm.storage.getItem(localStorageItemName);
     if(!matchingElements){return null;}
     if(matchingElements.length){
         if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
@@ -989,8 +980,8 @@ window.qmStorage.getWithFilters = function(localStorageItemName, filterPropertyN
     }
     return matchingElements;
 };
-window.qmStorage.getTrackingReminderNotifications = function(variableCategoryName, limit) {
-    var trackingReminderNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
+window.qm.storage.getTrackingReminderNotifications = function(variableCategoryName, limit) {
+    var trackingReminderNotifications = window.qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
     if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
     if(limit){
         try {
@@ -1004,33 +995,33 @@ window.qmStorage.getTrackingReminderNotifications = function(variableCategoryNam
     if(trackingReminderNotifications.length){
         if (qm.platform.isChromeExtension()) {
             //noinspection JSUnresolvedFunction
-            qmChrome.updateChromeBadge(trackingReminderNotifications.length);
+            qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
         }
     }
     return trackingReminderNotifications;
 };
-window.qmStorage.getAsString = function(key) {
-    var item = qmStorage.getItem(key);
+window.qm.storage.getAsString = function(key) {
+    var item = qm.storage.getItem(key);
     if(item === "null" || item === "undefined"){
-        qmStorage.removeItem(key);
+        qm.storage.removeItem(key);
         return null;
     }
     return item;
 };
-window.qmStorage.deleteById = function(localStorageItemName, elementId){
-    window.qmStorage.deleteByProperty(localStorageItemName, 'id', elementId);
+window.qm.storage.deleteById = function(localStorageItemName, elementId){
+    window.qm.storage.deleteByProperty(localStorageItemName, 'id', elementId);
 };
-window.qmStorage.removeItem = function(key){
+window.qm.storage.removeItem = function(key){
     qmLog.debug("Removing " + key + " from local storage");
     delete qm.globals[key];
     return localStorage.removeItem(key);
 };
-window.qmStorage.clear = function(){
+window.qm.storage.clear = function(){
     localStorage.clear();
     qm.globals = {};
 };
-window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemName, elementId){
-    var localStorageItemArray = qmStorage.getItem(localStorageItemName);
+window.qm.storage.getElementOfLocalStorageItemById = function(localStorageItemName, elementId){
+    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
     if(!localStorageItemArray){
         console.warn("Local storage item " + localStorageItemName + " not found");
     } else {
@@ -1039,15 +1030,15 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
         }
     }
 };
-window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
-    qmLog.debug('qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
+window.qm.storage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
+    qmLog.debug('qm.storage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
         JSON.stringify(replacementElementArray).substring(0,20)+'...');
     if(!(replacementElementArray instanceof Array)){
         replacementElementArray = [replacementElementArray];
     }
     // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
-    var localStorageItemArray = qmStorage.getItem(localStorageItemName);
+    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
     var found = false;
     if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
         for(var i = 0; i < localStorageItemArray.length; i++){
@@ -1061,10 +1052,10 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
             if(!found){elementsToKeep.push(localStorageItemArray[i]);}
         }
     }
-    qmStorage.setItem(localStorageItemName, elementsToKeep);
+    qm.storage.setItem(localStorageItemName, elementsToKeep);
     return elementsToKeep;
 };
-window.qmStorage.setGlobal = function(key, value){
+window.qm.storage.setGlobal = function(key, value){
     if(key === "userVariables" && typeof value === "string"){
         qmLog.error("userVariables should not be a string!");
     }
@@ -1074,19 +1065,22 @@ function getSizeInKiloBytes(string) {
     if(typeof value !== "string"){string = JSON.stringify(string);}
     return Math.round(string.length*16/(8*1024));
 }
-window.qmStorage.setItem = function(key, value){
+window.qm.storage.setItem = function(key, value){
     if(typeof value === "undefined"){
-        qmLog.error("value provided to qmStorage.setItem is undefined!");
+        qmLog.error("value provided to qm.storage.setItem is undefined!");
         return;
     }
-    if(value === qmStorage.getGlobal(key)){
+    if(value === qm.storage.getGlobal(key)){
         qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + JSON.stringify(value));
         return;
     }
-    qmStorage.setGlobal(key, value);
+    qm.storage.setGlobal(key, value);
     if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
+        if(key === qm.items.userVariables){
+            qmS
+        }
         return qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage")
     }
     var summaryValue = value;
@@ -1097,32 +1091,32 @@ window.qmStorage.setItem = function(key, value){
     } catch (error) {
         function deleteLargeLocalStorageItems(localStorageItemsArray){
             for (var i = 0; i < localStorageItemsArray.length; i++){
-                if(localStorageItemsArray[i].kB > 2000){ qmStorage.removeItem(localStorageItemsArray[i].name); }
+                if(localStorageItemsArray[i].kB > 2000){ qm.storage.removeItem(localStorageItemsArray[i].name); }
             }
         }
-        var metaData = { localStorageItems: qmStorage.getAllLocalStorageDataWithSizes(true) };
+        var metaData = { localStorageItems: qm.storage.getAllLocalStorageDataWithSizes(true) };
         metaData['size_of_'+key+"_in_kb"] = sizeInKb;
         var name = 'Error saving ' + key + ' to local storage: ' + error.message;
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
-        qmStorage.setItem(key, value);
+        qm.storage.setItem(key, value);
     }
 };
-window.qmStorage.getGlobal = function(key){
+window.qm.storage.getGlobal = function(key){
     if(typeof qm.globals[key] === "undefined"){return null;}
     if(qm.globals[key] === "false"){return false;}
     if(qm.globals[key] === "true"){return true;}
     if(qm.globals[key] === "null"){return null;}
     return qm.globals[key];
 };
-window.qmStorage.getItem = function(key){
+window.qm.storage.getItem = function(key){
     if(!key){
-        qmLog.error("No key provided to qmStorage.getItem");
+        qmLog.error("No key provided to qm.storage.getItem");
         return null;
     }
-    if(qmStorage.getGlobal(key)){
+    if(qm.storage.getGlobal(key)){
         qmLog.debug("Got " + key + " from globals");
-        return qmStorage.getGlobal(key);
+        return qm.storage.getGlobal(key);
     }
     var item = localStorage.getItem(key);
     if (item && typeof item === "string"){
@@ -1143,12 +1137,12 @@ var parseIfJsonString = function(stringOrObject) {
         return stringOrObject;
     }
 };
-window.qmStorage.clearOAuthTokens = function(){
+window.qm.storage.clearOAuthTokens = function(){
     qm.auth.saveAccessToken(null);
-    window.qmStorage.setItem('refreshToken', null);
-    window.qmStorage.setItem('expiresAtMilliseconds', null);
+    window.qm.storage.setItem('refreshToken', null);
+    window.qm.storage.setItem('expiresAtMilliseconds', null);
 };
-window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
+window.qm.storage.appendToArray = function(localStorageItemName, elementToAdd){
     function removeArrayElementsWithSameId(localStorageItem, elementToAdd) {
         if(elementToAdd.id){
             localStorageItem = localStorageItem.filter(function( obj ) {
@@ -1157,22 +1151,22 @@ window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
         }
         return localStorageItem;
     }
-    var array = window.qmStorage.getItem(localStorageItemName) || [];
+    var array = window.qm.storage.getItem(localStorageItemName) || [];
     array = removeArrayElementsWithSameId(array, elementToAdd);
     array.push(elementToAdd);
-    window.qmStorage.setItem(localStorageItemName, array);
+    window.qm.storage.setItem(localStorageItemName, array);
 };
 window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
     var accessToken;
     if(typeof accessResponse === "string"){accessToken = accessResponse;} else {accessToken = accessResponse.accessToken || accessResponse.access_token;}
     if (accessToken) {
-        window.qmStorage.setItem('accessToken', accessToken);
+        window.qm.storage.setItem('accessToken', accessToken);
     } else {
         qmLog.error('No access token provided to qm.auth.saveAccessTokenResponse');
         return;
     }
     var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-    if (refreshToken) {qmStorage.setItem(qmItems.refreshToken, refreshToken);}
+    if (refreshToken) {qm.storage.setItem(qm.items.refreshToken, refreshToken);}
     /** @namespace accessResponse.expiresAt */
     var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
     var expiresAtMilliseconds;
@@ -1193,23 +1187,23 @@ window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
         qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
     }
     if(expiresAtMilliseconds){
-        qmStorage.setItem(qmItems.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
+        qm.storage.setItem(qm.items.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
         return accessToken;
     } else {
         qmLog.error('No expiresAtMilliseconds!');
         Bugsnag.notify('No expiresAtMilliseconds!',
-            'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qmStorage.getAsString('user'),
+            'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
             {groupingHash: 'No expiresAtMilliseconds!'},
             "error");
     }
     var groupingHash = 'Access token expiresAt not provided in recognizable form!';
     qmLog.error(groupingHash);
     Bugsnag.notify(groupingHash,
-        'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qmStorage.getAsString('user'),
+        'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
         {groupingHash: groupingHash}, "error");
 };
 qm.notifications.deleteByVariableName = function(variableName){
-    qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', variableName);
+    qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
 };
 function getUnique(array, propertyName) {
     var flags = [], output = [], l = array.length, i;
@@ -1222,7 +1216,7 @@ function getUnique(array, propertyName) {
 }
 qm.notifications.getAllUniqueRatingNotifications = function() {
     qmLog.info("Called getAllUniqueRatingNotifications");
-    var ratingNotifications = qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
+    var ratingNotifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     if(!ratingNotifications){
         qmLog.info("No rating notifications in storage!");
         return null;
@@ -1234,7 +1228,7 @@ qm.notifications.getAllUniqueRatingNotifications = function() {
 };
 qm.notifications.getAllUniqueNotifications = function() {
     qmLog.info("Called getAllUniqueRatingNotifications");
-    var notifications = qmStorage.getItem(qmItems.trackingReminderNotifications);
+    var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
     if(!notifications){
         qmLog.info("No notifications in storage!");
         return null;
@@ -1244,26 +1238,26 @@ qm.notifications.getAllUniqueNotifications = function() {
     qmLog.info("Got " + unique.length + " UNIQUE notifications");
     return unique;
 };
-qm.notifications.deleteById = function(id){qmStorage.deleteById(qmItems.trackingReminderNotifications, id);};
+qm.notifications.deleteById = function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);};
 qm.notifications.undo = function(){
-    var notificationsSyncQueue = qmStorage.getItem(qmItems.notificationsSyncQueue);
+    var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
     if(!notificationsSyncQueue){ return false; }
     notificationsSyncQueue[0].hide = false;
-    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.trackingReminderNotifications, notificationsSyncQueue[0]);
-    qmStorage.deleteByProperty(qmItems.notificationsSyncQueue, 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+    qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderNotifications, notificationsSyncQueue[0]);
+    qm.storage.deleteByProperty(qm.items.notificationsSyncQueue, 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 };
 window.qm.notifications.getMostRecentRatingNotification = function (){
-    var ratingNotifications = window.qmStorage.getWithFilters(qmItems.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
+    var ratingNotifications = window.qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
     ratingNotifications = window.sortByProperty(ratingNotifications, 'trackingReminderNotificationTime');
     if(ratingNotifications.length) {
         var notification = ratingNotifications[ratingNotifications.length - 1];
-        if(notification.trackingReminderNotificationTimeEpoch < timeHelper.getUnixTimestampInSeconds() - 86400){
+        if(notification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
             window.qmLog.info('Got this notification but it\'s from yesterday: ' + JSON.stringify(notification).substring(0, 140) + '...');
             //return;
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
-        //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        //qmStorage.deleteByProperty(qmItems.trackingReminderNotifications, 'variableName', notification.variableName);
+        //window.qm.storage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
+        //qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', notification.variableName);
         return notification;
     } else {
         console.info('No rating notifications for popup');
@@ -1304,30 +1298,30 @@ window.qm.notifications.refreshIfEmptyOrStale = function(callback){
         window.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
     }
 };
-window.qmStorage.deleteTrackingReminderNotification = function(body){
+window.qm.storage.deleteTrackingReminderNotification = function(body){
     var trackingReminderNotificationId = body;
     if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){trackingReminderNotificationId = body.trackingReminderNotification.id;}
     if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){trackingReminderNotificationId = body.trackingReminderNotificationId;}
-    if(qmStorage.getTrackingReminderNotifications() && qmStorage.getTrackingReminderNotifications().length){
+    if(qm.storage.getTrackingReminderNotifications() && qm.storage.getTrackingReminderNotifications().length){
         window.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
-        window.qmStorage.deleteById(qmItems.trackingReminderNotifications, trackingReminderNotificationId);
+        window.qm.storage.deleteById(qm.items.trackingReminderNotifications, trackingReminderNotificationId);
     } else {
         window.qm.notifications.refreshIfEmpty();
     }
 };
 window.qm.notifications.drawOverAppsEnabled = function(){
-    return qmStorage.getItem(qmItems.drawOverAppsEnabled);
+    return qm.storage.getItem(qm.items.drawOverAppsEnabled);
 };
 window.qm.notifications.addToSyncQueue = function(trackingReminderNotification){
     qm.notifications.deleteById(trackingReminderNotification.id);
     qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
-    qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.notificationsSyncQueue, trackingReminderNotification);
+    qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
     if(!qm.notifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
     if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
         window.drawOverAppsRatingNotification(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue());
-    // } else if (window.qmStorage.getTrackingReminderNotifications().length) {
+    // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
     //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
     } else {
         window.qmLog.info('No notifications for popup! Refreshing if empty...');
@@ -1345,7 +1339,7 @@ window.drawOverAppsRatingNotification = function(trackingReminderNotification, f
     window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
 };
 window.drawOverAppsCompactInboxNotification = function() {
-    window.drawOverAppsPopup(qmChrome.compactInboxWindowParams.url);
+    window.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
 };
 window.drawOverAppsPopup = function(path, force){
     if(typeof window.overApps === "undefined"){
@@ -1372,18 +1366,18 @@ window.drawOverAppsPopup = function(path, force){
     });
 };
 qm.notifications.setLastPopupTime = function(time){
-    if(typeof time === "undefined"){time = timeHelper.getUnixTimestampInSeconds();}
-    qmStorage.setItem(qmItems.lastPopupNotificationUnixtimeSeconds, time);
+    if(typeof time === "undefined"){time = qm.timeHelper.getUnixTimestampInSeconds();}
+    qm.storage.setItem(qm.items.lastPopupNotificationUnixtimeSeconds, time);
     return true;
 };
 qm.notifications.getTimeSinceLastPopupString = function(){
-    return timeHelper.getTimeSinceString(qm.notifications.getLastPopupUnixtime());
+    return qm.timeHelper.getTimeSinceString(qm.notifications.getLastPopupUnixtime());
 };
 qm.notifications.getLastPopupUnixtime = function(){
-    return qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
+    return qm.storage.getItem(qm.items.lastPopupNotificationUnixtimeSeconds);
 };
 qm.notifications.getSecondsSinceLastPopup = function(){
-    return timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixtime();
+    return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixtime();
 };
 qm.notifications.getMostFrequentReminderIntervalInSeconds = function(){
     return qm.notifications.getMostFrequentReminderIntervalInMinutes() * 60;
@@ -1402,7 +1396,7 @@ qm.notifications.canWeShowPopupYet = function(path) {
     return false;
 };
 qm.notifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
-    if(!trackingReminders){trackingReminders = qmStorage.getItem(qmItems.trackingReminders);}
+    if(!trackingReminders){trackingReminders = qm.storage.getItem(qm.items.trackingReminders);}
     var shortestInterval = 86400;
     if(trackingReminders){
         for (var i = 0; i < trackingReminders.length; i++) {
@@ -1418,28 +1412,28 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.qm.notifications.setLastNotificationsRefreshTime = function(){
-    window.qmStorage.setLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
+    window.qm.storage.setLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
 };
 window.qm.notifications.getLastNotificationsRefreshTime = function(){
-    var lastTime = window.qmStorage.getLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
-    qmLog.info("Last notifications refresh " + timeHelper.getTimeSinceString(lastTime));
+    var lastTime = window.qm.storage.getLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
+    qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(lastTime));
     return lastTime;
 };
 window.qm.notifications.getSecondsSinceLastNotificationsRefresh = function(){
-    qmLog.info("Last notifications refresh " + timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
-    return timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
+    qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
+    return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
 };
-window.qmStorage.setLastRequestTime = function(type, route){
-    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
+window.qm.storage.setLastRequestTime = function(type, route){
+    window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
 };
-window.qmStorage.getLastRequestTime = function(type, route){
-    return window.qmStorage.getItem(getLocalStorageNameForRequest(type, route));
+window.qm.storage.getLastRequestTime = function(type, route){
+    return window.qm.storage.getItem(getLocalStorageNameForRequest(type, route));
 };
 window.canWeMakeRequestYet = function(type, route, options){
     function getSecondsSinceLastRequest(type, route){
         var secondsSinceLastRequest = 99999999;
-        if(window.qmStorage.getLastRequestTime(type, route)){
-            secondsSinceLastRequest = timeHelper.secondsAgo(window.qmStorage.getLastRequestTime(type, route));
+        if(window.qm.storage.getLastRequestTime(type, route)){
+            secondsSinceLastRequest = qm.timeHelper.secondsAgo(window.qm.storage.getLastRequestTime(type, route));
         }
         return secondsSinceLastRequest;
     }
@@ -1462,7 +1456,7 @@ window.canWeMakeRequestYet = function(type, route, options){
             window.qmLog.error(name, message, options);
         }
     }
-    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
+    window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
     return true;
 };
 window.getUnixTimestampInMilliseconds = function(dateTimeString) {
@@ -1471,15 +1465,15 @@ window.getUnixTimestampInMilliseconds = function(dateTimeString) {
 };
 window.getUserFromApi = function(){
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.apiHelper.getRequestUrl("user/me"), true);
+    xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             var userFromApi = JSON.parse(xhr.responseText);
             if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-                userHelper.setUser(userFromApi);
+                qm.userHelper.setUser(userFromApi);
             } else {
                 if(qm.platform.isChromeExtension()){
-                    var url = window.apiHelper.getRequestUrl("v2/auth/login");
+                    var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
                     chrome.tabs.create({"url": url, "selected": true});
                 }
             }
@@ -1487,13 +1481,13 @@ window.getUserFromApi = function(){
     };
     xhr.send();
 };
-window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmItems.lastPushTimestamp);};
-window.qmPush.getHoursSinceLastPush = function(){
-    return Math.round((window.timeHelper.secondsAgo(qmPush.getLastPushTimeStampInSeconds()))/3600);
+window.isTestUser = function(){return window.qm.user && window.qm.user.displayName.indexOf('test') !== -1 && window.qm.user.id !== 230;};
+window.qm.push.getLastPushTimeStampInSeconds = function(){return qm.storage.getItem(qm.items.lastPushTimestamp);};
+window.qm.push.getHoursSinceLastPush = function(){
+    return Math.round((window.qm.timeHelper.secondsAgo(qm.push.getLastPushTimeStampInSeconds()))/3600);
 };
-window.qmPush.getTimeSinceLastPushString = function(){
-    return timeHelper.getTimeSinceString(qmPush.getLastPushTimeStampInSeconds());
+window.qm.push.getTimeSinceLastPushString = function(){
+    return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
 };
 qm.arrayHasItemWithSpecificPropertyValue = function(propertyName, propertyValue, array){
     if(!array){
@@ -1554,7 +1548,7 @@ qm.auth.getAccessTokenFromCurrentUrl = function(){
 };
 qm.unitHelper.getNonAdvancedUnits = function(){
     var nonAdvancedUnitObjects = [];
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     for (var i = 0; i < allUnits.length; i++) {
         if(!allUnits[i].advanced){
             nonAdvancedUnitObjects.push(allUnits[i]);
@@ -1566,7 +1560,7 @@ qm.unitHelper.getNonAdvancedUnits = function(){
 };
 qm.unitHelper.inNonAdvancedUnitAbbreviatedNames = function(unitAbbreviatedName){
     var nonAdvancedUnitAbbreviatedNames = [];
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     for (var i = 0; i < allUnits.length; i++) {
         if(!allUnits[i].advanced){nonAdvancedUnitAbbreviatedNames.push(allUnits[i].abbreviatedName);}
     }
@@ -1574,7 +1568,7 @@ qm.unitHelper.inNonAdvancedUnitAbbreviatedNames = function(unitAbbreviatedName){
 };
 qm.unitHelper.getManualTrackingUnits = function(){
     var manualTrackingUnitObjects = [];
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     for (var i = 0; i < allUnits.length; i++) {
         if(allUnits[i].manualTracking){manualTrackingUnitObjects.push(allUnits[i]);}
     }
@@ -1584,14 +1578,14 @@ qm.unitHelper.getManualTrackingUnits = function(){
 };
 qm.unitHelper.inManualTrackingUnitUnitAbbreviatedNames = function(unitAbbreviatedName){
     var manualTrackingUnitUnitAbbreviatedNames = [];
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     for (var i = 0; i < allUnits.length; i++) {
         if(allUnits[i].manualTracking){manualTrackingUnitUnitAbbreviatedNames.push(allUnits[i].abbreviatedName);}
     }
     return manualTrackingUnitUnitAbbreviatedNames.indexOf(unitAbbreviatedName) > -1;
 };
 qm.unitHelper.getAllUnits = function(){
-    return qmStorage.getItem(qmItems.units);
+    return qm.storage.getItem(qm.items.units);
 };
 qm.unitHelper.getProgressivelyMoreUnits = function(currentlyDisplayedUnits){
     if(!currentlyDisplayedUnits){return qm.unitHelper.getNonAdvancedUnits();}
@@ -1599,14 +1593,14 @@ qm.unitHelper.getProgressivelyMoreUnits = function(currentlyDisplayedUnits){
     return qm.unitHelper.getAllUnits();
 };
 qm.unitHelper.getByAbbreviatedName = function(unitAbbreviatedName){
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     for (var i = 0; i < allUnits.length; i++) {
         if(allUnits[i].abbreviatedName === unitAbbreviatedName){return allUnits[i];}
     }
     return null;
 };
 qm.unitHelper.indexByAbbreviatedName = function(){
-    var allUnits = qmStorage.getItem(qmItems.units);
+    var allUnits = qm.storage.getItem(qm.items.units);
     qm.unitsIndexedByAbbreviatedName = [];
     for (var i = 0; i < allUnits.length; i++) {
         qm.unitsIndexedByAbbreviatedName[allUnits[i].abbreviatedName] = allUnits[i];
@@ -1620,7 +1614,7 @@ qm.unitHelper.getUnitArrayContaining = function(currentUnitAbbreviatedName){
     return qm.unitHelper.getAllUnits();
 };
 qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames = function(successHandler, errorHandler){
-    if(qmStorage.getItem(qmItems.units)){
+    if(qm.storage.getItem(qm.items.units)){
         qm.unitHelper.indexByAbbreviatedName();
         return;
     }
@@ -1628,7 +1622,7 @@ qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames = function(successHandle
     var apiInstance = new Quantimodo.UnitsApi();
     function callback(error, data, response) {
         if(data){
-            qmStorage.setItem(qmItems.units, data);
+            qm.storage.setItem(qm.items.units, data);
             qm.unitHelper.indexByAbbreviatedName();
         }
         qm.api.responseHandler(error, data, response, successHandler, errorHandler);
