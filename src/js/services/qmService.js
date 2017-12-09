@@ -6542,7 +6542,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){
-            $rootScope.user = window.qm.user;
+            $rootScope.user = window.qmUser;
             if($rootScope.user){qmLogService.debug('Got $rootScope.user', null, $rootScope.user);}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
@@ -6971,7 +6971,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
     };
     qmService.logEventToGA = function(category, action, label, value, noninteraction, customDimension, customMetric){
-        if(!label){label = (qm.user) ? qm.user.id : "NotLoggedIn";}
+        if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
         if(typeof noninteraction === "undefined"){noninteraction = true;}
         Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };
