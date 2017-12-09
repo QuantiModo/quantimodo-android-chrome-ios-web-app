@@ -58,7 +58,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     qmService.actionSheetButtons.measurementAddSearch,
             		qmService.actionSheetButtons.charts,
                     qmService.actionSheetButtons.settings,
-                    qmService.actionSheetButtons.help
+                    qmService.actionSheetButtons.help,
+                    qmService.actionSheetButtons.refresh
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -71,6 +72,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     if(index === 3){qmService.goToState('app.chartSearch', {variableCategoryName : getVariableCategoryName()});}
                     if(index === 4){qmService.goToState('app.settings');}
                     if(index === 5){qmService.goToState('app.help');}
+                    if(index === 6){$scope.refreshTrackingReminderNotifications(3)}
 					return true;
 				},
 				destructiveButtonClicked: function() {
