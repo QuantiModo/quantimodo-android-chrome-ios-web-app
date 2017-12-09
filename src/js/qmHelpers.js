@@ -360,23 +360,49 @@ window.qm = {
     },
     userHelper: {},
     timeHelper: {
+        getUnixTimestampInMilliseconds: function(dateTimeString) {
+            if(!dateTimeString){return new Date().getTime();}
+            return new Date(dateTimeString).getTime();
+        },
+        universalConversionToUnixTimeSeconds: function(unixTimeOrString){
+            if(isNaN(unixTimeOrString)){
+                unixTimeOrString = qm.timeHelper.getUnixTimestampInSeconds(unixTimeOrString);
+            }
+            if(unixTimeOrString > qm.timeHelper.getUnixTimestampInSeconds() + 365 * 86400 * 10){
+                unixTimeOrString = unixTimeOrString/1000;
+            }
+            return unixTimeOrString;
+        },
         getUnixTimestampInSeconds: function(dateTimeString) {
             if(!dateTimeString){dateTimeString = new Date().getTime();}
-            return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+            return Math.round(window.qm.timeHelper.getUnixTimestampInMilliseconds(dateTimeString)/1000);
         },
-        getTimeSinceString: function(unixTimestamp) {
-            if(!unixTimestamp){return "never";}
+        getTimeSinceString: function(unixTimeOrString) {
+            if(!unixTimeOrString){return "never";}
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
             var secondsAgo = qm.timeHelper.secondsAgo(unixTimestamp);
             if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
             if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
             if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
             return secondsAgo + " seconds ago";
         },
-        secondsAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));},
-        minutesAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/60));},
-        hoursAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/3600));},
-        daysAgo: function(unixTimestamp) {return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));},
-        getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();}
+        secondsAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));
+        },
+        minutesAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/60));
+        },
+        hoursAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/3600));
+        },
+        daysAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));
+        },
+        getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();},
     },
     apiHelper: {},
     push: {},
@@ -1175,16 +1201,16 @@ window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
     if(accessResponse.accessTokenExpiresAtMilliseconds){
         expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
     } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
-        expiresAtMilliseconds = window.getUnixTimestampInMilliseconds(expiresAt);
-    } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < window.getUnixTimestampInMilliseconds()) {
+        expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds(expiresAt);
+    } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < window.qm.timeHelper.getUnixTimestampInMilliseconds()) {
         expiresAtMilliseconds = expiresAt * 1000;
-    } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > window.getUnixTimestampInMilliseconds()){
+    } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > window.qm.timeHelper.getUnixTimestampInMilliseconds()){
         expiresAtMilliseconds = expiresAt;
     } else {
         // calculate expires at
         /** @namespace accessResponse.expiresIn */
         var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
-        expiresAtMilliseconds = window.getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
+        expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
         qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
     }
     if(expiresAtMilliseconds){
@@ -1460,10 +1486,7 @@ window.canWeMakeRequestYet = function(type, route, options){
     window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
     return true;
 };
-window.getUnixTimestampInMilliseconds = function(dateTimeString) {
-    if(!dateTimeString){return new Date().getTime();}
-    return new Date(dateTimeString).getTime();
-};
+
 window.getUserFromApi = function(){
     var xhr = new XMLHttpRequest();
     xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
