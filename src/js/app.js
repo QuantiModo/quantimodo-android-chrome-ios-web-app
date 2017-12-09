@@ -968,7 +968,7 @@ angular.module('starter',
             url: "/history",
             views: {
                 'menuContent': {
-                    templateUrl: "templates/history-all.html",
+                    templateUrl: "templates/history-primary-outcome-variable.html",
                     controller: 'HistoryPrimaryOutcomeCtrl'
                 }
             }
