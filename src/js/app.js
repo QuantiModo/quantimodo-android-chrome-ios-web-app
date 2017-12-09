@@ -1228,6 +1228,7 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName : null,
+                variableName : null,
                 reminder : null,
                 fromState : null,
                 fromUrl : null,

@@ -7510,7 +7510,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 qmService.scanBarcode(scanSuccessHandler);
             };
-            function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
+            function newVariable(searchText) {
+                qmService.goToState(qmStates.reminderAdd, {variableName: searchText});
+                self.cancel();
+            }
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
