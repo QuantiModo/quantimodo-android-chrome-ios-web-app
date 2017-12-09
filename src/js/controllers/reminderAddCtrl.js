@@ -66,6 +66,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
         } else if(variableIdUrlParameter) {
             setupReminderEditingFromVariableId(variableIdUrlParameter);
+        } else if($stateParams.variableName) {
+            setupByVariableObject({variableName: $stateParams.variableName});
         } else if($stateParams.variableCategoryName){
             $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
             setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
