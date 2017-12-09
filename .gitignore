@@ -24,7 +24,6 @@
 /config.xml
 /fastlane/*
 /hooks/generate_resources_fix_xcode_and_fastlane_beta.sh
-/ionic.project
 /platforms/
 /resources/
 /src/private_configs/*.json
