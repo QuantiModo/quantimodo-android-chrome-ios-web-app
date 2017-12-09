@@ -1079,7 +1079,8 @@ window.qm.storage.setItem = function(key, value){
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
         if(key === qm.items.userVariables){
-            qmS
+            qmLog.error("Removing qm.items.userVariables because it's really big and probable left over from before limit checker");
+            qm.storage.removeItem(qm.items.userVariables);
         }
         return qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage")
     }
