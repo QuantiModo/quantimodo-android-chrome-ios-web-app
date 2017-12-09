@@ -4024,7 +4024,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         qmService.getVariablesByNameFromApi(name, params, function(userVariable){
-            qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
+            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
             deferred.resolve(userVariable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
@@ -4044,7 +4044,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var userVariable;
             if(response.userVariables){userVariable = response.userVariables[0];}
             if(response.userVariable){userVariable = response.userVariable;}
-            qm.userVariableHelper.saveUserVariablesToLocalStorage(userVariable);
+            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
             qm.studyHelper.deleteLastStudy();
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ' + JSON.stringify(userVariable), null);
@@ -4056,7 +4056,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         var body = {variableId: variableId};
         qmService.resetUserVariable(body, function(response) {
-            qm.userVariableHelper.saveUserVariablesToLocalStorage(response.data.userVariable);
+            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(response.data.userVariable);
             deferred.resolve(response.data.userVariable);
         }, function(error){  deferred.reject(error); });
         return deferred.promise;
@@ -5678,8 +5678,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
     };
     qmService.addVariableToLocalStorage = function(variable){
-        if(variable.userId){qm.userVariableHelper.saveUserVariablesToLocalStorage(variable);}
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variable);
+        if(variable.userId){
+            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variable);
+        } else {
+            qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.commonVariables, variable);
+        }
     };
     qmService.sendEmailViaAPI = function(body, successHandler, errorHandler){
         qmService.post('api/v2/email', [], body, successHandler, errorHandler);
