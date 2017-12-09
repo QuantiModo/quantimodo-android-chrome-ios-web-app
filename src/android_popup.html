@@ -36,7 +36,7 @@
         height: 52px;
         border-radius: 26px;
         font-size: 20px;
-        font-size: 6vw;
+        font-size: 7vw;
         background-color: white;
         line-height: 1.33;
         color: white;
@@ -44,17 +44,12 @@
         transition: all 200ms linear;
         font-family: "Comic Sans MS", cursive, sans-serif;
     }
-
     .btn-xl:focus {
         outline: none;
     }
-
     .btn-xl:hover {
         -webkit-filter: brightness(110%) saturate(125%);
-        background-color: #4CAF50; /* Green */
-        color: white;
     }
-
     </style>
 	<script src="cordova.js"></script>
 	<script src="custom-lib/bugsnag.js"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
@@ -64,7 +59,6 @@
     <script src="js/popup.js"></script>
   </head>
   <body>
-
 	  <!--<img style="width: 24px; left:10px; position: absolute;" src="https://app.quantimo.do/ionic/Modo/www/img/intro/inbox.svg" id="buttonInbox">-->
 	  <p style="text-align: center; font-size: 20px;" id="question">How are you?</p>
 	  <section id="sectionRate" class="rating-section">
@@ -81,9 +75,8 @@
           <button id="snoozeButton" style="color: #f0ad4e; border:3px solid #f0ad4e; font-size: 14px;" type="button" class="btn-xl">
               z<sup> z<sup> z</sup></sup>
           </button>
-          <button id="skipButton" style="color: #d9534f; border: 3px solid #d9534f;" type="button" class="btn btn-danger btn-circle btn-xl">X</button>
+          <button id="skipButton" style="color: #d9534f; border: 3px solid #d9534f; font-size: 9vw;" type="button" class="btn btn-danger btn-circle btn-xl">X</button>
       </section>
-
 	  <section id="loader">
 		  <!--<img src="img/loaders/rainbow-loader.gif" id="popTartCat">-->
           <img style="max-height: 100%" src="img/loaders/purple-upload-check-loader_cropped_56px.gif" id="purpleLoader">
