@@ -416,9 +416,9 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
-if(!window.qm.user){
-    window.qm.user = localStorage.getItem(qm.items.user);
-    if(window.qm.user){window.qm.user = JSON.parse(window.qm.user);}
+if(!window.qmUser){
+    window.qmUser = localStorage.getItem(qm.items.user);
+    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qm.getPrimaryOutcomeVariable = function(){
     if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){ return qm.getAppSettings().primaryOutcomeVariableDetails;}
@@ -825,15 +825,15 @@ qm.notifications.refreshAndShowPopupIfNecessary = function(notificationParams) {
 };
 window.qm.userHelper = {
     getUser: function(){
-        if(window.qm.user){return window.qm.user;}
-        window.qm.user = qm.storage.getItem('user');
-        return window.qm.user;
+        if(window.qmUser){return window.qmUser;}
+        window.qmUser = qm.storage.getItem('user');
+        return window.qmUser;
     },
     setUser: function(user){
-        window.qm.user = user;
+        window.qmUser = user;
         qm.storage.setItem(qm.items.user, user);
         if(!user){return;}
-        window.qmLog.debug(window.qm.user.displayName + ' is logged in.');
+        window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
         if(urlHelper.getParam('doNotRemember')){return;}
         qmLog.setupUserVoice();
         if(!user.accessToken){
@@ -847,7 +847,7 @@ window.qm.userHelper = {
             var now = new Date();
             var hours = now.getHours();
             var currentTime = hours + ':00:00';
-            if(currentTime > qm.user.latestReminderTime || currentTime < qm.user.earliestReminderTime ){
+            if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
                 window.qmLog.info('Not showing notification because outside allowed time range');
                 return false;
             }
@@ -1481,7 +1481,7 @@ window.getUserFromApi = function(){
     };
     xhr.send();
 };
-window.isTestUser = function(){return window.qm.user && window.qm.user.displayName.indexOf('test') !== -1 && window.qm.user.id !== 230;};
+window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 window.qm.push.getLastPushTimeStampInSeconds = function(){return qm.storage.getItem(qm.items.lastPushTimestamp);};
 window.qm.push.getHoursSinceLastPush = function(){
     return Math.round((window.qm.timeHelper.secondsAgo(qm.push.getLastPushTimeStampInSeconds()))/3600);
