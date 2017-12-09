@@ -965,11 +965,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!window.isTestUser()){Bugsnag.notify(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");}
         }
-        if (accessTokenFromLocalStorage && window.getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
+        if (accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessTokenFromLocalStorage);
         } else if (refreshToken && expiresAtMilliseconds && qmService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
-            qmLog.authDebug(window.getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+            qmLog.authDebug(window.qm.timeHelper.getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             qmService.refreshAccessToken(refreshToken, deferred);
         } else if(accessTokenFromLocalStorage){
             deferred.resolve(accessTokenFromLocalStorage);
@@ -2101,7 +2101,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
-        qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.getUnixTimestampInMilliseconds());
+        qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.qm.timeHelper.getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
         qmLog.info("Broadcasting qm.storage.getTrackingReminderNotifications");
@@ -2112,7 +2112,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getSecondsSinceWeLastGotNotifications = function () {
         var lastGotNotificationsAtMilliseconds = qm.storage.getItem(qm.items.lastGotNotificationsAtMilliseconds);
         if(!lastGotNotificationsAtMilliseconds){ lastGotNotificationsAtMilliseconds = 0; }
-        return parseInt((window.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds)/1000);
+        return parseInt((window.qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds)/1000);
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
@@ -2146,8 +2146,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var trackingReminderNotificationSyncScheduled = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
         if(!trackingReminderNotificationSyncScheduled ||
-            parseInt(trackingReminderNotificationSyncScheduled) < window.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
-            qmService.storage.setItem('trackingReminderNotificationSyncScheduled', window.getUnixTimestampInMilliseconds());
+            parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
+            qmService.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
             if(!$rootScope.isMobile){ // Better performance
                 qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
             }
