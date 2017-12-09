@@ -40,7 +40,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        qmService.qmStorage.getFavorites($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+        qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
     };
     $scope.favoriteAddButtonClick = function () {qmService.goToState('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
