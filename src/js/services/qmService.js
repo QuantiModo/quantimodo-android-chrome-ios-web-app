@@ -7512,7 +7512,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             };
             function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
-                self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
+                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
                 if(!query){
                     qmLogService.debug('Why are we searching without a query?');
@@ -7543,10 +7543,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.lastApiQuery = query;
                 qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, self.dataToPass.excludeLocal)
                     .then(function(results){
+                        self.lastResults = results;
+                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                         if(results && results.length){
-                            self.lastResults = results;
-                            qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                            deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
                         } else {
                             if(variableSearchErrorHandler){variableSearchErrorHandler();}
