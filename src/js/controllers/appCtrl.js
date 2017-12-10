@@ -313,11 +313,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showExplanationsPopup = function(settingName, ev) {
         qmService.showMaterialAlert(qmService.explanations[settingName].title, qmService.explanations[settingName].explanation, ev);
     };
-    $scope.goBack = function (stateParams) {
-        if($ionicHistory.viewHistory().backView){
-            var backView = $ionicHistory.backView();
-            var stateId = backView.stateName;
-            if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
+    $scope.goBack = function (providedStateParams) {
+        function skipSearchPages() {
+            if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
                 $ionicHistory.removeBackView();
                 backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
                 stateId = backView.stateName;
@@ -325,17 +323,29 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 //qmService.goToDefaultState(stateParams);
                 //return;
             }
-            if(stateParams){
-                for (var key in stateParams) {
-                    if (stateParams[key] && stateParams[key] !== "") { stateId += "_" + key + "=" + stateParams[key]; }
+        }
+
+        function addProvidedStateParamsToBackViewStateParams() {
+            for (var key in providedStateParams) {
+                if (providedStateParams[key] && providedStateParams[key] !== "") {
+                    backView.stateParams[key] = providedStateParams[key];
+                    stateId += "_" + key + "=" + providedStateParams[key];
                 }
-                backView.stateParams = stateParams;
-                backView.stateId = stateId;
+            }
+            //backView.stateId = stateId;  // TODO: What is this for?
+        }
+
+        if($ionicHistory.viewHistory().backView){
+            var backView = $ionicHistory.backView();
+            var stateId = backView.stateName;
+            skipSearchPages();
+            if(providedStateParams){
+                addProvidedStateParamsToBackViewStateParams();
             }
             qmLogService.debug('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
             $ionicHistory.goBack();
         } else {
-            qmService.goToDefaultState(stateParams);
+            qmService.goToDefaultState(providedStateParams);
         }
     };
     $scope.trackLocationChange = function(event, trackLocation) {

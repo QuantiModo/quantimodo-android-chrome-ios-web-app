@@ -15,10 +15,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	};
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $scope.state.moreDataCanBeLoaded = true;
-        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getAsString('hideHistoryPageInstructionsCard');
+        $scope.hideHistoryPageInstructionsCard = qm.storage.getAsString('hideHistoryPageInstructionsCard');
+        updateMeasurementIfNecessary();
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
+        qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
         qmService.unHideNavigationMenu();
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
@@ -34,6 +35,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         }
         $scope.getHistory();
     });
+    function updateMeasurementIfNecessary(){
+        if($stateParams.updatedMeasurement && $scope.state.history && $scope.state.history.length){
+            $scope.state.history = qm.arrayHelper.replaceElementInArrayById($scope.state.history, $stateParams.updatedMeasurement);
+        }
+    }
     function hideLoader() {
         //Stop the ion-refresher from spinning
         $scope.$broadcast('scroll.refreshComplete');
@@ -155,9 +161,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 			buttonClicked: function(index) {
 				qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
 				if(index === 0){$scope.editMeasurement($scope.state.measurement);}
-				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject});}
-				if(index === 2) {qmService.goToState('app.charts', {variableObject: variableObject});}
-				if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject});}
+				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 2) {qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 4){qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
 				return true;
 			},
