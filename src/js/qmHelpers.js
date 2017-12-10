@@ -147,6 +147,14 @@ window.qm = {
         },
         replaceElementInArrayById: function (array, replacementElement) {
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
+        },
+        removeLastItem: function(array){
+            return array.splice(-1,1);
+        },
+        removeLastItemsUntilSizeLessThan: function(maxKb, array){
+            while (getSizeInKiloBytes(array) > maxKb) {
+                array = qm.arrayHelper.removeLastItem(array);
+            }
         }
     },
     auth: {},
@@ -1107,11 +1115,8 @@ window.qm.storage.setItem = function(key, value){
     if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
-        if(key === qm.items.userVariables){
-            qmLog.error("Removing qm.items.userVariables because it's really big and probable left over from before limit checker");
-            qm.storage.removeItem(qm.items.userVariables);
-        }
-        return qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage")
+        qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
+        value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
     }
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
