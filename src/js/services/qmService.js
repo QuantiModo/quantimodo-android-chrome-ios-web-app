@@ -578,7 +578,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         if(!params){params = {};}
-        if(!params.limit){params.limit = 200;}
+        if(!params.limit){params.limit = 50;}
         if(params.variableCategoryName && params.variableCategoryName === 'Anything'){params.variableCategoryName = null;}
         qmService.get('api/v3/variables', ['variableCategoryName', 'limit'], params, successHandler, errorHandler);
     };
@@ -4139,7 +4139,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function putCommonVariablesInLocalStorageUsingApi(){
         var deferred = $q.defer();
-        qmService.getCommonVariablesFromApi({}, function(commonVariables){
+        qmService.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
             qmService.storage.setItem('commonVariables', commonVariables);
             deferred.resolve(commonVariables);
         }, function(error){
