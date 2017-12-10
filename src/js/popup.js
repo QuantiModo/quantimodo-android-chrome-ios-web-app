@@ -193,6 +193,8 @@ function updateQuestion(variableName) {
             if(notificationAction.modifiedValue !== null){
                 textElement.innerHTML = notificationAction.shortTitle;
                 buttonElement.style.display = "inline-block";
+                var size = 30 - notificationAction.shortTitle.length * 12/3;
+                buttonElement.style.fontSize = size + "px";
             } else {
                 buttonElement.style.display = "none";
             }
