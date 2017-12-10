@@ -7415,7 +7415,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             action: actionArrayItem,
                             id: actionArrayItem.callback,
                             text:  '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
-                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.title + '</span>'
+                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
                         });
                     }
                     if(buttons.length > 8){break;}
