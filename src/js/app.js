@@ -966,6 +966,9 @@ angular.module('starter',
         */
         .state(qmStates.history, {
             url: "/history",
+            params: {
+                updatedMeasurement: null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/history-primary-outcome-variable.html",
@@ -979,7 +982,8 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 connectorName: null,
-                sourceName: null
+                sourceName: null,
+                updatedMeasurement: null
             },
             views: {
                 'menuContent': {
@@ -991,7 +995,9 @@ angular.module('starter',
         .state(qmStates.historyAllCategory, {
             url: "/history-all-category/:variableCategoryName",
             cache: true,
-            params: {},
+            params: {
+                updatedMeasurement: null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/history-all.html",
@@ -1003,7 +1009,8 @@ angular.module('starter',
             url: "/history-all-variable/:variableName",
             cache: true,
             params: {
-                variableObject : null
+                variableObject : null,
+                updatedMeasurement: null
             },
             views: {
                 'menuContent': {

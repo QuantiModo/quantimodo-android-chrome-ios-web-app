@@ -144,6 +144,9 @@ window.qm = {
                 }
             }
             return a;
+        },
+        replaceElementInArrayById: function (array, replacementElement) {
+            return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
         }
     },
     auth: {},
