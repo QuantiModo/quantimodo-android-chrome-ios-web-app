@@ -5127,6 +5127,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return cachedResponse.response;
     };
     qmService.storeCachedResponse = function(requestName, params, response){
+        params = JSON.parse(JSON.stringify(params));
+        response = JSON.parse(JSON.stringify(response));
         var cachedResponse = {requestParams: params, response: response, expirationTimeMilliseconds: Date.now() + 86400 * 1000};
         qmService.storage.setItem(requestName, cachedResponse);
     };
