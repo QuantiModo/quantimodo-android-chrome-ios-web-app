@@ -15,7 +15,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	};
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $scope.state.moreDataCanBeLoaded = true;
-        $rootScope.hideHistoryPageInstructionsCard = qmStorage.getAsString('hideHistoryPageInstructionsCard');
+        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getAsString('hideHistoryPageInstructionsCard');
     });
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name, null);

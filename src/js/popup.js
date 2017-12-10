@@ -2,7 +2,7 @@
 var ratingPopupHeight, ratingPopupWidth;
 function clearNotifications() {
     if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
-    qmChrome.updateChromeBadge(0);
+    qm.chrome.updateChromeBadge(0);
     chrome.notifications.clear("moodReportNotification", function() {});
 }
 function setFaceButtonListeners() {
@@ -43,15 +43,15 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.qmLog.error('OverApps not defined');
-        qmChrome.fullInboxWindowParams.focused = true;
-        openOrFocusChromePopupWindow(qmChrome.fullInboxWindowParams);
+        qm.chrome.fullInboxWindowParams.focused = true;
+        openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     hidePopup();
     //showLoader();
     if(window.notificationsSyncQueue){
-        qmStorage.deleteByPropertyInArray(qmItems.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
+        qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
         qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
     } else {
         closePopup();
@@ -102,18 +102,18 @@ var onLastValueButtonClicked = function() {
     var buttonId = this.id;
     console.log('onLastValueButtonClicked');
     window.qmLog.info('onLastValueButtonClicked buttonId ' + buttonId);
-    if (buttonId === "lastValue") {
+    if (buttonId === "lastValueButton") {
         window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.lastValue;
-    } else if (buttonId === "secondToLastValue") {
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[0].modifiedValue;
+    } else if (buttonId === "secondToLastValueButton") {
         window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.secondToLastValue;
-    } else if (buttonId === "thirdToLastValue") {
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[1].modifiedValue;
+    } else if (buttonId === "thirdToLastValueButton") {
         window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.thirdToLastValue;
-    } else if (buttonId === "snooze") {
+        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[2].modifiedValue;
+    } else if (buttonId === "snoozeButton") {
         window.trackingReminderNotification.action = 'snooze';
-    } else if (buttonId === "skip") {
+    } else if (buttonId === "skipButton") {
         window.trackingReminderNotification.action = 'skip';
     }
     addToSyncQueueAndCloseOrUpdateQuestion();
@@ -188,21 +188,22 @@ function updateQuestion(variableName) {
         getRatingSectionElement().style.display = "block";
         getLastValueSectionElement().style.display = "none";
     } else {
-        function setLastValueButtonProperties(textElement, buttonElement, value) {
-            if(value !== null){
-                textElement.innerHTML = value;
+        function setLastValueButtonProperties(textElement, buttonElement, notificationAction) {
+            if(notificationAction.modifiedValue !== null){
+                textElement.innerHTML = notificationAction.shortTitle;
                 buttonElement.style.display = "inline-block";
             } else {
                 buttonElement.style.display = "none";
             }
         }
-        setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), trackingReminderNotification.lastValue);
-        setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), trackingReminderNotification.secondToLastValue);
-        setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), trackingReminderNotification.thirdToLastValue);
+        setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), trackingReminderNotification.actionArray[0]);
+        setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), trackingReminderNotification.actionArray[1]);
+        setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), trackingReminderNotification.actionArray[2]);
         getRatingSectionElement().style.display = "none";
         getLastValueSectionElement().style.display = "block";
         questionText = "Record " + variableName + " (" + trackingReminderNotification.unitAbbreviatedName + ")";
     }
+    if(trackingReminderNotification.question){questionText = trackingReminderNotification.question;}
     window.qmLog.info('Updating question to ' + questionText);
     getQuestionElement().innerHTML = questionText;
     document.title = questionText;
