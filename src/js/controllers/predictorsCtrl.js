@@ -129,32 +129,37 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
                 { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
                 { text: '<i class="icon ion-arrow-down-c"></i>Ascending Correlation' },
-                { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
+                { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' },
+                qmService.actionSheetButtons.refresh
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { qmLogService.debug('CANCELLED', null); },
             buttonClicked: function(index) {
-                qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){
-                    qmLogService.debug('Sort by Statistical Significance', null);
+                    $scope.state.correlationObjects = [];
+                    qmLogService.debug('Sort by Statistical Significance');
                     $scope.state.requestParams.sort = '-statisticalSignificance';
                     populateCorrelationList();
                 }
                 if(index === 1){
-                    qmLogService.debug('Sort by QM Score', null);
+                    $scope.state.correlationObjects = [];
+                    qmLogService.debug('Sort by QM Score');
                     $scope.state.requestParams.sort = '-qmScore';
                     populateCorrelationList();
                 }
                 if(index === 2){
-                    qmLogService.debug('Ascending Predictive Correlation', null);
+                    $scope.state.correlationObjects = [];
+                    qmLogService.debug('Ascending Predictive Correlation');
                     $scope.state.requestParams.sort = 'correlationCoefficient';
                     populateCorrelationList();
                 }
                 if(index === 3){
-                    qmLogService.debug('Descending Predictive Correlation', null);
+                    $scope.state.correlationObjects = [];
+                    qmLogService.debug('Descending Predictive Correlation');
                     $scope.state.requestParams.sort = '-correlationCoefficient';
                     populateCorrelationList();
                 }
+                if(index === 4){$scope.refreshList();}
                 return true;
             }
         });
