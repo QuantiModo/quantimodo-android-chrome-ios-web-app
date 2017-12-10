@@ -87,7 +87,12 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.searching = false;
         $scope.$broadcast('scroll.infiniteScrollComplete');
     }
-    function populateCorrelationList() {
+    function populateCorrelationList(newSortParam) {
+        if(newSortParam){
+            $scope.state.correlationObjects = [];
+            qmLogService.debug('Sort by ' + newSortParam);
+            $scope.state.requestParams.sort = newSortParam;
+        }
         $scope.searching = true;
         var params = $scope.state.requestParams;
         params.limit = 10;
@@ -128,38 +133,24 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             buttons: [
                 { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
                 { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
-                { text: '<i class="icon ion-arrow-down-c"></i>Ascending Correlation' },
-                { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' },
+                { text: '<i class="icon ion-arrow-down-c"></i>Positive Relationships' },
+                { text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships' },
+                { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
+                { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
+                { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
                 qmService.actionSheetButtons.refresh
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { qmLogService.debug('CANCELLED', null); },
             buttonClicked: function(index) {
-                if(index === 0){
-                    $scope.state.correlationObjects = [];
-                    qmLogService.debug('Sort by Statistical Significance');
-                    $scope.state.requestParams.sort = '-statisticalSignificance';
-                    populateCorrelationList();
-                }
-                if(index === 1){
-                    $scope.state.correlationObjects = [];
-                    qmLogService.debug('Sort by QM Score');
-                    $scope.state.requestParams.sort = '-qmScore';
-                    populateCorrelationList();
-                }
-                if(index === 2){
-                    $scope.state.correlationObjects = [];
-                    qmLogService.debug('Ascending Predictive Correlation');
-                    $scope.state.requestParams.sort = 'correlationCoefficient';
-                    populateCorrelationList();
-                }
-                if(index === 3){
-                    $scope.state.correlationObjects = [];
-                    qmLogService.debug('Descending Predictive Correlation');
-                    $scope.state.requestParams.sort = '-correlationCoefficient';
-                    populateCorrelationList();
-                }
-                if(index === 4){$scope.refreshList();}
+                if(index === 0){populateCorrelationList('-statisticalSignificance');}
+                if(index === 1){populateCorrelationList('-qmScore');}
+                if(index === 2){populateCorrelationList('correlationCoefficient');}
+                if(index === 3){populateCorrelationList('-correlationCoefficient');}
+                if(index === 4){populateCorrelationList('-numberOfUsers');}
+                if(index === 5){populateCorrelationList('pValue');}
+                if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
+                if(index === 7){$scope.refreshList();}
                 return true;
             }
         });
