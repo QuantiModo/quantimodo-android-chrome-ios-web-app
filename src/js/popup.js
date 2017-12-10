@@ -191,6 +191,7 @@ function updateQuestion(variableName) {
     } else {
         function setLastValueButtonProperties(textElement, buttonElement, notificationAction) {
             if(notificationAction.modifiedValue !== null){
+                buttonElement.style.display = "none";
                 var size = 30 - notificationAction.shortTitle.length * 12/3;
                 buttonElement.style.fontSize = size + "px";
                 textElement.innerHTML = notificationAction.shortTitle;
