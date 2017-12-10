@@ -1267,6 +1267,10 @@ qm.notifications.getAllUniqueNotifications = function() {
 };
 qm.notifications.getNotificationsDueInLast24 = function() {
     var allNotifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
+    if(!allNotifications){
+        qmLog.info("No NotificationsDueInLast24 in localStorage");
+        return null;
+    }
     var last24 = [];
     for (var i = 0; i < allNotifications.length; i++) {
         if(qm.timeHelper.hoursAgo(allNotifications[i].trackingReminderNotificationTimeEpoch) < 24){
@@ -1277,6 +1281,10 @@ qm.notifications.getNotificationsDueInLast24 = function() {
 };
 qm.notifications.getUniqueNotificationsDueInLast24 = function() {
     var last24 = qm.notifications.getNotificationsDueInLast24();
+    if(!last24){
+        qmLog.info("No UNIQUE NotificationsDueInLast24 in localStorage");
+        return null;
+    }
     qmLog.info("Got " + last24.length + " total NON-UNIQUE notification due in last 24 from storage");
     var unique = getUnique(last24, 'variableName');
     qmLog.info("Got " + unique.length + " UNIQUE notifications");
