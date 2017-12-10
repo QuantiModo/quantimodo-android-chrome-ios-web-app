@@ -41,7 +41,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             $scope.myIntro.ready = true;
             $rootScope.hideNavigationMenu = true;
         }
-        qmService.qmStorage.setItem('introSeen', true);
+        qmService.storage.setItem('introSeen', true);
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();

@@ -38,9 +38,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.selectVariable = function(variableObject) {
         variableObject = addUpcToVariableObject(variableObject);
         qmLogService.debug($state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
-        variableObject.latestMeasurementTime = timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
+        variableObject.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
         if(variableObject.lastValue !== null){qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variableObject);}
-        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
+        qmService.storage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
         $scope.state.variableSearchQuery.name = '';
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
@@ -300,7 +300,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     "Result: " + $scope.state.variableSearchQuery.barcode + "\n" +
                     "Format: " + $scope.state.variableSearchQuery.barcodeFormat + "\n" +
                     "Cancelled: " + result.cancelled);
-                var localMatches = qmStorage.getWithFilters(qmItems.userVariables, 'upc', $scope.state.variableSearchQuery.barcode);
+                var localMatches = qm.storage.getWithFilters(qm.items.userVariables, 'upc', $scope.state.variableSearchQuery.barcode);
                 if(localMatches && localMatches.length){
                     $scope.variableSearchResults = localMatches;
                     qmLog.info("Found local match", null, localMatches);
