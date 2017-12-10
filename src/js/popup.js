@@ -68,6 +68,7 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
     if(window.trackingReminderNotification){
+        window.trackingReminderNotification.modifiedValue = ratingValue;
         return addToSyncQueueAndCloseOrUpdateQuestion();
     } else {
         qmLog.error("No window.trackingReminderNotification to post or add to queue!");
