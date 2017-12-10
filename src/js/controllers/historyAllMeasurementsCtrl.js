@@ -33,7 +33,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
             };
         }
-        $scope.getHistory();
+        if(!$scope.state.history || !$scope.state.history.length){ // Otherwise it keeps add more measurements whenever we edit one
+            $scope.getHistory();
+        }
     });
     function updateMeasurementIfNecessary(){
         if($stateParams.updatedMeasurement && $scope.state.history && $scope.state.history.length){
