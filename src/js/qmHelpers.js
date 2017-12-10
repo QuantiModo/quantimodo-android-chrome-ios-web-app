@@ -274,8 +274,8 @@ window.qm = {
         refreshUserVariables: function(){
             function successHandler(data) {
                 qm.storage.setItem(qm.items.userVariables, data);
-            }
-            qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
+            } // Limit 50 so we don't exceed storage limits
+            qm.userVariableHelper.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
         getFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
