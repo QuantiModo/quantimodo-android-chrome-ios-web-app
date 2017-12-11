@@ -2,24 +2,6 @@ $item-height: 49px;
 $font-size: 16px;
 $text-color: rgb(68,68,68);
 
-#frequencySelector,
-#advancedUnitSelector {
-	padding-top: 8px; 
-}
-
-.reminder-time,
-#selectedStartTrackingDate,
-#selectedStopTrackingDate,
-#defaultValue {
-	text-align: right;
-}
-
-.reminder-row,
-.reminder-row > .col,
-.list.card.margin-bottom-0 {
-	padding: 0;
-}
-
 #additionalTimeButton {
 	height: $item-height;
 	padding: 10px 16px;
@@ -43,28 +25,9 @@ $text-color: rgb(68,68,68);
 	padding: 10px 0px 10px 16px;
 }
 
-.date-fix {
-	height: $item-height;
-	font-size: $font-size;
-	color: $text-color;
-
-	input[type=text] {
-		padding-top: 7px;
-		font-size: $font-size;
-		color: $text-color;
-	}
-
-}
-
 .row.labeled-control > .date-padding-fix {
 	padding: 2px;
 	line-height: 36px;
-}
-
-#selectedStopTrackingDate,
-#selectedStartTrackingDate,
- {
-	padding: 0px 42px 0px 0px;
 }
 
 .button-row-margin {
