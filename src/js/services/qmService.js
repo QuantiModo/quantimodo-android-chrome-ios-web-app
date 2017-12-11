@@ -462,23 +462,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
-    qmService.getUnitsFromApi = function(){
-        var params = addGlobalUrlParamsToObject({});
-        var cachedData = qm.api.cacheGet(params, 'getUnitsFromApi');
-        if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
-        }
-        configureQmApiClient();
-        var apiInstance = new Quantimodo.UnitsApi();
-        function callback(error, data, response) {
-            if(data){
-                qm.storage.setItem('units', data);
-            }
-            qmSdkApiResponseHandler(error, data, response);
-        }
-        apiInstance.getUnits(callback);
-    };
     qmService.getCommonVariablesFromApi = function(params, successHandler, errorHandler){
         params = addGlobalUrlParamsToObject(params);
         params.commonOnly = true;
@@ -5109,7 +5092,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.storage.clear();
         qm.storage.setItem(qm.items.commonVariables, commonVariables);
         qm.storage.setItem(qm.items.units, units);
-        qmService.getUnitsFromApi();
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
