@@ -1,129 +1,135 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Reminder">
-    <ion-nav-title>{{state.title}}</ion-nav-title>
-    <ion-content scroll="true" overflow-scroll="true" style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
-        <div class="list card" id="reminderAddCard">
-            <div class="item item-divider">{{state.trackingReminder.variableName}} Settings</div>
-            <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
-            <label class="item item-input item-select" ng-if="state.showAddVariableCard">
-                <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName"
-                        ng-options="variableCategoryName as variableCategoryName for variableCategoryName in state.variableCategoryNames"
-                        ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
+    <ion-nav-title>Settings</ion-nav-title>
+    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
+        <md-toolbar class="md-theme-light" id="reminder-header">
+            <h2 class="md-toolbar-tools"><span style="color: white;">{{state.trackingReminder.variableName}}</span></h2>
+        </md-toolbar>
+        <label class="item item-input item-select" ng-if="state.showAddVariableCard">
+            <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
+            <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName"
+                    ng-options="variableCategoryName as variableCategoryName for variableCategoryName in state.variableCategoryNames"
+                    ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
+            </select>
+        </label>
+        <br>
+        <div layout="row" layout-margin  ng-if="!state.hideDefaultValueField">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>{{state.defaultValueLabel}}</label>
+                <input id="defaultValue" type="number" ng-model="state.trackingReminder.defaultValue" placeholder="{{state.defaultValuePlaceholderText}}">
+            </md-input-container>
+            <md-input-container id="unitSelectorBlock" class="md-block" flex-gt-sm>
+                <label ng-if="!isMobile" >Unit</label>
+                <md-select ng-if="!isMobile" id="unitSelectorMaterial"
+                           ng-model="state.trackingReminder.unitAbbreviatedName"
+                           ng-change="unitSelected()">
+                    <md-option ng-repeat="unit in state.units"
+                               value="{{unit.abbreviatedName}}" >{{unit.abbreviatedName}}
+                    </md-option>
+                </md-select>
+                <!-- Use native selector popup on mobile -->
+                <select style="border: none" ng-show="isMobile" id="unitSelectorMobile"
+                        ng-model="state.trackingReminder.unitAbbreviatedName"
+                        ng-options="unit.abbreviatedName as unit.name for unit in state.units"
+                        ng-change="unitSelected()">
                 </select>
-            </label>
-            <label ng-if="!state.hideDefaultValueField" class="item item-input">
-				<span class="input-label left-span" on-tap="showExplanationsPopup('Default Value')">{{state.defaultValueLabel}} <i class="icon ion-help-circled"></i></span>
-                <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
-            </label>
-            <label id="unitSelectorBlock" class="item item-input item-select" ng-if="!state.hideDefaultValueField">
-                <div class="input-label">Unit</div>
-                <select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName"
-                        ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()"> </select>
-            </label>
-            <label class="item item-input item-select" ng-if="!stateParams.favorite">
-                <div class="input-label">Frequency</div>
-                <select id="frequencySelector" ng-model="state.selectedFrequencyName" ng-change="frequencySelected()"><option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option></select>
-            </label>
-            <label class="item item-input" ng-hide="state.trackingReminder.reminderFrequency < 86400" ><div class="reminder-row row">
-                <div class="col"><div class="input-label" >Reminder time</div></div></div>
-                <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialFirstReminderStartTime" short-time="true" placeholder="Time"
-                           min-date="minDate" format="h:mm a" ng-model="state.firstReminderStartTimeMoment" class="md-input reminder-time">
-                </div>
-            </label>
-            <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
-                <div class="input-label">Reminder time</div>
-                <md-button id="oldFirstReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('first')"
-                        style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                    {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </md-button>
-            </label>
-            <label ng-show="state.secondReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
-                <div class="reminder-row row"><div class="col"><div class="input-label" >2nd reminder time</div></div></div>
-                <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialSecondReminderStartTime" short-time="true" placeholder="Time"
-                           min-date="minDate" format="h:mm a" ng-model="state.secondReminderStartTimeMoment" class=" md-input reminder-time">
-                </div>
-            </label>
-            <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
-                <div class="input-label" >2nd reminder time</div>
-                <md-button id="oldSecondReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('second')"
-                        style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px; padding-left: 0px;">
-                    {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </md-button>
-            </label>
-            <label ng-show="state.thirdReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
-                <div class="reminder-row row"><div class="col"><div class="input-label" >3nd reminder time</div></div></div>
-                <div class="col-6">
-                    <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialThirdReminderStartTime" short-time="true" placeholder="Time" min-date="minDate" format="h:mm a"
-                           ng-model="state.thirdReminderStartTimeMoment" class="md-input reminder-time">
-                </div>
-            </label>
-            <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
-                <div class="input-label" >3nd reminder time</div>
-                <md-button id="oldThirdReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('third')"
-                        style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                    {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </md-button>
-            </label>
-            <label id="oldAdditionalTimeButton" ng-hide="true" ng-click="oldShowAdditionalReminderTime()" class="item icon-left ion-clock">
-            </label>
-            <label id="additionalTimeButton" ng-hide="state.hideAdditionalReminderTimeButton || state.trackingReminder.reminderFrequency < 86400" ng-click="showAdditionalReminderTime()" class="item icon-left ion-clock">
-				<span>&nbsp;Add additional time</span>
-            </label>
-            <div id="valenceSelectorBlock" class="item" ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)">
-                Higher {{state.trackingReminder.variableName}} is
-                <md-radio-group ng-model="state.trackingReminder.valence" layout="row" style="float: right">
-                    <md-radio-button value="positive" class="md-primary"> good </md-radio-button>
-                    <md-radio-button value="negative"> bad </md-radio-button>
-                </md-radio-group>
-            </div>
-            <div class="margin-bottom-0" ng-if="!state.showMoreOptions" >
-                <div class="row" ng-click="showMoreOptions()"><label class="item icon-left ion-gear-a more-options-padding">&nbsp;More options...</label></div>
-            </div>
-            <div ng-if="state.showMoreOptions" class="row labeled-control date-fix">
-                <div class="col date-padding-fix"><span>Start</span>&nbsp<i class="ion-android-cancel" ng-click="state.selectedStartTrackingDate = null;" ng-if="state.selectedStartTrackingDate"></i></div>
-                <div class="col-6 date-padding-fix">
-                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
-                           placeholder="Select Date" style="cursor: pointer;  background-color: white;"
-                           format="ddd, MMM Do YYYY" ng-model="state.selectedStartTrackingDate">
-                </div>
-            </div>
-            <div ng-if="state.showMoreOptions" class="row labeled-control date-fix">
-                <div class="col date-padding-fix"><span>End</span>&nbsp
-                    <i class="ion-android-cancel" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i>
-                </div>
-                <div class="col-6 date-padding-fix">
-                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
-                           placeholder="Select Date" style="cursor: pointer;  background-color: white;"
-                           format="ddd, MMM Do YYYY" ng-model="state.selectedStopTrackingDate">
-                </div>
-            </div>
-            <label class="item item-input" ng-show="state.showInstructionsField && state.showMoreOptions">
-                <span class="input-label">Instructions</span>
-                <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
-            </label>
-            <div class="button-row-margin row">
-                <div class="col col-50">
-                    <md-button id="cancelButton" class="button" ng-click="goBack()">
-                        <md-button class="md-fab" aria-label="Cancel">
-                            <md-icon style="font-size: 20px;" md-font-icon="ion-close-round" class="ion-close-round"></md-icon>
-                        </md-button>
-                        <span style="color: black;"> &nbsp &nbsp Cancel &nbsp &nbsp</span>
-                    </md-button>
-                </div>
-                <div class="col col-50">
-                    <md-button id="saveButton" class="button" ng-click="save()">
-                        <md-fab-progress icon="'file_upload'" icon-done="'check'" value="value" do-action="resetSaveAnimation()"></md-fab-progress>
-                        <span style="color: black;"> &nbsp &nbsp Save &nbsp &nbsp</span>
-                    </md-button>
-                </div>
-            </div>
-            <div class="row" ng-if="state.trackingReminder && state.trackingReminder.id" >
-                <div class="col">
-                    <md-button ng-click="deleteReminder()" class="button button-outline button-block icon-left ion-trash-a button-assertive">Delete</md-button>
-                </div>
-            </div>
+            </md-input-container>
         </div>
+        <div layout="row" layout-margin ng-if="!stateParams.favorite">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label ng-if="!isMobile">Frequency</label>
+                <md-select ng-if="!isMobile" ng-model="state.selectedFrequencyName"
+                           id="frequencySelectorMaterial" ng-change="frequencySelected()">
+                    <md-option ng-repeat="frequency in variables.frequencyVariables" value="{{frequency.name}}">{{frequency.name}}</md-option>
+                </md-select>
+                <!-- Use native selector popup on mobile -->
+                <select ng-show="isMobile" id="frequencySelector"
+                        ng-model="state.selectedFrequencyName"
+                        ng-change="frequencySelected()" style="border: none" >
+                    <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
+                </select>
+            </md-input-container>
+            <md-input-container class="md-block" ng-hide="state.trackingReminder.reminderFrequency < 86400" flex-gt-sm>
+                <label>Reminder time</label>
+                <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true"
+                       type="text" id="materialFirstReminderStartTime" short-time="true" placeholder="Time"
+                       min-date="minDate" format="h:mm a" ng-model="state.firstReminderStartTimeMoment" class="md-input reminder-time">
+            </md-input-container>
+            <span ng-click="showAdditionalReminderTime()">
+                <!-- Tooltip doesn't hide itself for some reason <md-tooltip md-direction="down">Add additional time</md-tooltip>-->
+                <i id="additionalTimeButton" class="ion-plus-circled" style="font-size: 25px;"
+                    ng-hide="state.hideAdditionalReminderTimeButton || state.trackingReminder.reminderFrequency < 86400"></i>
+            </span>
+        </div>
+        <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
+            <div class="input-label">Reminder time</div>
+            <md-button id="oldFirstReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('first')"
+                    style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
+                {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+            </md-button>
+        </label>
+        <label ng-show="state.secondReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
+            <div class="reminder-row row"><div class="col"><div class="input-label" >2nd reminder time</div></div></div>
+            <div class="col-6">
+                <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text"
+                       id="materialSecondReminderStartTime" short-time="true" placeholder="Time"
+                       min-date="minDate" format="h:mm a" ng-model="state.secondReminderStartTimeMoment" class=" md-input reminder-time">
+            </div>
+        </label>
+        <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
+            <div class="input-label" >2nd reminder time</div>
+            <md-button id="oldSecondReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('second')"
+                    style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px; padding-left: 0px;">
+                {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+            </md-button>
+        </label>
+        <label ng-show="state.thirdReminderStartTimeEpochTime && state.trackingReminder.reminderFrequency >= 86400" class="item item-input">
+            <div class="reminder-row row"><div class="col"><div class="input-label" >3nd reminder time</div></div></div>
+            <div class="col-6">
+                <input style="cursor: pointer; background-color: white" mdc-datetime-picker="" date="false" time="true" type="text" id="materialThirdReminderStartTime" short-time="true" placeholder="Time" min-date="minDate" format="h:mm a"
+                       ng-model="state.thirdReminderStartTimeMoment" class="md-input reminder-time">
+            </div>
+        </label>
+        <label ng-hide="true || state.trackingReminder.reminderFrequency < 86400" class="item item-input">
+            <div class="input-label" >3nd reminder time</div>
+            <md-button id="oldThirdReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('third')"
+                    style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
+                {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+            </md-button>
+        </label>
+        <label id="oldAdditionalTimeButton" ng-hide="true" ng-click="oldShowAdditionalReminderTime()" class="item icon-left ion-clock"></label>
+        <div id="valenceSelectorBlock" ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)">
+            <p>&nbsp; &nbsp; Higher {{state.trackingReminder.variableName}} is </p>
+            <md-radio-group ng-model="state.trackingReminder.valence" flex layout="row" layout-padding layout-align="start center">
+                <md-radio-button value="positive" class="md-primary"> good </md-radio-button>
+                <md-radio-button value="negative"> bad </md-radio-button>
+            </md-radio-group>
+            <br>
+        </div>
+        <div layout="row" layout-margin ng-if="!stateParams.favorite && state.trackingReminder.variableCategoryName === 'Treatments'">
+            <md-input-container>
+                <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
+                       placeholder="Start Date" style="cursor: pointer;  background-color: white;"
+                       format="L" ng-model="state.selectedStartTrackingDate">
+            </md-input-container>
+            <i class="ion-android-cancel" style="font-size: 25px;" ng-click="state.selectedStartTrackingDate = null;" ng-if="state.selectedStartTrackingDate"></i>
+            <md-input-container>
+                <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
+                       placeholder="End Date" style="cursor: pointer;  background-color: white;"
+                       format="L" ng-model="state.selectedStopTrackingDate">
+            </md-input-container>
+            <i class="ion-android-cancel" style="font-size: 25px;" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i>
+        </div>
+        <label ng-show="state.trackingReminder.variableCategoryName === 'Treatments' && state.showMoreOptions"  class="item item-input">
+            <span class="input-label">Instructions</span>
+            <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
+        </label>
+        <section layout="row" layout-align="center center" layout-wrap>
+            <md-button ng-if="state.trackingReminder && state.trackingReminder.id" class="md-raised md-warn" ng-click="deleteReminder()">Delete</md-button>
+            <md-button id="cancelButton" ng-click="goBack()" class="md-raised" >Cancel</md-button>
+            <md-button id="saveButton" class="md-raised md-primary" ng-click="save()">Save</md-button>
+        </section>
+        <section layout="row" layout-align="center center" ng-if="!state.showMoreOptions" layout-wrap>
+            <md-button id="moreOptions" ng-click="showMoreOptions()" class="md-raised" >More options...</md-button>
+        </section>
     </ion-content>
 </ion-view>
