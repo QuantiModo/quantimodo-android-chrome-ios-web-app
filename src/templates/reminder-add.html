@@ -94,15 +94,15 @@
                        placeholder="Start Date" style="cursor: pointer;  background-color: white;"
                        format="L" ng-model="state.selectedStartTrackingDate">
             </md-input-container>
-            <i class="ion-android-cancel" ng-click="state.selectedStartTrackingDate = null;" ng-if="state.selectedStartTrackingDate"></i>
+            <i class="ion-android-cancel" style="font-size: 25px;" ng-click="state.selectedStartTrackingDate = null;" ng-if="state.selectedStartTrackingDate"></i>
             <md-input-container>
                 <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
                        placeholder="End Date" style="cursor: pointer;  background-color: white;"
                        format="L" ng-model="state.selectedStopTrackingDate">
             </md-input-container>
-            <i class="ion-android-cancel" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i>
+            <i class="ion-android-cancel" style="font-size: 25px;" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i>
         </div>
-        <label ng-show="state.showInstructionsField && state.showMoreOptions">
+        <label ng-show="state.trackingReminder.variableCategoryName === 'Treatments' && state.showMoreOptions"  class="item item-input">
             <span class="input-label">Instructions</span>
             <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
         </label>
