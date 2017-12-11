@@ -38,7 +38,7 @@
                        min-date="minDate" format="h:mm a" ng-model="state.firstReminderStartTimeMoment" class="md-input reminder-time">
             </md-input-container>
             <span ng-click="showAdditionalReminderTime()">
-                <md-tooltip md-direction="down">Add additional time</md-tooltip>
+                <!-- Tooltip doesn't hide itself for some reason <md-tooltip md-direction="down">Add additional time</md-tooltip>-->
                 <i id="additionalTimeButton" class="ion-plus-circled" style="font-size: 25px;"
                     ng-hide="state.hideAdditionalReminderTimeButton || state.trackingReminder.reminderFrequency < 86400"></i>
             </span>
