@@ -18,18 +18,35 @@
                 <input id="defaultValue" type="number" ng-model="state.trackingReminder.defaultValue" placeholder="{{state.defaultValuePlaceholderText}}">
             </md-input-container>
             <md-input-container id="unitSelectorBlock" class="md-block" flex-gt-sm>
-                <label>Unit</label>
-                <md-select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-change="unitSelected()">
-                    <md-option ng-repeat="unit in state.units" value="{{unit.abbreviatedName}}" >{{unit.abbreviatedName}}</md-option>
+                <label ng-if="!isMobile" >Unit</label>
+                <md-select ng-if="!isMobile" id="unitSelectorMaterial"
+                           ng-model="state.trackingReminder.unitAbbreviatedName"
+                           ng-change="unitSelected()">
+                    <md-option ng-repeat="unit in state.units"
+                               value="{{unit.abbreviatedName}}" >{{unit.abbreviatedName}}
+                    </md-option>
                 </md-select>
+                <!-- Use native selector popup on mobile -->
+                <select style="border: none" ng-show="isMobile" id="unitSelectorMobile"
+                        ng-model="state.trackingReminder.unitAbbreviatedName"
+                        ng-options="unit.abbreviatedName as unit.name for unit in state.units"
+                        ng-change="unitSelected()">
+                </select>
             </md-input-container>
         </div>
-        <div layout="row" layout-margin  ng-if="!stateParams.favorite">
+        <div layout="row" layout-margin ng-if="!stateParams.favorite">
             <md-input-container class="md-block" flex-gt-sm>
-                <label>Frequency</label>
-                <md-select ng-model="state.selectedFrequencyName" id="frequencySelector" ng-change="frequencySelected()">
+                <label ng-if="!isMobile">Frequency</label>
+                <md-select ng-if="!isMobile" ng-model="state.selectedFrequencyName"
+                           id="frequencySelectorMaterial" ng-change="frequencySelected()">
                     <md-option ng-repeat="frequency in variables.frequencyVariables" value="{{frequency.name}}">{{frequency.name}}</md-option>
                 </md-select>
+                <!-- Use native selector popup on mobile -->
+                <select ng-show="isMobile" id="frequencySelector"
+                        ng-model="state.selectedFrequencyName"
+                        ng-change="frequencySelected()" style="border: none" >
+                    <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
+                </select>
             </md-input-container>
             <md-input-container class="md-block" ng-hide="state.trackingReminder.reminderFrequency < 86400" flex-gt-sm>
                 <label>Reminder time</label>
