@@ -181,6 +181,7 @@ window.qm = {
         lastLocationResultType: 'lastLocationResultType',
         lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
         lastLongitude: 'lastLongitude',
+        lastReminder: 'lastReminder',
         lastStudy: 'lastStudy',
         lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
