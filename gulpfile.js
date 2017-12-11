@@ -1061,6 +1061,7 @@ gulp.task('devSetup', [], function (callback) {
         'saveDevCredentials',
         'configureApp',
         'ionicServe',
+        'copyConfigsToSrc',
         callback);
 });
 gulp.task('getClientIdFromUserInput', function () {
@@ -1877,6 +1878,9 @@ gulp.task('copyMaterialIconsToWww', [], function () {
 });
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+});
+gulp.task('copyConfigsToSrc', [], function () {
+    return copyFiles('www/configs/*', 'src/configs', []);
 });
 gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
