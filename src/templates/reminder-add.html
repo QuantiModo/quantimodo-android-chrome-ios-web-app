@@ -1,6 +1,9 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Reminder">
-    <ion-nav-title>{{state.trackingReminder.variableName}}</ion-nav-title>
+    <ion-nav-title>Settings</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
+        <md-toolbar class="md-theme-light" >
+            <h2 class="md-toolbar-tools"><span style="color: white;">{{state.trackingReminder.variableName}}</span></h2>
+        </md-toolbar>
         <label class="item item-input item-select" ng-if="state.showAddVariableCard">
             <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
             <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName"
