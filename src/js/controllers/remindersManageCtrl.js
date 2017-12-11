@@ -40,7 +40,13 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			{ text: '<i class="icon ion-clock"></i>Sort by Time' }
 		];
 		if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
+			if(!$scope.stateParams.title) {
+			    if($rootScope.isMobile){
+                    $scope.stateParams.title = "Reminders";
+                } else {
+                    $scope.stateParams.title = "Manage Reminders";
+                }
+			}
 			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add a Variable"; }
             if(!$scope.stateParams.addMeasurementButtonText) { $scope.stateParams.addMeasurementButtonText = "Record Measurement"; }
 			actionButtons[2] = qmService.actionSheetButtons.historyAllCategory;

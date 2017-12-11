@@ -871,7 +871,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
                 logDebug(err);
             }
         } else {
-            throw "No private config provided!  User will not be able to use OAuth login!";
+            logError("No private config provided!  User will not be able to use OAuth login!");
         }
         writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
         try {
