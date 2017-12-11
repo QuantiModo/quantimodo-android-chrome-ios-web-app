@@ -6064,7 +6064,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
         historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
         lastValuesAction: { icon: qmService.ionIcons.recordMeasurement },
-        measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.measurementAdd, text: 'Record Measurement'},
+        measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
         measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
         measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
         outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
@@ -6077,6 +6077,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
         variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
     };
+    if($rootScope.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     for (var propertyName in qmService.actionSheetButtons) {
         if( qmService.actionSheetButtons.hasOwnProperty(propertyName) ) {
             qmService.actionSheetButtons[propertyName].id = propertyName;
