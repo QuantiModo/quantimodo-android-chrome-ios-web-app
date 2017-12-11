@@ -10,10 +10,19 @@
                 <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
             </div>
         </div>
+        <div class="card"  ng-show="loading">
+            <div class="item" >
+                <div class="row">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Refreshing... </i></p>
+                </div>
+            </div>
+        </div>
         <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
-            <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
-                 id="{{divider.name}}Reminders">
-                <div ng-hide="hideNavigationMenu" class="item item-divider" style="">{{divider.name}}</div>
+            <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+                <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
+                    <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
+                </div>
                 <div class="list card" ng-show="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
                         <div id="notification-icon" ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
@@ -168,14 +177,7 @@
                 <highchart id="chart3" config="weekdayChartConfig"></highchart>
             </div>
         </div>
-        <div class="card"  ng-show="loading">
-            <div class="item" >
-                <div class="row">
-                    <ion-spinner></ion-spinner>
-                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Refreshing... </i></p>
-                </div>
-            </div>
-        </div>
+
         <br>
         <br>
         <br>
