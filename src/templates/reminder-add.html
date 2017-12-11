@@ -83,7 +83,7 @@
                 <md-radio-button value="negative"> bad </md-radio-button>
             </md-radio-group>
         </div>
-        <div layout="row" layout-margin  ng-if="!stateParams.favorite">
+        <div layout="row" layout-margin ng-if="!stateParams.favorite && (state.showMoreOptions || state.trackingReminder.variableCategoryName === 'Treatments')">
             <md-input-container>
                 <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
                        placeholder="Start Date" style="cursor: pointer;  background-color: white;"
