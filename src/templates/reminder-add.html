@@ -27,7 +27,7 @@
                     </md-option>
                 </md-select>
                 <!-- Use native selector popup on mobile -->
-                <select style="border: none" ng-show="isMobile" id="unitSelectorMobile"
+                <select style="border: none" ng-show="isMobile" id="unitSelector"
                         ng-model="state.trackingReminder.unitAbbreviatedName"
                         ng-options="unit.abbreviatedName as unit.name for unit in state.units"
                         ng-change="unitSelected()">
