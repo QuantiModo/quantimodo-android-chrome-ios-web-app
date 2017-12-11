@@ -144,6 +144,17 @@ window.qm = {
                 }
             }
             return a;
+        },
+        replaceElementInArrayById: function (array, replacementElement) {
+            return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
+        },
+        removeLastItem: function(array){
+            return array.splice(-1,1);
+        },
+        removeLastItemsUntilSizeLessThan: function(maxKb, array){
+            while (getSizeInKiloBytes(array) > maxKb) {
+                array = qm.arrayHelper.removeLastItem(array);
+            }
         }
     },
     auth: {},
@@ -170,6 +181,7 @@ window.qm = {
         lastLocationResultType: 'lastLocationResultType',
         lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
         lastLongitude: 'lastLongitude',
+        lastReminder: 'lastReminder',
         lastStudy: 'lastStudy',
         lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
@@ -271,8 +283,8 @@ window.qm = {
         refreshUserVariables: function(){
             function successHandler(data) {
                 qm.storage.setItem(qm.items.userVariables, data);
-            }
-            qm.userVariableHelper.getFromApi({limit: 200, sort: "-latestMeasurementTime"}, successHandler);
+            } // Limit 50 so we don't exceed storage limits
+            qm.userVariableHelper.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
         getFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
@@ -1104,11 +1116,8 @@ window.qm.storage.setItem = function(key, value){
     if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
-        if(key === qm.items.userVariables){
-            qmLog.error("Removing qm.items.userVariables because it's really big and probable left over from before limit checker");
-            qm.storage.removeItem(qm.items.userVariables);
-        }
-        return qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage")
+        qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
+        value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
     }
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
@@ -1267,6 +1276,10 @@ qm.notifications.getAllUniqueNotifications = function() {
 };
 qm.notifications.getNotificationsDueInLast24 = function() {
     var allNotifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
+    if(!allNotifications){
+        qmLog.info("No NotificationsDueInLast24 in localStorage");
+        return null;
+    }
     var last24 = [];
     for (var i = 0; i < allNotifications.length; i++) {
         if(qm.timeHelper.hoursAgo(allNotifications[i].trackingReminderNotificationTimeEpoch) < 24){
@@ -1277,6 +1290,10 @@ qm.notifications.getNotificationsDueInLast24 = function() {
 };
 qm.notifications.getUniqueNotificationsDueInLast24 = function() {
     var last24 = qm.notifications.getNotificationsDueInLast24();
+    if(!last24){
+        qmLog.info("No UNIQUE NotificationsDueInLast24 in localStorage");
+        return null;
+    }
     qmLog.info("Got " + last24.length + " total NON-UNIQUE notification due in last 24 from storage");
     var unique = getUnique(last24, 'variableName');
     qmLog.info("Got " + unique.length + " UNIQUE notifications");

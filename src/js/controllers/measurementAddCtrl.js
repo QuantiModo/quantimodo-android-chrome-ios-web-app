@@ -146,13 +146,13 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 qmLog.error("Syncing reminders because unit changed");
                 qm.storage.removeItem(qm.items.trackingReminders);
                 qmService.syncTrackingReminders();
-                $scope.goBack();
+                $scope.goBack({updatedMeasurement: $scope.state.measurement});
             }
         });
         var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
         toastMessage = toastMessage.replace(' /', '/');
         qmService.showInfoToast(toastMessage);
-        if(!unitChanged){$scope.goBack();}
+        if(!unitChanged){$scope.goBack({updatedMeasurement: $scope.state.measurement});}
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
         setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);

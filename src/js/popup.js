@@ -68,6 +68,7 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
     if(window.trackingReminderNotification){
+        window.trackingReminderNotification.modifiedValue = ratingValue;
         return addToSyncQueueAndCloseOrUpdateQuestion();
     } else {
         qmLog.error("No window.trackingReminderNotification to post or add to queue!");
@@ -190,6 +191,9 @@ function updateQuestion(variableName) {
     } else {
         function setLastValueButtonProperties(textElement, buttonElement, notificationAction) {
             if(notificationAction.modifiedValue !== null){
+                buttonElement.style.display = "none";
+                var size = 30 - notificationAction.shortTitle.length * 12/3;
+                buttonElement.style.fontSize = size + "px";
                 textElement.innerHTML = notificationAction.shortTitle;
                 buttonElement.style.display = "inline-block";
             } else {

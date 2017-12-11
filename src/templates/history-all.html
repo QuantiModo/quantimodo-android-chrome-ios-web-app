@@ -28,9 +28,6 @@
                  <div class="row" > <div class="button-bar"> <button id="gotItButton" class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button> </div> </div>
              </div>
          </div>
-         <div class="card"  ng-show="state.loading">
-             <div class="item" > <div class="row"> <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp {{state.loadingText}}</p> </div> </div>
-         </div>
         <ion-list id="historyList">
             <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
                 ng-hide="historyItem.hide"
@@ -53,11 +50,16 @@
                 </p>
             </div>
         </ion-list>
-         <ion-infinite-scroll
-             ng-if="state.moreDataCanBeLoaded"
-             on-infinite="getHistory()"
-             distance="10%">
-         </ion-infinite-scroll>
+         <div class="card" ng-show="state.loading">
+             <div class="item" > <div class="row">
+                 <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp {{state.loadingText}}</p>
+             </div> </div>
+         </div>
+         <!--Infinite scroll doesn't work on web for some reason.  Various solutions like collection-repeat cause double scroll bar-->
+         <div style="text-align: center;" ng-if="state.moreDataCanBeLoaded && !isMobile && !state.loading">
+             <md-button class="md-raised md-primary" ng-click="getHistory()"><i class="icon ion-refresh"></i>&nbsp; Load More </md-button>
+         </div>
+         <ion-infinite-scroll ng-if="state.moreDataCanBeLoaded" on-infinite="getHistory()" distance="10%"></ion-infinite-scroll>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>
