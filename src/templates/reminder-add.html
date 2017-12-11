@@ -16,8 +16,8 @@
             </md-input-container>
             <md-input-container id="unitSelectorBlock" class="md-block" flex-gt-sm>
                 <label>Unit</label>
-                <md-select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName">
-                    <md-option ng-repeat="unit in state.units" value="{{unit.abbreviatedName}}">{{unit.abbreviatedName}}</md-option>
+                <md-select id="unitSelector" ng-model="state.trackingReminder.unitAbbreviatedName" ng-change="unitSelected()">>
+                    <md-option ng-repeat="unit in state.units" value="{{unit.abbreviatedName}}" >{{unit.abbreviatedName}}</md-option>
                 </md-select>
             </md-input-container>
         </div>
