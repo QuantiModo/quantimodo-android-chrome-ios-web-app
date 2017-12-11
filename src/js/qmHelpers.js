@@ -655,6 +655,7 @@ var appsManager = { // jshint ignore:line
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
         if(!apiUrl){apiUrl = "https://app.quantimo.do";}
         if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
         apiUrl = apiUrl.replace("https://https", "https");
