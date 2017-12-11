@@ -149,9 +149,25 @@ window.qm = {
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
         },
         removeLastItem: function(array){
+            if(!array){
+                qmLog.error("No array provided to removeLastItem");
+                return array;
+            }
+            if(!qm.arrayHelper.variableIsArray(array)){
+                qmLog.error("Non-array provided to removeLastItem");
+                return array;
+            }
             return array.splice(-1,1);
         },
         removeLastItemsUntilSizeLessThan: function(maxKb, array){
+            if(!array){
+                qmLog.error("No array provided to removeLastItem");
+                return array;
+            }
+            if(!qm.arrayHelper.variableIsArray(array)){
+                qmLog.error("Non-array provided to removeLastItemsUntilSizeLessThan");
+                return array;
+            }
             while (getSizeInKiloBytes(array) > maxKb) {
                 array = qm.arrayHelper.removeLastItem(array);
             }
