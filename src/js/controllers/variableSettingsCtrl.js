@@ -93,7 +93,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             placeholder: "Search for a tag...",
             buttonText: "Select Variable",
             requestParams: {includePublic: true, taggedVariableId: $scope.state.variableObject.id},
-            excludeLocal: true // Necessary because API does complex filtering
+            excludeLocal: true, // Necessary because API does complex filtering,
+            doNotCreateNewVariables: true
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
@@ -154,7 +155,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             placeholder: "What variable would you like to join?",
             buttonText: "Select Variable",
             requestParams: {includePublic: true, joinVariableId: $scope.state.variableObject.id},
-            excludeLocal: true // Necessary because API does complex filtering
+            excludeLocal: true, // Necessary because API does complex filtering
+            doNotCreateNewVariables: true
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
