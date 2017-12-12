@@ -482,7 +482,7 @@ qm.getPrimaryOutcomeVariable = function(){
             "name" : "Overall Mood",
             "variableName": "Overall Mood",
             variableCategoryName : "Mood",
-            "userVariableDefaultUnitAbbreviatedName" : "/5",
+            "userUnitAbbreviatedName" : "/5",
             unitAbbreviatedName : "/5",
             "combinationOperation": "MEAN",
             "valence": "positive",

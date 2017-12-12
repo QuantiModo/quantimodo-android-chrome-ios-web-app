@@ -3,6 +3,5 @@
   "api_key":"7262cd5d6ace6ceb35304c7ddafefac98391666a2145fb97",
   "dev_push":false,
   "documentRoot": "src",
-  "watchPatterns": ["src/**/*", "!src/lib/**/*"],
-  "comment": "this_file_is_needed_to_serve_from_src_instead_of_www"
+  "watchPatterns": ["src/**/*", "!src/lib/**/*"]
 }

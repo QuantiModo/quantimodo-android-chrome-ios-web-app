@@ -2942,7 +2942,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return averageValueByMonthlyArray;
     };
     var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
-        return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
+        return variableObject.userUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
     };
     function setChartExportingOptions(highchartConfig){
         if(!highchartConfig){
