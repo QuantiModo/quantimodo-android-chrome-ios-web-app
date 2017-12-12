@@ -284,7 +284,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             onsetDelay: variableObject.onsetDelayInHours*60*60,
             combinationOperation: variableObject.combinationOperation,
             shareUserMeasurements: variableObject.shareUserMeasurements,
-            defaultUnitId: variableObject.userVariableDefaultUnitId,
+            defaultUnitId: variableObject.userUnitId,
             userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
             //userVariableAlias: $scope.state.userVariableAlias
             experimentStartTimeString: experimentStartTimeString,
@@ -342,17 +342,18 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
+            $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             $scope.state.variableObject = variableObject;
             //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             qmService.setupVariableByVariableObject(variableObject);
         }, function (error) {
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
+            $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             qmLogService.error(error);
         });
+    };
+    $scope.tagAnotherVariable = function (variableObject) {
+        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: variableObject});
     };
 }]);

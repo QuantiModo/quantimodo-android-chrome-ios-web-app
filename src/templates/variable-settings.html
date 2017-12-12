@@ -29,7 +29,7 @@
                 <md-card-content>
                     <div ng-if="state.variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
                         <span>Default Unit</span>
-                        <md-select ng-model="state.variableObject.userVariableDefaultUnitId" ng-show="!isMobile">
+                        <md-select ng-model="state.variableObject.userUnitId" ng-show="!isMobile">
                             <md-option ng-repeat="unit in state.variableObject.availableDefaultUnits" ng-value="unit.id" >{{unit.name}}</md-option>
                         </md-select>
                         <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="isMobile"
@@ -66,8 +66,9 @@
             </div>
             <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
                 <div class="card variable-settings" >
-                    <div ng-show="state.variableObject.ingredientUserTagVariables" class="item item-divider ng-binding">{{state.variableObject.name}} Ingredients</div>
+                    <div class="item item-divider ng-binding">{{state.variableObject.name}} Ingredients</div>
                     <md-chips ng-model="state.variableObject.ingredientUserTagVariables" name="tagVariable"
+                              ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
                               md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                         <md-chip-template>
                             <em>{{$chip.tagDisplayText}}</em>
@@ -88,17 +89,19 @@
             </div>
             <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
                 <div class="card variable-settings" >
-                    <div ng-show="state.variableObject.ingredientOfUserTagVariables" class="item item-divider ng-binding">
+                    <div class="item item-divider ng-binding">
                         {{state.variableObject.name}} is Ingredient Of
                     </div>
                     <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable"
+                              ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
                               md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
                         <md-chip-template>
                             <em>{{$chip.tagDisplayText}}</em>
                         </md-chip-template>
                     </md-chips>
                     <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
-                               ng-click="tagAnotherVariable(state.variableObject)">Add variable containing {{state.variableObject.name}}</md-button>
+                               ng-click="tagAnotherVariable(state.variableObject)">Add variable containing {{state.variableObject.name}}
+                    </md-button>
                     <div ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length"
                          class="item item-divider ng-binding">Common Tagged Variables</div>
                     <ion-list ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length">
