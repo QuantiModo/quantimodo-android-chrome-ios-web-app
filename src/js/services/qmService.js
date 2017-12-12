@@ -757,7 +757,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deleteUserTag(tagData, function(response){
             qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
             qmService.addVariableToLocalStorage(response.data.userTagVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
