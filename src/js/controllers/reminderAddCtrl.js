@@ -14,7 +14,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         measurementSynonymSingularLowercase : 'measurement',
         defaultValueLabel : 'Default Value',
         defaultValuePlaceholderText : 'Enter typical value',
-        showInstructionsField : false,
         selectedStopTrackingDate: null,
         showMoreOptions: false,
         showMoreUnits: false,
@@ -390,7 +389,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
             $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
         }
-        if(variableCategoryName === 'Treatments'){$scope.state.showInstructionsField = true;}
         $scope.state.trackingReminder = qmService.addImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
         setHideDefaultValueField();

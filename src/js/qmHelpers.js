@@ -149,9 +149,25 @@ window.qm = {
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
         },
         removeLastItem: function(array){
+            if(!array){
+                qmLog.error("No array provided to removeLastItem");
+                return array;
+            }
+            if(!qm.arrayHelper.variableIsArray(array)){
+                qmLog.error("Non-array provided to removeLastItem");
+                return array;
+            }
             return array.splice(-1,1);
         },
         removeLastItemsUntilSizeLessThan: function(maxKb, array){
+            if(!array){
+                qmLog.error("No array provided to removeLastItem");
+                return array;
+            }
+            if(!qm.arrayHelper.variableIsArray(array)){
+                qmLog.error("Non-array provided to removeLastItemsUntilSizeLessThan");
+                return array;
+            }
             while (getSizeInKiloBytes(array) > maxKb) {
                 array = qm.arrayHelper.removeLastItem(array);
             }
@@ -655,6 +671,7 @@ var appsManager = { // jshint ignore:line
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
         if(!apiUrl){apiUrl = "https://app.quantimo.do";}
         if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
         apiUrl = apiUrl.replace("https://https", "https");
