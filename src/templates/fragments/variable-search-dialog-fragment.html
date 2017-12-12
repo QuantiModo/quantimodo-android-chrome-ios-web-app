@@ -36,7 +36,8 @@
                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
                     </md-item-template>
                     <md-not-found>
-                        <a ng-click="ctrl.newVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
+                        <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
+                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.newVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
                     </md-not-found>
                 </md-autocomplete>
             </form>
