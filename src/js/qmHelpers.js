@@ -1133,8 +1133,13 @@ window.qm.storage.setItem = function(key, value){
     if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
-        qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
-        value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
+        if(qm.arrayHelper.variableIsArray(value)){
+            qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
+            value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
+        } else {
+            qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
+            return
+        }
     }
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
