@@ -7497,14 +7497,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             };
             function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
-                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
-                if(!query){
+                if(!query || query === ""){
+                    self.notFoundText = null;
                     qmLogService.debug('Why are we searching without a query?');
                     if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
+                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 if(qmService.arrayHasItemWithNameProperty(self.items)){
                     self.items = qmService.removeItemsWithDifferentName(self.items, query);
                     var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
