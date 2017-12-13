@@ -1130,7 +1130,6 @@ window.qm.storage.setItem = function(key, value){
         return;
     }
     qm.storage.setGlobal(key, value);
-    if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
         if(qm.arrayHelper.variableIsArray(value)){
@@ -1141,6 +1140,7 @@ window.qm.storage.setItem = function(key, value){
             return
         }
     }
+    if(typeof value !== "string"){value = JSON.stringify(value);}
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
     window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
