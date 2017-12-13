@@ -730,9 +730,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.postVariableJoin(tagData, function(response){
-            qmService.addVariableToLocalStorage(response.data.parentVariable);
+            qmService.addVariableToLocalStorage(response.data.currentVariable);
             qmService.addVariableToLocalStorage(response.data.joinedVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
@@ -743,9 +743,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.deleteVariableJoin(tagData, function(response){
-            qmService.addVariableToLocalStorage(response.data.parentVariable);
+            if(!response){
+                qmLog.info("No response from deleteVariableJoin");
+                deferred.resolve();
+                return;
+            }
+            qmService.addVariableToLocalStorage(response.data.currentVariable);
             qmService.addVariableToLocalStorage(response.data.joinedVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
@@ -755,9 +760,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteUserTagDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.deleteUserTag(tagData, function(response){
+            if(!response){
+                qmLog.info("No response from deleteUserTag");
+                deferred.resolve();
+                return;
+            }
             qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
             qmService.addVariableToLocalStorage(response.data.userTagVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
@@ -2942,7 +2952,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return averageValueByMonthlyArray;
     };
     var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
-        return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
+        return variableObject.userUnitId === 10 && variableObject.name === qm.getPrimaryOutcomeVariable().name;
     };
     function setChartExportingOptions(highchartConfig){
         if(!highchartConfig){
@@ -5662,6 +5672,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
     };
     qmService.addVariableToLocalStorage = function(variable){
+        if(!variable){
+            return qmLog.error("No variable provided to addVariableToLocalStorage!");
+        }
         if(variable.userId){
             qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variable);
         } else {
@@ -7497,14 +7510,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             };
             function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
-                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
-                if(!query){
+                if(!query || query === ""){
+                    self.notFoundText = null;
                     qmLogService.debug('Why are we searching without a query?');
                     if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
+                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 if(qmService.arrayHasItemWithNameProperty(self.items)){
                     self.items = qmService.removeItemsWithDifferentName(self.items, query);
                     var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;

@@ -163,9 +163,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showHelpInfoPopup = function (explanationId, ev) {
         qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
     };
-    $scope.tagAnotherVariable = function (variableObject) {
-        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: variableObject});
-    };
+
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}

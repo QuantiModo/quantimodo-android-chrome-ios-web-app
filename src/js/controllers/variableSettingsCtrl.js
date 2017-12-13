@@ -93,7 +93,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             placeholder: "Search for a tag...",
             buttonText: "Select Variable",
             requestParams: {includePublic: true, taggedVariableId: $scope.state.variableObject.id},
-            excludeLocal: true // Necessary because API does complex filtering
+            excludeLocal: true, // Necessary because API does complex filtering,
+            doNotCreateNewVariables: true
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
@@ -136,9 +137,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 joinedVariableId: selectedVariable.id,
                 conversionFactor: 1
             };
-            qmService.postVariableJoinDeferred(variableData).then(function (response) {
+            qmService.postVariableJoinDeferred(variableData).then(function (currentVariable) {
                 qmService.hideLoader();
-                $scope.state.variableObject = response.data.parentVariable;
+                $scope.state.variableObject = currentVariable;
             }, function (error) {
                 qmService.hideLoader();
                 qmLogService.error(null, error);
@@ -154,7 +155,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             placeholder: "What variable would you like to join?",
             buttonText: "Select Variable",
             requestParams: {includePublic: true, joinVariableId: $scope.state.variableObject.id},
-            excludeLocal: true // Necessary because API does complex filtering
+            excludeLocal: true, // Necessary because API does complex filtering
+            doNotCreateNewVariables: true
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
@@ -282,7 +284,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             onsetDelay: variableObject.onsetDelayInHours*60*60,
             combinationOperation: variableObject.combinationOperation,
             shareUserMeasurements: variableObject.shareUserMeasurements,
-            defaultUnitId: variableObject.userVariableDefaultUnitId,
+            defaultUnitId: variableObject.userUnitId,
             userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
             //userVariableAlias: $scope.state.userVariableAlias
             experimentStartTimeString: experimentStartTimeString,
@@ -300,12 +302,17 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.deleteTaggedVariable = function(taggedVariable) {
         taggedVariable.hide = true;
         var userTagData = {userTagVariableId: $scope.state.variableObject.id, userTaggedVariableId: taggedVariable.id};
-        qmService.deleteUserTagDeferred(userTagData);
+        qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
     };
     $scope.deleteTagVariable = function(tagVariable) {
         tagVariable.hide = true;
         var userTagData = {userTaggedVariableId: $scope.state.variableObject.id, userTagVariableId: tagVariable.id};
-        qmService.deleteUserTagDeferred(userTagData);
+        qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
+    };
+    $scope.deleteJoinedVariable = function(tagVariable) {
+        tagVariable.hide = true;
+        var postBody = {currentVariableId: $scope.state.variableObject.id, joinedUserTagVariableId: tagVariable.id};
+        qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
     };
     $scope.editTag = function(userTagVariable){
         qmService.goToState('app.tagAdd', {
@@ -329,17 +336,18 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
         qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
+            $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             $scope.state.variableObject = variableObject;
             //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             qmService.setupVariableByVariableObject(variableObject);
         }, function (error) {
-            //Stop the ion-refresher from spinning
-            $scope.$broadcast('scroll.refreshComplete');
+            $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             qmLogService.error(error);
         });
+    };
+    $scope.tagAnotherVariable = function (variableObject) {
+        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: variableObject});
     };
 }]);

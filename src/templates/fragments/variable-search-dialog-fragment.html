@@ -19,7 +19,7 @@
             <form ng-submit="$event.preventDefault()">
                 <p ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
                 <md-autocomplete id="variable-search-box"
-                        md-no-cache="true"
+                        md-no-cache="false"
                         md-selected-item="ctrl.selectedItem"
                         md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
                         md-search-text="ctrl.searchText"
@@ -27,7 +27,7 @@
                         md-items="item in ctrl.querySearch(ctrl.searchText)"
                         ng-model-options="{debounce: 500}"
                         md-item-text="item.name"
-                        md-min-length="0"
+                        md-min-length="1"
                         placeholder="{{ctrl.placeholder}}"
                         md-autofocus="true">
                     <md-item-template>
@@ -36,7 +36,8 @@
                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
                     </md-item-template>
                     <md-not-found>
-                        <a ng-click="ctrl.newVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
+                        <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
+                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.newVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
                     </md-not-found>
                 </md-autocomplete>
             </form>
