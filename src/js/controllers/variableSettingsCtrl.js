@@ -302,23 +302,17 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.deleteTaggedVariable = function(taggedVariable) {
         taggedVariable.hide = true;
         var userTagData = {userTagVariableId: $scope.state.variableObject.id, userTaggedVariableId: taggedVariable.id};
-        qmService.deleteUserTagDeferred(userTagData).then(function(response){
-            $scope.state.variableObject = response.userTagVariable;
-        });
+        qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
     };
     $scope.deleteTagVariable = function(tagVariable) {
         tagVariable.hide = true;
         var userTagData = {userTaggedVariableId: $scope.state.variableObject.id, userTagVariableId: tagVariable.id};
-        qmService.deleteUserTagDeferred(userTagData).then(function(response){
-            $scope.state.variableObject = response.userTaggedVariable;
-        });
+        qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
     };
     $scope.deleteJoinedVariable = function(tagVariable) {
         tagVariable.hide = true;
         var postBody = {currentVariableId: $scope.state.variableObject.id, joinedUserTagVariableId: tagVariable.id};
-        qmService.deleteVariableJoinDeferred(postBody).then(function (currentVariable) {
-            $scope.state.variableObject = currentVariable;
-        });
+        qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
     };
     $scope.editTag = function(userTagVariable){
         qmService.goToState('app.tagAdd', {
