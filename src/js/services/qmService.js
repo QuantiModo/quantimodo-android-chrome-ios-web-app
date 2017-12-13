@@ -743,6 +743,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.deleteVariableJoin(tagData, function(response){
+            if(!response){
+                qmLog.info("No response from deleteVariableJoin");
+                deferred.resolve();
+                return;
+            }
             qmService.addVariableToLocalStorage(response.data.currentVariable);
             qmService.addVariableToLocalStorage(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
@@ -755,6 +760,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteUserTagDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.deleteUserTag(tagData, function(response){
+            if(!response){
+                qmLog.info("No response from deleteUserTag");
+                deferred.resolve();
+                return;
+            }
             qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
             qmService.addVariableToLocalStorage(response.data.userTagVariable);
             deferred.resolve(response.data);
