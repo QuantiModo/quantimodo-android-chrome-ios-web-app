@@ -730,9 +730,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.postVariableJoin(tagData, function(response){
-            qmService.addVariableToLocalStorage(response.data.parentVariable);
+            qmService.addVariableToLocalStorage(response.data.currentVariable);
             qmService.addVariableToLocalStorage(response.data.joinedVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
@@ -743,9 +743,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.deleteVariableJoin(tagData, function(response){
-            qmService.addVariableToLocalStorage(response.data.parentVariable);
+            qmService.addVariableToLocalStorage(response.data.currentVariable);
             qmService.addVariableToLocalStorage(response.data.joinedVariable);
-            deferred.resolve(response);
+            deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
@@ -5662,6 +5662,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
     };
     qmService.addVariableToLocalStorage = function(variable){
+        if(!variable){
+            return qmLog.error("No variable provided to addVariableToLocalStorage!");
+        }
         if(variable.userId){
             qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variable);
         } else {
