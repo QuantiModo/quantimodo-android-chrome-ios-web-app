@@ -19,19 +19,6 @@
       <excludeFolder url="file://$MODULE_DIR$/../../.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../apps/quantimodo/www" />
       <excludeFolder url="file://$MODULE_DIR$/../../build" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/package/src/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/package/src/plugman/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/package/templates/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/src/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/src/plugman/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/cordova-lib/templates/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/package/src/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/package/src/plugman/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/package/templates/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/src/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/src/plugman/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/ionic/node_modules/cordova-lib/templates/platforms" />
-      <excludeFolder url="file://$MODULE_DIR$/../../node_modules/jshint/src/platforms" />
       <excludeFolder url="file://$MODULE_DIR$/../../platforms" />
       <excludeFolder url="file://$MODULE_DIR$/../../plugins/cordova-plugin-crosswalk-webview/platforms" />
       <excludeFolder url="file://$MODULE_DIR$/../../www" />
@@ -40,6 +27,5 @@
     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="global node modules" level="application" />
-    <orderEntry type="library" name="qm js" level="project" />
   </component>
 </module>

@@ -171,6 +171,7 @@ window.qm = {
             while (getSizeInKiloBytes(array) > maxKb) {
                 array = qm.arrayHelper.removeLastItem(array);
             }
+            return array;
         }
     },
     auth: {},
@@ -482,7 +483,7 @@ qm.getPrimaryOutcomeVariable = function(){
             "name" : "Overall Mood",
             "variableName": "Overall Mood",
             variableCategoryName : "Mood",
-            "userVariableDefaultUnitAbbreviatedName" : "/5",
+            "userUnitAbbreviatedName" : "/5",
             unitAbbreviatedName : "/5",
             "combinationOperation": "MEAN",
             "valence": "positive",
@@ -1130,12 +1131,17 @@ window.qm.storage.setItem = function(key, value){
         return;
     }
     qm.storage.setGlobal(key, value);
-    if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
-        qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
-        value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
+        if(qm.arrayHelper.variableIsArray(value)){
+            qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
+            value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
+        } else {
+            qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
+            return;
+        }
     }
+    if(typeof value !== "string"){value = JSON.stringify(value);}
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
     window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
@@ -1167,11 +1173,17 @@ window.qm.storage.getItem = function(key){
         qmLog.error("No key provided to qm.storage.getItem");
         return null;
     }
-    if(qm.storage.getGlobal(key)){
+    var fromGlobals = qm.storage.getGlobal(key);
+    if(fromGlobals){
         qmLog.debug("Got " + key + " from globals");
-        return qm.storage.getGlobal(key);
+        return fromGlobals;
     }
     var item = localStorage.getItem(key);
+    if(item === "undefined"){
+        qmLog.error(key + " from localStorage is undefined!");
+        localStorage.removeItem(key);
+        return null;
+    }
     if (item && typeof item === "string"){
         qm.globals[key] = parseIfJsonString(item);
         window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
