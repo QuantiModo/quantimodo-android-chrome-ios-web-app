@@ -482,7 +482,7 @@ qm.getPrimaryOutcomeVariable = function(){
             "name" : "Overall Mood",
             "variableName": "Overall Mood",
             variableCategoryName : "Mood",
-            "userVariableDefaultUnitAbbreviatedName" : "/5",
+            "userUnitAbbreviatedName" : "/5",
             unitAbbreviatedName : "/5",
             "combinationOperation": "MEAN",
             "valence": "positive",
@@ -1130,7 +1130,6 @@ window.qm.storage.setItem = function(key, value){
         return;
     }
     qm.storage.setGlobal(key, value);
-    if(typeof value !== "string"){value = JSON.stringify(value);}
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
         if(qm.arrayHelper.variableIsArray(value)){
@@ -1138,9 +1137,10 @@ window.qm.storage.setItem = function(key, value){
             value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
         } else {
             qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
-            return
+            return;
         }
     }
+    if(typeof value !== "string"){value = JSON.stringify(value);}
     var summaryValue = value;
     if(summaryValue){summaryValue = value.substring(0, 18);}
     window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
