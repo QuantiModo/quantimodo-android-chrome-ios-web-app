@@ -137,9 +137,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 joinedVariableId: selectedVariable.id,
                 conversionFactor: 1
             };
-            qmService.postVariableJoinDeferred(variableData).then(function (response) {
+            qmService.postVariableJoinDeferred(variableData).then(function (currentVariable) {
                 qmService.hideLoader();
-                $scope.state.variableObject = response.data.parentVariable;
+                $scope.state.variableObject = currentVariable;
             }, function (error) {
                 qmService.hideLoader();
                 qmLogService.error(null, error);
@@ -316,8 +316,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.deleteJoinedVariable = function(tagVariable) {
         tagVariable.hide = true;
         var postBody = {currentVariableId: $scope.state.variableObject.id, joinedUserTagVariableId: tagVariable.id};
-        qmService.deleteVariableJoinDeferred(postBody).then(function (response) {
-            $scope.state.variableObject = response.parentVariable;
+        qmService.deleteVariableJoinDeferred(postBody).then(function (currentVariable) {
+            $scope.state.variableObject = currentVariable;
         });
     };
     $scope.editTag = function(userTagVariable){
