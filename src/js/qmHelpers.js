@@ -171,6 +171,7 @@ window.qm = {
             while (getSizeInKiloBytes(array) > maxKb) {
                 array = qm.arrayHelper.removeLastItem(array);
             }
+            return array;
         }
     },
     auth: {},
@@ -1172,11 +1173,17 @@ window.qm.storage.getItem = function(key){
         qmLog.error("No key provided to qm.storage.getItem");
         return null;
     }
-    if(qm.storage.getGlobal(key)){
+    var fromGlobals = qm.storage.getGlobal(key);
+    if(fromGlobals){
         qmLog.debug("Got " + key + " from globals");
-        return qm.storage.getGlobal(key);
+        return fromGlobals;
     }
     var item = localStorage.getItem(key);
+    if(item === "undefined"){
+        qmLog.error(key + " from localStorage is undefined!");
+        localStorage.removeItem(key);
+        return null;
+    }
     if (item && typeof item === "string"){
         qm.globals[key] = parseIfJsonString(item);
         window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
