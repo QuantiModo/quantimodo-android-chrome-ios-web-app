@@ -1137,7 +1137,7 @@ window.qm.storage.setItem = function(key, value){
             value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
         } else {
             qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
-            return
+            return;
         }
     }
     if(typeof value !== "string"){value = JSON.stringify(value);}
