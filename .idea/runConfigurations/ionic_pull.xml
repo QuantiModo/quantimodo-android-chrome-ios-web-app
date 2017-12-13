@@ -2,9 +2,9 @@
   <configuration default="false" name="ionic pull" type="BashConfigurationType" factoryName="Bash" singleton="true">
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="INTERPRETER_PATH" value="C:\Program Files\Git\bin\bash.exe" />
-    <option name="WORKING_DIRECTORY" value="K:\Development\QM-Docker\public.built\ionic\Modo" />
+    <option name="WORKING_DIRECTORY" value="C:\Development\QM-Docker\public.built\ionic\Modo" />
     <option name="PARENT_ENVS" value="true" />
-    <option name="SCRIPT_NAME" value="K:\Development\QM-Docker\git-pull-develop.sh" />
+    <option name="SCRIPT_NAME" value="C:\Development\QM-Docker\git-pull-develop.sh" />
     <option name="PARAMETERS" value="" />
     <module name="" />
     <envs />
