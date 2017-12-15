@@ -7600,7 +7600,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             successHandler(variable);
         }, function(error) {
             if(errorHandler){errorHandler(error)}
-            qmLog.error(error);
             qmLogService.debug('User cancelled selection');
         });
     };
