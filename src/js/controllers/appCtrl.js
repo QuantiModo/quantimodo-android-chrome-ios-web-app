@@ -63,9 +63,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(correlationObject.effectVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
         } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
     };
-    $scope.openUrl = function(url){
-        if(typeof cordova !== "undefined"){ cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
-        } else { window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes'); }
+    $scope.openUrl = function(url, location, target){
+        location = location || "no";
+        target = target || '_blank';
+        if(typeof cordova !== "undefined"){
+            cordova.InAppBrowser.open(url,target, 'location='+location+',toolbar=yes,clearcache=no,clearsessioncache=no');
+        } else {
+            window.open(url,target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+        }
     };
     var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
         var title = 'Share Study';
