@@ -116,8 +116,9 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		$scope.state.earliestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					qmLogService.debug(null, 'Time not selected', null);
+					qmLogService.debug('Time not selected');
 				} else {
+                    var a = new Date();
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
