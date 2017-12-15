@@ -85,7 +85,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }
         }
         var dataToPass = {
-            title: 'Add a Tag',
+            title: 'Add an ingredient',
             helpText: "Search for a variable like an ingredient or category " +
             "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
             "when your tag variable is analyzed, measurements from " +
@@ -98,7 +98,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
         qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
     };
-    $scope.openTagVariableSearchDialog = function($event) {
+    $scope.openTageeVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {
             var userTagData;
             if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
@@ -118,7 +118,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }
         }
         var dataToPass = {
-            title: 'Tag another variable',
+            title: 'Add a variable containing ' + selectVariable.name,
             helpText: "Search for a variable " +
             " for which " + $scope.state.variableObject.name.toUpperCase() + " is an ingredient or category.  Then " +
             "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
@@ -346,8 +346,5 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmService.hideLoader();
             qmLogService.error(error);
         });
-    };
-    $scope.tagAnotherVariable = function (variableObject) {
-        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: variableObject});
     };
 }]);

@@ -114,7 +114,7 @@
         <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
             <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
         </div>
-        <div ng-if="isAndroid" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease)">
+        <div id="beta-download" ng-if="isAndroid" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease, 'yes', '_system')">
             <a class="item"><i class="icon ion-social-android"></i>&nbsp;Download Beta Version</a>
         </div>
         <div ng-if="isChromeExtension" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
