@@ -1340,7 +1340,7 @@ gulp.task('ionicPlatformAddIOS', function (callback) {
     executeCommand('ionic platform add ios', callback);
 });
 gulp.task('ionicServe', function (callback) {
-    logInfo("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from the command line in the root of the repository.");
+    logInfo("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from an administrative command prompt in the root of the repository.");
     executeCommand('ionic serve', callback);
 });
 gulp.task('ionicStateReset', function (callback) {
