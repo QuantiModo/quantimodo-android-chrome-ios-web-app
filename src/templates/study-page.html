@@ -10,7 +10,7 @@
             <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
                 <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)" style="text-align: center;"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'" style="text-align: center;"></div><br>
-                <div ng-hide="user && state.study.userId === user.id" class="row">
+                <div ng-hide="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left ion-ios-people button-positive"
                                 id="joinStudyButton" ng-click="joinStudy(state.study.statistics)">
@@ -18,7 +18,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="causeSettingsButton" ng-show="state.study.userId && user && state.study.userId === user.id" class="row">
+                <div id="causeSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.causeVariableIonIcon}} button-positive"
                                 id="predictorVariableSettingsButton" ng-click="goToVariableSettingsForCauseVariable(state.study.statistics)">
