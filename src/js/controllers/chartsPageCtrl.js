@@ -4,6 +4,19 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     $scope.controller_name = "ChartsPageCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {title: "Charts"};
+    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
+        qmService.unHideNavigationMenu();
+        $scope.variableName = getVariableName();
+        $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
+        $rootScope.showActionSheetMenu = function setActionSheet() {
+            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+        };
+        initializeCharts();
+        if (!clipboard.supported) {
+            console.log('Sorry, copy to clipboard is not supported');
+            $scope.hideClipboardButton = true;
+        }
+    });
     function getVariableName() {
         if($scope.variableName){return $scope.variableName;}
         if(urlHelper.getParam('variableName')){return urlHelper.getParam('variableName');}
@@ -26,6 +39,8 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         if(!getScopedVariableObject() || !getScopedVariableObject().charts){
             qmService.showBlackRingLoader();
             getCharts();
+        } else if ($stateParams.refresh) {
+            $scope.refreshCharts();
         } else {
             qmService.hideLoader();
         }
@@ -46,19 +61,6 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             });
     }
     $scope.refreshCharts = function () {getCharts(true);};
-    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
-        $scope.variableName = getVariableName();
-        $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = function setActionSheet() {
-            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-        };
-        initializeCharts();
-        if (!clipboard.supported) {
-            console.log('Sorry, copy to clipboard is not supported');
-            $scope.hideClipboardButton = true;
-        }
-    });
     $scope.addNewReminderButtonClick = function() {
         qmLogService.debug('addNewReminderButtonClick', null);
         qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, fromState: $state.current.name});
