@@ -293,7 +293,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         qmService.postUserVariableDeferred(body).then(function(userVariable) {
             qmService.hideLoader();
             qmService.showInfoToast('Saved ' + variableObject.name + ' settings');
-            $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
+            $scope.goBack({variableObject: userVariable, refresh: true});  // Temporary workaround to make tests pass
         }, function(error) {
             qmService.hideLoader();
             qmLogService.error(error);
