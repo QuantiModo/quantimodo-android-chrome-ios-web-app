@@ -184,6 +184,15 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             $cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
                 scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
+        if(connector.name === 'strava') {
+            if($rootScope.isWeb || $rootScope.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            scopes = ['public'];
+            $cordovaOauth.strava(window.private_keys.STRAVA_CLIENT_ID, window.private_keys.STRAVA_CLIENT_SECRET,
+                scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+        }
         if(connector.name === 'withings') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
@@ -482,9 +491,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     var webConnect = function (connector) {
         /** @namespace connector.connectInstructions */
         var url = connector.connectInstructions.url;
-        qmLogService.debug('targetUrl is ', null, url);
+        qmLogService.debug('targetUrl is ' + url);
         var ref = window.open(url,'', "width=600,height=800");
-        qmLogService.debug('Opened ' + url, null);
+        qmLogService.debug('Opened ' + url);
     };
     function connectWithParams(params, lowercaseConnectorName) {
         qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
