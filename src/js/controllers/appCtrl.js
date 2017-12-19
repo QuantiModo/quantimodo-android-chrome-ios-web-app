@@ -330,9 +330,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
         function addProvidedStateParamsToBackViewStateParams() {
             for (var key in providedStateParams) {
-                if (providedStateParams[key] && providedStateParams[key] !== "") {
-                    backView.stateParams[key] = providedStateParams[key];
-                    stateId += "_" + key + "=" + providedStateParams[key];
+                if (providedStateParams.hasOwnProperty(key)) {
+                    if (providedStateParams[key] && providedStateParams[key] !== "") {
+                        if (!backView.stateParams) {backView.stateParams = {};}
+                        backView.stateParams[key] = providedStateParams[key];
+                        stateId += "_" + key + "=" + providedStateParams[key];
+                    }
                 }
             }
             //backView.stateId = stateId;  // TODO: What is this for?
