@@ -4937,8 +4937,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getEpochTimeFromLocalString = function (localTimeString) {
         var timeFormat = "HH:mm:ss";
-        var epochTime = moment(localTimeString, timeFormat).unix();
-        return epochTime;
+        return moment(localTimeString, timeFormat).unix();
     };
     qmService.getEpochTimeFromLocalStringRoundedToHour = function (localTimeString) {
         var timeFormat = "HH";
@@ -4969,8 +4968,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getLocalMidnightInUtcString = function () {
         var localMidnightMoment = moment(0, "HH");
         var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-        var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
-        return localMidnightInUtcString;
+        return localMidnightMoment.utc().format(timeFormat);
     };
     qmService.getTomorrowLocalMidnightInUtcString = function () {
         var tomorrowLocalMidnightMoment = moment(0, "HH");
@@ -7639,7 +7637,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminder.tally = null;
             }
         }, 2000);
-    }
+    };
     qmService.scanBarcode = function (successHandler) {
         var scannerConfig = {
             //preferFrontCamera : true, // iOS and Android
