@@ -7438,6 +7438,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     };
     qmService.addActionArrayButtonsToActionSheet = function(actionArray, buttons){
+        if(!actionArray){
+            qmLogService.error("No action array provided to addActionArrayButtonsToActionSheet!");
+            return;
+        }
         for(var i=0; i < actionArray.length; i++){
             if(actionArray[i].action !== "snooze"){
                 buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + actionArray[i].title});
