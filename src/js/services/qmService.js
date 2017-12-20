@@ -6842,7 +6842,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isAndroid && qm.storage.getItem(qm.items.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     qmService.unHideNavigationMenu = function(){
-        if(!urlHelper.getParam('hideMenu')){
+        var hideMenu = urlHelper.getParam('hideMenu');
+        if(!hideMenu){
             $rootScope.hideNavigationMenu = false;
         }
     };
