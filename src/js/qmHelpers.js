@@ -364,6 +364,11 @@ window.qm = {
         },
         prettyJsonStringify: function (jsonObject) {
             return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
+        },
+        parseBoolean: function(value){
+            if(value === "false"){return false;}
+            if(value === "true"){return true;}
+            return value;
         }
     },
     getAppSettings: function () {
@@ -568,6 +573,7 @@ window.urlHelper = {
              for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                  var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
                  if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                     currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
                      if(typeof shouldDecode !== "undefined")  {
                          return decodeURIComponent(currentParameterKeyValuePair[1]);
                      } else {
