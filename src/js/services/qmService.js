@@ -1234,12 +1234,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function sendToAfterLoginGoToUrlIfNecessary() {
         var afterLoginGoToUrl = qm.storage.getAsString('afterLoginGoToUrl');
         if(afterLoginGoToUrl) {
-            qmLogService.debug('afterLoginGoToUrl from localstorage is  ' + afterLoginGoToUrl, null);
+            qmLogService.info('Going to afterLoginGoToUrl from local storage  ' + afterLoginGoToUrl);
             qm.storage.removeItem('afterLoginGoToUrl');
             window.location.replace(afterLoginGoToUrl);
             return true;
         } else {
-            qmLogService.debug('sendToAfterLoginGoToUrlIfNecessary: No afterLoginGoToUrl from localstorage', null);
+            qmLogService.debug('sendToAfterLoginGoToUrlIfNecessary: No afterLoginGoToUrl from local storage', null);
         }
     }
     function sendToAfterLoginStateIfNecessary() {
@@ -7273,6 +7273,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function disablePopups() {
             qmService.showInfoToast("Rating popups disabled");
             qmService.storage.setItem(qm.items.drawOverAppsEnabled, false);
+            if(localNotificationsPluginInstalled()){cordova.plugins.notification.local.cancelAll();}
         }
         function showEnablePopupsConfirmation(){
             var title = 'Enable Rating Popups';
