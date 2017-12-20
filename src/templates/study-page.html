@@ -26,7 +26,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="effectSettingsButton" ng-show="state.study.userId && user && state.study.userId === user.id" class="row">
+                <div id="effectSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.effectVariableIonIcon}} button-positive"
                                 id="outcomeVariableSettingsButton" ng-click="goToVariableSettingsForEffectVariable(state.study.statistics)">

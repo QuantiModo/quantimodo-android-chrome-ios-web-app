@@ -14,6 +14,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         moreDataCanBeLoaded: true
 	};
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        if($stateParams.refresh){$scope.state.history = null;}
         $scope.state.moreDataCanBeLoaded = true;
         $scope.hideHistoryPageInstructionsCard = qm.storage.getAsString('hideHistoryPageInstructionsCard');
         updateMeasurementIfNecessary();
@@ -71,6 +72,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	    if($scope.state.loading){return qmLog.info("Already getting measurements!");}
         if(!$scope.state.moreDataCanBeLoaded){return qmLog.info("No more measurements!");}
         $scope.state.loading = true;
+        if(!$scope.state.history){$scope.state.history = [];}
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
