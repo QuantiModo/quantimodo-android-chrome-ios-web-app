@@ -6522,7 +6522,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
         } else{
-            $ionicLoading.hide();
+            $timeout(function() { $ionicLoading.hide(); }, 0);
         }
     };
     qmService.weShouldUseOAuthLogin = function(){
