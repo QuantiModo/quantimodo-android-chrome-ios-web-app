@@ -665,7 +665,8 @@ angular.module('starter',
                 measurementInfo: null,
                 noReload: false,
                 fromState : null,
-                fromUrl : null
+                fromUrl : null,
+                refresh: null
             },
             views: {
                 'menuContent': {
@@ -861,7 +862,8 @@ angular.module('starter',
             params: {
                 correlationObject: null,
                 causeVariableName: null,
-                effectVariableName: null
+                effectVariableName: null,
+                refresh: null
             },
             views: {
                 'menuContent': {
@@ -983,7 +985,8 @@ angular.module('starter',
                 variableCategoryName: null,
                 connectorName: null,
                 sourceName: null,
-                updatedMeasurement: null
+                updatedMeasurement: null,
+                refresh: null
             },
             views: {
                 'menuContent': {
@@ -996,7 +999,8 @@ angular.module('starter',
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {
-                updatedMeasurement: null
+                updatedMeasurement: null,
+                refresh: null
             },
             views: {
                 'menuContent': {
@@ -1010,7 +1014,8 @@ angular.module('starter',
             cache: true,
             params: {
                 variableObject : null,
-                updatedMeasurement: null
+                updatedMeasurement: null,
+                refresh: null
             },
             views: {
                 'menuContent': {
