@@ -3,6 +3,12 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
+    analytics: {
+        eventCategories: {
+            pushNotifications: "pushNotifications",
+            inbox: "inbox"
+        }
+    },
     apiPaths: {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
@@ -87,6 +93,7 @@ window.qm = {
             return window.urlHelper.getParam('clientId');
         }
     },
+    apiHelper: {},
     arrayHelper: {
         variableIsArray: function(variable){
             if(!variable){
@@ -175,6 +182,46 @@ window.qm = {
         }
     },
     auth: {},
+    getAppSettings: function () {
+        if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
+        return null;
+    },
+    globalHelper: {
+        setStudy: function(study){
+            qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
+        },
+        getStudy: function(causeVariableName, effectVariableName){
+            qm.storage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
+        },
+        setItem: function(key, value){
+            qm.storage.setGlobal(key, value);
+        },
+        getItem: function(key){
+            return qm.storage.getGlobal(key);
+        }
+    },
+    globals: {},
+    integration: {
+        getIntegrationJsWithoutClientId: function(clientId, callback){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.ConnectorsApi();
+            apiInstance.getIntegrationJs({clientId: 'CLIENT_ID'}, function (error, data, response) {
+                if(data){
+                    qm.integration.integrationJs = data;
+                    if(clientId && callback){
+                        callback(qm.integration.integrationJs.replace('CLIENT_ID', clientId));
+                    }
+                }
+                qm.api.responseHandler(error, data, response);
+            });
+        },
+        getIntegrationJsEmbedCodeForClient: function(clientId, callback){
+            if(qm.integration.integrationJs){
+                return callback(qm.integration.integrationJs.replace('CLIENT_ID', clientId));
+            }
+            qm.integration.getIntegrationJsWithoutClientId(clientId, callback);
+        }
+    },
     items: {
         accessToken: 'accessToken',
         apiUrl: 'apiUrl',
@@ -218,23 +265,52 @@ window.qm = {
         useSmallInbox: 'useSmallInbox',
         userVariables: 'userVariables'
     },
-    unitHelper: {},
-    trackingReminderNotifications : [],
-    reminderHelper: {
-        getNumberOfTrackingRemindersInLocalStorage: function () {
-            var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
-            if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
-            return 0;
-        },
-        getTrackingRemindersFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.trackingReminders);
-        },
-        saveToLocalStorage: function(trackingReminders){
-            qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
-            qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
-        }
-    },
+    manualTrackingVariableCategoryNames: [
+        'Emotions',
+        'Symptoms',
+        'Treatments',
+        'Foods',
+        'Vital Signs',
+        'Physical Activity',
+        'Sleep',
+        'Miscellaneous',
+        'Environment'
+    ],
     notifications: {},
+    objectHelper: {
+        copyPropertiesFromOneObjectToAnother: function(source, destination){
+            for (var prop in source) {
+                if (source.hasOwnProperty(prop)) {
+                    destination[prop] = source[prop];
+                }
+            }
+            return destination;
+        },
+        getSizeInKb: function(object) {
+            var string;
+            if(typeof object === "string"){
+                string = object;
+            } else {
+                string = JSON.stringify(object);
+            }
+            return qm.objectHelper.getSizeOfStringInKb(string);
+        },
+        getSizeOfStringInKb: function(string) {
+            return Math.round(string.length / 1000);
+        },
+        unsetPropertiesWithSizeGreaterThanForObject: function(maximumKb, object) {
+            object = JSON.parse(JSON.stringify(object));  // Decouple
+            for (var property in object) {
+                if (object.hasOwnProperty(property)) {
+                    if(qm.objectHelper.getSizeInKb(object[property]) > maximumKb){
+                        delete object[property];
+                    }
+                }
+            }
+            return object;
+        }
+
+    },
     platform: {
         isChromeExtension: function (){
             if(typeof chrome === "undefined"){
@@ -257,8 +333,101 @@ window.qm = {
         isIOS: function (){return window.location.href.indexOf("var/containers/Bundle") > -1;},
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
     },
-    globals: {},
+    push: {},
+    reminderHelper: {
+        getNumberOfTrackingRemindersInLocalStorage: function () {
+            var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
+            return 0;
+        },
+        getTrackingRemindersFromLocalStorage: function(){
+            return qm.storage.getItem(qm.items.trackingReminders);
+        },
+        saveToLocalStorage: function(trackingReminders){
+            qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
+            qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
+        }
+    },
     storage: {},
+    stringHelper: {
+        removeSpecialCharacters: function (str) {
+            return str.replace(/[^A-Z0-9]+/ig, "_");
+        },
+        prettyJsonStringify: function (jsonObject) {
+            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
+        },
+        parseBoolean: function(value){
+            if(value === "false"){return false;}
+            if(value === "true"){return true;}
+            return value;
+        }
+    },
+    studyHelper: {
+        getLastStudy: function(){
+            return qm.storage.getItem(qm.items.lastStudy);
+        },
+        getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName) {
+            var lastStudy = qm.studyHelper.getLastStudy();
+            if(lastStudy.causeVariableName === causeVariableName && lastStudy.effectVariableName === effectVariableName){
+                return lastStudy;
+            }
+        },
+        saveLastStudy: function(study){
+            qm.storage.setItem(qm.items.lastStudy, study);
+        },
+        deleteLastStudy: function(){
+            qm.storage.removeItem(qm.items.lastStudy);
+        }
+    },
+    timeHelper: {
+        getUnixTimestampInMilliseconds: function(dateTimeString) {
+            if(!dateTimeString){return new Date().getTime();}
+            return new Date(dateTimeString).getTime();
+        },
+        universalConversionToUnixTimeSeconds: function(unixTimeOrString){
+            if(isNaN(unixTimeOrString)){
+                unixTimeOrString = qm.timeHelper.getUnixTimestampInSeconds(unixTimeOrString);
+            }
+            if(unixTimeOrString > qm.timeHelper.getUnixTimestampInSeconds() + 365 * 86400 * 10){
+                unixTimeOrString = unixTimeOrString/1000;
+            }
+            return unixTimeOrString;
+        },
+        getUnixTimestampInSeconds: function(dateTimeString) {
+            if(!dateTimeString){dateTimeString = new Date().getTime();}
+            return Math.round(window.qm.timeHelper.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+        },
+        getTimeSinceString: function(unixTimeOrString) {
+            if(!unixTimeOrString){return "never";}
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            var secondsAgo = qm.timeHelper.secondsAgo(unixTimestamp);
+            if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
+            if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
+            if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
+            return secondsAgo + " seconds ago";
+        },
+        secondsAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));
+        },
+        minutesAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/60));
+        },
+        hoursAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/3600));
+        },
+        daysAgo: function(unixTimeOrString) {
+            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
+            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));
+        },
+        getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();},
+    },
+    trackingReminderNotifications : [],
+    unitHelper: {},
+    user: null,
+    userHelper: {},
     userVariableHelper: {
         saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
             userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);
@@ -313,154 +482,6 @@ window.qm = {
             apiInstance.getVariables(params, callback);
         }
     },
-    manualTrackingVariableCategoryNames: [
-        'Emotions',
-        'Symptoms',
-        'Treatments',
-        'Foods',
-        'Vital Signs',
-        'Physical Activity',
-        'Sleep',
-        'Miscellaneous',
-        'Environment'
-    ],
-    objectHelper: {
-        copyPropertiesFromOneObjectToAnother: function(source, destination){
-            for (var prop in source) {
-                if (source.hasOwnProperty(prop)) {
-                    destination[prop] = source[prop];
-                }
-            }
-            return destination;
-        },
-        getSizeInKb: function(object) {
-            var string;
-            if(typeof object === "string"){
-                string = object;
-            } else {
-                string = JSON.stringify(object);
-            }
-            return qm.objectHelper.getSizeOfStringInKb(string);
-        },
-        getSizeOfStringInKb: function(string) {
-            return Math.round(string.length / 1000);
-        },
-        unsetPropertiesWithSizeGreaterThanForObject: function(maximumKb, object) {
-            object = JSON.parse(JSON.stringify(object));  // Decouple
-            for (var property in object) {
-                if (object.hasOwnProperty(property)) {
-                    if(qm.objectHelper.getSizeInKb(object[property]) > maximumKb){
-                        delete object[property];
-                    }
-                }
-            }
-            return object;
-        }
-
-    },
-    stringHelper: {
-        removeSpecialCharacters: function (str) {
-            return str.replace(/[^A-Z0-9]+/ig, "_");
-        },
-        prettyJsonStringify: function (jsonObject) {
-            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
-        },
-        parseBoolean: function(value){
-            if(value === "false"){return false;}
-            if(value === "true"){return true;}
-            return value;
-        }
-    },
-    getAppSettings: function () {
-        if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
-        return null;
-    },
-    studyHelper: {
-        getLastStudy: function(){
-            return qm.storage.getItem(qm.items.lastStudy);
-        },
-        getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName) {
-            var lastStudy = qm.studyHelper.getLastStudy();
-            if(lastStudy.causeVariableName === causeVariableName && lastStudy.effectVariableName === effectVariableName){
-                return lastStudy;
-            }
-        },
-        saveLastStudy: function(study){
-            qm.storage.setItem(qm.items.lastStudy, study);
-        },
-        deleteLastStudy: function(){
-            qm.storage.removeItem(qm.items.lastStudy);
-        }
-    },
-    userHelper: {},
-    timeHelper: {
-        getUnixTimestampInMilliseconds: function(dateTimeString) {
-            if(!dateTimeString){return new Date().getTime();}
-            return new Date(dateTimeString).getTime();
-        },
-        universalConversionToUnixTimeSeconds: function(unixTimeOrString){
-            if(isNaN(unixTimeOrString)){
-                unixTimeOrString = qm.timeHelper.getUnixTimestampInSeconds(unixTimeOrString);
-            }
-            if(unixTimeOrString > qm.timeHelper.getUnixTimestampInSeconds() + 365 * 86400 * 10){
-                unixTimeOrString = unixTimeOrString/1000;
-            }
-            return unixTimeOrString;
-        },
-        getUnixTimestampInSeconds: function(dateTimeString) {
-            if(!dateTimeString){dateTimeString = new Date().getTime();}
-            return Math.round(window.qm.timeHelper.getUnixTimestampInMilliseconds(dateTimeString)/1000);
-        },
-        getTimeSinceString: function(unixTimeOrString) {
-            if(!unixTimeOrString){return "never";}
-            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
-            var secondsAgo = qm.timeHelper.secondsAgo(unixTimestamp);
-            if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
-            if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
-            if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
-            return secondsAgo + " seconds ago";
-        },
-        secondsAgo: function(unixTimeOrString) {
-            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
-            return Math.round((qm.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));
-        },
-        minutesAgo: function(unixTimeOrString) {
-            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
-            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/60));
-        },
-        hoursAgo: function(unixTimeOrString) {
-            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
-            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/3600));
-        },
-        daysAgo: function(unixTimeOrString) {
-            var unixTimestamp = qm.timeHelper.universalConversionToUnixTimeSeconds(unixTimeOrString);
-            return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));
-        },
-        getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();},
-    },
-    apiHelper: {},
-    push: {},
-    analytics: {
-        eventCategories: {
-            pushNotifications: "pushNotifications",
-            inbox: "inbox"
-        }
-    },
-    globalHelper: {
-        setStudy: function(study){
-            qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
-        },
-        getStudy: function(causeVariableName, effectVariableName){
-            qm.storage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
-        },
-        setItem: function(key, value){
-            qm.storage.setGlobal(key, value);
-        },
-        getItem: function(key){
-            return qm.storage.getGlobal(key);
-        }
-    },
-    user: null
 };
 // SubDomain : Filename
 var appConfigFileNames = {
