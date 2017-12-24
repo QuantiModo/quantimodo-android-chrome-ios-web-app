@@ -1234,12 +1234,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function sendToAfterLoginGoToUrlIfNecessary() {
         var afterLoginGoToUrl = qm.storage.getAsString('afterLoginGoToUrl');
         if(afterLoginGoToUrl) {
-            qmLogService.debug('afterLoginGoToUrl from localstorage is  ' + afterLoginGoToUrl, null);
+            qmLogService.info('Going to afterLoginGoToUrl from local storage  ' + afterLoginGoToUrl);
             qm.storage.removeItem('afterLoginGoToUrl');
             window.location.replace(afterLoginGoToUrl);
             return true;
         } else {
-            qmLogService.debug('sendToAfterLoginGoToUrlIfNecessary: No afterLoginGoToUrl from localstorage', null);
+            qmLogService.debug('sendToAfterLoginGoToUrlIfNecessary: No afterLoginGoToUrl from local storage', null);
         }
     }
     function sendToAfterLoginStateIfNecessary() {
@@ -4937,8 +4937,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getEpochTimeFromLocalString = function (localTimeString) {
         var timeFormat = "HH:mm:ss";
-        var epochTime = moment(localTimeString, timeFormat).unix();
-        return epochTime;
+        return moment(localTimeString, timeFormat).unix();
     };
     qmService.getEpochTimeFromLocalStringRoundedToHour = function (localTimeString) {
         var timeFormat = "HH";
@@ -4969,8 +4968,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getLocalMidnightInUtcString = function () {
         var localMidnightMoment = moment(0, "HH");
         var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-        var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
-        return localMidnightInUtcString;
+        return localMidnightMoment.utc().format(timeFormat);
     };
     qmService.getTomorrowLocalMidnightInUtcString = function () {
         var tomorrowLocalMidnightMoment = moment(0, "HH");
@@ -6842,7 +6840,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isAndroid && qm.storage.getItem(qm.items.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     qmService.unHideNavigationMenu = function(){
-        if(!urlHelper.getParam('hideMenu')){
+        var hideMenu = urlHelper.getParam('hideMenu');
+        if(!hideMenu){
             $rootScope.hideNavigationMenu = false;
         }
     };
@@ -7275,6 +7274,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function disablePopups() {
             qmService.showInfoToast("Rating popups disabled");
             qmService.storage.setItem(qm.items.drawOverAppsEnabled, false);
+            if(localNotificationsPluginInstalled()){cordova.plugins.notification.local.cancelAll();}
         }
         function showEnablePopupsConfirmation(){
             var title = 'Enable Rating Popups';
@@ -7643,7 +7643,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminder.tally = null;
             }
         }, 2000);
-    }
+    };
     qmService.scanBarcode = function (successHandler) {
         var scannerConfig = {
             //preferFrontCamera : true, // iOS and Android

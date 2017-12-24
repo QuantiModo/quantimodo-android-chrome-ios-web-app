@@ -330,9 +330,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
         function addProvidedStateParamsToBackViewStateParams() {
             for (var key in providedStateParams) {
-                if (providedStateParams[key] && providedStateParams[key] !== "") {
-                    backView.stateParams[key] = providedStateParams[key];
-                    stateId += "_" + key + "=" + providedStateParams[key];
+                if (providedStateParams.hasOwnProperty(key)) {
+                    if (providedStateParams[key] && providedStateParams[key] !== "") {
+                        if (!backView.stateParams) {backView.stateParams = {};}
+                        backView.stateParams[key] = providedStateParams[key];
+                        stateId += "_" + key + "=" + providedStateParams[key];
+                    }
                 }
             }
             //backView.stateId = stateId;  // TODO: What is this for?
@@ -377,11 +380,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(title, textContent, ev);
     };
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-    $scope.copyToClipboard = function (text) {
+    $scope.copyToClipboard = function (text, name) {
+        name = name || text;
         $scope.copyLinkText = 'Copied!';
-        /** @namespace $scope.state.variableObject.chartsUrl */
         clipboard.copyText(text);
-        qmService.showInfoToast('Copied ' + text + ' to clipboard!');
+        qmService.showInfoToast('Copied ' + name + ' to clipboard!');
     };
     var verifyEmailAddressAndExecuteCallback = function (callback) {
         if($rootScope.user.email || $rootScope.user.userEmail){
