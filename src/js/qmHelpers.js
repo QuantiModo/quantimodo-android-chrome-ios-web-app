@@ -427,7 +427,16 @@ window.qm = {
     trackingReminderNotifications : [],
     unitHelper: {},
     user: null,
-    userHelper: {},
+    userHelper: {
+        deleteUserAccount: function(successHandler, errorHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.UserApi();
+            function callback(error, data, response) {
+                qm.api.responseHandler(error, data, response, successHandler, errorHandler);
+            }
+            apiInstance.deleteUser(callback);
+        }
+    },
     userVariableHelper: {
         saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
             userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);

@@ -307,4 +307,25 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.backgroundGeolocationStop();
         }
     };
+    $scope.openDeleteUserAccountDialog = function(ev){
+        qmLog.error("User clicked DELETE ACCOUNT!");
+        // Appending dialog to document.body to cover sidenav in docs app
+        var confirm = $mdDialog.prompt()
+            .title('Are you sure you want to delete your data?')
+            .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
+            .placeholder('What should I do better?')
+            .ariaLabel('Deletion reason')
+            //.initialValue('Buddy')
+            .targetEvent(ev)
+            .required(true)
+            .ok('DELETE ACCOUNT')
+            .cancel('Give me another chance?');
+
+        $mdDialog.show(confirm).then(function(reason) {
+
+            $scope.status = 'You decided to name your dog ' + reason + '.';
+        }, function(reason) {
+            $scope.status = 'You didn\'t name your dog.';
+        });
+    }
 }]);
