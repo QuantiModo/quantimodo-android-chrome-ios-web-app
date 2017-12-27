@@ -137,7 +137,9 @@
         <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
             <a class="item"><i class="icon ion-clock"></i>&nbsp; Your Time Zone: &nbsp;UTC {{timeZone}}</a>
         </div>
-        <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog()">Delete Account</md-button>
+        <div style="text-align: center;">
+            <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog($event)">Delete Account</md-button>
+        </div>
         <br>
     </ion-content>
 </ion-view>
