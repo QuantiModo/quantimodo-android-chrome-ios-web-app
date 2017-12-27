@@ -1,7 +1,9 @@
-angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ionicPopover", "$ionicPopup", "$rootScope", "$http", "qmService", "qmLogService", "ionicTimePicker", "$stateParams", "$ionicHistory", "$ionicLoading", "$ionicPlatform", function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
-										  qmService, qmLogService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
+angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ionicPopover", "$ionicPopup", "$rootScope", "$http",
+    "qmService", "qmLogService", "ionicTimePicker", "$stateParams", "$ionicHistory", "$ionicLoading", "$ionicPlatform", "$mdDialog",
+    function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http, qmService, qmLogService, ionicTimePicker,
+              $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
-										  $ionicPlatform) {
+										  $ionicPlatform, $mdDialog) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
 	$scope.userEmail = urlHelper.getParam('userEmail');
@@ -322,10 +324,12 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             .cancel('Give me another chance?');
 
         $mdDialog.show(confirm).then(function(reason) {
-
-            $scope.status = 'You decided to name your dog ' + reason + '.';
+            qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
+            qm.userHelper.deleteUserAccount(reason, function () {
+                qmService.completelyResetAppStateAndLogout();
+            });
         }, function(reason) {
-            $scope.status = 'You didn\'t name your dog.';
+            qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
         });
     }
 }]);
