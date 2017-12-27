@@ -427,7 +427,46 @@ window.qm = {
     trackingReminderNotifications : [],
     unitHelper: {},
     user: null,
-    userHelper: {},
+    userHelper: {
+        deleteUserAccount: function(reason, successHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.UserApi();
+            function callback(error, data, response) {
+                qm.api.responseHandler(error, data, response, successHandler);
+            }
+            apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
+        },
+        getUser: function(){
+            if(window.qmUser){return window.qmUser;}
+            window.qmUser = qm.storage.getItem('user');
+            return window.qmUser;
+        },
+        setUser: function(user){
+            window.qmUser = user;
+            qm.storage.setItem(qm.items.user, user);
+            if(!user){return;}
+            window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
+            if(urlHelper.getParam('doNotRemember')){return;}
+            qmLog.setupUserVoice();
+            if(!user.accessToken){
+                qmLog.error("User does not have access token!", null, {userToSave: user});
+            } else {
+                qm.auth.saveAccessTokenResponse(user);
+            }
+        },
+        withinAllowedNotificationTimes: function(){
+            if(qm.userHelper.getUser()){
+                var now = new Date();
+                var hours = now.getHours();
+                var currentTime = hours + ':00:00';
+                if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
+                    window.qmLog.info('Not showing notification because outside allowed time range');
+                    return false;
+                }
+            }
+            return true;
+        }
+    },
     userVariableHelper: {
         saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
             userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);
@@ -905,38 +944,6 @@ qm.notifications.refreshAndShowPopupIfNecessary = function(notificationParams) {
         }
     });
     return notificationParams;
-};
-window.qm.userHelper = {
-    getUser: function(){
-        if(window.qmUser){return window.qmUser;}
-        window.qmUser = qm.storage.getItem('user');
-        return window.qmUser;
-    },
-    setUser: function(user){
-        window.qmUser = user;
-        qm.storage.setItem(qm.items.user, user);
-        if(!user){return;}
-        window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
-        if(urlHelper.getParam('doNotRemember')){return;}
-        qmLog.setupUserVoice();
-        if(!user.accessToken){
-            qmLog.error("User does not have access token!", null, {userToSave: user});
-        } else {
-            qm.auth.saveAccessTokenResponse(user);
-        }
-    },
-    withinAllowedNotificationTimes: function(){
-        if(qm.userHelper.getUser()){
-            var now = new Date();
-            var hours = now.getHours();
-            var currentTime = hours + ':00:00';
-            if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
-                window.qmLog.info('Not showing notification because outside allowed time range');
-                return false;
-            }
-        }
-        return true;
-    }
 };
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
     if(!qm.platform.isChromeExtension()){return;}
