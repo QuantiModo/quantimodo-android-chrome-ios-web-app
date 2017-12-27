@@ -380,11 +380,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(title, textContent, ev);
     };
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-    $scope.copyToClipboard = function (text) {
+    $scope.copyToClipboard = function (text, name) {
+        name = name || text;
         $scope.copyLinkText = 'Copied!';
-        /** @namespace $scope.state.variableObject.chartsUrl */
         clipboard.copyText(text);
-        qmService.showInfoToast('Copied ' + text + ' to clipboard!');
+        qmService.showInfoToast('Copied ' + name + ' to clipboard!');
     };
     var verifyEmailAddressAndExecuteCallback = function (callback) {
         if($rootScope.user.email || $rootScope.user.userEmail){
