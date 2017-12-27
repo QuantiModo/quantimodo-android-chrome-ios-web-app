@@ -4937,8 +4937,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getEpochTimeFromLocalString = function (localTimeString) {
         var timeFormat = "HH:mm:ss";
-        var epochTime = moment(localTimeString, timeFormat).unix();
-        return epochTime;
+        return moment(localTimeString, timeFormat).unix();
     };
     qmService.getEpochTimeFromLocalStringRoundedToHour = function (localTimeString) {
         var timeFormat = "HH";
@@ -4969,8 +4968,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getLocalMidnightInUtcString = function () {
         var localMidnightMoment = moment(0, "HH");
         var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-        var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
-        return localMidnightInUtcString;
+        return localMidnightMoment.utc().format(timeFormat);
     };
     qmService.getTomorrowLocalMidnightInUtcString = function () {
         var tomorrowLocalMidnightMoment = moment(0, "HH");
@@ -6524,7 +6522,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
         } else{
-            $ionicLoading.hide();
+            $timeout(function() { $ionicLoading.hide(); }, 0);
         }
     };
     qmService.weShouldUseOAuthLogin = function(){
@@ -6842,7 +6840,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isAndroid && qm.storage.getItem(qm.items.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     qmService.unHideNavigationMenu = function(){
-        if(!urlHelper.getParam('hideMenu')){
+        var hideMenu = urlHelper.getParam('hideMenu');
+        if(!hideMenu){
             $rootScope.hideNavigationMenu = false;
         }
     };
@@ -7439,6 +7438,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     };
     qmService.addActionArrayButtonsToActionSheet = function(actionArray, buttons){
+        if(!actionArray){
+            qmLogService.error("No action array provided to addActionArrayButtonsToActionSheet!");
+            return;
+        }
         for(var i=0; i < actionArray.length; i++){
             if(actionArray[i].action !== "snooze"){
                 buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + actionArray[i].title});
@@ -7640,7 +7643,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminder.tally = null;
             }
         }, 2000);
-    }
+    };
     qmService.scanBarcode = function (successHandler) {
         var scannerConfig = {
             //preferFrontCamera : true, // iOS and Android
