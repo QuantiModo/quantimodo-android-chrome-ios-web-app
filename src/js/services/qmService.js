@@ -6164,8 +6164,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.title = dataToPass.title;
             self.textContent = dataToPass.textContent;
             $scope.hide = function() {$mdDialog.hide();};
-            $scope.cancel = function() {$mdDialog.cancel();};
+            self.cancel = function() {$mdDialog.cancel();};
             $scope.answer = function(answer) {$mdDialog.hide(answer);};
+            self.getHelp = function(){
+                if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                qmService.goToState(window.qmStates.help);
+                $mdDialog.cancel();
+            };
         }
         $mdDialog.show({
             controller: AlertDialogController,
