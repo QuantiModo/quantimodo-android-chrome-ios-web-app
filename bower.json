@@ -13,7 +13,7 @@
     "angular-d3-word-cloud": "^0.3.1",
     "angular-google-adsense": "^0.4.5",
     "angular-google-analytics": "git+https://github.com/mikepsinn/angular-google-analytics.git#b4a9b7cccd227e5e8e0e8f16ab26aee684f24866",
-    "angular-material": "1.1.1",
+    "angular-material": "1.1.5",
     "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#59819305be646f3f353001e183f35d008f6bc6cc",
     "angular-messages": "1.6.1",
     "angular-sanitize": "1.5.3",
@@ -46,7 +46,7 @@
   },
   "resolutions": {
     "angular": "1.6.1",
-    "angular-material": "1.1.1",
+    "angular-material": "1.1.5",
     "jquery": "~2.1.4",
     "d3": "~4.6.0"
   }
