@@ -8,9 +8,11 @@
             <div class="col col-70">
                 <div class="row">
                     <h2 class="col col-90" style="white-space: normal; line-height: normal;"> {{connector.displayName}}</h2>
-                    <div id="notification-more" ng-click="showActionSheetForConnector(connector, $event)" class="col col-10"><i style="font-size: 20px;" class="icon positive ion-more"></i></div>
+                    <div id="notification-more" ng-click="showActionSheetForConnector(connector, $event)" class="col col-10">
+                        <i style="font-size: 20px;" class="icon positive ion-more"></i>
+                    </div>
                 </div>
-                <p class="col col-90" style="white-space: normal; line-height: normal;" ng-bind-html="connector.message" ng-if="!connector.updateError"></p>
+                <p class="col col-90" style="white-space: normal; line-height: normal;" ng-bind-html="connector.message"></p>
             </div>
         </div>
         <!--<div ng-if="connector.updateError" class="item item-avatar">
