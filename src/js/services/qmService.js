@@ -1841,6 +1841,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.disconnectConnectorToApi(name, function(){deferred.resolve();}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
+    qmService.updateConnector = function(name){
+        qmService.get('api/v3/connectors/' + name + '/update', [], {}, function(){}, function(){});
+    };
     qmService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
         var deferred = $q.defer();
         if(lowercaseConnectorName.indexOf('weather')> -1 && !params.location){
