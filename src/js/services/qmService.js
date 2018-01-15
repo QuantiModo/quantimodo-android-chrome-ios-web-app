@@ -1841,6 +1841,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.disconnectConnectorToApi(name, function(){deferred.resolve();}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
+    qmService.updateConnector = function(name){
+        qmService.get('api/v3/connectors/' + name + '/update', [], {}, function(){}, function(){});
+    };
     qmService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
         var deferred = $q.defer();
         if(lowercaseConnectorName.indexOf('weather')> -1 && !params.location){
@@ -6164,8 +6167,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.title = dataToPass.title;
             self.textContent = dataToPass.textContent;
             $scope.hide = function() {$mdDialog.hide();};
-            $scope.cancel = function() {$mdDialog.cancel();};
+            self.cancel = function() {$mdDialog.cancel();};
             $scope.answer = function(answer) {$mdDialog.hide(answer);};
+            self.getHelp = function(){
+                if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                qmService.goToState(window.qmStates.help);
+                $mdDialog.cancel();
+            };
         }
         $mdDialog.show({
             controller: AlertDialogController,

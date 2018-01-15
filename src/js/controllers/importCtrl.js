@@ -131,6 +131,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         connector.loadingText = null;
         connector.connecting = true;
         button.text = "Import Scheduled";
+        connector.message = 'You should begin seeing any new data within an hour or so.';
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
             qmLogService.debug('Response Object -> ' + JSON.stringify(response), null);
@@ -462,6 +463,12 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmLogService.error("error disconnecting " + error);
         });
     };
+    var updateConnector = function (connector, button){
+        button.text = 'Update Scheduled';
+        connector.message = "If you have new data, you should begin to see it in a hour or so.";
+        qmService.updateConnector(connector.name);
+        $scope.safeApply();
+    };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
     $scope.connectorAction = function(connector, button){
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
@@ -470,6 +477,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             connectConnector(connector, button);
         } else if(button.text.toLowerCase().indexOf('get it') !== -1){
             getItHere(connector, button);
+        } else if(button.text.toLowerCase().indexOf('update') !== -1){
+            updateConnector(connector, button);
         }
     };
     $scope.refreshConnectors = function(){
