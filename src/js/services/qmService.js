@@ -4167,9 +4167,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         cordova.plugins.notification.local.on("update", function(notification) {
-            qmLogService.debug('onUpdate: Just updated this notification: ', null, notification);
+            qmLogService.info('onUpdate: Just updated this notification: ' + JSON.stringify(notification));
             cordova.plugins.notification.local.getAll(function (notifications) {
-                qmLogService.debug('onUpdate: All notifications after update: ', null, notifications);
+                qmLogService.debug('onUpdate: All notifications after update: ' + JSON.stringify(notifications));
             });
         });
         deferred.resolve();
@@ -4184,7 +4184,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {};
         var locationTrackingNotificationId = 666;
         cordova.plugins.notification.local.on("click", function (notification) {
-            qmLogService.debug('onClick: notification: ', null, notification);
+            qmLogService.info('onClick: notification: ' + JSON.stringify(notification));
             var notificationData = null;
             if(notification && notification.data){
                 notificationData = JSON.parse(notification.data);
@@ -4236,7 +4236,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicPlatform.ready(function () {
             if(!qmService.numberOfPendingNotifications){qmService.numberOfPendingNotifications = 0;}
             cordova.plugins.notification.local.getAll(function (notifications) {
-                qmLogService.debug('onTrigger.updateBadgesAndTextOnAllNotifications: ' + 'All notifications ', null, notifications);
+                qmLogService.debug('onTrigger.updateBadgesAndTextOnAllNotifications: ' + 'All notifications ' + JSON.stringify(notifications));
                 for (var i = 0; i < notifications.length; i++) {
                     if(notifications[i].badge === qmService.numberOfPendingNotifications){
                         console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because qmService.numberOfPendingNotifications" +
@@ -4333,7 +4333,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-            qmLogService.info(null, 'onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification), null);
+            qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
             /*                   I don't think this is necessary because we're going to check the API anyway
              if(currentNotification.badge < 1){
              $ionicPlatform.ready(function () {
@@ -4637,7 +4637,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //qmLogService.debug('Ionic is ready to schedule notifications');
                 if (typeof cordova !== "undefined") {
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        qmLogService.debug('scheduleNotificationByReminder: All notifications before scheduling', null, notifications);
+                        qmLogService.debug('scheduleNotificationByReminder: All notifications before scheduling' + JSON.stringify(notifications));
                         for(var i = 0; i < notifications.length; i++){
                             if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
                                 notifications[i].id === trackingReminder.id){
@@ -4913,7 +4913,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cordova.plugins.notification.local.cancelAll(function () {
                     qmLogService.debug('cancelAllNotifications: notifications have been cancelled', null);
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        qmLogService.debug('cancelAllNotifications: All notifications after cancelling', null, notifications);
+                        qmLogService.debug('cancelAllNotifications: All notifications after cancelling' + JSON.stringify(notifications));
                     });
                     deferred.resolve();
                 });
@@ -6814,7 +6814,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showAndroidPopupForMostRecentNotification();
             });
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-                qmLogService.info(null, 'onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification), null);
+                qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
                 qmService.showAndroidPopupForMostRecentNotification();
             });
         });
