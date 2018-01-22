@@ -7016,7 +7016,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "received");
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
-                    if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
+                    if(typeof window.overApps !== "undefined"){
                         var force = false;
                         qmService.drawOverAppsRatingNotification(data.additionalData, force);
                     } else {
