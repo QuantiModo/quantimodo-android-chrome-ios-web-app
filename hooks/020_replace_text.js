@@ -15,7 +15,7 @@ var rootdir = process.argv[2];
 function replace_string_in_file(filename, to_replace, replace_with) {
     var data = fs.readFileSync(filename, 'utf8');
 
-    console.log('replace_string_in_file');
+    console.log('hooks/020_replace_text.js replace_string_in_file');
     var result = data.replace(new RegExp(to_replace, "g"), replace_with);
     fs.writeFileSync(filename, result, 'utf8');
 }
