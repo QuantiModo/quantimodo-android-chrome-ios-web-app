@@ -1646,7 +1646,7 @@ qm.notifications.getMostRecentRatingNotificationNotInSyncQueue = function(){
 qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
     var uniqueNotifications = qm.notifications.getUniqueNotificationsDueInLast24();
     if(!uniqueNotifications || !uniqueNotifications.length){
-        qmLog.info("No uniqueRatingNotifications due in last 24 in storage");
+        qmLog.info("No uniqueNotifications due in last 24 in storage");
         return null;
     }
     for (var i = 0; i < uniqueNotifications.length; i++) {
