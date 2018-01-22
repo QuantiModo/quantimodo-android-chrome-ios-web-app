@@ -175,6 +175,10 @@ window.qm = {
                 qmLog.error("Non-array provided to removeLastItemsUntilSizeLessThan");
                 return array;
             }
+            if(array.length < 2){
+                qmLog.error("Removing only element from single item array!");
+                return [];
+            }
             while (getSizeInKiloBytes(array) > maxKb) {
                 array = qm.arrayHelper.removeLastItem(array);
             }
@@ -1167,7 +1171,7 @@ window.qm.storage.setItem = function(key, value){
     qm.storage.setGlobal(key, value);
     var sizeInKb = getSizeInKiloBytes(value);
     if(sizeInKb > 2000){
-        if(qm.arrayHelper.variableIsArray(value)){
+        if(qm.arrayHelper.variableIsArray(value) && value.length > 1){
             qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
             value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
         } else {
