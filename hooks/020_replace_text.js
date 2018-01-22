@@ -5,6 +5,8 @@
 // Look for the string CONFIGURE HERE for areas that need configuration
 //
 
+console.log('Runing 020_replace.js');
+
 var fs = require('fs');
 var path = require('path');
 
