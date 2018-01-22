@@ -46,7 +46,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});
     }
     if(!$rootScope.user){qmService.refreshUser();}
-    $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info(null, 'ReminderAddCtrl beforeEnter...', null);
+    $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...', null);
         var backView = $ionicHistory.backView();
         qmService.unHideNavigationMenu();
         qmService.sendToLoginIfNecessaryAndComeBack();
@@ -77,7 +77,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
     });
-    $scope.$on('$ionicView.afterEnter', function(){ qmLogService.info(null, 'ReminderAddCtrl beforeEnter...', null);
+    $scope.$on('$ionicView.afterEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...', null);
         qmService.hideLoader();
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
     });
@@ -156,7 +156,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
     };
     var setupByVariableObject = function(selectedVariable){
-        qmLogService.info(null, 'remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
+        qmLogService.info('remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
         if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
         $scope.state.variableObject=selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
@@ -277,7 +277,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         return frequencyChart[frequencyName];
     }
     $scope.save = function(){
-        qmLogService.info(null, 'Clicked save reminder', null);
+        qmLogService.info('Clicked save reminder', null);
         if($stateParams.favorite){
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
