@@ -1488,7 +1488,7 @@ window.qm.notifications.addToSyncQueue = function(trackingReminderNotification){
     qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
-    if(!qm.notifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
+    if(!qm.notifications.drawOverAppsEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
     if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
         window.drawOverAppsRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
     // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
@@ -1570,7 +1570,7 @@ qm.notifications.getMostFrequentReminderIntervalInMinutes = function(trackingRem
     var shortestInterval = 86400;
     if(trackingReminders){
         for (var i = 0; i < trackingReminders.length; i++) {
-            if(trackingReminders[i].reminderFrequency < shortestInterval){
+            if(trackingReminders[i].reminderFrequency && trackingReminders[i].reminderFrequency < shortestInterval){
                 shortestInterval = trackingReminders[i].reminderFrequency;
             }
         }
@@ -1677,7 +1677,7 @@ qm.notifications.getMostRecentRatingNotificationNotInSyncQueue = function(){
     }
     for (var i = 0; i < uniqueRatingNotifications.length; i++) {
         var notification = uniqueRatingNotifications[i];
-        if(!qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+        if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
             qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName);
             return notification;
         }
@@ -1693,7 +1693,7 @@ qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
     }
     for (var i = 0; i < uniqueNotifications.length; i++) {
         var notification = uniqueNotifications[i];
-        if(!qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+        if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
             qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
             return notification;
         }
