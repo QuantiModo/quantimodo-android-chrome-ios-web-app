@@ -30,7 +30,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		noRemindersText: "You don't have any reminders, yet.",
 		noRemindersIcon: "ion-android-notifications-none"
 	};
-	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.info(null, 'beforeEnter RemindersManageCtrl', null);
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.info('beforeEnter RemindersManageCtrl', null);
 		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
 		qmService.showBasicLoader();
         qmService.unHideNavigationMenu();
@@ -105,18 +105,18 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 	function addRemindersToScope(allTrackingReminderTypes) {
 		hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
-			qmLogService.info(null, 'No reminders!', null);
+			qmLogService.info('No reminders!', null);
 			$scope.state.showNoRemindersCard = true;
 			return;
 		}
-        qmLogService.info(null, 'Got ' + allTrackingReminderTypes.allTrackingReminders.length + ' ' + $stateParams.variableCategoryName +
+        qmLogService.info('Got ' + allTrackingReminderTypes.allTrackingReminders.length + ' ' + $stateParams.variableCategoryName +
             " category allTrackingReminderTypes.allTrackingReminders!", null);
 		$scope.state.showNoRemindersCard = false;
 		$scope.state.favorites = allTrackingReminderTypes.favorites;
 		$scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
         var count = 0;
         if(allTrackingReminderTypes.trackingReminders && allTrackingReminderTypes.trackingReminders.length){count = allTrackingReminderTypes.trackingReminders.length;}
-        qmLogService.info(null, 'Got ' + count + ' ' + $stateParams.variableCategoryName + ' category allTrackingReminderTypes.trackingReminders', null);
+        qmLogService.info('Got ' + count + ' ' + $stateParams.variableCategoryName + ' category allTrackingReminderTypes.trackingReminders', null);
 		$scope.state.archivedTrackingReminders = allTrackingReminderTypes.archivedTrackingReminders;
 		showAppropriateHelpInfoCards();
 	}
@@ -129,7 +129,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 	};
 	var getTrackingReminders = function(){
 		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
-		qmLogService.info(null, 'Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
+		qmLogService.info('Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
 		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {
 			addRemindersToScope(allTrackingReminderTypes);
 		});
