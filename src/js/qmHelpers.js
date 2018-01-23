@@ -980,10 +980,10 @@ qm.notifications.refreshNotifications = function(successHandler, errorHandler) {
 };
 qm.notifications.refreshAndShowPopupIfNecessary = function(notificationParams) {
     qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
-        var ratingNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+        var uniqueNotification = window.qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
         var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
-        if(ratingNotification){
-            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
+        if(uniqueNotification){
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(uniqueNotification));
             qm.chrome.updateChromeBadge(0);
         } else if (numberOfWaitingNotifications > 0) {
             qm.chrome.createSmallNotificationAndOpenInboxInBackground();
@@ -1489,8 +1489,8 @@ window.qm.notifications.addToSyncQueue = function(trackingReminderNotification){
 };
 window.showAndroidPopupForMostRecentNotification = function(){
     if(!qm.notifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
-    if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
-        window.drawOverAppsRatingNotification(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue());
+    if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
+        window.drawOverAppsRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
     // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
     //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
     } else {
