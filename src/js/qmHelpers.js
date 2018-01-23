@@ -164,7 +164,7 @@ window.qm = {
                 qmLog.error("Non-array provided to removeLastItem");
                 return array;
             }
-            return array.splice(-1,1);
+            array.pop();
         },
         removeLastItemsUntilSizeLessThan: function(maxKb, array){
             if(!array){
@@ -180,7 +180,13 @@ window.qm = {
                 return [];
             }
             while (getSizeInKiloBytes(array) > maxKb) {
-                array = qm.arrayHelper.removeLastItem(array);
+                qm.arrayHelper.removeLastItem(array);
+            }
+            return array;
+        },
+        unsetNullProperties: function (array) {
+            for (var i = 0; i < array.length; i++) {
+                array[i] = qm.objectHelper.unsetNullProperties(array[i]);
             }
             return array;
         }
@@ -312,8 +318,17 @@ window.qm = {
                 }
             }
             return object;
+        },
+        unsetNullProperties: function(object){
+            for (var property in object) {
+                if (object.hasOwnProperty(property)) {
+                    if(object[property] === null){
+                        delete object[property];
+                    }
+                }
+            }
+            return object;
         }
-
     },
     platform: {
         isChromeExtension: function (){
@@ -348,8 +363,35 @@ window.qm = {
             return qm.storage.getItem(qm.items.trackingReminders);
         },
         saveToLocalStorage: function(trackingReminders){
+            trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
+            var sizeInKb = getSizeInKiloBytes(trackingReminders);
+            if(sizeInKb > 2000){
+                trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
+            }
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
             qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
+        },
+        removeArchivedReminders: function(allReminders){
+            var activeReminders = qm.reminderHelper.getActive(allReminders);
+            var favorites = qm.reminderHelper.getFavorites(allReminders);
+            return activeReminders.concat(favorites);
+        },
+        getFavorites: function(allReminders){
+            return allReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency === 0;
+            });
+        },
+        getActive: function(allReminders){
+            return allReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 &&
+                    trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
+            });
+        },
+        getArchived: function(allReminders) {
+            return allReminders.filter(function (trackingReminder) {
+                return trackingReminder.reminderFrequency !== 0 &&
+                    trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
+            });
         }
     },
     storage: {},
