@@ -28,7 +28,7 @@ if (platforms.indexOf("ios" > -1)){
     if (err) {
       return console.log(FgRed, err, Reset);
     }
-
+      console.log('hooks/after_platform_add.bak/update-release-xcconfig.js replace PROFILE_UUID_TEMPLATE_VAL');
     var result = data.replace(PROFILE_UUID_TEMPLATE_VAL, PROFILE_UUID_ENV_VAR)
       .replace(DEVELOPER_NAME_REGEX_GLOBAL, DEVELOPER_NAME_ENV_VAR);
 

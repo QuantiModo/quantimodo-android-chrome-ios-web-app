@@ -10,6 +10,7 @@
       <root url="file://$PROJECT_DIR$/src/custom-lib" />
       <root url="file://$PROJECT_DIR$/src/lib" />
     </CLASSES>
+    <JAVADOC />
     <SOURCES />
   </library>
 </component>
