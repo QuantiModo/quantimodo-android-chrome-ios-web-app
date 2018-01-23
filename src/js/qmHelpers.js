@@ -260,7 +260,6 @@ window.qm = {
         lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
         measurementsQueue: 'measurementsQueue',
-        mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
