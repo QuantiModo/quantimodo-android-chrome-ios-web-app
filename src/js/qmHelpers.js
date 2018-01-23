@@ -1677,7 +1677,7 @@ qm.notifications.getMostRecentRatingNotificationNotInSyncQueue = function(){
     }
     for (var i = 0; i < uniqueRatingNotifications.length; i++) {
         var notification = uniqueRatingNotifications[i];
-        if(!qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+        if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
             qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName);
             return notification;
         }
@@ -1693,7 +1693,7 @@ qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
     }
     for (var i = 0; i < uniqueNotifications.length; i++) {
         var notification = uniqueNotifications[i];
-        if(!qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+        if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
             qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
             return notification;
         }
