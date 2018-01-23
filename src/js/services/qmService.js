@@ -6005,23 +6005,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             // TODO: Why is this necessary?
             qmLogService.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: trackingReminders});
             trackingReminders = JSON.parse(JSON.stringify(trackingReminders));
-            reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {
-                return trackingReminder.reminderFrequency === 0;
-            });
+            reminderTypesArray.favorites = qm.reminderHelper.getFavorites(trackingReminders);
             //reminderTypesArray.favorites = [];
         }
         try {
-            reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
-                return trackingReminder.reminderFrequency !== 0 &&
-                    trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
-            });
+            reminderTypesArray.trackingReminders = qm.reminderHelper.getActive(trackingReminders);
         } catch (error){
             qmLogService.error(error, {trackingReminders: trackingReminders});
         }
         try {
-            reminderTypesArray.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
-                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
-            });
+            reminderTypesArray.archivedTrackingReminders = qm.reminderHelper.getArchived(trackingReminders);
         } catch (error){
             qmLogService.error(error, {trackingReminders: trackingReminders});
         }
