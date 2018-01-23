@@ -4659,8 +4659,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.scheduleGenericNotification = function(notificationSettings){
         var deferred = $q.defer();
         if(!notificationSettings.every){
-            qmLogService.error("scheduleGenericNotification: Called scheduleGenericNotification without providing notificationSettings.every " +
-                notificationSettings.every + ". Not going to scheduleGenericNotification.");
+            qmLogService.error("Called scheduleGenericNotification with notificationSettings.every equal to: " +
+                notificationSettings.every + "! Not going to scheduleGenericNotification.");
             deferred.reject();
             return deferred.promise;
         }
@@ -6845,7 +6845,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(urlHelper.getParam('finish_url')){$rootScope.finishUrl = urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        if($rootScope.isAndroid && qm.storage.getItem(qm.items.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
+        qmService.getDrawOverAppsPermissionIfNecessary();
+    };
+    qmService.getDrawOverAppsPermissionIfNecessary = function(){
+        if($rootScope.isAndroid){
+            var drawOverAppsEnabled = qm.storage.getItem(qm.items.drawOverAppsEnabled);
+            if(drawOverAppsEnabled === null){
+                qmService.toggleDrawOverApps();
+            } else {
+                qmLog.pushDebug("Not checking getDrawOverAppsPermissionIfNecessary because qm.items.drawOverAppsEnabled is: " + drawOverAppsEnabled);
+            }
+        }
     };
     qmService.unHideNavigationMenu = function(){
         var hideMenu = urlHelper.getParam('hideMenu');
