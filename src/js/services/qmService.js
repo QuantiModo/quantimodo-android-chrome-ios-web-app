@@ -1304,10 +1304,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // Have to come back to login page and wait for user request to complete
         window.location.replace(loginUrl);
     };
-    qmService.refreshUserEmailPreferencesDeferred = function(params){
-        var deferred = $q.defer();
-        qmService.getUserEmailPreferences(params, function(user){deferred.resolve(user);}, function(error){deferred.reject(error);});
-        return deferred.promise;
+    qmService.refreshUserEmailPreferencesDeferred = function(params, successHandler, errorHandler){
+        qmService.getUserEmailPreferences(params, function(user){
+            successHandler(user);
+        }, function(error){
+            errorHandler(error)}
+        );
     };
     qmService.completelyResetAppState = function(){
         $rootScope.user = null;
