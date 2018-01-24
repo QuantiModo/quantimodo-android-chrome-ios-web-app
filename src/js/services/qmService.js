@@ -985,7 +985,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qmService.getClientId());
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
-            client_id: qmService.getClientId(),
+            client_id: qmService.getClientIdFromPrivateConfigs(),
             client_secret: qmService.getClientSecret(),
             refresh_token: refreshToken,
             grant_type: 'refresh_token'
@@ -1038,7 +1038,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
         // add params
         url += "response_type=code";
-        url += "&client_id=" + qmService.getClientId();
+        url += "&client_id=" + qmService.getClientIdFromPrivateConfigs();
         url += "&client_secret=" + qmService.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
@@ -1050,7 +1050,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.generateV2OAuthUrl= function(JWTToken) {
         var url = qmService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
         url += "response_type=code";
-        url += "&client_id=" + qmService.getClientId();
+        url += "&client_id=" + qmService.getClientIdFromPrivateConfigs();
         url += "&client_secret=" + qmService.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
@@ -1081,7 +1081,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 'Content-Type': "application/json"
             },
             data: {
-                client_id: qmService.getClientId(),
+                client_id: qmService.getClientIdFromPrivateConfigs(),
                 client_secret: qmService.getClientSecret(),
                 grant_type: 'authorization_code',
                 code: authorizationCode,
@@ -1796,6 +1796,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if ($rootScope.isChromeExtension) { return window.private_keys.client_secrets.Chrome; }
         if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
         return window.private_keys.client_secrets.Web;
+    };
+    qmService.getClientIdFromPrivateConfigs = function(){
+        if(!window.private_keys){
+            qmLog.error("No private_keys!");
+            return qmService.getClientId();
+        }
+        if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
+        if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
+        if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
+        if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome; }
+        if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
+        return window.private_keys.client_ids.Web;
     };
     qmService.getRedirectUri = function () {
         if(config.appSettings.redirectUri){return config.appSettings.redirectUri;}
