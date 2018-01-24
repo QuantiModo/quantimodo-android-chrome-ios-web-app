@@ -1810,7 +1810,7 @@ qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames = function(successHandle
         qm.unitHelper.indexByAbbreviatedName();
         return;
     }
-    qm.api.configureClient();
+    if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler)){return false;}
     var apiInstance = new Quantimodo.UnitsApi();
     function callback(error, data, response) {
         if(data){
