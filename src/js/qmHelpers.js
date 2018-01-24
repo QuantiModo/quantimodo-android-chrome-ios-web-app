@@ -91,6 +91,57 @@ window.qm = {
             if(appSettings){return appSettings.clientId;}
             if(config && config.appSettings){return config.appSettings.clientId;}
             return window.urlHelper.getParam('clientId');
+        },
+        canWeMakeRequestYet: function(type, route, options){
+            function getSecondsSinceLastRequest(type, route){
+                var secondsSinceLastRequest = 99999999;
+                if(window.qm.storage.getLastRequestTime(type, route)){
+                    secondsSinceLastRequest = qm.timeHelper.secondsAgo(window.qm.storage.getLastRequestTime(type, route));
+                }
+                return secondsSinceLastRequest;
+            }
+            var blockRequests = false;
+            if(options && options.blockRequests){blockRequests = options.blockRequests;}
+            var minimumSecondsBetweenRequests;
+            if(options && options.minimumSecondsBetweenRequests){
+                minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
+            } else {
+                minimumSecondsBetweenRequests = 1;
+            }
+            if(getSecondsSinceLastRequest(type, route) < minimumSecondsBetweenRequests){
+                var name = 'Just made a ' + type + ' request to ' + route;
+                var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
+                    getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
+                if(blockRequests){
+                    window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
+                    return false;
+                } else {
+                    window.qmLog.error(name, message, options);
+                }
+            }
+            window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
+            return true;
+        },
+        responseHandler: function(error, data, response, successHandler, errorHandler) {
+            if(!response){
+                qmLog.error("No response provided to qm.api.responseHandler");
+                return;
+            }
+            qmLog.debug(null, response.status + ' response from ' + response.req.url, null);
+            if (error) {
+                qm.api.generalErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                if(successHandler){successHandler(data, response);}
+            }
+        },
+        getBaseUrl: function () {
+            //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
+            if(config.appSettings.apiUrl){
+                if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
+                return config.appSettings.apiUrl;
+            }
+            return appsManager.getQuantiModoApiUrl();
         }
     },
     apiHelper: {},
@@ -968,7 +1019,7 @@ qm.storage.setTrackingReminderNotifications = function(notifications){
 qm.notifications.refreshNotifications = function(successHandler, errorHandler) {
     var type = "GET";
     var route = qm.apiPaths.trackingReminderNotificationsPast;
-    if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){
+    if(!qm.api.canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){
         if(errorHandler){errorHandler();}
         return;
     }
@@ -1606,37 +1657,6 @@ window.qm.storage.setLastRequestTime = function(type, route){
 window.qm.storage.getLastRequestTime = function(type, route){
     return window.qm.storage.getItem(getLocalStorageNameForRequest(type, route));
 };
-window.canWeMakeRequestYet = function(type, route, options){
-    function getSecondsSinceLastRequest(type, route){
-        var secondsSinceLastRequest = 99999999;
-        if(window.qm.storage.getLastRequestTime(type, route)){
-            secondsSinceLastRequest = qm.timeHelper.secondsAgo(window.qm.storage.getLastRequestTime(type, route));
-        }
-        return secondsSinceLastRequest;
-    }
-    var blockRequests = false;
-    if(options && options.blockRequests){blockRequests = options.blockRequests;}
-    var minimumSecondsBetweenRequests;
-    if(options && options.minimumSecondsBetweenRequests){
-        minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
-    } else {
-        minimumSecondsBetweenRequests = 1;
-    }
-    if(getSecondsSinceLastRequest(type, route) < minimumSecondsBetweenRequests){
-        var name = 'Just made a ' + type + ' request to ' + route;
-        var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
-            getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-        if(blockRequests){
-            window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
-            return false;
-        } else {
-            window.qmLog.error(name, message, options);
-        }
-    }
-    window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
-    return true;
-};
-
 window.getUserFromApi = function(){
     var xhr = new XMLHttpRequest();
     xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
@@ -1707,14 +1727,6 @@ qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
     }
     qmLog.info("No uniqueNotifications not in sync queue");
     return null;
-};
-qm.api.getBaseUrl = function () {
-    //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
-    if(config.appSettings.apiUrl){
-        if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
-        return config.appSettings.apiUrl;
-    }
-    return appsManager.getQuantiModoApiUrl();
 };
 qm.auth.getAccessTokenFromCurrentUrl = function(){
     qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
@@ -1802,31 +1814,4 @@ qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames = function(successHandle
         qm.api.responseHandler(error, data, response, successHandler, errorHandler);
     }
     apiInstance.getUnits(callback);
-};
-qm.api.generalErrorHandler = function(error, data, response, options) {
-    if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
-        {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
-    if(response.status !== 401){
-        qmLog.error(response.error.message, null, {apiResponse: response});
-    }
-};
-qm.api.responseHandler = function(error, data, response, successHandler, errorHandler) {
-    if(!response){
-        qmLog.error("No response provided to qm.api.responseHandler");
-        return;
-    }
-    qmLog.debug(null, response.status + ' response from ' + response.req.url, null);
-    if (error) {
-        qm.api.generalErrorHandler(error, data, response);
-        if(errorHandler){errorHandler(error);}
-    } else {
-        if(successHandler){successHandler(data, response);}
-    }
-};
-qm.api.configureClient = function() {
-    var qmApiClient = Quantimodo.ApiClient.instance;
-    var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
-    qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
-    quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-    return qmApiClient;
 };
