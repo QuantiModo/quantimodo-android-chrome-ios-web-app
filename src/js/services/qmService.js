@@ -1798,7 +1798,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return window.private_keys.client_secrets.Web;
     };
     qmService.getClientIdFromPrivateConfigs = function(){
-        if(!window.client_ids){return;}
+        if(!window.private_keys){
+            qmLog.error("No private_keys!");
+            return qmService.getClientId();
+        }
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
         if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
         if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
