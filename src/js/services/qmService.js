@@ -633,6 +633,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!configureQmApiClient(qm.functionHelper.getCurrentFunctionName(), errorHandler)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
+            if(data && data.length){checkHoursSinceLastPushNotificationReceived();}
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
         }
         params = addGlobalUrlParamsToObject(params);
@@ -6943,8 +6944,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error("Push never received!");
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
-        if(qm.push.getHoursSinceLastPush() > 24){
-            qmLogService.error("No pushes received in last 24 hours!", "Last push was " +  qm.push.getHoursSinceLastPush() + " hours ago");
+        if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
+            qmLogService.error("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
+                "minutes (most frequent reminder period)!", "Last push was " +  qm.push.getHoursSinceLastPush() + " hours ago!");
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
     }
