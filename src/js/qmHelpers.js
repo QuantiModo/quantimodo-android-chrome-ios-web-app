@@ -278,7 +278,7 @@ window.qm = {
     globals: {},
     integration: {
         getIntegrationJsWithoutClientId: function(clientId, callback){
-            if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler)){return false;}
+            if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler, 1, false)){return false;}
             var apiInstance = new Quantimodo.ConnectorsApi();
             apiInstance.getIntegrationJs({clientId: 'CLIENT_ID'}, function (error, data, response) {
                 if(data){
@@ -539,7 +539,7 @@ window.qm = {
     user: null,
     userHelper: {
         deleteUserAccount: function(reason, successHandler, errorHandler){
-            if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler)){return false;}
+            if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler, 10, false)){return false;}
             var apiInstance = new Quantimodo.UserApi();
             function callback(error, data, response) {
                 qm.api.responseHandler(error, data, response, successHandler);
@@ -619,10 +619,10 @@ window.qm = {
             function successHandler(data) {
                 qm.storage.setItem(qm.items.userVariables, data);
             } // Limit 50 so we don't exceed storage limits
-            qm.userVariableHelper.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
+            qm.userVariableHelper.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
-        getFromApi: function(params, successHandler, errorHandler){
-            if(!qm.api.configureClient('getVariables', errorHandler)){return false;}
+        getUserVariablesFromApi: function(params, successHandler, errorHandler){
+            if(!qm.api.configureClient(qm.functionHelper.getCurrentFunctionName(), errorHandler, 1, false)){return false;}
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
@@ -630,7 +630,7 @@ window.qm = {
             params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
         }
-    },
+    }
 };
 // SubDomain : Filename
 var appConfigFileNames = {
