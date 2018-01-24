@@ -18,7 +18,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
 			qmService.refreshUserEmailPreferencesDeferred({userEmail: urlHelper.getParam('userEmail')}, function(user){
-				$scope.user = user;
+				$rootScope.user = user;
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			}, function(error){
