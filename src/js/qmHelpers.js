@@ -1684,6 +1684,9 @@ window.qm.push.getLastPushTimeStampInSeconds = function(){return qm.storage.getI
 window.qm.push.getHoursSinceLastPush = function(){
     return Math.round((window.qm.timeHelper.secondsAgo(qm.push.getLastPushTimeStampInSeconds()))/3600);
 };
+window.qm.push.getMinutesSinceLastPush = function(){
+    return Math.round((window.qm.timeHelper.secondsAgo(qm.push.getLastPushTimeStampInSeconds()))/60);
+};
 window.qm.push.getTimeSinceLastPushString = function(){
     return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
 };
