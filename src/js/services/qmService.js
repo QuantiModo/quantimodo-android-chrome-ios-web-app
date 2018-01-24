@@ -176,7 +176,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             cache = params.cache;
             params.cache = null;
         }
-        if(!canWeMakeRequestYet('GET', route, options) && !params.force){
+        if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
@@ -235,7 +235,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!options){ options = {}; }
         options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
         delete body.stackTrace;
-        if(!canWeMakeRequestYet('POST', route, options)){
+        if(!qm.api.canWeMakeRequestYet('POST', route, options)){
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
@@ -1007,7 +1007,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function configureQmApiClient(functionName, errorHandler, minimumSecondsBetweenRequests, blockRequests) {
         minimumSecondsBetweenRequests = minimumSecondsBetweenRequests || 1;
         blockRequests = blockRequests || true;
-        if(!canWeMakeRequestYet('GET', functionName, {minimumSecondsBetweenRequests: 1, blockRequests: blockRequests})){
+        if(!qm.api.canWeMakeRequestYet('GET', functionName, {minimumSecondsBetweenRequests: 1, blockRequests: blockRequests})){
             errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
             return false;
         }
@@ -2261,7 +2261,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
             options.blockRequests = true;
         }
-        if(!canWeMakeRequestYet('GET', qm.apiPaths.trackingReminderNotificationsPast, options)){
+        if(!qm.api.canWeMakeRequestYet('GET', qm.apiPaths.trackingReminderNotificationsPast, options)){
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
         }
