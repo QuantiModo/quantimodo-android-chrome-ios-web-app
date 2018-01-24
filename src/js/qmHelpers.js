@@ -93,6 +93,10 @@ window.qm = {
             return window.urlHelper.getParam('clientId');
         },
         canWeMakeRequestYet: function(type, route, options){
+            if(!route || route === ''){
+                qmLog.error("No route provided to canWeMakeRequestYet!");
+                return true;
+            }
             function getSecondsSinceLastRequest(type, route){
                 var secondsSinceLastRequest = 99999999;
                 if(window.qm.storage.getLastRequestTime(type, route)){
