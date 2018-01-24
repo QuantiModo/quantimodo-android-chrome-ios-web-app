@@ -192,6 +192,14 @@ window.qm = {
         }
     },
     auth: {},
+    functionHelper: {
+        getCurrentFunctionName: function () {
+            var functionName = arguments.callee.toString();
+            functionName = functionName.substr('function '.length);
+            functionName = functionName.substr(0, functionName.indexOf('('));
+            return functionName;
+        }
+    },
     getAppSettings: function () {
         if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
         return null;
