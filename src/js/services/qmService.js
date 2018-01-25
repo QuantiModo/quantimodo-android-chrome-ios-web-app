@@ -2259,6 +2259,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                 if(trackingReminderNotifications.length){
                     checkHoursSinceLastPushNotificationReceived();
+                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
                 }
                 deferred.resolve(trackingReminderNotifications);
             } else {deferred.reject("error");}
@@ -2481,6 +2482,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                if(trackingReminders && trackingReminders.length){
+                    checkHoursSinceLastPushNotificationReceived();
+                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
+                }
                 qm.reminderHelper.saveToLocalStorage(trackingReminders);
                 qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 deferred.resolve(trackingReminders);
@@ -6866,15 +6871,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(urlHelper.getParam('finish_url')){$rootScope.finishUrl = urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        qmService.getDrawOverAppsPermissionIfNecessary();
+        qmService.getDrawOverAppsPopupPermissionIfNecessary();
     };
-    qmService.getDrawOverAppsPermissionIfNecessary = function(){
+    qmService.getDrawOverAppsPopupPermissionIfNecessary = function(){
         if($rootScope.isAndroid){
-            var drawOverAppsEnabled = qm.storage.getItem(qm.items.drawOverAppsEnabled);
-            if(drawOverAppsEnabled === null){
-                qmService.toggleDrawOverApps();
+            var drawOverAppsPopupEnabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+            if(drawOverAppsPopupEnabled === null){
+                qmService.toggleDrawOverAppsPopup();
             } else {
-                qmLog.pushDebug("Not checking getDrawOverAppsPermissionIfNecessary because qm.items.drawOverAppsEnabled is: " + drawOverAppsEnabled);
+                qmLog.pushDebug("Not checking getDrawOverAppsPopupPermissionIfNecessary because qm.items.drawOverAppsPopupEnabled is: " + drawOverAppsPopupEnabled);
             }
         }
     };
@@ -6979,7 +6984,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "Built " + qm.timeHelper.getTimeSinceString(config.appSettings.builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUser().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
-            template = template + "drawOverAppsEnabled: " + qm.notifications.drawOverAppsEnabled() + '\r\n';
+            template = template + "drawOverAppsPopupEnabled: " + qm.notifications.drawOverAppsPopupEnabled() + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
@@ -7295,24 +7300,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     //     });
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
-    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
+    qmService.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force) {
         if(!$rootScope.isAndroid){
             qmLogService.debug('Can only show popups on android', null);
             return;
         }
-        if(isFalsey(qm.storage.getItem(qm.items.drawOverAppsEnabled))){
-            window.qmLog.debug('drawOverApps is disabled');
+        if(isFalsey(qm.storage.getItem(qm.items.drawOverAppsPopupEnabled))){
+            window.qmLog.debug('drawOverAppsPopup is disabled');
             return;
         }
         $ionicPlatform.ready(function() {
-            qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "drawOverAppsRatingNotification");
-            window.drawOverAppsRatingNotification(trackingReminderNotification, force);
+            qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "drawOverAppsPopupRatingNotification");
+            window.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
         });
     };
-    qmService.toggleDrawOverApps = function(ev){
+    qmService.toggleDrawOverAppsPopup = function(ev){
         function disablePopups() {
             qmService.showInfoToast("Rating popups disabled");
-            qmService.storage.setItem(qm.items.drawOverAppsEnabled, false);
+            qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
             if(localNotificationsPluginInstalled()){cordova.plugins.notification.local.cancelAll();}
         }
         function showEnablePopupsConfirmation(){
@@ -7321,7 +7326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var noText = 'No';
             function yesCallback() {
                 qm.notifications.setLastPopupTime(null);
-                qmService.storage.setItem(qm.items.drawOverAppsEnabled, true);
+                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
                     if(typeof window.overApps !== "undefined"){
@@ -7335,7 +7340,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function noCallback() {disablePopups();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
         }
-        if(qm.notifications.drawOverAppsEnabled()){
+        if(qm.notifications.drawOverAppsPopupEnabled()){
             disablePopups();
         } else {
             showEnablePopupsConfirmation();

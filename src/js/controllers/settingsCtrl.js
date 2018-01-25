@@ -11,7 +11,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
-        $scope.drawOverAppsEnabled = qm.notifications.drawOverAppsEnabled();
+        $scope.drawOverAppsPopupEnabled = qm.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();
 		if(urlHelper.getParam('userEmail')){
@@ -277,8 +277,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         } else { webDowngrade(); }
     };
     if($rootScope.isAndroid){
-    	$scope.toggleDrawOverApps = function(ev){
-    		qmService.toggleDrawOverApps(ev);
+    	$scope.toggleDrawOverAppsPopup = function(ev){
+    		qmService.toggleDrawOverAppsPopup(ev);
     	};
     	$scope.togglePushNotificationsEnabled = function(){
     		// Toggle is done by the HTML
