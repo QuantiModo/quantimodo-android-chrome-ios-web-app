@@ -246,7 +246,84 @@ window.qm = {
             return array;
         }
     },
-    auth: {},
+    auth: {
+        getAndSaveAccessTokenFromCurrentUrl: function(){
+            qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
+            if(accessTokenFromUrl){
+                qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
+                qm.auth.saveAccessToken(accessTokenFromUrl);
+            }
+            return accessTokenFromUrl;
+        },
+        saveAccessToken: function(accessToken){
+            if(!urlHelper.getParam('doNotRemember')){
+                qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
+                qm.storage.setItem(qm.items.accessToken, accessToken);
+            }
+        },
+        getAccessTokenFromUrlUserOrStorage: function() {
+            if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
+            if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
+            if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
+            qmLog.info("No access token or user!");
+            return null;
+        },
+        saveAccessTokenResponse: function(accessResponse) {
+            var accessToken;
+            if(typeof accessResponse === "string"){accessToken = accessResponse;} else {accessToken = accessResponse.accessToken || accessResponse.access_token;}
+            if (accessToken) {
+                window.qm.storage.setItem('accessToken', accessToken);
+            } else {
+                qmLog.error('No access token provided to qm.auth.saveAccessTokenResponse');
+                return;
+            }
+            var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+            if (refreshToken) {qm.storage.setItem(qm.items.refreshToken, refreshToken);}
+            /** @namespace accessResponse.expiresAt */
+            var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
+            var expiresAtMilliseconds;
+            var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
+            if(accessResponse.accessTokenExpiresAtMilliseconds){
+                expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
+            } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
+                expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds(expiresAt);
+            } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < window.qm.timeHelper.getUnixTimestampInMilliseconds()) {
+                expiresAtMilliseconds = expiresAt * 1000;
+            } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > window.qm.timeHelper.getUnixTimestampInMilliseconds()){
+                expiresAtMilliseconds = expiresAt;
+            } else {
+                // calculate expires at
+                /** @namespace accessResponse.expiresIn */
+                var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
+                expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
+                qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
+            }
+            if(expiresAtMilliseconds){
+                qm.storage.setItem(qm.items.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
+                return accessToken;
+            } else {
+                qmLog.error('No expiresAtMilliseconds!');
+                Bugsnag.notify('No expiresAtMilliseconds!',
+                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
+                    {groupingHash: 'No expiresAtMilliseconds!'},
+                    "error");
+            }
+            var groupingHash = 'Access token expiresAt not provided in recognizable form!';
+            qmLog.error(groupingHash);
+            Bugsnag.notify(groupingHash,
+                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
+                {groupingHash: groupingHash}, "error");
+        },
+        getAccessTokenFromCurrentUrl: function(){
+            qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
+        },
+        deleteAllAccessTokens: function(){
+            qm.userHelper.getUser().accessToken = null;
+            qm.storage.
+        }
+    },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -456,7 +533,51 @@ window.qm = {
             });
         }
     },
-    storage: {},
+    storage: {
+        getUserVariableByName: function (variableName, updateLatestMeasurementTime, lastValue) {
+            var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
+            if(!userVariables || !userVariables.length){return null;}
+            var userVariable = userVariables[0];
+            userVariable.lastAccessedUnixtime = qm.timeHelper.getUnixTimestampInSeconds();
+            if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();}
+            if(lastValue){
+                userVariable.lastValue = lastValue;
+                userVariable.lastValueInUserUnit = lastValue;
+            }
+            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
+            return userVariable;
+        },
+        setTrackingReminderNotifications: function(notifications){
+            if(!notifications){
+                qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
+                return;
+            }
+            qmLog.info("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
+            qm.notifications.setLastNotificationsRefreshTime();
+            window.qm.chrome.updateChromeBadge(notifications.length);
+            qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
+        },
+        deleteByProperty: function (localStorageItemName, propertyName, propertyValue){
+            var localStorageItemArray = qm.storage.getItem(localStorageItemName);
+            if(!localStorageItemArray){
+                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
+            } else {
+                qm.storage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
+            }
+        },
+        deleteByPropertyInArray: function (localStorageItemName, propertyName, objectsArray){
+            var localStorageItemArray = qm.storage.getItem(localStorageItemName);
+            if(!localStorageItemArray){
+                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
+            } else {
+                var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
+                for (var i=0; i < arrayOfValuesForProperty.length; i++) {
+                    localStorageItemArray = deleteFromArrayByProperty(localStorageItemArray, propertyName, arrayOfValuesForProperty[i]);
+                }
+                qm.storage.setItem(localStorageItemName, localStorageItemArray);
+            }
+        },
+    },
     stringHelper: {
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
@@ -726,19 +847,7 @@ qm.ratingImages = {
 qm.notifications.getFromGlobalsOrLocalStorage = function(){
     return qm.storage.getItem(qm.items.trackingReminderNotifications);
 };
-qm.storage.getUserVariableByName = function (variableName, updateLatestMeasurementTime, lastValue) {
-    var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
-    if(!userVariables || !userVariables.length){return null;}
-    var userVariable = userVariables[0];
-    userVariable.lastAccessedUnixtime = qm.timeHelper.getUnixTimestampInSeconds();
-    if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();}
-    if(lastValue){
-        userVariable.lastValue = lastValue;
-        userVariable.lastValueInUserUnit = lastValue;
-    }
-    qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
-    return userVariable;
-};
+
 // returns bool | string
 // if search param is found: returns its value
 // returns false if not found
@@ -885,28 +994,6 @@ function getAppVersion() {
     if(appSettings){return appSettings.versionNumber;}
     return window.urlHelper.getParam('appVersion');
 }
-qm.auth.getAndSaveAccessTokenFromCurrentUrl = function(){
-    qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
-    var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
-    if(accessTokenFromUrl){
-        qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
-        qm.auth.saveAccessToken(accessTokenFromUrl);
-    }
-    return accessTokenFromUrl;
-};
-qm.auth.saveAccessToken = function(accessToken){
-    if(!urlHelper.getParam('doNotRemember')){
-        qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
-        qm.storage.setItem(qm.items.accessToken, accessToken);
-    }
-};
-qm.auth.getAccessTokenFromUrlUserOrStorage = function() {
-    if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
-    if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
-    if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
-    qmLog.info("No access token or user!");
-    return null;
-};
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
 function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -1021,16 +1108,6 @@ window.qm.apiHelper.getRequestUrl = function(path) {
     console.log("Making API request to " + url);
     return url;
 };
-qm.storage.setTrackingReminderNotifications = function(notifications){
-    if(!notifications){
-        qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
-        return;
-    }
-    qmLog.info("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
-    qm.notifications.setLastNotificationsRefreshTime();
-    window.qm.chrome.updateChromeBadge(notifications.length);
-    qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
-};
 qm.notifications.refreshNotifications = function(successHandler, errorHandler) {
     var type = "GET";
     var route = qm.apiPaths.trackingReminderNotificationsPast;
@@ -1093,26 +1170,8 @@ function deleteFromArrayByProperty(localStorageItemArray, propertyName, property
     }
     return elementsToKeep;
 }
-window.qm.storage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
-    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
-    if(!localStorageItemArray){
-        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
-    } else {
-        qm.storage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
-    }
-};
-window.qm.storage.deleteByPropertyInArray = function (localStorageItemName, propertyName, objectsArray){
-    var localStorageItemArray = qm.storage.getItem(localStorageItemName);
-    if(!localStorageItemArray){
-        window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
-    } else {
-        var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
-        for (var i=0; i < arrayOfValuesForProperty.length; i++) {
-            localStorageItemArray = deleteFromArrayByProperty(localStorageItemArray, propertyName, arrayOfValuesForProperty[i]);
-        }
-        qm.storage.setItem(localStorageItemName, localStorageItemArray);
-    }
-};
+
+
 function addQueryParameter(url, name, value){
     if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
     return url + "&" + name + "=" + value;
@@ -1373,52 +1432,6 @@ window.qm.storage.appendToArray = function(localStorageItemName, elementToAdd){
     array = removeArrayElementsWithSameId(array, elementToAdd);
     array.push(elementToAdd);
     window.qm.storage.setItem(localStorageItemName, array);
-};
-window.qm.auth.saveAccessTokenResponse = function (accessResponse) {
-    var accessToken;
-    if(typeof accessResponse === "string"){accessToken = accessResponse;} else {accessToken = accessResponse.accessToken || accessResponse.access_token;}
-    if (accessToken) {
-        window.qm.storage.setItem('accessToken', accessToken);
-    } else {
-        qmLog.error('No access token provided to qm.auth.saveAccessTokenResponse');
-        return;
-    }
-    var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-    if (refreshToken) {qm.storage.setItem(qm.items.refreshToken, refreshToken);}
-    /** @namespace accessResponse.expiresAt */
-    var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
-    var expiresAtMilliseconds;
-    var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
-    if(accessResponse.accessTokenExpiresAtMilliseconds){
-        expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
-    } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
-        expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds(expiresAt);
-    } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < window.qm.timeHelper.getUnixTimestampInMilliseconds()) {
-        expiresAtMilliseconds = expiresAt * 1000;
-    } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > window.qm.timeHelper.getUnixTimestampInMilliseconds()){
-        expiresAtMilliseconds = expiresAt;
-    } else {
-        // calculate expires at
-        /** @namespace accessResponse.expiresIn */
-        var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
-        expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
-        qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
-    }
-    if(expiresAtMilliseconds){
-        qm.storage.setItem(qm.items.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
-        return accessToken;
-    } else {
-        qmLog.error('No expiresAtMilliseconds!');
-        Bugsnag.notify('No expiresAtMilliseconds!',
-            'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
-            {groupingHash: 'No expiresAtMilliseconds!'},
-            "error");
-    }
-    var groupingHash = 'Access token expiresAt not provided in recognizable form!';
-    qmLog.error(groupingHash);
-    Bugsnag.notify(groupingHash,
-        'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
-        {groupingHash: groupingHash}, "error");
 };
 qm.notifications.deleteByVariableName = function(variableName){
     qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
@@ -1745,10 +1758,6 @@ qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue = function(){
     }
     qmLog.info("No uniqueNotifications not in sync queue");
     return null;
-};
-qm.auth.getAccessTokenFromCurrentUrl = function(){
-    qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
-    return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
 };
 qm.unitHelper.getNonAdvancedUnits = function(){
     var nonAdvancedUnitObjects = [];
