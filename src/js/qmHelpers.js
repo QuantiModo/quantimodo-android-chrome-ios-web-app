@@ -248,7 +248,7 @@ window.qm = {
     },
     auth: {},
     functionHelper: {
-        getCurrentFunctionName: function () {
+        getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
             functionName = functionName.substr('function '.length);
             functionName = functionName.substr(0, functionName.indexOf('('));
