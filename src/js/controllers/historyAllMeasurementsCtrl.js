@@ -157,7 +157,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				qmService.actionSheetButtons.reminderAdd,
 				qmService.actionSheetButtons.charts,
 				qmService.actionSheetButtons.historyAllVariable,
-				qmService.actionSheetButtons.variableSettings
+				qmService.actionSheetButtons.variableSettings,
+                qmService.actionSheetButtons.relationships
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -169,6 +170,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				if(index === 2) {qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 4){qmService.goToVariableSettingsByName($scope.state.measurement.variableName);}
+                if(index === 5){
+					qmService.showBlackRingLoader();
+					qmService.goToCorrelationsListForVariable($scope.state.measurement.variableName);
+				}
 				return true;
 			},
 			destructiveButtonClicked: function() {

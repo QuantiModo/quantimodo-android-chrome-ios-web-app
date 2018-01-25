@@ -617,9 +617,9 @@ window.qm = {
             function successHandler(data) {
                 qm.storage.setItem(qm.items.userVariables, data);
             } // Limit 50 so we don't exceed storage limits
-            qm.userVariableHelper.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
+            qm.userVariableHelper.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
-        getFromApi: function(params, successHandler, errorHandler){
+        getUserVariablesFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
@@ -627,8 +627,19 @@ window.qm = {
             }
             params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
+        },
+        getUserVariableFromApiByName: function(variableName, successHandler, errorHandler){
+            qm.userVariableHelper.getUserVariablesFromApi({name: variableName}, function (userVariables) {
+                qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariables[0]);
+                successHandler(userVariables[0]);
+            }, errorHandler)
+        },
+        getUserVariableByNameFromLocalStorageOrApi: function(variableName, successHandler, errorHandler){
+            var fromLocalStorage = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableName);
+            if(fromLocalStorage){return successHandler(fromLocalStorage);}
+            qm.userVariableHelper.getUserVariableFromApiByName(variableName, successHandler, errorHandler);
         }
-    },
+    }
 };
 // SubDomain : Filename
 var appConfigFileNames = {

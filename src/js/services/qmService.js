@@ -18,7 +18,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         refresh: 'ion-android-refresh',
         predictors: 'ion-log-in',
         outcomes: 'ion-log-out',
-        study: 'ion-ios-book'
+        study: 'ion-ios-book',
+        discoveries: 'ion-ios-analytics'
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
@@ -4004,10 +4005,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.goToState(qmStates.outcomesAll, {causeVariableName: variableName});
     };
     qmService.goToCorrelationsListForVariable = function(variable){
-        if(variable.outcome){
-            qmService.goToPredictorsList(variable.name);
+        function goToCorrelationsList(variable) {
+            if(variable.outcome){
+                qmService.goToPredictorsList(variable.name);
+            } else {
+                qmService.goToOutcomesList(variable.name);
+            }
+        }
+        if(typeof variable === "string"){
+            qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApi(variable, function(userVariable){
+                goToCorrelationsList(userVariable);
+            })
         } else {
-            qmService.goToOutcomesList(variable.name);
+            goToCorrelationsList(variable);
         }
     };
     qmService.goToStudyCreationForOutcome = function(variable){
@@ -6085,6 +6095,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
         outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
         predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
+        relationships: { icon: qmService.ionIcons.discoveries, text: 'Relationships'},
         recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
         refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
         reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
