@@ -305,7 +305,7 @@ window.qm = {
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
         deviceTokenToSync: 'deviceTokenToSync',
-        drawOverAppsEnabled: 'drawOverAppsEnabled',
+        drawOverAppsPopupEnabled: 'drawOverAppsPopupEnabled',
         expiresAtMilliseconds: 'expiresAtMilliseconds',
         hideImportHelpCard: 'hideImportHelpCard',
         introSeen: 'introSeen',
@@ -1541,8 +1541,8 @@ window.qm.storage.deleteTrackingReminderNotification = function(body){
         window.qm.notifications.refreshIfEmpty();
     }
 };
-window.qm.notifications.drawOverAppsEnabled = function(){
-    return qm.storage.getItem(qm.items.drawOverAppsEnabled);
+window.qm.notifications.drawOverAppsPopupEnabled = function(){
+    return qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
 };
 window.qm.notifications.addToSyncQueue = function(trackingReminderNotification){
     qm.notifications.deleteById(trackingReminderNotification.id);
@@ -1550,11 +1550,11 @@ window.qm.notifications.addToSyncQueue = function(trackingReminderNotification){
     qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
 };
 window.showAndroidPopupForMostRecentNotification = function(){
-    if(!qm.notifications.drawOverAppsEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
+    if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
     if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
-        window.drawOverAppsRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
+        window.drawOverAppsPopupRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
     // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
-    //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
+    //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
     } else {
         window.qmLog.info('No notifications for popup! Refreshing if empty...');
         window.qm.notifications.refreshIfEmpty();
@@ -1567,10 +1567,10 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&clientId=" + window.getClientId() +
     "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
 }
-window.drawOverAppsRatingNotification = function(trackingReminderNotification, force) {
+window.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force) {
     window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
 };
-window.drawOverAppsCompactInboxNotification = function() {
+window.drawOverAppsPopupCompactInboxNotification = function() {
     window.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
 };
 window.drawOverAppsPopup = function(path, force){
@@ -1589,7 +1589,7 @@ window.drawOverAppsPopup = function(path, force){
         verticalPosition: "bottom",    // set vertical alignment of view.
         horizontalPosition: "center"  // set horizontal alignment of view.
     };
-    window.qmLog.info('drawOverAppsRatingNotification options: ' + JSON.stringify(options));
+    window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
     /** @namespace window.overApps */
     window.overApps.startOverApp(options, function (success){
         window.qmLog.info('startOverApp success: ' + success, null);
