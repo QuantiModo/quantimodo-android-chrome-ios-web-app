@@ -416,13 +416,17 @@ window.qm = {
     },
     push: {},
     reminderHelper: {
-        getNumberOfTrackingRemindersInLocalStorage: function () {
-            var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
-            if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
-            return 0;
+        getNumberOfTrackingRemindersInLocalStorage: function (callback) {
+            qm.reminderHelper.getTrackingRemindersFromLocalStorage(function (trackingReminders) {
+                var count = 0;
+                if(trackingReminders && trackingReminders.length){count = trackingReminders.length;}
+                callback(count);
+            });
         },
-        getTrackingRemindersFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.trackingReminders);
+        getTrackingRemindersFromLocalStorage: function(callback){
+            localForage.getItem(qm.items.trackingReminders, function (trackingReminders) {
+                callback(trackingReminders);
+            });
         },
         saveToLocalStorage: function(trackingReminders){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
@@ -605,13 +609,14 @@ window.qm = {
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
         refreshIfLessThanNumberOfReminders: function(){
-            var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-            var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
-            qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
-            if(numberOfReminders > numberOfUserVariables){
-                qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                qm.userVariableHelper.refreshUserVariables();
-            }
+            qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage(function (numberOfReminders) {
+                var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
+                qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
+                if(numberOfReminders > numberOfUserVariables){
+                    qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
+                    qm.userVariableHelper.refreshUserVariables();
+                }
+            });
         },
         refreshUserVariables: function(){
             function successHandler(data) {
@@ -1638,17 +1643,19 @@ qm.notifications.canWeShowPopupYet = function(path) {
         ' and getMostFrequentReminderIntervalInMinutes is ' + qm.notifications.getMostFrequentReminderIntervalInMinutes() + ". path: " + path);
     return false;
 };
-qm.notifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
-    if(!trackingReminders){trackingReminders = qm.storage.getItem(qm.items.trackingReminders);}
-    var shortestInterval = 86400;
-    if(trackingReminders){
-        for (var i = 0; i < trackingReminders.length; i++) {
-            if(trackingReminders[i].reminderFrequency && trackingReminders[i].reminderFrequency < shortestInterval){
-                shortestInterval = trackingReminders[i].reminderFrequency;
+qm.notifications.getMostFrequentReminderIntervalInMinutes = function(callback){
+    qm.reminderHelper.getTrackingRemindersFromLocalStorage(function (trackingReminders) {
+        var shortestInterval = 86400;
+        if(trackingReminders){
+            for (var i = 0; i < trackingReminders.length; i++) {
+                if(trackingReminders[i].reminderFrequency && trackingReminders[i].reminderFrequency < shortestInterval){
+                    shortestInterval = trackingReminders[i].reminderFrequency;
+                }
             }
         }
-    }
-    return shortestInterval/60;
+        var shortestIntervalInMinutes = shortestInterval/60;
+        callback(shortestIntervalInMinutes);
+    });
 };
 
 function getLocalStorageNameForRequest(type, route) {
