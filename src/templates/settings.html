@@ -42,9 +42,9 @@
         </div>
         <div ng-show="isAndroid" class="card sign-in" >
             <div class="item item-divider" >Popup Tracking Notifications &nbsp;</div>
-            <ion-toggle ng-model="drawOverAppsEnabled" ng-change="toggleDrawOverApps()">
-                <div ng-if="drawOverAppsEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
-                <div ng-if="!drawOverAppsEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
+            <ion-toggle ng-model="drawOverAppsPopupEnabled" ng-change="toggleDrawOverAppsPopup()">
+                <div ng-if="drawOverAppsPopupEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
+                <div ng-if="!drawOverAppsPopupEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
             </ion-toggle>
         </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
