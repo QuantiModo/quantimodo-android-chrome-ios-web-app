@@ -752,6 +752,11 @@ window.qm = {
                 }
             }
             return object;
+        },
+        objectContainsString: function(object, needle){
+            if(!object){return false;}
+            var haystack = JSON.stringify(object).toLowerCase();
+            return haystack.indexOf(needle) !== -1;
         }
     },
     platform: {
