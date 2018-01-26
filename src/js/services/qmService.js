@@ -337,7 +337,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function generalApiErrorHandler(data, status, headers, request, options){
         if(status === 302){return qmLogService.debug('Got 302 response from ' + JSON.stringify(request), null, options.stackTrace);}
-        if(status === 401){return handle401Response(request, options, headers);}
+        if(status === 401){
+            if(data && qm.objectHelper.objectContainsString(data, 'expired')){
+                qmService.auth.deleteAllAccessTokens();
+            }
+            return handle401Response(request, options, headers);
+        }
         if(!data){
             showOfflineError(options, request);
             return;
@@ -1030,6 +1035,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function qmApiGeneralErrorHandler(error, data, response, options) {
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401){
+            if(response.body && qm.objectHelper.objectContainsString(response.body, 'expired')){
+                qmService.auth.deleteAllAccessTokens();
+            }
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
             var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
