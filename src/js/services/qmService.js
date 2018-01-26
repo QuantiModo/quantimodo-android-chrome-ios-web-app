@@ -7,7 +7,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
-    var qmService = {storage: {}};
+    var qmService = {
+        storage: {},
+        auth: {
+            deleteAllAccessTokens: function () {
+                $rootScope.accessToken = null;
+                if($rootScope.user){$rootScope.user.accessToken = null;}
+                qm.auth.deleteAllAccessTokens();
+            },
+            handleExpiredAccessTokenResponse: function (responseBody) {
+                if(responseBody && qm.objectHelper.objectContainsString(responseBody, 'expired')){
+                    $rootScope.user = null;
+                    qmService.auth.deleteAllAccessTokens();
+                }
+            }
+        }
+    };
     qmService.ionIcons = {
         history: 'ion-ios-list-outline',
         reminder: 'ion-android-notifications-none',
@@ -337,7 +352,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function generalApiErrorHandler(data, status, headers, request, options){
         if(status === 302){return qmLogService.debug('Got 302 response from ' + JSON.stringify(request), null, options.stackTrace);}
-        if(status === 401){return handle401Response(request, options, headers);}
+        if(status === 401){
+            qmService.auth.handleExpiredAccessTokenResponse(data);
+            return handle401Response(request, options, headers);
+        }
         if(!data){
             showOfflineError(options, request);
             return;
@@ -1027,9 +1045,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
+
     function qmApiGeneralErrorHandler(error, data, response, options) {
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401){
+            qmService.auth.handleExpiredAccessTokenResponse(response.body);
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
             var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
