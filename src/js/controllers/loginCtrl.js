@@ -37,7 +37,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         //     "the NSA waterboards me, I will never divulge share your data without your permission.",
     };
     var leaveIfLoggedIn = function () {
-        if($rootScope.user){
+        if($rootScope.user && $rootScope.user.accessToken){
             qmLogService.debug('Already logged in on login page.  goToDefaultStateIfNoAfterLoginGoToUrlOrState...', null);
             qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
         }

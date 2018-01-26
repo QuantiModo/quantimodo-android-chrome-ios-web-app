@@ -2,10 +2,8 @@
     <ion-nav-title>Study</ion-nav-title>
         <ion-content scroll="{ isBrowserView : isWeb == false }" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div ng-if="!state.study && !state.studyNotFound">
+            <div ng-show="loadingCharts">
                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
-                <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
-                <div class="bottom-block"> <h1 style="text-align: center;">Analyzing data...</h1> </div>
             </div>
             <div ng-cloak ng-show="state.study" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
                 <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)" style="text-align: center;"></div>
@@ -17,6 +15,10 @@
                             Join this Study
                         </button>
                     </div>
+                </div>
+                <div ng-show="loadingCharts">
+                    <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
+                    <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
                 </div>
                 <div id="causeSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
@@ -46,7 +48,9 @@
                         <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
                     </label>
                 </div>
-                <div ng-show="loadingCharts" style="text-align: center"> <br> <ion-spinner icon="android"></ion-spinner> <br> <br> <br> </div>
+                <div ng-show="loadingCharts" style="text-align: center"> <br>
+                    <ion-spinner icon="android"></ion-spinner> <br> <br> <br>
+                </div>
                 <div id="studyCharts" style="text-align: center;">
                     <div ng-repeat="chart in state.study.charts" ng-if="chart.highchartConfig">
                         <h2>{{chart.chartTitle}}</h2>
