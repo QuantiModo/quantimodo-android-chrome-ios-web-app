@@ -4,6 +4,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on("$ionicView.beforeEnter", function() {
+        $scope.loadingCharts = true;  // Need to do this here so robot works properly
         qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state = {
             title: "Loading study...",
