@@ -146,6 +146,56 @@ window.qm = {
                 return config.appSettings.apiUrl;
             }
             return appsManager.getQuantiModoApiUrl();
+        },
+        postToQuantiModo: function (body, path, onDoneListener) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST",  window.qm.apiHelper.getRequestUrl(path), true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {  // If the request is completed
+                    console.log("POST " + path + " response:" + xhr.responseText);
+                    if(onDoneListener) {onDoneListener(xhr.responseText);}
+                }
+            };
+            xhr.send(JSON.stringify(body));
+        },
+        get: function(url, successHandler, errorHandler){
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+            xobj.open('GET', url, true);
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState === 4) {
+                    var json = xobj.responseText;
+                    if(json.indexOf('DOCTYPE html') > -1){
+                        qmLog.error("Could not get " + url);
+                        if(errorHandler){errorHandler(json);}
+                    } else {
+                        window.qmLog.debug('Got appSettings from configs/default.config.json', null, json);
+                        try {
+                            var parsedResponse = JSON.parse(json);
+                        } catch (error) {
+                            if(url !== "configs/default.config.json"){
+                                qmLog.error(url + " error: " + error, "Could not parse json from " + url + "!  json: " + json, {});
+                            }
+                            if(errorHandler){errorHandler(json);}
+                            return;
+                        }
+                        if(successHandler){successHandler(parsedResponse);}
+                    }
+                } else {
+                    window.qmLog.debug('Could not get appSettings from configs/default.config.json! xobj.readyState:' + xobj.readyState);
+                }
+            };
+            xobj.send(null);
+        },
+        getAppSettingsUrl: function () {
+            var settingsUrl = 'configs/default.config.json';
+            var clientId = appsManager.getQuantiModoClientId();
+            if(!appsManager.shouldWeUseLocalConfig(clientId)){
+                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+                if(window.designMode){settingsUrl += '&designMode=true';}
+            }
+            window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
+            return settingsUrl;
         }
     },
     apiHelper: {},
@@ -244,7 +294,33 @@ window.qm = {
                 array[i] = qm.objectHelper.unsetNullProperties(array[i]);
             }
             return array;
-        }
+        },
+        arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
+            if(!array){
+                qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
+                return false;
+            }
+            for (var i = 0; i < array.length; i++) {
+                var obj = array[i];
+                if(obj[propertyName] && obj[propertyName] === propertyValue){
+                    return true;
+                }
+            }
+            return false;
+        },
+        sortByProperty: function(arrayToSort, propertyName){
+            if(!qm.arrayHelper.variableIsArray(arrayToSort)){
+                qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
+                return arrayToSort;
+            }
+            if(arrayToSort.length < 2){return arrayToSort;}
+            if(propertyName.indexOf('-') > -1){
+                arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
+            } else {
+                arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
+            }
+            return arrayToSort;
+        },
     },
     auth: {
         getAndSaveAccessTokenFromCurrentUrl: function(){
@@ -478,7 +554,7 @@ window.qm = {
             }
             for (var i = 0; i < uniqueRatingNotifications.length; i++) {
                 var notification = uniqueRatingNotifications[i];
-                if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                if(!window.notificationsSyncQueue || !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
                     qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName);
                     return notification;
                 }
@@ -494,7 +570,7 @@ window.qm = {
             }
             for (var i = 0; i < uniqueNotifications.length; i++) {
                 var notification = uniqueNotifications[i];
-                if(!window.notificationsSyncQueue || !qm.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                if(!window.notificationsSyncQueue || !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
                     qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
                     return notification;
                 }
@@ -641,7 +717,7 @@ window.qm = {
         },
         getMostRecentRatingNotification: function (){
             var ratingNotifications = window.qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
-            ratingNotifications = window.sortByProperty(ratingNotifications, 'trackingReminderNotificationTime');
+            ratingNotifications = window.qm.arrayHelper.sortByProperty(ratingNotifications, 'trackingReminderNotificationTime');
             if(ratingNotifications.length) {
                 var notification = ratingNotifications[ratingNotifications.length - 1];
                 if(notification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
@@ -708,7 +784,7 @@ window.qm = {
                     qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
                 }
             }
-            postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
+            qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
         },
     },
     objectHelper: {
@@ -1614,36 +1690,6 @@ function addGlobalQueryParameters(url) {
     if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
     return url;
 }
-
-qm.api.get = function(url, successHandler, errorHandler){
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', url, true);
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState === 4) {
-            var json = xobj.responseText;
-            if(json.indexOf('DOCTYPE html') > -1){
-                qmLog.error("Could not get " + url);
-                if(errorHandler){errorHandler(json);}
-            } else {
-                window.qmLog.debug('Got appSettings from configs/default.config.json', null, json);
-                try {
-                    var parsedResponse = JSON.parse(json);
-                } catch (error) {
-                    if(url !== "configs/default.config.json"){
-                        qmLog.error(url + " error: " + error, "Could not parse json from " + url + "!  json: " + json, {});
-                    }
-                    if(errorHandler){errorHandler(json);}
-                    return;
-                }
-                if(successHandler){successHandler(parsedResponse);}
-            }
-        } else {
-            window.qmLog.debug('Could not get appSettings from configs/default.config.json! xobj.readyState:' + xobj.readyState);
-        }
-    };
-    xobj.send(null);
-};
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     qm.api.get('configs/default.config.json', function (parsedResponse) {
         window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
@@ -1652,35 +1698,14 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
         qmLog.error("Could not get appSettings from configs/default.config.json");
     });
 }
-qm.api.getAppSettingsUrl = function () {
-    var settingsUrl = 'configs/default.config.json';
-    var clientId = appsManager.getQuantiModoClientId();
-    if(!appsManager.shouldWeUseLocalConfig(clientId)){
-        settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
-        if(window.designMode){settingsUrl += '&designMode=true';}
-    }
-    window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
-    return settingsUrl;
-};
 if(!window.urlHelper.getParam('clientId')){loadAppSettings();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
 window.pushMeasurements = function(measurements, onDoneListener) {
-	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
+    qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 };
-function postToQuantiModo(body, path, onDoneListener) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST",  window.qm.apiHelper.getRequestUrl(path), true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {  // If the request is completed
-            console.log("POST " + path + " response:" + xhr.responseText);
-            if(onDoneListener) {onDoneListener(xhr.responseText);}
-        }
-    };
-    xhr.send(JSON.stringify(body));
-}
 function objectLength(obj) {
     var result = 0;
     for(var prop in obj) {
@@ -1751,19 +1776,7 @@ function getUnique(array, propertyName) {
     }
     return output;
 }
-window.sortByProperty = function(arrayToSort, propertyName){
-    if(!qm.arrayHelper.variableIsArray(arrayToSort)){
-        qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
-        return arrayToSort;
-    }
-    if(arrayToSort.length < 2){return arrayToSort;}
-    if(propertyName.indexOf('-') > -1){
-        arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
-    } else {
-        arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
-    }
-    return arrayToSort;
-};
+
 window.showAndroidPopupForMostRecentNotification = function(){
     if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
     if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
@@ -1834,16 +1847,4 @@ window.getUserFromApi = function(){
     xhr.send();
 };
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-qm.arrayHasItemWithSpecificPropertyValue = function(propertyName, propertyValue, array){
-    if(!array){
-        qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
-        return false;
-    }
-    for (var i = 0; i < array.length; i++) {
-        var obj = array[i];
-        if(obj[propertyName] && obj[propertyName] === propertyValue){
-            return true;
-        }
-    }
-    return false;
-};
+
