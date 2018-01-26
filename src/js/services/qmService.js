@@ -4014,7 +4014,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         variables = qmService.removeArrayElementsWithDuplicateIds(variables);
-        if(requestParams && requestParams.sort){variables = qmService.sortByProperty(variables, requestParams.sort);}
+        if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
         //variables = addVariableCategoryInfo(variables);
         return variables;
     };
@@ -5147,11 +5147,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 matchingElements.push(unfilteredElementArray[i]);
             }
         }
-        if(requestParams && requestParams.sort){matchingElements = qmService.sortByProperty(matchingElements, requestParams.sort);}
+        if(requestParams && requestParams.sort){matchingElements = window.qm.arrayHelper.sortByProperty(matchingElements, requestParams.sort);}
         return matchingElements;
-    };
-    qmService.sortByProperty = function(arrayToSort, propertyName){
-        return window.sortByProperty(arrayToSort, propertyName);
     };
     qmService.storage.clearStorageExceptForUnitsAndCommonVariables = function(){
         qmLogService.info('Clearing local storage!');
