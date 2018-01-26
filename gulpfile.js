@@ -120,7 +120,7 @@ var filter = require('gulp-filter');
 var csso = require('gulp-csso');
 var ngAnnotate = require('gulp-ng-annotate');
 
-var majorMinorVersionNumbers = '2.7.';
+var majorMinorVersionNumbers = '2.8.';
 var date = new Date();
 function getPatchVersionNumber() {
     var date = new Date();
