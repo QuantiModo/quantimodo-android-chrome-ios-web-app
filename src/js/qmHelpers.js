@@ -785,7 +785,7 @@ window.qm = {
             return Math.round((window.qm.timeHelper.secondsAgo(qm.push.getLastPushTimeStampInSeconds()))/60);
         },
         getTimeSinceLastPushString: function(){
-            return qm.timeHelper.getTimeSinceString(getLastPushTimeStampInSeconds());
+            return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
         },
         enabled: function () {
             if(!qm.userHelper.getUser()){return false;}
