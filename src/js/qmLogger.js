@@ -16,7 +16,7 @@ if(!window.qmUser){
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
-qmLog.loglevel = "info";
+qmLog.logLevel = "info";
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}
@@ -32,14 +32,12 @@ window.qmLog.getLogLevelName = function() {
         return "debug";
     }
     if(qmLog.debugMode){return "debug";}
-    if(qmLog.loglevel){return qmLog.loglevel;}
-    if(qmLog.checkUrlAndStorageForDebugMode()){
-        qmLog.loglevel = "debug";
-        return qmLog.loglevel;
+    if(qmLog.logLevel){
+        return qmLog.logLevel;
     }
     if(urlHelper.getParam('logLevel')){
-        qmLog.loglevel = urlHelper.getParam('logLevel');
-        return qmLog.loglevel;
+        qmLog.logLevel = urlHelper.getParam('logLevel');
+        return qmLog.logLevel;
     }
     return "error";
 };
@@ -49,6 +47,8 @@ window.qmLog.checkUrlAndStorageForDebugMode = function () {
         return true;
     }
     if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+        qmLog.logLevel = "debug";
+        qmLog.debugMode = true;
         qm.storage.setItem(qm.items.debugMode, true);
         console.log("Set debugMode in local storage");
         return true;
