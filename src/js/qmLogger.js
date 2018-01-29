@@ -33,7 +33,7 @@ window.qmLog.getLogLevelName = function() {
     }
     if(qmLog.debugMode){return "debug";}
     if(qmLog.loglevel){return qmLog.loglevel;}
-    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+    if(qmLog.checkUrlAndStorageForDebugMode()){
         qmLog.loglevel = "debug";
         return qmLog.loglevel;
     }
@@ -43,7 +43,17 @@ window.qmLog.getLogLevelName = function() {
     }
     return "error";
 };
-window.qmLog.isDebugMode = function() {return qmLog.getLogLevelName() === "debug";};
+window.qmLog.checkUrlAndStorageForDebugMode = function () {
+    if(qm.storage.getItem(qm.items.debugMode)){return true;}
+    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+        qm.storage.setItem(qm.items.debugMode, true);
+        return true;
+    }
+    return false;
+};
+window.qmLog.isDebugMode = function() {
+    return qmLog.getLogLevelName() === "debug";
+};
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;

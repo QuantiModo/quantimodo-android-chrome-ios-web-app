@@ -496,6 +496,7 @@ window.qm = {
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
         commonVariables: 'commonVariables',
+        debugMode: 'debugMode',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
         deviceTokenToSync: 'deviceTokenToSync',
