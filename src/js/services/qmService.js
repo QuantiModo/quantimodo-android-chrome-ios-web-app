@@ -2440,6 +2440,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
+        qmLog.checkUrlAndStorageForDebugMode();
         var trackingReminderSyncQueue = qm.storage.getItem('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' + JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
