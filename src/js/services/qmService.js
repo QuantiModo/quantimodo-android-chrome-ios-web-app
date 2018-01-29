@@ -671,16 +671,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         options.doNotShowOfflineError = true;
         qmService.post('api/v3/trackingReminderNotifications', [], trackingReminderNotificationsArray, successHandler, errorHandler, options);
     };
-    qmService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
-        if(!configureQmApiClient('getTrackingRemindersFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.RemindersApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
-        }
-        params = addGlobalUrlParamsToObject(params);
-        apiInstance.getTrackingReminders(params, callback);
-        //qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
-    };
     qmService.getStudy = function(params, successHandler, errorHandler){
         params = addGlobalUrlParamsToObject(params);
         var cachedData = qm.api.cacheGet(params, 'getStudy');
@@ -2336,7 +2326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getTrackingReminderByIdDeferred = function(reminderId){
         var deferred = $q.defer();
         var params = {id : reminderId};
-        qmService.getTrackingRemindersFromApi(params, function(remindersResponse){
+        qm.reminderHelper.getTrackingRemindersFromApi(params, function(remindersResponse){
             var trackingReminders = remindersResponse.data;
             if(remindersResponse.success) {deferred.resolve(trackingReminders);} else {deferred.reject("error");}
         }, function(error){
@@ -2502,7 +2492,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         } else {
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
-            qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+            qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
                 if(trackingReminders && trackingReminders.length){
                     checkHoursSinceLastPushNotificationReceived();
                     qmService.getDrawOverAppsPopupPermissionIfNecessary();
