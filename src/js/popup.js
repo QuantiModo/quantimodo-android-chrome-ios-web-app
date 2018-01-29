@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hidePopup();
         qm.notifications.refreshNotifications(updateQuestion, closePopup);
     }
-    if(!window.qmUser){window.getUserFromApi();}
+    if(!window.qmUser){qm.userHelper.getUserFromApi();}
     setFaceButtonListeners();
     setLastValueButtonListeners();
     qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + " notifications in InGlobalsOrLocalStorage on popup DOMContentLoaded");
