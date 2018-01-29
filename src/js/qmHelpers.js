@@ -342,6 +342,7 @@ window.qm = {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
             if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
             if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
+            qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
             return null;
         },
