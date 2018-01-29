@@ -1509,9 +1509,9 @@ window.qm = {
             }
             if(!qm.api.configureClient('getUserFromApi', errorHandler)){return false;}
             var apiInstance = new Quantimodo.UserApi();
-            function callback(error, user, response) {
-                if(user){
-                    qm.userHelper.setUser(user);
+            function callback(error, data, response) {
+                if(data){
+                    qm.userHelper.setUser(data);
                 } else if(qm.platform.isChromeExtension()){
                     var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
                     chrome.tabs.create({"url": url, "selected": true});
