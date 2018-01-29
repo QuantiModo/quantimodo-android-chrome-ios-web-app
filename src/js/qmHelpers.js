@@ -913,12 +913,20 @@ window.qm = {
     reminderHelper: {
         getNumberOfReminders: function(callback){
             var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-            if(number){callback(number);}
+            if(number){
+                callback(number);
+                return;
+            }
+            qm.reminderHelper.getTrackingRemindersFromApi({}, function () {
+                number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+                callback(number);
+            });
         },
         getTrackingRemindersFromApi: function(params, successHandler, errorHandler){
             if(!qm.api.configureClient('getTrackingRemindersFromApi', errorHandler)){return false;}
             var apiInstance = new Quantimodo.RemindersApi();
             function callback(error, data, response) {
+                qm.reminderHelper.saveToLocalStorage(data);
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
             }
             params = qm.api.addGlobalParams(params);

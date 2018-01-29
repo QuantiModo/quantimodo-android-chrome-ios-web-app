@@ -2498,7 +2498,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     checkHoursSinceLastPushNotificationReceived();
                     qmService.getDrawOverAppsPopupPermissionIfNecessary();
                 }
-                qm.reminderHelper.saveToLocalStorage(trackingReminders);
                 qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 deferred.resolve(trackingReminders);
             }, function(error){
