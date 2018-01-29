@@ -19,6 +19,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     });
     // Have to get url params after entering.  Otherwise, we get params from study if coming back
     $scope.$on('$ionicView.afterEnter', function(e) {
+        qm.loaders.robots();
         qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
         if(!variablesHaveChanged()){return;}
