@@ -45,7 +45,7 @@ window.qmLog.getLogLevelName = function() {
 };
 window.qmLog.checkUrlAndStorageForDebugMode = function () {
     if(qm.storage.getItem(qm.items.debugMode)){
-        console.log("Got debugMode from local storage");
+        //console.log("Got debugMode from local storage");
         return true;
     }
     if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
