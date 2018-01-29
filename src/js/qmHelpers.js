@@ -342,6 +342,7 @@ window.qm = {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
             if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
             if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
+            qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
             return null;
         },
@@ -496,6 +497,7 @@ window.qm = {
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
         commonVariables: 'commonVariables',
+        debugMode: 'debugMode',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
         deviceTokenToSync: 'deviceTokenToSync',
@@ -909,6 +911,19 @@ window.qm = {
         },
     },
     reminderHelper: {
+        getNumberOfReminders: function(callback){
+            var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            if(number){callback(number);}
+        },
+        getTrackingRemindersFromApi: function(params, successHandler, errorHandler){
+            if(!qm.api.configureClient('getTrackingRemindersFromApi', errorHandler)){return false;}
+            var apiInstance = new Quantimodo.RemindersApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
+            }
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getTrackingReminders(params, callback);
+        },
         getNumberOfTrackingRemindersInLocalStorage: function () {
             var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
             if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
