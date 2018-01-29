@@ -1501,6 +1501,25 @@ window.qm = {
                 }
             }
             return true;
+        },
+        getUserFromApi: function(successHandler, errorHandler){
+            qmLog.info("Getting user from API");
+            if(qm.userHelper.getUser()){
+                qmLog.warn('Are you sure we should be getting the user again when we already have a user?', null, qm.userHelper.getUser());
+            }
+            if(!qm.api.configureClient('getUserFromApi', errorHandler)){return false;}
+            var apiInstance = new Quantimodo.UserApi();
+            function callback(error, user, response) {
+                if(user){
+                    qm.userHelper.setUser(user);
+                } else if(qm.platform.isChromeExtension()){
+                    var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
+                    chrome.tabs.create({"url": url, "selected": true});
+                }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.getUser(params, callback);
         }
     },
     userVariableHelper: {
@@ -1886,23 +1905,6 @@ window.drawOverAppsPopup = function(path, force){
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
-window.getUserFromApi = function(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            var userFromApi = JSON.parse(xhr.responseText);
-            if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-                qm.userHelper.setUser(userFromApi);
-            } else {
-                if(qm.platform.isChromeExtension()){
-                    var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
-                    chrome.tabs.create({"url": url, "selected": true});
-                }
-            }
-        }
-    };
-    xhr.send();
-};
+
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 
