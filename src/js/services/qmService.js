@@ -6875,6 +6875,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     qmService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
+        qmLog.checkUrlAndStorageForDebugMode();
         var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
