@@ -38,7 +38,7 @@ var onIntervalChanged = function() {
 			chrome.alarms.create("moodReportAlarm", alarmInfo)
 			console.log("Alarm set, every " + notificationInterval + " minutes");
 		}
-        qmChrome.showRatingOrInboxPopup();
+        qm.chrome.showRatingOrInboxPopup();
 	}
 };
 var onShowSmallNotificationChanged = function() {
