@@ -37,6 +37,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.$on('$ionicView.afterEnter', function (e) {
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
         qmService.postTrackingReminderNotificationsDeferred();
+        qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
