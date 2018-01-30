@@ -28,7 +28,8 @@ angular.module('starter',
         'angular-cache',
         'angular-d3-word-cloud',
         'ngFileUpload',
-        'ngOpbeat'
+        'ngOpbeat',
+        'angular-web-notification'
         //'ui-iconpicker'
     ]
 )
