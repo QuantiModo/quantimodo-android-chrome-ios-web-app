@@ -37,7 +37,7 @@ angular.module('starter',
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
-    if(urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
+    if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -91,7 +91,7 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
-    if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser') || window.designMode) {
+    if (qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') || qm.urlHelper.getParam('refreshUser') || window.designMode) {
         qm.storage.setItem(qm.items.introSeen, true);
         qm.storage.setItem(qm.items.onboarded, true);
     }
@@ -102,9 +102,9 @@ angular.module('starter',
         orgId: '10d58117acb546c08a2cae66d650480d',
         appId: 'fc62a74505'
     });
-    window.debugMode = (urlHelper.getParam('debug') || urlHelper.getParam('debugMode'));
+    window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
-    if(urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + urlHelper.getParam(qm.items.apiUrl));}
+    if(qm.urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = qm.storage.getItem('GA_LOCAL_STORAGE_KEY');

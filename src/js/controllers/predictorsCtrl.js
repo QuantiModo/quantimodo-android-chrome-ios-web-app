@@ -21,7 +21,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.$on('$ionicView.afterEnter', function(e) {
         qm.loaders.robots();
         qmLogService.debug('beforeEnter state ' + $state.current.name);
-        $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
+        $scope.state.requestParams.aggregated = qm.urlHelper.getParam('aggregated');
         if(!variablesHaveChanged()){return;}
         if (getCauseVariableName()){
             $scope.state.requestParams.causeVariableName = getCauseVariableName();
@@ -51,12 +51,12 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         return false;
     }
     function getEffectVariableName() {
-        if(urlHelper.getParam('effectVariableName')){ return urlHelper.getParam('effectVariableName', window.location.href, true); }
+        if(qm.urlHelper.getParam('effectVariableName')){ return qm.urlHelper.getParam('effectVariableName', window.location.href, true); }
         if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
         if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
     }
     function getCauseVariableName() {
-        if(urlHelper.getParam('causeVariableName')){ return urlHelper.getParam('causeVariableName', window.location.href, true); }
+        if(qm.urlHelper.getParam('causeVariableName')){ return qm.urlHelper.getParam('causeVariableName', window.location.href, true); }
         if($stateParams.causeVariableName){return $stateParams.causeVariableName;}
     }
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
