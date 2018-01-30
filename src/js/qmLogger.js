@@ -11,10 +11,6 @@
 window.qmLog = {debugMode:false};
 Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 var logMetaData = false;
-if(!window.qmUser){
-    window.qmUser = localStorage.getItem('user');
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
 qmLog.mobileDebug = false;
 qmLog.logLevel = "info";
 window.isTruthy = function(value){return value && value !== "false"; };
@@ -129,9 +125,9 @@ window.qmLog.getEnv = function(){
     if(window.location.origin.indexOf('local') !== -1){env = "development";}
     if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
     if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qmUser){
-        if(qmUser.email && qmUser.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qmUser.displayName && qmUser.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    if(qm.getLocalUser()){
+        if(qm.getLocalUser().email && qm.getLocalUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if(qm.getLocalUser().displayName && qm.getLocalUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
     }
     if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
     return env;
@@ -178,8 +174,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if(window.qmUser){
-            url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);
+        if(qm.getLocalUser()){
+            url +=  "?userEmail=" + encodeURIComponent(qm.getLocalUser().email);
         }
         return url;
     }
@@ -248,7 +244,7 @@ window.qmLog.setupBugsnag = function(){
             Bugsnag.appVersion = config.appSettings.versionNumber;
             Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
         }
-        if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
+        if(qm.getLocalUser()){Bugsnag.metaData.user = {name: qm.getLocalUser().displayName, email: qm.getLocalUser().email, id: qm.getLocalUser().id};}
     } else {
         qmLog.error('Bugsnag is not defined');
     }
@@ -257,11 +253,11 @@ window.qmLog.setupBugsnag = function(){
 window.qmLog.setupUserVoice = function() {
     if (typeof UserVoice !== "undefined") {
         UserVoice.push(['identify', {
-            email: qmUser.email, // User’s email address
-            name: qmUser.displayName, // User’s real name
-            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUser().userRegistered), // Unix timestamp for the date the user signed up
-            id: qm.userHelper.getUser().id, // Optional: Unique id of the user (if set, this should not change)
-            type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUser().subscribed + ')', // Optional: segment your users by type
+            email: qm.getLocalUser().email, // User’s email address
+            name: qm.getLocalUser().displayName, // User’s real name
+            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.getLocalUser().userRegistered), // Unix timestamp for the date the user signed up
+            id: qm.getLocalUser().id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + qm.getLocalUser().subscribed + ')', // Optional: segment your users by type
             account: {
                 //id: 123, // Optional: associate multiple users with a single account
                 name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
@@ -276,9 +272,9 @@ window.qmLog.setupUserVoice = function() {
 window.qmLog.setupIntercom = function() {
     window.intercomSettings = {
         app_id: "uwtx2m33",
-        name: qm.userHelper.getUser().displayName,
-        email: qm.userHelper.getUser().email,
-        user_id: qm.userHelper.getUser().id,
+        name: qm.getLocalUser().displayName,
+        email: qm.getLocalUser().email,
+        user_id: qm.getLocalUser().id,
         app_name: config.appSettings.appDisplayName,
         app_version: config.appSettings.versionNumber,
         platform: qm.getPlatform()
@@ -295,9 +291,10 @@ window.qmLog.shouldWeLog = function(providedLogLevelName) {
     return globalLogLevelValue >= providedLogLevelValue;
 };
 var logLevels = {
-  "error": 1,
-  "info": 2,
-  "debug": 3
+    "error": 1,
+    "warn": 2,
+    "info": 3,
+    "debug": 4
 };
 function getConsoleLogString(name, message, metaData, stackTrace){
     var logString = name;
@@ -329,6 +326,13 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
     //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
+};
+window.qmLog.warn = function (name, message, metaData, stackTrace) {
+    name = name || message;
+    metaData = metaData || null;
+    if(!qmLog.shouldWeLog("warn")){return;}
+    message = addCallerFunctionToMessage(message);
+    console.warn("WARN: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}

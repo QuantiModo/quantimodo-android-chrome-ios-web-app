@@ -626,20 +626,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {noRedirect: true, code: code};
         qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
-    qmService.getUserFromApi = function(params, successHandler, errorHandler){
-        if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
-        var options = {};
-        options.minimumSecondsBetweenRequests = 3;
-        options.doNotSendToLogin = true;
-        if(!configureQmApiClient('getUserFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.UserApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
-        }
-        params = addGlobalUrlParamsToObject(params);
-        apiInstance.getUser(params, callback);
-        //qmService.get('api/user/me', [], params, successHandler, errorHandler, options);
-    };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
@@ -1235,7 +1221,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        setupGoogleAnalytics(qm.userHelper.getUser());
+        setupGoogleAnalytics(qm.getLocalUser());
         if(qm.storage.getItem(qm.items.deviceTokenOnServer)){
             qmLogService.debug('This token is already on the server: ' + qm.storage.getItem(qm.items.deviceTokenOnServer));
         }
@@ -1288,7 +1274,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getUserVariablesFromLocalStorageOrApiDeferred();
     };
     qmService.refreshUser = function(){
-        var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
         if(urlHelper.getParam('logout')){
             qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
@@ -1296,7 +1281,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmLogService.debug('qmService.refreshUser: Calling qmService.getUserFromApi...');
-        qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+        qm.userHelper.getUserFromApi(function(user){
             qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ' + JSON.stringify(user));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
@@ -6589,7 +6574,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){
-            $rootScope.user = window.qmUser;
+            $rootScope.user = qm.getLocalUser();
             if($rootScope.user){qmLogService.debug('Got $rootScope.user', null, $rootScope.user);}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
@@ -6884,7 +6869,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!qm.storage.getItem(qm.items.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        setupGoogleAnalytics(qm.userHelper.getUser());
+        setupGoogleAnalytics(qm.getLocalUser());
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
@@ -7001,7 +6986,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.storage.getItem(qm.items.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qm.storage.getItem(qm.items.deviceTokenToSync) + '\r\n' + '\r\n';}
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
             template = template + "Built " + qm.timeHelper.getTimeSinceString(config.appSettings.builtAt) + '\r\n';
-            template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUser().pushNotificationsEnabled + '\r\n';
+            template = template + "user.pushNotificationsEnabled: " + qm.getLocalUser().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
             template = template + "drawOverAppsPopupEnabled: " + qm.notifications.drawOverAppsPopupEnabled() + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
@@ -7032,7 +7017,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
     };
     qmService.logEventToGA = function(category, action, label, value, noninteraction, customDimension, customMetric){
-        if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
+        if(!label){label = (qm.getLocalUser()) ? qm.getLocalUser().id : "NotLoggedIn";}
         if(typeof noninteraction === "undefined"){noninteraction = true;}
         Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };
