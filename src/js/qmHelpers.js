@@ -1612,6 +1612,46 @@ window.qm = {
             if(fromLocalStorage){return successHandler(fromLocalStorage);}
             qm.userVariableHelper.getUserVariableFromApiByName(variableName, successHandler, errorHandler);
         }
+    },
+    webNotifications: {
+        registerServiceWorker: function () {
+            //Get the service worker registration object at the startup of the application.
+            //This is an aysnc operation so you should not try to use it before the promise is finished.
+            var serviceWorkerRegistration;
+            navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                qm.webNotifications.serviceWorkerRegistration = registration;
+            });
+        },
+        showNotification: function () {
+            //when setting on even handlers in different areas of the application, use that registration object instance (must be done after the registration is available)
+            webNotification.showNotification('Example Notification', {
+                serviceWorkerRegistration: qm.webNotifications.serviceWorkerRegistration,
+                body: 'Notification Text...',
+                icon: 'my-icon.ico',
+                actions: [
+                    {
+                        action: 'Start',
+                        title: 'Start'
+                    },
+                    {
+                        action: 'Stop',
+                        title: 'Stop'
+                    }
+                ],
+                autoClose: 4000 //auto close the notification after 4 seconds (you can manually close it via hide function)
+            }, function onShow(error, hide) {
+                if (error) {
+                    window.alert('Unable to show notification: ' + error.message);
+                } else {
+                    console.log('Notification Shown.');
+
+                    setTimeout(function hideNotification() {
+                        console.log('Hiding notification....');
+                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                    }, 5000);
+                }
+            });
+        }
     }
 };
 // SubDomain : Filename
