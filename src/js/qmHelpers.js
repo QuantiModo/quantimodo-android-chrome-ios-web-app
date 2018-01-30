@@ -13,11 +13,22 @@ window.qm = {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
     api: {
-        configureClient: function () {
+        configureClient: function (functionName, errorHandler, params) {
+            if(!params){params = {};}
+            var minimumSecondsBetweenRequests = params.minimumSecondsBetweenRequests || 1;
+            var blockRequests = params.blockRequests || false;
+            if(!qm.api.canWeMakeRequestYet('GET', functionName, {minimumSecondsBetweenRequests: 1, blockRequests: blockRequests})){
+                errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
+                return false;
+            }
             var qmApiClient = Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
-            quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            if(params.accessToken){
+                quantimodo_oauth2.accessToken = params.accessToken;
+            } else {
+                quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            }
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
@@ -329,8 +340,8 @@ window.qm = {
             if(accessTokenFromUrl){
                 qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
                 qm.auth.saveAccessToken(accessTokenFromUrl);
-                if(!qm.userHelper.getUser() || qm.userHelper.getUser().accessToken !== accessTokenFromUrl){
-                    qm.userHelper.getUserFromApi();
+                if(!qm.getLocalUser() || qm.getLocalUser().accessToken !== accessTokenFromUrl){
+                    qm.userHelper.getUserFromApi(accessTokenFromUrl);
                 }
             }
             return accessTokenFromUrl;
@@ -343,7 +354,7 @@ window.qm = {
         },
         getAccessTokenFromUrlUserOrStorage: function() {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
-            if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
+            if(qm.getLocalUser() && qm.getLocalUser().accessToken){return qm.getLocalUser().accessToken;}
             if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
             qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
@@ -400,7 +411,7 @@ window.qm = {
             return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
         },
         deleteAllAccessTokens: function(){
-            qm.userHelper.getUser().accessToken = null;
+            qm.getLocalUser().accessToken = null;
             //qm.storage.
         }
     },
@@ -456,6 +467,9 @@ window.qm = {
     },
     getPrimaryOutcomeVariableByNumber: function(num){
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
+    },
+    getLocalUser: function () {
+        return qm.userHelper.getLocalUser();
     },
     globalHelper: {
         setStudy: function(study){
@@ -909,8 +923,8 @@ window.qm = {
             return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
         },
         enabled: function () {
-            if(!qm.userHelper.getUser()){return false;}
-            return qm.userHelper.getUser().pushNotificationsEnabled;
+            if(!qm.getLocalUser()){return false;}
+            return qm.getLocalUser().pushNotificationsEnabled;
         },
     },
     reminderHelper: {
@@ -1475,16 +1489,13 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUser: function(){
-            if(window.qmUser){return window.qmUser;}
-            window.qmUser = qm.storage.getItem('user');
-            return window.qmUser;
+        getLocalUser: function(){
+            return qm.storage.getItem(qm.items.user);
         },
         setUser: function(user){
-            window.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
             if(!user){return;}
-            window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
+            window.qmLog.debug(user.displayName + ' is logged in.');
             if(urlHelper.getParam('doNotRemember')){return;}
             qmLog.setupUserVoice();
             if(!user.accessToken){
@@ -1494,23 +1505,23 @@ window.qm = {
             }
         },
         withinAllowedNotificationTimes: function(){
-            if(qm.userHelper.getUser()){
+            if(qm.getLocalUser()){
                 var now = new Date();
                 var hours = now.getHours();
                 var currentTime = hours + ':00:00';
-                if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
+                if(currentTime > qm.getLocalUser().latestReminderTime || currentTime < qm.getLocalUser().earliestReminderTime ){
                     window.qmLog.info('Not showing notification because outside allowed time range');
                     return false;
                 }
             }
             return true;
         },
-        getUserFromApi: function(successHandler, errorHandler){
+        getUserFromApi: function(successHandler, errorHandler, accessToken){
             qmLog.info("Getting user from API");
-            if(qm.userHelper.getUser()){
-                qmLog.warn('Are you sure we should be getting the user again when we already have a user?', null, qm.userHelper.getUser());
+            if(qm.getLocalUser()){
+                qmLog.warn('Are you sure we should be getting the user again when we already have a user?', null, qm.getLocalUser());
             }
-            if(!qm.api.configureClient('getUserFromApi', errorHandler)){return false;}
+            if(!qm.api.configureClient('getUserFromApi', errorHandler, {accessToken: accessToken})){return false;}
             var apiInstance = new Quantimodo.UserApi();
             function callback(error, data, response) {
                 if(data){
@@ -1605,10 +1616,6 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
-if(!window.qmUser){
-    window.qmUser = localStorage.getItem(qm.items.user);
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
 
 // returns bool | string
 // if search param is found: returns its value
@@ -1909,5 +1916,5 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 
-window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
+window.isTestUser = function(){return qm.getLocalUser() && qm.getLocalUser().displayName.indexOf('test') !== -1 && qm.getLocalUser().id !== 230;};
 
