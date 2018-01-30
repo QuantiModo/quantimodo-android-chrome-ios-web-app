@@ -83,14 +83,14 @@ window.qm = {
             }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
-                if(urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = urlHelper.getParam(passableUrlParameters[i]);}
+                if(qm.urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);}
             }
             return urlParams;
         },
         getClientId: function(){
             if(appSettings){return appSettings.clientId;}
             if(config && config.appSettings){return config.appSettings.clientId;}
-            return window.urlHelper.getParam('clientId');
+            return window.qm.urlHelper.getParam('clientId');
         },
         canWeMakeRequestYet: function(type, route, options){
             if(!route || route === ''){
@@ -333,7 +333,7 @@ window.qm = {
             return accessTokenFromUrl;
         },
         saveAccessToken: function(accessToken){
-            if(!urlHelper.getParam('doNotRemember')){
+            if(!qm.urlHelper.getParam('doNotRemember')){
                 qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
                 qm.storage.setItem(qm.items.accessToken, accessToken);
             }
@@ -394,7 +394,7 @@ window.qm = {
         },
         getAccessTokenFromCurrentUrl: function(){
             qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
-            return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
+            return (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
         },
         deleteAllAccessTokens: function(){
             qm.userHelper.getUser().accessToken = null;
@@ -1462,6 +1462,46 @@ window.qm = {
             apiInstance.getUnits(callback);
         },
     },
+    urlHelper: {
+        getParam: function(parameterName, url, shouldDecode) {
+            if(!url){url = window.location.href;}
+            if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
+            if(url.split('?').length > 1){
+                var queryString = url.split('?')[1];
+                var parameterKeyValuePairs = queryString.split('&');
+                for (var i = 0; i < parameterKeyValuePairs.length; i++) {
+                    var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
+                    if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                        currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
+                        if(typeof shouldDecode !== "undefined")  {
+                            return decodeURIComponent(currentParameterKeyValuePair[1]);
+                        } else {
+                            return currentParameterKeyValuePair[1];
+                        }
+                    }
+                }
+            }
+            return null;
+        },
+        getAllQueryParamsFromUrlString: function(url){
+            if(!url){url = window.location.href;}
+            var keyValuePairsObject = {};
+            var array = [];
+            if(url.split('?').length > 1){
+                var queryString = url.split('?')[1];
+                var parameterKeyValueSubstrings = queryString.split('&');
+                for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
+                    array = parameterKeyValueSubstrings[i].split('=');
+                    keyValuePairsObject[array[0]] = array[1];
+                }
+            }
+            return keyValuePairsObject;
+        },
+        openUrlInNewTab: function (url, showLocation) {
+            showLocation = showLocation || 'yes';
+            window.open(url, '_blank', 'location='+showLocation);
+        }
+    },
     user: null,
     userHelper: {
         deleteUserAccount: function(reason, successHandler){
@@ -1486,7 +1526,7 @@ window.qm = {
             qm.storage.setItem(qm.items.user, user);
             if(!user){return;}
             window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
-            if(urlHelper.getParam('doNotRemember')){return;}
+            if(qm.urlHelper.getParam('doNotRemember')){return;}
             qmLog.setupUserVoice();
             if(!user.accessToken){
                 qmLog.error("User does not have access token!", null, {userToSave: user});
@@ -1595,42 +1635,6 @@ if(!window.qmUser){
 // returns bool | string
 // if search param is found: returns its value
 // returns false if not found
-window.urlHelper = {
-     getParam: function(parameterName, url, shouldDecode) {
-         if(!url){url = window.location.href;}
-         if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
-         if(url.split('?').length > 1){
-             var queryString = url.split('?')[1];
-             var parameterKeyValuePairs = queryString.split('&');
-             for (var i = 0; i < parameterKeyValuePairs.length; i++) {
-                 var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                 if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
-                     currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
-                     if(typeof shouldDecode !== "undefined")  {
-                         return decodeURIComponent(currentParameterKeyValuePair[1]);
-                     } else {
-                         return currentParameterKeyValuePair[1];
-                     }
-                 }
-             }
-         }
-         return null;
-     },
-     getAllQueryParamsFromUrlString: function(url){
-         if(!url){url = window.location.href;}
-         var keyValuePairsObject = {};
-         var array = [];
-         if(url.split('?').length > 1){
-             var queryString = url.split('?')[1];
-             var parameterKeyValueSubstrings = queryString.split('&');
-             for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
-                 array = parameterKeyValueSubstrings[i].split('=');
-                 keyValuePairsObject[array[0]] = array[1];
-             }
-         }
-         return keyValuePairsObject;
-     }
- };
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
 qm.getSourceName = function(){return config.appSettings.appDisplayName + " for " + qm.getPlatform();};
@@ -1645,10 +1649,10 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 function getClientIdFromQueryParameters() {
-    var clientId = window.urlHelper.getParam('clientId');
-    if(!clientId){clientId = window.urlHelper.getParam('appName');}
-    if(!clientId){clientId = window.urlHelper.getParam('lowerCaseAppName');}
-    if(!clientId){clientId = window.urlHelper.getParam('quantimodoClientId');}
+    var clientId = window.qm.urlHelper.getParam('clientId');
+    if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
+    if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
+    if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
     if(clientId){qm.storage.setItem('clientId', clientId);}
     return clientId;
 }
@@ -1701,7 +1705,7 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = window.urlHelper.getParam(qm.items.apiUrl);
+        var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
         if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
@@ -1723,16 +1727,16 @@ var appsManager = { // jshint ignore:line
 };
 function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
-    return window.urlHelper.getParam('appName');
+    return window.qm.urlHelper.getParam('appName');
 }
 function getClientId() {
     if(appSettings){return appSettings.clientId;}
-    return window.urlHelper.getParam('clientId');
+    return window.qm.urlHelper.getParam('clientId');
 }
 function getAppVersion() {
     if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
-    return window.urlHelper.getParam('appVersion');
+    return window.qm.urlHelper.getParam('appVersion');
 }
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
@@ -1760,7 +1764,7 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
         qmLog.error("Could not get appSettings from configs/default.config.json");
     });
 }
-if(!window.urlHelper.getParam('clientId')){loadAppSettings();}
+if(!window.qm.urlHelper.getParam('clientId')){loadAppSettings();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";

@@ -82,7 +82,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmLogService.debug('beforeEnter in state ' + $state.current.name, null);
         leaveIfLoggedIn();
         if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
-        if(urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrl()){
+        if(qm.urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrl()){
             loginTimeout();
         } else {
             qmLogService.debug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token', null);
@@ -109,10 +109,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     };
     var oAuthBrowserLogin = function (register) {
         var url = qmService.generateV1OAuthUrl(register);
-        qmLogService.debug('Going to try logging in by opening new tab at url ' + url, null);
+        qmLogService.debug('Going to try logging in by opening new tab at url ' + url);
         qmService.showBlackRingLoader();
         var ref = window.open(url, '_blank');
         if (!ref) {
+            qmLogService.error('You must first unblock popups, and and refresh the page for this to work!');
             alert("You must first unblock popups, and and refresh the page for this to work!");
         } else {
             qmLogService.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs', null);
