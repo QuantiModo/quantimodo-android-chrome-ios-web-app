@@ -16,7 +16,7 @@ if(!window.qmUser){
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
-qmLog.loglevel = "info";
+qmLog.logLevel = "info";
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}
@@ -32,18 +32,33 @@ window.qmLog.getLogLevelName = function() {
         return "debug";
     }
     if(qmLog.debugMode){return "debug";}
-    if(qmLog.loglevel){return qmLog.loglevel;}
-    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
-        qmLog.loglevel = "debug";
-        return qmLog.loglevel;
+    if(qmLog.logLevel){
+        return qmLog.logLevel;
     }
     if(urlHelper.getParam('logLevel')){
-        qmLog.loglevel = urlHelper.getParam('logLevel');
-        return qmLog.loglevel;
+        qmLog.logLevel = urlHelper.getParam('logLevel');
+        return qmLog.logLevel;
     }
     return "error";
 };
-window.qmLog.isDebugMode = function() {return qmLog.getLogLevelName() === "debug";};
+window.qmLog.checkUrlAndStorageForDebugMode = function () {
+    if(qm.storage.getItem(qm.items.debugMode)){
+        console.log("Got debugMode from local storage");
+        return true;
+    }
+    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+        qmLog.logLevel = "debug";
+        qmLog.debugMode = true;
+        qm.storage.setItem(qm.items.debugMode, true);
+        console.log("Set debugMode in local storage");
+        return true;
+    }
+    console.log("No debug url param!");
+    return false;
+};
+window.qmLog.isDebugMode = function() {
+    return qmLog.getLogLevelName() === "debug";
+};
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;

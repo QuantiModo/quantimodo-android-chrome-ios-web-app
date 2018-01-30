@@ -15,6 +15,11 @@
     </ion-header-bar>
     <ion-content scroll="true" overflow-scroll="true" style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
         <ion-refresher on-refresh="refreshList()"></ion-refresher>
+        <div ng-show="searching">
+            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+            <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
+            <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
+        </div>
         <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
