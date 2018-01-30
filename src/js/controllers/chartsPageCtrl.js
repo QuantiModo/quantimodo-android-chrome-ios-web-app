@@ -19,7 +19,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     });
     function getVariableName() {
         if($scope.variableName){return $scope.variableName;}
-        if(urlHelper.getParam('variableName')){return urlHelper.getParam('variableName');}
+        if(qm.urlHelper.getParam('variableName')){return qm.urlHelper.getParam('variableName');}
         if($stateParams.variableName){return $stateParams.variableName;}
         if($stateParams.variableObject){return $stateParams.variableObject.name;}
         if($scope.state.variableObject){return $scope.state.variableObject.name;}
