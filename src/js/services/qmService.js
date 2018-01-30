@@ -291,7 +291,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function setAfterLoginGoToUrlAndSendToLogin(){
         if($state.current.name.indexOf('login') !== -1){
-            qmLogService.info('Why are we sending to login from login state?');
+            qmLogService.info('setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
             return;
         }
         setAfterLoginGoToUrl();
@@ -5846,7 +5846,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function setAfterLoginGoToState(afterLoginGoToState){
         if(afterLoginGoToState.indexOf('login') !== -1){
-            qmLogService.info('Why are we sending to login from login state?');
+            qmLogService.info('setAfterLoginGoToState: Why are we sending to login from login state?');
             return;
         }
         qmLogService.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ', null);
@@ -5855,7 +5855,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
         if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
         if(afterLoginGoToUrl.indexOf('login') !== -1){
-            qmLogService.info('Why are we sending to login from login state?');
+            qmLogService.info('setAfterLoginGoToUrl: Why are we sending to login from login state?');
             return;
         }
         qmLogService.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.', null);
