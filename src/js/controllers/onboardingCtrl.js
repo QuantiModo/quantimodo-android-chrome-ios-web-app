@@ -1,4 +1,9 @@
-angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
+angular.module('starter').controller('OnboardingCtrl',
+    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService",
+    function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
+    $scope.state = {
+        showSkipButton: false
+    };
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
@@ -12,6 +17,9 @@ angular.module('starter').controller('OnboardingCtrl', ["$scope", "$state", "$io
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name, null);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
+        qm.reminderHelper.getNumberOfReminders(function (number) {
+            if(number){$scope.state.showSkipButton = true;}
+        });
     });
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
