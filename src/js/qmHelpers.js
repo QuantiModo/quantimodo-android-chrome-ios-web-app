@@ -650,8 +650,9 @@ window.qm = {
             var shortestInterval = 86400;
             if(trackingReminders){
                 for (var i = 0; i < trackingReminders.length; i++) {
-                    if(trackingReminders[i].reminderFrequency && trackingReminders[i].reminderFrequency < shortestInterval){
-                        shortestInterval = trackingReminders[i].reminderFrequency;
+                    var currentFrequency = trackingReminders[i].reminderFrequency;
+                    if(currentFrequency && currentFrequency < shortestInterval){
+                        shortestInterval = currentFrequency;
                     }
                 }
             }
