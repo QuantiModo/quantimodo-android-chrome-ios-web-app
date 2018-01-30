@@ -151,15 +151,19 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		var variableObject = JSON.parse(JSON.stringify(measurement));
         variableObject.id = measurement.variableId;
         variableObject.name = measurement.variableName;
+        var buttons = [
+            { text: '<i class="icon ion-edit"></i>Edit Measurement'},
+            qmService.actionSheetButtons.reminderAdd,
+            qmService.actionSheetButtons.charts,
+            qmService.actionSheetButtons.historyAllVariable,
+            qmService.actionSheetButtons.variableSettings,
+            qmService.actionSheetButtons.relationships
+        ];
+        if(measurement.url){
+            buttons.push(qmService.actionSheetButtons.openUrl);
+        }
 		var hideSheet = $ionicActionSheet.show({
-			buttons: [
-				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
-				qmService.actionSheetButtons.reminderAdd,
-				qmService.actionSheetButtons.charts,
-				qmService.actionSheetButtons.historyAllVariable,
-				qmService.actionSheetButtons.variableSettings,
-                qmService.actionSheetButtons.relationships
-			],
+			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
@@ -174,6 +178,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 					qmService.showBlackRingLoader();
 					qmService.goToCorrelationsListForVariable($scope.state.measurement.variableName);
 				}
+                if(index === 6){
+                    qm.urlHelper.openUrlInNewTab(measurement.url);
+                }
 				return true;
 			},
 			destructiveButtonClicked: function() {
