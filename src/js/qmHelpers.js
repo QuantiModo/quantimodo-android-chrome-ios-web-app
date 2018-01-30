@@ -329,6 +329,9 @@ window.qm = {
             if(accessTokenFromUrl){
                 qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
                 qm.auth.saveAccessToken(accessTokenFromUrl);
+                if(!qm.userHelper.getUser() || qm.userHelper.getUser().accessToken !== accessTokenFromUrl){
+                    qm.userHelper.getUserFromApi();
+                }
             }
             return accessTokenFromUrl;
         },
