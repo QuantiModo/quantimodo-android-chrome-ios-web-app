@@ -1473,8 +1473,12 @@ window.qm = {
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
         getUser: function(){
-            if(window.qmUser){return window.qmUser;}
-            window.qmUser = qm.storage.getItem('user');
+            if(!window.qmUser) {
+                window.qmUser = qm.storage.getItem('user');
+            }
+            if(!window.qmUser){
+                qmLog.info("We do not have a user!");
+            }
             return window.qmUser;
         },
         setUser: function(user){
