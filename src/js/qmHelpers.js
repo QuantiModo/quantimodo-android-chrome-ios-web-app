@@ -1501,6 +1501,9 @@ window.qm = {
         openUrlInNewTab: function (url, showLocation) {
             showLocation = showLocation || 'yes';
             window.open(url, '_blank', 'location='+showLocation);
+        },
+        getIonicAppBaseUrl: function (){
+            return (window.location.origin + window.location.pathname).replace('index.html', '');
         }
     },
     user: null,
@@ -1615,11 +1618,14 @@ window.qm = {
     },
     webNotifications: {
         registerServiceWorker: function () {
+            var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'service-worker.js';
+            qmLog.info("Registering service worker at " + serviceWorkerUrl);
             //Get the service worker registration object at the startup of the application.
             //This is an aysnc operation so you should not try to use it before the promise is finished.
-            var serviceWorkerRegistration;
-            navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            navigator.serviceWorker.register(serviceWorkerUrl).then(function(registration) {
                 qm.webNotifications.serviceWorkerRegistration = registration;
+                qm.webNotifications.showNotification();
+                qm.webNotifications.subscribeUser();
             });
         },
         showNotification: function () {
@@ -1651,6 +1657,46 @@ window.qm = {
                     }, 5000);
                 }
             });
+        },
+        applicationServerPublicKey: "BIBzRyyEXjXuWf_D_Rl4pOD6WjGGyB1bBV3I9bAl1_T3133mG-2ahzRlYtLLycDu74gVSJwFffDY00aOEzNFDDU",
+        isSubscribed: null,
+        subscribeUser: function() {
+            const applicationServerKey = qm.webNotifications.urlB64ToUint8Array(qm.webNotifications.applicationServerPublicKey);
+            qm.webNotifications.serviceWorkerRegistration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: applicationServerKey
+            })
+                .then(function(subscription) {
+                    console.log('User is subscribed.');
+
+                    qm.webNotifications.updateSubscriptionOnServer(subscription);
+
+                    qm.webNotifications.isSubscribed = true;
+
+                })
+                .catch(function(err) {
+                    console.log('Failed to subscribe the user: ', err);
+                });
+        },
+        updateSubscriptionOnServer: function (subscription) {
+            if (subscription) {
+                console.log(JSON.stringify(subscription));
+            }
+            // TODO: Send subscription to application server
+        },
+        urlB64ToUint8Array: function (base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
         }
     }
 };
