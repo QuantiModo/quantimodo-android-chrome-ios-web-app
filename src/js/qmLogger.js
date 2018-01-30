@@ -35,8 +35,8 @@ window.qmLog.getLogLevelName = function() {
     if(qmLog.logLevel){
         return qmLog.logLevel;
     }
-    if(urlHelper.getParam('logLevel')){
-        qmLog.logLevel = urlHelper.getParam('logLevel');
+    if(qm.urlHelper.getParam('logLevel')){
+        qmLog.logLevel = qm.urlHelper.getParam('logLevel');
         return qmLog.logLevel;
     }
     return "error";
@@ -46,7 +46,7 @@ window.qmLog.checkUrlAndStorageForDebugMode = function () {
         console.log("Got debugMode from local storage");
         return true;
     }
-    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+    if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){
         qmLog.logLevel = "debug";
         qmLog.debugMode = true;
         qm.storage.setItem(qm.items.debugMode, true);
