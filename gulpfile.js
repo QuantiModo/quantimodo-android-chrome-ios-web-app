@@ -775,9 +775,12 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
     createChromeManifest();
 });
 
+gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
+    createProgressiveWebAppManifest('src/manifest.json');
+});
 function createProgressiveWebAppManifest(outputPath) {
     outputPath = outputPath || paths.src + '/manifest.json';
-    var chromeExtensionManifest = {
+    var pwaManifest = {
         'manifest_version': 2,
         'name': appSettings.appDisplayName,
         'short_name': appSettings.clientId,
@@ -790,12 +793,12 @@ function createProgressiveWebAppManifest(outputPath) {
             "type": "image/png"
         }],
         "background_color": "#FF9800",
-        "theme_color": "#FF9800"
+        "theme_color": "#FF9800",
+        "gcm_sender_id": "1052648855194"
     };
-    //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
-    chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
-    logInfo("Creating chrome manifest at " + outputPath);
-    writeToFile(outputPath, chromeExtensionManifest);
+    pwaManifest = JSON.stringify(pwaManifest, null, 2);
+    logInfo("Creating ProgressiveWebApp manifest at " + outputPath);
+    writeToFile(outputPath, pwaManifest);
 }
 function writeToFile(filePath, stringContents) {
     logDebug("Writing to " + filePath);
