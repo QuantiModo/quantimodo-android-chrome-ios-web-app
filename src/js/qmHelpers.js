@@ -1617,97 +1617,7 @@ window.qm = {
         }
     },
     webNotifications: {
-        registerServiceWorker: function () {
-            qm.firebaseWebNotifications.registerServiceWorker();
-            return;
-            var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'service-worker.js';
-            qmLog.info("Registering service worker at " + serviceWorkerUrl);
-            //Get the service worker registration object at the startup of the application.
-            //This is an aysnc operation so you should not try to use it before the promise is finished.
-            navigator.serviceWorker.register(serviceWorkerUrl).then(function(registration) {
-                qm.webNotifications.serviceWorkerRegistration = registration;
-                qm.webNotifications.showNotification();
-                qm.webNotifications.subscribeUser();
-            });
-        },
-        showNotification: function () {
-            //when setting on even handlers in different areas of the application, use that registration object instance (must be done after the registration is available)
-            webNotification.showNotification('Example Notification', {
-                serviceWorkerRegistration: qm.webNotifications.serviceWorkerRegistration,
-                body: 'Notification Text...',
-                icon: 'my-icon.ico',
-                actions: [
-                    {
-                        action: 'Start',
-                        title: 'Start'
-                    },
-                    {
-                        action: 'Stop',
-                        title: 'Stop'
-                    }
-                ],
-                autoClose: 4000 //auto close the notification after 4 seconds (you can manually close it via hide function)
-            }, function onShow(error, hide) {
-                if (error) {
-                    window.alert('Unable to show notification: ' + error.message);
-                } else {
-                    console.log('Notification Shown.');
-
-                    setTimeout(function hideNotification() {
-                        console.log('Hiding notification....');
-                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
-                    }, 5000);
-                }
-            });
-        },
-        applicationServerPublicKey: "BIBzRyyEXjXuWf_D_Rl4pOD6WjGGyB1bBV3I9bAl1_T3133mG-2ahzRlYtLLycDu74gVSJwFffDY00aOEzNFDDU",
-        isSubscribed: null,
-        subscribeUser: function() {
-            const applicationServerKey = qm.webNotifications.urlB64ToUint8Array(qm.webNotifications.applicationServerPublicKey);
-            qm.webNotifications.serviceWorkerRegistration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: applicationServerKey
-            })
-                .then(function(subscription) {
-                    console.log('User is subscribed.');
-                    qm.webNotifications.postWebPushSubscriptionToServer(subscription);
-                    qm.webNotifications.isSubscribed = true;
-
-                })
-                .catch(function(err) {
-                    console.log('Failed to subscribe the user: ', err);
-                });
-        },
-        postWebPushSubscriptionToServer: function (subscription) {
-            if (subscription) {
-                console.log(JSON.stringify(subscription));
-                qm.api.configureClient();
-                var apiInstance = new Quantimodo.NotificationsApi();
-                function callback(error, data, response) {
-                    qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
-                }
-                var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: JSON.stringify(subscription)});
-                apiInstance.postDeviceToken(params, callback);
-            }
-        },
-        urlB64ToUint8Array: function (base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/\-/g, '+')
-                .replace(/_/g, '/');
-
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-
-            for (var i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-    },
-    firebaseWebNotifications: {
-        registerServiceWorker: function () {
-            // Initialize Firebase
+        initializeFirebase: function(){
             var config = {
                 apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
                 authDomain: "quantimo-do.firebaseapp.com",
@@ -1717,53 +1627,22 @@ window.qm = {
                 messagingSenderId: "1052648855194"
             };
             console.log("firebase.initializeApp(config)");
-            firebase.initializeApp(config);
+            return firebase.initializeApp(config);
+        },
+        registerServiceWorker: function () {
+            qm.webNotifications.initializeFirebase();
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             navigator.serviceWorker.register(serviceWorkerUrl)
                 .then(function(registration) {
                     const messaging = firebase.messaging();
                     messaging.useServiceWorker(registration);
-                    qm.firebaseWebNotifications.subscribeUser(messaging);
+                    qm.webNotifications.subscribeUser(messaging);
                 })
         },
-        showNotification: function () {
-            //when setting on even handlers in different areas of the application, use that registration object instance (must be done after the registration is available)
-            webNotification.showNotification('Example Notification', {
-                serviceWorkerRegistration: qm.webNotifications.serviceWorkerRegistration,
-                body: 'Notification Text...',
-                icon: 'my-icon.ico',
-                actions: [
-                    {
-                        action: 'Start',
-                        title: 'Start'
-                    },
-                    {
-                        action: 'Stop',
-                        title: 'Stop'
-                    }
-                ],
-                autoClose: 4000 //auto close the notification after 4 seconds (you can manually close it via hide function)
-            }, function onShow(error, hide) {
-                if (error) {
-                    window.alert('Unable to show notification: ' + error.message);
-                } else {
-                    console.log('Notification Shown.');
-
-                    setTimeout(function hideNotification() {
-                        console.log('Hiding notification....');
-                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
-                    }, 5000);
-                }
-            });
-        },
-        applicationServerPublicKey: "BIBzRyyEXjXuWf_D_Rl4pOD6WjGGyB1bBV3I9bAl1_T3133mG-2ahzRlYtLLycDu74gVSJwFffDY00aOEzNFDDU",
-        isSubscribed: null,
         subscribeUser: function(messaging) {
             messaging.requestPermission()
                 .then(function() {
                     console.log('Notification permission granted.');
-                    // TODO(developer): Retrieve an Instance ID token for use with FCM.
-                    // ...
                     // Get Instance ID token. Initially this makes a network call, once retrieved
                     // subsequent calls to getToken will return from cache.
                     messaging.getToken()
@@ -1790,37 +1669,20 @@ window.qm = {
                     console.log('Unable to get permission to notify.', err);
                 });
         },
-        postWebPushSubscriptionToServer: function (subscription) {
-            if (subscription) {
-                console.log(JSON.stringify(subscription));
+        postWebPushSubscriptionToServer: function (deviceTokenString) {
+            if (deviceTokenString) {
+                console.log("Got token: " + deviceTokenString);
                 qm.api.configureClient();
                 var apiInstance = new Quantimodo.NotificationsApi();
                 function callback(error, data, response) {
                     qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
                 }
-                var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: JSON.stringify(subscription)});
+                var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: deviceTokenString});
                 apiInstance.postDeviceToken(params, callback);
             }
-        },
-        urlB64ToUint8Array: function (base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/\-/g, '+')
-                .replace(/_/g, '/');
-
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-
-            for (var i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
         }
     }
 };
-if(typeof qm === "undefined"){
-    var qm = window.qm;
-}
 // SubDomain : Filename
 var appConfigFileNames = {
     "app" : "quantimodo",
