@@ -64,7 +64,7 @@ window.qm = {
                     qmLog.error("Not authenticated!")
                 }
             } else {
-                qmLogService.error(response.error.message, null, {apiResponse: response});
+                qmLog.error(response.error.message, null, {apiResponse: response});
             }
         },
         addGlobalParams: function (urlParams) {
@@ -1668,7 +1668,7 @@ window.qm = {
             })
                 .then(function(subscription) {
                     console.log('User is subscribed.');
-                    qm.webNotifications.updateSubscriptionOnServer(subscription);
+                    qm.webNotifications.postWebPushSubscriptionToServer(subscription);
                     qm.webNotifications.isSubscribed = true;
 
                 })
@@ -1676,18 +1676,17 @@ window.qm = {
                     console.log('Failed to subscribe the user: ', err);
                 });
         },
-        updateSubscriptionOnServer: function (subscription) {
+        postWebPushSubscriptionToServer: function (subscription) {
             if (subscription) {
                 console.log(JSON.stringify(subscription));
                 qm.api.configureClient();
                 var apiInstance = new Quantimodo.NotificationsApi();
                 function callback(error, data, response) {
-                    qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+                    qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
                 }
-                var params = qm.api.addGlobalParams(params);
-                apiInstance.postDeviceTokens(params, callback);
+                var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: JSON.stringify(subscription)});
+                apiInstance.postDeviceToken(params, callback);
             }
-            // TODO: Send subscription to application server
         },
         urlB64ToUint8Array: function (base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -1698,7 +1697,7 @@ window.qm = {
             const rawData = window.atob(base64);
             const outputArray = new Uint8Array(rawData.length);
 
-            for (let i = 0; i < rawData.length; ++i) {
+            for (var i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
             }
             return outputArray;
