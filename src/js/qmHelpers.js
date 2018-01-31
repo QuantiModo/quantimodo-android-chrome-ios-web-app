@@ -1668,9 +1668,7 @@ window.qm = {
             })
                 .then(function(subscription) {
                     console.log('User is subscribed.');
-
                     qm.webNotifications.updateSubscriptionOnServer(subscription);
-
                     qm.webNotifications.isSubscribed = true;
 
                 })
@@ -1681,6 +1679,13 @@ window.qm = {
         updateSubscriptionOnServer: function (subscription) {
             if (subscription) {
                 console.log(JSON.stringify(subscription));
+                qm.api.configureClient();
+                var apiInstance = new Quantimodo.NotificationsApi();
+                function callback(error, data, response) {
+                    qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+                }
+                var params = qm.api.addGlobalParams(params);
+                apiInstance.postDeviceTokens(params, callback);
             }
             // TODO: Send subscription to application server
         },
