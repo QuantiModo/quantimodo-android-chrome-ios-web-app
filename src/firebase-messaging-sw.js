@@ -1,8 +1,117 @@
-/** @namespace window.qmLog */
-/** @namespace window.qm.chrome */
-String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-var appSettings;
-window.qm = {
+// Import and configure the Firebase SDK
+// These scripts are made available when the app is served or deployed on Firebase Hosting
+// If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup
+getIonicAppBaseUrl = function (){
+    return (self.location.origin + self.location.pathname).replace('firebase-messaging-sw.js', '');
+};
+var locationObj = self.location;
+var libUrl = getIonicAppBaseUrl()+'lib/';
+importScripts(libUrl+'firebase/firebase-app.js');
+importScripts(libUrl+'firebase/firebase-messaging.js');
+//importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
+//importScripts(libUrl+'firebase/init.js');
+var config = {
+    apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
+    authDomain: "quantimo-do.firebaseapp.com",
+    databaseURL: "https://quantimo-do.firebaseio.com",
+    projectId: "quantimo-do",
+    storageBucket: "quantimo-do.appspot.com",
+    messagingSenderId: "1052648855194"
+};
+console.log("firebase.initializeApp(config)");
+firebase.initializeApp(config);
+const messaging = firebase.messaging();
+
+/**
+ * Here is is the code snippet to initialize Firebase Messaging in the Service
+ * Worker when your app is not hosted on Firebase Hosting.
+
+ // [START initialize_firebase_in_sw]
+ // Give the service worker access to Firebase Messaging.
+ // Note that you can only use Firebase Messaging here, other Firebase libraries
+ // are not available in the service worker.
+ importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
+ importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
+
+ // Initialize the Firebase app in the service worker by passing in the
+ // messagingSenderId.
+ firebase.initializeApp({
+   'messagingSenderId': 'YOUR-SENDER-ID'
+ });
+
+ // Retrieve an instance of Firebase Messaging so that it can handle background
+ // messages.
+ const messaging = firebase.messaging();
+ // [END initialize_firebase_in_sw]
+ **/
+
+
+// If you would like to customize notifications that are received in the
+// background (Web app is closed or not in browser focus) then you should
+// implement this optional method.
+// [START background_handler]
+messaging.setBackgroundMessageHandler(function(payload) {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  // Customize notification here
+  const notificationTitle = 'Background Message Title';
+  const notificationOptions = {
+    body: 'Background Message body.',
+    icon: '/firebase-logo.png'
+  };
+
+  return self.registration.showNotification(notificationTitle,
+      notificationOptions);
+});
+
+
+self.addEventListener('push', function(event) {
+    console.log('[Service Worker] Push Received.');
+    //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    var pushData = event.data.json();
+    pushData = pushData.data;
+    pushData.data = JSON.parse(JSON.stringify(pushData));
+    console.log(pushData);
+    const title = pushData.title;
+    qm.allActions = JSON.parse(pushData.actions);
+    for (var i = 0; i < qm.allActions.length; i++) {
+        qm.allActions[i].action = qm.allActions[i].callback;
+    }
+    pushData.actions = qm.allActions;
+    pushData.body = "Click here for more options";
+
+    event.waitUntil(self.registration.showNotification(title, pushData));
+});
+// [END background_handler]
+
+function runFunction(name, arguments)
+{
+    var fn = qm.notifications.actions[name];
+    if(typeof fn !== 'function'){
+      console.log(name +" is not a function");
+      return false;
+    }
+    console.log("executing" + name );
+    fn.apply(qm.notifications.actions, [arguments]);
+    return true;
+}
+
+
+self.addEventListener('notificationclick', function(event) {
+    console.log('[Service Worker] Notification click Received: ' + event.action);
+    event.notification.close();
+    if (runFunction(event.action, event.notification.data)) {
+        return;
+    }
+    event.waitUntil(
+        clients.openWindow('https://app.quantimo.do/ionic/Modo/www/index.html#/app/reminders-inbox?refresh=true')
+    );
+});
+
+
+
+
+
+var qm = {
     analytics: {
         eventCategories: {
             pushNotifications: "pushNotifications",
@@ -147,16 +256,20 @@ window.qm = {
             }
             return appsManager.getQuantiModoApiUrl();
         },
-        postToQuantiModo: function (body, path, onDoneListener) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST",  window.qm.apiHelper.getRequestUrl(path), true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {  // If the request is completed
-                    console.log("POST " + path + " response:" + xhr.responseText);
-                    if(onDoneListener) {onDoneListener(xhr.responseText);}
-                }
-            };
-            xhr.send(JSON.stringify(body));
+        postToQuantiModo: function (body, path) {
+            fetch("https://local.quantimo.do/api/v1/" + path, {
+                method: 'post',
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+            .then(function (response) {
+                console.log('Request succeeded with JSON response', response);
+            })
+            .catch(function (error) {
+                console.log('Request failed', error);
+            });
         },
         get: function(url, successHandler, errorHandler){
             var xobj = new XMLHttpRequest();
@@ -815,15 +928,77 @@ window.qm = {
             return 0;
         },
         postTrackingReminderNotifications: function(trackingReminderNotifications, onDoneListener) {
-            qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
+            console.log("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
             if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
-            if(!onDoneListener){
-                onDoneListener = function (response) {
-                    qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
-                }
-            }
-            qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
+            qm.api.postToQuantiModo(trackingReminderNotifications, "trackingReminderNotifications");
         },
+        actions: {
+            trackYesAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
+                console.log('trackYesAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackNoAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
+                console.log('trackNoAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackZeroAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
+                console.log('trackZeroAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackOneRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
+                console.log('trackOneRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackTwoRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
+                console.log('trackTwoRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackThreeRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
+                console.log('trackThreeRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackFourRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
+                console.log('trackFourRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackFiveRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
+                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackDefaultValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
+                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            snoozeAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
+                console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmService.snoozeTrackingReminderNotificationDeferred(body);
+            },
+            trackLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
+                console.log('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackSecondToLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
+                console.log('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackThirdToLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
+                console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+        }
     },
     objectHelper: {
         copyPropertiesFromOneObjectToAnother: function(source, destination){
@@ -1818,307 +1993,3 @@ window.qm = {
         }
     }
 };
-if(typeof qm === "undefined"){
-    var qm = window.qm;
-}
-// SubDomain : Filename
-var appConfigFileNames = {
-    "app" : "quantimodo",
-    "energymodo" : "energymodo",
-    "default" : "default",
-    "ionic" : "quantimodo",
-    "local" : "quantimodo",
-    "medimodo" : "medimodo",
-    "mindfirst" : "mindfirst",
-    "moodimodo" : "moodimodo",
-    "oauth" : "quantimodo",
-    "quantimodo" : "quantimodo",
-    "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
-};
-if(!window.qmUser){
-    window.qmUser = localStorage.getItem(qm.items.user);
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
-
-// returns bool | string
-// if search param is found: returns its value
-// returns false if not found
-window.isTruthy = function(value){return value && value !== "false"; };
-window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
-qm.getSourceName = function(){return config.appSettings.appDisplayName + " for " + qm.getPlatform();};
-qm.getPlatform = function(){
-    if(qm.platform.isChromeExtension()){return "chromeExtension";}
-    if(window.location.href.indexOf('https://') !== -1){return "web";}
-    return 'mobile';
-};
-function getSubDomain(){
-    var full = window.location.host;
-    var parts = full.split('.');
-    return parts[0].toLowerCase();
-}
-function getClientIdFromQueryParameters() {
-    var clientId = window.qm.urlHelper.getParam('clientId');
-    if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
-    if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
-    if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
-    if(clientId){qm.storage.setItem('clientId', clientId);}
-    return clientId;
-}
-function getQuantiModoClientId() {
-    if(qm.platform.isMobile()){
-        window.qmLog.debug(null, 'Using default.config.js because we\'re on mobile', null);
-        return "default"; // On mobile
-    }
-    var clientId = getClientIdFromQueryParameters();
-    if(clientId){
-        window.qmLog.debug(null, 'Using clientIdFromQueryParams: ' + clientId, null);
-        return clientId;
-    }
-    if(!clientId){clientId = qm.storage.getItem(qm.items.clientId);}
-    if(clientId){
-        window.qmLog.debug(null, 'Using clientId From localStorage: ' + clientId, null);
-        return clientId;
-    }
-    if(window.location.href.indexOf('quantimo.do') === -1){
-        window.qmLog.debug(null, 'Using default.config.js because we\'re not on a quantimo.do domain', null);
-        return "default"; // On mobile
-    }
-    var subdomain = getSubDomain();
-    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
-    if(clientIdFromAppConfigName){
-        window.qmLog.debug(null, 'Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subdomain: ' + subdomain, null);
-        return clientIdFromAppConfigName;
-    }
-    window.qmLog.debug(null, 'Using subdomain as client id: ' + subdomain);
-    return subdomain;
-}
-var appsManager = { // jshint ignore:line
-    defaultApp : "default",
-    getAppConfig : function(){
-        window.qmLog.debug(null, 'getQuantiModoClientId returns ' + getQuantiModoClientId(), null);
-        if(getQuantiModoClientId()){
-            return 'configs/' + getQuantiModoClientId() + '.js';
-        } else {
-            return 'configs/' + appsManager.defaultApp + '.js';
-        }
-    },
-    getPrivateConfig : function(){
-        if(getQuantiModoClientId()){
-            return './private_configs/'+ getQuantiModoClientId() + '.config.js';
-        } else {
-            return './private_configs/'+ appsManager.defaultApp + '.config.js';
-        }
-    },
-    getQuantiModoClientId: function () {
-        return getQuantiModoClientId();
-    },
-    getQuantiModoApiUrl: function () {
-        var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
-        if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
-        if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
-        if(!apiUrl){apiUrl = "https://app.quantimo.do";}
-        if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
-        apiUrl = apiUrl.replace("https://https", "https");
-        if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
-        return apiUrl;
-    },
-    shouldWeUseLocalConfig: function (clientId) {
-        if(clientId === "default"){return true;}
-        if(qm.platform.isMobile()){return true;}
-        var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        if(designMode){return false;}
-        if(getClientIdFromQueryParameters() === 'app'){return true;}
-    }
-};
-function getAppName() {
-    if(getChromeManifest()){return getChromeManifest().name;}
-    return window.qm.urlHelper.getParam('appName');
-}
-function getClientId() {
-    if(appSettings){return appSettings.clientId;}
-    return window.qm.urlHelper.getParam('clientId');
-}
-function getAppVersion() {
-    if(getChromeManifest()){return getChromeManifest().version;}
-    if(appSettings){return appSettings.versionNumber;}
-    return window.qm.urlHelper.getParam('appVersion');
-}
-function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
-function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
-function getChromeRatingNotificationParams(trackingReminderNotification){
-    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
-        left: screen.width - 380, width: 390, height: 110, focused: true};
-}
-function addGlobalQueryParameters(url) {
-    if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
-        url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
-    } else {
-        window.qmLog.error(null, 'No access token!');
-        showSignInNotification();
-    }
-    if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
-    if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
-    if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
-    return url;
-}
-function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
-    qm.api.get('configs/default.config.json', function (parsedResponse) {
-        window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
-        appSettings = parsedResponse;
-    }, function () {
-        qmLog.error("Could not get appSettings from configs/default.config.json");
-    });
-}
-if(!window.qm.urlHelper.getParam('clientId')){loadAppSettings();}
-function getAppHostName() {
-    if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
-    return "https://app.quantimo.do";
-}
-window.pushMeasurements = function(measurements, onDoneListener) {
-    qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
-};
-function objectLength(obj) {
-    var result = 0;
-    for(var prop in obj) {
-        if (obj.hasOwnProperty(prop)) {
-            // or Object.prototype.hasOwnProperty.call(obj, prop)
-            result++;
-        }
-    }
-    return result;
-}
-window.qm.apiHelper.getRequestUrl = function(path) {
-    var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
-    console.log("Making API request to " + url);
-    return url;
-};
-function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(!qm.platform.isChromeExtension()){return;}
-	window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
-    if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
-    if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
-        qm.chrome.createSmallNotificationAndOpenInboxInBackground();
-    } else {
-        qm.notifications.refreshAndShowPopupIfNecessary();
-    }
-
-}
-/**
- * @return {boolean}
- */
-function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (exception) {
-        return false;
-    }
-    return true;
-}
-function deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue) {
-    var elementsToKeep = [];
-    for(var i = 0; i < localStorageItemArray.length; i++){
-        if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
-    }
-    return elementsToKeep;
-}
-function addQueryParameter(url, name, value){
-    if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
-    return url + "&" + name + "=" + value;
-}
-function getSizeInKiloBytes(string) {
-    if(typeof value !== "string"){string = JSON.stringify(string);}
-    return Math.round(string.length*16/(8*1024));
-}
-var parseIfJsonString = function(stringOrObject) {
-    if(!stringOrObject){return stringOrObject;}
-    if(typeof stringOrObject !== "string"){return stringOrObject;}
-    try {
-        return JSON.parse(stringOrObject);
-    } catch (e) {
-        return stringOrObject;
-    }
-};
-function getUnique(array, propertyName) {
-    var flags = [], output = [], l = array.length, i;
-    for( i=0; i<l; i++) {
-        if(flags[array[i][propertyName]]) {continue;}
-        flags[array[i][propertyName]] = true;
-        output.push(array[i]);
-    }
-    return output;
-}
-
-window.showAndroidPopupForMostRecentNotification = function(){
-    if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
-    if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
-        window.drawOverAppsPopupRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
-    // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
-    //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
-    } else {
-        window.qmLog.info('No notifications for popup! Refreshing if empty...');
-        window.qm.notifications.refreshIfEmpty();
-    }
-};
-function getRatingNotificationPath(trackingReminderNotification){
-    return "android_popup.html?variableName=" + trackingReminderNotification.variableName +
-    "&valence=" + trackingReminderNotification.valence +
-    "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
-    "&clientId=" + window.getClientId() +
-    "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
-}
-window.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force) {
-    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
-};
-window.drawOverAppsPopupCompactInboxNotification = function() {
-    window.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
-};
-window.drawOverAppsPopup = function(path, force){
-    if(typeof window.overApps === "undefined"){
-        window.qmLog.error(null, 'window.overApps is undefined!');
-        return;
-    }
-    if(!force && !qm.notifications.canWeShowPopupYet(path)){return;}
-    //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
-    var options = {
-        path: path,          // file path to display as view content.
-        hasHead: false,              // display over app head image which open the view up on click.
-        dragToSide: false,          // enable auto move of head to screen side after dragging stop.
-        enableBackBtn: true,       // enable hardware back button to close view.
-        enableCloseBtn: true,      //  whether to show native close btn or to hide it.
-        verticalPosition: "bottom",    // set vertical alignment of view.
-        horizontalPosition: "center"  // set horizontal alignment of view.
-    };
-    window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
-    /** @namespace window.overApps */
-    window.overApps.startOverApp(options, function (success){
-        window.qmLog.info('startOverApp success: ' + success, null);
-    },function (err){
-        window.qmLog.error('startOverApp error: ' + err);
-    });
-};
-function getLocalStorageNameForRequest(type, route) {
-    return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
-}
-window.getUserFromApi = function(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            var userFromApi = JSON.parse(xhr.responseText);
-            if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-                qm.userHelper.setUser(userFromApi);
-            } else {
-                if(qm.platform.isChromeExtension()){
-                    var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
-                    chrome.tabs.create({"url": url, "selected": true});
-                }
-            }
-        }
-    };
-    xhr.send();
-};
-window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-
