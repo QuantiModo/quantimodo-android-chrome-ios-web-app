@@ -185,7 +185,11 @@ function updateQuestion(variableName) {
     }
     var questionText;
     if(trackingReminderNotification.unitAbbreviatedName === '/5'){
-        questionText= "How is your " + variableName.toLowerCase() + "?";
+        questionText = "How is your " + variableName.toLowerCase() + "?";
+        if(variableName.toLowerCase() === 'meditation'){
+            qmLog.error("Asking "+questionText+"!",  "trackingReminderNotification is: "+JSON.stringify(trackingReminderNotification), {
+                trackingReminderNotification: trackingReminderNotification});
+        }
         getRatingSectionElement().style.display = "block";
         getLastValueSectionElement().style.display = "none";
     } else {
