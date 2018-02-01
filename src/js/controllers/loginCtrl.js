@@ -2,7 +2,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
-    $scope.headline = config.appSettings.headline;
+    $scope.headline = qm.getAppSettings().headline;
     $rootScope.showFilterBarSearchIcon = false;
     if($rootScope.isMobile){
         if(window && window.plugins && window.plugins.googleplus){
