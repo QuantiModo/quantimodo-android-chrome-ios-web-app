@@ -8,20 +8,12 @@ var locationObj = self.location;
 var window = self;
 var document = {};
 var libUrl = getIonicAppBaseUrl()+'lib/';
-if(self.location.href.indexOf('/src/') !== -1){
-    console.log("Service worker importing libararies from " + libUrl);
-    importScripts(libUrl+'firebase/firebase-app.js');
-    importScripts(libUrl+'firebase/firebase-messaging.js');
-    importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
-    importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
-    importScripts(getIonicAppBaseUrl()+'js/qmChrome.js');
-} else {
-    console.log("Service worker importing libararies from " + getIonicAppBaseUrl());
-    importScripts(getIonicAppBaseUrl()+'scripts/combined-body-libraries-8612e00e3a.js');
-    importScripts(getIonicAppBaseUrl()+'scripts/combined-head-libraries-40e3b54783.js');
-}
-
-qm.serviceWorker = true;
+console.log("Service worker importing libararies from " + libUrl);
+importScripts(libUrl+'firebase/firebase-app.js');
+importScripts(libUrl+'firebase/firebase-messaging.js');
+importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
+importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
+importScripts(getIonicAppBaseUrl()+'js/qmChrome.js');
 var config = {
     apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
     authDomain: "quantimo-do.firebaseapp.com",
