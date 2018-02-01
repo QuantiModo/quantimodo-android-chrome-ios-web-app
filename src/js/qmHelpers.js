@@ -1682,6 +1682,9 @@ window.qm = {
     },
     webNotifications: {
         initializeFirebase: function(){
+            if(qm.firebase){
+                qmLog.debug("Firebase already initialized")
+            }
             var config = {
                 apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
                 authDomain: "quantimo-do.firebaseapp.com",
@@ -1691,7 +1694,8 @@ window.qm = {
                 messagingSenderId: "1052648855194"
             };
             console.log("firebase.initializeApp(config)");
-            return firebase.initializeApp(config);
+            qm.firebase = firebase.initializeApp(config);
+            return qm.firebase;
         },
         registerServiceWorker: function () {
             qm.webNotifications.initializeFirebase();
