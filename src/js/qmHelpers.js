@@ -70,11 +70,11 @@ window.qm = {
         addGlobalParams: function (urlParams) {
             if(!urlParams){urlParams = {};}
             if(appsManager.getAppSettingsFromMemory()){
-                urlParams.appName = encodeURIComponent(appsManager.getAppSettingsFromMemory().appSettings.appDisplayName);
-                if(config.appSettings.versionNumber){
-                    urlParams.appVersion = encodeURIComponent(appsManager.getAppSettingsFromMemory().appSettings.versionNumber);
+                urlParams.appName = encodeURIComponent(appsManager.getAppSettingsFromMemory().appDisplayName);
+                if(qm.getAppSettings().versionNumber){
+                    urlParams.appVersion = encodeURIComponent(appsManager.getAppSettingsFromMemory().versionNumber);
                 } else {
-                    qmLog.debug('Version number not specified!', null, 'Version number not specified on config.appSettings');
+                    qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
             urlParams.clientId = encodeURIComponent(qm.api.getClientId());
@@ -152,14 +152,17 @@ window.qm = {
             }
             return appsManager.getQuantiModoApiUrl();
         },
-        postToQuantiModo: function (body, path, onDoneListener) {
-            // url (required), options (optional)
+        postToQuantiModo: function (body, path, successHandler) {
+            qmLog.info("Making POST request to " + path);
             fetch( window.qm.apiHelper.getRequestUrl(path), {
                 method: 'post'
             }).then(function(response) {
-                onDoneListener(response)
+                qmLog.info("Got " + response.status + " response from POST to " + path);
+                if(successHandler){
+                    successHandler(response);
+                }
             }).catch(function(err) {
-                // Error :(
+                qmLog.error("Error from POST to " + path + ": " +err);
             });
         },
         get: function(url, successHandler, errorHandler){
@@ -171,7 +174,7 @@ window.qm = {
                         successHandler(data);
                     }
                 }).catch(function(err) {
-                    qmLog.error("If we couldn't parse json, "+ url + " probably doesn't exist");
+                    qmLog.error("If we couldn't parse json, " + url + " probably doesn't exist");
                     if(errorHandler){errorHandler(err);}
                 });
         },
@@ -568,6 +571,73 @@ window.qm = {
         'Environment'
     ],
     notifications: {
+        actions: {
+            trackYesAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
+                console.log('trackYesAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackNoAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
+                console.log('trackNoAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackZeroAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
+                console.log('trackZeroAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackOneRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
+                console.log('trackOneRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackTwoRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
+                console.log('trackTwoRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackThreeRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
+                console.log('trackThreeRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackFourRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
+                console.log('trackFourRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackFiveRatingAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
+                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackDefaultValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
+                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            snoozeAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
+                console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmService.snoozeTrackingReminderNotificationDeferred(body);
+            },
+            trackLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
+                console.log('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackSecondToLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
+                console.log('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+            trackThirdToLastValueAction: function (data){
+                var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
+                console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qm.notifications.postTrackingReminderNotifications(body);
+            },
+        },
         getFromGlobalsOrLocalStorage : function(){
             return qm.storage.getItem(qm.items.trackingReminderNotifications);
         },
@@ -1786,18 +1856,7 @@ var appsManager = { // jshint ignore:line
             successHandler(qm.appSettings);
             return;
         }
-        qm.api.configureClient();
-        var apiInstance = new Quantimodo.AppSettingsApi();
-        function callback(error, data, response) {
-            qm.appSettings = data.appSettings;
-            qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
-        }
-        var params = qm.api.addGlobalParams(params);
-        apiInstance.getAppSettings({}, callback);
-        // qm.api.get(qm.api.getAppSettingsUrl(), function (appSettings) {
-        //     qm.appSettings = appSettings;
-        //     successHandler(qm.appSettings);
-        // })
+        return appsManager.getAppSettingsFromFetchApi(successHandler);
     },
     getAppSettingsFromMemory: function(){
         if(typeof config !== "undefined" && config.appSettings){
@@ -1807,6 +1866,22 @@ var appsManager = { // jshint ignore:line
             return qm.appSettings;
         }
         return false;
+    },
+    getAppSettingsFromFetchApi: function (successHandler) {
+        qm.api.get(qm.api.getAppSettingsUrl(), function (response) {
+            qm.appSettings = response.appSettings;
+            successHandler(qm.appSettings);
+        })
+    },
+    getAppSettingsFromSdkApi: function (successHandler) {
+        qm.api.configureClient();
+        var apiInstance = new Quantimodo.AppSettingsApi();
+        function callback(error, data, response) {
+            qm.appSettings = data.appSettings;
+            qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
+        }
+        var params = qm.api.addGlobalParams(params);
+        apiInstance.getAppSettings({}, callback);
     }
 };
 function getAppName() {

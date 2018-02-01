@@ -12,8 +12,8 @@ importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
 //importScripts(libUrl+'quantimodo/src/index.js');
 //importScripts(libUrl+'quantimodo/quantimodo-web.js'); // XHR error
-importScripts(libUrl+'requirejs/require.js'); // XHR error
-importScripts(libUrl+'quantimodo/api.js'); // XHR error
+//importScripts(libUrl+'requirejs/require.js'); // Doesn't help
+//importScripts(libUrl+'quantimodo/api.js'); // XHR error
 //importScripts(libUrl+'bugsnag/src/bugsnag.js');  // Doesn't work because it requires document
 importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
@@ -45,7 +45,8 @@ function showNotification(pushData) {
     pushData.body = "Click here for more options";
     pushData.requireInteraction = true;
     appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
-        pushData.icon = pushData.image = appSettings.additionalSettings.appImages.appIcon;
+        //pushData.image = appSettings.additionalSettings.appImages.appIcon;
+        pushData.icon = appSettings.additionalSettings.appImages.appIcon;
         //event.waitUntil(self.registration.showNotification(title, pushData));
         self.registration.showNotification(title, pushData);
     })
