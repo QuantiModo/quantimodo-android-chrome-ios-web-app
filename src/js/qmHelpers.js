@@ -68,11 +68,14 @@ window.qm = {
             }
         },
         addGlobalParams: function (urlParams) {
-            urlParams.appName = encodeURIComponent(config.appSettings.appDisplayName);
-            if(config.appSettings.versionNumber){
-                urlParams.appVersion = encodeURIComponent(config.appSettings.versionNumber);
-            } else {
-                qmLog.debug('Version number not specified!', null, 'Version number not specified on config.appSettings');
+            if(!urlParams){urlParams = {};}
+            if(appsManager.getAppSettingsFromMemory()){
+                urlParams.appName = encodeURIComponent(appsManager.getAppSettingsFromMemory().appSettings.appDisplayName);
+                if(config.appSettings.versionNumber){
+                    urlParams.appVersion = encodeURIComponent(appsManager.getAppSettingsFromMemory().appSettings.versionNumber);
+                } else {
+                    qmLog.debug('Version number not specified!', null, 'Version number not specified on config.appSettings');
+                }
             }
             urlParams.clientId = encodeURIComponent(qm.api.getClientId());
             if(window.devCredentials){
@@ -89,7 +92,7 @@ window.qm = {
         },
         getClientId: function(){
             if(appSettings){return appSettings.clientId;}
-            if(config && config.appSettings){return config.appSettings.clientId;}
+            if(appsManager.getAppSettingsFromMemory()){return appsManager.getAppSettingsFromMemory().clientId;}
             return window.qm.urlHelper.getParam('clientId');
         },
         canWeMakeRequestYet: function(type, route, options){
@@ -141,51 +144,36 @@ window.qm = {
         },
         getBaseUrl: function () {
             //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
-            if(config.appSettings.apiUrl){
-                if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
-                return config.appSettings.apiUrl;
+            if(appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().apiUrl){
+                if(appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
+                    appsManager.getAppSettingsFromMemory().apiUrl = "https://" + appsManager.getAppSettingsFromMemory().apiUrl;
+                }
+                return appsManager.getAppSettingsFromMemory().apiUrl;
             }
             return appsManager.getQuantiModoApiUrl();
         },
         postToQuantiModo: function (body, path, onDoneListener) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST",  window.qm.apiHelper.getRequestUrl(path), true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {  // If the request is completed
-                    console.log("POST " + path + " response:" + xhr.responseText);
-                    if(onDoneListener) {onDoneListener(xhr.responseText);}
-                }
-            };
-            xhr.send(JSON.stringify(body));
+            // url (required), options (optional)
+            fetch( window.qm.apiHelper.getRequestUrl(path), {
+                method: 'post'
+            }).then(function(response) {
+                onDoneListener(response)
+            }).catch(function(err) {
+                // Error :(
+            });
         },
         get: function(url, successHandler, errorHandler){
-            var xobj = new XMLHttpRequest();
-            xobj.overrideMimeType("application/json");
-            xobj.open('GET', url, true);
-            xobj.onreadystatechange = function () {
-                if (xobj.readyState === 4) {
-                    var json = xobj.responseText;
-                    if(json.indexOf('DOCTYPE html') > -1){
-                        qmLog.error("Could not get " + url);
-                        if(errorHandler){errorHandler(json);}
-                    } else {
-                        window.qmLog.debug('Got appSettings from configs/default.config.json', null, json);
-                        try {
-                            var parsedResponse = JSON.parse(json);
-                        } catch (error) {
-                            if(url !== "configs/default.config.json"){
-                                qmLog.error(url + " error: " + error, "Could not parse json from " + url + "!  json: " + json, {});
-                            }
-                            if(errorHandler){errorHandler(json);}
-                            return;
-                        }
-                        if(successHandler){successHandler(parsedResponse);}
+            fetch(url, {method: 'get'})
+                .then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    if(successHandler){
+                        successHandler(data);
                     }
-                } else {
-                    window.qmLog.debug('Could not get appSettings from configs/default.config.json! xobj.readyState:' + xobj.readyState);
-                }
-            };
-            xobj.send(null);
+                }).catch(function(err) {
+                    qmLog.error("If we couldn't parse json, "+ url + " probably doesn't exist");
+                    if(errorHandler){errorHandler(err);}
+                });
         },
         getAppSettingsUrl: function () {
             var settingsUrl = 'configs/default.config.json';
@@ -410,7 +398,7 @@ window.qm = {
         }
     },
     getAppSettings: function () {
-        if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){return config.appSettings;}
+        if(appsManager.getAppSettingsFromMemory()){return appsManager.getAppSettingsFromMemory();}
         return null;
     },
     getPrimaryOutcomeVariable: function(){
@@ -783,18 +771,14 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
-            var xhr = new XMLHttpRequest();
-            xhr.open(type, window.qm.apiHelper.getRequestUrl(route), false);
-            xhr.onreadystatechange = function () {
-                if (xhr.status === 401) {
+            qm.api.get(window.qm.apiHelper.getRequestUrl(route), function (response) {
+                if(response.status === 401){
                     showSignInNotification();
-                } else if (xhr.readyState === 4) {
-                    var responseObject = JSON.parse(xhr.responseText);
-                    qm.storage.setTrackingReminderNotifications(responseObject.data);
-                    if(successHandler){successHandler(responseObject.data);}
+                } else {
+                    qm.storage.setTrackingReminderNotifications(response.data);
+                    if(successHandler){successHandler(response.data);}
                 }
-            };
-            xhr.send();
+            })
         },
         refreshAndShowPopupIfNecessary: function(notificationParams) {
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
@@ -996,6 +980,7 @@ window.qm = {
             'img/rating/numeric_rating_button_256_5.png'
         ]
     },
+    serviceWorker: false,
     storage: {
         getUserVariableByName: function (variableName, updateLatestMeasurementTime, lastValue) {
             var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
@@ -1041,6 +1026,7 @@ window.qm = {
             }
         },
         getAllLocalStorageDataWithSizes: function(summary){
+            if(typeof localStorage === "undefined"){return false;}
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 var key = localStorage.key(i);
@@ -1138,11 +1124,14 @@ window.qm = {
         removeItem: function(key){
             qmLog.debug("Removing " + key + " from local storage");
             delete qm.globals[key];
+            if(typeof localStorage === "undefined"){return false;}
             return localStorage.removeItem(key);
         },
         clear: function(){
-            localStorage.clear();
             qm.globals = {};
+            if(typeof localStorage === "undefined"){return false;}
+            localStorage.clear();
+
         },
         getElementOfLocalStorageItemById: function(localStorageItemName, elementId){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
@@ -1216,6 +1205,7 @@ window.qm = {
             if(summaryValue){summaryValue = value.substring(0, 18);}
             window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
             try {
+                if(typeof localStorage === "undefined"){return false;}
                 localStorage.setItem(key, value);
             } catch (error) {
                 function deleteLargeLocalStorageItems(localStorageItemsArray){
@@ -1248,6 +1238,7 @@ window.qm = {
                 qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
+            if(typeof localStorage === "undefined"){return false;}
             var item = localStorage.getItem(key);
             if(item === "undefined"){
                 qmLog.error(key + " from localStorage is undefined!");
@@ -1294,6 +1285,7 @@ window.qm = {
             }
         },
         getLocalStorageList: function(){
+            if(typeof localStorage === "undefined"){return false;}
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 var key = localStorage.key(i);
@@ -1697,17 +1689,12 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
-if(!window.qmUser){
-    window.qmUser = localStorage.getItem(qm.items.user);
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
-
 // returns bool | string
 // if search param is found: returns its value
 // returns false if not found
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
-qm.getSourceName = function(){return config.appSettings.appDisplayName + " for " + qm.getPlatform();};
+qm.getSourceName = function(){return appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.getPlatform();};
 qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
     if(window.location.href.indexOf('https://') !== -1){return "web";}
@@ -1793,6 +1780,33 @@ var appsManager = { // jshint ignore:line
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
         if(getClientIdFromQueryParameters() === 'app'){return true;}
+    },
+    getAppSettingsLocallyOrFromApi: function (successHandler) {
+        if(qm.appSettings && qm.appSettings.clientId){
+            successHandler(qm.appSettings);
+            return;
+        }
+        qm.api.configureClient();
+        var apiInstance = new Quantimodo.AppSettingsApi();
+        function callback(error, data, response) {
+            qm.appSettings = data.appSettings;
+            qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
+        }
+        var params = qm.api.addGlobalParams(params);
+        apiInstance.getAppSettings({}, callback);
+        // qm.api.get(qm.api.getAppSettingsUrl(), function (appSettings) {
+        //     qm.appSettings = appSettings;
+        //     successHandler(qm.appSettings);
+        // })
+    },
+    getAppSettingsFromMemory: function(){
+        if(typeof config !== "undefined" && config.appSettings){
+            return config.appSettings;
+        }
+        if(typeof qm.appSettings !== "undefined"){
+            return qm.appSettings;
+        }
+        return false;
     }
 };
 function getAppName() {
@@ -1808,8 +1822,18 @@ function getAppVersion() {
     if(appSettings){return appSettings.versionNumber;}
     return window.qm.urlHelper.getParam('appVersion');
 }
-function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
-function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
+function multiplyScreenHeight(factor) {
+    if(typeof screen === "undefined"){return false;}
+    return parseInt(factor * screen.height);
+}
+function multiplyScreenWidth(factor) {
+    if(typeof screen === "undefined"){return false;}
+    return parseInt(factor * screen.height);
+}
+function getScreenHeight() {
+    if(typeof screen === "undefined"){return false;}
+    return screen.height;
+}
 function getChromeRatingNotificationParams(trackingReminderNotification){
     return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
         left: screen.width - 380, width: 390, height: 110, focused: true};
@@ -1819,7 +1843,9 @@ function addGlobalQueryParameters(url) {
         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
     } else {
         window.qmLog.error(null, 'No access token!');
-        showSignInNotification();
+        if(!qm.serviceWorker){
+            showSignInNotification();
+        }
     }
     if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
     if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
@@ -1965,22 +1991,32 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.getUserFromApi = function(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.qm.apiHelper.getRequestUrl("user/me"), true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            var userFromApi = JSON.parse(xhr.responseText);
-            if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-                qm.userHelper.setUser(userFromApi);
-            } else {
-                if(qm.platform.isChromeExtension()){
-                    var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
-                    chrome.tabs.create({"url": url, "selected": true});
-                }
+    function successHandler(userFromApi){
+        if (userFromApi && typeof userFromApi.displayName !== "undefined") {
+            qm.userHelper.setUser(userFromApi);
+        } else {
+            if(qm.platform.isChromeExtension()){
+                var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
+                chrome.tabs.create({"url": url, "selected": true});
             }
         }
     };
-    xhr.send();
+    qm.api.configureClient();
+    var apiInstance = new Quantimodo.UserApi();
+    function callback(error, data, response) {
+        qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getUserFromApi');
+    }
+    var params = qm.api.addGlobalParams(params);
+    apiInstance.getUser({}, callback);
 };
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 
+if(!window.qmUser){
+    if(typeof localStorage !== "undefined"){
+        window.qmUser = localStorage.getItem(qm.items.user);
+    }
+    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
+}
+appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
+   console.log(appSettings);
+});

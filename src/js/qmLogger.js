@@ -9,10 +9,15 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {debugMode:false};
-Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+if(typeof Bugsnag !== "undefined"){
+    Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+}
+
 var logMetaData = false;
 if(!window.qmUser){
-    window.qmUser = localStorage.getItem('user');
+    if(typeof localStorage !== "undefined"){
+        window.qmUser = localStorage.getItem('user');
+    }
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
@@ -156,7 +161,9 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            if(typeof Bugsnag !== "undefined"){
+                Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            }
             //window.qmLog.error(error, object); // Avoid infinite recursion
             return object;
         }
