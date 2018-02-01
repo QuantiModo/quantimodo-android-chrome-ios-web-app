@@ -58,8 +58,14 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
         if($stateParams.variableObject){return $stateParams.variableObject.name;}
+        if(qm.urlHelper.getParam('variableName')){return qm.urlHelper.getParam('variableName');}
 		qmLog.info("Could not get variableName")
     }
+	function getConnectorName() {
+		if($stateParams.connectorName){return $stateParams.connectorName;}
+		if(qm.urlHelper.getParam('connectorName')){return qm.urlHelper.getParam('connectorName');}
+		qmLog.info("Could not get variableName")
+	}
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
@@ -76,7 +82,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
-        if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
+        if(getConnectorName()){params.connectorName = getConnectorName();}
 		if(getVariableName()){
 			if(!$scope.state.variableObject){
 				qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
