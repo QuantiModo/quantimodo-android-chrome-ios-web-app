@@ -21,11 +21,10 @@
                 <div ng-if="trackingReminder.addMeasurement" ng-include="'templates/items/favorite-item.html'"></div>
             </div>
 			<div class="item item-divider" ng-if="state.archivedTrackingReminders && state.archivedTrackingReminders.length">Archived</div>
-			<div ng-click="showActionSheet(trackingReminder)" class="item item-avatar" ng-if="!trackingReminder.hide" style="opacity: 0.6"
+			<div ng-click="showActionSheet(trackingReminder)" ng-if="!trackingReminder.hide" style="opacity: 0.6"
 				 ng-repeat="trackingReminder in state.archivedTrackingReminders | orderBy:reminderOrderParameter track by $index">
-				<img ng-src="{{trackingReminder.pngPath}}" style="border-radius: 0">
-				<h2 style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
-				<p style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+				<div ng-if="!trackingReminder.addMeasurement" ng-include="'templates/items/variable-item.html'"></div>
+				<div ng-if="trackingReminder.addMeasurement" ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
 		</div>
 	</ion-content>
