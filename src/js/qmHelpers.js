@@ -1699,6 +1699,10 @@ window.qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(qm.serviceWorker){
+                qmLog.debug("serviceWorker already registered");
+                return false;
+            }
             if(!qm.platform.isWeb()){
                 qmLog.debug("Not registering service worker because not on Web");
                 return false;
@@ -1712,6 +1716,8 @@ window.qm = {
                     messaging.useServiceWorker(registration);
                     qm.webNotifications.subscribeUser(messaging);
                 })
+            qm.serviceWorker = navigator.serviceWorker;
+            return qm.serviceWorker;
         },
         subscribeUser: function(messaging) {
             messaging.requestPermission()
