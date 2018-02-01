@@ -1354,6 +1354,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
 });
+var pump = require('pump');
+
+gulp.task('uglify-error-debugging', function (cb) {
+    pump([
+        gulp.src('src/js/**/*.js'),
+        uglify(),
+        gulp.dest('./dist/')
+    ], cb);
+});
 gulp.task('deleteFacebookPlugin', function (callback) {
     logInfo('If this doesn\'t work, just use gulp cleanPlugins');
     executeCommand('cordova plugin rm phonegap-facebook-plugin', callback);
