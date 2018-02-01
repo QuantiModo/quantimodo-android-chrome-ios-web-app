@@ -1699,6 +1699,10 @@ window.qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(!qm.platform.isWeb()){
+                qmLog.debug("Not registering service worker because not on Web");
+                return false;
+            }
             qm.webNotifications.initializeFirebase();
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
