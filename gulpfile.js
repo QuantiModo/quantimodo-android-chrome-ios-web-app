@@ -66,7 +66,10 @@ var paths = {
         privateConfigs: "src/private_configs/",
         defaultConfig: "src/configs/default.config.json",
         defaultPrivateConfig: "src/private_configs/default.private_config.json",
-        icons: "src/img/icons"
+        icons: "src/img/icons",
+        firebase: "src/lib/firebase/**/*",
+        js: "src/js/*.js",
+        serviceWorker: "src/firebase-messaging-sw.js"
     },
     www: {
         appConfigs: "www/configs/",
@@ -74,7 +77,9 @@ var paths = {
         privateConfigs: "www/private_configs/",
         defaultConfig: "www/configs/default.config.json",
         defaultPrivateConfig: "www/private_configs/default.private_config.json",
-        icons: "www/img/icons"
+        icons: "www/img/icons",
+        firebase: "www/lib/firebase/",
+        js: "www/js/"
     }
 };
 var gulp = require('gulp'),
@@ -1923,6 +1928,11 @@ gulp.task('copySrcToAndroidWww', [], function () {
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
+gulp.task('copyServiceWorkerAndLibraries', [], function () {
+    copyFiles(paths.src.firebase, paths.www.firebase);
+    copyFiles(paths.src.serviceWorker, 'www/');
+    return copyFiles(paths.src.js, paths.www.js);
+});
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
@@ -2037,6 +2047,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
         'copyIconsToWwwImg',
+        'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
         'createSuccessFile',
         callback);

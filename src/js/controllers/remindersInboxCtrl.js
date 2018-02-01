@@ -100,6 +100,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
             $scope.refreshTrackingReminderNotifications();
         }
+        if($rootScope.isWeb){qm.webNotifications.registerServiceWorker();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);

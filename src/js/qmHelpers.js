@@ -1682,6 +1682,10 @@ window.qm = {
     },
     webNotifications: {
         initializeFirebase: function(){
+            if(qm.firebase){
+                qmLog.debug("Firebase already initialized");
+                return qm.firebase;
+            }
             var config = {
                 apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
                 authDomain: "quantimo-do.firebaseapp.com",
@@ -1691,9 +1695,18 @@ window.qm = {
                 messagingSenderId: "1052648855194"
             };
             console.log("firebase.initializeApp(config)");
-            return firebase.initializeApp(config);
+            qm.firebase = firebase.initializeApp(config);
+            return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(qm.serviceWorker){
+                qmLog.debug("serviceWorker already registered");
+                return false;
+            }
+            if(!qm.platform.isWeb()){
+                qmLog.debug("Not registering service worker because not on Web");
+                return false;
+            }
             qm.webNotifications.initializeFirebase();
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
@@ -1703,6 +1716,8 @@ window.qm = {
                     messaging.useServiceWorker(registration);
                     qm.webNotifications.subscribeUser(messaging);
                 })
+            qm.serviceWorker = navigator.serviceWorker;
+            return qm.serviceWorker;
         },
         subscribeUser: function(messaging) {
             messaging.requestPermission()
