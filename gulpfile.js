@@ -774,6 +774,32 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
     postAppStatus();
     createChromeManifest();
 });
+
+gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
+    createProgressiveWebAppManifest('src/manifest.json');
+});
+function createProgressiveWebAppManifest(outputPath) {
+    outputPath = outputPath || paths.src + '/manifest.json';
+    var pwaManifest = {
+        'manifest_version': 2,
+        'name': appSettings.appDisplayName,
+        'short_name': appSettings.clientId,
+        'description': appSettings.appDescription,
+        "start_url": "index.html",
+        "display": "standalone",
+        "icons": [{
+            "src": "img/icons/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }],
+        "background_color": "#FF9800",
+        "theme_color": "#FF9800",
+        "gcm_sender_id": "1052648855194"
+    };
+    pwaManifest = JSON.stringify(pwaManifest, null, 2);
+    logInfo("Creating ProgressiveWebApp manifest at " + outputPath);
+    writeToFile(outputPath, pwaManifest);
+}
 function writeToFile(filePath, stringContents) {
     logDebug("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
@@ -1327,6 +1353,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(revReplace())         // Substitute in new filenames
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
+});
+var pump = require('pump');
+
+gulp.task('uglify-error-debugging', function (cb) {
+    pump([
+        gulp.src('src/js/**/*.js'),
+        uglify(),
+        gulp.dest('./dist/')
+    ], cb);
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     logInfo('If this doesn\'t work, just use gulp cleanPlugins');

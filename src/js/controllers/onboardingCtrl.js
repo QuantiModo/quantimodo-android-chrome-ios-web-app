@@ -4,7 +4,7 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.state = {
         showSkipButton: false
     };
-    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = true;

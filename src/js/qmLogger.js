@@ -9,10 +9,15 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {debugMode:false};
-Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+if(typeof Bugsnag !== "undefined"){
+    Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+}
+
 var logMetaData = false;
 if(!window.qmUser){
-    window.qmUser = localStorage.getItem('user');
+    if(typeof localStorage !== "undefined"){
+        window.qmUser = localStorage.getItem('user');
+    }
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
@@ -156,7 +161,9 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            if(typeof Bugsnag !== "undefined"){
+                Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            }
             //window.qmLog.error(error, object); // Avoid infinite recursion
             return object;
         }
@@ -211,8 +218,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     };
     if(qmLog.isDebugMode()){metaData.local_storage = window.qm.storage.getLocalStorageList();} // Too slow to do for every error
     if(qm.getAppSettings()){
-        metaData.build_server = config.appSettings.buildServer;
-        metaData.build_link = config.appSettings.buildLink;
+        metaData.build_server = qm.getAppSettings().buildServer;
+        metaData.build_link = qm.getAppSettings().buildLink;
     }
     metaData.test_app_url = getTestUrl();
     if (!metaData.groupingHash) {metaData.groupingHash = name;}
@@ -232,7 +239,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         console.error('API ERROR URL ' + metaData.test_api_url, metaData);
         delete metaData.apiResponse;
     }
-    //metaData.appSettings = config.appSettings;  // Request Entity Too Large
+    //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
     //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
     metaData = obfuscateSecrets(metaData);
@@ -245,8 +252,8 @@ window.qmLog.setupBugsnag = function(){
         if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
         Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
         if(qm.getAppSettings()){
-            Bugsnag.appVersion = config.appSettings.versionNumber;
-            Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+            Bugsnag.appVersion = qm.getAppSettings().versionNumber;
+            Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
         if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
     } else {
@@ -264,7 +271,7 @@ window.qmLog.setupUserVoice = function() {
             type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUser().subscribed + ')', // Optional: segment your users by type
             account: {
                 //id: 123, // Optional: associate multiple users with a single account
-                name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
+                name: qm.getSourceName() + ' v' + qm.getAppSettings().versionNumber, // Account name
                 //created_at: 1364406966, // Unix timestamp for the date the account was created
                 //monthly_rate: 9.99, // Decimal; monthly rate of the account
                 //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -279,8 +286,8 @@ window.qmLog.setupIntercom = function() {
         name: qm.userHelper.getUser().displayName,
         email: qm.userHelper.getUser().email,
         user_id: qm.userHelper.getUser().id,
-        app_name: config.appSettings.appDisplayName,
-        app_version: config.appSettings.versionNumber,
+        app_name: qm.getAppSettings().appDisplayName,
+        app_version: qm.getAppSettings().versionNumber,
         platform: qm.getPlatform()
     };
 };

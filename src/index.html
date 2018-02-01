@@ -9,6 +9,7 @@
     <title></title>
     <link href="css/app.min.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
+      <link rel="manifest" href="manifest.json">
     <!-- build:css css/combined.css -->
     <!-- endbuild -->
     <!-- inject:css -->
@@ -22,6 +23,7 @@
     <!--<script src="lib/templates.js"></script>-->
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
     <script src="lib/opbeat-angular/opbeat-angular.min.js"></script>
+    <script src="lib/quantimodo/quantimodo-web.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
     <script src="js/qmChrome.js"></script>
@@ -72,7 +74,6 @@
   <body ng-app="starter">
     <ion-nav-view></ion-nav-view>
     <!-- build:js scripts/combined-body-libraries.js -->
-    <script src="lib/quantimodo/quantimodo-web.js"></script>
     <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
     <!-- google maps -->
     <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?&sensor=false"></script>-->
@@ -101,6 +102,9 @@
     <script src="lib/angular-d3-word-cloud/dist/angular-word-cloud.min.js"></script>
     <script src="lib/gsap/src/minified/TweenMax.min.js"></script>
     <script src="lib/ng-file-upload/ng-file-upload.min.js"></script>
+    <script type="text/javascript" src="lib/simple-web-notification/web-notification.js"></script>
+    <script type="text/javascript" src="lib/angular-web-notification/angular-web-notification.js"></script>
+    <script src="lib/firebase/firebase.js"></script>
     <!--<script src='https://connect.humanapi.co/connect.js'></script>-->
     <!--<script src='https://app.quantimo.do/api/v1/connect.js'></script>-->
     <!-- I think we're already including UserVoice in the JavaScript <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>-->

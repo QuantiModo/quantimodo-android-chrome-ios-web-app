@@ -28,7 +28,8 @@ angular.module('starter',
         'angular-cache',
         'angular-d3-word-cloud',
         'ngFileUpload',
-        'ngOpbeat'
+        'ngOpbeat',
+        'angular-web-notification'
         //'ui-iconpicker'
     ]
 )
@@ -72,7 +73,7 @@ angular.module('starter',
             qmService.goToDefaultState();
             return;
         }
-        if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
+        if($ionicHistory.currentStateName() === qm.getAppSettings().appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
         }
@@ -105,7 +106,7 @@ angular.module('starter',
     window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(qm.urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));}
-    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
+    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = qm.storage.getItem('GA_LOCAL_STORAGE_KEY');
         if(!clientId){
