@@ -1562,7 +1562,8 @@ window.qm = {
         },
         openUrlInNewTab: function (url, showLocation) {
             showLocation = showLocation || 'yes';
-            window.open(url, '_blank', 'location='+showLocation);
+            //window.open(url, '_blank', 'location='+showLocation);
+            window.open(url, '_blank');
         },
         getIonicAppBaseUrl: function (){
             var url = (window.location.origin + window.location.pathname).replace('configuration-index.html', '');
