@@ -5,7 +5,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
-        return !config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
+        return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);

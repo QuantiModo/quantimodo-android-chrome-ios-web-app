@@ -180,7 +180,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.positiveRatingOptions = qmService.getPositiveRatingOptions();
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
-    $scope.welcomeText = config.appSettings.welcomeText;
+    $scope.welcomeText = qm.getAppSettings().welcomeText;
     $scope.downVote = function(correlationObject, $index, ev){
         if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
         var title, textContent, yesCallback, noCallback;
@@ -277,9 +277,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.actionSheetButtons.historyAllVariable,
             qmService.actionSheetButtons.variableSettings
         ];
-        /** @namespace config.appSettings.favoritesController */
-        if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
-            actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+        /** @namespace qm.getAppSettings().favoritesController */
+        if(qm.getAppSettings().favoritesController && qm.getAppSettings().favoritesController.actionMenuButtons){
+            actionMenuButtons = qm.getAppSettings().favoritesController.actionMenuButtons;
         }
         if(bloodPressure){actionMenuButtons = [];}
         var hideSheet = $ionicActionSheet.show({
