@@ -1696,7 +1696,7 @@ window.qm = {
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             navigator.serviceWorker.register(serviceWorkerUrl)
                 .then(function(registration) {
-                    const messaging = firebase.messaging();
+                    var messaging = firebase.messaging();
                     messaging.useServiceWorker(registration);
                     qm.webNotifications.subscribeUser(messaging);
                 })
