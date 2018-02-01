@@ -40,7 +40,9 @@ function showNotification(pushData) {
     pushData.requireInteraction = true;
     appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
         //pushData.image = appSettings.additionalSettings.appImages.appIcon;
-        pushData.icon = appSettings.additionalSettings.appImages.appIcon;
+        if(!pushData.icon){
+            pushData.icon = appSettings.additionalSettings.appImages.appIcon;
+        }
         //event.waitUntil(self.registration.showNotification(title, pushData));
         self.registration.showNotification(title, pushData);
     })
