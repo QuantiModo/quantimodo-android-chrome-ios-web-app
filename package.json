@@ -49,7 +49,7 @@
     "plist": "^1.2.0",
     "pump":"^3.0.0",
     "q": "^1.4.1",
-    "quantimodo": "5.9.13121",
+    "quantimodo": "5.9.20115",
     "request": "^2.64.0",
     "request-promise": "^4.2.1",
     "run-sequence": "^1.1.4",

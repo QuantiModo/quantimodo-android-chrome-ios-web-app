@@ -32,22 +32,32 @@
             <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
                 ng-hide="historyItem.hide"
                 data-measurementid="{{historyItem.id}}"
-                class="item item-avatar"
-                id="historyItem"
-                ng-click="showActionSheetForMeasurement(historyItem)">
+                class="item item-avatar item-button-right"
+                id="historyItem">
                 <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive"
+                   ng-click="showActionSheetForMeasurement(historyItem)"
                    ng-if="!historyItem.pngPath"
                    style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"> </i>
-                <img ng-if="historyItem.pngPath" ng-src="{{historyItem.pngPath}}" style="border-radius: 0">
-                <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;">
+                <img ng-if="historyItem.pngPath" ng-src="{{historyItem.pngPath}}" style="border-radius: 0"
+                     ng-click="showActionSheetForMeasurement(historyItem)">
+                <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;"
+                    ng-click="showActionSheetForMeasurement(historyItem)">
                     {{historyItem.displayValueAndUnitString}} {{historyItem.variableName}}
                 </h2>
-                <p id="historyItemBody" >
+                <p id="historyItemBody" ng-click="showActionSheetForMeasurement(historyItem)">
                     <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
                     {{historyItem.startTimeEpoch | dayOfWeekAndDate}}<br>
                     <span ng-if="historyItem.noteHtml" ng-bind-html="historyItem.noteHtml"></span>
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
                 </p>
+                <div class="buttons">
+                    <button ng-if="historyItem.productUrl" class="button button-assertive" ng-click="openUrl(historyItem.productUrl, '_blank')">
+                        <md-tooltip md-direction="down">Buy Now</md-tooltip> <i class="icon ion-bag"></i>
+                    </button>
+                    <button ng-if="!isMobile" class="button button-dark" ng-click="showActionSheet(trackingReminder)">
+                        <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-more"></i>
+                    </button>
+                </div>
             </div>
         </ion-list>
          <div class="card" ng-show="state.loading">
