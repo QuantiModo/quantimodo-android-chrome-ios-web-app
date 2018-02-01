@@ -76,7 +76,7 @@ function showNotification(pushData) {
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    qm.api.postToQuantiModo(payload, "setBackgroundMessageHandlerPayload:"+JSON.stringify(payload));
+    qm.api.postToQuantiModo(payload, 'v1/deviceTokens');
     showNotification(payload);
 });
 self.addEventListener('push', function(event) {
@@ -101,11 +101,8 @@ function runFunction(name, arguments)
 self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notification click Received: ' + event.action);
     event.notification.close();
-    if (runFunction(event.action, event.notification.data)) {
-        clients.openWindow('https://app.quantimo.do/ionic/Modo/www/index.html#/app/reminders-inbox?refresh=true')
-        return;
-    }
+    if (runFunction(event.action, event.notification.data)) {return;}
     event.waitUntil(
-        clients.openWindow('https://app.quantimo.do/ionic/Modo/www/index.html#/app/reminders-inbox?refresh=true')
+        clients.openWindow('https://'+ getQuantiModoClientId() +'.quantimo.do/ionic/Modo/www/index.html#/app/reminders-inbox?refresh=true')
     );
 });

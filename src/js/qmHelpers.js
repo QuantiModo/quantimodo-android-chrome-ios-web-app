@@ -82,7 +82,7 @@ window.qm = {
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
             } else {
-                qmLog.debug(null, 'No dev credentials', null);
+                qmLog.debug('No dev credentials', null);
             }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
@@ -134,7 +134,7 @@ window.qm = {
                 qmLog.error("No response provided to qm.api.responseHandler");
                 return;
             }
-            qmLog.debug(null, response.status + ' response from ' + response.req.url, null);
+            qmLog.debug(response.status + ' response from ' + response.req.url, null);
             if (error) {
                 qm.api.generalErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
@@ -185,7 +185,7 @@ window.qm = {
                 settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(window.designMode){settingsUrl += '&designMode=true';}
             }
-            window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
+            window.qmLog.debug('Getting app settings from ' + settingsUrl, null);
             return settingsUrl;
         }
     },
@@ -941,7 +941,7 @@ window.qm = {
                 window.qmLog.debug('chrome.alarms is undefined', null, null);
                 return false;
             }
-            window.qmLog.debug(null, 'isChromeExtension returns true', null, null);
+            window.qmLog.debug('isChromeExtension returns true', null, null);
             return true;
         },
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
@@ -1785,36 +1785,36 @@ function getClientIdFromQueryParameters() {
 }
 function getQuantiModoClientId() {
     if(qm.platform.isMobile()){
-        window.qmLog.debug(null, 'Using default.config.js because we\'re on mobile', null);
+        window.qmLog.debug('Using default.config.js because we\'re on mobile', null);
         return "default"; // On mobile
     }
     var clientId = getClientIdFromQueryParameters();
     if(clientId){
-        window.qmLog.debug(null, 'Using clientIdFromQueryParams: ' + clientId, null);
+        window.qmLog.debug('Using clientIdFromQueryParams: ' + clientId, null);
         return clientId;
     }
     if(!clientId){clientId = qm.storage.getItem(qm.items.clientId);}
     if(clientId){
-        window.qmLog.debug(null, 'Using clientId From localStorage: ' + clientId, null);
+        window.qmLog.debug('Using clientId From localStorage: ' + clientId, null);
         return clientId;
     }
     if(window.location.href.indexOf('quantimo.do') === -1){
-        window.qmLog.debug(null, 'Using default.config.js because we\'re not on a quantimo.do domain', null);
+        window.qmLog.debug('Using default.config.js because we\'re not on a quantimo.do domain', null);
         return "default"; // On mobile
     }
     var subdomain = getSubDomain();
     var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
     if(clientIdFromAppConfigName){
-        window.qmLog.debug(null, 'Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subdomain: ' + subdomain, null);
+        window.qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subdomain: ' + subdomain, null);
         return clientIdFromAppConfigName;
     }
-    window.qmLog.debug(null, 'Using subdomain as client id: ' + subdomain);
+    window.qmLog.debug('Using subdomain as client id: ' + subdomain);
     return subdomain;
 }
 var appsManager = { // jshint ignore:line
     defaultApp : "default",
     getAppConfig : function(){
-        window.qmLog.debug(null, 'getQuantiModoClientId returns ' + getQuantiModoClientId(), null);
+        window.qmLog.debug('getQuantiModoClientId returns ' + getQuantiModoClientId(), null);
         if(getQuantiModoClientId()){
             return 'configs/' + getQuantiModoClientId() + '.js';
         } else {
