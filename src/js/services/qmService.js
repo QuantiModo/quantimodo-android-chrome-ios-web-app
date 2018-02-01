@@ -1038,7 +1038,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
 
     function qmApiGeneralErrorHandler(error, data, response, options) {
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
-        if(response.status === 401){
+        if(response.status === 401 || (response.text && response.text.indexOf('expired') !== -1)){
             qmService.auth.handleExpiredAccessTokenResponse(response.body);
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
