@@ -1565,7 +1565,9 @@ window.qm = {
             window.open(url, '_blank', 'location='+showLocation);
         },
         getIonicAppBaseUrl: function (){
-            return (window.location.origin + window.location.pathname).replace('index.html', '');
+            var url = (window.location.origin + window.location.pathname).replace('configuration-index.html', '');
+            url = url.replace('index.html', '');
+            return url;
         }
     },
     user: null,
@@ -1694,6 +1696,7 @@ window.qm = {
         registerServiceWorker: function () {
             qm.webNotifications.initializeFirebase();
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
+            qmLog.info("Loading service worker from " + serviceWorkerUrl);
             navigator.serviceWorker.register(serviceWorkerUrl)
                 .then(function(registration) {
                     var messaging = firebase.messaging();
