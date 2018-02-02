@@ -2,7 +2,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$ionicLoading", "$mdToast",
     function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService,
              qmLogService, $ionicLoading, $mdToast) {
-    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
 	$scope.controller_name = "RemindersInboxCtrl";
 	qmLogService.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
@@ -100,6 +100,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
             $scope.refreshTrackingReminderNotifications();
         }
+        if($rootScope.isWeb){qm.webNotifications.registerServiceWorker();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
@@ -473,6 +474,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     };
     function getVariableCategoryName() {
         if($stateParams.variableCategoryName){return $stateParams.variableCategoryName;}
-        if(urlHelper.getParam('variableCategoryName')){return urlHelper.getParam('variableCategoryName');}
+        if(qm.urlHelper.getParam('variableCategoryName')){return qm.urlHelper.getParam('variableCategoryName');}
     }
 }]);

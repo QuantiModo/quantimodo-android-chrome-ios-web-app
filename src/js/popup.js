@@ -24,7 +24,7 @@ function setLastValueButtonListeners() {
     document.getElementById('skipButton').onclick = onLastValueButtonClicked;
 }
 function getVariableName() {
-    var variableName = window.urlHelper.getParam('variableName');
+    var variableName = window.qm.urlHelper.getParam('variableName');
     if(variableName){
         qmLog.debug("Got variableName " + variableName + " from url");
         return variableName;
@@ -185,7 +185,11 @@ function updateQuestion(variableName) {
     }
     var questionText;
     if(trackingReminderNotification.unitAbbreviatedName === '/5'){
-        questionText= "How is your " + variableName.toLowerCase() + "?";
+        questionText = "How is your " + variableName.toLowerCase() + "?";
+        if(variableName.toLowerCase() === 'meditation'){
+            qmLog.error("Asking "+questionText+"!",  "trackingReminderNotification is: "+JSON.stringify(trackingReminderNotification), {
+                trackingReminderNotification: trackingReminderNotification});
+        }
         getRatingSectionElement().style.display = "block";
         getLastValueSectionElement().style.display = "none";
     } else {
@@ -245,9 +249,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.resizeBy(wDiff, hDiff);
     ratingPopupHeight = window.innerHeight;
     ratingPopupWidth = window.innerWidth;
-    if(window.urlHelper.getParam("trackingReminderNotificationId")){
-        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
-            variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
+    if(window.qm.urlHelper.getParam("trackingReminderNotificationId")){
+        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.qm.urlHelper.getParam('trackingReminderNotificationId'),
+            variableName: window.qm.urlHelper.getParam("variableName"), valence: window.qm.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
     } else {
         window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     }

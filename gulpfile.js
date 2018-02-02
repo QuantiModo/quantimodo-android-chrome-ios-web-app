@@ -66,7 +66,10 @@ var paths = {
         privateConfigs: "src/private_configs/",
         defaultConfig: "src/configs/default.config.json",
         defaultPrivateConfig: "src/private_configs/default.private_config.json",
-        icons: "src/img/icons"
+        icons: "src/img/icons",
+        firebase: "src/lib/firebase/**/*",
+        js: "src/js/*.js",
+        serviceWorker: "src/firebase-messaging-sw.js"
     },
     www: {
         appConfigs: "www/configs/",
@@ -74,7 +77,9 @@ var paths = {
         privateConfigs: "www/private_configs/",
         defaultConfig: "www/configs/default.config.json",
         defaultPrivateConfig: "www/private_configs/default.private_config.json",
-        icons: "www/img/icons"
+        icons: "www/img/icons",
+        firebase: "www/lib/firebase/",
+        js: "www/js/"
     }
 };
 var gulp = require('gulp'),
@@ -774,6 +779,32 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
     postAppStatus();
     createChromeManifest();
 });
+
+gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
+    createProgressiveWebAppManifest('src/manifest.json');
+});
+function createProgressiveWebAppManifest(outputPath) {
+    outputPath = outputPath || paths.src + '/manifest.json';
+    var pwaManifest = {
+        'manifest_version': 2,
+        'name': appSettings.appDisplayName,
+        'short_name': appSettings.clientId,
+        'description': appSettings.appDescription,
+        "start_url": "index.html",
+        "display": "standalone",
+        "icons": [{
+            "src": "img/icons/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }],
+        "background_color": "#FF9800",
+        "theme_color": "#FF9800",
+        "gcm_sender_id": "1052648855194"
+    };
+    pwaManifest = JSON.stringify(pwaManifest, null, 2);
+    logInfo("Creating ProgressiveWebApp manifest at " + outputPath);
+    writeToFile(outputPath, pwaManifest);
+}
 function writeToFile(filePath, stringContents) {
     logDebug("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
@@ -1327,6 +1358,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(revReplace())         // Substitute in new filenames
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
+});
+var pump = require('pump');
+
+gulp.task('uglify-error-debugging', function (cb) {
+    pump([
+        gulp.src('src/js/**/*.js'),
+        uglify(),
+        gulp.dest('./dist/')
+    ], cb);
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     logInfo('If this doesn\'t work, just use gulp cleanPlugins');
@@ -1888,6 +1928,11 @@ gulp.task('copySrcToAndroidWww', [], function () {
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
+gulp.task('copyServiceWorkerAndLibraries', [], function () {
+    copyFiles(paths.src.firebase, paths.www.firebase);
+    copyFiles(paths.src.serviceWorker, 'www/');
+    return copyFiles(paths.src.js, paths.www.js);
+});
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
@@ -2002,6 +2047,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
         'copyIconsToWwwImg',
+        'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
         'createSuccessFile',
         callback);

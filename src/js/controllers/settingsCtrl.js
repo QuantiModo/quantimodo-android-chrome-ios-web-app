@@ -6,7 +6,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 										  $ionicPlatform, $mdDialog) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
-	$scope.userEmail = urlHelper.getParam('userEmail');
+	$scope.userEmail = qm.urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
@@ -14,10 +14,10 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.drawOverAppsPopupEnabled = qm.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();
-		if(urlHelper.getParam('userEmail')){
+		if(qm.urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
-			qmService.refreshUserEmailPreferencesDeferred({userEmail: urlHelper.getParam('userEmail')}, function(user){
+			qmService.refreshUserEmailPreferencesDeferred({userEmail: qm.urlHelper.getParam('userEmail')}, function(user){
 				$rootScope.user = user;
 				$scope.state.loading = false;
 				qmService.hideLoader();
@@ -94,7 +94,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
 		var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
+		if(qm.urlHelper.getParam('userEmail')){params.userEmail = qm.urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendReminderNotificationEmails){
             qmService.showMaterialAlert('Reminder Emails Enabled', "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email.", ev);
@@ -105,7 +105,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
+		if(qm.urlHelper.getParam('userEmail')){params.userEmail = qm.urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
             qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
