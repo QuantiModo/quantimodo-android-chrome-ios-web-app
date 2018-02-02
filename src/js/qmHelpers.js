@@ -155,7 +155,8 @@ window.qm = {
         postToQuantiModo: function (body, path, successHandler) {
             qmLog.info("Making POST request to " + path);
             fetch( window.qm.apiHelper.getRequestUrl(path), {
-                method: 'post'
+                method: 'post',
+                body: JSON.stringify(body)
             }).then(function(response) {
                 qmLog.info("Got " + response.status + " response from POST to " + path);
                 if(successHandler){
