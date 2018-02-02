@@ -31,7 +31,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		noRemindersIcon: "ion-android-notifications-none"
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.info('beforeEnter RemindersManageCtrl', null);
-		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
+		if(qm.urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');}
 		qmService.showBasicLoader();
         qmService.unHideNavigationMenu();
 		$scope.stateParams = $stateParams;
@@ -128,7 +128,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		});
 	};
 	var getTrackingReminders = function(){
-		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
+		if(qm.urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');}
 		qmLogService.info('Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
 		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {
 			addRemindersToScope(allTrackingReminderTypes);

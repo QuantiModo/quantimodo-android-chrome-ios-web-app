@@ -58,8 +58,14 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     function getVariableName() {
         if($stateParams.variableName){return $stateParams.variableName;}
         if($stateParams.variableObject){return $stateParams.variableObject.name;}
+        if(qm.urlHelper.getParam('variableName')){return qm.urlHelper.getParam('variableName');}
 		qmLog.info("Could not get variableName")
     }
+	function getConnectorName() {
+		if($stateParams.connectorName){return $stateParams.connectorName;}
+		if(qm.urlHelper.getParam('connectorName')){return qm.urlHelper.getParam('connectorName');}
+		qmLog.info("Could not get variableName")
+	}
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
@@ -76,7 +82,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if(getVariableName()){params.variableName = getVariableName();}
-        if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
+        if(getConnectorName()){params.connectorName = getConnectorName();}
 		if(getVariableName()){
 			if(!$scope.state.variableObject){
 				qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
@@ -151,15 +157,19 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		var variableObject = JSON.parse(JSON.stringify(measurement));
         variableObject.id = measurement.variableId;
         variableObject.name = measurement.variableName;
+        var buttons = [
+            { text: '<i class="icon ion-edit"></i>Edit Measurement'},
+            qmService.actionSheetButtons.reminderAdd,
+            qmService.actionSheetButtons.charts,
+            qmService.actionSheetButtons.historyAllVariable,
+            qmService.actionSheetButtons.variableSettings,
+            qmService.actionSheetButtons.relationships
+        ];
+        if(measurement.url){
+            buttons.push(qmService.actionSheetButtons.openUrl);
+        }
 		var hideSheet = $ionicActionSheet.show({
-			buttons: [
-				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
-				qmService.actionSheetButtons.reminderAdd,
-				qmService.actionSheetButtons.charts,
-				qmService.actionSheetButtons.historyAllVariable,
-				qmService.actionSheetButtons.variableSettings,
-                qmService.actionSheetButtons.relationships
-			],
+			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
@@ -174,6 +184,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 					qmService.showBlackRingLoader();
 					qmService.goToCorrelationsListForVariable($scope.state.measurement.variableName);
 				}
+                if(index === 6){
+                    qm.urlHelper.openUrlInNewTab(measurement.url);
+                }
 				return true;
 			},
 			destructiveButtonClicked: function() {

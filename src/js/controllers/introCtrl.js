@@ -30,11 +30,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         //qmLogService.debug("Entering state " + $state.current.name);
-        if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
+        if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
-            qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + config.appSettings.appDesign.defaultState, null);
+            qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + qm.getAppSettings().appDesign.defaultState, null);
             qmService.goToDefaultState();
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
