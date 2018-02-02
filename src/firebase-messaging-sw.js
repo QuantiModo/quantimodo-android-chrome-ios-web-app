@@ -78,9 +78,13 @@ messaging.setBackgroundMessageHandler(function(payload) {
 self.addEventListener('push', function(event) {
     console.log('[Service Worker] Push Received.');
     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
-    var pushData = event.data.json();
-    pushData = pushData.data;
-    showNotification(pushData);
+    try {
+        var pushData = event.data.json();
+        pushData = pushData.data;
+        showNotification(pushData);
+    } catch (error) {
+        qmLog.error("Could not show push notification because: " + error);
+    }
 });
 // [END background_handler]
 function runFunction(name, arguments)
