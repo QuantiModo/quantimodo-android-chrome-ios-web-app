@@ -319,6 +319,10 @@ window.qm = {
             qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             if(accessTokenFromUrl){
+                if(accessTokenFromUrl.length < 10){
+                    qmLog.error("accessTokenFromUrl is "+ accessTokenFromUrl);
+                    return null;
+                }
                 qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
                 qm.auth.saveAccessToken(accessTokenFromUrl);
             }
@@ -331,9 +335,23 @@ window.qm = {
             }
         },
         getAccessTokenFromUrlUserOrStorage: function() {
-            if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){return qm.auth.getAndSaveAccessTokenFromCurrentUrl();}
-            if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){return qm.userHelper.getUser().accessToken;}
-            if(qm.storage.getItem(qm.items.accessToken)){return qm.storage.getItem(qm.items.accessToken);}
+            if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
+                return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
+            }
+            if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){
+                if(qm.userHelper.getUser().accessToken.length < 10){
+                    qmLog.error("qm.userHelper.getUser().accessToken is "+ qm.userHelper.getUser().accessToken);
+                } else {
+                    return qm.userHelper.getUser().accessToken;
+                }
+            }
+            if(qm.storage.getItem(qm.items.accessToken)){
+                if(qm.storage.getItem(qm.items.accessToken).length < 10){
+                    qmLog.error("accessTokenFromUrl is "+ qm.storage.getItem(qm.items.accessToken));
+                } else {
+                    return qm.storage.getItem(qm.items.accessToken);
+                }
+            }
             qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
             return null;
@@ -1937,7 +1955,7 @@ function addGlobalQueryParameters(url) {
     if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
     } else {
-        window.qmLog.error(null, 'No access token!');
+        window.qmLog.error('No access token!');
         if(!qm.serviceWorker){
             showSignInNotification();
         }
