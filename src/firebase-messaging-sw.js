@@ -26,7 +26,7 @@ console.log("firebase.initializeApp(config)");
 firebase.initializeApp(config);
 const messaging = firebase.messaging();
 function showNotification(pushData) {
-    qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
+    //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     pushData.data = JSON.parse(JSON.stringify(pushData));
     console.log(pushData);
     const title = pushData.title;
