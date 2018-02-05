@@ -759,15 +759,16 @@ window.qm = {
         },
         drawOverAppsPopupEnabled: function(){
             var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(!enabled){
-                qmLog.error("Popups are disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+            if(enabled === true || enabled === "true"){
+                return true;
             }
-            return enabled;
+            qmLog.pushDebug("Popups are not enabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+            return false;
         },
         drawOverAppsPopupAreDisabled: function(){
             var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
             if(enabled === false || enabled === "false"){
-                qmLog.error("Popups are disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                qmLog.pushDebug("Popups are explicitely disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
                 return true;
             }
             return false;
@@ -775,7 +776,7 @@ window.qm = {
         drawOverAppsPopupHaveNotBeenConfigured: function(){
             var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
             if(enabled === null || enabled === "null"){
-                qmLog.error("Popups have not been configured!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                qmLog.pushDebug("Popups have not been configured!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
                 return true;
             }
             return false;
@@ -791,7 +792,8 @@ window.qm = {
                 qm.notifications.refreshNotifications(successHandler, errorHandler);
                 return true;
             }
-            window.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
+            qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
+            successHandler();
             return false
         },
         refreshIfEmptyOrStale: function(callback){
@@ -904,6 +906,10 @@ window.qm = {
                 var uniqueNotification = window.qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
+                    function getChromeRatingNotificationParams(trackingReminderNotification){
+                        return { url: qm.notifications.getRatingNotificationPath(trackingReminderNotification),
+                            type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true};
+                    }
                     openOrFocusChromePopupWindow(getChromeRatingNotificationParams(uniqueNotification));
                     qm.chrome.updateChromeBadge(0);
                 } else if (numberOfWaitingNotifications > 0) {
@@ -929,6 +935,7 @@ window.qm = {
         },
         showAndroidPopupForMostRecentNotification: function(){
             if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
+            qmLog.info('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
             window.qm.notifications.refreshIfEmpty(function () {
                 // Need to use unique rating notifications because we need to setup initial popup via url params
                 if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
@@ -940,16 +947,19 @@ window.qm = {
                 }
             });
         },
-        drawOverAppsPopupRatingNotification: function(trackingReminderNotification, force) {
-            if(!trackingReminderNotification){
+        drawOverAppsPopupRatingNotification: function(ratingTrackingReminderNotification, force) {
+            qmLog.info('Called qm.notifications.drawOverAppsPopupRatingNotification...');
+            if(!ratingTrackingReminderNotification){
                 // Need to use unique rating notifications because we need to setup initial popup via url params
-                trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+                ratingTrackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
             }
-            qm.notifications.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
+            qm.notifications.drawOverAppsPopup(qm.notifications.getRatingNotificationPath(ratingTrackingReminderNotification), force);
         },
         drawOverAppsPopup: function(path, force){
-            if(!qm.notifications.drawOverAppsPopupEnabled()){
+            qmLog.info('Called qm.notifications.drawOverAppsPopup...');
+            if(qm.notifications.drawOverAppsPopupAreDisabled()){
                 qmLog.error("Cannot show popup because it has been disabled")
+                return false;
             }
             if(typeof window.overApps === "undefined"){
                 qmLog.error('window.overApps is undefined!');
@@ -977,6 +987,16 @@ window.qm = {
             },function (err){
                 window.qmLog.error('startOverApp error: ' + err);
             });
+        },
+        getRatingNotificationPath: function(ratingTrackingReminderNotification){
+            if(ratingTrackingReminderNotification.unitAbbreviatedName !== '/5'){
+                qmLog.error('ratingTrackingReminderNotification must have unit /5');
+            }
+            return "android_popup.html?variableName=" + ratingTrackingReminderNotification.variableName +
+                "&valence=" + ratingTrackingReminderNotification.valence +
+                "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
+                "&clientId=" + window.getClientId() +
+                "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
         }
     },
     objectHelper: {
@@ -2061,10 +2081,6 @@ function getScreenHeight() {
     if(typeof screen === "undefined"){return false;}
     return screen.height;
 }
-function getChromeRatingNotificationParams(trackingReminderNotification){
-    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
-        left: screen.width - 380, width: 390, height: 110, focused: true};
-}
 function addGlobalQueryParameters(url) {
     if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
@@ -2155,13 +2171,7 @@ function getUnique(array, propertyName) {
     return output;
 }
 
-function getRatingNotificationPath(trackingReminderNotification){
-    return "android_popup.html?variableName=" + trackingReminderNotification.variableName +
-    "&valence=" + trackingReminderNotification.valence +
-    "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
-    "&clientId=" + window.getClientId() +
-    "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
-}
+
 
 window.drawOverAppsPopupCompactInboxNotification = function() {
     qm.notifications.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
