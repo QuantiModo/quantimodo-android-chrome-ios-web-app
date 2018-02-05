@@ -59,8 +59,7 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
 }
 var onFaceButtonClicked = function() {
     var buttonId = this.id;
-    console.log('onFaceButtonClicked');
-    window.qmLog.info('onFaceButtonClicked buttonId ' + buttonId);
+    window.qmLog.pushDebug('onFaceButtonClicked buttonId ' + buttonId);
     var ratingValue; // Figure out what rating was selected
     if (buttonId === "buttonMoodDepressed") {if(valenceNegative()){ ratingValue = 5; } else { ratingValue = 1;}
     } else if (buttonId === "buttonMoodSad") {if(valenceNegative()){ ratingValue = 4; } else { ratingValue = 2;}
