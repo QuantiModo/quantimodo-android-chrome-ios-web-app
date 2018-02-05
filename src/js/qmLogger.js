@@ -222,6 +222,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         metaData.build_link = qm.getAppSettings().buildLink;
     }
     metaData.test_app_url = getTestUrl();
+    metaData.window_location_href = window.location.href;
+    metaData.window_location_origin = window.location.origin;
     if (!metaData.groupingHash) {metaData.groupingHash = name;}
     if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
     if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
