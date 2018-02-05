@@ -692,9 +692,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug("getTrackingReminderNotificationsFromApi", null, params, qmLog.getStackTrace());
         if(!configureQmApiClient('getTrackingReminderNotificationsFromApi', errorHandler)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
-        function callback(error, data, response) {
-            if(data && data.length){checkHoursSinceLastPushNotificationReceived();}
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
+        function callback(error, trackingReminderNotifications, response) {
+            if(trackingReminderNotifications && trackingReminderNotifications.length){
+                qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                checkHoursSinceLastPushNotificationReceived();
+            }
+            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler)
         }
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
@@ -2311,7 +2314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                 if(trackingReminderNotifications.length){
                     checkHoursSinceLastPushNotificationReceived();
-                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                 }
                 deferred.resolve(trackingReminderNotifications);
             } else {deferred.reject("error");}
@@ -2535,11 +2538,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
-                if(trackingReminders && trackingReminders.length){
+                if(qm.reminderHelper.getActive(trackingReminders) && qm.reminderHelper.getActive(trackingReminders).length){
                     checkHoursSinceLastPushNotificationReceived();
-                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 }
-                qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 deferred.resolve(trackingReminders);
             }, function(error){
                 qmLogService.error(error);
@@ -4487,7 +4490,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return deferred.promise;
     };
-    qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
+    qmService.scheduleSingleMostFrequentLocalNotification = function(activeTrackingReminders) {
         if(!$rootScope.user){
             qmLogService.debug('No user for scheduleSingleMostFrequentLocalNotification', null);
             return;
@@ -4501,13 +4504,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false so we shouldn\'t be calling this function', null);
             //return;
         }
+        if(!activeTrackingReminders){activeTrackingReminders = qm.reminderHelper.getActive();}
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
         if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
-            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
-            if(trackingRemindersFromApi){
-                for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                    if(trackingRemindersFromApi[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
-                        at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
+            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(activeTrackingReminders);
+            if(activeTrackingReminders){
+                for (var i = 0; i < activeTrackingReminders.length; i++) {
+                    if(activeTrackingReminders[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
+                        at.setUTCSeconds(activeTrackingReminders[i].nextReminderTimeEpochSeconds);
                     }
                 }
             }
