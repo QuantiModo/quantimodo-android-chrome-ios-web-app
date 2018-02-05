@@ -755,10 +755,10 @@ window.qm = {
             qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
         },
-        refreshIfEmpty: function(callback){
+        refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 window.qmLog.info('No notifications in local storage');
-                qm.notifications.refreshNotifications(callback);
+                qm.notifications.refreshNotifications(successHandler, errorHandler);
                 return true;
             }
             window.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -897,6 +897,18 @@ window.qm = {
             }
             qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
         },
+        showAndroidPopupForMostRecentNotification: function(){
+            if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
+            window.qm.notifications.refreshIfEmpty(function () {
+                if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
+                    window.drawOverAppsPopupRatingNotification(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue());
+                    // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
+                    //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
+                } else {
+                    qmLog.error("No getMostRecentRatingNotificationNotInSyncQueue so not showing popup!");
+                }
+            });
+        }
     },
     objectHelper: {
         copyPropertiesFromOneObjectToAnother: function(source, destination){
@@ -1600,12 +1612,17 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUserFromLocalStorage: function(){
+        getUserFromLocalStorage: function(refresh){
             if(!window.qmUser) {
                 window.qmUser = qm.storage.getItem('user');
             }
             if(!window.qmUser){
-                qmLog.info("We do not have a user!");
+                if(refresh){
+                    qmLog.info("We do not have a user!  Going to try to get from API");
+                    qm.userHelper.getUserFromApi();
+                } else {
+                    qmLog.info("We do not have a user!");
+                }
             }
             return window.qmUser;
         },
@@ -1627,7 +1644,8 @@ window.qm = {
                 var now = new Date();
                 var hours = now.getHours();
                 var currentTime = hours + ':00:00';
-                if(currentTime > qmUser.latestReminderTime || currentTime < qmUser.earliestReminderTime ){
+                if(currentTime > qm.userHelper.getUserFromLocalStorage().latestReminderTime ||
+                    currentTime < qm.userHelper.getUserFromLocalStorage().earliestReminderTime ){
                     window.qmLog.info('Not showing notification because outside allowed time range');
                     return false;
                 }
@@ -2023,17 +2041,6 @@ window.qm.apiHelper.getRequestUrl = function(path) {
     console.log("Making API request to " + url);
     return url;
 };
-function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(!qm.platform.isChromeExtension()){return;}
-	window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
-    if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
-    if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
-        qm.chrome.createSmallNotificationAndOpenInboxInBackground();
-    } else {
-        qm.notifications.refreshAndShowPopupIfNecessary();
-    }
-
-}
 /**
  * @return {boolean}
  */
@@ -2079,17 +2086,6 @@ function getUnique(array, propertyName) {
     return output;
 }
 
-window.showAndroidPopupForMostRecentNotification = function(){
-    if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
-    if(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue()) {
-        window.drawOverAppsPopupRatingNotification(qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue());
-    // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
-    //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
-    } else {
-        window.qmLog.info('No notifications for popup! Refreshing if empty...');
-        window.qm.notifications.refreshIfEmpty();
-    }
-};
 function getRatingNotificationPath(trackingReminderNotification){
     return "android_popup.html?variableName=" + trackingReminderNotification.variableName +
     "&valence=" + trackingReminderNotification.valence +
