@@ -213,7 +213,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "deviceTokenToSync": qm.storage.getItem(qm.items.deviceTokenToSync),
         "last_push": window.qm.push.getTimeSinceLastPushString(),
         "push enabled": qm.push.enabled(),
-        "draw over apps enabled": window.qm.notifications.drawOverAppsPopupEnabled(),
+        "draw over apps enabled": qm.storage.getItem(qm.items.drawOverAppsPopupEnabled)), // Don't use function drawOverAppsPopupEnabled() because of recursion error
         "last popup": qm.notifications.getTimeSinceLastPopupString()
     };
     if(qmLog.isDebugMode()){metaData.local_storage = window.qm.storage.getLocalStorageList();} // Too slow to do for every error

@@ -7099,8 +7099,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined"){
+                        qmLog.pushDebug('push notification is calling drawOverApps showAndroidPopupForMostRecentNotification...');
                         qm.notifications.showAndroidPopupForMostRecentNotification();
                     } else {
+                        qmLog.pushDebug('window.overApps for popups is undefined! ');
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                         }, function (error) {
