@@ -158,25 +158,35 @@ qm.chrome.createSmallNotificationAndOpenInboxInBackground = function(){
     windowParams.focused = false;
     openOrFocusChromePopupWindow(windowParams);
 };
-window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
-    //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
-    if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
-        qmLog.info("Opening rating notification popup");
-        openOrFocusChromePopupWindow(getChromeRatingNotificationParams(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()));
-        window.qm.chrome.updateChromeBadge(0);
-    } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
-        qmLog.info("No rating notifications so opening compactInboxWindow popup");
-        openOrFocusChromePopupWindow(qm.chrome.compactInboxWindowParams);
-    } else if (alarm) {
-        qmLog.info("Got an alarm and no rating notifications so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-        checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
-    } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
-        qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-        window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+qm.chrome.checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary = function(alarm) {
+    if(!qm.platform.isChromeExtension()){return;}
+    window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
+    if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
+    if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
+        qm.chrome.createSmallNotificationAndOpenInboxInBackground();
     } else {
-        qmLog.info("No notifications in localStorage so refreshIfEmpty");
-        qm.notifications.refreshIfEmpty();
+        qm.notifications.refreshAndShowPopupIfNecessary();
     }
+
+};
+window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
+    qm.notifications.refreshIfEmpty(function () {
+        //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
+        if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
+            qmLog.info("Opening rating notification popup");
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(
+                qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()));
+            window.qm.chrome.updateChromeBadge(0);
+        } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
+            qmLog.info("No rating notifications so opening compactInboxWindow popup");
+            openOrFocusChromePopupWindow(qm.chrome.compactInboxWindowParams);
+        } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
+            qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
+            window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+        }
+    }, function (err) {
+        qmLog.error("Not showing popup because of notfication refresh error: "+ err);
+    });
 };
 if(qm.platform.isChromeExtension()) {
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
@@ -185,6 +195,7 @@ if(qm.platform.isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
+        qm.getUserFromLocalStorageOrRefreshIfNecessary();
         qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup(alarm));
     });
     if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}

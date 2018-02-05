@@ -2302,7 +2302,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.isAndroid){window.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.isAndroid){qm.notifications.showAndroidPopupForMostRecentNotification();}
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -6850,12 +6850,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings), null);
                 qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data), null);
-                window.showAndroidPopupForMostRecentNotification();
+                qm.notifications.showAndroidPopupForMostRecentNotification();
             });
             qmLog.info("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                 qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
-                window.showAndroidPopupForMostRecentNotification();
+                qm.notifications.showAndroidPopupForMostRecentNotification();
             });
         });
     }
@@ -7069,7 +7069,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined"){
-                        window.showAndroidPopupForMostRecentNotification();
+                        qm.notifications.showAndroidPopupForMostRecentNotification();
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
@@ -7354,7 +7354,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         qmLogService.error("window.overApps is undefined!");
                     }
-                    window.showAndroidPopupForMostRecentNotification();
+                    qm.notifications.showAndroidPopupForMostRecentNotification();
                 });
             }
             function noCallback() {disablePopups();}
