@@ -338,11 +338,11 @@ window.qm = {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
                 return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             }
-            if(qm.userHelper.getUser() && qm.userHelper.getUser().accessToken){
-                if(qm.userHelper.getUser().accessToken.length < 10){
-                    qmLog.error("qm.userHelper.getUser().accessToken is "+ qm.userHelper.getUser().accessToken);
+            if(qm.userHelper.getUserFromLocalStorage() && qm.userHelper.getUserFromLocalStorage().accessToken){
+                if(qm.userHelper.getUserFromLocalStorage().accessToken.length < 10){
+                    qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is "+ qm.userHelper.getUserFromLocalStorage().accessToken);
                 } else {
-                    return qm.userHelper.getUser().accessToken;
+                    return qm.userHelper.getUserFromLocalStorage().accessToken;
                 }
             }
             if(qm.storage.getItem(qm.items.accessToken)){
@@ -407,7 +407,7 @@ window.qm = {
             return (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
         },
         deleteAllAccessTokens: function(){
-            qm.userHelper.getUser().accessToken = null;
+            qm.userHelper.getUserFromLocalStorage().accessToken = null;
             //qm.storage.
         }
     },
@@ -980,8 +980,8 @@ window.qm = {
             return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
         },
         enabled: function () {
-            if(!qm.userHelper.getUser()){return false;}
-            return qm.userHelper.getUser().pushNotificationsEnabled;
+            if(!qm.userHelper.getUserFromLocalStorage()){return false;}
+            return qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled;
         },
     },
     reminderHelper: {
@@ -1600,7 +1600,7 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUser: function(){
+        getUserFromLocalStorage: function(){
             if(!window.qmUser) {
                 window.qmUser = qm.storage.getItem('user');
             }
@@ -1623,7 +1623,7 @@ window.qm = {
             }
         },
         withinAllowedNotificationTimes: function(){
-            if(qm.userHelper.getUser()){
+            if(qm.userHelper.getUserFromLocalStorage()){
                 var now = new Date();
                 var hours = now.getHours();
                 var currentTime = hours + ':00:00';
@@ -1633,6 +1633,33 @@ window.qm = {
                 }
             }
             return true;
+        },
+        getUserFromApi: function(successCallback, errorHandler){
+            function successHandler(userFromApi){
+                if (userFromApi && typeof userFromApi.displayName !== "undefined") {
+                    qm.userHelper.setUser(userFromApi);
+                    if(successCallback){successCallback();}
+                } else {
+                    if(qm.platform.isChromeExtension()){
+                        var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
+                        chrome.tabs.create({"url": url, "selected": true});
+                    }
+                }
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.UserApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.getUser({}, callback);
+        },
+        getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
+            if(qm.userHelper.getUserFromLocalStorage()){
+                successHandler(qm.userHelper.getUserFromLocalStorage());
+                return;
+            }
+            qm.getUserFromApi(successHandler, errorHandler);
         }
     },
     userVariableHelper: {
@@ -2103,25 +2130,6 @@ window.drawOverAppsPopup = function(path, force){
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
-window.getUserFromApi = function(){
-    function successHandler(userFromApi){
-        if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-            qm.userHelper.setUser(userFromApi);
-        } else {
-            if(qm.platform.isChromeExtension()){
-                var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
-                chrome.tabs.create({"url": url, "selected": true});
-            }
-        }
-    };
-    qm.api.configureClient();
-    var apiInstance = new Quantimodo.UserApi();
-    function callback(error, data, response) {
-        qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getUserFromApi');
-    }
-    var params = qm.api.addGlobalParams(params);
-    apiInstance.getUser({}, callback);
-};
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 
 if(!window.qmUser){

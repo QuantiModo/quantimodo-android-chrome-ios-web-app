@@ -895,7 +895,11 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         /** @namespace response.privateConfig */
         if(response.privateConfig){
             privateConfig = response.privateConfig;
-            writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            try {
+                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            } catch (error) {
+                logError(error);
+            }
             try {
                 writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
             } catch (err){
