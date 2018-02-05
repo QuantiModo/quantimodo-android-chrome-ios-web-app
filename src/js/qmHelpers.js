@@ -661,6 +661,7 @@ window.qm = {
             return qm.storage.getItem(qm.items.trackingReminderNotifications);
         },
         getMostRecentRatingNotificationNotInSyncQueue: function(){
+            // Need unique rating notifications because we need to setup initial popup via url params
             var uniqueRatingNotifications = qm.notifications.getAllUniqueRatingNotifications();
             if(!uniqueRatingNotifications){
                 qmLog.info("No uniqueRatingNotifications in storage");
@@ -702,6 +703,15 @@ window.qm = {
         },
         getLastPopupUnixtime: function(){
             return qm.storage.getItem(qm.items.lastPopupNotificationUnixtimeSeconds);
+        },
+        lastPopupWasBeforeLastReminderTime: function () {
+            var lastTime =  qm.notifications.getLastPopupUnixtime();
+            qmLog.info("Last popup at " + qm.timeHelper.getTimeSinceString(lastTime));
+            if(lastTime < qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getMostFrequentReminderIntervalInSeconds()){
+                qmLog.error("No popups shown since before last reminder time!  Re-initializing popups...");
+                return true; // Sometimes we lose permission for some reason
+            }
+            return false;
         },
         getSecondsSinceLastPopup: function(){
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixtime();
@@ -748,7 +758,27 @@ window.qm = {
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
         drawOverAppsPopupEnabled: function(){
-            return qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+            if(!enabled){
+                qmLog.error("Popups are disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+            }
+            return enabled;
+        },
+        drawOverAppsPopupAreDisabled: function(){
+            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+            if(enabled === false || enabled === "false"){
+                qmLog.error("Popups are disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                return true;
+            }
+            return false;
+        },
+        drawOverAppsPopupHaveNotBeenConfigured: function(){
+            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+            if(enabled === null || enabled === "null"){
+                qmLog.error("Popups have not been configured!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                return true;
+            }
+            return false;
         },
         addToSyncQueue: function(trackingReminderNotification){
             qm.notifications.deleteById(trackingReminderNotification.id);
@@ -898,15 +928,54 @@ window.qm = {
             qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
         },
         showAndroidPopupForMostRecentNotification: function(){
-            if(!qm.notifications.drawOverAppsPopupEnabled()){window.qmLog.info('Can only show popups on Android'); return;}
+            if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
             window.qm.notifications.refreshIfEmpty(function () {
+                // Need to use unique rating notifications because we need to setup initial popup via url params
                 if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
-                    window.drawOverAppsPopupRatingNotification(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue());
+                    qm.notifications.drawOverAppsPopupRatingNotification();
                     // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
                     //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
                 } else {
                     qmLog.error("No getMostRecentRatingNotificationNotInSyncQueue so not showing popup!");
                 }
+            });
+        },
+        drawOverAppsPopupRatingNotification: function(trackingReminderNotification, force) {
+            if(!trackingReminderNotification){
+                // Need to use unique rating notifications because we need to setup initial popup via url params
+                trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+            }
+            qm.notifications.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
+        },
+        drawOverAppsPopup: function(path, force){
+            if(!qm.notifications.drawOverAppsPopupEnabled()){
+                qmLog.error("Cannot show popup because it has been disabled")
+            }
+            if(typeof window.overApps === "undefined"){
+                qmLog.error('window.overApps is undefined!');
+                return;
+            }
+            if(!force && !qm.notifications.canWeShowPopupYet(path)){return;}
+            //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
+            var options = {
+                path: path,          // file path to display as view content.
+                hasHead: false,              // display over app head image which open the view up on click.
+                dragToSide: false,          // enable auto move of head to screen side after dragging stop.
+                enableBackBtn: true,       // enable hardware back button to close view.
+                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
+                verticalPosition: "bottom",    // set vertical alignment of view.
+                horizontalPosition: "center"  // set horizontal alignment of view.
+            };
+            window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
+            /** @namespace window.overApps */
+            window.overApps.startOverApp(options, function (success){
+                if(success.toLowerCase().indexOf('no permission') !== -1){
+                    qmLog.error("startOverApp popoup error: " + success);
+                } else {
+                    qmLog.info('startOverApp success: ' + success);
+                }
+            },function (err){
+                window.qmLog.error('startOverApp error: ' + err);
             });
         }
     },
@@ -2093,35 +2162,9 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&clientId=" + window.getClientId() +
     "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
 }
-window.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force) {
-    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification), force);
-};
+
 window.drawOverAppsPopupCompactInboxNotification = function() {
-    window.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
-};
-window.drawOverAppsPopup = function(path, force){
-    if(typeof window.overApps === "undefined"){
-        window.qmLog.error(null, 'window.overApps is undefined!');
-        return;
-    }
-    if(!force && !qm.notifications.canWeShowPopupYet(path)){return;}
-    //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
-    var options = {
-        path: path,          // file path to display as view content.
-        hasHead: false,              // display over app head image which open the view up on click.
-        dragToSide: false,          // enable auto move of head to screen side after dragging stop.
-        enableBackBtn: true,       // enable hardware back button to close view.
-        enableCloseBtn: true,      //  whether to show native close btn or to hide it.
-        verticalPosition: "bottom",    // set vertical alignment of view.
-        horizontalPosition: "center"  // set horizontal alignment of view.
-    };
-    window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
-    /** @namespace window.overApps */
-    window.overApps.startOverApp(options, function (success){
-        window.qmLog.info('startOverApp success: ' + success, null);
-    },function (err){
-        window.qmLog.error('startOverApp error: ' + err);
-    });
+    qm.notifications.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
 };
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
