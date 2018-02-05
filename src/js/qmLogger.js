@@ -266,9 +266,9 @@ window.qmLog.setupUserVoice = function() {
         UserVoice.push(['identify', {
             email: qmUser.email, // User’s email address
             name: qmUser.displayName, // User’s real name
-            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUser().userRegistered), // Unix timestamp for the date the user signed up
-            id: qm.userHelper.getUser().id, // Optional: Unique id of the user (if set, this should not change)
-            type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUser().subscribed + ')', // Optional: segment your users by type
+            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
+            id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
             account: {
                 //id: 123, // Optional: associate multiple users with a single account
                 name: qm.getSourceName() + ' v' + qm.getAppSettings().versionNumber, // Account name
@@ -283,9 +283,9 @@ window.qmLog.setupUserVoice = function() {
 window.qmLog.setupIntercom = function() {
     window.intercomSettings = {
         app_id: "uwtx2m33",
-        name: qm.userHelper.getUser().displayName,
-        email: qm.userHelper.getUser().email,
-        user_id: qm.userHelper.getUser().id,
+        name: qm.userHelper.getUserFromLocalStorage().displayName,
+        email: qm.userHelper.getUserFromLocalStorage().email,
+        user_id: qm.userHelper.getUserFromLocalStorage().id,
         app_name: qm.getAppSettings().appDisplayName,
         app_version: qm.getAppSettings().versionNumber,
         platform: qm.getPlatform()

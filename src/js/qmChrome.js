@@ -187,7 +187,7 @@ if(qm.platform.isChromeExtension()) {
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
         qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup(alarm));
     });
-    if(qm.userHelper.getUser()){window.qm.chrome.showRatingOrInboxPopup();}
+    if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}
     if (!qm.storage.getItem(qm.items.introSeen)) {
         window.qmLog.info('introSeen false on chrome extension so opening intro window popup');
         window.qm.storage.setItem('introSeen', true);
