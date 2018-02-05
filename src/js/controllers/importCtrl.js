@@ -277,6 +277,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             scopes =  "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly";
             connectGoogle(connector, scopes);
         }
+        if(connector.name === 'gmail') {
+            if($rootScope.isWeb || $rootScope.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            scopes =  "https://www.googleapis.com/auth/gmail.readonly";
+            connectGoogle(connector, scopes);
+        }
         if(connector.name === 'sleepcloud') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
