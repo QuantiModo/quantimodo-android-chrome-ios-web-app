@@ -693,7 +693,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!configureQmApiClient('getTrackingReminderNotificationsFromApi', errorHandler)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
-            if(data && data.length){checkHoursSinceLastPushNotificationReceived();}
+            if(data && data.length){
+                qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                checkHoursSinceLastPushNotificationReceived();
+            }
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
         }
         params = addGlobalUrlParamsToObject(params);

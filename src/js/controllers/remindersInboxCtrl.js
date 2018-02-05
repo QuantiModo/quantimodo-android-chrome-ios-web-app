@@ -101,7 +101,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.refreshTrackingReminderNotifications();
         }
         if($rootScope.isWeb){qm.webNotifications.registerServiceWorker();}
-        qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
