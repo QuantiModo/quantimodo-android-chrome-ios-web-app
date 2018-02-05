@@ -70,7 +70,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(typeof cordova !== "undefined"){
             cordova.InAppBrowser.open(url,target, 'location='+location+',toolbar=yes,clearcache=no,clearsessioncache=no');
         } else {
-            window.open(url,target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            if($rootScope.isWeb){
+                window.open(url, target);  // Otherwise it opens weird popup instead of new tab
+            } else {
+                window.open(url, target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            }
         }
     };
     var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {

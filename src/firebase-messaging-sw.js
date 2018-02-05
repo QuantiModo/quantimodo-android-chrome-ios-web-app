@@ -25,26 +25,37 @@ var config = {
 console.log("firebase.initializeApp(config)");
 firebase.initializeApp(config);
 const messaging = firebase.messaging();
+
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
-    pushData.data = JSON.parse(JSON.stringify(pushData));
     console.log(pushData);
-    const title = pushData.title;
-    qm.allActions = JSON.parse(pushData.actions);
-    for (var i = 0; i < qm.allActions.length; i++) {
-        qm.allActions[i].action = qm.allActions[i].callback;
-        qm.allActions[i].title = qm.allActions[i].longTitle;
-    }
-    pushData.actions = qm.allActions;
-    pushData.body = "Click here for more options";
-    pushData.requireInteraction = true;
     appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
-        //pushData.image = appSettings.additionalSettings.appImages.appIcon;
-        if(!pushData.icon){
-            pushData.icon = appSettings.additionalSettings.appImages.appIcon;
+        var notificationOptions = {
+            actions: [],
+            requireInteraction: true,
+            body: "Click here for more options",
+            data: JSON.parse(JSON.stringify(pushData)),
+            //dir: NotificationDirection,
+            icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
+            //lang: string,
+            tag: JSON.stringify(pushData)
+        };
+        qm.allActions = JSON.parse(pushData.actions);
+        for (var i = 0; i < qm.allActions.length; i++) {
+            notificationOptions.actions[i] = {
+                action: qm.allActions[i].callback,
+                title: qm.allActions[i].longTitle
+            };
+        }
+        var maxVisibleActions = Notification.maxActions;
+        if (maxVisibleActions < 4) {
+            console.log("This notification will only display " + maxVisibleActions   +" actions.");
+        } else {
+            console.log("This notification can display up to " + maxVisibleActions +" actions");
         }
         //event.waitUntil(self.registration.showNotification(title, pushData));
-        self.registration.showNotification(title, pushData);
+        console.log("Notification options", notificationOptions);
+        self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
 /**
@@ -101,13 +112,17 @@ function runFunction(name, arguments)
 self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notification click Received: ' + event.action);
     event.notification.close();
+    if(event.action === ""){qmLog.error("No event action provided!");}
     if (runFunction(event.action, event.notification.data)) {return;}
     // This looks to see if the current is already open and focuses if it is
-    event.waitUntil(clients.matchAll({ type: 'window' }).then(function(clientList) {
+    event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
         for (var i = 0; i < clientList.length; i++) {
             var client = clientList[i];
-            if (client.url == '/' && 'focus' in client)
+            var url = client.url;
+            console.log(url);
+            if ('focus' in client){
                 return client.focus();
+            }
         }
         if (clients.openWindow)
             return clients.openWindow('/');
