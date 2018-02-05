@@ -166,7 +166,7 @@ window.qm = {
                 qmLog.error("Error from POST to " + path + ": " +err);
             });
         },
-        get: function(url, successHandler, errorHandler){
+        getFromQmApi: function(url, successHandler, errorHandler){
             fetch(url, {method: 'get'})
                 .then(function(response) {
                     return response.json();
@@ -175,7 +175,12 @@ window.qm = {
                         successHandler(data);
                     }
                 }).catch(function(err) {
-                    qmLog.error("If we couldn't parse json, " + url + " probably doesn't exist");
+                    if(url.indexOf('.config.json')){
+                        qmLog.error("qm.api.get error from " + url + " request: " + err + "If we couldn't parse json, " +
+                            url + " probably doesn't exist", err);
+                    } else {
+                        qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
+                    }
                     if(errorHandler){errorHandler(err);}
                 });
         },
@@ -695,6 +700,7 @@ window.qm = {
         },
         setLastPopupTime: function(time){
             if(typeof time === "undefined"){time = qm.timeHelper.getUnixTimestampInSeconds();}
+            qmLog.pushDebug(arguments.callee.caller.name + " setLastPopupTime to "+ time);
             qm.storage.setItem(qm.items.lastPopupNotificationUnixtimeSeconds, time);
             return true;
         },
@@ -892,7 +898,7 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
-            qm.api.get(window.qm.apiHelper.getRequestUrl(route), function (response) {
+            qm.api.getFromQmApi(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     showSignInNotification();
                 } else {
@@ -982,7 +988,7 @@ window.qm = {
                 if(success.toLowerCase().indexOf('no permission') !== -1){
                     qmLog.error("startOverApp popoup error: " + success);
                 } else {
-                    qmLog.info('startOverApp success: ' + success);
+                    qmLog.pushDebug('startOverApp success: ' + success);
                 }
             },function (err){
                 window.qmLog.error('startOverApp error: ' + err);
@@ -1321,7 +1327,6 @@ window.qm = {
             qm.globals = {};
             if(typeof localStorage === "undefined"){return false;}
             localStorage.clear();
-
         },
         getElementOfLocalStorageItemById: function(localStorageItemName, elementId){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
@@ -2040,7 +2045,7 @@ var appsManager = { // jshint ignore:line
         return false;
     },
     getAppSettingsFromFetchApi: function (successHandler) {
-        qm.api.get(qm.api.getAppSettingsUrl(), function (response) {
+        qm.api.getFromQmApi(qm.api.getAppSettingsUrl(), function (response) {
             qm.appSettings = response.appSettings;
             successHandler(qm.appSettings);
         })
@@ -2096,7 +2101,7 @@ function addGlobalQueryParameters(url) {
     return url;
 }
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
-    qm.api.get('configs/default.config.json', function (parsedResponse) {
+    qm.api.getFromQmApi('configs/default.config.json', function (parsedResponse) {
         window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
         appSettings = parsedResponse;
     }, function () {
@@ -2170,9 +2175,6 @@ function getUnique(array, propertyName) {
     }
     return output;
 }
-
-
-
 window.drawOverAppsPopupCompactInboxNotification = function() {
     qm.notifications.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
 };
@@ -2180,7 +2182,6 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-
 if(!window.qmUser){
     if(typeof localStorage !== "undefined"){
         window.qmUser = localStorage.getItem(qm.items.user);
