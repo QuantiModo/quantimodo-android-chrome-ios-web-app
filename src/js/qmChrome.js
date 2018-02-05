@@ -185,7 +185,7 @@ window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
             window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
         }
     }, function (err) {
-        qmLog.error("Not showing popup because of notfication refresh error: "+ err);
+        qmLog.error("Not showing popup because of notification refresh error: "+ err);
     });
 };
 if(qm.platform.isChromeExtension()) {

@@ -21,6 +21,47 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             }
+        },
+        notifications: {
+            enableDrawOverAppsPopups: function () {
+                qm.notifications.setLastPopupTime(null);
+                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
+                $ionicPlatform.ready(function () {
+                    qmService.scheduleSingleMostFrequentLocalNotification();
+                    if (typeof window.overApps !== "undefined") {
+                        window.overApps.checkPermission(function (msg) {
+                            qmLogService.info('overApps.checkPermission: ' + msg, null);
+                        });
+                    } else {
+                        qmLogService.error("window.overApps is undefined!");
+                    }
+                    qm.notifications.showAndroidPopupForMostRecentNotification();
+                });
+            },
+            showEnablePopupsConfirmation: function (ev) {
+                var title = 'Enable Rating Popups';
+                var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in' +
+                    ' a fraction of a second?';
+                var noText = 'No';
+                function yesCallback() {qmService.notifications.enableDrawOverAppsPopups();}
+                function noCallback() {qmService.notifications.disablePopups();}
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
+            },
+            disablePopups: function () {
+                qmService.showInfoToast("Rating popups disabled");
+                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
+                if (localNotificationsPluginInstalled()) {cordova.plugins.notification.local.cancelAll();}
+            },
+            getDrawOverAppsPopupPermissionIfNecessary: function(ev){
+                if(!$rootScope.isAndroid){return false;}
+                if(qm.notifications.drawOverAppsPopupAreDisabled()){return false;}
+                if(qm.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
+                    qmService.notifications.showEnablePopupsConfirmation(ev);
+                } else if (qm.notifications.lastPopupWasBeforeLastReminderTime()) {
+                    qmLog.error("Popups enabled but no popups shown since before last reminder time!  Re-initializing popups...");
+                    qmService.notifications.showEnablePopupsConfirmation(ev); // Sometimes we lose permission for some reason
+                }
+            }
         }
     };
     qmService.ionIcons = {
@@ -6891,17 +6932,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        qmService.getDrawOverAppsPopupPermissionIfNecessary();
-    };
-    qmService.getDrawOverAppsPopupPermissionIfNecessary = function(){
-        if($rootScope.isAndroid){
-            var drawOverAppsPopupEnabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(drawOverAppsPopupEnabled === null){
-                qmService.toggleDrawOverAppsPopup();
-            } else {
-                qmLog.pushDebug("Not checking getDrawOverAppsPopupPermissionIfNecessary because qm.items.drawOverAppsPopupEnabled is: " + drawOverAppsPopupEnabled);
-            }
-        }
     };
     qmService.unHideNavigationMenu = function(){
         var hideMenu = qm.urlHelper.getParam('hideMenu');
@@ -7330,40 +7360,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         $ionicPlatform.ready(function() {
-            qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "drawOverAppsPopupRatingNotification");
-            window.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
+            qm.notifications.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
         });
     };
     qmService.toggleDrawOverAppsPopup = function(ev){
-        function disablePopups() {
-            qmService.showInfoToast("Rating popups disabled");
-            qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
-            if(localNotificationsPluginInstalled()){cordova.plugins.notification.local.cancelAll();}
-        }
-        function showEnablePopupsConfirmation(){
-            var title = 'Enable Rating Popups';
-            var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
-            var noText = 'No';
-            function yesCallback() {
-                qm.notifications.setLastPopupTime(null);
-                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
-                $ionicPlatform.ready(function() {
-                    qmService.scheduleSingleMostFrequentLocalNotification();
-                    if(typeof window.overApps !== "undefined"){
-                        window.overApps.checkPermission(function(msg){qmLogService.info('overApps.checkPermission: ' + msg, null);});
-                    } else {
-                        qmLogService.error("window.overApps is undefined!");
-                    }
-                    qm.notifications.showAndroidPopupForMostRecentNotification();
-                });
-            }
-            function noCallback() {disablePopups();}
-            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
-        }
         if(qm.notifications.drawOverAppsPopupEnabled()){
-            disablePopups();
+            qmService.notifications.disablePopups();
         } else {
-            showEnablePopupsConfirmation();
+            qmService.notifications.showEnablePopupsConfirmation(ev);
         }
     };
     qmService.showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
