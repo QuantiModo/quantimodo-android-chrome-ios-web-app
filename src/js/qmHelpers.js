@@ -1136,17 +1136,20 @@ window.qm = {
             return activeReminders.concat(favorites);
         },
         getFavorites: function(allReminders){
+            if(!allReminders){allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
             return allReminders.filter(function( trackingReminder ) {
                 return trackingReminder.reminderFrequency === 0;
             });
         },
         getActive: function(allReminders){
+            if(!allReminders){allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
             return allReminders.filter(function( trackingReminder ) {
                 return trackingReminder.reminderFrequency !== 0 &&
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
             });
         },
         getArchived: function(allReminders) {
+            if(!allReminders){allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
             return allReminders.filter(function (trackingReminder) {
                 return trackingReminder.reminderFrequency !== 0 &&
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
