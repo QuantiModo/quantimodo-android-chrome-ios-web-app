@@ -21,6 +21,47 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             }
+        },
+        notifications: {
+            enableDrawOverAppsPopups: function () {
+                qm.notifications.setLastPopupTime(null);
+                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
+                $ionicPlatform.ready(function () {
+                    qmService.scheduleSingleMostFrequentLocalNotification();
+                    if (typeof window.overApps !== "undefined") {
+                        window.overApps.checkPermission(function (msg) {
+                            qmLogService.info('overApps.checkPermission: ' + msg, null);
+                        });
+                    } else {
+                        qmLogService.error("window.overApps is undefined!");
+                    }
+                    qm.notifications.showAndroidPopupForMostRecentNotification();
+                });
+            },
+            showEnablePopupsConfirmation: function (ev) {
+                var title = 'Enable Rating Popups';
+                var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in' +
+                    ' a fraction of a second?';
+                var noText = 'No';
+                function yesCallback() {qmService.notifications.enableDrawOverAppsPopups();}
+                function noCallback() {qmService.notifications.disablePopups();}
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
+            },
+            disablePopups: function () {
+                qmService.showInfoToast("Rating popups disabled");
+                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
+                if (localNotificationsPluginInstalled()) {cordova.plugins.notification.local.cancelAll();}
+            },
+            getDrawOverAppsPopupPermissionIfNecessary: function(ev){
+                if(!$rootScope.isAndroid){return false;}
+                if(qm.notifications.drawOverAppsPopupAreDisabled()){return false;}
+                if(qm.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
+                    qmService.notifications.showEnablePopupsConfirmation(ev);
+                } else if (qm.notifications.lastPopupWasBeforeLastReminderTime()) {
+                    qmLog.error("Popups enabled but no popups shown since before last reminder time!  Re-initializing popups...");
+                    qmService.notifications.showEnablePopupsConfirmation(ev); // Sometimes we lose permission for some reason
+                }
+            }
         }
     };
     qmService.ionIcons = {
@@ -651,9 +692,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug("getTrackingReminderNotificationsFromApi", null, params, qmLog.getStackTrace());
         if(!configureQmApiClient('getTrackingReminderNotificationsFromApi', errorHandler)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
-        function callback(error, data, response) {
-            if(data && data.length){checkHoursSinceLastPushNotificationReceived();}
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
+        function callback(error, trackingReminderNotifications, response) {
+            if(trackingReminderNotifications && trackingReminderNotifications.length){
+                qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                checkHoursSinceLastPushNotificationReceived();
+            }
+            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler)
         }
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
@@ -1235,7 +1279,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(qm.urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        setupGoogleAnalytics(qm.userHelper.getUser());
+        setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
         if(qm.storage.getItem(qm.items.deviceTokenOnServer)){
             qmLogService.debug('This token is already on the server: ' + qm.storage.getItem(qm.items.deviceTokenOnServer));
         }
@@ -2270,7 +2314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                 if(trackingReminderNotifications.length){
                     checkHoursSinceLastPushNotificationReceived();
-                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                 }
                 deferred.resolve(trackingReminderNotifications);
             } else {deferred.reject("error");}
@@ -2302,7 +2346,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.isAndroid){window.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.isAndroid){qm.notifications.showAndroidPopupForMostRecentNotification();}
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -2494,11 +2538,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
-                if(trackingReminders && trackingReminders.length){
+                if(qm.reminderHelper.getActive(trackingReminders) && qm.reminderHelper.getActive(trackingReminders).length){
                     checkHoursSinceLastPushNotificationReceived();
-                    qmService.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                    qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 }
-                qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 deferred.resolve(trackingReminders);
             }, function(error){
                 qmLogService.error(error);
@@ -4446,7 +4490,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return deferred.promise;
     };
-    qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
+    qmService.scheduleSingleMostFrequentLocalNotification = function(activeTrackingReminders) {
         if(!$rootScope.user){
             qmLogService.debug('No user for scheduleSingleMostFrequentLocalNotification', null);
             return;
@@ -4460,13 +4504,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false so we shouldn\'t be calling this function', null);
             //return;
         }
+        if(!activeTrackingReminders){activeTrackingReminders = qm.reminderHelper.getActive();}
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
         if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
-            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
-            if(trackingRemindersFromApi){
-                for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                    if(trackingRemindersFromApi[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
-                        at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
+            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(activeTrackingReminders);
+            if(activeTrackingReminders){
+                for (var i = 0; i < activeTrackingReminders.length; i++) {
+                    if(activeTrackingReminders[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
+                        at.setUTCSeconds(activeTrackingReminders[i].nextReminderTimeEpochSeconds);
                     }
                 }
             }
@@ -6850,12 +6895,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings), null);
                 qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data), null);
-                window.showAndroidPopupForMostRecentNotification();
+                qm.notifications.showAndroidPopupForMostRecentNotification();
             });
             qmLog.info("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                 qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
-                window.showAndroidPopupForMostRecentNotification();
+                qm.notifications.showAndroidPopupForMostRecentNotification();
             });
         });
     }
@@ -6885,23 +6930,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!qm.storage.getItem(qm.items.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        setupGoogleAnalytics(qm.userHelper.getUser());
+        setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        qmService.getDrawOverAppsPopupPermissionIfNecessary();
-    };
-    qmService.getDrawOverAppsPopupPermissionIfNecessary = function(){
-        if($rootScope.isAndroid){
-            var drawOverAppsPopupEnabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(drawOverAppsPopupEnabled === null){
-                qmService.toggleDrawOverAppsPopup();
-            } else {
-                qmLog.pushDebug("Not checking getDrawOverAppsPopupPermissionIfNecessary because qm.items.drawOverAppsPopupEnabled is: " + drawOverAppsPopupEnabled);
-            }
-        }
     };
     qmService.unHideNavigationMenu = function(){
         var hideMenu = qm.urlHelper.getParam('hideMenu');
@@ -7002,9 +7036,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.storage.getItem(qm.items.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qm.storage.getItem(qm.items.deviceTokenToSync) + '\r\n' + '\r\n';}
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
             template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
-            template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUser().pushNotificationsEnabled + '\r\n';
+            template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
-            template = template + "drawOverAppsPopupEnabled: " + qm.notifications.drawOverAppsPopupEnabled() + '\r\n';
+            template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
@@ -7069,8 +7103,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined"){
-                        window.showAndroidPopupForMostRecentNotification();
+                        qmLog.pushDebug('push notification is calling drawOverApps showAndroidPopupForMostRecentNotification...');
+                        qm.notifications.showAndroidPopupForMostRecentNotification();
                     } else {
+                        qmLog.pushDebug('window.overApps for popups is undefined! ');
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                         }, function (error) {
@@ -7330,40 +7366,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         $ionicPlatform.ready(function() {
-            qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "drawOverAppsPopupRatingNotification");
-            window.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
+            qm.notifications.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
         });
     };
     qmService.toggleDrawOverAppsPopup = function(ev){
-        function disablePopups() {
-            qmService.showInfoToast("Rating popups disabled");
-            qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
-            if(localNotificationsPluginInstalled()){cordova.plugins.notification.local.cancelAll();}
-        }
-        function showEnablePopupsConfirmation(){
-            var title = 'Enable Rating Popups';
-            var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
-            var noText = 'No';
-            function yesCallback() {
-                qm.notifications.setLastPopupTime(null);
-                qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
-                $ionicPlatform.ready(function() {
-                    qmService.scheduleSingleMostFrequentLocalNotification();
-                    if(typeof window.overApps !== "undefined"){
-                        window.overApps.checkPermission(function(msg){qmLogService.info('overApps.checkPermission: ' + msg, null);});
-                    } else {
-                        qmLogService.error("window.overApps is undefined!");
-                    }
-                    window.showAndroidPopupForMostRecentNotification();
-                });
-            }
-            function noCallback() {disablePopups();}
-            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
-        }
         if(qm.notifications.drawOverAppsPopupEnabled()){
-            disablePopups();
+            qmService.notifications.disablePopups();
         } else {
-            showEnablePopupsConfirmation();
+            qmService.notifications.showEnablePopupsConfirmation(ev);
         }
     };
     qmService.showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
