@@ -1710,6 +1710,7 @@ window.qm = {
         getIonicAppBaseUrl: function (){
             var url = (window.location.origin + window.location.pathname).replace('configuration-index.html', '');
             url = url.replace('index.html', '');
+            url = url.replace('android_popup.html', '');
             return url;
         },
         getAbsoluteUrlFromRelativePath: function (relativePath){
