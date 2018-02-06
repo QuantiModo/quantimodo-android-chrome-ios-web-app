@@ -167,6 +167,7 @@ window.qm = {
             });
         },
         getFromQmApi: function(url, successHandler, errorHandler){
+            qmLog.pushDebug("Making get request to " + url);
             fetch(url, {method: 'get'})
                 .then(function(response) {
                     return response.json();
@@ -176,7 +177,7 @@ window.qm = {
                     }
                 }).catch(function(err) {
                     if(url.indexOf('.config.json')){
-                        qmLog.error("qm.api.get error from " + url + " request: " + err + "If we couldn't parse json, " +
+                        qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
                             url + " probably doesn't exist", err);
                     } else {
                         qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
@@ -185,7 +186,7 @@ window.qm = {
                 });
         },
         getAppSettingsUrl: function () {
-            var settingsUrl = 'configs/default.config.json';
+            var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
             var clientId = appsManager.getQuantiModoClientId();
             if(!appsManager.shouldWeUseLocalConfig(clientId)){
                 settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
@@ -731,6 +732,10 @@ window.qm = {
                 return true;
             }
             if(qm.notifications.getSecondsSinceLastPopup() > qm.notifications.getMostFrequentReminderIntervalInSeconds()){
+                qm.notifications.setLastPopupTime();
+                return true;
+            }
+            if(qm.notifications.getSecondsSinceLastPopup() > 30 * 60){
                 qm.notifications.setLastPopupTime();
                 return true;
             }
@@ -1444,7 +1449,7 @@ window.qm = {
                 return null;
             }
             if (item && typeof item === "string"){
-                qm.globals[key] = parseIfJsonString(item);
+                qm.globals[key] = qm.stringHelper.parseIfJsonString(item);
                 window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
             } else {
@@ -1503,6 +1508,15 @@ window.qm = {
             if(value === "false"){return false;}
             if(value === "true"){return true;}
             return value;
+        },
+        parseIfJsonString: function(stringOrObject) {
+            if(!stringOrObject){return stringOrObject;}
+            if(typeof stringOrObject !== "string"){return stringOrObject;}
+            try {
+                return JSON.parse(stringOrObject);
+            } catch (e) {
+                return stringOrObject;
+            }
         }
     },
     studyHelper: {
@@ -1697,6 +1711,15 @@ window.qm = {
             var url = (window.location.origin + window.location.pathname).replace('configuration-index.html', '');
             url = url.replace('index.html', '');
             return url;
+        },
+        getAbsoluteUrlFromRelativePath: function (relativePath){
+            if(relativePath.indexOf('/') === 0){
+                relativePath = relativePath.replace('/', '');
+            }
+            return qm.urlHelper.getIonicAppBaseUrl() + relativePath;
+        },
+        getDefaultConfigUrl: function(){
+            return qm.urlHelper.getAbsoluteUrlFromRelativePath('configs/default.config.json');
         }
     },
     user: null,
@@ -1965,7 +1988,7 @@ function getClientIdFromQueryParameters() {
 }
 function getQuantiModoClientId() {
     if(qm.platform.isMobile()){
-        window.qmLog.debug('Using default.config.js because we\'re on mobile', null);
+        window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
         return "default"; // On mobile
     }
     var clientId = getClientIdFromQueryParameters();
@@ -1979,7 +2002,7 @@ function getQuantiModoClientId() {
         return clientId;
     }
     if(window.location.href.indexOf('quantimo.do') === -1){
-        window.qmLog.debug('Using default.config.js because we\'re not on a quantimo.do domain', null);
+        window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re not on a quantimo.do domain', null);
         return "default"; // On mobile
     }
     var subdomain = getSubDomain();
@@ -2062,6 +2085,14 @@ var appsManager = { // jshint ignore:line
         }
         var params = qm.api.addGlobalParams(params);
         apiInstance.getAppSettings({}, callback);
+    },
+    loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
+        qm.api.getFromQmApi(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {
+            window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
+            appSettings = parsedResponse;
+        }, function () {
+            qmLog.error("Could not get appSettings from configs/default.config.json");
+        });
     }
 };
 function getAppName() {
@@ -2103,15 +2134,7 @@ function addGlobalQueryParameters(url) {
     if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
     return url;
 }
-function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
-    qm.api.getFromQmApi('configs/default.config.json', function (parsedResponse) {
-        window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
-        appSettings = parsedResponse;
-    }, function () {
-        qmLog.error("Could not get appSettings from configs/default.config.json");
-    });
-}
-if(!window.qm.urlHelper.getParam('clientId')){loadAppSettings();}
+if(!window.qm.urlHelper.getParam('clientId')){appsManager.loadAppSettingsFromDefaultConfigJson();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
@@ -2160,15 +2183,6 @@ function getSizeInKiloBytes(string) {
     if(typeof value !== "string"){string = JSON.stringify(string);}
     return Math.round(string.length*16/(8*1024));
 }
-var parseIfJsonString = function(stringOrObject) {
-    if(!stringOrObject){return stringOrObject;}
-    if(typeof stringOrObject !== "string"){return stringOrObject;}
-    try {
-        return JSON.parse(stringOrObject);
-    } catch (e) {
-        return stringOrObject;
-    }
-};
 function getUnique(array, propertyName) {
     var flags = [], output = [], l = array.length, i;
     for( i=0; i<l; i++) {
