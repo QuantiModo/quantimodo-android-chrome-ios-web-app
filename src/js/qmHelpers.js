@@ -154,19 +154,33 @@ window.qm = {
         },
         postToQuantiModo: function (body, path, successHandler) {
             qmLog.info("Making POST request to " + path);
-            fetch( window.qm.apiHelper.getRequestUrl(path), {
-                method: 'post',
-                body: JSON.stringify(body)
-            }).then(function(response) {
-                qmLog.info("Got " + response.status + " response from POST to " + path);
-                if(successHandler){
-                    successHandler(response);
-                }
-            }).catch(function(err) {
-                qmLog.error("Error from POST to " + path + ": " +err);
-            });
+            var url = window.qm.apiHelper.getRequestUrl(path);
+            try {
+                qm.api.postViaXhr(body, url, successHandler);
+            } catch (error) {
+                qmLog.error(error);  // Need fetch for service worker
+                qm.api.postViaFetch(body, url, successHandler, errorHandler);
+            }
         },
-        getFromQmApi: function(url, successHandler, errorHandler){
+        getFromQuantiModo: function(url, successHandler, errorHandler){
+            try {
+                qm.api.getViaXhr(url, successHandler);
+            } catch (error) {
+                qmLog.error(error); // Need fetch for service worker
+                qm.api.getViaFetch(url, successHandler, errorHandler);
+            }
+        },
+        getAppSettingsUrl: function () {
+            var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
+            var clientId = appsManager.getQuantiModoClientId();
+            if(!appsManager.shouldWeUseLocalConfig(clientId)){
+                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+                if(window.designMode){settingsUrl += '&designMode=true';}
+            }
+            window.qmLog.debug('Getting app settings from ' + settingsUrl, null);
+            return settingsUrl;
+        },
+        getViaFetch: function(url, successHandler, errorHandler){
             qmLog.pushDebug("Making get request to " + url);
             fetch(url, {method: 'get'})
                 .then(function(response) {
@@ -185,15 +199,41 @@ window.qm = {
                     if(errorHandler){errorHandler(err);}
                 });
         },
-        getAppSettingsUrl: function () {
-            var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
-            var clientId = appsManager.getQuantiModoClientId();
-            if(!appsManager.shouldWeUseLocalConfig(clientId)){
-                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
-                if(window.designMode){settingsUrl += '&designMode=true';}
-            }
-            window.qmLog.debug('Getting app settings from ' + settingsUrl, null);
-            return settingsUrl;
+        getViaXhr: function (url, successHandler) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
+                    successHandler(responseObject);
+                }
+            };
+            xhr.open('GET', url, true);
+            xhr.send(null);
+        },
+        postViaFetch: function (body, url, successHandler) {
+            fetch( url, {
+                method: 'post',
+                body: JSON.stringify(body)
+            }).then(function(response) {
+                qmLog.info("Got " + response.status + " response from POST to " + path);
+                if(successHandler){
+                    successHandler(response);
+                }
+            }).catch(function(err) {
+                qmLog.error("Error from POST to " + path + ": " +err);
+            });
+        },
+        postViaXhr: function (body, url, successHandler) {
+            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+            xmlhttp.open("POST", url);
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onreadystatechange = function() {//Call a function when the state changes.
+                if(xhr.readyState == XMLHttpRequest.DONE) {
+                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
+                    successHandler(responseObject);
+                }
+            };
+            xmlhttp.send(JSON.stringify(body));
         }
     },
     apiHelper: {},
@@ -903,7 +943,7 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
-            qm.api.getFromQmApi(window.qm.apiHelper.getRequestUrl(route), function (response) {
+            qm.api.getFromQuantiModo(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     showSignInNotification();
                 } else {
@@ -1517,6 +1557,13 @@ window.qm = {
             } catch (e) {
                 return stringOrObject;
             }
+        },
+        getStringBeforeSubstring: function(needle, haystack){
+            var i = haystack.indexOf(needle);
+            if(i > 0)
+                return  haystack.slice(0, i);
+            else
+                return haystack;
         }
     },
     studyHelper: {
@@ -1708,9 +1755,11 @@ window.qm = {
             window.open(url, '_blank');
         },
         getIonicAppBaseUrl: function (){
-            var url = (window.location.origin + window.location.pathname).replace('configuration-index.html', '');
-            url = url.replace('index.html', '');
-            url = url.replace('android_popup.html', '');
+            var url = window.location.origin + window.location.pathname;
+            url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
             return url;
         },
         getAbsoluteUrlFromRelativePath: function (relativePath){
@@ -2060,7 +2109,7 @@ var appsManager = { // jshint ignore:line
             successHandler(qm.appSettings);
             return;
         }
-        return appsManager.getAppSettingsFromFetchApi(successHandler);
+        return appsManager.getAppSettingsFromApi(successHandler);
     },
     getAppSettingsFromMemory: function(){
         if(typeof config !== "undefined" && config.appSettings){
@@ -2071,8 +2120,8 @@ var appsManager = { // jshint ignore:line
         }
         return false;
     },
-    getAppSettingsFromFetchApi: function (successHandler) {
-        qm.api.getFromQmApi(qm.api.getAppSettingsUrl(), function (response) {
+    getAppSettingsFromApi: function (successHandler) {
+        qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
             qm.appSettings = response.appSettings;
             successHandler(qm.appSettings);
         })
@@ -2088,7 +2137,7 @@ var appsManager = { // jshint ignore:line
         apiInstance.getAppSettings({}, callback);
     },
     loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
-        qm.api.getFromQmApi(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {
+        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {
             window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
             appSettings = parsedResponse;
         }, function () {
