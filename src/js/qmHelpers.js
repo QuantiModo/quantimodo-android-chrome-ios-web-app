@@ -943,6 +943,7 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
+            // Can't use QM SDK in service worker
             qm.api.getFromQuantiModo(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     showSignInNotification();
@@ -2125,6 +2126,7 @@ var appsManager = { // jshint ignore:line
         return false;
     },
     getAppSettingsFromApi: function (successHandler) {
+        // Can't use QM SDK in service worker
         qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
             qm.appSettings = response.appSettings;
             successHandler(qm.appSettings);
@@ -2141,7 +2143,7 @@ var appsManager = { // jshint ignore:line
         apiInstance.getAppSettings({}, callback);
     },
     loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
-        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {
+        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
             window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
             appSettings = parsedResponse;
         }, function () {
