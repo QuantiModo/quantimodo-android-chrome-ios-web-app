@@ -39,6 +39,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             showEnablePopupsConfirmation: function (ev) {
+                if(!$rootScope.isAndroid){return;}
                 var title = 'Enable Rating Popups';
                 var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in' +
                     ' a fraction of a second?';
@@ -5328,6 +5329,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ref.close();
                 qmLogService.debug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.', null);
                 qmService.fetchAccessTokenAndUserDetails(authorizationCode);
+                qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
             }
             qmService.checkLoadStartEventUrlForErrors(ref, event);
         });

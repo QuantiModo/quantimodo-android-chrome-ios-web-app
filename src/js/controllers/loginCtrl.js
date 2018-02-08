@@ -1,4 +1,6 @@
-angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector", "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog", function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
+angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector",
+    "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
+    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
@@ -127,6 +129,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode);  // get access token from authorization code
                         ref.close();  // close the sibling tab
+                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 }
@@ -197,6 +200,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         ref.close();
                         var withJWT = true;
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
+                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 });
@@ -248,6 +252,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.hideLoader();
                     loginLog('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }, function (errorMessage) {
                     qmService.hideLoader();
                     reportLoginError("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -307,7 +312,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             fullscreen: $scope.customFullscreen
         });
     };
-    function LoginModalController($scope, $mdDialog, qmService, qmLogService) {
+    function LoginModalController($scope, $mdDialog, qmService) {
         $scope.credentials = {};
         $scope.close = function () { $mdDialog.cancel(); };
         $scope.hide = function () { $mdDialog.hide(); };
