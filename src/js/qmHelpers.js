@@ -224,16 +224,16 @@ window.qm = {
             });
         },
         postViaXhr: function (body, url, successHandler) {
-            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-            xmlhttp.open("POST", url);
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            var xhr = new XMLHttpRequest();   // new HttpRequest instance
+            xhr.open("POST", url);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.onreadystatechange = function() {//Call a function when the state changes.
                 if(xhr.readyState == XMLHttpRequest.DONE) {
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
                     successHandler(responseObject);
                 }
             };
-            xmlhttp.send(JSON.stringify(body));
+            xhr.send(JSON.stringify(body));
         }
     },
     apiHelper: {},
