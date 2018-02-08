@@ -1765,6 +1765,7 @@ window.qm = {
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
+            url = qm.stringHelper.getStringBeforeSubstring('chrome_settings.html', url);
             return url;
         },
         getAbsoluteUrlFromRelativePath: function (relativePath){
@@ -2103,6 +2104,10 @@ var appsManager = { // jshint ignore:line
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
+        if(!clientId){
+            qmLog.error("No client id to get app settings url!");
+            return true;
+        }
         if(clientId === "default"){return true;}
         if(qm.platform.isMobile()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
