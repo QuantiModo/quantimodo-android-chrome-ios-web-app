@@ -819,7 +819,7 @@ window.qm = {
         drawOverAppsPopupAreDisabled: function(){
             var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
             if(enabled === false || enabled === "false"){
-                qmLog.pushDebug("Popups are explicitely disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                qmLog.pushDebug("Popups are explicitly disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
                 return true;
             }
             return false;
@@ -1031,7 +1031,11 @@ window.qm = {
             /** @namespace window.overApps */
             window.overApps.startOverApp(options, function (success){
                 if(success.toLowerCase().indexOf('no permission') !== -1){
-                    qmLog.error("startOverApp popoup error: " + success);
+                    qmLog.error("startOverApp popup error: " + success, 'drawOverAppsPopupHaveNotBeenConfigured returns: ' +
+                        qm.notifications.drawOverAppsPopupHaveNotBeenConfigured());
+                    if(qm.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
+                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                    }
                 } else {
                     qmLog.pushDebug('startOverApp success: ' + success);
                 }
