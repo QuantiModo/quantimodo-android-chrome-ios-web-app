@@ -2110,6 +2110,7 @@ var appsManager = { // jshint ignore:line
         }
         if(clientId === "default"){return true;}
         if(qm.platform.isMobile()){return true;}
+        if(qm.platform.isChromeExtension()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
         if(getClientIdFromQueryParameters() === 'app'){return true;}
