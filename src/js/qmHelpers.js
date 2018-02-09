@@ -224,16 +224,16 @@ window.qm = {
             });
         },
         postViaXhr: function (body, url, successHandler) {
-            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-            xmlhttp.open("POST", url);
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            var xhr = new XMLHttpRequest();   // new HttpRequest instance
+            xhr.open("POST", url);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.onreadystatechange = function() {//Call a function when the state changes.
                 if(xhr.readyState == XMLHttpRequest.DONE) {
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
                     successHandler(responseObject);
                 }
             };
-            xmlhttp.send(JSON.stringify(body));
+            xhr.send(JSON.stringify(body));
         }
     },
     apiHelper: {},
@@ -943,6 +943,7 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
+            // Can't use QM SDK in service worker
             qm.api.getFromQuantiModo(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     showSignInNotification();
@@ -1764,6 +1765,7 @@ window.qm = {
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
+            url = qm.stringHelper.getStringBeforeSubstring('chrome_settings.html', url);
             return url;
         },
         getAbsoluteUrlFromRelativePath: function (relativePath){
@@ -2102,8 +2104,13 @@ var appsManager = { // jshint ignore:line
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
+        if(!clientId){
+            qmLog.error("No client id to get app settings url!");
+            return true;
+        }
         if(clientId === "default"){return true;}
         if(qm.platform.isMobile()){return true;}
+        if(qm.platform.isChromeExtension()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
         if(getClientIdFromQueryParameters() === 'app'){return true;}
@@ -2125,6 +2132,7 @@ var appsManager = { // jshint ignore:line
         return false;
     },
     getAppSettingsFromApi: function (successHandler) {
+        // Can't use QM SDK in service worker
         qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
             qm.appSettings = response.appSettings;
             successHandler(qm.appSettings);
@@ -2141,7 +2149,7 @@ var appsManager = { // jshint ignore:line
         apiInstance.getAppSettings({}, callback);
     },
     loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
-        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {
+        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
             window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
             appSettings = parsedResponse;
         }, function () {
