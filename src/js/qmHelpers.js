@@ -975,7 +975,7 @@ window.qm = {
             if(notifications){return notifications.length;}
             return 0;
         },
-        postTrackingReminderNotifications: function(trackingReminderNotifications, onDoneListener) {
+        postTrackingReminderNotifications: function(trackingReminderNotifications, onDoneListener, timeout) {
             qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
             if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
             if(!onDoneListener){
@@ -984,6 +984,12 @@ window.qm = {
                 }
             }
             qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
+            if(timeout){
+                setTimeout(function () {
+                    qmLog.info("Timeout expired so closing");
+                    qm.notifications.closePopup();  // Avoid leaving the popup open too long
+                }, timeout);
+            }
         },
         showAndroidPopupForMostRecentNotification: function(){
             if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
@@ -1053,6 +1059,22 @@ window.qm = {
                 "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
                 "&clientId=" + window.getClientId() +
                 "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
+        },
+        closePopup: function() {
+            window.qmLog.info('closing popup');
+            qm.notifications.clearNotifications();
+            window.close();
+            if(typeof OverApps !== "undefined"){
+                console.log("Calling OverApps.closeWebView()...");
+                OverApps.closeWebView();
+            } else {
+                console.error("OverApps is undefined!");
+            }
+        },
+        clearNotifications: function() {
+            if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
+            qm.chrome.updateChromeBadge(0);
+            chrome.notifications.clear("moodReportNotification", function() {});
         }
     },
     objectHelper: {
