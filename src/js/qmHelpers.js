@@ -328,6 +328,10 @@ window.qm = {
             return array;
         },
         unsetNullProperties: function (array) {
+            if(!array){
+                qmLog.error("Nothing provided to unsetNullProperties");
+                return null;
+            }
             for (var i = 0; i < array.length; i++) {
                 array[i] = qm.objectHelper.unsetNullProperties(array[i]);
             }
