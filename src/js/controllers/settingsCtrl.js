@@ -311,7 +311,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     };
     $scope.openDeleteUserAccountDialog = function(ev){
         qmLog.error("User clicked DELETE ACCOUNT!");
-    	qmService.sendBugReport(); // Do this instead of dialog so we can get their actual email (in case they're logged in as wrong users) and extra diagnostic info
+        // sendBugReport instead of dialog so we can get their actual email (in case they're logged in as the wrong user) and extra diagnostic info
+    	qmService.sendBugReport();
     	return;
         // Appending dialog to document.body to cover sidenav in docs app
         var confirm = $mdDialog.prompt()
