@@ -152,7 +152,7 @@ window.qm = {
             }
             return appsManager.getQuantiModoApiUrl();
         },
-        postToQuantiModo: function (body, path, successHandler) {
+        postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qmLog.info("Making POST request to " + path);
             var url = window.qm.apiHelper.getRequestUrl(path);
             try {
