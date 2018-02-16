@@ -1,10 +1,5 @@
 /** @namespace window.qmLog */
 var ratingPopupHeight, ratingPopupWidth;
-function clearNotifications() {
-    if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
-    qm.chrome.updateChromeBadge(0);
-    chrome.notifications.clear("moodReportNotification", function() {});
-}
 function setFaceButtonListeners() {
     qmLog.pushDebug("popup: Setting face button onclick listeners");
     document.getElementById('buttonMoodDepressed').onclick = onFaceButtonClicked;
@@ -53,9 +48,9 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     //showLoader();
     if(window.notificationsSyncQueue){
         qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
-        qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+        qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, qm.notifications.closePopup, 300);
     } else {
-        closePopup();
+        qm.notifications.closePopup();
     }
 }
 var onFaceButtonClicked = function() {
@@ -168,20 +163,10 @@ function displaySendingTextAndPostMeasurements() {
                 window.close();
             }, 300);
         });
-        clearNotifications();
+        qm.notifications.clearNotifications();
     }, 400 );
 }
-function closePopup() {
-    window.qmLog.info('closePopup');
-    clearNotifications();
-    window.close();
-    if(typeof OverApps !== "undefined"){
-        console.log("Calling OverApps.closeWebView()...");
-        OverApps.closeWebView();
-    } else {
-        console.error("OverApps is undefined!");
-    }
-}
+
 function updateQuestion(variableName) {
     qmLog.pushDebug("popup: updateQuestion...");
     if(!variableName || typeof variableName !== "string"){
@@ -191,7 +176,7 @@ function updateQuestion(variableName) {
             window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
             if(!window.trackingReminderNotification){
                 qmLog.pushDebug("popup: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...");
-                closePopup();
+                qm.notifications.closePopup();
                 return;
             }
         }
@@ -277,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         qmLog.pushDebug("popup addEventListener: Calling hidePopup...");
         hidePopup();
-        qm.notifications.refreshNotifications(updateQuestion, closePopup);
+        qm.notifications.refreshNotifications(updateQuestion, qm.notifications.closePopup);
     }
     qmLog.pushDebug("popup addEventListener: calling setFaceButtonListeners...");
     setFaceButtonListeners();
