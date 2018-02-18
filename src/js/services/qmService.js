@@ -1815,7 +1815,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.debug('$rootScope.appSettings.clientId is not present', null);
         }
-        if(!window.private_keys){return appsManager.getQuantiModoClientId();}
+        if(!window.private_keys){return qm.api.getClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
         if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS;}
         if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android;}
