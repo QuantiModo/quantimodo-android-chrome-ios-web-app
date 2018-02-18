@@ -91,9 +91,53 @@ window.qm = {
             return urlParams;
         },
         getClientId: function(){
-            if(appSettings){return appSettings.clientId;}
-            if(appsManager.getAppSettingsFromMemory()){return appsManager.getAppSettingsFromMemory().clientId;}
-            return window.qm.urlHelper.getParam('clientId');
+            var clientId;
+            if(appSettings){
+                clientId =  appSettings.clientId;
+            }
+            if(!clientId && appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().clientId){
+                clientId = appsManager.getAppSettingsFromMemory().clientId;
+            }
+            if(!clientId && qm.platform.isMobile()){
+                window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
+                clientId = "default"; // On mobile
+            }
+            if(qm.api.getClientIdFromQueryParameters()){
+                clientId = qm.api.getClientIdFromQueryParameters();
+            }
+            if(!clientId){
+                clientId = qm.storage.getItem(qm.items.clientId);
+            }
+            if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
+                clientId = "default"; // On mobile
+            }
+            if(!clientId){
+                clientId = qm.api.getClientIdFromSubDomain();
+            }
+            if(!clientId){
+                qmLog.error("Could not get client id!");
+                clientId = 'quantimodo';
+            }
+            return clientId;
+        },
+         getClientIdFromQueryParameters: function() {
+            var clientId = window.qm.urlHelper.getParam('clientId');
+            if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
+            if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
+            if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
+            if(clientId){qm.storage.setItem('clientId', clientId);}
+            return clientId;
+        },
+        getClientIdFromSubDomain: function(){
+            var subDomain = getSubDomain();
+            var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+            if(clientIdFromAppConfigName){
+                window.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
+                    ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
+                return clientIdFromAppConfigName;
+            }
+            window.qmLog.debug('Using subDomain as client id: ' + subDomain);
+            return subDomain;
         },
         canWeMakeRequestYet: function(type, route, options){
             if(!route || route === ''){
@@ -172,7 +216,7 @@ window.qm = {
         },
         getAppSettingsUrl: function () {
             var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
-            var clientId = appsManager.getQuantiModoClientId();
+            var clientId = qm.api.getClientId();
             if(!appsManager.shouldWeUseLocalConfig(clientId)){
                 settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(window.designMode){settingsUrl += '&designMode=true';}
@@ -1061,7 +1105,7 @@ window.qm = {
             return "android_popup.html?variableName=" + ratingTrackingReminderNotification.variableName +
                 "&valence=" + ratingTrackingReminderNotification.valence +
                 "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
-                "&clientId=" + window.getClientId() +
+                "&clientId=" + qm.api.getClientId() +
                 "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
         },
         closePopup: function() {
@@ -2060,61 +2104,24 @@ function getSubDomain(){
     var parts = full.split('.');
     return parts[0].toLowerCase();
 }
-function getClientIdFromQueryParameters() {
-    var clientId = window.qm.urlHelper.getParam('clientId');
-    if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
-    if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
-    if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
-    if(clientId){qm.storage.setItem('clientId', clientId);}
-    return clientId;
-}
-function getQuantiModoClientId() {
-    if(qm.platform.isMobile()){
-        window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
-        return "default"; // On mobile
-    }
-    var clientId = getClientIdFromQueryParameters();
-    if(clientId){
-        window.qmLog.debug('Using clientIdFromQueryParams: ' + clientId, null);
-        return clientId;
-    }
-    if(!clientId){clientId = qm.storage.getItem(qm.items.clientId);}
-    if(clientId){
-        window.qmLog.debug('Using clientId From localStorage: ' + clientId, null);
-        return clientId;
-    }
-    if(window.location.href.indexOf('quantimo.do') === -1){
-        window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re not on a quantimo.do domain', null);
-        return "default"; // On mobile
-    }
-    var subdomain = getSubDomain();
-    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
-    if(clientIdFromAppConfigName){
-        window.qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subdomain: ' + subdomain, null);
-        return clientIdFromAppConfigName;
-    }
-    window.qmLog.debug('Using subdomain as client id: ' + subdomain);
-    return subdomain;
-}
+
 var appsManager = { // jshint ignore:line
     defaultApp : "default",
     getAppConfig : function(){
-        window.qmLog.debug('getQuantiModoClientId returns ' + getQuantiModoClientId(), null);
-        if(getQuantiModoClientId()){
-            return 'configs/' + getQuantiModoClientId() + '.js';
+        window.qmLog.debug('getClientIdFromQueryParametersLocalStorageDefaultConfigOrSubDomain returns ' +
+            qm.api.getClientId(), null);
+        if(qm.api.getClientId()){
+            return 'configs/' + qm.api.getClientId() + '.js';
         } else {
             return 'configs/' + appsManager.defaultApp + '.js';
         }
     },
     getPrivateConfig : function(){
-        if(getQuantiModoClientId()){
-            return './private_configs/'+ getQuantiModoClientId() + '.config.js';
+        if(qm.api.getClientId()){
+            return './private_configs/'+ qm.api.getClientId() + '.config.js';
         } else {
             return './private_configs/'+ appsManager.defaultApp + '.config.js';
         }
-    },
-    getQuantiModoClientId: function () {
-        return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
         var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
@@ -2139,7 +2146,7 @@ var appsManager = { // jshint ignore:line
         if(qm.platform.isChromeExtension()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
-        if(getClientIdFromQueryParameters() === 'app'){return true;}
+        if(qm.api.getClientIdFromQueryParameters() === 'app'){return true;}
     },
     getAppSettingsLocallyOrFromApi: function (successHandler) {
         if(qm.appSettings && qm.appSettings.clientId){
@@ -2187,10 +2194,6 @@ function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
     return window.qm.urlHelper.getParam('appName');
 }
-function getClientId() {
-    if(appSettings){return appSettings.clientId;}
-    return window.qm.urlHelper.getParam('clientId');
-}
 function getAppVersion() {
     if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
@@ -2219,7 +2222,7 @@ function addGlobalQueryParameters(url) {
     }
     if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
     if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
-    if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
+    if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
     return url;
 }
 if(!window.qm.urlHelper.getParam('clientId')){appsManager.loadAppSettingsFromDefaultConfigJson();}
