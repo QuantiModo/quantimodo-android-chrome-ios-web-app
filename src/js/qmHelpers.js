@@ -215,12 +215,12 @@ window.qm = {
                 method: 'post',
                 body: JSON.stringify(body)
             }).then(function(response) {
-                qmLog.info("Got " + response.status + " response from POST to " + path);
+                qmLog.info("Got " + response.status + " response from POST to " + url);
                 if(successHandler){
                     successHandler(response);
                 }
             }).catch(function(err) {
-                qmLog.error("Error from POST to " + path + ": " +err);
+                qmLog.error("Error from POST to " + url + ": " +err);
             });
         },
         postViaXhr: function (body, url, successHandler) {
