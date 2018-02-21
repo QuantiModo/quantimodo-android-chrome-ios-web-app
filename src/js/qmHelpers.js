@@ -1920,7 +1920,7 @@ window.qm = {
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             if(qm.userHelper.getUserFromLocalStorage()){
-                successHandler(qm.userHelper.getUserFromLocalStorage());
+                if(successHandler){successHandler(qm.userHelper.getUserFromLocalStorage());}
                 return;
             }
             qm.getUserFromApi(successHandler, errorHandler);
