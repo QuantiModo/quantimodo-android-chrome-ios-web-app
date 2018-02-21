@@ -1923,7 +1923,7 @@ window.qm = {
                 if(successHandler){successHandler(qm.userHelper.getUserFromLocalStorage());}
                 return;
             }
-            qm.getUserFromApi(successHandler, errorHandler);
+            qm.userHelper.getUserFromApi(successHandler, errorHandler);
         }
     },
     userVariableHelper: {
