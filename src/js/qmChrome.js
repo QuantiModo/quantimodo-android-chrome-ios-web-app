@@ -194,7 +194,7 @@ if(qm.platform.isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
-        qm.getUserFromLocalStorageOrRefreshIfNecessary();
+        qm.userHelper.getUserFromLocalStorageOrApi();
         qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup(alarm));
     });
     if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}

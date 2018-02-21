@@ -2290,12 +2290,7 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-if(!window.qmUser){
-    if(typeof localStorage !== "undefined"){
-        window.qmUser = localStorage.getItem(qm.items.user);
-    }
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
+qm.userHelper.getUserFromLocalStorageOrApi();
 appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
    console.log(appSettings);
 });
