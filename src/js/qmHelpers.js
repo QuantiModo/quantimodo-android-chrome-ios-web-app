@@ -1858,18 +1858,9 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUserFromLocalStorage: function(refresh){
-            if(!window.qmUser) {
-                window.qmUser = qm.storage.getItem('user');
-            }
-            if(!window.qmUser){
-                if(refresh){
-                    qmLog.info("We do not have a user!  Going to try to get from API");
-                    qm.userHelper.getUserFromApi();
-                } else {
-                    qmLog.info("We do not have a user!");
-                }
-            }
+        getUserFromLocalStorage: function(){
+            if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
+            if(!window.qmUser){qmLog.info("We do not have a user!");}
             return window.qmUser;
         },
         setUser: function(user){
@@ -1920,10 +1911,10 @@ window.qm = {
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             if(qm.userHelper.getUserFromLocalStorage()){
-                successHandler(qm.userHelper.getUserFromLocalStorage());
+                if(successHandler){successHandler(qm.userHelper.getUserFromLocalStorage());}
                 return;
             }
-            qm.getUserFromApi(successHandler, errorHandler);
+            qm.userHelper.getUserFromApi(successHandler, errorHandler);
         }
     },
     userVariableHelper: {
@@ -2290,12 +2281,7 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-if(!window.qmUser){
-    if(typeof localStorage !== "undefined"){
-        window.qmUser = localStorage.getItem(qm.items.user);
-    }
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
+qm.userHelper.getUserFromLocalStorage();
 appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
    console.log(appSettings);
 });
