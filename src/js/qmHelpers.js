@@ -1858,18 +1858,9 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUserFromLocalStorage: function(refresh){
-            if(!window.qmUser) {
-                window.qmUser = qm.storage.getItem('user');
-            }
-            if(!window.qmUser){
-                if(refresh){
-                    qmLog.info("We do not have a user!  Going to try to get from API");
-                    qm.userHelper.getUserFromApi();
-                } else {
-                    qmLog.info("We do not have a user!");
-                }
-            }
+        getUserFromLocalStorage: function(){
+            if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
+            if(!window.qmUser){qmLog.info("We do not have a user!");}
             return window.qmUser;
         },
         setUser: function(user){
@@ -2290,7 +2281,7 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-qm.userHelper.getUserFromLocalStorageOrApi();
+qm.userHelper.getUserFromLocalStorage();
 appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
    console.log(appSettings);
 });
