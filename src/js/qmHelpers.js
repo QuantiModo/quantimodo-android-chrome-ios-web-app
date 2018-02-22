@@ -92,7 +92,10 @@ window.qm = {
         },
         getClientId: function(){
             var clientId;
-            if(appSettings){
+            if(qm.api.getClientIdFromQueryParameters()){
+                clientId = qm.api.getClientIdFromQueryParameters();
+            }
+            if(!clientId && appSettings){
                 clientId =  appSettings.clientId;
             }
             if(!clientId && appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().clientId){
@@ -101,9 +104,6 @@ window.qm = {
             if(!clientId && qm.platform.isMobile()){
                 window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
                 clientId = "default"; // On mobile
-            }
-            if(qm.api.getClientIdFromQueryParameters()){
-                clientId = qm.api.getClientIdFromQueryParameters();
             }
             if(!clientId){
                 clientId = qm.storage.getItem(qm.items.clientId);
@@ -1105,7 +1105,7 @@ window.qm = {
             return "android_popup.html?variableName=" + ratingTrackingReminderNotification.variableName +
                 "&valence=" + ratingTrackingReminderNotification.valence +
                 "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
-                "&clientId=" + qm.api.getClientId() +
+                "&clientId=" + qm.api.getClientId() + // // Need to do this for Android webview that can't access local config.json
                 "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
         },
         closePopup: function() {
@@ -2128,6 +2128,7 @@ var appsManager = { // jshint ignore:line
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
+        if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
         if(!clientId){
             qmLog.error("No client id to get app settings url!");
             return true;
