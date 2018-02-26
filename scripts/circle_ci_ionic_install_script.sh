@@ -3,5 +3,5 @@ npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower # Adding plugins from Github
 npm install -g bamlab/cordova-deploy
 npm install && gulp configureApp
 npm install -g karma-cli
-bower install
+bower install --allow-root
 ionic config build
