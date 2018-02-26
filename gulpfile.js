@@ -1980,7 +1980,7 @@ gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
     return execute('convert -flatten resources/icon.png resources/icon.png', callback);
 });
 gulp.task('bowerInstall', [], function (callback) {
-    return execute('bower install', callback);
+    return execute('bower install --allow-root', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
     return execute('ionic resources ios', callback);
