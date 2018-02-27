@@ -99,6 +99,7 @@ var fs = require('fs');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
 var request = require('request');
+var defaultRequestOptions = {strictSSL: false};
 var open = require('gulp-open');
 var runSequence = require('run-sequence');
 var plist = require('plist');
@@ -565,7 +566,7 @@ function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
     var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     logInfo("Downloading " + downloadUrl + ' to ' + decryptedFilename);
-    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
+    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
 }
 function unzipFile(pathToZipFile, pathToOutputFolder) {
@@ -1009,7 +1010,9 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     logInfo('gulp getCommonVariables...');
-    return request({url: appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
+    return request({url: appHostName +
+        '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3',
+        headers: {'User-Agent': 'request'}}, defaultRequestOptions)
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
@@ -1018,7 +1021,7 @@ gulp.task('getCommonVariables', function () {
 });
 gulp.task('getUnits', function () {
     logInfo('gulp getUnits...');
-    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}})
+    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}}, defaultRequestOptions)
         .pipe(source('units.json'))
         .pipe(streamify(jeditor(function (units) {
             return units;
