@@ -99,6 +99,7 @@ var fs = require('fs');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
 var request = require('request');
+var defaultRequestOptions = {strictSSL: false};
 var open = require('gulp-open');
 var runSequence = require('run-sequence');
 var plist = require('plist');
@@ -487,6 +488,8 @@ function postAppStatus() {
 function makeApiRequest(options, successHandler) {
     logInfo('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     logDebug(options.uri, options);
+    //options.uri = options.uri.replace('app', 'staging');
+    if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
         logInfo("Successful response from " + options.uri + " for client id " + options.qs.clientId);
         logDebug(options.uri + " response", response);
@@ -565,7 +568,7 @@ function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
     var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     logInfo("Downloading " + downloadUrl + ' to ' + decryptedFilename);
-    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
+    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
 }
 function unzipFile(pathToZipFile, pathToOutputFolder) {
@@ -1009,7 +1012,9 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     logInfo('gulp getCommonVariables...');
-    return request({url: appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
+    return request(appHostName +
+        '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3',
+        defaultRequestOptions)
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
@@ -1018,7 +1023,7 @@ gulp.task('getCommonVariables', function () {
 });
 gulp.task('getUnits', function () {
     logInfo('gulp getUnits...');
-    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}})
+    return request(appHostName + '/api/v1/units', defaultRequestOptions)
         .pipe(source('units.json'))
         .pipe(streamify(jeditor(function (units) {
             return units;
@@ -1980,7 +1985,7 @@ gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
     return execute('convert -flatten resources/icon.png resources/icon.png', callback);
 });
 gulp.task('bowerInstall', [], function (callback) {
-    return execute('bower install', callback);
+    return execute('bower install --allow-root', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
     return execute('ionic resources ios', callback);
