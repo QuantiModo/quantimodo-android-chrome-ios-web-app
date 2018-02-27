@@ -488,6 +488,8 @@ function postAppStatus() {
 function makeApiRequest(options, successHandler) {
     logInfo('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     logDebug(options.uri, options);
+    //options.uri = options.uri.replace('app', 'staging');
+    if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
         logInfo("Successful response from " + options.uri + " for client id " + options.qs.clientId);
         logDebug(options.uri + " response", response);
