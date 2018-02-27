@@ -92,7 +92,10 @@ window.qm = {
         },
         getClientId: function(){
             var clientId;
-            if(appSettings){
+            if(qm.api.getClientIdFromQueryParameters()){
+                clientId = qm.api.getClientIdFromQueryParameters();
+            }
+            if(!clientId && appSettings){
                 clientId =  appSettings.clientId;
             }
             if(!clientId && appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().clientId){
@@ -101,9 +104,6 @@ window.qm = {
             if(!clientId && qm.platform.isMobile()){
                 window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
                 clientId = "default"; // On mobile
-            }
-            if(qm.api.getClientIdFromQueryParameters()){
-                clientId = qm.api.getClientIdFromQueryParameters();
             }
             if(!clientId){
                 clientId = qm.storage.getItem(qm.items.clientId);
@@ -1105,7 +1105,7 @@ window.qm = {
             return "android_popup.html?variableName=" + ratingTrackingReminderNotification.variableName +
                 "&valence=" + ratingTrackingReminderNotification.valence +
                 "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
-                "&clientId=" + qm.api.getClientId() +
+                "&clientId=" + qm.api.getClientId() + // // Need to do this for Android webview that can't access local config.json
                 "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
         },
         closePopup: function() {
@@ -1858,18 +1858,9 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUserFromLocalStorage: function(refresh){
-            if(!window.qmUser) {
-                window.qmUser = qm.storage.getItem('user');
-            }
-            if(!window.qmUser){
-                if(refresh){
-                    qmLog.info("We do not have a user!  Going to try to get from API");
-                    qm.userHelper.getUserFromApi();
-                } else {
-                    qmLog.info("We do not have a user!");
-                }
-            }
+        getUserFromLocalStorage: function(){
+            if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
+            if(!window.qmUser){qmLog.info("We do not have a user!");}
             return window.qmUser;
         },
         setUser: function(user){
@@ -1920,10 +1911,10 @@ window.qm = {
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             if(qm.userHelper.getUserFromLocalStorage()){
-                successHandler(qm.userHelper.getUserFromLocalStorage());
+                if(successHandler){successHandler(qm.userHelper.getUserFromLocalStorage());}
                 return;
             }
-            qm.getUserFromApi(successHandler, errorHandler);
+            qm.userHelper.getUserFromApi(successHandler, errorHandler);
         }
     },
     userVariableHelper: {
@@ -2137,6 +2128,7 @@ var appsManager = { // jshint ignore:line
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
+        if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
         if(!clientId){
             qmLog.error("No client id to get app settings url!");
             return true;
@@ -2290,12 +2282,7 @@ function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-if(!window.qmUser){
-    if(typeof localStorage !== "undefined"){
-        window.qmUser = localStorage.getItem(qm.items.user);
-    }
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
+qm.userHelper.getUserFromLocalStorage();
 appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
    console.log(appSettings);
 });
