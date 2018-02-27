@@ -1010,9 +1010,9 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     logInfo('gulp getCommonVariables...');
-    return request({url: appHostName +
+    return request(appHostName +
         '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3',
-        headers: {'User-Agent': 'request'}}, defaultRequestOptions)
+        defaultRequestOptions)
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
@@ -1021,7 +1021,7 @@ gulp.task('getCommonVariables', function () {
 });
 gulp.task('getUnits', function () {
     logInfo('gulp getUnits...');
-    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}}, defaultRequestOptions)
+    return request(appHostName + '/api/v1/units', defaultRequestOptions)
         .pipe(source('units.json'))
         .pipe(streamify(jeditor(function (units) {
             return units;
