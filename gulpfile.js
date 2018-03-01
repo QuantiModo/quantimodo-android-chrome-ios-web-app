@@ -1020,15 +1020,20 @@ gulp.task('getCommonVariables', function () {
         })))
         .pipe(gulp.dest('./www/data/'));
 });
-gulp.task('getUnits', function () {
+gulp.task('getUnits', function (callback) {
     var url = appHostName + '/api/v1/units';
     logInfo('gulp getUnits from '+ url);
-    return request(url, defaultRequestOptions)
-        .pipe(source('units.json'))
-        .pipe(streamify(jeditor(function (units) {
-            return units;
-        })))
-        .pipe(gulp.dest('./www/data/'));
+    try {
+        request(url, defaultRequestOptions)
+            .pipe(source('units.json'))
+            .pipe(streamify(jeditor(function (units) {
+                return units;
+            })))
+            .pipe(gulp.dest('./www/data/'));
+    } catch (error) {
+        logError(error);
+    }
+    callback();
 });
 gulp.task('getSHA1FromAPK', function () {
     logInfo('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
