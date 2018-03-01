@@ -1021,8 +1021,9 @@ gulp.task('getCommonVariables', function () {
         .pipe(gulp.dest('./www/data/'));
 });
 gulp.task('getUnits', function () {
-    logInfo('gulp getUnits...');
-    return request(appHostName + '/api/v1/units', defaultRequestOptions)
+    var url = appHostName + '/api/v1/units';
+    logInfo('gulp getUnits from '+ url);
+    return request(url, defaultRequestOptions)
         .pipe(source('units.json'))
         .pipe(streamify(jeditor(function (units) {
             return units;
