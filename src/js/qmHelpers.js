@@ -1836,6 +1836,7 @@ window.qm = {
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
             url = qm.stringHelper.getStringBeforeSubstring('chrome_settings.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('_generated_background_page.html', url);
             return url;
         },
         getAbsoluteUrlFromRelativePath: function (relativePath){
