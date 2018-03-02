@@ -1904,7 +1904,7 @@ window.qm = {
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
                     qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
-                    if(successCallback){successCallback();}
+                    if(successCallback){successCallback(userFromApi);}
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
