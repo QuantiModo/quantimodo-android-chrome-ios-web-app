@@ -498,7 +498,13 @@ window.qm = {
         },
         getAccessTokenFromCurrentUrl: function(){
             qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
-            return (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
+            var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
+            if(accessTokenFromUrl){
+                qmLog.info("Got access token from url");
+            } else {
+                qmLog.info("No access token from url");
+            }
+            return accessTokenFromUrl;
         },
         deleteAllAccessTokens: function(){
             qm.userHelper.getUserFromLocalStorage().accessToken = null;
