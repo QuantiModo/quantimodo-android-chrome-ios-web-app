@@ -1861,7 +1861,9 @@ window.qm = {
         },
         getUserFromLocalStorage: function(){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
-            if(!window.qmUser){qmLog.info("We do not have a user!");}
+            if(!window.qmUser){
+                qmLog.info("We do not have a user in local storage!");
+            }
             return window.qmUser;
         },
         setUser: function(user){
@@ -1891,11 +1893,14 @@ window.qm = {
             return true;
         },
         getUserFromApi: function(successCallback, errorHandler){
+            qmLog.info("Getting user from API...");
             function successHandler(userFromApi){
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
+                    qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
                     if(successCallback){successCallback();}
                 } else {
+                    qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
                         var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
                         chrome.tabs.create({"url": url, "selected": true});
