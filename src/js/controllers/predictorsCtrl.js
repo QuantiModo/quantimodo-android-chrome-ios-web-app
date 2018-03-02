@@ -10,12 +10,39 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         qmService.unHideNavigationMenu();
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
+        $rootScope.showActionSheetMenu = function() {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Positive Relationships' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
+                    qmService.actionSheetButtons.refresh
+                ],
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() { qmLogService.debug('CANCELLED', null); },
+                buttonClicked: function(index) {
+                    if(index === 0){populateCorrelationList('-statisticalSignificance');}
+                    if(index === 1){populateCorrelationList('-qmScore');}
+                    if(index === 2){populateCorrelationList('correlationCoefficient');}
+                    if(index === 3){populateCorrelationList('-correlationCoefficient');}
+                    if(index === 4){populateCorrelationList('-numberOfUsers');}
+                    if(index === 5){populateCorrelationList('pValue');}
+                    if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
+                    if(index === 7){$scope.refreshList();}
+                    return true;
+                }
+            });
+        };
     });
     // Have to get url params after entering.  Otherwise, we get params from study if coming back
     $scope.$on('$ionicView.afterEnter', function(e) {
@@ -128,34 +155,6 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.state.requestParams.offset = 0;
         qmService.clearCorrelationCache();
         populateCorrelationList();
-    };
-    $rootScope.showActionSheetMenu = function() {
-        // Show the action sheet
-        var hideSheet = $ionicActionSheet.show({
-            buttons: [
-                { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
-                { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
-                { text: '<i class="icon ion-arrow-down-c"></i>Positive Relationships' },
-                { text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships' },
-                { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
-                { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
-                { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
-                qmService.actionSheetButtons.refresh
-            ],
-            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLogService.debug('CANCELLED', null); },
-            buttonClicked: function(index) {
-                if(index === 0){populateCorrelationList('-statisticalSignificance');}
-                if(index === 1){populateCorrelationList('-qmScore');}
-                if(index === 2){populateCorrelationList('correlationCoefficient');}
-                if(index === 3){populateCorrelationList('-correlationCoefficient');}
-                if(index === 4){populateCorrelationList('-numberOfUsers');}
-                if(index === 5){populateCorrelationList('pValue');}
-                if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
-                if(index === 7){$scope.refreshList();}
-                return true;
-            }
-        });
     };
     $scope.openStore = function(name){
         qmLogService.debug('open store for ', null, name); // make url
