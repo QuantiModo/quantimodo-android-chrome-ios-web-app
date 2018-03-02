@@ -2053,7 +2053,7 @@ gulp.task('configureApp', [], function (callback) {
         'copySrcToWww',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
-        //'getUnits',  // This is being weird for some reason
+        'getUnits',  // This is being weird for some reason
         'getAppConfigs',
         'minify-js-generate-css-and-index-html',
         'downloadIcon',
