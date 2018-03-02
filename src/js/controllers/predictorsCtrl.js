@@ -30,7 +30,8 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                         { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
                         { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
                         { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
-                        qmService.actionSheetButtons.refresh
+                        qmService.actionSheetButtons.refresh,
+                        qmService.actionSheetButtons.settings
                     ],
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() { qmLogService.debug('CANCELLED', null); },
@@ -43,6 +44,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                         if(index === 5){populateCorrelationList('pValue');}
                         if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
                         if(index === 7){$scope.refreshList();}
+                        if(index === 8){qmService.goToState(qmStates.settings);}
                         return true;
                     }
                 });
