@@ -275,7 +275,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         if (data.error) {
                             generalApiErrorHandler(data, status, headers, request, options);
-                            requestSpecificErrorHandler(data);
+                            if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
                         }
                         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
                         if(data.message){ qmLogService.debug(data.message, null, options.stackTrace); }
@@ -284,7 +284,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 })
                 .error(function (data, status, headers) {
                     generalApiErrorHandler(data, status, headers, request, options);
-                    requestSpecificErrorHandler(data);
+                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
                 }, onRequestFailed);
         });
     };
