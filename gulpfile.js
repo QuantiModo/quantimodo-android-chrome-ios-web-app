@@ -82,49 +82,49 @@ var paths = {
         js: "www/js/"
     }
 };
-var gulp = require('gulp'),
-    ts = require('gulp-typescript'),
-    es = require('event-stream'),
-    cordovaBuild = require('taco-team-build');
-var gutil = require('gulp-util');
-var bower = require('bower');
-var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var sh = require('shelljs');
-var inquirer = require('inquirer');
-var change = require('gulp-change');
-var q = require('q');
-var fs = require('fs');
-var zip = require('gulp-zip');
-var unzip = require('gulp-unzip');
-var request = require('request');
-var defaultRequestOptions = {strictSSL: false};
-var open = require('gulp-open');
-var runSequence = require('run-sequence');
-var plist = require('plist');
-var xml2js = require('xml2js');
-var parseString = require('xml2js').parseString;
-var clean = require('gulp-rimraf');
-var replace = require('gulp-string-replace');
-var download = require('gulp-download-stream');
-var git = require('gulp-git'),
-    jeditor = require('gulp-json-editor'),
-    source = require('vinyl-source-stream'),
-    streamify = require('gulp-streamify');
 var argv = require('yargs').argv;
+var bower = require('bower');
+var change = require('gulp-change');
+var clean = require('gulp-rimraf');
+var cordovaBuild = require('taco-team-build');
+var csso = require('gulp-csso');
+var defaultRequestOptions = {strictSSL: false};
+var download = require('gulp-download-stream');
+var es = require('event-stream');
 var exec = require('child_process').exec;
-var rp = require('request-promise');
-var templateCache = require('gulp-angular-templatecache');
-var uglify      = require('gulp-uglify');
+var filter = require('gulp-filter');
+var fs = require('fs');
+var git = require('gulp-git');
+var gulp = require('gulp');
+var gutil = require('gulp-util');
+var inquirer = require('inquirer');
+var jeditor = require('gulp-json-editor');
+var lazypipe = require('lazypipe');
+var minifyCss = require('gulp-minify-css');
+var ngAnnotate = require('gulp-ng-annotate');
+var open = require('gulp-open');
+var parseString = require('xml2js').parseString;
+var plist = require('plist');
+var q = require('q');
+var rename = require('gulp-rename');
+var replace = require('gulp-string-replace');
+var request = require('request');
 var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
+var rp = require('request-promise');
+var runSequence = require('run-sequence');
+var sass = require('gulp-sass');
+var sh = require('shelljs');
+var source = require('vinyl-source-stream');
 var sourcemaps = require('gulp-sourcemaps');
+var streamify = require('gulp-streamify');
+var templateCache = require('gulp-angular-templatecache');
+var ts = require('gulp-typescript');
+var uglify      = require('gulp-uglify');
+var unzip = require('gulp-unzip');
 var useref = require('gulp-useref');
-var lazypipe = require('lazypipe');
-var filter = require('gulp-filter');
-var csso = require('gulp-csso');
-var ngAnnotate = require('gulp-ng-annotate');
+var xml2js = require('xml2js');
+var zip = require('gulp-zip');
 
 var majorMinorVersionNumbers = '2.8.';
 var date = new Date();
@@ -1347,18 +1347,18 @@ gulp.task('ng-annotate', [], function() {
         .pipe(ngAnnotate())
         .pipe(gulp.dest('www/js'));
 });
-gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
     logInfo("Running minify-js-generate-css-and-index-html...");
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
-    var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+    var indexHtmlFilter = filter(['**/*', '!**/'+sourceIndexFileName], { restore: true });
 
     var sourceMapsWriteOptions = {
         //sourceRoot: "src/lib/",
         includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
-    return gulp.src("src/index.html")
-        //.pipe(useref())      // Concatenate with gulp-useref
+    return gulp.src("src/"+sourceIndexFileName)
+    //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
         .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
@@ -1372,6 +1372,9 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(revReplace())         // Substitute in new filenames
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
+}
+gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 var pump = require('pump');
 
