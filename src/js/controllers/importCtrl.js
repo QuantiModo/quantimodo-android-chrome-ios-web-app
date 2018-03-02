@@ -5,7 +5,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
-        return !config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
+        return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);
@@ -275,6 +275,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes =  "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly";
+            connectGoogle(connector, scopes);
+        }
+        if(connector.name === 'gmail') {
+            if($rootScope.isWeb || $rootScope.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            scopes =  "https://www.googleapis.com/auth/gmail.readonly";
             connectGoogle(connector, scopes);
         }
         if(connector.name === 'sleepcloud') {

@@ -66,7 +66,10 @@ var paths = {
         privateConfigs: "src/private_configs/",
         defaultConfig: "src/configs/default.config.json",
         defaultPrivateConfig: "src/private_configs/default.private_config.json",
-        icons: "src/img/icons"
+        icons: "src/img/icons",
+        firebase: "src/lib/firebase/**/*",
+        js: "src/js/*.js",
+        serviceWorker: "src/firebase-messaging-sw.js"
     },
     www: {
         appConfigs: "www/configs/",
@@ -74,7 +77,9 @@ var paths = {
         privateConfigs: "www/private_configs/",
         defaultConfig: "www/configs/default.config.json",
         defaultPrivateConfig: "www/private_configs/default.private_config.json",
-        icons: "www/img/icons"
+        icons: "www/img/icons",
+        firebase: "www/lib/firebase/",
+        js: "www/js/"
     }
 };
 var gulp = require('gulp'),
@@ -94,6 +99,7 @@ var fs = require('fs');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
 var request = require('request');
+var defaultRequestOptions = {strictSSL: false};
 var open = require('gulp-open');
 var runSequence = require('run-sequence');
 var plist = require('plist');
@@ -482,6 +488,8 @@ function postAppStatus() {
 function makeApiRequest(options, successHandler) {
     logInfo('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     logDebug(options.uri, options);
+    //options.uri = options.uri.replace('app', 'staging');
+    if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
         logInfo("Successful response from " + options.uri + " for client id " + options.qs.clientId);
         logDebug(options.uri + " response", response);
@@ -560,7 +568,7 @@ function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
     var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     logInfo("Downloading " + downloadUrl + ' to ' + decryptedFilename);
-    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
+    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
 }
 function unzipFile(pathToZipFile, pathToOutputFolder) {
@@ -774,6 +782,32 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
     postAppStatus();
     createChromeManifest();
 });
+
+gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
+    createProgressiveWebAppManifest('src/manifest.json');
+});
+function createProgressiveWebAppManifest(outputPath) {
+    outputPath = outputPath || paths.src + '/manifest.json';
+    var pwaManifest = {
+        'manifest_version': 2,
+        'name': appSettings.appDisplayName,
+        'short_name': appSettings.clientId,
+        'description': appSettings.appDescription,
+        "start_url": "index.html",
+        "display": "standalone",
+        "icons": [{
+            "src": "img/icons/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }],
+        "background_color": "#FF9800",
+        "theme_color": "#FF9800",
+        "gcm_sender_id": "1052648855194"
+    };
+    pwaManifest = JSON.stringify(pwaManifest, null, 2);
+    logInfo("Creating ProgressiveWebApp manifest at " + outputPath);
+    writeToFile(outputPath, pwaManifest);
+}
 function writeToFile(filePath, stringContents) {
     logDebug("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
@@ -864,7 +898,11 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         /** @namespace response.privateConfig */
         if(response.privateConfig){
             privateConfig = response.privateConfig;
-            writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            try {
+                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            } catch (error) {
+                logError(error);
+            }
             try {
                 writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
             } catch (err){
@@ -973,22 +1011,29 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
     return verifyExistenceOfFile(getPathToChromeExtensionZip());
 });
 gulp.task('getCommonVariables', function () {
-    logInfo('gulp getCommonVariables...');
-    return request({url: appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
+    var url = appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3';
+    logInfo('gulp getCommonVariables from '+ url);
+    return request(url, defaultRequestOptions)
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
         })))
         .pipe(gulp.dest('./www/data/'));
 });
-gulp.task('getUnits', function () {
-    logInfo('gulp getUnits...');
-    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}})
-        .pipe(source('units.json'))
-        .pipe(streamify(jeditor(function (units) {
-            return units;
-        })))
-        .pipe(gulp.dest('./www/data/'));
+gulp.task('getUnits', function (callback) {
+    var url = appHostName + '/api/v1/units';
+    logInfo('gulp getUnits from '+ url);
+    try {
+        request(url, defaultRequestOptions)
+            .pipe(source('units.json'))
+            .pipe(streamify(jeditor(function (units) {
+                return units;
+            })))
+            .pipe(gulp.dest('./www/data/'));
+    } catch (error) {
+        logError(error);
+    }
+    callback();
 });
 gulp.task('getSHA1FromAPK', function () {
     logInfo('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
@@ -1327,6 +1372,15 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         .pipe(revReplace())         // Substitute in new filenames
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
+});
+var pump = require('pump');
+
+gulp.task('uglify-error-debugging', function (cb) {
+    pump([
+        gulp.src('src/js/**/*.js'),
+        uglify(),
+        gulp.dest('./dist/')
+    ], cb);
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     logInfo('If this doesn\'t work, just use gulp cleanPlugins');
@@ -1888,6 +1942,11 @@ gulp.task('copySrcToAndroidWww', [], function () {
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
+gulp.task('copyServiceWorkerAndLibraries', [], function () {
+    copyFiles(paths.src.firebase, paths.www.firebase);
+    copyFiles(paths.src.serviceWorker, 'www/');
+    return copyFiles(paths.src.js, paths.www.js);
+});
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
@@ -1931,7 +1990,7 @@ gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
     return execute('convert -flatten resources/icon.png resources/icon.png', callback);
 });
 gulp.task('bowerInstall', [], function (callback) {
-    return execute('bower install', callback);
+    return execute('bower install --allow-root', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
     return execute('ionic resources ios', callback);
@@ -1993,15 +2052,16 @@ gulp.task('configureApp', [], function (callback) {
         'sass',
         'copySrcToWww',
         //'commentOrUncommentCordovaJs',
-        'minify-js-generate-css-and-index-html',
         'getCommonVariables',
-        'getUnits',
+        'getUnits',  // This is being weird for some reason
         'getAppConfigs',
+        'minify-js-generate-css-and-index-html',
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
         'copyIconsToWwwImg',
+        'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
         'createSuccessFile',
         callback);

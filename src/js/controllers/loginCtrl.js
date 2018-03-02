@@ -1,8 +1,10 @@
-angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector", "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog", function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
+angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector",
+    "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
+    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
-    $scope.headline = config.appSettings.headline;
+    $scope.headline = qm.getAppSettings().headline;
     $rootScope.showFilterBarSearchIcon = false;
     if($rootScope.isMobile){
         if(window && window.plugins && window.plugins.googleplus){
@@ -82,7 +84,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmLogService.debug('beforeEnter in state ' + $state.current.name, null);
         leaveIfLoggedIn();
         if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
-        if(urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrl()){
+        if(qm.urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrl()){
             loginTimeout();
         } else {
             qmLogService.debug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token', null);
@@ -109,10 +111,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     };
     var oAuthBrowserLogin = function (register) {
         var url = qmService.generateV1OAuthUrl(register);
-        qmLogService.debug('Going to try logging in by opening new tab at url ' + url, null);
+        qmLogService.debug('Going to try logging in by opening new tab at url ' + url);
         qmService.showBlackRingLoader();
         var ref = window.open(url, '_blank');
         if (!ref) {
+            qmLogService.error('You must first unblock popups, and and refresh the page for this to work!');
             alert("You must first unblock popups, and and refresh the page for this to work!");
         } else {
             qmLogService.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs', null);
@@ -126,6 +129,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode);  // get access token from authorization code
                         ref.close();  // close the sibling tab
+                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 }
@@ -196,6 +200,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         ref.close();
                         var withJWT = true;
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
+                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 });
@@ -247,6 +252,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.hideLoader();
                     loginLog('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }, function (errorMessage) {
                     qmService.hideLoader();
                     reportLoginError("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -306,7 +312,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             fullscreen: $scope.customFullscreen
         });
     };
-    function LoginModalController($scope, $mdDialog, qmService, qmLogService) {
+    function LoginModalController($scope, $mdDialog, qmService) {
         $scope.credentials = {};
         $scope.close = function () { $mdDialog.cancel(); };
         $scope.hide = function () { $mdDialog.hide(); };
