@@ -33,11 +33,33 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $rootScope.showActionSheetMenu = function setActionSheet() {
                 return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
             };
+        } else {
+            updateNavigationMenuButton();
         }
         if(!$scope.state.history || !$scope.state.history.length){ // Otherwise it keeps add more measurements whenever we edit one
             $scope.getHistory();
         }
     });
+    function updateNavigationMenuButton() {
+            $timeout(function() {
+                $rootScope.showActionSheetMenu = function() {
+                    // Show the action sheet
+                    var hideSheet = $ionicActionSheet.show({
+                        buttons: [
+                            qmService.actionSheetButtons.refresh,
+                            qmService.actionSheetButtons.settings
+                        ],
+                        cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                        cancel: function() { qmLogService.debug('CANCELLED', null); },
+                        buttonClicked: function(index) {
+                            if(index === 0){$scope.refreshHistory();}
+                            if(index === 1){qmService.goToState(qmStates.settings);}
+                            return true;
+                        }
+                    });
+                };
+            }, 1);
+        }
     function updateMeasurementIfNecessary(){
         if($stateParams.updatedMeasurement && $scope.state.history && $scope.state.history.length){
             $scope.state.history = qm.arrayHelper.replaceElementInArrayById($scope.state.history, $stateParams.updatedMeasurement);
