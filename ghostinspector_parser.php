@@ -7,10 +7,10 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 
 $contents = file_get_contents('ghostinspector.json');
 $json = json_decode($contents);
-#echo "Contents of ghostinspector.json: ";
-#print_r($json);
 $success = $json->code == 'SUCCESS';
 if (!$success) {
+    echo "Contents of ghostinspector.json: ";
+    print_r($json);
     echo "GhostInspector tests failed\n";
     exit(1);
 }
@@ -38,6 +38,7 @@ if(isset($json->data->passing)){
         echo "|___|    |__| |__||_______||_______||_______||______| |__|         |______| ";
 
         echo $json->data->name . " PASSED!  Yay! :D";
+        unlink('ghostinspector.json');
         exit(0);
     }
 }
@@ -57,4 +58,5 @@ if ($failedTests) {
 }
 
 echo "GhostInspector tests were successful\n";
+unlink('ghostinspector.json');
 exit(0);

@@ -9,10 +9,15 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {debugMode:false};
-Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+if(typeof Bugsnag !== "undefined"){
+    Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+}
+
 var logMetaData = false;
 if(!window.qmUser){
-    window.qmUser = localStorage.getItem('user');
+    if(typeof localStorage !== "undefined"){
+        window.qmUser = localStorage.getItem('user');
+    }
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 qmLog.mobileDebug = false;
@@ -35,8 +40,8 @@ window.qmLog.getLogLevelName = function() {
     if(qmLog.logLevel){
         return qmLog.logLevel;
     }
-    if(urlHelper.getParam('logLevel')){
-        qmLog.logLevel = urlHelper.getParam('logLevel');
+    if(qm.urlHelper.getParam('logLevel')){
+        qmLog.logLevel = qm.urlHelper.getParam('logLevel');
         return qmLog.logLevel;
     }
     return "error";
@@ -46,7 +51,7 @@ window.qmLog.checkUrlAndStorageForDebugMode = function () {
         console.log("Got debugMode from local storage");
         return true;
     }
-    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
+    if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){
         qmLog.logLevel = "debug";
         qmLog.debugMode = true;
         qm.storage.setItem(qm.items.debugMode, true);
@@ -156,7 +161,9 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            if(typeof Bugsnag !== "undefined"){
+                Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            }
             //window.qmLog.error(error, object); // Avoid infinite recursion
             return object;
         }
@@ -206,15 +213,17 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "deviceTokenToSync": qm.storage.getItem(qm.items.deviceTokenToSync),
         "last_push": window.qm.push.getTimeSinceLastPushString(),
         "push enabled": qm.push.enabled(),
-        "draw over apps enabled": window.qm.notifications.drawOverAppsPopupEnabled(),
+        "draw over apps enabled": qm.storage.getItem(qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
         "last popup": qm.notifications.getTimeSinceLastPopupString()
     };
     if(qmLog.isDebugMode()){metaData.local_storage = window.qm.storage.getLocalStorageList();} // Too slow to do for every error
     if(qm.getAppSettings()){
-        metaData.build_server = config.appSettings.buildServer;
-        metaData.build_link = config.appSettings.buildLink;
+        metaData.build_server = qm.getAppSettings().buildServer;
+        metaData.build_link = qm.getAppSettings().buildLink;
     }
     metaData.test_app_url = getTestUrl();
+    metaData.window_location_href = window.location.href;
+    metaData.window_location_origin = window.location.origin;
     if (!metaData.groupingHash) {metaData.groupingHash = name;}
     if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
     if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
@@ -232,7 +241,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         console.error('API ERROR URL ' + metaData.test_api_url, metaData);
         delete metaData.apiResponse;
     }
-    //metaData.appSettings = config.appSettings;  // Request Entity Too Large
+    //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
     //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
     metaData = obfuscateSecrets(metaData);
@@ -245,8 +254,8 @@ window.qmLog.setupBugsnag = function(){
         if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
         Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
         if(qm.getAppSettings()){
-            Bugsnag.appVersion = config.appSettings.versionNumber;
-            Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+            Bugsnag.appVersion = qm.getAppSettings().versionNumber;
+            Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
         if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
     } else {
@@ -259,12 +268,12 @@ window.qmLog.setupUserVoice = function() {
         UserVoice.push(['identify', {
             email: qmUser.email, // User’s email address
             name: qmUser.displayName, // User’s real name
-            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUser().userRegistered), // Unix timestamp for the date the user signed up
-            id: qm.userHelper.getUser().id, // Optional: Unique id of the user (if set, this should not change)
-            type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUser().subscribed + ')', // Optional: segment your users by type
+            created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
+            id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
             account: {
                 //id: 123, // Optional: associate multiple users with a single account
-                name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
+                name: qm.getSourceName() + ' v' + qm.getAppSettings().versionNumber, // Account name
                 //created_at: 1364406966, // Unix timestamp for the date the account was created
                 //monthly_rate: 9.99, // Decimal; monthly rate of the account
                 //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -276,11 +285,11 @@ window.qmLog.setupUserVoice = function() {
 window.qmLog.setupIntercom = function() {
     window.intercomSettings = {
         app_id: "uwtx2m33",
-        name: qm.userHelper.getUser().displayName,
-        email: qm.userHelper.getUser().email,
-        user_id: qm.userHelper.getUser().id,
-        app_name: config.appSettings.appDisplayName,
-        app_version: config.appSettings.versionNumber,
+        name: qm.userHelper.getUserFromLocalStorage().displayName,
+        email: qm.userHelper.getUserFromLocalStorage().email,
+        user_id: qm.userHelper.getUserFromLocalStorage().id,
+        app_name: qm.getAppSettings().appDisplayName,
+        app_version: qm.getAppSettings().versionNumber,
         platform: qm.getPlatform()
     };
 };
@@ -349,8 +358,12 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    var authDebug = false;
-    if(authDebug || qmLog.debugMode){qmLog.debug(message, message, null);}
+    var authDebug = window.location.href.indexOf("authDebug") !== -1;
+    if(authDebug){
+        qmLog.info(message, message, null);
+    } else {
+        qmLog.debug(message, message, null);
+    }
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
     var pushDebug = false;

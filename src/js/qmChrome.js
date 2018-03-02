@@ -1,63 +1,61 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm */
-window.qm.chrome = {
-    introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-    facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
-    loginWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-    fullInboxWindowParams: { url: "index.html#/app/reminders-inbox", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
-    compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
-    inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
-    signInNotificationParams: { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2},
-    scheduleGenericChromeExtensionNotification: function(intervalInMinutes) {
-        qmLog.info('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
-        var alarmInfo = {periodInMinutes: intervalInMinutes};
-        qmLog.info('scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm');
-        chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
-        qmLog.info('scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm', null, alarmInfo);
-        chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
-        qmLog.info('Alarm set, every ' + intervalInMinutes + ' minutes');
-    },
-    scheduleChromeExtensionNotificationWithTrackingReminder: function(trackingReminder) {
-        var alarmInfo = {};
-        function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
-            return {
-                trackingReminderId: trackingReminder.id,
-                variableName: trackingReminder.variableName,
-                defaultValue: trackingReminder.defaultValue,
-                unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
-                periodInMinutes: trackingReminder.reminderFrequency / 60,
-                reminderStartTime: trackingReminder.reminderStartTime,
-                startTrackingDate: trackingReminder.startTrackingDate,
-                variableCategoryName: trackingReminder.variableCategoryName,
-                valence: trackingReminder.valence,
-                reminderEndTime: trackingReminder.reminderEndTime
-            };
-        }
-        alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
-        alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-        var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
-        alarmName = JSON.stringify(alarmName);
-        chrome.alarms.getAll(function(alarms) {
-            var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
-            if (hasAlarm) {qmLog.info(null, 'Already have an alarm for ' + alarmName, null);}
-            if (!hasAlarm) {
-                chrome.alarms.create(alarmName, alarmInfo);
-                qmLog.info(null, 'Created alarm for alarmName ' + alarmName, null, alarmInfo);
+window.qm.chrome = {};
+if(typeof screen !== "undefined"){
+    window.qm.chrome = {
+        introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
+        facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
+        loginWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
+        fullInboxWindowParams: { url: "index.html#/app/reminders-inbox", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
+        compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
+        inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
+        signInNotificationParams: { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2},
+        scheduleGenericChromeExtensionNotification: function(intervalInMinutes) {
+            qmLog.info('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
+            var alarmInfo = {periodInMinutes: intervalInMinutes};
+            qmLog.info('scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm');
+            chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
+            qmLog.info('scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm', null, alarmInfo);
+            chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
+            qmLog.info('Alarm set, every ' + intervalInMinutes + ' minutes');
+        },
+        scheduleChromeExtensionNotificationWithTrackingReminder: function(trackingReminder) {
+            var alarmInfo = {};
+            function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
+                return {
+                    trackingReminderId: trackingReminder.id,
+                    variableName: trackingReminder.variableName,
+                    defaultValue: trackingReminder.defaultValue,
+                    unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
+                    periodInMinutes: trackingReminder.reminderFrequency / 60,
+                    reminderStartTime: trackingReminder.reminderStartTime,
+                    startTrackingDate: trackingReminder.startTrackingDate,
+                    variableCategoryName: trackingReminder.variableCategoryName,
+                    valence: trackingReminder.valence,
+                    reminderEndTime: trackingReminder.reminderEndTime
+                };
             }
-        });
-    }
-};
+            alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
+            alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
+            var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
+            alarmName = JSON.stringify(alarmName);
+            chrome.alarms.getAll(function(alarms) {
+                var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
+                if (hasAlarm) {qmLog.info(null, 'Already have an alarm for ' + alarmName, null);}
+                if (!hasAlarm) {
+                    chrome.alarms.create(alarmName, alarmInfo);
+                    qmLog.info(null, 'Created alarm for alarmName ' + alarmName, null, alarmInfo);
+                }
+            });
+        }
+    };
+}
 function showSignInNotification() {
     if(!qm.platform.isChromeExtension()){return;}
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, qm.chrome.signInNotificationParams, function (id) {});
 }
 function getChromeManifest() {if(qm.platform.isChromeExtension()){return chrome.runtime.getManifest();}}
-function getChromeRatingNotificationParams(trackingReminderNotification){
-    if(!trackingReminderNotification){trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();}
-    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
-        left: screen.width - 380, width: 390, height: 110, focused: true};
-}
 qm.chrome.canShowChromePopups = function(){
     if(typeof chrome === "undefined" || typeof chrome.windows === "undefined" || typeof chrome.windows.create === "undefined"){
         qmLog.info("Cannot show chrome popups");
@@ -66,10 +64,17 @@ qm.chrome.canShowChromePopups = function(){
     return true;
 };
 qm.chrome.showRatingPopup = function(){
+    qmLog.info("Opening rating notification popup");
+    var getChromeRatingNotificationParams = function(trackingReminderNotification){
+        if(!trackingReminderNotification){trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();}
+        return { url: qm.notifications.getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
+            left: screen.width - 380, width: 390, height: 110, focused: true};
+    };
     window.trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
     if(window.trackingReminderNotification){
         openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
     }
+    window.qm.chrome.updateChromeBadge(0);
 };
 function openOrFocusChromePopupWindow(windowParams) {
     if(!window.qm.chrome.canShowChromePopups()){return;}
@@ -155,25 +160,32 @@ qm.chrome.createSmallNotificationAndOpenInboxInBackground = function(){
     windowParams.focused = false;
     openOrFocusChromePopupWindow(windowParams);
 };
-window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
-    //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
-    if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
-        qmLog.info("Opening rating notification popup");
-        openOrFocusChromePopupWindow(getChromeRatingNotificationParams(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()));
-        window.qm.chrome.updateChromeBadge(0);
-    } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
-        qmLog.info("No rating notifications so opening compactInboxWindow popup");
-        openOrFocusChromePopupWindow(qm.chrome.compactInboxWindowParams);
-    } else if (alarm) {
-        qmLog.info("Got an alarm and no rating notifications so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-        checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
-    } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
-        qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-        window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+qm.chrome.checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary = function(alarm) {
+    if(!qm.platform.isChromeExtension()){return;}
+    window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
+    if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
+    if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
+        qm.chrome.createSmallNotificationAndOpenInboxInBackground();
     } else {
-        qmLog.info("No notifications in localStorage so refreshIfEmpty");
-        qm.notifications.refreshIfEmpty();
+        qm.notifications.refreshAndShowPopupIfNecessary();
     }
+
+};
+window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
+    qm.notifications.refreshIfEmpty(function () {
+        //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
+        if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
+            qm.chrome.showRatingPopup();
+        } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
+            qmLog.info("No rating notifications so opening compactInboxWindow popup");
+            openOrFocusChromePopupWindow(qm.chrome.compactInboxWindowParams);
+        } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
+            qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
+            window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+        }
+    }, function (err) {
+        qmLog.error("Not showing popup because of notification refresh error: "+ err);
+    });
 };
 if(qm.platform.isChromeExtension()) {
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
@@ -182,9 +194,10 @@ if(qm.platform.isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
+        qm.userHelper.getUserFromLocalStorageOrApi();
         qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup(alarm));
     });
-    if(qm.userHelper.getUser()){window.qm.chrome.showRatingOrInboxPopup();}
+    if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}
     if (!qm.storage.getItem(qm.items.introSeen)) {
         window.qmLog.info('introSeen false on chrome extension so opening intro window popup');
         window.qm.storage.setItem('introSeen', true);

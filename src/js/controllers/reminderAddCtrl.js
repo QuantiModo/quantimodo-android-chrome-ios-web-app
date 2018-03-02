@@ -54,8 +54,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
         $scope.stateParams = $stateParams;
         setTitle();
-        var reminderIdUrlParameter = urlHelper.getParam('reminderId');
-        var variableIdUrlParameter = urlHelper.getParam('variableId');
+        var reminderIdUrlParameter = qm.urlHelper.getParam('reminderId');
+        var variableIdUrlParameter = qm.urlHelper.getParam('variableId');
         if ($stateParams.variableObject) {
             $scope.state.variableObject = $stateParams.variableObject;
             setupByVariableObject($stateParams.variableObject);

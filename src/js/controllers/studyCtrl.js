@@ -69,7 +69,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if($stateParams.correlationObject){ return $stateParams.correlationObject;}
     }
     function getStateOrUrlOrRootScopeCorrelationOrRequestParam(paramName) {
-        if(window.urlHelper.getParam(paramName)){return window.urlHelper.getParam(paramName, window.location.href, true);}
+        if(window.qm.urlHelper.getParam(paramName)){return window.qm.urlHelper.getParam(paramName, window.location.href, true);}
         if($stateParams[paramName]){ return $stateParams[paramName]; }
         if($scope.state.requestParams && $scope.state.requestParams[paramName]){return $scope.state.requestParams[paramName];}
         return null;
