@@ -668,20 +668,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {noRedirect: true, code: code};
         qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
-    qmService.getUserFromApi = function(params, successHandler, errorHandler){
-        if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
-        var options = {};
-        options.minimumSecondsBetweenRequests = 3;
-        options.doNotSendToLogin = true;
-        if(!configureQmApiClient('getUserFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.UserApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler)
-        }
-        params = addGlobalUrlParamsToObject(params);
-        apiInstance.getUser(params, callback);
-        //qmService.get('api/user/me', [], params, successHandler, errorHandler, options);
-    };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
@@ -1333,7 +1319,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getUserVariablesFromLocalStorageOrApiDeferred();
     };
     qmService.refreshUser = function(){
-        var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
         if(qm.urlHelper.getParam('logout')){
             qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
@@ -1341,7 +1326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmLogService.debug('qmService.refreshUser: Calling qmService.getUserFromApi...');
-        qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+        qm.userHelper.getUserFromApi(function(user){
             qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ' + JSON.stringify(user));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);

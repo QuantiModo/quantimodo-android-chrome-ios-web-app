@@ -304,9 +304,10 @@ window.qmLog.shouldWeLog = function(providedLogLevelName) {
     return globalLogLevelValue >= providedLogLevelValue;
 };
 var logLevels = {
-  "error": 1,
-  "info": 2,
-  "debug": 3
+    "error": 1,
+    "warn": 2,
+    "info": 3,
+    "debug": 4
 };
 function getConsoleLogString(name, message, metaData, stackTrace){
     var logString = name;
@@ -338,6 +339,13 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
     //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
+};
+window.qmLog.warn = function (name, message, metaData, stackTrace) {
+    name = name || message;
+    metaData = metaData || null;
+    if(!qmLog.shouldWeLog("warn")){return;}
+    message = addCallerFunctionToMessage(message);
+    console.warn("WARN: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}
