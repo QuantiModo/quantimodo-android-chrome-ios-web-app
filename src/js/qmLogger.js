@@ -350,8 +350,12 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    var authDebug = false;
-    if(authDebug || qmLog.debugMode){qmLog.debug(message, message, null);}
+    var authDebug = window.location.href.indexOf("authDebug") !== -1;
+    if(authDebug){
+        qmLog.info(message, message, null);
+    } else {
+        qmLog.debug(message, message, null);
+    }
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
     var pushDebug = false;
