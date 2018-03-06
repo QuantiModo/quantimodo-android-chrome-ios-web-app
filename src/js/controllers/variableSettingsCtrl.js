@@ -285,7 +285,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             combinationOperation: variableObject.combinationOperation,
             shareUserMeasurements: variableObject.shareUserMeasurements,
             defaultUnitId: variableObject.userUnitId,
-            userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
+            userVariableVariableCategoryName: variableObject.variableCategoryName,
             //userVariableAlias: $scope.state.userVariableAlias
             experimentStartTimeString: experimentStartTimeString,
             experimentEndTimeString: experimentEndTimeString
