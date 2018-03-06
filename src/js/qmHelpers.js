@@ -2024,12 +2024,16 @@ window.qm = {
             qm.webNotifications.initializeFirebase();
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
+            if(typeof navigator.serviceWorker === "undefined"){
+                qmLog.error("navigator.serviceWorker is not defined!");
+                return false;
+            }
             navigator.serviceWorker.register(serviceWorkerUrl)
                 .then(function(registration) {
                     var messaging = firebase.messaging();
                     messaging.useServiceWorker(registration);
                     qm.webNotifications.subscribeUser(messaging);
-                })
+                });
             qm.serviceWorker = navigator.serviceWorker;
             return qm.serviceWorker;
         },
