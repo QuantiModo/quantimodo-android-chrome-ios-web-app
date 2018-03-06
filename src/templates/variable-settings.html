@@ -38,15 +38,15 @@
                                 ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableDefaultUnits">
                         </select>
                     </div>
-                    <div ng-if="state.variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
+                    <div ng-if="state.variableObject.variableCategoryName" layout="row" layout-align="space-between center">
                         <span>Variable Category</span>
-                        <md-select ng-model="state.variableObject.userVariableVariableCategoryName" ng-show="!isMobile">
+                        <md-select ng-model="state.variableObject.variableCategoryName" ng-show="!isMobile">
                             <md-option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName" >
                                 {{variableCategoryName}}
                             </md-option>
                         </md-select>
                         <select id="variableCategorySelector" ng-show="isMobile"
-                                ng-model="state.variableObject.userVariableVariableCategoryName">
+                                ng-model="state.variableObject.variableCategoryName">
                             <option ng-repeat="variableCategoryName in variableCategoryNames"
                                     ng-value="variableCategoryName">{{variableCategoryName}}
                             </option>
