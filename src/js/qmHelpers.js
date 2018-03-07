@@ -2152,12 +2152,12 @@ var appsManager = { // jshint ignore:line
         return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
+        if(clientId && clientId === "default"){return true;}
         if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
         if(!clientId){
             qmLog.error("No client id to get app settings url!");
             return true;
         }
-        if(clientId === "default"){return true;}
         if(qm.platform.isMobile()){return true;}
         if(qm.platform.isChromeExtension()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
