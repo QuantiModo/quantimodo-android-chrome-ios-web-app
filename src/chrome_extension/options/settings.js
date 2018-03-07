@@ -31,11 +31,11 @@ var onIntervalChanged = function() {
 		notificationInterval = newNotificationInterval;
 		localStorage["notificationInterval"] = notificationInterval;
 		if(notificationInterval == -1) {
-			chrome.alarms.clear("moodReportAlarm");
+			chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
 			console.log("Alarm cancelled");
 		} else {
-			var alarmInfo = {periodInMinutes: notificationInterval}
-			chrome.alarms.create("moodReportAlarm", alarmInfo)
+			var alarmInfo = {periodInMinutes: notificationInterval};
+			chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
 			console.log("Alarm set, every " + notificationInterval + " minutes");
 		}
         qm.chrome.showRatingOrInboxPopup();
