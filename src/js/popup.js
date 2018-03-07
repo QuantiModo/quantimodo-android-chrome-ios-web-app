@@ -89,7 +89,11 @@ function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
     if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
     window.notificationsSyncQueue.push(window.trackingReminderNotification);
-    //window.qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName);
+    if(window.trackingReminderNotification.id){
+        qm.notifications.deleteById(window.trackingReminderNotification.id);
+    } else {
+        qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName); // TODO: Why was this commented?
+    }
     window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     if(!window.trackingReminderNotification){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...');
