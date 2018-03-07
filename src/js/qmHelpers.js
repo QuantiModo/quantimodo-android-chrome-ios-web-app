@@ -785,7 +785,8 @@ window.qm = {
             }
             for (var i = 0; i < uniqueNotifications.length; i++) {
                 var notification = uniqueNotifications[i];
-                if(!window.notificationsSyncQueue || !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                if(!window.notificationsSyncQueue ||
+                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
                     qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
                     return notification;
                 }
