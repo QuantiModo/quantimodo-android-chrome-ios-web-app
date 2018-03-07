@@ -769,9 +769,16 @@ window.qm = {
             }
             for (var i = 0; i < uniqueRatingNotifications.length; i++) {
                 var notification = uniqueRatingNotifications[i];
-                if(!window.notificationsSyncQueue || !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
-                    qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName);
-                    return notification;
+                if(!window.notificationsSyncQueue ||
+                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                    qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName, null, notification);
+                    var hoursAgo = qm.timeHelper.hoursAgo(notification.trackingReminderNotificationTimeEpoch);
+                    if(hoursAgo < 24) {
+                        //var dueTimeString = qm.timeHelper.getTimeSinceString(notification.trackingReminderNotificationTimeEpoch);
+                        //console.log("due: "+ dueTimeString);
+                        return notification;
+                    }
+                    console.log(hoursAgo + " hours ago is too old!");
                 }
             }
             qmLog.info("No uniqueRatingNotifications not in sync queue");
