@@ -1000,7 +1000,7 @@ window.qm = {
             // Can't use QM SDK in service worker
             qm.api.getFromQuantiModo(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
-                    showSignInNotification();
+                    qm.chrome.showSignInNotification();
                 } else {
                     qm.storage.setTrackingReminderNotifications(response.data);
                     if(successHandler){successHandler(response.data);}
@@ -1016,7 +1016,7 @@ window.qm = {
                         return { url: qm.notifications.getRatingNotificationPath(trackingReminderNotification),
                             type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true};
                     }
-                    openOrFocusChromePopupWindow(getChromeRatingNotificationParams(uniqueNotification));
+                    qm.chrome.openOrFocusChromePopupWindow(getChromeRatingNotificationParams(uniqueNotification));
                     qm.chrome.updateChromeBadge(0);
                 } else if (numberOfWaitingNotifications > 0) {
                     qm.chrome.createSmallNotificationAndOpenInboxInBackground();
@@ -2199,11 +2199,11 @@ var appsManager = { // jshint ignore:line
     }
 };
 function getAppName() {
-    if(getChromeManifest()){return getChromeManifest().name;}
+    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
     return window.qm.urlHelper.getParam('appName');
 }
 function getAppVersion() {
-    if(getChromeManifest()){return getChromeManifest().version;}
+    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
     return window.qm.urlHelper.getParam('appVersion');
 }
@@ -2225,7 +2225,7 @@ function addGlobalQueryParameters(url) {
     } else {
         window.qmLog.error('No access token!');
         if(!qm.serviceWorker){
-            showSignInNotification();
+            qm.chrome.showSignInNotification();
         }
     }
     if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
@@ -2292,7 +2292,7 @@ function getUnique(array, propertyName) {
     return output;
 }
 window.drawOverAppsPopupCompactInboxNotification = function() {
-    qm.notifications.drawOverAppsPopup(qm.chrome.compactInboxWindowParams.url);
+    qm.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
 };
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
