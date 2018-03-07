@@ -93,6 +93,19 @@ function openOrFocusChromePopupWindow(windowParams) {
         return;
     }
     window.qmLog.info('openOrFocusChromePopupWindow: window id from localStorage: ' + chromeWindowId, windowParams );
+    var chromeDebug = false;
+    if(chromeDebug){
+        checkAlarm();
+        chrome.windows.getLastFocused(function(window) {
+            console.log("last focused", window);
+        });
+        chrome.windows.getAll(function(windows) {
+            console.log("all windows", windows);
+        });
+        chrome.windows.getCurrent(function(window) {
+            console.log("current window", window);
+        });
+    }
     chrome.windows.get(chromeWindowId, function (chromeWindow) {
         if (!chrome.runtime.lastError && chromeWindow){
             if(windowParams.focused){
@@ -120,6 +133,7 @@ function openChromePopup(notificationId, focusWindow) {
 	if(!notificationId){notificationId = null;}
 	var windowParams;
 	qm.chrome.updateChromeBadge(0);
+	qmLog.info("notificationId: "+ notificationId);
 	if(notificationId === "moodReportNotification") {
         openOrFocusChromePopupWindow(qm.chrome.facesWindowParams);
 	} else if (notificationId === "signin") {
@@ -142,7 +156,7 @@ function openChromePopup(notificationId, focusWindow) {
 if(qm.platform.isChromeExtension()){
     // Called when the notification is clicked
     chrome.notifications.onClicked.addListener(function(notificationId) {
-        window.qmLog.debug(null, 'onClicked: notificationId:', null, notificationId);
+        window.qmLog.debug('onClicked: notificationId:' + notificationId);
         var focusWindow = true;
         openChromePopup(notificationId, focusWindow);
     });
@@ -171,7 +185,7 @@ qm.chrome.checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary = fu
     }
 
 };
-window.qm.chrome.showRatingOrInboxPopup = function (alarm) {
+window.qm.chrome.showRatingOrInboxPopup = function () {
     qm.notifications.refreshIfEmpty(function () {
         //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
         if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
@@ -195,7 +209,7 @@ if(qm.platform.isChromeExtension()) {
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
         qm.userHelper.getUserFromLocalStorageOrApi();
-        qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup(alarm));
+        qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup());
     });
     if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}
     if (!qm.storage.getItem(qm.items.introSeen)) {
@@ -204,3 +218,11 @@ if(qm.platform.isChromeExtension()) {
         openOrFocusChromePopupWindow(qm.chrome.introWindowParams);
     }
 }
+
+function checkAlarm() {
+    chrome.alarms.getAll(function(alarms) {
+        console.log("all alarms", alarms);
+    })
+}
+
+
