@@ -89,7 +89,8 @@ function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
     if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
     window.notificationsSyncQueue.push(window.trackingReminderNotification);
-    //window.qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName);
+    // TODO: Why was this commented?
+    qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName);
     window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     if(!window.trackingReminderNotification){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...');
