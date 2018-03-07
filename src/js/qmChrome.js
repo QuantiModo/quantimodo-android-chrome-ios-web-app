@@ -215,9 +215,9 @@ window.qm.chrome = {
     },
     showRatingOrInboxPopup: function () {
         qm.notifications.refreshIfEmpty(function () {
-            //window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotification();
-            if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()){
-                qm.chrome.showRatingPopup();
+            window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+            if(window.trackingReminderNotification){
+                qm.chrome.showRatingPopup(window.trackingReminderNotification);
             } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
                 qmLog.info("No rating notifications so opening compactInboxWindow popup");
                 qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
@@ -229,14 +229,18 @@ window.qm.chrome = {
             qmLog.error("Not showing popup because of notification refresh error: "+ err);
         });
     },
-    showRatingPopup: function(){
+    showRatingPopup: function(trackingReminderNotification){
         qmLog.info("Opening rating notification popup");
         var getChromeRatingNotificationParams = function(trackingReminderNotification){
             if(!trackingReminderNotification){trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();}
             return { url: qm.notifications.getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
                 left: screen.width - 380, width: 390, height: 110, focused: true};
         };
-        window.trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+        if(trackingReminderNotification){
+            window.trackingReminderNotification = trackingReminderNotification;
+        } else {
+            window.trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+        }
         if(window.trackingReminderNotification){
             qm.chrome.openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
         }
