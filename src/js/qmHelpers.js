@@ -92,7 +92,7 @@ window.qm = {
         },
         getClientId: function(){
             var clientId;
-            if(qm.api.getClientIdFromQueryParameters()){
+            if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 clientId = qm.api.getClientIdFromQueryParameters();
             }
             if(!clientId && appSettings){
@@ -101,16 +101,18 @@ window.qm = {
             if(!clientId && appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().clientId){
                 clientId = appsManager.getAppSettingsFromMemory().clientId;
             }
-            if(!clientId && qm.platform.isMobile()){
-                window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
-                clientId = "default"; // On mobile
-            }
+            // DON'T DO THIS
+            // if(!clientId && qm.platform.isMobile()){
+            //     window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
+            //     clientId = "default"; // On mobile
+            // }
             if(!clientId){
                 clientId = qm.storage.getItem(qm.items.clientId);
             }
-            if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
-                clientId = "default"; // On mobile
-            }
+            // DON'T DO THIS
+            // if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
+            //     clientId = "default"; // On mobile
+            // }
             if(!clientId){
                 clientId = qm.api.getClientIdFromSubDomain();
             }
