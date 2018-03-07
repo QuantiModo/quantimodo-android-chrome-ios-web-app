@@ -39,6 +39,13 @@ window.qm.chrome = {
         windowParams.focused = false;
         qm.chrome.openOrFocusChromePopupWindow(windowParams);
     },
+    createPopup: function(windowParams){
+        qmLog.info("creating popup window", null, windowParams);
+        chrome.windows.create(windowParams, function (chromeWindow) {
+            qm.storage.setItem('chromeWindowId', chromeWindow.id);
+            chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
+        });
+    },
     canShowChromePopups: function(){
         if(typeof chrome === "undefined" || typeof chrome.windows === "undefined" || typeof chrome.windows.create === "undefined"){
             qmLog.info("Cannot show chrome popups");
@@ -47,6 +54,57 @@ window.qm.chrome = {
         return true;
     },
     getChromeManifest: function() {if(qm.platform.isChromeExtension()){return chrome.runtime.getManifest();}},
+    getWindowByIdAndFocusOrCreateNewPopup: function(chromeWindowId, windowParams){
+        chrome.windows.get(chromeWindowId, function (chromeWindow) {
+            if (!chrome.runtime.lastError && chromeWindow){
+                if(windowParams.focused){
+                    window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. Focusing...', windowParams );
+                    chrome.windows.update(chromeWindowId, {focused: true});
+                } else {
+                    window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. NOT focusing...', windowParams );
+                }
+            } else {
+                window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window NOT already open. Creating one...', windowParams );
+                qm.chrome.createPopup(windowParams);
+            }
+        });
+    },
+    createPopupIfNoWindowIdInLocalStorage: function(windowParams){
+        window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow checking if a window is already open.  new window params: ', null, windowParams );
+        var chromeWindowId = parseInt(qm.storage.getItem(qm.items.chromeWindowId), null);
+        if(!chromeWindowId){
+            window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: No window id from localStorage. Creating one...', windowParams );
+            qm.chrome.createPopup(windowParams);
+            return false;
+        }
+        window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: window id from localStorage: ' + chromeWindowId, windowParams );
+        return chromeWindowId;
+    },
+    getCurrentWindowAndFocusOrCreateNewPopup: function (windowParams) {
+        chrome.windows.getCurrent(function (window) {
+            console.log("current window", window);
+            if(window && window.type === "popup"){
+                chrome.windows.update(window.id, {focused: true});
+            } else {
+                qm.chrome.createPopup(windowParams);
+            }
+        });
+    },
+    getAllWindowsFocusOrCreateNewPopup: function (windowParams) {
+        console.log("getAllWindowsFocusOrCreateNewPopup");
+        chrome.windows.getAll(function (windows) {
+            for (var i = 0; i < windows.length; i++) {
+                var window = windows[i];
+                console.log("current window", window);
+                if(window.type === "popup"){
+                    console.log("Focusing existing popup", window);
+                    chrome.windows.update(window.id, {focused: true});
+                    return;
+                }
+            }
+            qm.chrome.createPopup(windowParams);
+        });
+    },
     handleNotificationClick: function(notificationId) {
         window.qmLog.debug('onClicked: notificationId:' + notificationId);
         var focusWindow = true;
@@ -91,36 +149,13 @@ window.qm.chrome = {
         }
     },
     openOrFocusChromePopupWindow: function (windowParams) {
-        if(!window.qm.chrome.canShowChromePopups()){return;}
-        window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow checking if a window is already open', null, windowParams );
-        function createWindow(windowParams) {
-            qmLog.info("creating popup window", null, windowParams);
-            chrome.windows.create(windowParams, function (chromeWindow) {
-                qm.storage.setItem('chromeWindowId', chromeWindow.id);
-                chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
-            });
-        }
-        var chromeWindowId = parseInt(qm.storage.getItem(qm.items.chromeWindowId), null);
-        if(!chromeWindowId){
-            window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: No window id from localStorage. Creating one...', windowParams );
-            createWindow(windowParams);
-            return;
-        }
-        window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: window id from localStorage: ' + chromeWindowId, windowParams );
         qm.chrome.chromeDebug();
-        chrome.windows.get(chromeWindowId, function (chromeWindow) {
-            if (!chrome.runtime.lastError && chromeWindow){
-                if(windowParams.focused){
-                    window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. Focusing...', windowParams );
-                    chrome.windows.update(chromeWindowId, {focused: true});
-                } else {
-                    window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. NOT focusing...', windowParams );
-                }
-            } else {
-                window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window NOT already open. Creating one...', windowParams );
-                createWindow(windowParams);
-            }
-        });
+        if(!window.qm.chrome.canShowChromePopups()){return;}
+        // var chromeWindowId = qm.chrome.createPopupIfNoWindowIdInLocalStorage(windowParams);
+        // if(!chromeWindowId){return;}
+        //qm.chrome.getCurrentWindowAndFocusOrCreateNewPopup(windowParams);
+        qm.chrome.getAllWindowsFocusOrCreateNewPopup(windowParams);
+        //qm.chrome.getWindowByIdAndFocusOrCreateNewPopup(chromeWindowId, windowParams);
     },
     openFullInbox: function (focusWindow, notificationId) {
         var windowParams = qm.chrome.fullInboxWindowParams;
