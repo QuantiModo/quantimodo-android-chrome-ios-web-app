@@ -38,8 +38,8 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.qmLog.error('OverApps not defined');
-        qm.chrome.fullInboxWindowParams.focused = true;
-        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
+        qm.chrome.windowParams.fullInboxWindowParams.focused = true;
+        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.fullInboxWindowParams);
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {

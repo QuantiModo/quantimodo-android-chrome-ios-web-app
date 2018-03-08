@@ -158,9 +158,9 @@ window.qm.chrome = {
         //qm.chrome.getWindowByIdAndFocusOrCreateNewPopup(chromeWindowId, windowParams);
     },
     openFullInbox: function (focusWindow, notificationId) {
-        var windowParams = qm.chrome.fullInboxWindowParams;
+        var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
         if(focusWindow){windowParams.focused = true;}
-        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
+        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.fullInboxWindowParams);
         console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
     },
     openLoginWindow: function(){
@@ -169,10 +169,10 @@ window.qm.chrome = {
         qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.loginWindowParams);
     },
     openMeasurementAddWindow: function (focusWindow, notificationId) {
-        var windowParams = qm.chrome.fullInboxWindowParams;
+        var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
         if(focusWindow){windowParams.focused = true;}
-        qm.chrome.fullInboxWindowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
-        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
+        qm.chrome.windowParams.fullInboxWindowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.fullInboxWindowParams);
     },
     scheduleGenericChromeExtensionNotification: function() {
         var intervalInMinutes = parseInt(qm.storage.getItem(qm.items.notificationInterval) || "60");
