@@ -7769,11 +7769,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     function logOutOfWebsite() {
-        var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+        var afterLogoutGoToUrl = qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+        if(window.location.href.indexOf('.quantimo.do/') === -1){
+            afterLogoutGoToUrl = window.location.href;
+        }
+        var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
+        qmLog.info("Sending to " + logoutUrl);
         //qmService.get(logoutUrl);
         var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
-        $http(request);
-        //window.location.replace(logoutUrl);
+        //$http(request);
+        // Get request doesn't seem to clear cookies
+        window.location.replace(logoutUrl);
     }
     qmService.completelyResetAppStateAndLogout = function(){
         qmService.showBlackRingLoader();
