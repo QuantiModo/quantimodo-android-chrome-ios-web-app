@@ -23,7 +23,8 @@
                 <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
                     <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
                 </div>
-                <div class="list card" ng-show="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
+                <div class="list card" ng-show="!trackingReminderNotification.hide"
+                     ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
                         <div id="notification-icon" ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
                             <div class="col col-20" style="padding-top: 0px;">
@@ -60,7 +61,11 @@
                             <span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label">
 								{{trackingReminderNotification.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
 							</span>
+
                         </label>
+                        <span class="row" ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null" style="display: flex; justify-content: center;">
+                            <span ng-include="'templates/input/action-buttons-fragment.html'"></span>
+                        </span
                         <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
                         <div class="row" ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)" >
                             <div class="button-bar">
@@ -113,7 +118,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div ng-if="trackingReminderNotification.inputType === 'oneToTen' || trackingReminderNotification.inputType === 'slider'">
+                        <div ng-if="trackingReminderNotification.inputType === 'oneToTen'">
                             <div class="row">
                                 <div class="button-bar">
                                     <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
@@ -133,6 +138,9 @@
                                 </div>
                             </div>
                         </div>
+                        <span class="row" ng-if="trackingReminderNotification.inputType === 'slider'" style="display: flex; justify-content: center;">
+                            <span ng-include="'templates/input/action-buttons-fragment.html'"></span>
+                        </span>
                         <div class="row" >
                             <div class="button-bar">
                                 <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;"
