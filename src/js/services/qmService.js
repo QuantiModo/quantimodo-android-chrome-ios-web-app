@@ -1361,7 +1361,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
-        qm.auth.deleteAllAccessTokens();
+        qmService.auth.deleteAllAccessTokens();
     };
     qmService.updateUserSettingsDeferred = function(params){
         if($rootScope.physicianUser || qm.storage.getItem(qm.items.physicianUser)){return false;} // Let's restrict settings updates to users
