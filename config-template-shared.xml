@@ -56,6 +56,9 @@
     <splash src="resources/ios/splash/Default-Portrait~ipad.png" width="768" height="1024"/>
     <splash src="resources/ios/splash/Default@2x~iphone.png" width="640" height="960"/>
     <splash src="resources/ios/splash/Default~iphone.png" width="320" height="480"/>
+    <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+      <string>Easily track your diet using your phone's camera as a barcode scanner</string>
+    </edit-config>
   </platform>
   <preference name="android-minSdkVersion" value="16" />
   <preference name="AutoHideSplashScreen" value="true" />
@@ -94,7 +97,7 @@
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
   </plugin>
   <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.8" >
-      <param name="CAMERA_USAGE_DESCRIPTION" value="To scan barcodes." />
+      <param name="CAMERA_USAGE_DESCRIPTION" value="Easily track your diet using your phone's camera as a barcode scanner" />
   </plugin>
   <plugin name="phonegap-plugin-push" version="1.10.5">
     <variable name="SENDER_ID" value="1052648855194"/>
