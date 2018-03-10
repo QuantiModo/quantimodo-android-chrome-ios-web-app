@@ -5301,7 +5301,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
         // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
         // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
-        var ref = window.open(qmService.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+        var url = qmService.generateV1OAuthUrl(register);
+        qmLog.info("Opening " + url);
+        var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
         // Commented because I think it's causing "$apply already in progress" error
         // $timeout(function () {
         //     qmLogService.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
