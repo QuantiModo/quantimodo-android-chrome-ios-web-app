@@ -5,6 +5,10 @@
                 <div style="text-align: center; color: white; padding: 30px; height: 100%" >
                     <div>
                         <div ng-include="'templates/fragments/circle-page.html'" ng-cloak></div>
+                        <div ng-if="circlePage.title === 'Logging in...'" ng-click="circlePage.title = 'Please try logging in again'" >
+                            <br><br>
+                            Click here to retry if this takes too long
+                        </div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
                                 <md-button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</md-button>
                                 <md-button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</md-button>
