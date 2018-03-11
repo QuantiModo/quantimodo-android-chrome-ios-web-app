@@ -1266,7 +1266,8 @@ window.qm = {
             return 0;
         },
         getTrackingRemindersFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.trackingReminders);
+            var trackingReminders = qm.storage.getItem(qm.items.trackingReminders);
+            return trackingReminders;
         },
         saveToLocalStorage: function(trackingReminders){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
@@ -1284,12 +1285,16 @@ window.qm = {
         },
         getFavorites: function(allReminders){
             if(!allReminders){allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
+            if(!allReminders){return [];}
             return allReminders.filter(function( trackingReminder ) {
                 return trackingReminder.reminderFrequency === 0;
             });
         },
         getActive: function(allReminders){
-            if(!allReminders){allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
+            if(!allReminders){
+                allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            }
+            if(!allReminders){return [];}
             return allReminders.filter(function( trackingReminder ) {
                 return trackingReminder.reminderFrequency !== 0 &&
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
