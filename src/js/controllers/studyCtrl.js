@@ -152,7 +152,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getStudy() {
         if(!getCauseVariableName() || !getEffectVariableName()){
-            qmLogService.error(null, 'Cannot get study. Missing cause or effect variable name.');
+            qmLogService.error('Cannot get study. Missing cause or effect variable name.');
             qmService.goToDefaultState();
             return;
         }
@@ -163,6 +163,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             if(study){$scope.state.studyNotFound = false;}
             setAllStatePropertiesAndSaveToLocalStorage(study);
             $scope.loadingCharts = false;
+            setActionSheetMenu();
         }, function (error) {
             qmLogService.error(null, error);
             qmService.hideLoader();
@@ -175,29 +176,35 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getEffectVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariableName');}
     function getCauseVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariable');}
     function getEffectVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariable');}
-    $rootScope.showActionSheetMenu = function() {
-        var hideSheet = $ionicActionSheet.show({
-            buttons: [
-                { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
-                { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
-                { text: '<i class="icon ion-thumbsup"></i> Seems Right' }
-            ],
-            destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
-            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null); },
-            buttonClicked: function(index) {
-                if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
-                if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }
-                if(index === 2){ $scope.upVote(getStatistics()); }
-                return true;
-            },
-            destructiveButtonClicked: function() {
-                $scope.downVote(getStatistics());
-                return true;
-            }
-        });
-        $timeout(function() { hideSheet(); }, 20000);
-    };
+    function setActionSheetMenu(){
+         var showActionSheetMenu = function() {
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
+                    { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
+                    { text: '<i class="icon ion-thumbsup"></i> Seems Right' },
+                    qmService.actionSheetButtons.refresh
+                ],
+                destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() { qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null); },
+                buttonClicked: function(index) {
+                    if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
+                    if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }
+                    if(index === 2){ $scope.upVote(getStatistics()); }
+                    if(index === 3){ $scope.refreshStudy(); }
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.downVote(getStatistics());
+                    return true;
+                }
+            });
+            $timeout(function() { hideSheet(); }, 20000);
+        };
+         // FYI Using timeout to modify rootScope Seems to solve robot animation problems
+        $timeout(function() { $rootScope.showActionSheetMenu = showActionSheetMenu; }, 1);
+    }
     $scope.changeVariableSetting = function(variable, propertyToUpdate, ev){
         $mdDialog.show({
             controller: VariableSettingsController,
@@ -245,5 +252,4 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $mdDialog.hide(dataToPass.variable);
         };
     }
-
 }]);
