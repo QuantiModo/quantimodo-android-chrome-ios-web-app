@@ -7525,7 +7525,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.title = dataToPass.title;
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
-            self.newVariable = newVariable;
+            self.createNewVariable = createNewVariable;
             self.getHelp = function(){
                 if(self.helpText && !self.showHelp){return self.showHelp = true;}
                 qmService.goToState(window.qmStates.help);
@@ -7573,7 +7573,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 qmService.scanBarcode(scanSuccessHandler);
             };
-            function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
+            function createNewVariable(variableName) {
+                qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
+                $mdDialog.cancel();
+            }
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 var deferred = $q.defer();
                 if(!query || query === ""){
