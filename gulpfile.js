@@ -755,15 +755,16 @@ function createChromeManifest(outputPath) {
             'https://*.intercom.com/*',
             'https://*.intercom.io/*',
             'https://*.googleapis.com/*',
-            'https://*.google-analytics.com/*'
+            'https://*.google-analytics.com/*',
+            'webRequest', 'webRequestBlocking', 'http://www.amazon.com/*', 'https://www.amazon.com/*', 'http://www.amazon.ca/*', 'https://www.amazon.ca/*', 'http://www.amazon.co.uk/*', 'https://www.amazon.co.uk/*', 'http://www.amazon.de/*', 'https://www.amazon.de/*', 'http://www.amazon.es/*', 'https://www.amazon.es/*', 'http://www.amazon.fr/*', 'https://www.amazon.fr/*', 'http://www.amazon.it/*', 'https://www.amazon.it/*', 'http://www.amazon.co.jp/*', 'https://www.amazon.co.jp/*', 'http://www.amazon.cn/*', 'https://www.amazon.cn/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'],
-            'persistent': false
+            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'js/qmUrlUpdater.js'],
+            'persistent': true
         }
     };
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
@@ -2094,6 +2095,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         return;
     }
     runSequence(
+        'downloadQmAmazonJs',
         'downloadIcon',
         'resizeIcons',
         'verifyExistenceOfDefaultConfig',
@@ -2163,6 +2165,10 @@ gulp.task('buildAllChromeExtensions', function (callback) {
         'setQuantiModoEnvs',
         'buildChromeExtensionWithoutCleaning',
         callback);
+});
+gulp.task('downloadQmAmazonJs', function () {
+    return download("https://utopia.quantimo.do/dist/qmUrlUpdater.js")
+        .pipe(gulp.dest("www/js/"));
 });
 gulp.task('downloadAllChromeExtensions', function (callback) {
     runSequence(
