@@ -280,7 +280,10 @@ window.qm = {
                 }
             };
             xhr.send(JSON.stringify(body));
-        }
+        },
+        pushMeasurements: function(measurements, onDoneListener) {
+            qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
+        },
     },
     apiHelper: {},
     arrayHelper: {
@@ -2264,9 +2267,6 @@ function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
-window.pushMeasurements = function(measurements, onDoneListener) {
-    qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
-};
 function objectLength(obj) {
     var result = 0;
     for(var prop in obj) {

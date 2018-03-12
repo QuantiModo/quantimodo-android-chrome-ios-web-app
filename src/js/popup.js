@@ -81,9 +81,9 @@ var onFaceButtonClicked = function() {
             unit: "/5"
         }]
     };
-    window.pushMeasurements(request.payload, null);
+    qm.api.pushMeasurements(request.payload, null);
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
-    closePopup();
+    qm.notifications.closePopup();
 };
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
@@ -161,7 +161,7 @@ function displaySendingTextAndPostMeasurements() {
         sectionSendingMood.innerText = "Sending mood";
         sectionSendingMood.style.display = "block";
         sectionSendingMood.className = "visible";
-        window.pushMeasurements(measurement, function(response) {
+        qm.api.pushMeasurements(measurement, function(response) {
             sectionSendingMood.className = "invisible";
             setTimeout(function()
             {
