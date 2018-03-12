@@ -37,7 +37,7 @@
                     </md-item-template>
                     <md-not-found>
                         <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
-                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.newVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
+                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.createNewVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
                     </md-not-found>
                 </md-autocomplete>
             </form>
