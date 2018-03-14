@@ -513,7 +513,9 @@ window.qm = {
         },
         deleteAllAccessTokens: function(){
             qmLog.info("deleteAllAccessTokens...");
-            qm.userHelper.getUserFromLocalStorage().accessToken = null;
+            if(qm.userHelper.getUserFromLocalStorage()){
+                qm.userHelper.getUserFromLocalStorage().accessToken = null;
+            }
             qm.auth.deleteAllCookies();
         },
         deleteAllCookies: function(){
