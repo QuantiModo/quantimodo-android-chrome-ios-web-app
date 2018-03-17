@@ -26,7 +26,13 @@ function getVariableName() {
     }
 }
 function valenceNegative() {
-    if(window.trackingReminderNotification.valence === "negative"){return true;}
+    if(!window.trackingReminderNotification){
+        qmLog.error("window.trackingReminderNotification not set!");
+        qm.notifications.closePopup();
+    }
+    if(window.trackingReminderNotification.valence === "negative"){
+        return true;
+    }
 }
 var inboxButtonClicked = function() {
     window.qmLog.info('inboxButtonClicked');
