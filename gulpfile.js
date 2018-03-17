@@ -763,7 +763,7 @@ function createChromeManifest(outputPath) {
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'js/qmUrlUpdater.js'],
+            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'],
             'persistent': true
         }
     };
@@ -2068,6 +2068,17 @@ gulp.task('configureApp', [], function (callback) {
         'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
         'createSuccessFile',
+        callback);
+});
+gulp.task('buildChromeInSrcFolder', ['getAppConfigs'], function (callback) {
+    if(!appSettings.appStatus.buildEnabled.chromeExtension){
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
+            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
+        return;
+    }
+    runSequence(
+        'createChromeManifestInSrcFolder',
+        'copyConfigsToSrc',
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
