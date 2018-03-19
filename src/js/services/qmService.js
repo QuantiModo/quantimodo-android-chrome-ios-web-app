@@ -7648,7 +7648,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         value: variable.name.toLowerCase(),
                         name: variable.name,
                         variable: variable,
-                        ionIcon: variable.ionIcon
+                        ionIcon: variable.ionIcon,
+                        subtitle: variable.subtitle
                     };
                 });
             }
