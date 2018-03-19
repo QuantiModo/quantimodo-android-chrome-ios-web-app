@@ -29,11 +29,17 @@
                         md-item-text="item.name"
                         md-min-length="1"
                         placeholder="{{ctrl.placeholder}}"
+                        md-menu-class="autocomplete-custom-template"
                         md-autofocus="true">
                     <md-item-template>
-                        <i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>
-                        &nbsp;
-                        <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
+                        <span class="item-title">
+                            <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
+                            <i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>
+                            <span> {{item.name}} </span>
+                        </span>
+                        <span class="item-metadata">
+                            <span><small>{{item.subtitle}}</small></span>
+                        </span>
                     </md-item-template>
                     <md-not-found>
                         <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
