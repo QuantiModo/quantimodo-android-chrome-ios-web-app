@@ -618,14 +618,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         apiInstance.getVariables(params, callback);
         //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
-    qmService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
-        var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        if(!params){params = {};}
-        if(!params.limit){params.limit = 50;}
-        if(params.variableCategoryName && params.variableCategoryName === 'Anything'){params.variableCategoryName = null;}
-        qmService.get('api/v3/variables', ['variableCategoryName', 'limit'], params, successHandler, errorHandler);
-    };
     qmService.postUserVariableToApi = function(userVariable, successHandler, errorHandler) {
         qmService.post('api/v3/userVariables',
             [
@@ -4180,7 +4172,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshUserVariables = function(){
         var deferred = $q.defer();  // Limit 50 so we don't exceed storage limits
-        qmService.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, function(userVariables){
+        qm.userVariableHelper.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, function(userVariables){
             qmService.storage.setItem(qm.items.userVariables, userVariables);
             deferred.resolve(userVariables);
         }, function(error){deferred.reject(error);});

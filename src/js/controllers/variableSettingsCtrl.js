@@ -14,7 +14,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function getUserVariableWithTags() {
         if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+        qm.userVariableHelper.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
             qmService.hideLoader();
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);

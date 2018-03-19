@@ -2010,6 +2010,7 @@ window.qm = {
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
             }
+            if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
         },
