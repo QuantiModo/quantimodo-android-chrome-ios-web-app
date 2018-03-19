@@ -112,3 +112,4 @@ www/configs/*
 !/www/configs/gitkeep
 www/private_configs/*
 !/www/private_configs/gitkeep
+/src/qm-amazon/
