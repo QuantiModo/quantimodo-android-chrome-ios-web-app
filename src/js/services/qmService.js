@@ -3963,18 +3963,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return setChartExportingOptions(chartConfig);
     };
     // VARIABLE SERVICE
-    // get user variables (without public)
-    qmService.searchUserVariablesDeferred = function(variableSearchQuery, params){
-        var deferred = $q.defer();
-        if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
-            deferred.resolve(variables);
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     function doWeHaveEnoughVariables(variables){
         var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
         return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
