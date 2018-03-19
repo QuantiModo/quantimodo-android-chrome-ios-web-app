@@ -23,7 +23,7 @@
                 <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
                     <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
                 </div>
-                <div class="list card" ng-show="!trackingReminderNotification.hide"
+                <div ng-show="!trackingReminderNotification.hide"
                      ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
                         <span ng-include="'templates/items/notification-item.html'"></span>
