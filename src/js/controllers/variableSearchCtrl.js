@@ -144,18 +144,19 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
-                .then(function(variables){
-                    if(successHandler && variables && variables.length){successHandler();}
-                    if(errorHandler && (!variables || !variables.length)){errorHandler();}
-                    $scope.state.noVariablesFoundCard.show = false;
-                    $scope.state.showAddVariableButton = false;
-                    $scope.state.variableSearchResults = variables;
-                    qmLogService.debug('variable search results', null, variables);
-                    $scope.state.searching = false;
-                    if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
-                    showNoVariablesFoundCardIfNecessary(errorHandler);
-                });
+            qmService.searchUserVariablesFromApi($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters, function(variables){
+                if(successHandler && variables && variables.length){successHandler();}
+                if(errorHandler && (!variables || !variables.length)){errorHandler();}
+                $scope.state.noVariablesFoundCard.show = false;
+                $scope.state.showAddVariableButton = false;
+                $scope.state.variableSearchResults = variables;
+                qmLogService.debug('variable search results', null, variables);
+                $scope.state.searching = false;
+                if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
+                showNoVariablesFoundCardIfNecessary(errorHandler);
+            }, function(error){
+                qmLogService.error(error);
+            });
         } else {
             populateUserVariables();
         }
