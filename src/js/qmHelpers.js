@@ -1970,15 +1970,45 @@ window.qm = {
         getUserVariableFromApiByName: function(variableName, params, successHandler, errorHandler){
             if(!params){params = {};}
             params.name = variableName;
-            qm.userVariableHelper.getUserVariablesFromApi({name: variableName}, function (userVariables) {
+            qm.userVariableHelper.getUserVariablesFromApi(params, function (userVariables) {
                 qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariables[0]);
                 successHandler(userVariables[0]);
             }, errorHandler)
         },
-        getUserVariableByNameFromLocalStorageOrApi: function(variableName, successHandler, errorHandler){
-            var fromLocalStorage = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableName);
-            if(fromLocalStorage){return successHandler(fromLocalStorage);}
-            qm.userVariableHelper.getUserVariableFromApiByName(variableName, {}, successHandler, errorHandler);
+        getUserVariableByNameFromLocalStorageOrApi: function(variableName, params, refresh, successHandler, errorHandler){
+            if(!params){params = {};}
+            if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
+            if(!refresh){
+                var userVariable = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableName);
+                if(userVariable){
+                    if(typeof params.includeCharts === "undefined" ||
+                        (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
+                        successHandler(userVariable);
+                        return;
+                    }
+                }
+            }
+            qm.userVariableHelper.getUserVariableFromApiByName(variableName, params, successHandler, errorHandler);
+        },
+        getUserVariableByNameFromLocalStorageOrApiDeferred: function (name, params, refresh, successHandler, errorHandler){
+            if(!params){params = {};}
+            if(!name){name = qm.getPrimaryOutcomeVariable().name;}
+            if(!refresh){
+                var userVariable = qm.storage.getUserVariableByName(name);
+                if(userVariable){
+                    if(typeof params.includeCharts === "undefined" ||
+                        (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
+                        successHandler(userVariable);
+                        return;
+                    }
+                }
+            }
+            qm.userVariableHelper.getUserVariableFromApiByName(name, params, function(userVariable){
+                qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
+                successHandler(userVariable);
+            }, function(error){
+                if(errorHandler){errorHandler(error);}
+            });
         }
     },
     webNotifications: {
