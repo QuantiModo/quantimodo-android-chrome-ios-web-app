@@ -696,6 +696,39 @@ window.qm = {
             var eyes = new TweenMax.to('#blueBotEyes',.5,{scale:1.1,transformOrigin:'50% 50%',ease:Sine.easeInOut,onComplete:function(){eyes.reverse()},onReverseComplete:function(){eyes.play()}})
         }
     },
+    localForage: {
+        saveWithUniqueId: function(key, arrayToSave) {
+            if(!qm.arrayHelper.variableIsArray(arrayToSave)){
+                arrayToSave = [arrayToSave];
+            }
+            localforage.getItem(key, function(error, existingData) {
+                if(!existingData){existingData = [];}
+                for (var i = 0; i < arrayToSave.length; i++) {
+                    var userVariableFromApi = arrayToSave[i];
+                    existingData = existingData.filter(function( obj ) {
+                        return obj.id !== userVariableFromApi.id;
+                    });
+                    existingData.unshift(userVariableFromApi);
+                }
+                localforage.setItem(qm.items.userVariables, existingData);
+            });
+        },
+        searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
+            searchTerm = searchTerm.toLowerCase();
+            localforage.getItem(key, function(error, existingData) {
+                if(error){
+                    if(errorHandler){errorHandler(error);}
+                    return;
+                }
+                if(!existingData){existingData = [];}
+                existingData = existingData.filter(function( obj ) {
+                    var currentValue = obj[propertyName].toLowerCase();
+                    return currentValue.indexOf(searchTerm) !== -1;
+                });
+                successHandler(existingData);
+            });
+        }
+    },
     manualTrackingVariableCategoryNames: [
         'Emotions',
         'Symptoms',
@@ -2019,10 +2052,66 @@ window.qm = {
                 successHandler(userVariables[0]);
             }, errorHandler)
         },
-        getUserVariableByNameFromLocalStorageOrApi: function(variableName, successHandler, errorHandler){
-            var fromLocalStorage = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableName);
+        getUserVariableByNameFromLocalStorageOrApi: function(variableSearchQuery, requestParams, excludeLocal, successHandler, errorHandler){
+            var fromLocalStorage = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableSearchQuery);
             if(fromLocalStorage){return successHandler(fromLocalStorage);}
-            qm.userVariableHelper.getUserVariableFromApiByName(variableName, successHandler, errorHandler);
+            qm.localForage.searchByProperty(qm.items.userVariables, 'name', variableSearchQuery, function(variables){
+                if(!excludeLocal && variables && variables.length){
+                    successHandler(variables);
+                    return;
+                }
+                if(params.includePublic && !excludeLocal){
+                    if(!variables){variables = [];}
+                    var commonVariables = qmService.storage.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
+                    variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
+                }
+                if(!excludeLocal && !qm.api.canWeMakeRequestYet("GET", "userVariables")) {
+                    successHandler(variables);
+                    return;
+                }
+                qm.userVariableHelper.getUserVariableFromApiByName(variableName, successHandler, errorHandler);
+            });
+        },
+        getUserVariableByNameFromLocalStorageOrApiDeferred: function (name, params, refresh, successHandler, errorHandler){
+            if(!params){params = {};}
+            if(!name){name = qm.getPrimaryOutcomeVariable().name;}
+            if(!refresh){
+                var userVariable = qm.storage.getUserVariableByName(name);
+                if(userVariable){
+                    if(typeof params.includeCharts === "undefined" ||
+                        (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
+                        successHandler(userVariable);
+                        return;
+                    }
+                }
+            }
+            qm.userVariableHelper.getVariablesByNameFromApi(name, params, function(userVariable){
+                qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
+                successHandler(userVariable);
+            }, function(error){
+                if(errorHandler){
+                    errorHandler(error);
+                }
+            });
+        },
+        getVariablesByNameFromApi: function(variableName, params, successHandler, errorHandler){
+            if(!params){params = {};}
+            params.name = variableName;
+            if(!qm.api.configureClient('getVariablesByNameFromApi', errorHandler)){return false;}
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                if (error || !data[0]) {
+                    qm.api.generalErrorHandler(error, data, response);
+                    if(errorHandler){errorHandler(error);}
+                } else {
+                    successHandler(data[0], response);
+                }
+            }
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getVariables(params, callback);
+            //var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
+            //qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
         }
     },
     webNotifications: {
