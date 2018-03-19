@@ -4105,7 +4105,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         if(typeof variable === "string"){
-            qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApi(variable, function(userVariable){
+            qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApi(variable, {}, null, function(userVariable){
                 goToCorrelationsList(userVariable);
             })
         } else {
@@ -4127,31 +4127,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getVariableWithCharts = function(variableName, refresh, successHandler) {
         if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh)
-            .then(function (variableObject) {
+        qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {includeCharts: true}, refresh, function (variableObject) {
                 qmService.hideLoader();
                 if(successHandler){successHandler(variableObject);}
             });
-    };
-    qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function (name, params, refresh){
-        if(!params){params = {};}
-        if(!name){name = qm.getPrimaryOutcomeVariable().name;}
-        var deferred = $q.defer();
-        if(!refresh){
-            var userVariable = qm.storage.getUserVariableByName(name);
-            if(userVariable){
-                if(typeof params.includeCharts === "undefined" ||
-                    (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
-                    deferred.resolve(userVariable);
-                    return deferred.promise;
-                }
-            }
-        }
-        qm.userVariableHelper.getUserVariableFromApiByName(name, params, function(userVariable){
-            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
-            deferred.resolve(userVariable);
-        }, function(error){ deferred.reject(error); });
-        return deferred.promise;
     };
     qmService.addWikipediaExtractAndThumbnail = function(variableObject){
         qmService.getWikipediaArticle(variableObject.name).then(function (page) {
