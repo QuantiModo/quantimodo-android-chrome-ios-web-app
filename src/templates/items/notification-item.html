@@ -27,13 +27,13 @@
         <i class="ion-settings"> &nbsp; Settings</i>
     </button>
 </div>
-<label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null" class="item item-input">
+<label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null" class="item item-input"
+    style="display: flex; justify-content: center;">
     <input type="number" ng-model="trackingReminderNotification.total" id="emptyValueField" ng-click="onTextClick($event)" placeholder="Enter value"
            style="text-align: center; max-width: 125px; padding-right: 10px">
     <span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label">
         {{trackingReminderNotification.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
     </span>
-
 </label>
 <span class="row" ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null" style="display: flex; justify-content: center;">
     <span ng-include="'templates/input/action-buttons-fragment.html'"></span>
