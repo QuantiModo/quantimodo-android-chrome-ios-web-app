@@ -4164,18 +4164,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve([]);
             return deferred.promise;
         }
-        qmService.refreshUserVariables().then(function () {
+        qm.userVariableHelper.refreshUserVariables(function () {
             userVariables = qmService.storage.getElementsWithRequestParams(qm.items.userVariables, params);
             deferred.resolve(userVariables);
         }, function (error) {deferred.reject(error);});
-        return deferred.promise;
-    };
-    qmService.refreshUserVariables = function(){
-        var deferred = $q.defer();  // Limit 50 so we don't exceed storage limits
-        qm.userVariableHelper.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, function(userVariables){
-            qmService.storage.setItem(qm.items.userVariables, userVariables);
-            deferred.resolve(userVariables);
-        }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params){
