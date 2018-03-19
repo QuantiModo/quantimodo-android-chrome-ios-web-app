@@ -11,7 +11,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
-        $scope.drawOverAppsPopupEnabled = qm.notifications.drawOverAppsPopupEnabled();
+        $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
         qmService.unHideNavigationMenu();
 		if(qm.urlHelper.getParam('userEmail')){

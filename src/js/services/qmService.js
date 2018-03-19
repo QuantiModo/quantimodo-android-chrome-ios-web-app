@@ -55,13 +55,99 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             getDrawOverAppsPopupPermissionIfNecessary: function(ev){
                 if(!$rootScope.isAndroid){return false;}
-                if(qm.notifications.drawOverAppsPopupAreDisabled()){return false;}
-                if(qm.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
+                if(qmService.notifications.drawOverAppsPopupAreDisabled()){return false;}
+                if(qmService.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
                     qmService.notifications.showEnablePopupsConfirmation(ev);
                 } else if (qm.notifications.lastPopupWasBeforeLastReminderTime()) {
                     qmLog.error("Popups enabled but no popups shown since before last reminder time!  Re-initializing popups...");
                     qmService.notifications.showEnablePopupsConfirmation(ev); // Sometimes we lose permission for some reason
                 }
+            },
+            drawOverAppsPopupRatingNotification: function(ratingTrackingReminderNotification, force) {
+                qmLog.info('Called qmService.notifications.drawOverAppsPopupRatingNotification...');
+                if(!ratingTrackingReminderNotification){
+                    // Need to use unique rating notifications because we need to setup initial popup via url params
+                    ratingTrackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+                }
+                qmService.notifications.drawOverAppsPopup(qm.notifications.getRatingNotificationPath(ratingTrackingReminderNotification), force);
+            },
+            drawOverAppsPopup: function(path, force){
+                qmLog.info('Called qmService.notifications.drawOverAppsPopup...');
+                if(qmService.notifications.drawOverAppsPopupAreDisabled()){
+                    qmLog.error("Cannot show popup because it has been disabled")
+                    return false;
+                }
+                if(typeof window.overApps === "undefined"){
+                    qmLog.error('window.overApps is undefined!');
+                    return;
+                }
+                if(!force && !qm.notifications.canWeShowPopupYet(path)){return;}
+                //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
+                var options = {
+                    path: path,          // file path to display as view content.
+                    hasHead: false,              // display over app head image which open the view up on click.
+                    dragToSide: false,          // enable auto move of head to screen side after dragging stop.
+                    enableBackBtn: true,       // enable hardware back button to close view.
+                    enableCloseBtn: true,      //  whether to show native close btn or to hide it.
+                    verticalPosition: "bottom",    // set vertical alignment of view.
+                    horizontalPosition: "center"  // set horizontal alignment of view.
+                };
+                window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
+                /** @namespace window.overApps */
+                window.overApps.startOverApp(options, function (success){
+                    if(success.toLowerCase().indexOf('no permission') !== -1){
+                        qmLog.error("startOverApp popup error: " + success, 'drawOverAppsPopupHaveNotBeenConfigured returns: ' +
+                            qmService.notifications.drawOverAppsPopupHaveNotBeenConfigured());
+                        if(qmService.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
+                            qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                        }
+                    } else {
+                        qmLog.pushDebug('startOverApp success: ' + success);
+                    }
+                },function (err){
+                    window.qmLog.error('startOverApp error: ' + err);
+                });
+            },
+            drawOverAppsPopupEnabled: function(){
+                var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+                if(enabled === true || enabled === "true"){
+                    return true;
+                }
+                qmLog.pushDebug("Popups are not enabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                return false;
+            },
+            drawOverAppsPopupAreDisabled: function(){
+                var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+                if(enabled === false || enabled === "false"){
+                    qmLog.pushDebug("Popups are explicitly disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                    return true;
+                }
+                return false;
+            },
+            drawOverAppsPopupHaveNotBeenConfigured: function(){
+                var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
+                if(enabled === null || enabled === "null"){
+                    qmLog.pushDebug("Popups have not been configured!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
+                    return true;
+                }
+                return false;
+            },
+            showAndroidPopupForMostRecentNotification: function(){
+                if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
+                qmLog.info('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
+                window.qm.notifications.refreshIfEmpty(function () {
+                    // Need to use unique rating notifications because we need to setup initial popup via url params
+                    if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
+                        qmService.notifications.drawOverAppsPopupRatingNotification();
+                        // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
+                        //     qmService.notifications.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
+                    } else {
+                        qmLog.error("No getMostRecentRatingNotificationNotInSyncQueue so not showing popup!");
+                    }
+                });
+            },
+            drawOverAppsPopupCompactInboxNotification: function() {
+                qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
             }
         }
     };
@@ -587,25 +673,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
-    };
-    qmService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
-        if(!params){params = {};}
-        params.name = variableName;
-        if(!configureQmApiClient('getVariablesByNameFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.VariablesApi();
-        function callback(error, data, response) {
-            if (error || !data[0]) {
-                qmApiGeneralErrorHandler(error, data, response);
-                if(errorHandler){errorHandler(error);}
-            } else {
-                successHandler(data[0], response);
-            }
-        }
-        params = addGlobalUrlParamsToObject(params);
-        apiInstance.getVariables(params, callback);
-        //var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        //qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         if(!configureQmApiClient('getVariableByIdFromApi', errorHandler)){return false;}
@@ -4004,14 +4071,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.refreshUserVariableByNameDeferred = function (variableName, params) {
-        var deferred = $q.defer();
-        if(!params){params = {includeTags: true};}
-        qmService.getVariablesByNameFromApi(variableName, params, function(variable){
-            deferred.resolve(variable);
-        }, function(error){ deferred.reject(error); });
-        return deferred.promise;
-    };
     qmService.storage.getVariables = function(requestParams){
         var variables;
         if(!variables){ variables = qm.storage.getItem(qm.items.userVariables); }
@@ -4088,7 +4147,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        qmService.getVariablesByNameFromApi(name, params, function(userVariable){
+        qm.userVariableHelper.getUserVariableFromApiByName(name, params, function(userVariable){
             qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
             deferred.resolve(userVariable);
         }, function(error){ deferred.reject(error); });
@@ -4160,7 +4219,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         userVariables = qm.storage.getItem(qm.items.userVariables);
         if(userVariables && userVariables.length){
-            qmLogService.debug('We already have userVariables that didn\'t match filters so no need to refresh them', null);
+            qmLog.debug('We already have userVariables that didn\'t match filters so no need to refresh them', null);
             deferred.resolve([]);
             return deferred.promise;
         }
@@ -5133,12 +5192,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var val = qm.storage.getItem(key);
             callback(val);
         }
-    };
-    qmService.storage.getWithFilters = function (localStorageItemName, filterPropertyName, filterPropertyValue,
-                                                                     lessThanPropertyName, lessThanPropertyValue,
-                                                                     greaterThanPropertyName, greaterThanPropertyValue) {
-        return window.qm.storage.getWithFilters(localStorageItemName, filterPropertyName, filterPropertyValue,
-            lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
     };
     qmService.storage.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery, requestParams) {
         var matchingElements = [];
@@ -7305,11 +7358,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         $ionicPlatform.ready(function() {
-            qm.notifications.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
+            qmService.notifications.drawOverAppsPopupRatingNotification(trackingReminderNotification, force);
         });
     };
     qmService.toggleDrawOverAppsPopup = function(ev){
-        if(qm.notifications.drawOverAppsPopupEnabled()){
+        if(qmService.notifications.drawOverAppsPopupEnabled()){
             qmService.notifications.disablePopups();
         } else {
             qmService.notifications.showEnablePopupsConfirmation(ev);
