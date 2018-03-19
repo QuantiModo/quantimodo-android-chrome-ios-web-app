@@ -1648,6 +1648,41 @@ window.qm = {
             }
             return localStorageItemsArray;
         },
+        getElementsWithRequestParams: function(localStorageItemName, requestParams) {
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyValue = null;
+            var log = [];
+            var filterPropertyValues = [];
+            var filterPropertyNames = [];
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
+                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
+                    filterPropertyNames.push(key);
+                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
+                }
+            }, log);
+            var results =  qmService.storage.getWithFilters(localStorageItemName, null,
+                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
+                }
+            }
+            return results;
+        }
     },
     stringHelper: {
         removeSpecialCharacters: function (str) {
