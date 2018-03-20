@@ -31,22 +31,6 @@
                 <div><i class="icon ion-map"></i> &nbsp Ongoing Background Recording &nbsp</div>
             </ion-toggle>
         </div>
-        <div ng-show="isAndroid" class="card sign-in" >
-            <div class="item item-divider" >Notifications in Top Drawer &nbsp;</div>
-            <p style="text-align: center; padding: 3px;" ng-if="user.pushNotificationsEnabled">
-                &nbsp Try disabling if the app rudely opens while you're using other apps &nbsp</p>
-            <ion-toggle ng-model="user.pushNotificationsEnabled" ng-change="togglePushNotificationsEnabled()">
-                <div ng-if="user.pushNotificationsEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
-                <div ng-if="!user.pushNotificationsEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
-            </ion-toggle>
-        </div>
-        <div ng-show="isAndroid" class="card sign-in" >
-            <div class="item item-divider" >Popup Tracking Notifications &nbsp;</div>
-            <ion-toggle ng-model="drawOverAppsPopupEnabled" ng-change="toggleDrawOverAppsPopup()">
-                <div ng-if="drawOverAppsPopupEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
-                <div ng-if="!drawOverAppsPopupEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
-            </ion-toggle>
-        </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
         <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
         <div class="list card">
