@@ -46,8 +46,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         }
     }
     function getCharts(refresh) {
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
-            .then(function (variableObject) {
+        qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh, function (variableObject) {
                 if(!variableObject.charts){
                     qmLog.error("No charts!");
                     if(!$scope.state.variableObject || !$scope.state.variableObject.charts){

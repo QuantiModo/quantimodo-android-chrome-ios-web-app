@@ -14,7 +14,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function getUserVariableWithTags() {
         if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+        qm.userVariableHelper.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
             qmService.hideLoader();
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);
@@ -335,7 +335,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){ $scope.state.variableObject = null; }
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
+        qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh, function(variableObject){
             $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             $scope.state.variableObject = variableObject;
