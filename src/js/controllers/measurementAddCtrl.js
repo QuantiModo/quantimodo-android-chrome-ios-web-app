@@ -230,7 +230,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     var setupFromVariableObject = function(variableObject){
         $stateParams.variableObject = variableObject;
         // Gets version from local storage in case we just updated unit in variable settings
-        var userVariables = qmService.storage.getElementsWithRequestParams(qm.items.userVariables, {name: variableObject.name});
+        var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $scope.state.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
@@ -262,7 +262,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     };
     var setupFromVariableName = function(variableName){
         qmService.showBlackRingLoader();
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {}).then(function(variableObject){
+        qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {}, null, function(variableObject){
             qmService.hideLoader();
             setupFromVariableObject(variableObject);
         }, function (error) {

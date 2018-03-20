@@ -91,14 +91,14 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         $scope.stateParams = $stateParams;
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
-            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
+            qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety', {}, null, function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
                 qmService.hideLoader();
             });
         }
         if(!$scope.stateParams.userTaggedVariableObject){
             qmService.showBlackRingLoader();
-            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
+            qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood', {}, null, function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
                 qmService.hideLoader();
             });
