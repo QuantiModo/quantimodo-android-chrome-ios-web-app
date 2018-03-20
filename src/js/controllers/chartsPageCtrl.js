@@ -30,9 +30,6 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         if($stateParams.variableObject){
             return $scope.state.variableObject = $stateParams.variableObject;
         }
-        if(qm.userVariables.getFromLocalStorage(getVariableName())){
-            return $scope.state.variableObject = qm.userVariables.getFromLocalStorageByName(getVariableName());
-        }
         return $scope.state.variableObject;
     }
     function initializeCharts() {
