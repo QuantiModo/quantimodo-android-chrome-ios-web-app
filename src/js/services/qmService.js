@@ -35,7 +35,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         qmLogService.error("window.overApps is undefined!");
                     }
-                    qm.notifications.showAndroidPopupForMostRecentNotification();
+                    qmService.notifications.showAndroidPopupForMostRecentNotification();
                 });
             },
             showEnablePopupsConfirmation: function (ev) {
@@ -2392,7 +2392,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.isAndroid){qm.notifications.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -6856,12 +6856,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings), null);
                 qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data), null);
-                qm.notifications.showAndroidPopupForMostRecentNotification();
+                qmService.notifications.showAndroidPopupForMostRecentNotification();
             });
             qmLog.info("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                 qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
-                qm.notifications.showAndroidPopupForMostRecentNotification();
+                qmService.notifications.showAndroidPopupForMostRecentNotification();
             });
         });
     }
@@ -7065,7 +7065,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined"){
                         qmLog.pushDebug('push notification is calling drawOverApps showAndroidPopupForMostRecentNotification...');
-                        qm.notifications.showAndroidPopupForMostRecentNotification();
+                        qmService.notifications.showAndroidPopupForMostRecentNotification();
                     } else {
                         qmLog.pushDebug('window.overApps for popups is undefined! ');
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
