@@ -696,6 +696,39 @@ window.qm = {
             var eyes = new TweenMax.to('#blueBotEyes',.5,{scale:1.1,transformOrigin:'50% 50%',ease:Sine.easeInOut,onComplete:function(){eyes.reverse()},onReverseComplete:function(){eyes.play()}})
         }
     },
+    localForage: {
+        saveWithUniqueId: function(key, arrayToSave) {
+            if(!qm.arrayHelper.variableIsArray(arrayToSave)){
+                arrayToSave = [arrayToSave];
+            }
+            localforage.getItem(key, function(error, existingData) {
+                if(!existingData){existingData = [];}
+                for (var i = 0; i < arrayToSave.length; i++) {
+                    var userVariableFromApi = arrayToSave[i];
+                    existingData = existingData.filter(function( obj ) {
+                        return obj.id !== userVariableFromApi.id;
+                    });
+                    existingData.unshift(userVariableFromApi);
+                }
+                localforage.setItem(qm.items.userVariables, existingData);
+            });
+        },
+        searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
+            searchTerm = searchTerm.toLowerCase();
+            localforage.getItem(key, function(error, existingData) {
+                if(error){
+                    if(errorHandler){errorHandler(error);}
+                    return;
+                }
+                if(!existingData){existingData = [];}
+                existingData = existingData.filter(function( obj ) {
+                    var currentValue = obj[propertyName].toLowerCase();
+                    return currentValue.indexOf(searchTerm) !== -1;
+                });
+                successHandler(existingData);
+            });
+        }
+    },
     manualTrackingVariableCategoryNames: [
         'Emotions',
         'Symptoms',
@@ -757,7 +790,8 @@ window.qm = {
             snoozeAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
                 console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
-                qmService.snoozeTrackingReminderNotificationDeferred(body);
+                body.action = 'snooze';
+                qm.notifications.postTrackingReminderNotifications(body);
             },
             trackLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
@@ -888,33 +922,9 @@ window.qm = {
             qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
-        drawOverAppsPopupEnabled: function(){
-            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(enabled === true || enabled === "true"){
-                return true;
-            }
-            qmLog.pushDebug("Popups are not enabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
-            return false;
-        },
-        drawOverAppsPopupAreDisabled: function(){
-            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(enabled === false || enabled === "false"){
-                qmLog.pushDebug("Popups are explicitly disabled!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
-                return true;
-            }
-            return false;
-        },
-        drawOverAppsPopupHaveNotBeenConfigured: function(){
-            var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
-            if(enabled === null || enabled === "null"){
-                qmLog.pushDebug("Popups have not been configured!  qm.items.drawOverAppsPopupEnabled is: " + enabled);
-                return true;
-            }
-            return false;
-        },
         addToSyncQueue: function(trackingReminderNotification){
             qm.notifications.deleteById(trackingReminderNotification.id);
-            qm.userVariableHelper.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
+            qm.userVariables.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
         },
         refreshIfEmpty: function(successHandler, errorHandler){
@@ -1071,65 +1081,6 @@ window.qm = {
                 }, timeout);
             }
         },
-        showAndroidPopupForMostRecentNotification: function(){
-            if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
-            qmLog.info('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
-            window.qm.notifications.refreshIfEmpty(function () {
-                // Need to use unique rating notifications because we need to setup initial popup via url params
-                if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
-                    qm.notifications.drawOverAppsPopupRatingNotification();
-                    // } else if (window.qm.storage.getTrackingReminderNotifications().length) {
-                    //     window.drawOverAppsPopupCompactInboxNotification();  // TODO: Fix me
-                } else {
-                    qmLog.error("No getMostRecentRatingNotificationNotInSyncQueue so not showing popup!");
-                }
-            });
-        },
-        drawOverAppsPopupRatingNotification: function(ratingTrackingReminderNotification, force) {
-            qmLog.info('Called qm.notifications.drawOverAppsPopupRatingNotification...');
-            if(!ratingTrackingReminderNotification){
-                // Need to use unique rating notifications because we need to setup initial popup via url params
-                ratingTrackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
-            }
-            qm.notifications.drawOverAppsPopup(qm.notifications.getRatingNotificationPath(ratingTrackingReminderNotification), force);
-        },
-        drawOverAppsPopup: function(path, force){
-            qmLog.info('Called qm.notifications.drawOverAppsPopup...');
-            if(qm.notifications.drawOverAppsPopupAreDisabled()){
-                qmLog.error("Cannot show popup because it has been disabled")
-                return false;
-            }
-            if(typeof window.overApps === "undefined"){
-                qmLog.error('window.overApps is undefined!');
-                return;
-            }
-            if(!force && !qm.notifications.canWeShowPopupYet(path)){return;}
-            //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
-            var options = {
-                path: path,          // file path to display as view content.
-                hasHead: false,              // display over app head image which open the view up on click.
-                dragToSide: false,          // enable auto move of head to screen side after dragging stop.
-                enableBackBtn: true,       // enable hardware back button to close view.
-                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
-                verticalPosition: "bottom",    // set vertical alignment of view.
-                horizontalPosition: "center"  // set horizontal alignment of view.
-            };
-            window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
-            /** @namespace window.overApps */
-            window.overApps.startOverApp(options, function (success){
-                if(success.toLowerCase().indexOf('no permission') !== -1){
-                    qmLog.error("startOverApp popup error: " + success, 'drawOverAppsPopupHaveNotBeenConfigured returns: ' +
-                        qm.notifications.drawOverAppsPopupHaveNotBeenConfigured());
-                    if(qm.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
-                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
-                    }
-                } else {
-                    qmLog.pushDebug('startOverApp success: ' + success);
-                }
-            },function (err){
-                window.qmLog.error('startOverApp error: ' + err);
-            });
-        },
         getRatingNotificationPath: function(ratingTrackingReminderNotification){
             if(ratingTrackingReminderNotification.unitAbbreviatedName !== '/5'){
                 qmLog.error('ratingTrackingReminderNotification must have unit /5');
@@ -1281,7 +1232,7 @@ window.qm = {
                 trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
             }
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
-            qm.userVariableHelper.refreshIfLessThanNumberOfReminders();
+            qm.userVariables.refreshIfLessThanNumberOfReminders();
         },
         removeArchivedReminders: function(allReminders){
             var activeReminders = qm.reminderHelper.getActive(allReminders);
@@ -1348,7 +1299,7 @@ window.qm = {
                 userVariable.lastValue = lastValue;
                 userVariable.lastValueInUserUnit = lastValue;
             }
-            qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
+            qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
             return userVariable;
         },
         setTrackingReminderNotifications: function(notifications){
@@ -1648,6 +1599,41 @@ window.qm = {
             }
             return localStorageItemsArray;
         },
+        getElementsWithRequestParams: function(localStorageItemName, requestParams) {
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyValue = null;
+            var log = [];
+            var filterPropertyValues = [];
+            var filterPropertyNames = [];
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
+                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
+                    filterPropertyNames.push(key);
+                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
+                }
+            }, log);
+            var results =  qm.storage.getWithFilters(localStorageItemName, null,
+                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
+                }
+            }
+            return results;
+        }
     },
     stringHelper: {
         removeSpecialCharacters: function (str) {
@@ -1960,12 +1946,12 @@ window.qm = {
             qm.userHelper.getUserFromApi(successHandler, errorHandler);
         }
     },
-    userVariableHelper: {
+    userVariables: {
         saveSingleUserVariableToLocalStorageAndUnsetLargeProperties: function(userVariable){
             userVariable = qm.objectHelper.unsetPropertiesWithSizeGreaterThanForObject(10, userVariable);
-            qm.userVariableHelper.saveUserVariablesToLocalStorage([userVariable]);
+            qm.userVariables.saveToLocalStorage([userVariable]);
         },
-        saveUserVariablesToLocalStorage: function(userVariables){
+        saveToLocalStorage: function(userVariables){
             userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
             var definitelyUserVariables = [];
             for (var i = 0; i < userVariables.length; i++) {
@@ -1975,15 +1961,15 @@ window.qm = {
             }
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.userVariables, definitelyUserVariables);
         },
-        getNumberOfUserVariablesInLocalStorage: function () {
-            var userVariables = qm.userVariableHelper.getUserVariablesFromLocalStorage();
+        getNumberInLocalStorage: function () {
+            var userVariables = qm.userVariables.getFromLocalStorage();
             if(userVariables && userVariables.length){return userVariables.length;}
             return 0;
         },
-        getUserVariablesFromLocalStorage: function(){
+        getFromLocalStorage: function(){
             return qm.storage.getItem(qm.items.userVariables);
         },
-        getUserVariablesFromLocalStorageByName: function(variableName){
+        getFromLocalStorageByName: function(variableName){
             return qm.storage.getUserVariableByName(variableName);
         },
         updateLatestMeasurementTime: function(variableName, lastValue){
@@ -1991,38 +1977,51 @@ window.qm = {
         },
         refreshIfLessThanNumberOfReminders: function(){
             var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-            var numberOfUserVariables = qm.userVariableHelper.getNumberOfUserVariablesInLocalStorage();
+            var numberOfUserVariables = qm.userVariables.getNumberInLocalStorage();
             qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
             if(numberOfReminders > numberOfUserVariables){
                 qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                qm.userVariableHelper.refreshUserVariables();
+                qm.userVariables.refreshUserVariables();
             }
         },
         refreshUserVariables: function(){
             function successHandler(data) {
                 qm.storage.setItem(qm.items.userVariables, data);
             } // Limit 50 so we don't exceed storage limits
-            qm.userVariableHelper.getUserVariablesFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
+            qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
-        getUserVariablesFromApi: function(params, successHandler, errorHandler){
+        getFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
             }
+            if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
         },
-        getUserVariableFromApiByName: function(variableName, successHandler, errorHandler){
-            qm.userVariableHelper.getUserVariablesFromApi({name: variableName}, function (userVariables) {
-                qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariables[0]);
+        getByNameFromApi: function(variableName, params, successHandler, errorHandler){
+            if(!params){params = {};}
+            params.name = variableName;
+            qm.userVariables.getFromApi(params, function (userVariables) {
+                qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariables[0]);
                 successHandler(userVariables[0]);
             }, errorHandler)
         },
-        getUserVariableByNameFromLocalStorageOrApi: function(variableName, successHandler, errorHandler){
-            var fromLocalStorage = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(variableName);
-            if(fromLocalStorage){return successHandler(fromLocalStorage);}
-            qm.userVariableHelper.getUserVariableFromApiByName(variableName, successHandler, errorHandler);
+        getByName: function(variableName, params, refresh, successHandler, errorHandler){
+            if(!params){params = {};}
+            if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
+            if(!refresh){
+                var userVariable = qm.userVariables.getFromLocalStorageByName(variableName);
+                if(userVariable){
+                    if(typeof params.includeCharts === "undefined" ||
+                        (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
+                        successHandler(userVariable);
+                        return;
+                    }
+                }
+            }
+            qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
         }
     },
     webNotifications: {
@@ -2319,9 +2318,6 @@ function getUnique(array, propertyName) {
     }
     return output;
 }
-window.drawOverAppsPopupCompactInboxNotification = function() {
-    qm.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
-};
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }

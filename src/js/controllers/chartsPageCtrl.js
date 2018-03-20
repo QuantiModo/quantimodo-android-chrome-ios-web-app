@@ -30,8 +30,8 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         if($stateParams.variableObject){
             return $scope.state.variableObject = $stateParams.variableObject;
         }
-        if(qm.userVariableHelper.getUserVariablesFromLocalStorage(getVariableName())){
-            return $scope.state.variableObject = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(getVariableName());
+        if(qm.userVariables.getFromLocalStorage(getVariableName())){
+            return $scope.state.variableObject = qm.userVariables.getFromLocalStorageByName(getVariableName());
         }
         return $scope.state.variableObject;
     }
@@ -46,8 +46,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         }
     }
     function getCharts(refresh) {
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
-            .then(function (variableObject) {
+        qm.userVariables.getByName(getVariableName(), {includeCharts: true}, refresh, function (variableObject) {
                 if(!variableObject.charts){
                     qmLog.error("No charts!");
                     if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
