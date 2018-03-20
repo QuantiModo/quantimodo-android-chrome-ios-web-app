@@ -816,9 +816,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.postUserTag(tagData, function(response){
             /** @namespace response.data.userTaggedVariable */
-            qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
+            qm.userVariables.saveToLocalStorage(response.data.userTaggedVariable);
             /** @namespace response.data.userTagVariable */
-            qmService.addVariableToLocalStorage(response.data.userTagVariable);
+            qm.userVariables.saveToLocalStorage(response.data.userTagVariable);
             deferred.resolve(response);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -830,8 +830,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.postVariableJoin(tagData, function(response){
-            qmService.addVariableToLocalStorage(response.data.currentVariable);
-            qmService.addVariableToLocalStorage(response.data.joinedVariable);
+            qm.userVariables.saveToLocalStorage(response.data.currentVariable);
+            qm.userVariables.saveToLocalStorage(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -848,8 +848,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
                 return;
             }
-            qmService.addVariableToLocalStorage(response.data.currentVariable);
-            qmService.addVariableToLocalStorage(response.data.joinedVariable);
+            qm.userVariables.saveToLocalStorage(response.data.currentVariable);
+            qm.userVariables.saveToLocalStorage(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -865,8 +865,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
                 return;
             }
-            qmService.addVariableToLocalStorage(response.data.userTaggedVariable);
-            qmService.addVariableToLocalStorage(response.data.userTagVariable);
+            qm.userVariables.saveToLocalStorage(response.data.userTaggedVariable);
+            qm.userVariables.saveToLocalStorage(response.data.userTagVariable);
             deferred.resolve(response.data);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -4147,7 +4147,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var userVariable;
             if(response.userVariables){userVariable = response.userVariables[0];}
             if(response.userVariable){userVariable = response.userVariable;}
-            qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(userVariable);
+            qm.userVariables.saveToLocalStorage(userVariable);
             qm.studyHelper.deleteLastStudy();
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ' + JSON.stringify(userVariable), null);
@@ -4159,7 +4159,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         var body = {variableId: variableId};
         qmService.resetUserVariable(body, function(response) {
-            qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(response.data.userVariable);
+            qm.userVariables.saveToLocalStorage(response.data.userVariable);
             deferred.resolve(response.data.userVariable);
         }, function(error){  deferred.reject(error); });
         return deferred.promise;
@@ -5731,16 +5731,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.openSharingUrl = function(sharingUrl){
         var newTab = window.open(sharingUrl,'_system');
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
-    };
-    qmService.addVariableToLocalStorage = function(variable){
-        if(!variable){
-            return qmLog.error("No variable provided to addVariableToLocalStorage!");
-        }
-        if(variable.userId){
-            qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variable);
-        } else {
-            qmService.storage.addToOrReplaceByIdAndMoveToFront(qm.items.commonVariables, variable);
-        }
     };
     qmService.sendEmailViaAPI = function(body, successHandler, errorHandler){
         qmService.post('api/v2/email', [], body, successHandler, errorHandler);
@@ -7612,7 +7602,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     item.variable.barcodeFormat = self.barcodeFormat;
                 }
                 $scope.variable = item.variable;
-                qmService.addVariableToLocalStorage(item.variable);
+                qm.userVariables.saveToLocalStorage(item.variable);
                 qmLogService.debug('Item changed to ' + item.variable.name);
                 self.finish();
             }
