@@ -262,7 +262,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     };
     var setupFromVariableName = function(variableName){
         qmService.showBlackRingLoader();
-        qm.userVariableHelper.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {}, null, function(variableObject){
+        qm.userVariables.getByName(variableName, {}, null, function(variableObject){
             qmService.hideLoader();
             setupFromVariableObject(variableObject);
         }, function (error) {

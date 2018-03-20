@@ -39,7 +39,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         variableObject = addUpcToVariableObject(variableObject);
         qmLogService.debug($state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
         variableObject.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
-        if(variableObject.lastValue !== null){qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variableObject);}
+        if(variableObject.lastValue !== null){qm.userVariables.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variableObject);}
         qmService.storage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
         $scope.state.variableSearchQuery.name = '';
         var userTagData;
@@ -181,7 +181,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getUserVariablesFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
+        qmService.getFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Don't sort because it overwrites the order from local storage and from the API
