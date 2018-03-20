@@ -280,14 +280,14 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     	$scope.toggleDrawOverAppsPopup = function(ev){
     		qmService.toggleDrawOverAppsPopup(ev);
     	};
-    	$scope.togglePushNotificationsEnabled = function(){
-    		// Toggle is done by the HTML
-            //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
-            qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
-            if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
-            if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
-        };
     }
+    $scope.togglePushNotificationsEnabled = function(){
+        // Toggle is done by the HTML
+        //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
+        qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
+        if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
+        if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
+    };
     $scope.toggleDebugMode = function(){
         $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
     };
