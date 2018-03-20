@@ -1471,7 +1471,7 @@ window.qm = {
                     if(!found){elementsToKeep.push(localStorageItemArray[i]);}
                 }
             }
-            qm.localForage.setItem(localStorageItemName, elementsToKeep);
+            localforage.setItem(localStorageItemName, elementsToKeep);
             qm.storage.setItem(localStorageItemName, elementsToKeep);
             return elementsToKeep;
         },
