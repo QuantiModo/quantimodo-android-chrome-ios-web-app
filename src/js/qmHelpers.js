@@ -286,19 +286,10 @@ window.qm = {
         },
         pushMeasurements: function(measurements, onDoneListener) {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
-        },
+        }
     },
     appsManager: { // jshint ignore:line
         defaultApp : "default",
-        getAppConfig : function(){
-            window.qmLog.debug('getClientIdFromQueryParametersLocalStorageDefaultConfigOrSubDomain returns ' +
-                qm.api.getClientId(), null);
-            if(qm.api.getClientId()){
-                return 'configs/' + qm.api.getClientId() + '.js';
-            } else {
-                return 'configs/' + qm.appsManager.defaultApp + '.js';
-            }
-        },
         getPrivateConfig : function(){
             if(qm.api.getClientId()){
                 return './private_configs/'+ qm.api.getClientId() + '.config.js';
