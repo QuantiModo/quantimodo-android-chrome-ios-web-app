@@ -113,3 +113,5 @@ www/configs/*
 www/private_configs/*
 !/www/private_configs/gitkeep
 /src/qm-amazon/
+
+cordova-hcp\.json
