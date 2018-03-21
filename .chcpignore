@@ -1,0 +1,8 @@
+www/configs/*
+www/private_configs/*
+configs/*
+private_configs/*
+**/www/configs/*
+**/www/private_configs/*
+**/configs/*
+**/private_configs/*

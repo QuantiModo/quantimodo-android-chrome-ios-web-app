@@ -9,7 +9,7 @@
     "StatusBar" : false,
     "cordova" : false,
     "document" : false,
-    "appsManager" : false,
+    "qm.appsManager" : false,
     "setTimeout" : false,
     "Bugsnag" : false,
     "setInterval" : false,
@@ -56,6 +56,9 @@
     "qmUser": false,
     "userHelper": false,
     "urlHelper": false,
-    "qmAnalytics": false
+    "qmAnalytics": false,
+    "OverApps": false,
+    "localforage": false,
+      "firebase": false
   }
 }

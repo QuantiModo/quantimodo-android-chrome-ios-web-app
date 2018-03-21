@@ -2059,6 +2059,7 @@ gulp.task('configureApp', [], function (callback) {
         'getCommonVariables',
         'getUnits',  // This is being weird for some reason
         'getAppConfigs',
+        'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'downloadIcon',
         'resizeIcons',
@@ -2359,6 +2360,12 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
+});
+gulp.task('cordovaHotCodePushConfig', [], function () {
+    var string = '{"name": "'+appSettings.appDisplayName+'", "ios_identifier": "'+appSettings.appIdentifier+
+        '", "android_identifier": "'+appSettings.appIdentifier+
+        '", "update": "start", "content_url": "http://quantimodo.asuscomm.com:3000/cordova-hot-code-push"}';
+    return writeToFile('cordova-hcp.json', string);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
