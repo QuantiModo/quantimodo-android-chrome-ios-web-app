@@ -1262,7 +1262,19 @@ window.qm = {
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
         isAndroid: function (){return window.location.href.indexOf("android_asset") > -1;},
         isIOS: function (){return window.location.href.indexOf("var/containers/Bundle") > -1;},
-        isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();}
+        isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
+        getCurrentPlatform: function(){
+            if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
+            if(qm.platform.isAndroid()){return qm.platform.types.android;}
+            if(qm.platform.isIOS()){return qm.platform.types.ios;}
+            if(qm.platform.isWeb()){return qm.platform.types.web;}
+        },
+        types: {
+            web: "web",
+            android: "android",
+            ios: "ios",
+            chromeExtension: "chromeExtension"
+        }
     },
     push: {
         getLastPushTimeStampInSeconds: function(){return qm.storage.getItem(qm.items.lastPushTimestamp);},
