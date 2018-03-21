@@ -152,7 +152,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         deploy: {
             fetchUpdate: function() {
-                const options = {
+                var options = {
                     'config-file': 'http://quantimodo.asuscomm.com:3000/cordova-hot-code-push/chcp.json'
                 };
                 chcp.fetchUpdate(this.updateCallback, options);
@@ -866,6 +866,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
         qmService.postVariableJoin(tagData, function(response){
+            /** @namespace response.data.currentVariable */
             qm.userVariables.saveToLocalStorage(response.data.currentVariable);
             qm.userVariables.saveToLocalStorage(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
@@ -1029,6 +1030,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function getDefaultState() {
         if(window.designMode){return qmStates.configuration;}
+        /** @namespace qm.getAppSettings().appDesign.defaultState */
         return qm.getAppSettings().appDesign.defaultState || qmStates.remindersInbox;
     }
     qmService.goToDefaultState = function(params, options){
@@ -7746,7 +7748,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.error("Barcode scan failure!  error: " + error);
             qmService.showMaterialAlert("Barcode scan failed!",
                 "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
-        };
+        }
         cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
     };
     qmService.switchToPatient = function(patientUser){

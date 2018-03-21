@@ -80,7 +80,7 @@
     <plugin name="cordova-hot-code-push-local-dev-addon" spec="~0.4.2" />
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <chcp>
-        <config-file url="http://mydomain.com/chcp.json" />
+        <config-file url="https://5368d31d.ngrok.io/chcp.json" />
         <local-development enabled="false" />
     </chcp>
   <plugin name="cordova-ios-plugin-no-export-compliance" spec="~0.0.5" />
