@@ -29,7 +29,7 @@ const messaging = firebase.messaging();
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     console.log(pushData);
-    appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
+    qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
         var notificationOptions = {
             actions: [],
             requireInteraction: true,
