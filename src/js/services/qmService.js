@@ -74,7 +74,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             drawOverAppsPopup: function(path, force){
                 qmLog.info('Called qmService.notifications.drawOverAppsPopup...');
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){
-                    qmLog.error("Cannot show popup because it has been disabled")
+                    qmLog.error("Cannot show popup because it has been disabled");
                     return false;
                 }
                 if(typeof window.overApps === "undefined"){
@@ -1534,7 +1534,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         study.charts[i].highchartConfig = study.charts[i].chartConfig
                     }
                     if(!study.charts[i].highchartConfig){
-                        qmLog.error("highchartConfig not defined for: ", null, {chart: study.charts[i]})
+                        qmLog.error("highchartConfig not defined for: ", null, {chart: study.charts[i]});
                         continue;
                     }
                     study.charts[i].highchartConfig = setChartExportingOptions(study.charts[i].highchartConfig);
@@ -5934,7 +5934,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
         }
         if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
-            qmLogService.debug('Going to favoriteAdd state', null)
+            qmLogService.debug('Going to favoriteAdd state', null);
             qmService.goToState('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
             return;
         }
