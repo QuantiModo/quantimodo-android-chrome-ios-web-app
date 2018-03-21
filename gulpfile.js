@@ -1,3 +1,4 @@
+/* eslint-disable no-process-env */
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials;
 var androidX86ReleaseName = 'android-x86-release';
@@ -2361,11 +2362,30 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('cordovaHotCodePushConfig', [], function () {
-    var string = '{"name": "'+appSettings.appDisplayName+'", "ios_identifier": "'+appSettings.appIdentifier+
-        '", "android_identifier": "'+appSettings.appIdentifier+
-        '", "update": "start", "content_url": "http://quantimodo.asuscomm.com:3000/cordova-hot-code-push"}';
+gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
+    /** @namespace appSettings.additionalSettings.appIds.appleId */
+    var string = '{"name": "'+appSettings.appDisplayName+'", '+
+        '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
+        '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
+        '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push"}';
     return writeToFile('cordova-hcp.json', string);
+});
+gulp.task('cordovaHotCodePushLogin', [], function () {
+    /** @namespace process.env.AWS_ACCESS_KEY_ID */
+    /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
+    var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
+    return writeToFile('.chcplogin', string);
+});
+gulp.task('cordovaHotCodePushBuildDeploy', [], function (callback) {
+    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback)
+});
+gulp.task('deployToProduction', [], function (callback) {
+    runSequence(
+        'cordovaHotCodePushConfig',
+        'cordovaHotCodePushLogin',
+        'cordovaHotCodePushBuildDeploy',
+        callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */

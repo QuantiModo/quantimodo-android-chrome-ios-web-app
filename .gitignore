@@ -113,7 +113,10 @@ www/configs/*
 www/private_configs/*
 !/www/private_configs/gitkeep
 /src/qm-amazon/
+dist/
+'.chcplogin' 
 
 cordova-hcp\.json
+\.chcplogin
 
-dist/
+\.chcpenv
