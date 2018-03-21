@@ -125,6 +125,19 @@ window.qm = {
             }
             return clientId;
         },
+        getClientIdWithCallback: function(successHandler){
+            if(qm.api.getClientId()){
+                successHandler(qm.api.getClientId());
+                return;
+            }
+            AppSettings.get(
+                function(value) {
+                    successHandler(value);
+                },
+                function(error) {
+                    alert("Error! " + JSON.stringify(error));
+                }, ["QuantiModoClientId"]);
+        },
          getClientIdFromQueryParameters: function() {
             var clientId = window.qm.urlHelper.getParam('clientId');
             if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
@@ -328,7 +341,14 @@ window.qm = {
                 successHandler(qm.appSettings);
                 return;
             }
-            return qm.appsManager.getAppSettingsFromApi(successHandler);
+            localforage.getItem(qm.items.appSettings, function(appSettings){
+                if(appSettings){
+                    qm.appSettings = appSettings;
+                    successHandler(appSettings);
+                    return;
+                }
+                qm.appsManager.getAppSettingsFromApi(successHandler)
+            });
         },
         getAppSettingsFromMemory: function(){
             if(typeof qm.appSettings !== "undefined"){
@@ -340,6 +360,7 @@ window.qm = {
             // Can't use QM SDK in service worker
             qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
                 qm.appSettings = response.appSettings;
+                localforage.setItem(qm.items.appSettings, qm.appSettings);
                 successHandler(qm.appSettings);
             })
         },
