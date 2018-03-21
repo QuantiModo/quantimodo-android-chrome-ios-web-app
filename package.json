@@ -13,6 +13,7 @@
     "bugsnag": "^1.11.0",
     "event-stream": "^3.3.2",
     "express": "^4.13.3",
+    "eslint": "^4.19.0",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "1.9.1",
     "gulp-change": "^1.0.0",
