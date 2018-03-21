@@ -1,5 +1,8 @@
+/* eslint-disable no-console,no-unused-vars */
 /** @namespace window.qmLog */
 /** @namespace window.qm.chrome */
+/* global TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
+/* eslint-env browser */
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 var appSettings;
 window.qm = {
@@ -69,10 +72,10 @@ window.qm = {
         },
         addGlobalParams: function (urlParams) {
             if(!urlParams){urlParams = {};}
-            if(appsManager.getAppSettingsFromMemory()){
-                urlParams.appName = encodeURIComponent(appsManager.getAppSettingsFromMemory().appDisplayName);
+            if(qm.appsManager.getAppSettingsFromMemory()){
+                urlParams.appName = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().appDisplayName);
                 if(qm.getAppSettings().versionNumber){
-                    urlParams.appVersion = encodeURIComponent(appsManager.getAppSettingsFromMemory().versionNumber);
+                    urlParams.appVersion = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().versionNumber);
                 } else {
                     qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
@@ -98,8 +101,8 @@ window.qm = {
             if(!clientId && appSettings){
                 clientId =  appSettings.clientId;
             }
-            if(!clientId && appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().clientId){
-                clientId = appsManager.getAppSettingsFromMemory().clientId;
+            if(!clientId && qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().clientId){
+                clientId = qm.appsManager.getAppSettingsFromMemory().clientId;
             }
             // DON'T DO THIS
             // if(!clientId && qm.platform.isMobile()){
@@ -190,13 +193,13 @@ window.qm = {
         },
         getBaseUrl: function () {
             //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
-            if(appsManager.getAppSettingsFromMemory() && appsManager.getAppSettingsFromMemory().apiUrl){
-                if(appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
-                    appsManager.getAppSettingsFromMemory().apiUrl = "https://" + appsManager.getAppSettingsFromMemory().apiUrl;
+            if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
+                if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
+                    qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
                 }
-                return appsManager.getAppSettingsFromMemory().apiUrl;
+                return qm.appsManager.getAppSettingsFromMemory().apiUrl;
             }
-            return appsManager.getQuantiModoApiUrl();
+            return qm.appsManager.getQuantiModoApiUrl();
         },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qmLog.info("Making POST request to " + path);
@@ -219,8 +222,8 @@ window.qm = {
         getAppSettingsUrl: function () {
             var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
             var clientId = qm.api.getClientId();
-            if(!appsManager.shouldWeUseLocalConfig(clientId)){
-                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+            if(!qm.appsManager.shouldWeUseLocalConfig(clientId)){
+                settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(window.designMode){settingsUrl += '&designMode=true';}
             }
             window.qmLog.debug('Getting app settings from ' + settingsUrl, null);
@@ -285,6 +288,89 @@ window.qm = {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
         },
     },
+    appsManager: { // jshint ignore:line
+        defaultApp : "default",
+        getAppConfig : function(){
+            window.qmLog.debug('getClientIdFromQueryParametersLocalStorageDefaultConfigOrSubDomain returns ' +
+                qm.api.getClientId(), null);
+            if(qm.api.getClientId()){
+                return 'configs/' + qm.api.getClientId() + '.js';
+            } else {
+                return 'configs/' + qm.appsManager.defaultApp + '.js';
+            }
+        },
+        getPrivateConfig : function(){
+            if(qm.api.getClientId()){
+                return './private_configs/'+ qm.api.getClientId() + '.config.js';
+            } else {
+                return './private_configs/'+ qm.appsManager.defaultApp + '.config.js';
+            }
+        },
+        getQuantiModoApiUrl: function () {
+            var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
+            if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
+            if(!apiUrl){apiUrl = "https://app.quantimo.do";}
+            if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
+            apiUrl = apiUrl.replace("https://https", "https");
+            if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
+            return apiUrl;
+        },
+        shouldWeUseLocalConfig: function (clientId) {
+            if(clientId && clientId === "default"){return true;}
+            if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
+            if(!clientId){
+                qmLog.error("No client id to get app settings url!");
+                return true;
+            }
+            if(qm.platform.isMobile()){return true;}
+            if(qm.platform.isChromeExtension()){return true;}
+            var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+            if(designMode){return false;}
+            if(qm.api.getClientIdFromQueryParameters() === 'app'){return true;}
+        },
+        getAppSettingsLocallyOrFromApi: function (successHandler) {
+            if(qm.appSettings && qm.appSettings.clientId){
+                successHandler(qm.appSettings);
+                return;
+            }
+            return qm.appsManager.getAppSettingsFromApi(successHandler);
+        },
+        getAppSettingsFromMemory: function(){
+            if(typeof qm.appSettings !== "undefined"){
+                return qm.appSettings;
+            }
+            return false;
+        },
+        getAppSettingsFromApi: function (successHandler) {
+            // Can't use QM SDK in service worker
+            qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
+                qm.appSettings = response.appSettings;
+                successHandler(qm.appSettings);
+            })
+        },
+        getAppSettingsFromSdkApi: function (successHandler) {
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.AppSettingsApi();
+            function callback(error, data, response) {
+                qm.appSettings = data.appSettings;
+                qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.getAppSettings(params, callback);
+        },
+        loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
+            qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
+                window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
+                appSettings = parsedResponse;
+            }, function () {
+                qmLog.error("Could not get appSettings from configs/default.config.json");
+            });
+        }
+    },
     apiHelper: {},
     arrayHelper: {
         variableIsArray: function(variable){
@@ -319,8 +405,8 @@ window.qm = {
                 return object;
             }
             if(qm.arrayHelper.variableIsArray(object)){return object;}
-            var result = Object.keys(obj).map(function(key) {
-                return obj[key];
+            var result = Object.keys(object).map(function(key) {
+                return object[key];
             });
             return result;
         },
@@ -538,7 +624,7 @@ window.qm = {
         }
     },
     getAppSettings: function () {
-        if(appsManager.getAppSettingsFromMemory()){return appsManager.getAppSettingsFromMemory();}
+        if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}
         return null;
     },
     getPrimaryOutcomeVariable: function(){
@@ -1726,6 +1812,18 @@ window.qm = {
             return Math.round((qm.timeHelper.secondsAgo(unixTimestamp)/86400));
         },
         getCurrentLocalDateAndTime: function() {return new Date().toLocaleString();},
+        convertUnixTimeStampToISOString: function (UNIX_timestamp){
+            var a = new Date(UNIX_timestamp * 1000);
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            var year = a.getFullYear();
+            var month = months[a.getMonth()];
+            var date = a.getDate();
+            var hour = a.getHours();
+            var min = a.getMinutes();
+            var sec = a.getSeconds();
+            var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+            return time;
+        }
     },
     trackingReminderNotifications : [],
     unitHelper: {
@@ -2123,7 +2221,7 @@ var appConfigFileNames = {
 // returns false if not found
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
-qm.getSourceName = function(){return appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.getPlatform();};
+qm.getSourceName = function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.getPlatform();};
 qm.getPlatform = function(){
     if(qm.platform.isChromeExtension()){return "chromeExtension";}
     if(window.location.href.indexOf('https://') !== -1){return "web";}
@@ -2134,93 +2232,6 @@ function getSubDomain(){
     var parts = full.split('.');
     return parts[0].toLowerCase();
 }
-
-var appsManager = { // jshint ignore:line
-    defaultApp : "default",
-    getAppConfig : function(){
-        window.qmLog.debug('getClientIdFromQueryParametersLocalStorageDefaultConfigOrSubDomain returns ' +
-            qm.api.getClientId(), null);
-        if(qm.api.getClientId()){
-            return 'configs/' + qm.api.getClientId() + '.js';
-        } else {
-            return 'configs/' + appsManager.defaultApp + '.js';
-        }
-    },
-    getPrivateConfig : function(){
-        if(qm.api.getClientId()){
-            return './private_configs/'+ qm.api.getClientId() + '.config.js';
-        } else {
-            return './private_configs/'+ appsManager.defaultApp + '.config.js';
-        }
-    },
-    getQuantiModoApiUrl: function () {
-        var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
-        if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
-        if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
-        if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
-        if(!apiUrl){apiUrl = "https://app.quantimo.do";}
-        if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
-        apiUrl = apiUrl.replace("https://https", "https");
-        if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
-        return apiUrl;
-    },
-    shouldWeUseLocalConfig: function (clientId) {
-        if(clientId && clientId === "default"){return true;}
-        if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
-        if(!clientId){
-            qmLog.error("No client id to get app settings url!");
-            return true;
-        }
-        if(qm.platform.isMobile()){return true;}
-        if(qm.platform.isChromeExtension()){return true;}
-        var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        if(designMode){return false;}
-        if(qm.api.getClientIdFromQueryParameters() === 'app'){return true;}
-    },
-    getAppSettingsLocallyOrFromApi: function (successHandler) {
-        if(qm.appSettings && qm.appSettings.clientId){
-            successHandler(qm.appSettings);
-            return;
-        }
-        return appsManager.getAppSettingsFromApi(successHandler);
-    },
-    getAppSettingsFromMemory: function(){
-        if(typeof config !== "undefined" && config.appSettings){
-            return config.appSettings;
-        }
-        if(typeof qm.appSettings !== "undefined"){
-            return qm.appSettings;
-        }
-        return false;
-    },
-    getAppSettingsFromApi: function (successHandler) {
-        // Can't use QM SDK in service worker
-        qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
-            qm.appSettings = response.appSettings;
-            successHandler(qm.appSettings);
-        })
-    },
-    getAppSettingsFromSdkApi: function (successHandler) {
-        qm.api.configureClient();
-        var apiInstance = new Quantimodo.AppSettingsApi();
-        function callback(error, data, response) {
-            qm.appSettings = data.appSettings;
-            qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
-        }
-        var params = qm.api.addGlobalParams(params);
-        apiInstance.getAppSettings({}, callback);
-    },
-    loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
-        qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
-            window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
-            appSettings = parsedResponse;
-        }, function () {
-            qmLog.error("Could not get appSettings from configs/default.config.json");
-        });
-    }
-};
 function getAppName() {
     if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
     return window.qm.urlHelper.getParam('appName');
@@ -2256,7 +2267,7 @@ function addGlobalQueryParameters(url) {
     if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
     return url;
 }
-if(!window.qm.urlHelper.getParam('clientId')){appsManager.loadAppSettingsFromDefaultConfigJson();}
+if(!window.qm.urlHelper.getParam('clientId')){qm.appsManager.loadAppSettingsFromDefaultConfigJson();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
@@ -2316,6 +2327,6 @@ function getLocalStorageNameForRequest(type, route) {
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 qm.userHelper.getUserFromLocalStorage();
-appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
+qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
    console.log(appSettings);
 });
