@@ -817,6 +817,7 @@ function writeToFile(filePath, stringContents) {
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
+gulp.task('deleteWwwManifestJson', function () {return clean(['www/manifest.json']);});
 gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
@@ -1083,6 +1084,9 @@ gulp.task('deleteNodeModules', function () {
 });
 gulp.task('deleteWwwPrivateConfigs', function () {
     return cleanFolder(paths.www.privateConfigs);
+});
+gulp.task('deleteWwwConfigs', function () {
+    return cleanFolder(paths.www.appConfigs);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
@@ -2366,8 +2370,10 @@ gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var string = '{"name": "'+appSettings.appDisplayName+'", '+
         '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
-        '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
-        '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        // '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
+        // '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        '"ios_identifier": "",' +
+        '"android_identifier": "",' +
         '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push"}';
     return writeToFile('cordova-hcp.json', string);
 });
@@ -2384,7 +2390,11 @@ gulp.task('deployToProduction', [], function (callback) {
     runSequence(
         'cordovaHotCodePushConfig',
         'cordovaHotCodePushLogin',
-        'cordovaHotCodePushBuildDeploy',
+        //'deleteDevCredentialsFromWww',
+        'deleteWwwPrivateConfigs',
+        'deleteWwwConfigs',
+        'deleteWwwManifestJson',
+        //'cordovaHotCodePushBuildDeploy',
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
