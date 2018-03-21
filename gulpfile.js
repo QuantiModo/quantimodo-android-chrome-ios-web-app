@@ -2360,6 +2360,12 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
+gulp.task('cordovaHotCodePushConfig', [], function () {
+    var string = '{"name": "'+appSettings.appDisplayName+'", "ios_identifier": "'+appSettings.appIdentifier+
+        '", "android_identifier": "'+appSettings.appIdentifier+
+        '", "update": "start", "content_url": "http://quantimodo.asuscomm.com:3000/cordova-hot-code-push"}';
+    return writeToFile('cordova-hcp.json', string);
+});
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
     /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */

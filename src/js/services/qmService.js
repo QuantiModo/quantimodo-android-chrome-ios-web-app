@@ -149,6 +149,42 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             drawOverAppsPopupCompactInboxNotification: function() {
                 qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
             }
+        },
+        deploy: {
+            fetchUpdate: function() {
+                const options = {
+                    'config-file': 'http://quantimodo.asuscomm.com:3000/cordova-hot-code-push/chcp.json'
+                };
+                chcp.fetchUpdate(this.updateCallback, options);
+            },
+            updateCallback: function(error, data) {
+                if (error) {
+                    console.error(error);
+                } else {
+                    console.log('Update is loaded...');
+                    $ionicPopup.show({
+                        title: 'Update available',
+                        //subTitle: '',
+                        template: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
+                        buttons: [
+                            { text: 'Not now' },
+                            {
+                                text: 'Restart',
+                                onTap: function(e) {
+                                    chcp.installUpdate(function(error) {
+                                        if (error) {
+                                            console.error(error);
+                                            qmService.showMaterialAlert('Update error ' + error.code)
+                                        } else {
+                                            console.log('Update installed...');
+                                        }
+                                    });
+                                }
+                            }
+                        ]
+                    });
+                }
+            }
         }
     };
     qmService.ionIcons = {
