@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 /** @namespace window.qmLog */
 /** @namespace window.qm.notifications */
 /** @namespace window.qm.storage */
+/* global chcp $ionicDeploy */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
@@ -155,6 +157,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var options = {
                     'config-file': 'http://quantimodo.asuscomm.com:3000/cordova-hot-code-push/chcp.json'
                 };
+                // noinspection Annotator
                 chcp.fetchUpdate(this.updateCallback, options);
             },
             updateCallback: function(error, data) {
@@ -171,6 +174,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             {
                                 text: 'Restart',
                                 onTap: function(e) {
+                                    // noinspection Annotator
                                     chcp.installUpdate(function(error) {
                                         if (error) {
                                             console.error(error);
@@ -2661,7 +2665,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //qmLog.error(error, "notifications are: " + JSON.stringify(trackingReminderNotifications), {});
             qmLog.error(error, "Trying again after JSON.parse(JSON.stringify(trackingReminderNotifications)). Why is this necessary?", {});
             trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
-            var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+            todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
             });
@@ -4595,7 +4599,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 for (var i = 0; i < scheduledTrackingReminders.length; i++) {
                     var existingReminderFoundInApiResponse = false;
                     for (var j = 0; j < trackingRemindersFromApi.length; j++) {
-                        var alarmName = createChromeAlarmNameFromTrackingReminder(trackingRemindersFromApi[j]);
+                        var alarmName = qm.chrome.createChromeAlarmNameFromTrackingReminder(trackingRemindersFromApi[j]);
                         if (JSON.stringify(alarmName) === scheduledTrackingReminders[i].name) {
                             qmLogService.debug('Server has a reminder matching alarm ' + JSON.stringify(scheduledTrackingReminders[i]), null);
                             existingReminderFoundInApiResponse = true;
@@ -4775,7 +4779,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //qmLogService.debug('Ionic is ready to schedule notifications');
                 if (typeof cordova !== "undefined") {
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        qmLogService.info('scheduledNotifications: ' + JSON.stringify(scheduledNotifications));
+                        qmLogService.info('scheduledNotifications: ' + JSON.stringify(notifications));
                         qmLogService.debug('scheduleNotificationByReminder: All notifications before scheduling', null, notifications);
                         for(var i = 0; i < notifications.length; i++){
                             if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
@@ -4789,6 +4793,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             });
+            /** @namespace $rootScope.isChromeApp */
             if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
                 qm.chrome.scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
             }
@@ -6690,6 +6695,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         HumanConnect.open(options);
     };
     qmService.quantimodoConnectPopup = function(){
+        // noinspection Annotator
         window.QuantiModoIntegration.options = {
             clientUserId: encodeURIComponent($rootScope.user.id),
             clientId: $rootScope.appSettings.clientId,
@@ -6875,8 +6881,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if (oldLink) {document.head.removeChild(oldLink);}
             document.head.appendChild(link);
         }
-        if(!window.config){window.config = {};}
-        window.config.appSettings = appSettings;
+        window.qm.appSettings = appSettings;
         window.qm.getAppSettings().designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.qm.getAppSettings().appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.qm.getAppSettings().appDesign.menu);
         //window.qm.getAppSettings().appDesign.menu = qmService.convertHrefInAllMenus(window.qm.getAppSettings().appDesign.menu);  // Should be done on server
@@ -6983,18 +6988,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
         if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
         return menu;
-    }
-    function convertUnixTimeStampToISOString(UNIX_timestamp){
-        var a = new Date(UNIX_timestamp * 1000);
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var year = a.getFullYear();
-        var month = months[a.getMonth()];
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes();
-        var sec = a.getSeconds();
-        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-        return time;
     }
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.isMobile){return;}

@@ -186,23 +186,9 @@ window.qm.chrome = {
     },
     scheduleChromeExtensionNotificationWithTrackingReminder: function(trackingReminder) {
         var alarmInfo = {};
-        function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
-            return {
-                trackingReminderId: trackingReminder.id,
-                variableName: trackingReminder.variableName,
-                defaultValue: trackingReminder.defaultValue,
-                unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
-                periodInMinutes: trackingReminder.reminderFrequency / 60,
-                reminderStartTime: trackingReminder.reminderStartTime,
-                startTrackingDate: trackingReminder.startTrackingDate,
-                variableCategoryName: trackingReminder.variableCategoryName,
-                valence: trackingReminder.valence,
-                reminderEndTime: trackingReminder.reminderEndTime
-            };
-        }
         alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
         alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-        var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
+        var alarmName = qm.chrome.createChromeAlarmNameFromTrackingReminder(trackingReminder);
         alarmName = JSON.stringify(alarmName);
         chrome.alarms.getAll(function(alarms) {
             var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
@@ -212,6 +198,20 @@ window.qm.chrome = {
                 qmLog.info(null, 'Created alarm for alarmName ' + alarmName, null, alarmInfo);
             }
         });
+    },
+    createChromeAlarmNameFromTrackingReminder: function (trackingReminder) {
+        return {
+            trackingReminderId: trackingReminder.id,
+            variableName: trackingReminder.variableName,
+            defaultValue: trackingReminder.defaultValue,
+            unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
+            periodInMinutes: trackingReminder.reminderFrequency / 60,
+            reminderStartTime: trackingReminder.reminderStartTime,
+            startTrackingDate: trackingReminder.startTrackingDate,
+            variableCategoryName: trackingReminder.variableCategoryName,
+            valence: trackingReminder.valence,
+            reminderEndTime: trackingReminder.reminderEndTime
+        };
     },
     showRatingOrInboxPopup: function () {
         qm.notifications.refreshIfEmpty(function () {
