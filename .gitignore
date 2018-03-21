@@ -115,3 +115,5 @@ www/private_configs/*
 /src/qm-amazon/
 
 cordova-hcp\.json
+
+dist/

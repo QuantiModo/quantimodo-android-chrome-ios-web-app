@@ -2059,6 +2059,7 @@ gulp.task('configureApp', [], function (callback) {
         'getCommonVariables',
         'getUnits',  // This is being weird for some reason
         'getAppConfigs',
+        'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'downloadIcon',
         'resizeIcons',
