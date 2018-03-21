@@ -1338,7 +1338,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         Analytics.registerTrackers();
         // you can set any advanced configuration here
         if(user){Analytics.set('&uid', user.id);}
-        Analytics.set('&ds', qm.platforms.getCurrentPlatform());
+        Analytics.set('&ds', qm.platform.getCurrentPlatform());
         Analytics.set('&cn', qm.getAppSettings().appDisplayName);
         Analytics.set('&cs', qm.getAppSettings().appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
