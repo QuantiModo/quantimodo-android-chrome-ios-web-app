@@ -631,7 +631,7 @@ window.qm = {
             if(accessTokenFromUrl){
                 qmLog.info("Got access token from url");
             } else {
-                qmLog.info("No access token from url");
+                qmLog.authDebug("No access token from url");
             }
             return accessTokenFromUrl;
         },
