@@ -635,6 +635,8 @@ function generateConfigXmlFromTemplate(callback) {
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_ID);
+    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_SECRET);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
             throw new Error('ERROR: failed to read xml file', err);
@@ -1939,8 +1941,12 @@ gulp.task('copyIonIconsToWww', [], function () {
 gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
+gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs',
+        '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+});
 gulp.task('copySrcToWww', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+    return copyFiles('src/**/*', 'www', []);
 });
 gulp.task('copyConfigsToSrc', [], function () {
     return copyFiles('www/configs/*', 'src/configs', []);
@@ -2059,7 +2065,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
-        'copySrcToWww',
+        'copySrcToWwwExceptLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
         'getUnits',  // This is being weird for some reason
@@ -2305,14 +2311,16 @@ gulp.task('prepareQuantiModoIos', function (callback) {
 gulp.task('copySrcAndEmulateAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToAndroidWww',
+        'copySrcToWww',
+        //'copySrcToAndroidWww',
         'ionicEmulateAndroid',
         callback);
 });
 gulp.task('copySrcAndRunAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToAndroidWww',
+        'copySrcToWww',
+        //'copySrcToAndroidWww',
         'ionicRunAndroid',
         callback);
 });

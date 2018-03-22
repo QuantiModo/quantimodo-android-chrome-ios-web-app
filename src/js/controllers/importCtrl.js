@@ -182,7 +182,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = ['user', 'repo'];
-            $cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
+            $cordovaOauth.github(qm.privateConfig.GITHUB_CLIENT_ID, qm.privateConfig.GITHUB_CLIENT_SECRET,
                 scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'strava') {
@@ -191,7 +191,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = ['public'];
-            $cordovaOauth.strava(window.private_keys.STRAVA_CLIENT_ID, window.private_keys.STRAVA_CLIENT_SECRET,
+            $cordovaOauth.strava(qm.privateConfig.STRAVA_CLIENT_ID, qm.privateConfig.STRAVA_CLIENT_SECRET,
                 scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'withings') {
@@ -199,7 +199,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 webConnect(connector);
                 return;
             }
-            $cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
+            $cordovaOauth.withings(qm.privateConfig.WITHINGS_CLIENT_ID, qm.privateConfig.WITHINGS_CLIENT_SECRET)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'fitbit') {
@@ -219,7 +219,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 'weight'
             ];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
+            $cordovaOauth.fitbit(qm.privateConfig.FITBIT_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'runkeeper') {
@@ -229,7 +229,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
             scopes = [];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
+            $cordovaOauth.fitbit(qm.privateConfig.RUNKEEPER_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'rescuetime') {
@@ -239,7 +239,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
             scopes = ['time_data', 'category_data', 'productivity_data'];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
+            $cordovaOauth.rescuetime(qm.privateConfig.RESCUETIME_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'slice') {
@@ -249,7 +249,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
             scopes = [];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
+            $cordovaOauth.slice(qm.privateConfig.SLICE_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'facebook') {
@@ -258,7 +258,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             scopes = ['user_likes', 'user_posts'];
-            $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
+            $cordovaOauth.facebook(qm.privateConfig.FACEBOOK_APP_ID, scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'googlefit') {
@@ -311,7 +311,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 'heartrate_read',
                 'generic_event_read'
             ];
-            $cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
+            $cordovaOauth.jawbone(qm.privateConfig.JAWBONE_CLIENT_ID, qm.privateConfig.JAWBONE_CLIENT_SECRET, scopes)
                 .then(function(result) { connectWithToken(result);
                 }, function(error) { connectorErrorHandler(error); });
         }

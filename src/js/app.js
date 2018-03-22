@@ -36,7 +36,7 @@ angular.module('starter',
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
-    qmService.getPrivateConfigs();
+    qm.appsManager.loadPrivateConfigFromJsonFile();
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
@@ -142,8 +142,12 @@ angular.module('starter',
     };
 
     var config_resolver = {
-        appSettingsResponse: function($http){
-            return $http({method: 'GET', url: qm.api.getAppSettingsUrl()});
+        appSettingsResponse: function($q){
+            var deferred = $q.defer();
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
+                deferred.resolve(appSettings);
+            });
+            return deferred.promise;
         }
     };
     //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([qm.appsManager.getAppConfig(), qm.appsManager.getPrivateConfig()]);}];
