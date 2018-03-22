@@ -431,6 +431,18 @@ window.qm = {
             }
             return false;
         },
+        deleteById: function(id, array){
+            array = array.filter(function( obj ) {
+                return obj.id !== id;
+            });
+            return array;
+        },
+        deleteByProperty: function(propertyName, value, array){
+            array = array.filter(function( obj ) {
+                return obj[propertyName] !== value;
+            });
+            return array;
+        },
         convertObjectToArray: function (object) {
             if(!object){
                 qmLog.info(object + " provided to convertObjectToArray");
