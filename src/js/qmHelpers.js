@@ -310,7 +310,6 @@ window.qm = {
         }
     },
     appsManager: { // jshint ignore:line
-        defaultApp : "default",
         getQuantiModoApiUrl: function () {
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
@@ -324,12 +323,17 @@ window.qm = {
             if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
             return apiUrl;
         },
-        shouldWeUseLocalConfig: function (clientId) {
-            if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
-            if(qm.platform.isChromeExtension()){return true;}
-            var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-            if(designMode){return false;}
-        },
+        getClientSecret: function(){
+            if(qm.clientSecret){return qm.clientSecret;}
+            if(!qm.privateConfig){
+                qmLog.error("No client secret or private config!");
+                return null;
+            }
+            if (qm.platform.isIOS()) { return qm.privateConfig.client_secrets.iOS; }
+            if (qm.platform.isAndroid) { return qm.privateConfig.client_secrets.Android; }
+            if (qm.platform.isChromeExtension) { return qm.privateConfig.client_secrets.Chrome; }
+            if (qm.platform.isWindows) { return qm.privateConfig.client_secrets.Windows; }
+            return qm.privateConfig.client_secrets.Web;},
         getAppSettingsLocallyOrFromApi: function (successHandler) {
             if(qm.appSettings && qm.appSettings.clientId){
                 successHandler(qm.appSettings);
@@ -369,16 +373,6 @@ window.qm = {
                     successHandler(qm.appSettings);
                 })
             });
-        },
-        getAppSettingsFromSdkApi: function (successHandler) {
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.AppSettingsApi();
-            function callback(error, data, response) {
-                qm.appSettings = data.appSettings;
-                qm.api.generalResponseHandler(error, data, response, successHandler, null, params, 'getAppSettingsLocallyOrFromApi');
-            }
-            var params = qm.api.addGlobalParams({});
-            apiInstance.getAppSettings(params, callback);
         },
         loadAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
             qm.api.getViaXhrOrFetch(qm.urlHelper.getDefaultConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
