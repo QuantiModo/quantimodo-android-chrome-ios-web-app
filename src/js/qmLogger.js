@@ -58,7 +58,7 @@ window.qmLog.checkUrlAndStorageForDebugMode = function () {
         console.log("Set debugMode in local storage");
         return true;
     }
-    console.log("No debug url param!");
+    console.debug("No debug url param!");
     return false;
 };
 window.qmLog.isDebugMode = function() {
