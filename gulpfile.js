@@ -1956,6 +1956,9 @@ gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', []);
 });
+gulp.task('copySrcJsToWww', [], function () {
+    return copyFiles('src/js/**/*', 'www/js');
+});
 gulp.task('copyConfigsToSrc', [], function () {
     return copyFiles('www/configs/*', 'src/configs', []);
 });
@@ -2400,7 +2403,7 @@ gulp.task('cordovaHotCodePushLogin', [], function () {
     return writeToFile('.chcplogin', string);
 });
 gulp.task('cordovaHotCodePushBuildDeploy', [], function (callback) {
-    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback)
+    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('deployToProduction', [], function (callback) {
     runSequence(
@@ -2425,8 +2428,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.appStatus.buildEnabled */
     /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
     if(!appSettings.appStatus.buildEnabled.androidRelease){
-        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
-            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is " +
+            appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
@@ -2460,4 +2463,12 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         "fastlaneSupplyBeta",
         "post-app-status",
         callback);
+});
+var watch = require('gulp-watch');
+gulp.task('watch-src', function() {
+    var source = './src',
+        destination = './www';
+    gulp.src(source + '/**/*', {base: source})
+        .pipe(watch(source, {base: source}))
+        .pipe(gulp.dest(destination));
 });

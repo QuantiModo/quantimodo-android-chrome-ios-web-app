@@ -348,14 +348,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
         if($ionicHistory.viewHistory().backView){
             var backView = $ionicHistory.backView();
+            qmLog.info("backView.stateName is " + backView.stateName);
             var stateId = backView.stateName;
             skipSearchPages();
             if(providedStateParams){
                 addProvidedStateParamsToBackViewStateParams();
             }
-            qmLogService.debug('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
+            qmLog.info('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
             $ionicHistory.goBack();
         } else {
+            qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
             qmService.goToDefaultState(providedStateParams);
         }
     };

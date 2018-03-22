@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GI Test API app.qm.do" type="BashConfigurationType" factoryName="Bash" folderName="GI Tests">
+  <configuration default="false" name="GI Test Ionic Suite" type="BashConfigurationType" factoryName="Bash" folderName="GI Tests">
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="INTERPRETER_PATH" value="C:\Program Files\Git\bin\bash.exe" />
     <option name="WORKING_DIRECTORY" value="K:\Development\QM-Docker\public.built\ionic\Modo" />
@@ -8,8 +8,8 @@
     <option name="PARAMETERS" value="" />
     <module name="" />
     <envs>
-      <env name="START_URL" value="https://app.quantimo.do" />
-      <env name="SUITE_ID" value="559020a9f71321f80c6d8176" />
+      <env name="START_URL" value="https://be33e57e.ngrok.io" />
+      <env name="SUITE_ID" value="57aa05ac6f43214f19b2f055" />
     </envs>
     <method />
   </configuration>
