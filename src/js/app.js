@@ -381,7 +381,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                variableName: null
+                variableName: null,
+                currentMeasurementHistory: null
             },
             views: {
                 'menuContent': {
@@ -974,7 +975,7 @@ angular.module('starter',
         .state(qmStates.history, {
             url: "/history",
             params: {
-                updatedMeasurement: null
+                updatedMeasurementHistory: null
             },
             views: {
                 'menuContent': {
@@ -990,7 +991,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 connectorName: null,
                 sourceName: null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1004,7 +1005,7 @@ angular.module('starter',
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1019,7 +1020,7 @@ angular.module('starter',
             cache: true,
             params: {
                 variableObject : null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
