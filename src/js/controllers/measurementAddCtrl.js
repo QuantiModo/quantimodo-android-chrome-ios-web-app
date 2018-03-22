@@ -71,12 +71,17 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             });
         $scope.goBack();
     };
-    $scope.cancel = function(){ $scope.goBack(); };
+    $scope.cancel = function(){
+        $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
+    };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
         qmService.showInfoToast('Deleting measurement...');
-        qmService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-            $scope.goBack();
-        });
+        var backStateParams = {};
+        if($stateParams.currentMeasurementHistory){
+            backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
+        }
+        qmService.deleteMeasurementFromServer($scope.state.measurement);
+        $scope.goBack(backStateParams);
     };
     var validate = function () {
         var message;
@@ -142,22 +147,24 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         // Assign measurement value if it does not exist
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
         qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
+        var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
+        toastMessage = toastMessage.replace(' /', '/');
+        qmService.showInfoToast(toastMessage);
         // Measurement only - post measurement. This is for adding or editing
+        var backStateParams = {};
+        if($stateParams.currentMeasurementHistory){
+            backStateParams.updatedMeasurementHistory =
+                qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, $scope.state.measurement);
+        }
         qmService.postMeasurementDeferred(measurementInfo, function(){
             if(unitChanged){
                 qmLog.error("Syncing reminders because unit changed");
                 qm.storage.removeItem(qm.items.trackingReminders);
                 qmService.syncTrackingReminders();
-                $scope.goBack({updatedMeasurementHistory: $scope.state.measurement});
+                $scope.goBack(backStateParams);
             }
         });
-        var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
-        toastMessage = toastMessage.replace(' /', '/');
-        qmService.showInfoToast(toastMessage);
-        if(!unitChanged && $stateParams.currentMeasurementHistory){
-            var updatedMeasurementHistory = qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, $scope.state.measurement);
-            $scope.goBack({updatedMeasurementHistory: updatedMeasurementHistory});
-        }
+        if(!unitChanged){$scope.goBack(backStateParams);} // We can go back immediately if no unit change
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
         setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);

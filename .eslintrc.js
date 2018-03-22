@@ -60,7 +60,8 @@ module.exports = {
         "localforage": false,
         "firebase": false,
         "qmStates": false,
-        "chcp": false
+        "chcp": false,
+        "jQuery": false
     },
     "rules": {
         "accessor-pairs": "error",
