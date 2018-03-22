@@ -305,7 +305,7 @@ window.qm = {
             };
             xhr.send(JSON.stringify(body));
         },
-        pushMeasurements: function(measurements, onDoneListener) {
+        postMeasurements: function(measurements, onDoneListener) {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
         }
     },
@@ -706,6 +706,9 @@ window.qm = {
     },
     getPrimaryOutcomeVariableByNumber: function(num){
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
+    },
+    getUser: function(){
+        return qm.userHelper.getUserFromLocalStorage();
     },
     globalHelper: {
         setStudy: function(study){
@@ -1631,8 +1634,13 @@ window.qm = {
                 qmLog.error("value provided to qm.storage.setItem is undefined!");
                 return;
             }
+            if(value === "null"){
+                qmLog.error("null string provided to qm.storage.setItem!");
+                return;
+            }
             if(value === qm.storage.getGlobal(key)){
-                qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + JSON.stringify(value));
+                var valueString = JSON.stringify(value);
+                qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
                 return;
             }
             qm.storage.setGlobal(key, value);

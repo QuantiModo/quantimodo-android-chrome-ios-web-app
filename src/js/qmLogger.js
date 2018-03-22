@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
 // BLACK BOX THESE
 // \.min\.js$ — for all minified sources
@@ -5,7 +6,7 @@
 // qmLogService.js
 // bugsnag.js
 // node_modules and bower_components — for dependencies
-//     ~ — home for dependencies in Webpack bundle
+// — home for dependencies in Webpack bundle
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {debugMode:false};
@@ -33,6 +34,7 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
+    return "info";
     if(window.location.href.indexOf('utopia.quantimo.do') > -1){
         return "debug";
     }
@@ -232,6 +234,10 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     } else {
         metaData.stackTrace = qmLog.getStackTrace();
     }
+    function addQueryParameter(url, name, value){
+        if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
+        return url + "&" + name + "=" + value;
+    }
     if(metaData.apiResponse){
         var request = metaData.apiResponse.req;
         metaData.test_api_url = request.method + " " + request.url;
@@ -321,14 +327,12 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
-    if(!qmLog.shouldWeLog("debug")){return;}
+    if(!qmLog.shouldWeLog("debug")){
+        //console.debug("Not logging debug message: " + name);
+        return;
+    }
     message = addCallerFunctionToMessage(message);
-    var logString = name;
-    if(logString !== message){logString = logString + ": " + message;}
-    if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
-    //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
-    //bugsnagNotify(name, message, metaData, "debug", stackTrace);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
     name = name || message;
@@ -358,16 +362,31 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    var authDebug = window.location.href.indexOf("authDebug") !== -1;
-    if(authDebug){
+    //qmLog.authDebugEnabled = true;
+    if(!qmLog.authDebugEnabled){
+        qmLog.authDebugEnabled = window.location.href.indexOf("authDebug") !== -1;
+        if(qmLog.authDebugEnabled){
+            localStorage.setItem('authDebugEnabled', "true");
+        }
+    }
+    if(!qmLog.authDebugEnabled){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
+    if(qmLog.authDebugEnabled){
         qmLog.info(message, message, null);
     } else {
+        //console.log("Log level is " + qmLog.getLogLevelName());
         qmLog.debug(message, message, null);
     }
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
-    var pushDebug = false;
-    if(pushDebug || qmLog.debugMode){
+    //qmLog.pushDebugEnabled = true;
+    if(!qmLog.pushDebugEnabled){
+        qmLog.pushDebugEnabled = window.location.href.indexOf("pushDebugEnabled") !== -1;
+        if(qmLog.pushDebugEnabled){
+            localStorage.setItem('pushDebugEnabled', "true");
+        }
+    }
+    if(!qmLog.pushDebugEnabled){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
+    if(qmLog.pushDebugEnabled || qmLog.debugMode){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
         qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);

@@ -437,13 +437,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
             }
+            //console.log("Log level is " + qmLog.getLogLevelName());
             var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
-                qmLog.authDebug('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
+                qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
             } else {
-                qmLog.authDebug('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
+                qmLog.error('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
             }
             function generalSuccessHandler(response){
                 var responseString = JSON.stringify(response);
@@ -510,7 +511,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function handle401Response(request, options, headers) {
         if(options && options.doNotSendToLogin){return;}
-        qmLogService.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), null, options.stackTrace);
+        qmLogService.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
+            JSON.stringify(request), null, options.stackTrace);
         qmLogService.debug('HEADERS: ' + JSON.stringify(headers), null, options.stackTrace);
         setAfterLoginGoToUrlAndSendToLogin();
     }
@@ -521,6 +523,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function generalApiErrorHandler(data, status, headers, request, options){
         if(status === 302){return qmLogService.debug('Got 302 response from ' + JSON.stringify(request), null, options.stackTrace);}
         if(status === 401){
+            qmLog.info('Got 401 response with headers: ' + JSON.stringify(headers), null, options.stackTrace);
             qmService.auth.handleExpiredAccessTokenResponse(data);
             return handle401Response(request, options, headers);
         }
@@ -1115,9 +1118,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig) {
             qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
-            return deferred.promise;
+        } else if (qm.getUser() && qm.getUser().accessToken){
+            qmLog.authDebug("got access token from user");
+            deferred.resolve(qm.getUser().accessToken);
         } else {
-            qmLog.authDebug('Could not get or refresh access token at ' + window.location.href);
+            qmLog.error('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
         }
         return deferred.promise;
@@ -5874,7 +5879,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
-        qmLogService.debug('Called qmService.sendToLoginIfNecessaryAndComeBack', null);
+        qmLog.authDebug('Called qmService.sendToLoginIfNecessaryAndComeBack', null);
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(afterLoginGoToState){
@@ -6375,7 +6380,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
             return;
         }
-        qmLogService.debug('Sending to app.login', null);
+        qmLog.authDebug('Sending to app.login', null);
         qmService.goToState("app.login");
     }
     qmService.sendToLogin = function() {
