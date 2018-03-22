@@ -1,10 +1,9 @@
 /* eslint-disable no-console,no-unused-vars */
 /** @namespace window.qmLog */
 /** @namespace window.qm.chrome */
-/* global TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
+/* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-var appSettings;
 window.qm = {
     analytics: {
         eventCategories: {
@@ -98,8 +97,8 @@ window.qm = {
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 clientId = qm.api.getClientIdFromQueryParameters();
             }
-            if(!clientId && appSettings){
-                clientId =  appSettings.clientId;
+            if(!clientId && qm.appSettings){
+                clientId =  qm.appSettings.clientId;
             }
             if(!clientId && qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().clientId){
                 clientId = qm.appsManager.getAppSettingsFromMemory().clientId;
@@ -126,17 +125,24 @@ window.qm = {
             return clientId;
         },
         getClientIdWithCallback: function(successHandler){
-            if(qm.api.getClientId()){
-                successHandler(qm.api.getClientId());
+            var clientId = qm.api.getClientId();
+            if(clientId){
+                successHandler(clientId);
                 return;
             }
-            AppSettings.get(
-                function(value) {
-                    successHandler(value);
-                },
-                function(error) {
-                    alert("Error! " + JSON.stringify(error));
-                }, ["QuantiModoClientId"]);
+            if(typeof AppSettings !== "undefined"){
+                AppSettings.get(
+                    function(preferences) {
+                        /** @namespace preferences.QuantiModoClientId */
+                        qm.clientId = preferences.QuantiModoClientId;
+                        /** @namespace preferences.QuantiModoClientSecret */
+                        qm.clientSecret = preferences.QuantiModoClientSecret;
+                        successHandler(preferences.QuantiModoClientId,  preferences.QuantiModoClientSecret);
+                    },
+                    function(error) {
+                        qmLog.error("Error! " + JSON.stringify(error));
+                    }, ["QuantiModoClientId", "QuantiModoClientSecret"]);
+            }
         },
          getClientIdFromQueryParameters: function() {
             var clientId = window.qm.urlHelper.getParam('clientId');
@@ -224,7 +230,7 @@ window.qm = {
                 qm.api.postViaFetch(body, url, successHandler, errorHandler);
             }
         },
-        getFromQuantiModo: function(url, successHandler, errorHandler){
+        getViaXhrOrFetch: function(url, successHandler, errorHandler){
             try {
                 qm.api.getViaXhr(url, successHandler);
             } catch (error) {
@@ -232,15 +238,17 @@ window.qm = {
                 qm.api.getViaFetch(url, successHandler, errorHandler);
             }
         },
-        getAppSettingsUrl: function () {
-            var settingsUrl = qm.urlHelper.getDefaultConfigUrl();
-            var clientId = qm.api.getClientId();
-            if(!qm.appsManager.shouldWeUseLocalConfig(clientId)){
-                settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+        getAppSettingsUrl: function (callback) {
+            qm.api.getClientIdWithCallback(function(clientId, clientSecret){
+                // Can't use QM SDK in service worker
+                var settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+                if(clientSecret){
+                    settingsUrl += "&clientSecret=" + clientSecret;
+                }
                 if(window.designMode){settingsUrl += '&designMode=true';}
-            }
-            window.qmLog.debug('Getting app settings from ' + settingsUrl, null);
-            return settingsUrl;
+                window.qmLog.debug('Getting app settings from ' + settingsUrl);
+                callback(settingsUrl);
+            });
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qmLog.pushDebug("Making get request to " + url);
@@ -303,13 +311,6 @@ window.qm = {
     },
     appsManager: { // jshint ignore:line
         defaultApp : "default",
-        getPrivateConfig : function(){
-            if(qm.api.getClientId()){
-                return './private_configs/'+ qm.api.getClientId() + '.config.js';
-            } else {
-                return './private_configs/'+ qm.appsManager.defaultApp + '.config.js';
-            }
-        },
         getQuantiModoApiUrl: function () {
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
@@ -324,30 +325,30 @@ window.qm = {
             return apiUrl;
         },
         shouldWeUseLocalConfig: function (clientId) {
-            if(clientId && clientId === "default"){return true;}
             if(qm.api.getClientIdFromQueryParameters()){return false;} // Need to do this for Android webview that can't access local config.json
-            if(!clientId){
-                qmLog.error("No client id to get app settings url!");
-                return true;
-            }
-            if(qm.platform.isMobile()){return true;}
             if(qm.platform.isChromeExtension()){return true;}
             var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
             if(designMode){return false;}
-            if(qm.api.getClientIdFromQueryParameters() === 'app'){return true;}
         },
         getAppSettingsLocallyOrFromApi: function (successHandler) {
             if(qm.appSettings && qm.appSettings.clientId){
                 successHandler(qm.appSettings);
                 return;
             }
-            localforage.getItem(qm.items.appSettings, function(appSettings){
+            localforage.getItem(qm.items.appSettings, function(error, appSettings){
                 if(appSettings){
                     qm.appSettings = appSettings;
                     successHandler(appSettings);
                     return;
                 }
-                qm.appsManager.getAppSettingsFromApi(successHandler)
+                qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
+                    if(appSettings){
+                        qm.appSettings = appSettings;
+                        successHandler(appSettings);
+                        return;
+                    }
+                    qm.appsManager.getAppSettingsFromApi(successHandler)
+                })
             });
         },
         getAppSettingsFromMemory: function(){
@@ -357,12 +358,17 @@ window.qm = {
             return false;
         },
         getAppSettingsFromApi: function (successHandler) {
-            // Can't use QM SDK in service worker
-            qm.api.getFromQuantiModo(qm.api.getAppSettingsUrl(), function (response) {
-                qm.appSettings = response.appSettings;
-                localforage.setItem(qm.items.appSettings, qm.appSettings);
-                successHandler(qm.appSettings);
-            })
+            qm.api.getAppSettingsUrl(function(appSettingsUrl){
+                qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
+                    qm.appSettings = response.appSettings;
+                    localforage.setItem(qm.items.appSettings, qm.appSettings);
+                    if(response.privateConfig){
+                        qm.privateConfig = response.privateConfig;
+                        localforage.setItem(qm.items.privateConfig, response.privateConfig);
+                    }
+                    successHandler(qm.appSettings);
+                })
+            });
         },
         getAppSettingsFromSdkApi: function (successHandler) {
             qm.api.configureClient();
@@ -374,13 +380,27 @@ window.qm = {
             var params = qm.api.addGlobalParams({});
             apiInstance.getAppSettings(params, callback);
         },
-        loadAppSettingsFromDefaultConfigJson: function() {  // I think adding appSettings to the chrome manifest breaks installation
-            qm.api.getFromQuantiModo(qm.urlHelper.getDefaultConfigUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
-                window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
-                appSettings = parsedResponse;
+        loadAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
+            qm.api.getViaXhrOrFetch(qm.urlHelper.getDefaultConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
+                if(parsedResponse){
+                    window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
+                    qm.appSettings = parsedResponse;
+                    localforage.setItem(qm.items.appSettings, qm.appSettings);
+                }
+                callback(parsedResponse);
             }, function () {
                 qmLog.error("Could not get appSettings from configs/default.config.json");
             });
+        },
+        loadPrivateConfigFromJsonFile: function() {  // I think adding appSettings to the chrome manifest breaks installation
+            if(!qm.privateConfig){
+                qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
+                    window.qmLog.debug('Got private config from json file', null, parsedResponse);
+                    qm.privateConfig = parsedResponse;
+                }, function () {
+                    qmLog.error("Could not get private config from json file");
+                });
+            }
         }
     },
     apiHelper: {},
@@ -719,6 +739,7 @@ window.qm = {
     items: {
         accessToken: 'accessToken',
         apiUrl: 'apiUrl',
+        appSettings: 'appSettings',
         appSettingsRevisions: 'appSettingsRevisions',
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
@@ -749,6 +770,7 @@ window.qm = {
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
         physicianUser: 'physicianUser',
+        privateConfig: 'privateConfig',
         refreshToken: 'refreshToken',
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
@@ -1132,7 +1154,7 @@ window.qm = {
                 return;
             }
             // Can't use QM SDK in service worker
-            qm.api.getFromQuantiModo(window.qm.apiHelper.getRequestUrl(route), function (response) {
+            qm.api.getViaXhrOrFetch(window.qm.apiHelper.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     qm.chrome.showSignInNotification();
                 } else {
@@ -1758,13 +1780,14 @@ window.qm = {
             if(value === "true"){return true;}
             return value;
         },
-        parseIfJsonString: function(stringOrObject) {
+        parseIfJsonString: function(stringOrObject, defaultValue) {
+            defaultValue = defaultValue || null;
             if(!stringOrObject){return stringOrObject;}
             if(typeof stringOrObject !== "string"){return stringOrObject;}
             try {
                 return JSON.parse(stringOrObject);
             } catch (e) {
-                return stringOrObject;
+                return defaultValue;
             }
         },
         getStringBeforeSubstring: function(needle, haystack){
@@ -1991,8 +2014,11 @@ window.qm = {
             }
             return qm.urlHelper.getIonicAppBaseUrl() + relativePath;
         },
-        getDefaultConfigUrl: function(){
+        getDefaultConfigJsonUrl: function(){
             return qm.urlHelper.getAbsoluteUrlFromRelativePath('configs/default.config.json');
+        },
+        getPrivateConfigJsonUrl: function(){
+            return qm.urlHelper.getAbsoluteUrlFromRelativePath('private_configs/default.private_config.json');
         }
     },
     user: null,
@@ -2084,7 +2110,7 @@ window.qm = {
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
         refreshIfLessThanNumberOfReminders: function(){
-            localforage.getItem(qm.items.userVariables, function (userVariables) {
+            localforage.getItem(qm.items.userVariables, function (error, userVariables) {
                 var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
                 var numberOfUserVariables =  0;
                 if(userVariables){numberOfUserVariables = userVariables.length;}
@@ -2262,7 +2288,7 @@ function getAppName() {
 }
 function getAppVersion() {
     if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
-    if(appSettings){return appSettings.versionNumber;}
+    if(qm.appSettings){return qm.appSettings.versionNumber;}
     return window.qm.urlHelper.getParam('appVersion');
 }
 function multiplyScreenHeight(factor) {
@@ -2272,10 +2298,6 @@ function multiplyScreenHeight(factor) {
 function multiplyScreenWidth(factor) {
     if(typeof screen === "undefined"){return false;}
     return parseInt(factor * screen.height);
-}
-function getScreenHeight() {
-    if(typeof screen === "undefined"){return false;}
-    return screen.height;
 }
 function addGlobalQueryParameters(url) {
     if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
@@ -2291,9 +2313,8 @@ function addGlobalQueryParameters(url) {
     if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
     return url;
 }
-if(!window.qm.urlHelper.getParam('clientId')){qm.appsManager.loadAppSettingsFromDefaultConfigJson();}
 function getAppHostName() {
-    if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
+    if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
 function objectLength(obj) {

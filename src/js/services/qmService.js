@@ -233,7 +233,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLog.authDebug("Version number not specified!", "Version number not specified on qm.getAppSettings()");
         }
-        urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qmService.getClientId()));
+        urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qm.api.getClientId()));
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
@@ -254,7 +254,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             qmLogService.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
         }
-        urlParams.clientId = encodeURIComponent(qmService.getClientId());
+        urlParams.clientId = encodeURIComponent(qm.api.getClientId());
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
             if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
@@ -935,7 +935,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isAndroid){platform = 'android';}
         if($rootScope.isIOS){platform = 'ios';}
         if($rootScope.isWindows){platform = 'windows';}
-        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId(), stacktrace: qmLog.getStackTrace()};
+        var params = {platform: platform, deviceToken: deviceToken, clientId: qm.api.getClientId(), stacktrace: qmLog.getStackTrace()};
         qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
     qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
@@ -1103,7 +1103,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessTokenFromLocalStorage);
-        } else if (refreshToken && expiresAtMilliseconds && qmService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
+        } else if (refreshToken && expiresAtMilliseconds && qm.api.getClientId() !== 'oAuthDisabled' && qm.privateConfig) {
             qmLog.authDebug(window.qm.timeHelper.getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             qmService.refreshAccessToken(refreshToken, deferred);
         } else if(accessTokenFromLocalStorage){
@@ -1112,7 +1112,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.getDevCredentials().then(function(){
                 deferred.resolve();
             });
-        } else if(qmService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
+        } else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig) {
             qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
             return deferred.promise;
@@ -1124,10 +1124,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshAccessToken = function(refreshToken, deferred) {
         qmLog.authDebug('Refresh token will be used to fetch access token from ' +
-            qmService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qmService.getClientId());
+            qmService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qm.api.getClientId());
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
-            client_id: qmService.getClientIdFromPrivateConfigs(),
+            client_id: qm.api.getClientId(),
             client_secret: qmService.getClientSecret(),
             refresh_token: refreshToken,
             grant_type: 'refresh_token'
@@ -1182,7 +1182,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
         // add params
         url += "response_type=code";
-        url += "&client_id=" + qmService.getClientIdFromPrivateConfigs();
+        url += "&client_id=" + qm.api.getClientId();
         url += "&client_secret=" + qmService.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
@@ -1194,7 +1194,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.generateV2OAuthUrl= function(JWTToken) {
         var url = qmService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
         url += "response_type=code";
-        url += "&client_id=" + qmService.getClientIdFromPrivateConfigs();
+        url += "&client_id=" + qm.api.getClientId();
         url += "&client_secret=" + qmService.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
@@ -1225,7 +1225,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 'Content-Type': "application/json"
             },
             data: {
-                client_id: qmService.getClientIdFromPrivateConfigs(),
+                client_id: qm.api.getClientId(),
                 client_secret: qmService.getClientSecret(),
                 grant_type: 'authorization_code',
                 code: authorizationCode,
@@ -1273,7 +1273,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qmService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
         url += "provider=" + encodeURIComponent(provider);
         url += "&accessToken=" + encodeURIComponent(accessToken);
-        url += "&client_id=" + encodeURIComponent(qmService.getClientId());
+        url += "&client_id=" + encodeURIComponent(qm.api.getClientId());
         qmLogService.debug('qmService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url, null);
         $http({
             method: 'GET',
@@ -1895,21 +1895,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return 'ion-speedometer';
         }
     };
-    qmService.getClientId = function(){
-        if(qm.getAppSettings() && $rootScope.appSettings.clientId){
-            if(qm.urlHelper.getParam('clientIdDebug')){qmLogService.debug(null, '$rootScope.appSettings.clientId is ' + $rootScope.appSettings.clientId, null);}
-            return $rootScope.appSettings.clientId;
-        } else {
-            qmLogService.debug('$rootScope.appSettings.clientId is not present', null);
-        }
-        if(!window.private_keys){return qm.api.getClientId();}
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
-        if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS;}
-        if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android;}
-        if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome;}
-        if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows;}
-        return window.private_keys.client_ids.Web;
-    };
     qmService.setPlatformVariables = function () {
         //qmLogService.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
         $rootScope.isWeb = window.location.href.indexOf('https://') !== -1;
@@ -1933,25 +1918,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return str.replace(/%20([^%20]*)$/,'$1');
     };
     qmService.getClientSecret = function(){
-        if(!window.private_keys){return;}
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_secrets.Chrome;}
-        if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
-        if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
-        if ($rootScope.isChromeExtension) { return window.private_keys.client_secrets.Chrome; }
-        if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
-        return window.private_keys.client_secrets.Web;
-    };
-    qmService.getClientIdFromPrivateConfigs = function(){
-        if(!window.private_keys){
-            qmLog.error("No private_keys!");
-            return qmService.getClientId();
-        }
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
-        if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
-        if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
-        if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome; }
-        if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
-        return window.private_keys.client_ids.Web;
+        if(!qm.privateConfig){return;}
+        if (window.chrome && chrome.runtime && chrome.runtime.id) {return qm.privateConfig.client_secrets.Chrome;}
+        if ($rootScope.isIOS) { return qm.privateConfig.client_secrets.iOS; }
+        if ($rootScope.isAndroid) { return qm.privateConfig.client_secrets.Android; }
+        if ($rootScope.isChromeExtension) { return qm.privateConfig.client_secrets.Chrome; }
+        if ($rootScope.isWindows) { return qm.privateConfig.client_secrets.Windows; }
+        return qm.privateConfig.client_secrets.Web;
     };
     qmService.getRedirectUri = function () {
         if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
@@ -1964,7 +1937,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return 'https';
     };
-
     qmService.getQuantiModoUrl = function (path) {
         if(typeof path === "undefined") {path = "";}
         return qm.api.getBaseUrl() + "/" + path;
@@ -2068,7 +2040,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getLocationInfoFromGoogleMaps = function ($http) {
-        var GOOGLE_MAPS_API_KEY = window.private_keys.GOOGLE_MAPS_API_KEY;
+        var GOOGLE_MAPS_API_KEY = qm.privateConfig.GOOGLE_MAPS_API_KEY;
         if (!GOOGLE_MAPS_API_KEY) {qmLogService.error('Please add GOOGLE_MAPS_API_KEY to private config');}
         function lookup(latitude, longitude) {
             return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=' + GOOGLE_MAPS_API_KEY);
@@ -2076,8 +2048,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return {lookup: lookup};
     };
     qmService.getLocationInfoFromFoursquare = function ($http) {
-        var FOURSQUARE_CLIENT_ID = window.private_keys.FOURSQUARE_CLIENT_ID;
-        var FOURSQUARE_CLIENT_SECRET = window.private_keys.FOURSQUARE_CLIENT_SECRET;
+        var FOURSQUARE_CLIENT_ID = qm.privateConfig.FOURSQUARE_CLIENT_ID;
+        var FOURSQUARE_CLIENT_SECRET = qm.privateConfig.FOURSQUARE_CLIENT_SECRET;
         if (!FOURSQUARE_CLIENT_ID) {qmLogService.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');}
         function whatsAt(latitude, longitude) {
             return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + latitude + ',' + longitude +
@@ -6651,11 +6623,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //qmService.humanConnect();
         }
     };
-    qmService.getPrivateConfigs = function(){
-        $http.get('private_configs/default.private_config.json').success(function(response) {
-            if(typeof response === "string"){qmLogService.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
-        });
-    };
+
     qmService.getDevCredentials = function(){
         return $http.get('private_configs/dev-credentials.json').success(function(response) {
             if(typeof response !== "string"){
@@ -6881,12 +6849,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if (oldLink) {document.head.removeChild(oldLink);}
             document.head.appendChild(link);
         }
-        window.qm.appSettings = appSettings;
-        window.qm.getAppSettings().designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        window.qm.getAppSettings().appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.qm.getAppSettings().appDesign.menu);
+        qm.appSettings = appSettings;
+        qm.getAppSettings().designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        qm.getAppSettings().appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(qm.getAppSettings().appDesign.menu);
         //window.qm.getAppSettings().appDesign.menu = qmService.convertHrefInAllMenus(window.qm.getAppSettings().appDesign.menu);  // Should be done on server
         //window.qm.getAppSettings().appDesign.floatingActionButton = qmService.convertHrefInFab(window.qm.getAppSettings().appDesign.floatingActionButton);
-        $rootScope.appSettings = window.qm.getAppSettings();
+        $rootScope.appSettings = qm.getAppSettings();
         qmLogService.debug('appSettings.clientId is ' + $rootScope.appSettings.clientId);
         qmLogService.debug('$rootScope.appSettings: ', null, $rootScope.appSettings);
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6923,10 +6891,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.info('shouldWeUseIonicLocalNotifications is false', null);
         }
     }
-    qmService.initializeApplication = function(appSettingsResponse){
+    qmService.initializeApplication = function(appSettings){
         if(window.config){return;}
         qmLog.checkUrlAndStorageForDebugMode();
-        var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
@@ -7032,7 +6999,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
             template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
-            template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
+            template = template + "QuantiModo Client ID: " + qm.api.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
             template = template + "User ID: " + $rootScope.user.id + '\r\n';
             template = template + "User Email: " + $rootScope.user.email + '\r\n';
