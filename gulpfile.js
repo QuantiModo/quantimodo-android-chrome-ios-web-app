@@ -9,6 +9,8 @@ var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.DEBUG_BUILD */
 /** @namespace process.env.BUILD_DEBUG */
 var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
+/** @namespace process.env.DO_NOT_MINIFY */
+var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
@@ -885,6 +887,9 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
+        if(!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET){
+            appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+        }
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
         delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
@@ -895,27 +900,27 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        if(!response.privateConfig && devCredentials.accessToken){
-            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
-                " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
-        }
-        /** @namespace response.privateConfig */
-        if(response.privateConfig){
-            privateConfig = response.privateConfig;
-            try {
-                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (error) {
-                logError(error);
-            }
-            try {
-                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (err){
-                logDebug(err);
-            }
-        } else {
-            logError("No private config provided!  User will not be able to use OAuth login!");
-        }
+        // if(!response.privateConfig && devCredentials.accessToken){
+        //     logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+        //         + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+        //         " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
+        // }
+        // /** @namespace response.privateConfig */
+        // if(response.privateConfig){
+        //     privateConfig = response.privateConfig;
+        //     try {
+        //         //writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+        //     } catch (error) {
+        //         logError(error);
+        //     }
+        //     try {
+        //         writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+        //     } catch (err){
+        //         logDebug(err);
+        //     }
+        // } else {
+        //     logError("No private config provided!  User will not be able to use OAuth login!");
+        // }
         writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
         try {
             writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
@@ -1382,6 +1387,9 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'));
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    if(doNotMinify){
+        return copyFiles('src/**/*', 'www', []);
+    }
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 var pump = require('pump');
@@ -1942,7 +1950,7 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs',
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**','!src/private_configs',
         '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
 });
 gulp.task('copySrcToWww', [], function () {
