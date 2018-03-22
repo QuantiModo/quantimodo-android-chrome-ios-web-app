@@ -1128,7 +1128,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
             client_id: qm.api.getClientId(),
-            client_secret: qmService.getClientSecret(),
+            client_secret: qm.appsManager.getClientSecret(),
             refresh_token: refreshToken,
             grant_type: 'refresh_token'
         }).success(function (data) {
@@ -1183,7 +1183,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // add params
         url += "response_type=code";
         url += "&client_id=" + qm.api.getClientId();
-        url += "&client_secret=" + qmService.getClientSecret();
+        url += "&client_secret=" + qm.appsManager.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
         if(register === true){url += "&register=true";}
@@ -1195,7 +1195,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qmService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
         url += "response_type=code";
         url += "&client_id=" + qm.api.getClientId();
-        url += "&client_secret=" + qmService.getClientSecret();
+        url += "&client_secret=" + qm.appsManager.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
@@ -1226,7 +1226,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             data: {
                 client_id: qm.api.getClientId(),
-                client_secret: qmService.getClientSecret(),
+                client_secret: qm.appsManager.getClientSecret(),
                 grant_type: 'authorization_code',
                 code: authorizationCode,
                 redirect_uri: qmService.getRedirectUri()
@@ -1916,15 +1916,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var permissions = ['readmeasurements', 'writemeasurements'];
         for(var i=0; i < permissions.length; i++) {str += permissions[i] + "%20";}
         return str.replace(/%20([^%20]*)$/,'$1');
-    };
-    qmService.getClientSecret = function(){
-        if(!qm.privateConfig){return;}
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {return qm.privateConfig.client_secrets.Chrome;}
-        if ($rootScope.isIOS) { return qm.privateConfig.client_secrets.iOS; }
-        if ($rootScope.isAndroid) { return qm.privateConfig.client_secrets.Android; }
-        if ($rootScope.isChromeExtension) { return qm.privateConfig.client_secrets.Chrome; }
-        if ($rootScope.isWindows) { return qm.privateConfig.client_secrets.Windows; }
-        return qm.privateConfig.client_secrets.Web;
     };
     qmService.getRedirectUri = function () {
         if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}

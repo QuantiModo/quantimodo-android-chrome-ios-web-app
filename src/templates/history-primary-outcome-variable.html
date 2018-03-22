@@ -24,7 +24,7 @@
          </div>
       <ion-list id="historyList">
           <div id="historyItem"
-               collection-repeat="historyItem in history"
+               collection-repeat="historyItem in state.history"
                data-measurementid="{{historyItem.id}}"
                ng-hide="historyItem.hide"
                on-hold="showActionSheet(historyItem, $index)"

@@ -11,12 +11,14 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl',
 	};
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
-		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
+		$scope.state.history = qmService.getLocalPrimaryOutcomeMeasurements();
+		if($scope.state.history){qmService.hideLoader();}
         qmService.showInfoToast($scope.syncDisplayText);
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
+            $scope.state.history = qmService.getLocalPrimaryOutcomeMeasurements();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
+            qmService.hideLoader();
         });
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
@@ -30,7 +32,7 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl',
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){
 		qmLogService.debug(null, $state.current.name + ': ' + 'updatePrimaryOutcomeHistory broadcast received..', null);
-		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
+		$scope.state.history = qmService.getLocalPrimaryOutcomeMeasurements();
 	});
 	$scope.showActionSheet = function(measurement) {
 		$scope.state.measurement = measurement;
