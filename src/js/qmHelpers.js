@@ -325,6 +325,7 @@ window.qm = {
         },
         getClientSecret: function(){
             if(qm.clientSecret){return qm.clientSecret;}
+            if(qm.appSettings.clientSecret){return qm.appSettings.clientSecret;}
             if(!qm.privateConfig){
                 qmLog.error("No client secret or private config!");
                 return null;
