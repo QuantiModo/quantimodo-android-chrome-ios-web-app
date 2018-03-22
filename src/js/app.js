@@ -975,12 +975,17 @@ angular.module('starter',
         .state(qmStates.history, {
             url: "/history",
             params: {
-                updatedMeasurementHistory: null
+                updatedMeasurementHistory: null,
+                variableObject : null,
+                refresh: null,
+                variableCategoryName: null,
+                connectorName: null,
+                sourceName: null
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/history-primary-outcome-variable.html",
-                    controller: 'HistoryPrimaryOutcomeCtrl'
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
                 }
             }
         })
