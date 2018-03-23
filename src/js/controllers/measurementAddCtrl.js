@@ -1,5 +1,6 @@
-angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService", "ionicTimePicker", "ionicDatePicker", "$ionicLoading", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, qmService, qmLogService, ionicTimePicker, ionicDatePicker, $ionicLoading) {
+angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope",
+    "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService",
+    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory, qmService, qmLogService) {
     $scope.controller_name = "MeasurementAddCtrl";
     var variableCategoryName = $stateParams.variableCategoryName;
     var variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
@@ -51,7 +52,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(!$scope.state.measurementIsSetup){setupFromVariableObject(qm.getPrimaryOutcomeVariable());}
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLogService.debug('$ionicView.enter ' + $state.current.name, null);
+        qmLogService.debug('$ionicView.enter ' + $state.current.name);
+        qmService.hideLoader();
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
@@ -69,12 +71,17 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             });
         $scope.goBack();
     };
-    $scope.cancel = function(){ $scope.goBack(); };
+    $scope.cancel = function(){
+        $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
+    };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
         qmService.showInfoToast('Deleting measurement...');
-        qmService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-            $scope.goBack();
-        });
+        var backStateParams = {};
+        if($stateParams.currentMeasurementHistory){
+            backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
+        }
+        qmService.deleteMeasurementFromServer($scope.state.measurement);
+        $scope.goBack(backStateParams);
     };
     var validate = function () {
         var message;
@@ -140,19 +147,24 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         // Assign measurement value if it does not exist
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
         qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
+        var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
+        toastMessage = toastMessage.replace(' /', '/');
+        qmService.showInfoToast(toastMessage);
         // Measurement only - post measurement. This is for adding or editing
+        var backStateParams = {};
+        if($stateParams.currentMeasurementHistory){
+            backStateParams.updatedMeasurementHistory =
+                qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, $scope.state.measurement);
+        }
         qmService.postMeasurementDeferred(measurementInfo, function(){
             if(unitChanged){
                 qmLog.error("Syncing reminders because unit changed");
                 qm.storage.removeItem(qm.items.trackingReminders);
                 qmService.syncTrackingReminders();
-                $scope.goBack({updatedMeasurement: $scope.state.measurement});
+                $scope.goBack(backStateParams);
             }
         });
-        var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
-        toastMessage = toastMessage.replace(' /', '/');
-        qmService.showInfoToast(toastMessage);
-        if(!unitChanged){$scope.goBack({updatedMeasurement: $scope.state.measurement});}
+        if(!unitChanged){$scope.goBack(backStateParams);} // We can go back immediately if no unit change
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
         setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);
@@ -203,14 +215,19 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         setupValueFieldType(unitAbbreviatedName, valence);
     }
-    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
+    $scope.selectPrimaryOutcomeVariableValue = function($event, newValue){
         // remove any previous primary outcome variables if present
         jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
         // make this primary outcome variable glow visually
         jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
         jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
-        $scope.state.measurement.value = val;
-        qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + val, null);
+        if($scope.state.measurement.displayValueAndUnitString){
+            $scope.state.measurement.displayValueAndUnitString =
+                $scope.state.measurement.displayValueAndUnitString.replace($scope.state.measurement.value, newValue);
+        }
+        $scope.state.measurement.value = newValue;
+        $scope.state.measurement.pngPath = $event.currentTarget.currentSrc;
+        qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + newValue);
     };
     $scope.showUnitsDropDown = function(){ $scope.showUnitsDropDown = true; };
     var setupFromUrlParameters = function() {

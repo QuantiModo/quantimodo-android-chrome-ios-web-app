@@ -36,7 +36,7 @@ angular.module('starter',
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
-    qmService.getPrivateConfigs();
+    qm.appsManager.loadPrivateConfigFromJsonFile();
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
@@ -142,8 +142,12 @@ angular.module('starter',
     };
 
     var config_resolver = {
-        appSettingsResponse: function($http){
-            return $http({method: 'GET', url: qm.api.getAppSettingsUrl()});
+        appSettingsResponse: function($q){
+            var deferred = $q.defer();
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
+                deferred.resolve(appSettings);
+            });
+            return deferred.promise;
         }
     };
     //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([qm.appsManager.getAppConfig(), qm.appsManager.getPrivateConfig()]);}];
@@ -377,7 +381,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                variableName: null
+                variableName: null,
+                currentMeasurementHistory: null
             },
             views: {
                 'menuContent': {
@@ -970,12 +975,17 @@ angular.module('starter',
         .state(qmStates.history, {
             url: "/history",
             params: {
-                updatedMeasurement: null
+                updatedMeasurementHistory: null,
+                variableObject : null,
+                refresh: null,
+                variableCategoryName: null,
+                connectorName: null,
+                sourceName: null
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/history-primary-outcome-variable.html",
-                    controller: 'HistoryPrimaryOutcomeCtrl'
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
                 }
             }
         })
@@ -986,7 +996,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 connectorName: null,
                 sourceName: null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1000,7 +1010,7 @@ angular.module('starter',
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1015,7 +1025,7 @@ angular.module('starter',
             cache: true,
             params: {
                 variableObject : null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {

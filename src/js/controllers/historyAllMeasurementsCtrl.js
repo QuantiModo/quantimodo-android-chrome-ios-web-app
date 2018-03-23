@@ -61,8 +61,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
     function updateMeasurementIfNecessary(){
-        if($stateParams.updatedMeasurement && $scope.state.history && $scope.state.history.length){
-            $scope.state.history = qm.arrayHelper.replaceElementInArrayById($scope.state.history, $stateParams.updatedMeasurement);
+        if($stateParams.updatedMeasurementHistory){
+            $scope.state.history = $stateParams.updatedMeasurementHistory;
         }
     }
     function hideLoader() {
@@ -89,15 +89,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		qmLog.info("Could not get variableName")
 	}
 	$scope.editMeasurement = function(measurement){
-		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
-		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
+		//measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
+		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name,
+            fromUrl: window.location.href, currentMeasurementHistory: $scope.state.history});
 	};
 	$scope.refreshHistory = function(){
         $scope.state.history = [];
 		$scope.getHistory();
 	};
 	$scope.getHistory = function(){
-	    if($scope.state.loading){return qmLog.info("Already getting measurements!");}
+        if($scope.state.loading){return qmLog.info("Already getting measurements!");}
         if(!$scope.state.moreDataCanBeLoaded){return qmLog.info("No more measurements!");}
         $scope.state.loading = true;
         if(!$scope.state.history){$scope.state.history = [];}
@@ -113,7 +114,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 			}
 		}
 		function successHandler(measurements) {
-		    if(!measurements || measurements.length < params.limit){$scope.state.moreDataCanBeLoaded = false;}
+            if(!measurements || measurements.length < params.limit){$scope.state.moreDataCanBeLoaded = false;}
             if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
             measurements = qmService.addInfoAndImagesToMeasurements(measurements);
             if(!qm.arrayHelper.variableIsArray($scope.state.history)){

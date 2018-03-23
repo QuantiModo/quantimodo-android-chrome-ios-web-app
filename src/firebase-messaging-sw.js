@@ -11,6 +11,7 @@ var libUrl = getIonicAppBaseUrl()+'lib/';
 console.log("Service worker importing libararies from " + libUrl);
 importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
+importScripts(libUrl+'localforage/dist/localforage.js');
 importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
 importScripts(getIonicAppBaseUrl()+'js/qmChrome.js');

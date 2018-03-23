@@ -23,7 +23,6 @@
 	        fileref.setAttribute("type","text/javascript");
 	        fileref.setAttribute("src", '../'+url);
 	        document.getElementsByTagName("head")[0].appendChild(fileref);
-			private_url = qm.appsManager.getPrivateConfig(getAppNameFromUrl());
 	        var private_fileref=document.createElement('script');
 	        private_fileref.setAttribute("type","text/javascript");
 	        private_fileref.setAttribute("src", '../'+private_url);

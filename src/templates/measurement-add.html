@@ -12,7 +12,7 @@
                         <option ng-repeat="variableCategoryName in state.variableCategoryNames" value="{{variableCategoryName}}">{{variableCategoryName}}</option>
                     </select>
                 </label>
-                <label ng-if="state.measurement.inputType === 'value'" class="item item-input">
+                <label ng-if="state.measurement.inputType === 'value' || state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'" class="item item-input">
                     <div class="input-label">{{state.defaultValueLabel}}</div>
                     <input type="number" class="text-right" ng-model="state.measurement.value" id="defaultValue" ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
@@ -48,16 +48,16 @@
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">
                 </div>
-                <div ng-if="state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'">
-                    <div class="row" >
-                        <div style="width: 100%" class="range range-positive">
-                            {{state.measurement.minimumAllowedValue}}
-                            <input ng-model="state.measurement.value" type="range" name="valueSlider"
-                                   min="{{state.measurement.minimumAllowedValue}}" max="{{state.measurement.maximumAllowedValue}}" value="{{state.measurement.value}}">
-                            {{state.measurement.maximumAllowedValue}}
-                        </div>
-                    </div>
-                </div>
+                <!--<div ng-if="state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'">-->
+                    <!--<div class="row" >-->
+                        <!--<div style="width: 100%" class="range range-positive">-->
+                            <!--{{state.measurement.minimumAllowedValue}}-->
+                            <!--<input ng-model="state.measurement.value" type="range" name="valueSlider"-->
+                                   <!--min="{{state.measurement.minimumAllowedValue}}" max="{{state.measurement.maximumAllowedValue}}" value="{{state.measurement.value}}">-->
+                            <!--{{state.measurement.maximumAllowedValue}}-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <div ng-if="state.measurement.inputType === 'yesOrNo'" class="item" >
                     Value
                     <md-radio-group ng-model="state.measurement.value" layout="row" ng-init="state.measurement.value = 1" style="float: right">
