@@ -1010,12 +1010,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
         qm.auth.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
         if(!qm.auth.accessTokenFromUrl){return null;}
-        qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
-        qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
-        qm.storage.setItem('onboarded', true);
-        qm.storage.setItem('introSeen', true);
-        qmLog.info('Setting onboarded and introSeen to true');
         if($state.current.name !== 'app.login'){
+            qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
+            qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
+            qm.storage.setItem('onboarded', true);
+            qm.storage.setItem('introSeen', true);
+            qmLog.info('Setting onboarded and introSeen to true');
             qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
             qm.storage.setItem('afterLoginGoToState', null);
             qm.storage.setItem('afterLoginGoToUrl', null);
