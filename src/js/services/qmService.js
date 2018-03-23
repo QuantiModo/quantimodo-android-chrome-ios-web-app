@@ -2,7 +2,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm.notifications */
 /** @namespace window.qm.storage */
-/* global chcp $ionicDeploy */
+/* global chcp $ionicDeploy qmStates */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
@@ -1005,15 +1005,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("getAccessTokenFromUrl: No previous $rootScope.accessTokenFromUrl");
             $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
-            if($rootScope.accessTokenFromUrl){
+            if(qm.auth.getAccessTokenFromCurrentUrl()){
                 qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
-                qmService.storage.setItem('onboarded', true);
-                qmService.storage.setItem('introSeen', true);
-                qmLogService.info('Setting onboarded and introSeen to true');
+                qm.storage.setItem('onboarded', true);
+                qm.storage.setItem('introSeen', true);
+                qmLog.info('Setting onboarded and introSeen to true');
                 if($state.current.name !== 'app.login'){
-                    qmLogService.info('Setting afterLoginGoToState and afterLoginGoToUrl to null', null);
-                    qmService.storage.setItem('afterLoginGoToState', null);
-                    qmService.storage.setItem('afterLoginGoToUrl', null);
+                    qmLogService.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
+                    qm.storage.setItem('afterLoginGoToState', null);
+                    qm.storage.setItem('afterLoginGoToUrl', null);
                 } else {
                     qmLogService.info('On login state so not setting afterLoginGoToState and afterLoginGoToUrl to null', null);
                 }
@@ -1022,16 +1022,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + $rootScope.accessTokenFromUrl);
         return $rootScope.accessTokenFromUrl;
     };
-    function weHaveUserOrAccessToken(){
-        if($rootScope.user){
-            qmLog.authDebug("weHaveUserOrAccessToken: We already have a $rootScope.user");
-            return true;
-        }
-        if(qmService.getAccessTokenFromUrl()){
-            qmLog.authDebug("weHaveUserOrAccessToken: We already have a AccessTokenFromUrl");
-            return true;
-        }
-    }
     qmService.goToState = function(to, params, options){
         qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
         $state.go(to, params, options);
@@ -1173,7 +1163,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
-
     function qmApiGeneralErrorHandler(error, data, response, options) {
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401 || (response.text && response.text.indexOf('expired') !== -1)){
@@ -1591,7 +1580,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
-        if(!weHaveUserOrAccessToken()){
+        if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
             errorMessage = 'Cannot sync because we do not have a user or access token in url';
             qmLogService.error(errorMessage);
             deferred.reject(errorMessage);
@@ -1619,7 +1608,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     qmService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
-        if(!weHaveUserOrAccessToken()){
+        if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
             var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
             qmLogService.error(errorMessage);
             defer.reject(errorMessage);
@@ -1655,7 +1644,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return true;
         }
         var defer = $q.defer();
-        if(!weHaveUserOrAccessToken()){
+        if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
             qmLogService.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user', null);
             defer.resolve();
             return defer.promise;
@@ -2581,7 +2570,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qm.storage.setTrackingReminderNotifications(notifications);
                         }
                     } else {
-                        qmLogService.error("No postTrackingRemindersToApi response.data!")
+                        qmLogService.error("No postTrackingRemindersToApi response.data!");
                     }
                     deferred.resolve(response);
                 }, function(error){deferred.reject(error);});
@@ -2625,8 +2614,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var yesterday = reference.clone().subtract(1, 'days').startOf('day');
         var weekOld = reference.clone().subtract(7, 'days').startOf('day');
         var monthOld = reference.clone().subtract(30, 'days').startOf('day');
+        var todayResult;
         try {
-            var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+            todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
             });
@@ -5882,7 +5872,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
         qmLog.authDebug('Called qmService.sendToLoginIfNecessaryAndComeBack', null);
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
-        if(!weHaveUserOrAccessToken()){
+        if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
             if(afterLoginGoToState){
                 setAfterLoginGoToState(afterLoginGoToState);
             } else {
