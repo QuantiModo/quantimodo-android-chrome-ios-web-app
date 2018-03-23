@@ -273,7 +273,8 @@ window.qm = {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
-                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
+                    var fallback = null; // Just return null instead of 500 page HTML
+                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                     successHandler(responseObject);
                 }
             };
@@ -299,7 +300,8 @@ window.qm = {
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.onreadystatechange = function() {//Call a function when the state changes.
                 if(xhr.readyState == XMLHttpRequest.DONE) {
-                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText);
+                    var fallback = xhr.responseText;
+                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                     successHandler(responseObject);
                 }
             };
@@ -1700,7 +1702,7 @@ window.qm = {
                 return null;
             }
             if (item && typeof item === "string"){
-                qm.globals[key] = qm.stringHelper.parseIfJsonString(item);
+                qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
                 window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
             } else {
