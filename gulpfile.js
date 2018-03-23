@@ -9,6 +9,8 @@ var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.DEBUG_BUILD */
 /** @namespace process.env.BUILD_DEBUG */
 var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
+/** @namespace process.env.DO_NOT_MINIFY */
+var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
@@ -635,6 +637,8 @@ function generateConfigXmlFromTemplate(callback) {
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_ID);
+    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_SECRET);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
             throw new Error('ERROR: failed to read xml file', err);
@@ -817,6 +821,7 @@ function writeToFile(filePath, stringContents) {
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
+gulp.task('deleteWwwManifestJson', function () {return clean(['www/manifest.json']);});
 gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
@@ -882,6 +887,9 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
+        if(!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET){
+            appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+        }
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
         delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
@@ -1083,6 +1091,9 @@ gulp.task('deleteNodeModules', function () {
 });
 gulp.task('deleteWwwPrivateConfigs', function () {
     return cleanFolder(paths.www.privateConfigs);
+});
+gulp.task('deleteWwwConfigs', function () {
+    return cleanFolder(paths.www.appConfigs);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
@@ -1376,6 +1387,9 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'));
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    if(doNotMinify){
+        return copyFiles('src/**/*', 'www', []);
+    }
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 var pump = require('pump');
@@ -1935,8 +1949,15 @@ gulp.task('copyIonIconsToWww', [], function () {
 gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
+gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**','!src/private_configs',
+        '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+});
 gulp.task('copySrcToWww', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**', '!src/private_configs', '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+    return copyFiles('src/**/*', 'www', []);
+});
+gulp.task('copySrcJsToWww', [], function () {
+    return copyFiles('src/js/**/*', 'www/js');
 });
 gulp.task('copyConfigsToSrc', [], function () {
     return copyFiles('www/configs/*', 'src/configs', []);
@@ -2055,7 +2076,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
-        'copySrcToWww',
+        'copySrcToWwwExceptLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
         'getUnits',  // This is being weird for some reason
@@ -2301,14 +2322,16 @@ gulp.task('prepareQuantiModoIos', function (callback) {
 gulp.task('copySrcAndEmulateAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToAndroidWww',
+        'copySrcToWww',
+        //'copySrcToAndroidWww',
         'ionicEmulateAndroid',
         callback);
 });
 gulp.task('copySrcAndRunAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToAndroidWww',
+        'copySrcToWww',
+        //'copySrcToAndroidWww',
         'ionicRunAndroid',
         callback);
 });
@@ -2366,8 +2389,10 @@ gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var string = '{"name": "'+appSettings.appDisplayName+'", '+
         '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
-        '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
-        '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        // '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
+        // '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        '"ios_identifier": "",' +
+        '"android_identifier": "",' +
         '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push"}';
     return writeToFile('cordova-hcp.json', string);
 });
@@ -2378,13 +2403,17 @@ gulp.task('cordovaHotCodePushLogin', [], function () {
     return writeToFile('.chcplogin', string);
 });
 gulp.task('cordovaHotCodePushBuildDeploy', [], function (callback) {
-    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback)
+    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('deployToProduction', [], function (callback) {
     runSequence(
         'cordovaHotCodePushConfig',
         'cordovaHotCodePushLogin',
-        'cordovaHotCodePushBuildDeploy',
+        //'deleteDevCredentialsFromWww',
+        'deleteWwwPrivateConfigs',
+        'deleteWwwConfigs',
+        'deleteWwwManifestJson',
+        //'cordovaHotCodePushBuildDeploy',
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
@@ -2399,8 +2428,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.appStatus.buildEnabled */
     /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
     if(!appSettings.appStatus.buildEnabled.androidRelease){
-        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
-            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is " +
+            appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
@@ -2434,4 +2463,12 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         "fastlaneSupplyBeta",
         "post-app-status",
         callback);
+});
+var watch = require('gulp-watch');
+gulp.task('watch-src', function() {
+    var source = './src',
+        destination = './www';
+    gulp.src(source + '/**/*', {base: source})
+        .pipe(watch(source, {base: source}))
+        .pipe(gulp.dest(destination));
 });
