@@ -2048,9 +2048,7 @@ window.qm = {
         },
         getUserFromLocalStorage: function(){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
-            if(!window.qmUser){
-                qmLog.info("We do not have a user in local storage!");
-            }
+            if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
             return window.qmUser;
         },
         setUser: function(user){
@@ -2279,6 +2277,7 @@ var appConfigFileNames = {
     "moodimodo" : "moodimodo",
     "oauth" : "quantimodo",
     "quantimodo" : "quantimodo",
+    "staging" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
 // returns bool | string
