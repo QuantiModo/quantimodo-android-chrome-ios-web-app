@@ -342,9 +342,9 @@ window.qm = {
             }
             localforage.getItem(qm.items.appSettings, function(error, appSettings){
                 if(appSettings){
-                    qm.appSettings = appSettings;
-                    successHandler(appSettings);
-                    return;
+                    // qm.appSettings = appSettings;
+                    // successHandler(appSettings);
+                    // return;
                 }
                 qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){

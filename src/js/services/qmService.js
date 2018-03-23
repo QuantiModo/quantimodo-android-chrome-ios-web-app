@@ -2,7 +2,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm.notifications */
 /** @namespace window.qm.storage */
-/* global chcp $ionicDeploy qmStates */
+/* global chcp $ionicDeploy qmStates chcp qmStates */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
@@ -687,7 +687,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserCorrelationsFromApi');
         }
         apiInstance.getCorrelations(params, callback);
-        var options = {};
+        //var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
     };
@@ -787,7 +787,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                 checkHoursSinceLastPushNotificationReceived();
             }
-            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler)
+            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler);
         }
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
@@ -1446,8 +1446,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getUserEmailPreferences(params, function(user){
             successHandler(user);
         }, function(error){
-            errorHandler(error)}
-        );
+            errorHandler(error);
+        });
     };
     qmService.completelyResetAppState = function(){
         $rootScope.user = null;

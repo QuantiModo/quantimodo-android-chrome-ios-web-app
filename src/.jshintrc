@@ -59,6 +59,7 @@
     "qmAnalytics": false,
     "OverApps": false,
     "localforage": false,
-      "firebase": false
+      "firebase": false,
+      "qmStates": false
   }
 }
