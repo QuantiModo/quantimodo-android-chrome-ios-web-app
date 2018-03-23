@@ -1000,27 +1000,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(variableCategoryName && variableCategoryName !== "Anything"){return variableCategoryName;}
         return null;
     };
-    qmService.getAccessTokenFromUrl = function(){
-        if(!$rootScope.accessTokenFromUrl){
-            qmLog.authDebug("getAccessTokenFromUrl: No previous $rootScope.accessTokenFromUrl");
-            $rootScope.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
-            qmLog.authDebug("getAccessTokenFromUrl: Setting $rootScope.accessTokenFromUrl to " + $rootScope.accessTokenFromUrl);
-            if(qm.auth.getAccessTokenFromCurrentUrl()){
-                qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
-                qm.storage.setItem('onboarded', true);
-                qm.storage.setItem('introSeen', true);
-                qmLog.info('Setting onboarded and introSeen to true');
-                if($state.current.name !== 'app.login'){
-                    qmLogService.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
-                    qm.storage.setItem('afterLoginGoToState', null);
-                    qm.storage.setItem('afterLoginGoToUrl', null);
-                } else {
-                    qmLogService.info('On login state so not setting afterLoginGoToState and afterLoginGoToUrl to null', null);
-                }
-            }
+    qmService.getAccessTokenFromUrlAndSetLocalStorageFlags = function(){
+        if(qm.auth.accessTokenFromUrl){ return qm.auth.accessTokenFromUrl; }
+        qmLog.authDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
+        qm.auth.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
+        if(!qm.auth.accessTokenFromUrl){return null;}
+        qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
+        qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
+        qm.storage.setItem('onboarded', true);
+        qm.storage.setItem('introSeen', true);
+        qmLog.info('Setting onboarded and introSeen to true');
+        if($state.current.name !== 'app.login'){
+            qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
+            qm.storage.setItem('afterLoginGoToState', null);
+            qm.storage.setItem('afterLoginGoToUrl', null);
+        } else {
+            qmLog.info('On login state so not setting afterLoginGoToState and afterLoginGoToUrl to null');
         }
-        qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + $rootScope.accessTokenFromUrl);
-        return $rootScope.accessTokenFromUrl;
+        qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + qm.auth.accessTokenFromUrl);
+        return qm.auth.accessTokenFromUrl;
     };
     qmService.goToState = function(to, params, options){
         qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
@@ -1043,14 +1041,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
-        if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
+        if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
             qmLog.authDebug("$rootScope.user token matches the one in url");
             return;
         }
-        if(qmService.getAccessTokenFromUrl()){
+        if(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
             qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
-            var accessTokenFromLocalStorage = qm.storage.getItem("accessToken");
-            if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
+            var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
+            if(accessTokenFromLocalStorage && qm.auth.accessTokenFromUrl !== accessTokenFromLocalStorage){
                 qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
@@ -1063,14 +1061,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 user = $rootScope.user;
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No user from local storage but we do have a $rootScope user");
             }
-            if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
+            if(user && qm.auth.accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
                 qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
-                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
+                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
             }
             if(!qm.urlHelper.getParam('doNotRemember')){
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-                qmService.storage.setItem('accessToken', $rootScope.accessTokenFromUrl);
+                qmService.storage.setItem(qm.items.accessToken, qm.auth.accessTokenFromUrl);
             }
             if(!$rootScope.user){
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
@@ -1080,12 +1078,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        if(qmService.getAccessTokenFromUrl()){
+        if(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
             qmLog.authDebug("getAccessTokenFromAnySource: Got AccessTokenFromUrl");
-            deferred.resolve($rootScope.accessTokenFromUrl);
+            deferred.resolve(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags());
             return deferred.promise;
         }
-        var accessTokenFromLocalStorage = qm.storage.getItem("accessToken");
+        var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
         var expiresAtMilliseconds = qm.storage.getItem("expiresAtMilliseconds");
         var refreshToken = qm.storage.getItem("refreshToken");
         qmLog.authDebug('getAccessTokenFromAnySource: Values from local storage:',
@@ -1150,8 +1148,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return false;
         }
         function getAccessToken(){
-            if(qmService.getAccessTokenFromUrl()){
-                return qmService.getAccessTokenFromUrl();
+            if(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
+                return qmService.getAccessTokenFromUrlAndSetLocalStorageFlags();
             }
             if($rootScope.user && $rootScope.user.accessToken){return $rootScope.user.accessToken;}
             var accessTokenFromLocalStorage = qm.storage.getItem("accessToken");
