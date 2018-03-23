@@ -1380,7 +1380,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!qmService.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
     };
     function sendToAfterLoginGoToUrlIfNecessary() {
-        var afterLoginGoToUrl = qm.storage.getAsString('afterLoginGoToUrl');
+        var afterLoginGoToUrl = qm.storage.getItem('afterLoginGoToUrl');
         if(afterLoginGoToUrl) {
             qmLogService.info('Going to afterLoginGoToUrl from local storage  ' + afterLoginGoToUrl);
             qm.storage.removeItem('afterLoginGoToUrl');
@@ -1391,7 +1391,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     function sendToAfterLoginStateIfNecessary() {
-        var afterLoginGoToState = qm.storage.getAsString('afterLoginGoToState');
+        var afterLoginGoToState = qm.storage.getItem('afterLoginGoToState');
         qmLogService.debug('afterLoginGoToState from localstorage is  ' + afterLoginGoToState, null);
         if(afterLoginGoToState){
             qm.storage.removeItem('afterLoginGoToState');
@@ -1669,8 +1669,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     // date setter from - to
     qmService.setDates = function(to, from){
-        var oldFromDate = qm.storage.getAsString('fromDate');
-        var oldToDate = qm.storage.getAsString('toDate');
+        var oldFromDate = qm.storage.getItem('fromDate');
+        var oldToDate = qm.storage.getItem('toDate');
         qmService.storage.setItem('fromDate',parseInt(from));
         qmService.storage.setItem('toDate',parseInt(to));
         // if date range changed, update charts
@@ -5433,7 +5433,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     }
     function getLastPostedWeatherAtTimeUnixtime() {
-        return Number(qm.storage.getAsString('lastPostedWeatherAt'));
+        return Number(qm.storage.getItem('lastPostedWeatherAt'));
     }
     function alreadyPostedWeatherSinceNoonYesterday(){
         var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixtime();
