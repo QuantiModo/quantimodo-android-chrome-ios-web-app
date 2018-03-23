@@ -13,7 +13,6 @@ window.qmLog = {debugMode:false};
 if(typeof Bugsnag !== "undefined"){
     Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 }
-
 var logMetaData = false;
 if(!window.qmUser){
     if(typeof localStorage !== "undefined"){
@@ -365,11 +364,11 @@ window.qmLog.authDebug = function(message) {
     //qmLog.authDebugEnabled = true;
     if(!qmLog.authDebugEnabled){
         qmLog.authDebugEnabled = window.location.href.indexOf("authDebug") !== -1;
-        if(qmLog.authDebugEnabled){
+        if(qmLog.authDebugEnabled && window.localStorage){
             localStorage.setItem('authDebugEnabled', "true");
         }
     }
-    if(!qmLog.authDebugEnabled){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
+    if(!qmLog.authDebugEnabled && window.localStorage){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
     if(qmLog.authDebugEnabled){
         qmLog.info(message, message, null);
     } else {
@@ -381,11 +380,11 @@ window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
     //qmLog.pushDebugEnabled = true;
     if(!qmLog.pushDebugEnabled){
         qmLog.pushDebugEnabled = window.location.href.indexOf("pushDebugEnabled") !== -1;
-        if(qmLog.pushDebugEnabled){
+        if(qmLog.pushDebugEnabled && window.localStorage){
             localStorage.setItem('pushDebugEnabled', "true");
         }
     }
-    if(!qmLog.pushDebugEnabled){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
+    if(!qmLog.pushDebugEnabled && window.localStorage){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
     if(qmLog.pushDebugEnabled || qmLog.debugMode){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
