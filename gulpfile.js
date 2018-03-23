@@ -900,27 +900,27 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        // if(!response.privateConfig && devCredentials.accessToken){
-        //     logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-        //         + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
-        //         " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
-        // }
-        // /** @namespace response.privateConfig */
-        // if(response.privateConfig){
-        //     privateConfig = response.privateConfig;
-        //     try {
-        //         //writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-        //     } catch (error) {
-        //         logError(error);
-        //     }
-        //     try {
-        //         writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-        //     } catch (err){
-        //         logDebug(err);
-        //     }
-        // } else {
-        //     logError("No private config provided!  User will not be able to use OAuth login!");
-        // }
+        if(!response.privateConfig && devCredentials.accessToken){
+            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+                " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
+        }
+        /** @namespace response.privateConfig */
+        if(response.privateConfig){
+            privateConfig = response.privateConfig;
+            try {
+                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            } catch (error) {
+                logError(error);
+            }
+            try {
+                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            } catch (err){
+                logDebug(err);
+            }
+        } else {
+            logError("No private config provided!  User will not be able to use OAuth login!");
+        }
         writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
         try {
             writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
