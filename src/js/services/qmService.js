@@ -1111,7 +1111,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("got access token from user");
             deferred.resolve(qm.getUser().accessToken);
         } else {
-            qmLog.error('Could not get or refresh access token at ' + window.location.href);
+            qmLog.info('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
         }
         return deferred.promise;
