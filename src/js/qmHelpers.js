@@ -1477,7 +1477,10 @@ window.qm = {
             }
         },
         getAllLocalStorageDataWithSizes: function(summary){
-            if(typeof localStorage === "undefined"){return false;}
+            if(typeof localStorage === "undefined"){
+                qmLog.debug("localStorage not defined");
+                return false;
+            }
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 var key = localStorage.key(i);
@@ -1575,7 +1578,10 @@ window.qm = {
         removeItem: function(key){
             qmLog.debug("Removing " + key + " from local storage");
             delete qm.globals[key];
-            if(typeof localStorage === "undefined"){return false;}
+            if(typeof localStorage === "undefined"){
+                qmLog.debug("localStorage not defined");
+                return false;
+            }
             return localStorage.removeItem(key);
         },
         clear: function(){
@@ -1661,7 +1667,10 @@ window.qm = {
             if(summaryValue){summaryValue = value.substring(0, 18);}
             window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
             try {
-                if(typeof localStorage === "undefined"){return false;}
+                if(typeof localStorage === "undefined"){
+                    qmLog.debug("localStorage not defined");
+                    return false;
+                }
                 localStorage.setItem(key, value);
             } catch (error) {
                 function deleteLargeLocalStorageItems(localStorageItemsArray){
@@ -1694,7 +1703,10 @@ window.qm = {
                 qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
-            if(typeof localStorage === "undefined"){return false;}
+            if(typeof localStorage === "undefined"){
+                qmLog.debug("localStorage not defined");
+                return false;
+            }
             var item = localStorage.getItem(key);
             if(item === "undefined"){
                 qmLog.error(key + " from localStorage is undefined!");
@@ -1741,7 +1753,10 @@ window.qm = {
             }
         },
         getLocalStorageList: function(){
-            if(typeof localStorage === "undefined"){return false;}
+            if(typeof localStorage === "undefined"){
+                qmLog.debug("localStorage not defined");
+                return false;
+            }
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 var key = localStorage.key(i);
