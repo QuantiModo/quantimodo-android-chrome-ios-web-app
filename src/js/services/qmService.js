@@ -428,6 +428,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!window.qmLog.isDebugMode()){bodyString = bodyString.substring(0, 140);}
         qmLogService.info('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, null, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
+            if(!accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
+                qmLog.error("qmService.getAccessTokenFromAnySource returned: " + accessToken +
+                    ", but getAccessTokenFromUrlUserOrStorage returns: " + qm.auth.getAccessTokenFromUrlUserOrStorage());
+                accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            }
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
                 for (var j = 0; j < requiredFields.length; j++) {
@@ -1005,12 +1010,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
         qm.auth.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
         if(!qm.auth.accessTokenFromUrl){return null;}
-        qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
-        qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
-        qm.storage.setItem('onboarded', true);
-        qm.storage.setItem('introSeen', true);
-        qmLog.info('Setting onboarded and introSeen to true');
         if($state.current.name !== 'app.login'){
+            qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
+            qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
+            qm.storage.setItem('onboarded', true);
+            qm.storage.setItem('introSeen', true);
+            qmLog.info('Setting onboarded and introSeen to true');
             qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
             qm.storage.setItem('afterLoginGoToState', null);
             qm.storage.setItem('afterLoginGoToUrl', null);
@@ -1521,8 +1526,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getStudy(params, function (response) {
             qmLogService.debug('qmService.getStudy response: ' + prettyJsonStringify(response), null);
             var study;
+            /** @namespace response.userStudy */
             if(response.userStudy){ study = response.userStudy; }
-            if(response.publicStudy){ study = response.publicStudy; }
+            if(response.publicStudy){
+                /** @namespace response.publicStudy */
+                study = response.publicStudy; }
             if(!study){study = response;}
             if(study.charts){
                 study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
@@ -4571,6 +4579,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
             if(!localNotificationsPluginInstalled()) {return;}
+            /** @namespace cordova.plugins.notification */
             cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
                 qmLogService.info('cancelIonicNotificationsForDeletedReminders: notification.local.getAll ' +
                     'scheduledNotifications: ' + JSON.stringify(scheduledNotifications));
@@ -7515,7 +7524,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         var errorMessage = "Couldn't find anything matching barcode " + self.barcodeFormat + " " + self.barcode;
                         qmLog.error(errorMessage);
                         qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                            "I'll link the code to your selected variable so scanning should work in the future. ")
+                            "I'll link the code to your selected variable so scanning should work in the future. ");
                     }
                     function variableSearchSuccessHandler() {
                         doneSearching = true;
@@ -7622,7 +7631,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }).then(function(variable) {
             successHandler(variable);
         }, function(error) {
-            if(errorHandler){errorHandler(error)}
+            if(errorHandler){errorHandler(error);}
             qmLogService.debug('User cancelled selection');
         });
     };
