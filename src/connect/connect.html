@@ -17,14 +17,14 @@
 			    }
 			    return false;
 			};
-			var url = '';
-			url = qm.appsManager.getAppConfig(getAppNameFromUrl());
+			var url = qm.appsManager.getAppConfig(getAppNameFromUrl());
 	        var fileref=document.createElement('script');
 	        fileref.setAttribute("type","text/javascript");
 	        fileref.setAttribute("src", '../'+url);
 	        document.getElementsByTagName("head")[0].appendChild(fileref);
 	        var private_fileref=document.createElement('script');
 	        private_fileref.setAttribute("type","text/javascript");
+            private_url = qm.appsManager.getPrivateConfig(getAppNameFromUrl());
 	        private_fileref.setAttribute("src", '../'+private_url);
 	        document.getElementsByTagName("head")[0].appendChild(private_fileref);
 		</script>
