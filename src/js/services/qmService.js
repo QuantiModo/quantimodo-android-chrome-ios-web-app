@@ -314,7 +314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         for (var prop in object) {
             // skip loop if the property is from prototype
-            if(!object.hasOwnProperty(prop)) continue;
+            if(!object.hasOwnProperty(prop)) {continue;}
             if(object[prop].stateParameters){
                 if(object[prop].stateParameters.constructor === Array){
                     qmLogService.error('stateParams should be an object!');
@@ -2793,40 +2793,38 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getRatingInfo = function() {
-        var ratingInfo =
-            {
-                1 : {
-                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
-                    positiveImage: qm.ratingImages.positive[0],
-                    negativeImage: qm.ratingImages.negative[0],
-                    numericImage:  qm.ratingImages.numeric[0],
-                },
-                2 : {
-                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
-                    positiveImage: qm.ratingImages.positive[1],
-                    negativeImage: qm.ratingImages.negative[1],
-                    numericImage:  qm.ratingImages.numeric[1],
-                },
-                3 : {
-                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
-                    positiveImage: qm.ratingImages.positive[2],
-                    negativeImage: qm.ratingImages.negative[2],
-                    numericImage:  qm.ratingImages.numeric[2],
-                },
-                4 : {
-                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
-                    positiveImage: qm.ratingImages.positive[3],
-                    negativeImage: qm.ratingImages.negative[3],
-                    numericImage:  qm.ratingImages.numeric[3],
-                },
-                5 : {
-                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
-                    positiveImage: qm.ratingImages.positive[4],
-                    negativeImage: qm.ratingImages.negative[4],
-                    numericImage:  qm.ratingImages.numeric[4],
-                }
-            };
-        return ratingInfo;
+        return {
+            1: {
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                positiveImage: qm.ratingImages.positive[0],
+                negativeImage: qm.ratingImages.negative[0],
+                numericImage: qm.ratingImages.numeric[0],
+            },
+            2: {
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                positiveImage: qm.ratingImages.positive[1],
+                negativeImage: qm.ratingImages.negative[1],
+                numericImage: qm.ratingImages.numeric[1],
+            },
+            3: {
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                positiveImage: qm.ratingImages.positive[2],
+                negativeImage: qm.ratingImages.negative[2],
+                numericImage: qm.ratingImages.numeric[2],
+            },
+            4: {
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                positiveImage: qm.ratingImages.positive[3],
+                negativeImage: qm.ratingImages.negative[3],
+                numericImage: qm.ratingImages.numeric[3],
+            },
+            5: {
+                displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                positiveImage: qm.ratingImages.positive[4],
+                negativeImage: qm.ratingImages.negative[4],
+                numericImage: qm.ratingImages.numeric[4],
+            }
+        };
     };
     qm.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
         if(shouldShowNumbers || !qm.getPrimaryOutcomeVariable().ratingOptionLabels){return ['1',  '2',  '3',  '4', '5'];
@@ -6833,6 +6831,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
     qmService.configureAppSettings = function(appSettings){
         function changeFavicon(){
+            /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
             if(!$rootScope.appSettings.additionalSettings.appImages.favicon){return;}
             //noinspection JSAnnotator
             document.head || (document.head = document.getElementsByTagName('head')[0]);
@@ -6858,6 +6857,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //notificationSettings.every = "minute";
         if(!notificationSettings.sound){notificationSettings.sound = null;}
         $ionicPlatform.ready(function () {
+            /** @namespace cordova.plugins.notification */
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings), null);
                 qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data), null);
@@ -6915,6 +6915,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.debug('No stateName on menu item', null, menuItem);
                     return menuItem;
                 }
+                /** @namespace menuItem.subMenu */
                 if(menuItem.subMenu && menuItem.subMenu.length){
                     qmLogService.debug('menuItem is a parent', null, menuItem);
                     return menuItem;
@@ -7019,10 +7020,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
         } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
     };
-    qmService.logEventToGA = function(category, action, label, value, noninteraction, customDimension, customMetric){
+    qmService.logEventToGA = function(category, action, label, value, nonInteraction, customDimension, customMetric){
         if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
-        if(typeof noninteraction === "undefined"){noninteraction = true;}
-        Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
+        if(typeof nonInteraction === "undefined"){nonInteraction = true;}
+        Analytics.trackEvent(category, action, label, value, nonInteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };
     qmService.configurePushNotifications = function(){
         $ionicPlatform.ready(function() {
@@ -7703,6 +7704,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.showMaterialAlert("Barcode scan failed!",
                 "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
         }
+        /** @namespace cordova.plugins.barcodeScanner */
         cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
     };
     qmService.switchToPatient = function(patientUser){
@@ -7739,6 +7741,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function logOutOfWebsite() {
         var afterLogoutGoToUrl = qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+        if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
         if(window.location.href.indexOf('.quantimo.do/') === -1){
             afterLogoutGoToUrl = window.location.href;
         }
