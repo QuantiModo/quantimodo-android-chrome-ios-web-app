@@ -881,60 +881,69 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
-        appSettings = response.appSettings;
-        appSettings.buildServer = getCurrentServerContext();
-        appSettings.buildLink = getBuildLink();
-        appSettings.versionNumber = versionNumbers.ionicApp;
-        appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
-        appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
-        if(!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET){
-            appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+        function addBuildInfoToAppSettings() {
+            appSettings = response.appSettings;
+            appSettings.buildServer = getCurrentServerContext();
+            appSettings.buildLink = getBuildLink();
+            appSettings.versionNumber = versionNumbers.ionicApp;
+            appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+            appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
+            if (!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
+                appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+            }
+            buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
+            delete appSettings.additionalSettings.buildSettings;
+            /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
+            /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
+            if (appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release) {
+                appSettings.appStatus.additionalSettings.buildSettings.xwalkMultipleApk = true;
+            }
         }
-        buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
-        delete appSettings.additionalSettings.buildSettings;
-        /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
-        /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
-        if(appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release){
-            appSettings.appStatus.additionalSettings.buildSettings.xwalkMultipleApk = true;
-        }
+        addBuildInfoToAppSettings();
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        if(!response.privateConfig && devCredentials.accessToken){
-            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
-                " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
-        }
-        /** @namespace response.privateConfig */
-        if(response.privateConfig){
-            privateConfig = response.privateConfig;
-            try {
-                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (error) {
-                logError(error);
+        function writePrivateConfigs() {
+            if (!response.privateConfig && devCredentials.accessToken) {
+                logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+                    + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+                    " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
             }
+            /** @namespace response.privateConfig */
+            if (response.privateConfig) {
+                privateConfig = response.privateConfig;
+                try {
+                    writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+                } catch (error) {
+                    logError(error);
+                }
+                try {
+                    writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+                } catch (err) {
+                    logDebug(err);
+                }
+            } else {
+                logError("No private config provided!  User will not be able to use OAuth login!");
+            }
+        }
+        function writeAppSettingsJsonFiles() {
+            writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
             try {
-                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (err){
+                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
+            } catch (err) {
                 logDebug(err);
             }
-        } else {
-            logError("No private config provided!  User will not be able to use OAuth login!");
-        }
-        writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
-        try {
-            writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
-        } catch (err){
-            logDebug(err);
-        }
-        logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
-        writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
-        /** @namespace response.allConfigs */
-        if(response.allConfigs){
-            for (var i = 0; i < response.allConfigs.length; i++) {
-                writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+            logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
+            writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+            /** @namespace response.allConfigs */
+            if (response.allConfigs) {
+                for (var i = 0; i < response.allConfigs.length; i++) {
+                    writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+                }
             }
         }
+        //writePrivateConfigs();
+        writeAppSettingsJsonFiles();
     }
     return makeApiRequest(options, successHandler);
 });
