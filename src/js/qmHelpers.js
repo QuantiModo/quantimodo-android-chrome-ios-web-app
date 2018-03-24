@@ -272,7 +272,7 @@ window.qm = {
         getViaXhr: function (url, successHandler) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
                     var fallback = null; // Just return null instead of 500 page HTML
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                     successHandler(responseObject);
@@ -299,7 +299,7 @@ window.qm = {
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.onreadystatechange = function() {//Call a function when the state changes.
-                if(xhr.readyState == XMLHttpRequest.DONE) {
+                if(xhr.readyState === XMLHttpRequest.DONE) {
                     var fallback = xhr.responseText;
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                     successHandler(responseObject);
