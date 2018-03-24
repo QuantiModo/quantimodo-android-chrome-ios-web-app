@@ -2422,6 +2422,3 @@ function getLocalStorageNameForRequest(type, route) {
 }
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 qm.userHelper.getUserFromLocalStorage();
-qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
-   console.log(appSettings);
-});
