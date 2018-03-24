@@ -80,6 +80,11 @@
   </plugin>
     <plugin name="cordova-android-play-services-gradle-release" spec="~1.2.0" />
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
+    <chcp>
+        <config-file url="https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json"/>
+        <auto-download enabled="true" />
+        <auto-install enabled="true" />
+    </chcp>
   <plugin name="cordova-ios-plugin-no-export-compliance" spec="~0.0.5" />
   <plugin name="cordova-plugin-console" spec="~1.0.3"/>
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
