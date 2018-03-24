@@ -369,6 +369,10 @@ window.qm = {
                         qm.privateConfig = response.privateConfig;
                         localforage.setItem(qm.items.privateConfig, response.privateConfig);
                     }
+                    if(!response.appSettings){
+                        qmLog.error("No appSettings response from "+ appSettingsUrl);
+                        return false;
+                    }
                     qm.appsManager.setAppSettings(response.appSettings, successHandler);
                 })
             });
@@ -407,6 +411,10 @@ window.qm = {
             }
         },
         setAppSettings: function(appSettings, callback){
+            if(!appSettings){
+                qmLog.error("Nothing given to setAppSettings!");
+                return false;
+            }
             qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
                 for (var propertyName in buildInfo) {
                     if( buildInfo.hasOwnProperty(propertyName) ) {
