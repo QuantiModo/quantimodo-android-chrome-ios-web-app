@@ -1030,7 +1030,7 @@ gulp.task('post-app-status', [], function () {
 gulp.task('validateChromeManifest', function () {
     return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
 });
-gulp.task('verifyExistenceOfDefaultBuildInfo', function () {
+gulp.task('verifyExistenceOfBuildInfo', function () {
     return verifyExistenceOfFile(paths.www.buildInfo);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
@@ -1885,7 +1885,7 @@ gulp.task('writeBuildInfo', ['getAppConfigs'], function () {
         buildLink: getBuildLink(),
         versionNumber: versionNumbers.ionicApp
     };
-    writeToFile("www/build-info.json", buildInfo);
+    writeToFile("./www/build-info.json", buildInfo);
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -2134,7 +2134,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
-        'verifyExistenceOfDefaultBuildInfo',
+        'verifyExistenceOfBuildInfo',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
@@ -2178,7 +2178,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'chromeBackgroundJS',
         'chromeIFrameHtml',
         'chromeOptionsHtml',
-        'verifyExistenceOfDefaultBuildInfo',
+        'verifyExistenceOfBuildInfo',
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
@@ -2486,9 +2486,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         callback);
 });
 var watch = require('gulp-watch');
-gulp.task('watch-src', function() {
-    var source = './src',
-        destination = './www';
+gulp.task('watch-src', function () {
+    var source = './src', destination = './www';
     gulp.src(source + '/**/*', {base: source})
         .pipe(watch(source, {base: source}))
         .pipe(gulp.dest(destination));
