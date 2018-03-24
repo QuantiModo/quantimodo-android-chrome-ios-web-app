@@ -154,39 +154,36 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         deploy: {
             fetchUpdate: function() {
-                var options = {
-                    'config-file': 'http://quantimodo.asuscomm.com:3000/cordova-hot-code-push/chcp.json'
-                };
+                var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
+                qmLog.info("Checking for CHCP updates at " + options['config-file']);
                 // noinspection Annotator
-                chcp.fetchUpdate(this.updateCallback, options);
+                chcp.fetchUpdate(qmService.deploy.updateCallback, options);
+            },
+            installUpdate: function(){
+                qmLog.info('CHCP installUpdate...');
+                // noinspection Annotator
+                chcp.installUpdate(function(error) {
+                    if (error) {
+                        qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
+                        qmService.showMaterialAlert('Update error ' + error.code)
+                    } else {
+                        // Automatically restarts
+                        //navigator.app.loadUrl("file:///android_asset/www/index.html");
+                        qmLog.info('CHCP Update installed...');
+                    }
+                });
             },
             updateCallback: function(error, data) {
                 if (error) {
-                    console.error(error);
+                    qmLog.error("CHCP UPDATE ERROR: "+ error);
                 } else {
-                    console.log('Update is loaded...');
-                    $ionicPopup.show({
-                        title: 'Update available',
-                        //subTitle: '',
-                        template: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
-                        buttons: [
-                            { text: 'Not now' },
-                            {
-                                text: 'Restart',
-                                onTap: function(e) {
-                                    // noinspection Annotator
-                                    chcp.installUpdate(function(error) {
-                                        if (error) {
-                                            console.error(error);
-                                            qmService.showMaterialAlert('Update error ' + error.code)
-                                        } else {
-                                            console.log('Update installed...');
-                                        }
-                                    });
-                                }
-                            }
-                        ]
-                    });
+                    qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
+                    var title = 'Update available';
+                    var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
+                    var noText = 'Not now';
+                    function yesCallback() {qmService.deploy.installUpdate();}
+                    function noCallback() {}
+                    qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
                 }
             }
         }
@@ -6905,6 +6902,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
             appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         }
+        qmService.deploy.fetchUpdate();
     };
     qmService.unHideNavigationMenu = function(){
         var hideMenu = qm.urlHelper.getParam('hideMenu');
