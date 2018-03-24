@@ -779,12 +779,12 @@ function chromeManifest(outputPath, backgroundScriptArray) {
 gulp.task('chromeIFrameHtml', [], function () {
     return gulp.src(['src/chrome_default_popup_iframe.html'])
         .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
-        .pipe(gulp.dest('www/'));
+        .pipe(gulp.dest(chromeExtensionBuildPath));
 });
 gulp.task('chromeOptionsHtml', [], function () {
     return gulp.src(['src/chrome_options.html'])
         .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
-        .pipe(gulp.dest('www/'));
+        .pipe(gulp.dest(chromeExtensionBuildPath));
 });
 gulp.task('chromeManifestInBuildFolder', ['getAppConfigs'], function () {
     chromeManifest(chromeExtensionBuildPath + '/manifest.json', [chromeBackgroundJsFilename]);
@@ -860,9 +860,7 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         logError("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
         return;
     }
-    var manifestJson = {
-        'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey
-    };
+    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey};
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
@@ -906,49 +904,51 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        function writePrivateConfigs() {
-            if (!response.privateConfig && devCredentials.accessToken) {
-                logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-                    + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
-                    " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
-            }
-            /** @namespace response.privateConfig */
-            if (response.privateConfig) {
-                privateConfig = response.privateConfig;
-                try {
-                    writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-                } catch (error) {
-                    logError(error);
-                }
-                try {
-                    writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-                } catch (err) {
-                    logDebug(err);
-                }
-            } else {
-                logError("No private config provided!  User will not be able to use OAuth login!");
-            }
+    }
+    return makeApiRequest(options, successHandler);
+});
+gulp.task('writeAppConfigs', ['getAppConfigs'], function () {
+    function writePrivateConfigs() {
+        if (!response.privateConfig && devCredentials.accessToken) {
+            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+                " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
         }
-        function writeAppSettingsJsonFiles() {
-            writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
+        /** @namespace response.privateConfig */
+        if (response.privateConfig) {
+            privateConfig = response.privateConfig;
             try {
-                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
+                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
+            } catch (error) {
+                logError(error);
+            }
+            try {
+                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
             } catch (err) {
                 logDebug(err);
             }
-            logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
-            writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
-            /** @namespace response.allConfigs */
-            if (response.allConfigs) {
-                for (var i = 0; i < response.allConfigs.length; i++) {
-                    writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
-                }
+        } else {
+            logError("No private config provided!  User will not be able to use OAuth login!");
+        }
+    }
+    function writeAppSettingsJsonFiles() {
+        writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
+        try {
+            writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
+        } catch (err) {
+            logDebug(err);
+        }
+        logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
+        writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        /** @namespace response.allConfigs */
+        if (response.allConfigs) {
+            for (var i = 0; i < response.allConfigs.length; i++) {
+                writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
             }
         }
-        //writePrivateConfigs();
-        writeAppSettingsJsonFiles();
     }
-    return makeApiRequest(options, successHandler);
+    //writePrivateConfigs();
+    writeAppSettingsJsonFiles();
 });
 var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
@@ -1993,7 +1993,7 @@ gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
 gulp.task('copyIconsToChromeImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', chromeExtensionBuildPath+"/img/icons");
+    return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
 });
 gulp.task('copyServiceWorkerAndLibraries', [], function () {
     copyFiles(paths.src.firebase, paths.www.firebase);
@@ -2258,39 +2258,15 @@ gulp.task('buildAllAndroidAppsWithCleaning', function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
-    runSequence(
-        'cleanBuildFolder',
-        'prepareRepositoryForAndroid',
-        'setMediModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
-        'setMoodiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        //'buildAndroidApp',
-        'setQuantiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
-        callback);
-});
-gulp.task('buildAllChromeExtensionsAndAndroidAppsWithoutCleaning', function (callback) {
-    runSequence(
-        'cleanBuildFolder',
-        'prepareRepositoryForAndroidWithoutCleaning',
-        'setMediModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
-        'setMoodiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        //'buildAndroidApp',
-        'setQuantiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
-        callback);
-});
 gulp.task('buildQuantiModoChromeExtension', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
+        'buildChromeExtension',
+        callback);
+});
+gulp.task('buildMediModoChromeExtension', function (callback) {
+    runSequence(
+        'setMediModoEnvs',
         'buildChromeExtension',
         callback);
 });
