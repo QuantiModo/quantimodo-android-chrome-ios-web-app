@@ -833,7 +833,7 @@ function createProgressiveWebAppManifest(outputPath) {
     writeToFile(outputPath, pwaManifest);
 }
 function writeToFile(filePath, stringContents) {
-    logDebug("Writing to " + filePath);
+    logInfo("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
 }
