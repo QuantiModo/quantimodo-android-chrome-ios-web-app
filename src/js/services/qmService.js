@@ -1127,7 +1127,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
             client_id: qm.api.getClientId(),
-            client_secret: qm.appsManager.getClientSecret(),
+            //client_secret: qm.appsManager.getClientSecret(),
             refresh_token: refreshToken,
             grant_type: 'refresh_token'
         }).success(function (data) {
@@ -1181,7 +1181,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // add params
         url += "response_type=code";
         url += "&client_id=" + qm.api.getClientId();
-        url += "&client_secret=" + qm.appsManager.getClientSecret();
+        //url += "&client_secret=" + qm.appsManager.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
         if(register === true){url += "&register=true";}
@@ -1193,7 +1193,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var url = qmService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
         url += "response_type=code";
         url += "&client_id=" + qm.api.getClientId();
-        url += "&client_secret=" + qm.appsManager.getClientSecret();
+        //url += "&client_secret=" + qm.appsManager.getClientSecret();
         url += "&scope=" + qmService.getPermissionString();
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
