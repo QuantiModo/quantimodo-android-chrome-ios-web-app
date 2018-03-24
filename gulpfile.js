@@ -91,6 +91,7 @@ var change = require('gulp-change');
 var clean = require('gulp-rimraf');
 var cordovaBuild = require('taco-team-build');
 var csso = require('gulp-csso');
+var concat = require('gulp-concat');
 var defaultRequestOptions = {strictSSL: false};
 var download = require('gulp-download-stream');
 var es = require('event-stream');
@@ -128,7 +129,6 @@ var unzip = require('gulp-unzip');
 var useref = require('gulp-useref');
 var xml2js = require('xml2js');
 var zip = require('gulp-zip');
-
 var majorMinorVersionNumbers = '2.8.';
 var date = new Date();
 function getPatchVersionNumber() {
@@ -146,7 +146,6 @@ var versionNumbers = {
     ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
 };
 logInfo(JSON.stringify(versionNumbers));
-
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 bugsnag.releaseStage = getCurrentServerContext();
@@ -161,12 +160,10 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
     metaData.build_link = getBuildLink();
 });
-
 var Quantimodo = require('quantimodo');
 var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
-
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
@@ -734,7 +731,9 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-function createChromeManifest(outputPath) {
+var chromeScripts = ['lib/localforage/dist/localforage.js', 'custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js',
+    'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'];
+function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
     var chromeExtensionManifest = {
         'manifest_version': 2,
@@ -768,7 +767,7 @@ function createChromeManifest(outputPath) {
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'],
+            'scripts': backgroundScriptArray,
             'persistent': true
         }
     };
@@ -777,18 +776,22 @@ function createChromeManifest(outputPath) {
     logInfo("Creating chrome manifest at " + outputPath);
     writeToFile(outputPath, chromeExtensionManifest);
 }
-gulp.task('createChromeManifestInWwwFolder', ['getAppConfigs'], function () {
-    createChromeManifest('www/manifest.json');
+gulp.task('chromeIFrameHtml', [], function () {
+    return gulp.src(['src/chrome_default_popup_iframe.html'])
+        .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
+        .pipe(gulp.dest('www/'));
 });
-gulp.task('createChromeManifestInSrcFolder', ['getAppConfigs'], function () {
-    createChromeManifest('src/manifest.json');
+gulp.task('chromeOptionsHtml', [], function () {
+    return gulp.src(['src/chrome_options.html'])
+        .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
+        .pipe(gulp.dest('www/'));
 });
-gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToChromeExtension'], function () {
-    appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
-    postAppStatus();
-    createChromeManifest();
+gulp.task('chromeManifestInBuildFolder', ['getAppConfigs'], function () {
+    chromeManifest(chromeExtensionBuildPath + '/manifest.json', [chromeBackgroundJsFilename]);
 });
-
+gulp.task('chromeManifestInSrcFolder', ['getAppConfigs'], function () {
+    chromeManifest('src/manifest.json', chromeScripts);
+});
 gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
     createProgressiveWebAppManifest('src/manifest.json');
 });
@@ -1374,7 +1377,6 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/'+sourceIndexFileName], { restore: true });
-
     var sourceMapsWriteOptions = {
         //sourceRoot: "src/lib/",
         includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
@@ -1402,7 +1404,6 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 var pump = require('pump');
-
 gulp.task('uglify-error-debugging', function (cb) {
     pump([
         gulp.src('src/js/**/*.js'),
@@ -1857,7 +1858,7 @@ gulp.task('setVersionNumberInFiles', function () {
         '.travis.yml',
         'resources/chrome_app/manifest.json'
     ];
-    return gulp.src(filesToUpdate, {base: '.'}) // Every file allown.
+    return gulp.src(filesToUpdate, {base: '.'})
         .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.iosCFBundleVersion))
         .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
@@ -1971,11 +1972,28 @@ gulp.task('copySrcJsToWww', [], function () {
 gulp.task('copyConfigsToSrc', [], function () {
     return copyFiles('www/configs/*', 'src/configs', []);
 });
+var chromeBackgroundJsFilename = 'qmChromeBackground.js';
+gulp.task('chromeBackgroundJS', [], function () {
+    var base = './src/';
+    var chromeScriptsWithBase = [];
+    for (var i = 0; i < chromeScripts.length; i++) {
+        chromeScriptsWithBase[i] = base + chromeScripts[i];
+    }
+    return gulp.src(chromeScriptsWithBase)
+        .pipe(uglify())
+        .pipe(concat(chromeBackgroundJsFilename))
+        .pipe(gulp.dest(chromeExtensionBuildPath));
+    //return gulp.src(chromeScriptsWithBase).pipe(babel({presets: ['es2015']})).pipe(uglify()).pipe(gulp.dest(chromeExtensionBuildPath));
+    //return gulp.src(chromeScriptsWithBase,  {base: base}).pipe(gulp.dest(chromeExtensionBuildPath));
+});
 gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
+});
+gulp.task('copyIconsToChromeImg', [], function () {
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', chromeExtensionBuildPath+"/img/icons");
 });
 gulp.task('copyServiceWorkerAndLibraries', [], function () {
     copyFiles(paths.src.firebase, paths.www.firebase);
@@ -2008,9 +2026,6 @@ gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
-});
-gulp.task('copyIconsToChromeExtension', [], function () {
-    return copyFiles(paths.www.icons + "/*", chromeExtensionBuildPath + '/img/icons');
 });
 gulp.task('copyWwwIconsToSrc', [], function () {
     return copyFiles(paths.www.icons + "/*", paths.src.icons);
@@ -2049,7 +2064,7 @@ gulp.task('prepareIosApp', function (callback) {
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
-    return zipAFolder('www', getChromeExtensionZipFilename(), buildPath);
+    return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
 });
 gulp.task('zipBuild', [], function () {
     return zipAFolder(process.env.BUDDYBUILD_WORKSPACE, "buddybuild.zip", './');
@@ -2109,7 +2124,7 @@ gulp.task('buildChromeInSrcFolder', ['getAppConfigs'], function (callback) {
         return;
     }
     runSequence(
-        'createChromeManifestInSrcFolder',
+        'chromeManifestInSrcFolder',
         'copyConfigsToSrc',
         callback);
 });
@@ -2122,13 +2137,8 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     runSequence(
         'cleanChromeBuildFolder',
         'bowerInstall',
-        'configureApp', // Need to run sass and generate index.html
-        'copyWwwFolderToChromeExtensionAndCreateManifest',
-        'zipChromeExtension',
-        'unzipChromeExtension',
-        'validateChromeManifest',
-        'upload-chrome-extension-to-s3',
-        'post-app-status',
+        'copyWwwFolderToChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         callback);
 });
 gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
@@ -2141,10 +2151,13 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'downloadQmAmazonJs',
         'downloadIcon',
         'resizeIcons',
+        'chromeBackgroundJS',
+        'chromeIFrameHtml',
+        'chromeOptionsHtml',
         'verifyExistenceOfDefaultConfig',
-        'copyIconsToWwwImg',
+        'copyIconsToChromeImg',
         'setVersionNumberInFiles',
-        'createChromeManifestInWwwFolder',
+        'chromeManifestInBuildFolder',
         'deleteWwwPrivateConfigs',
         'zipChromeExtension',
         'unzipChromeExtension',
@@ -2201,8 +2214,7 @@ gulp.task('buildAllChromeExtensions', function (callback) {
         'cleanBuildFolder',
         'bowerInstall',
         'setMediModoEnvs',
-        'configureApp',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         'setMoodiModoEnvs',
         'buildChromeExtensionWithoutCleaning',
         'setQuantiModoEnvs',

@@ -41,6 +41,9 @@ window.qm.chrome = {
     },
     createPopup: function(windowParams){
         qmLog.info("creating popup window", null, windowParams);
+        if(windowParams.url.indexOf('.quantimo.do') === -1){
+            windowParams.url = "https://"+qm.getClientId()+".quantimo.do/ionic/Modo/www/"+windowParams.url;
+        }
         chrome.windows.create(windowParams, function (chromeWindow) {
             qm.storage.setItem('chromeWindowId', chromeWindow.id);
             chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
