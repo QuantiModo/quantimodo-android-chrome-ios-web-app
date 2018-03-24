@@ -154,6 +154,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         deploy: {
             fetchUpdate: function() {
+                if(typeof chcp === "undefined"){
+                    qmLog.info("chcp not defined");
+                    return false;
+                }
                 var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
                 qmLog.info("Checking for CHCP updates at " + options['config-file']);
                 // noinspection Annotator
