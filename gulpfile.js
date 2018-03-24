@@ -160,6 +160,20 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
     metaData.build_link = getBuildLink();
 });
+var buildingFor = {
+    web: function () {
+        return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
+    },
+    android: function () {
+        return process.env.BUILD_ANDROID;
+    },
+    ios:function () {
+        return process.env.BUILD_IOS;
+    },
+    chrome: function () {
+        return process.env.BUILD_CHROME;
+    }
+};
 var Quantimodo = require('quantimodo');
 var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
@@ -882,8 +896,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
+        appSettings = response.appSettings;
         function addBuildInfoToAppSettings() {
-            appSettings = response.appSettings;
             appSettings.buildServer = getCurrentServerContext();
             appSettings.buildLink = getBuildLink();
             appSettings.versionNumber = versionNumbers.ionicApp;
@@ -1854,7 +1868,7 @@ gulp.task('commentOrUncommentCordovaJs', function () {
 });
 gulp.task('setVersionNumberInFiles', function () {
     var filesToUpdate = [
-        paths.www.defaultConfig,
+        //paths.www.defaultConfig,
         '.travis.yml',
         'resources/chrome_app/manifest.json'
     ];
@@ -1862,6 +1876,16 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.iosCFBundleVersion))
         .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
+});
+gulp.task('writeBuildInfo', ['getAppConfigs'], function () {
+    var buildInfo = {
+        iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
+        builtAt: timeHelper.getUnixTimestampInSeconds(),
+        buildServer: getCurrentServerContext,
+        buildLink: getBuildLink(),
+        versionNumber: versionNumbers.ionicApp
+    };
+    writeToFile("www/build-info.json", buildInfo);
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -2022,7 +2046,7 @@ gulp.task('copyIonicCloudLibrary', [], function () {
     return copyFiles('node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js', 'www/lib');
 });
 gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
-    return copyFiles('www/**/*', chromeExtensionBuildPath);
+    return copyFiles('www/*.html', chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
