@@ -97,12 +97,11 @@ angular.module('starter',
         qm.storage.setItem(qm.items.onboarded, true);
     }
 }])
-.config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider", "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider", function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
+.config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
+    "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider",
+    function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
                  $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
-    $opbeatProvider.config({
-        orgId: '10d58117acb546c08a2cae66d650480d',
-        appId: 'fc62a74505'
-    });
+    $opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
     window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(qm.urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));}
@@ -234,13 +233,13 @@ angular.module('starter',
         "welcome": "app.welcome"
     };
     $stateProvider
-        .state('intro', {
-            cache: true,
-            url: '/',
-            templateUrl: 'templates/intro-tour-new.html',
-            controller: 'IntroCtrl',
-            resolve : config_resolver
-        })
+        // .state('intro', {
+        //     cache: true,
+        //     url: '/',
+        //     templateUrl: 'templates/intro-tour-new.html',
+        //     controller: 'IntroCtrl',
+        //     resolve : config_resolver
+        // })
         .state('app', {
             url: "/app",
             templateUrl: "templates/menu.html",
@@ -1326,7 +1325,7 @@ angular.module('starter',
 
     if (!qm.storage.getItem(qm.items.introSeen)) {
         //console.debug("Intro not seen so setting default route to intro");
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/app/intro');
     } else if (!qm.storage.getItem(qm.items.onboarded)) {
         //console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');
