@@ -32,9 +32,12 @@ window.qm.chrome = {
         }
 
     },
-    createSmallNotificationAndOpenInboxInBackground: function(){
+    createSmallInboxNotification: function (){
         var notificationId = "inbox";
         chrome.notifications.create(notificationId, qm.chrome.windowParams.inboxNotificationParams, function (id) {});
+    },
+    createSmallNotificationAndOpenInboxInBackground: function(){
+       qm.chrome.createSmallInboxNotification();
         var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
         windowParams.focused = false;
         qm.chrome.openOrFocusChromePopupWindow(windowParams);
@@ -52,6 +55,10 @@ window.qm.chrome = {
     canShowChromePopups: function(){
         if(typeof chrome === "undefined" || typeof chrome.windows === "undefined" || typeof chrome.windows.create === "undefined"){
             qmLog.info("Cannot show chrome popups");
+            return false;
+        }
+        if(qm.getUser() && !qm.getUser().pushNotificationsEnabled){
+            qmLog.info("User has disabled notifications");
             return false;
         }
         return true;
@@ -218,6 +225,14 @@ window.qm.chrome = {
     },
     showRatingOrInboxPopup: function () {
         qm.notifications.refreshIfEmpty(function () {
+            if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
+                qmLog.info("No notifications not opening popup");
+                return false;
+            }
+            if(qm.getUser().combineNotifications){
+                qm.chrome.createSmallInboxNotification();
+                return;
+            }
             window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
             if(window.trackingReminderNotification){
                 qm.chrome.showRatingPopup(window.trackingReminderNotification);
