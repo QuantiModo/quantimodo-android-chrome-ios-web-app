@@ -378,7 +378,7 @@ window.qm = {
             });
         },
         loadAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getDefaultConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
+            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('configs/default.config.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
                 if(parsedResponse){
                     window.qmLog.debug('Got appSettings from configs/default.config.json', null, parsedResponse);
                     qm.appSettings = parsedResponse;
@@ -656,6 +656,7 @@ window.qm = {
             }
         }
     },
+    buildInfo: {},
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -2047,9 +2048,6 @@ window.qm = {
                 relativePath = relativePath.replace('/', '');
             }
             return qm.urlHelper.getIonicAppBaseUrl() + relativePath;
-        },
-        getDefaultConfigJsonUrl: function(){
-            return qm.urlHelper.getAbsoluteUrlFromRelativePath('configs/default.config.json');
         },
         getPrivateConfigJsonUrl: function(){
             return qm.urlHelper.getAbsoluteUrlFromRelativePath('private_configs/default.private_config.json');
