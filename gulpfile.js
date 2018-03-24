@@ -1884,7 +1884,7 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
 });
-gulp.task('writeBuildInfo', ['getAppConfigs'], function () {
+gulp.task('buildInfo', ['getAppConfigs'], function () {
     var buildInfo = {
         iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
         builtAt: timeHelper.getUnixTimestampInSeconds(),
@@ -2143,7 +2143,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
-        'writeBuildInfo',
+        'buildInfo',
         'setVersionNumberInFiles',
         'createSuccessFile',
         'verifyExistenceOfBuildInfo',
@@ -2167,8 +2167,10 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         return;
     }
     runSequence(
+        'cleanWwwLibFolder',
         'cleanChromeBuildFolder',
         'bowerInstall',
+        'copyIonIconsToWww',
         'copyWwwFolderToChromeExtension',
         'buildChromeExtensionWithoutCleaning',
         callback);
@@ -2242,9 +2244,6 @@ gulp.task('buildMediModoAndroid', function (callback) {
 });
 gulp.task('buildAllChromeExtensions', function (callback) {
     runSequence(
-        'cleanWwwLibFolder',
-        'cleanBuildFolder',
-        'bowerInstall',
         'setMediModoEnvs',
         'buildChromeExtension',
         'setMoodiModoEnvs',
