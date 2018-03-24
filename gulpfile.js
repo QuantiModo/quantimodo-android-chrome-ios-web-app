@@ -298,12 +298,19 @@ function uploadAppImagesToS3(filePath) {
     //appSettings.additionalSettings.appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP contructor
     return uploadToS3(filePath);
 }
-function uploadToS3(filePath) {
+function checkAwsEnvs() {
     if(!process.env.AWS_ACCESS_KEY_ID){
-        logInfo("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
-        return;
+        logInfo("Please set environmental variable AWS_ACCESS_KEY_ID");
+        return false;
     }
     if(!process.env.AWS_SECRET_ACCESS_KEY){
+        logInfo("Please set environmental variable AWS_SECRET_ACCESS_KEY");
+        return false;
+    }
+    return true;
+}
+function uploadToS3(filePath) {
+    if(!checkAwsEnvs()){
         logInfo("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
         return;
     }
@@ -2409,7 +2416,9 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
 });
 gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
-    var string = '{"name": "'+appSettings.appDisplayName+'", '+
+    var string =
+        '{"name": "QuantiModo", '+
+        //'{"name": "'+appSettings.appDisplayName+'", '+
         '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
         // '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
         // '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
@@ -2419,6 +2428,7 @@ gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
     return writeToFile('cordova-hcp.json', string);
 });
 gulp.task('cordovaHotCodePushLogin', [], function () {
+    if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
     /** @namespace process.env.AWS_ACCESS_KEY_ID */
     /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
     var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
