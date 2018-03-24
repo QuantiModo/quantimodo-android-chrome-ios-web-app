@@ -344,14 +344,12 @@ window.qm = {
             }
             localforage.getItem(qm.items.appSettings, function(error, appSettings){
                 if(appSettings){
-                    // qm.appSettings = appSettings;
-                    // successHandler(appSettings);
+                    // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
                 }
                 qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){
-                        qm.appSettings = appSettings;
-                        successHandler(appSettings);
+                        qm.appsManager.setAppSettings(appSettings, successHandler);
                         return;
                     }
                     qm.appsManager.getAppSettingsFromApi(successHandler)
@@ -367,13 +365,11 @@ window.qm = {
         getAppSettingsFromApi: function (successHandler) {
             qm.api.getAppSettingsUrl(function(appSettingsUrl){
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
-                    qm.appSettings = response.appSettings;
-                    localforage.setItem(qm.items.appSettings, qm.appSettings);
                     if(response.privateConfig){
                         qm.privateConfig = response.privateConfig;
                         localforage.setItem(qm.items.privateConfig, response.privateConfig);
                     }
-                    successHandler(qm.appSettings);
+                    qm.appsManager.setAppSettings(response.appSettings, successHandler);
                 })
             });
         },
@@ -389,6 +385,17 @@ window.qm = {
                 qmLog.error("Could not get appSettings from configs/default.config.json");
             });
         },
+        loadBuildInfoFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
+            if(qm.buildInfo){callback(qm.buildInfo);}
+            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('build-info.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
+                if(parsedResponse){
+                    qm.buildInfo = parsedResponse;
+                }
+                callback(parsedResponse);
+            }, function () {
+                qmLog.error("Could not get appSettings from build-info.json");
+            });
+        },
         loadPrivateConfigFromJsonFile: function() {  // I think adding appSettings to the chrome manifest breaks installation
             if(!qm.privateConfig){
                 qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
@@ -398,6 +405,18 @@ window.qm = {
                     qmLog.error("Could not get private config from json file");
                 });
             }
+        },
+        setAppSettings: function(appSettings, callback){
+            qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
+                for (var propertyName in buildInfo) {
+                    if( buildInfo.hasOwnProperty(propertyName) ) {
+                        appSettings[propertyName] = buildInfo[propertyName];
+                    }
+                }
+                qm.appSettings = appSettings;
+                localforage.setItem(qm.items.appSettings, qm.appSettings);
+                if(callback){callback(appSettings);}
+            })
         }
     },
     apiHelper: {},
