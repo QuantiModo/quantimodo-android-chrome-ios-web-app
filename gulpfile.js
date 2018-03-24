@@ -2134,11 +2134,12 @@ gulp.task('configureApp', [], function (callback) {
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
-        'verifyExistenceOfBuildInfo',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
+        'writeBuildInfo',
         'setVersionNumberInFiles',
         'createSuccessFile',
+        'verifyExistenceOfBuildInfo',
         callback);
 });
 gulp.task('buildChromeInSrcFolder', ['getAppConfigs'], function (callback) {
