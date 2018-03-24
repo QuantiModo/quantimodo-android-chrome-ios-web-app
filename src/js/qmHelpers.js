@@ -108,8 +108,8 @@ window.qm = {
             //     window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
             //     clientId = "default"; // On mobile
             // }
-            if(!clientId){
-                clientId = qm.storage.getItem(qm.items.clientId);
+            if(!clientId){ // Not sure why but this always returns quantimodo
+                //clientId = qm.storage.getItem(qm.items.clientId);
             }
             // DON'T DO THIS
             // if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
