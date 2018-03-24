@@ -79,6 +79,7 @@ var paths = {
         devCredentials: "www/private_configs/dev-credentials.json",
         privateConfigs: "www/private_configs/",
         defaultConfig: "www/configs/default.config.json",
+        buildInfo: "www/build-info.json",
         defaultPrivateConfig: "www/private_configs/default.private_config.json",
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
@@ -888,7 +889,6 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
     return makeApiRequest(options);
 });
-function generateDefaultConfigJson(appSettings) {writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));}
 gulp.task('getAppConfigs', ['setClientId'], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
@@ -1030,8 +1030,8 @@ gulp.task('post-app-status', [], function () {
 gulp.task('validateChromeManifest', function () {
     return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
 });
-gulp.task('verifyExistenceOfDefaultConfig', function () {
-    return verifyExistenceOfFile(paths.www.defaultConfig);
+gulp.task('verifyExistenceOfDefaultBuildInfo', function () {
+    return verifyExistenceOfFile(paths.www.buildInfo);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
     if(buildSettings.xwalkMultipleApk){
@@ -2134,7 +2134,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
-        'verifyExistenceOfDefaultConfig',
+        'verifyExistenceOfDefaultBuildInfo',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
@@ -2178,7 +2178,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'chromeBackgroundJS',
         'chromeIFrameHtml',
         'chromeOptionsHtml',
-        'verifyExistenceOfDefaultConfig',
+        'verifyExistenceOfDefaultBuildInfo',
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
@@ -2443,14 +2443,14 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
         logError("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
         logError("No playPublicLicenseKey so disabling subscriptions on Android build");
-        appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
-        generateDefaultConfigJson(appSettings);
+        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+        //generateDefaultConfigJson(appSettings);
     }
     /** @namespace appSettings.appStatus.buildEnabled */
     /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
     if(!appSettings.appStatus.buildEnabled.androidRelease){
         logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is " +
-            appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+            appSettings.appStatus.buildEnabled.androidRelease + ".  You can enable it at " + getAppDesignerUrl());
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
