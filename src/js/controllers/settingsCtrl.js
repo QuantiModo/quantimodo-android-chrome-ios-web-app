@@ -315,24 +315,24 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     	qmService.sendBugReport();
     	return;
         // Appending dialog to document.body to cover sidenav in docs app
-        var confirm = $mdDialog.prompt()
-            .title('Are you sure you want to delete your data?')
-            .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
-            .placeholder('What should I do better?')
-            .ariaLabel('Deletion reason')
-            //.initialValue('Buddy')
-            .targetEvent(ev)
-            .required(true)
-            .ok('DELETE ACCOUNT')
-            .cancel('Give me another chance?');
-
-        $mdDialog.show(confirm).then(function(reason) {
-            qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
-            qm.userHelper.deleteUserAccount(reason, function () {
-                qmService.completelyResetAppStateAndLogout();
-            });
-        }, function(reason) {
-            qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
-        });
+        // var confirm = $mdDialog.prompt()
+        //     .title('Are you sure you want to delete your data?')
+        //     .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
+        //     .placeholder('What should I do better?')
+        //     .ariaLabel('Deletion reason')
+        //     //.initialValue('Buddy')
+        //     .targetEvent(ev)
+        //     .required(true)
+        //     .ok('DELETE ACCOUNT')
+        //     .cancel('Give me another chance?');
+        //
+        // $mdDialog.show(confirm).then(function(reason) {
+        //     qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
+        //     qm.userHelper.deleteUserAccount(reason, function () {
+        //         qmService.completelyResetAppStateAndLogout();
+        //     });
+        // }, function(reason) {
+        //     qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
+        // });
     }
 }]);
