@@ -31,5 +31,5 @@ The main contents of the App are in the `www` folder. The structure is:
 
 ## App-Specific Config Files
 1. config.xml
-2. www/configs/{{appname}}.js
+2. www/default.config.json
 3. www/private_configs/{{appname}}.private_config.json
