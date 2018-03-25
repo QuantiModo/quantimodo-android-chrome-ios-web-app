@@ -928,6 +928,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
             }
         }
         addBuildInfoToAppSettings();
+        writeDefaultConfigJson('src');
+        writeDefaultConfigJson('www');
         qmLog.info("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
