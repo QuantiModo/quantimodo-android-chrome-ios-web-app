@@ -40,6 +40,15 @@ window.qm = {
             return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
         },
         cache: {},
+        client: {
+            getClientWebsiteUrl: function (successHandler, partialPath){
+                if(!partialPath){partialPath = '';}
+                qm.api.getClientIdWithCallback(function (clientId) {
+                    var url = "https://"+clientId+".quantimo.do/ionic/Modo/www/" + partialPath;
+                    successHandler(url)
+                })
+            }
+        },
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
                 qmLog.error("No response provided to qmSdkApiResponseHandler");
