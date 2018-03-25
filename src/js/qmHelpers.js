@@ -88,7 +88,8 @@ window.qm = {
                     qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
-            urlParams.clientId = encodeURIComponent(qm.api.getClientId());
+            if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = encodeURIComponent(qm.api.getClientId());}
+            if(!urlParams.clientId && qm.api.getClientId()){urlParams.clientId = encodeURIComponent(qm.api.getClientId());}
             if(window.devCredentials){
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
