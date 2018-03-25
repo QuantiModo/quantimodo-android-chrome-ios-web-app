@@ -40,6 +40,15 @@ window.qm = {
             return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
         },
         cache: {},
+        client: {
+            getClientWebsiteUrl: function (successHandler, partialPath){
+                if(!partialPath){partialPath = '';}
+                qm.api.getClientIdWithCallback(function (clientId) {
+                    var url = "https://"+clientId+".quantimo.do/ionic/Modo/www/" + partialPath;
+                    successHandler(url)
+                })
+            }
+        },
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
                 qmLog.error("No response provided to qmSdkApiResponseHandler");
@@ -79,7 +88,8 @@ window.qm = {
                     qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
-            urlParams.clientId = encodeURIComponent(qm.api.getClientId());
+            if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = encodeURIComponent(qm.api.getClientId());}
+            if(!urlParams.clientId && qm.api.getClientId()){urlParams.clientId = encodeURIComponent(qm.api.getClientId());}
             if(window.devCredentials){
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
@@ -350,12 +360,16 @@ window.qm = {
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
                 }
+                if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
+                    qm.appsManager.getAppSettingsFromApi(successHandler);
+                    return;
+                }
                 qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){
                         qm.appsManager.setAppSettings(appSettings, successHandler);
                         return;
                     }
-                    qm.appsManager.getAppSettingsFromApi(successHandler)
+                    qm.appsManager.getAppSettingsFromApi(successHandler);
                 })
             });
         },
@@ -699,8 +713,12 @@ window.qm = {
         if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}
         return null;
     },
-    getClientId: function(){
-        return qm.api.getClientId();
+    getClientId: function(successHandler){
+        if(!successHandler){
+            return qm.api.getClientId();
+        } else {
+            qm.api.getClientIdWithCallback(successHandler)
+        }
     },
     getPrimaryOutcomeVariable: function(){
         if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){ return qm.getAppSettings().primaryOutcomeVariableDetails;}
