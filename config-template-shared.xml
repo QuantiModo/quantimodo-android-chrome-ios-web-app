@@ -23,7 +23,9 @@
   <platform name="android">
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
-    <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
+    <hook type="after_prepare" src="hooks/android_custom_resources.js" />
+      <hook src="hooks/build-extras-hook.js" type="before_run" />
+      <hook src="hooks/build-extras-hook.js" type="before_build" />
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*" />
@@ -78,7 +80,6 @@
   <plugin name="cordova-android-support-gradle-release" spec="~1.1.2">
     <variable name="ANDROID_SUPPORT_VERSION" value="25.+" />
   </plugin>
-    <plugin name="cordova-android-play-services-gradle-release" spec="~1.2.0" />
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <chcp>
         <config-file url="https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json"/>
