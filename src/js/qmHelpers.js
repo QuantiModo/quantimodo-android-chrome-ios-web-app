@@ -40,15 +40,6 @@ window.qm = {
             return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
         },
         cache: {},
-        client: {
-            getClientWebsiteUrl: function (successHandler, partialPath){
-                if(!partialPath){partialPath = '';}
-                qm.api.getClientIdWithCallback(function (clientId) {
-                    var url = "https://"+clientId+".quantimo.do/ionic/Modo/www/" + partialPath;
-                    successHandler(url)
-                })
-            }
-        },
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
                 qmLog.error("No response provided to qmSdkApiResponseHandler");
@@ -79,7 +70,12 @@ window.qm = {
             }
         },
         addGlobalParams: function (urlParams) {
+            var url;
             if(!urlParams){urlParams = {};}
+            if(typeof urlParams === "string"){
+                url = urlParams;
+                urlParams = {};
+            }
             if(qm.appsManager.getAppSettingsFromMemory()){
                 urlParams.appName = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().appDisplayName);
                 if(qm.getAppSettings().versionNumber){
@@ -88,8 +84,8 @@ window.qm = {
                     qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
-            if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = encodeURIComponent(qm.api.getClientId());}
-            if(!urlParams.clientId && qm.api.getClientId()){urlParams.clientId = encodeURIComponent(qm.api.getClientId());}
+            if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();}
+            if(!urlParams.clientId && qm.api.getClientId()){urlParams.clientId = qm.api.getClientId();}
             if(window.devCredentials){
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
@@ -100,44 +96,46 @@ window.qm = {
             for(var i = 0; i < passableUrlParameters.length; i++){
                 if(qm.urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);}
             }
+            if(url){
+                url = qm.urlHelper.addUrlQueryParamsToUrl(urlParams, url);
+                return url;
+            }
             return urlParams;
         },
         getClientId: function(){
-            var clientId;
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
-                clientId = qm.api.getClientIdFromQueryParameters();
+                qm.clientId = qm.api.getClientIdFromQueryParameters();
             }
-            if(!clientId && qm.appSettings){
-                clientId =  qm.appSettings.clientId;
+            if(!qm.clientId){
+                qm.clientId = qm.api.getClientIdFromSubDomain();
             }
-            if(!clientId && qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().clientId){
-                clientId = qm.appsManager.getAppSettingsFromMemory().clientId;
+            if(!qm.clientId && qm.appSettings){
+                qm.clientId =  qm.appSettings.clientId;
+            }
+            if(!qm.clientId && qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().clientId){
+                qm.clientId = qm.appsManager.getAppSettingsFromMemory().clientId;
             }
             // DON'T DO THIS
             // if(!clientId && qm.platform.isMobile()){
             //     window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
             //     clientId = "default"; // On mobile
             // }
-            if(!clientId){ // Not sure why but this always returns quantimodo
+            if(!qm.clientId){ // Not sure why but this always returns quantimodo
                 //clientId = qm.storage.getItem(qm.items.clientId);
             }
             // DON'T DO THIS
             // if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
             //     clientId = "default"; // On mobile
             // }
-            if(!clientId){
-                clientId = qm.api.getClientIdFromSubDomain();
+            if(!qm.clientId){
+                qmLog.info("Could not get client id!");
+                //clientId = 'quantimodo';
             }
-            if(!clientId){
-                qmLog.error("Could not get client id!");
-                clientId = 'quantimodo';
-            }
-            return clientId;
+            return qm.clientId;
         },
         getClientIdWithCallback: function(successHandler){
-            var clientId = qm.api.getClientId();
-            if(clientId){
-                successHandler(clientId);
+            if(qm.api.getClientId()){
+                successHandler(qm.api.getClientId());
                 return;
             }
             if(typeof AppSettings !== "undefined"){
@@ -147,14 +145,20 @@ window.qm = {
                         qm.clientId = preferences.QuantiModoClientId;
                         /** @namespace preferences.QuantiModoClientSecret */
                         qm.clientSecret = preferences.QuantiModoClientSecret;
-                        successHandler(preferences.QuantiModoClientId,  preferences.QuantiModoClientSecret);
+                        successHandler(qm.clientId,  preferences.QuantiModoClientSecret);
                     },
                     function(error) {
                         qmLog.error("Error! " + JSON.stringify(error));
                     }, ["QuantiModoClientId", "QuantiModoClientSecret"]);
             }
+            qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
+                if(appSettings){
+                    qm.clientId = appSettings.clientId;
+                    successHandler(qm.clientId);
+                }
+            });
         },
-         getClientIdFromQueryParameters: function() {
+        getClientIdFromQueryParameters: function() {
             var clientId = window.qm.urlHelper.getParam('clientId');
             if(!clientId){clientId = window.qm.urlHelper.getParam('appName');}
             if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
@@ -167,7 +171,7 @@ window.qm = {
                 return null;
             }
             var subDomain = getSubDomain();
-            var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+            var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[getSubDomain()];
             if(clientIdFromAppConfigName){
                 window.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
                     ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
@@ -364,7 +368,7 @@ window.qm = {
                     qm.appsManager.getAppSettingsFromApi(successHandler);
                     return;
                 }
-                qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
+                qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){
                         qm.appsManager.setAppSettings(appSettings, successHandler);
                         return;
@@ -394,7 +398,7 @@ window.qm = {
                 })
             });
         },
-        loadAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
+        getAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
             qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('default.config.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
                 if(parsedResponse){
                     window.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
@@ -442,6 +446,21 @@ window.qm = {
                 localforage.setItem(qm.items.appSettings, qm.appSettings);
                 if(callback){callback(appSettings);}
             })
+        },
+        // SubDomain : Filename
+        appConfigFileNames: {
+            "app" : "quantimodo",
+            "energymodo" : "energymodo",
+            "default" : "default",
+            "ionic" : "quantimodo",
+            "local" : "quantimodo",
+            "medimodo" : "medimodo",
+            "mindfirst" : "mindfirst",
+            "moodimodo" : "moodimodo",
+            "oauth" : "quantimodo",
+            "quantimodo" : "quantimodo",
+            "staging" : "quantimodo",
+            "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         }
     },
     apiHelper: {},
@@ -701,6 +720,15 @@ window.qm = {
         }
     },
     buildInfo: {},
+    client: {
+        getClientWebsiteUrl: function (successHandler, partialPath){
+            if(!partialPath){partialPath = '';}
+            qm.api.getClientIdWithCallback(function (clientId) {
+                var url = "https://"+clientId+".quantimo.do/ionic/Modo/www/" + partialPath;
+                successHandler(url)
+            })
+        }
+    },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -764,8 +792,11 @@ window.qm = {
     getPrimaryOutcomeVariableByNumber: function(num){
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
     },
-    getUser: function(){
-        return qm.userHelper.getUserFromLocalStorage();
+    getUser: function(successHandler, errorHandler){
+        if(!successHandler){
+            return qm.userHelper.getUserFromLocalStorage();
+        }
+        qm.userHelper.getUserFromLocalStorageOrApi(successHandler, errorHandler);
     },
     globalHelper: {
         setStudy: function(study){
@@ -1272,11 +1303,11 @@ window.qm = {
             if(ratingTrackingReminderNotification.unitAbbreviatedName !== '/5'){
                 qmLog.error('ratingTrackingReminderNotification must have unit /5');
             }
-            return "android_popup.html?variableName=" + ratingTrackingReminderNotification.variableName +
+            var url = "android_popup.html?variableName=" + encodeURIComponent(ratingTrackingReminderNotification.variableName) +
                 "&valence=" + ratingTrackingReminderNotification.valence +
-                "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId +
-                "&clientId=" + qm.api.getClientId() + // // Need to do this for Android webview that can't access local config.json
-                "&accessToken=" + qm.auth.getAccessTokenFromUrlUserOrStorage();
+                "&trackingReminderNotificationId=" + ratingTrackingReminderNotification.trackingReminderNotificationId;
+            url = qm.api.addGlobalParams(url);
+            return url;
         },
         closePopup: function() {
             window.qmLog.info('closing popup');
@@ -2102,6 +2133,20 @@ window.qm = {
         },
         getPrivateConfigJsonUrl: function(){
             return qm.urlHelper.getAbsoluteUrlFromRelativePath('private_configs/default.private_config.json');
+        },
+        addUrlQueryParamsToUrl: function (params, url){
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    if(url.indexOf(key + '=') === -1){
+                        if(url.indexOf('?') === -1){
+                            url = url + "?" + key + "=" + encodeURIComponent(params[key]);
+                        } else {
+                            url = url + "&" + key + "=" + encodeURIComponent(params[key]);
+                        }
+                    }
+                }
+            }
+            return url;
         }
     },
     user: null,
@@ -2119,6 +2164,7 @@ window.qm = {
             if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
             return window.qmUser;
         },
+        isTestUser: function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;},
         setUser: function(user){
             window.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
@@ -2333,21 +2379,6 @@ window.qm = {
         }
     }
 };
-// SubDomain : Filename
-var appConfigFileNames = {
-    "app" : "quantimodo",
-    "energymodo" : "energymodo",
-    "default" : "default",
-    "ionic" : "quantimodo",
-    "local" : "quantimodo",
-    "medimodo" : "medimodo",
-    "mindfirst" : "mindfirst",
-    "moodimodo" : "moodimodo",
-    "oauth" : "quantimodo",
-    "quantimodo" : "quantimodo",
-    "staging" : "quantimodo",
-    "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
-};
 // returns bool | string
 // if search param is found: returns its value
 // returns false if not found
@@ -2452,5 +2483,3 @@ function getUnique(array, propertyName) {
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
-window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-qm.userHelper.getUserFromLocalStorage();
