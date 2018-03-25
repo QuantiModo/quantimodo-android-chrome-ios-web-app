@@ -153,6 +153,9 @@ window.qm = {
             return clientId;
         },
         getClientIdFromSubDomain: function(){
+            if(window.location.href.indexOf('.quantimo.do') === -1){
+                return null;
+            }
             var subDomain = getSubDomain();
             var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
             if(clientIdFromAppConfigName){
