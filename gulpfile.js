@@ -753,7 +753,7 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-var chromeScripts = ['lib/localforage/dist/localforage.js', 'custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js',
+var chromeScripts = ['lib/localforage/dist/localforage.js', 'src/lib/bugsnag/src/bugsnag.js','js/qmLogger.js','js/qmHelpers.js',
     'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'];
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
@@ -2049,9 +2049,6 @@ gulp.task('copyAndroidBuild', [], function () {
     var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
     return copyFiles(paths.apk.outputFolder + '/*.apk', buildFolderPath);
 });
-gulp.task('copyIonicCloudLibrary', [], function () {
-    return copyFiles('node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js', 'www/lib');
-});
 gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
     return copyFiles('www/*.html', chromeExtensionBuildPath);
 });
@@ -2313,7 +2310,7 @@ gulp.task('fastlaneBetaIos', function (callback) {
     return execute(command, callback);
 });
 gulp.task('xcodeProjectFix', function (callback) {
-    var command = 'ruby hooks/after_platform_add.bak/xcodeprojectfix.rb';
+    var command = 'ruby hooks/xcodeprojectfix.rb';
     return execute(command, callback);
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
