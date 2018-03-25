@@ -64,10 +64,10 @@ var paths = {
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
-        appConfigs: "src/configs/",
+        appConfigs: "src/",
         devCredentials: "src/private_configs/dev-credentials.json",
         privateConfigs: "src/private_configs/",
-        defaultConfig: "src/configs/default.config.json",
+        defaultConfig: "src/default.config.json",
         defaultPrivateConfig: "src/private_configs/default.private_config.json",
         icons: "src/img/icons",
         firebase: "src/lib/firebase/**/*",
@@ -75,10 +75,10 @@ var paths = {
         serviceWorker: "src/firebase-messaging-sw.js"
     },
     www: {
-        appConfigs: "www/configs/",
+        appConfigs: "www/",
         devCredentials: "www/private_configs/dev-credentials.json",
         privateConfigs: "www/private_configs/",
-        defaultConfig: "www/configs/default.config.json",
+        defaultConfig: "www/default.config.json",
         buildInfo: "www/build-info.json",
         defaultPrivateConfig: "www/private_configs/default.private_config.json",
         icons: "www/img/icons",
@@ -753,7 +753,7 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-var chromeScripts = ['lib/localforage/dist/localforage.js', 'src/lib/bugsnag/src/bugsnag.js','js/qmLogger.js','js/qmHelpers.js',
+var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/src/bugsnag.js','js/qmLogger.js','js/qmHelpers.js',
     'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'];
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
@@ -904,6 +904,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
         appSettings = response.appSettings;
+        if(response.privateConfig){privateConfig = response.privateConfig;}
         function addBuildInfoToAppSettings() {
             appSettings.buildServer = getCurrentServerContext();
             appSettings.buildLink = getBuildLink();
@@ -928,48 +929,33 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     return makeApiRequest(options, successHandler);
 });
-gulp.task('writeAppConfigs', ['getAppConfigs'], function () {
-    function writePrivateConfigs() {
-        if (!response.privateConfig && devCredentials.accessToken) {
-            logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-                + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
-                " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
-        }
-        /** @namespace response.privateConfig */
-        if (response.privateConfig) {
-            privateConfig = response.privateConfig;
-            try {
-                writeToFile(paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (error) {
-                logError(error);
-            }
-            try {
-                writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultPrivateConfig, prettyJSONStringify(privateConfig));
-            } catch (err) {
-                logDebug(err);
-            }
-        } else {
-            logError("No private config provided!  User will not be able to use OAuth login!");
-        }
+function writeDefaultConfigJson(path) {
+    writeToFile(path + "/default.config.json", prettyJSONStringify(appSettings));
+}
+function writePrivateConfigs(path) {
+    if (!privateConfig && devCredentials.accessToken) {
+        logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
+            + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+            " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
     }
-    function writeAppSettingsJsonFiles() {
-        writeToFile(paths.www.defaultConfig, prettyJSONStringify(appSettings));
+    /** @namespace response.privateConfig */
+    if (privateConfig) {
         try {
-            writeToFile(chromeExtensionBuildPath + '/' + paths.www.defaultConfig, prettyJSONStringify(appSettings));
-        } catch (err) {
-            logDebug(err);
+            writeToFile(path + '/private_configs/default.private_config.json', prettyJSONStringify(privateConfig));
+        } catch (error) {
+            logError(error);
         }
-        logDebug("Writing to " + paths.www.defaultConfig + ": " + prettyJSONStringify(appSettings));
-        writeToFile(paths.www.appConfigs + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
-        /** @namespace response.allConfigs */
-        if (response.allConfigs) {
-            for (var i = 0; i < response.allConfigs.length; i++) {
-                writeToFile(paths.www.appConfigs + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
-            }
-        }
+    } else {
+        logError("No private config provided!  User will not be able to use OAuth login!");
     }
-    //writePrivateConfigs();
-    writeAppSettingsJsonFiles();
+}
+gulp.task('chromeDefaultConfigJson', ['getAppConfigs'], function () {
+    //writePrivateConfigs(chromeExtensionBuildPath);
+    writeDefaultConfigJson(chromeExtensionBuildPath);
+});
+gulp.task('defaultConfigJsonToSrc', ['getAppConfigs'], function () {
+    //writePrivateConfigs('src');
+    writeDefaultConfigJson('src');
 });
 var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
@@ -1991,7 +1977,7 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/configs/**','!src/private_configs',
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json','!src/private_configs',
         '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
 });
 gulp.task('copySrcToWww', [], function () {
@@ -2001,7 +1987,7 @@ gulp.task('copySrcJsToWww', [], function () {
     return copyFiles('src/js/**/*', 'www/js');
 });
 gulp.task('copyConfigsToSrc', [], function () {
-    return copyFiles('www/configs/*', 'src/configs', []);
+    return copyFiles('default.config.json', 'src', []);
 });
 var chromeBackgroundJsFilename = 'qmChromeBackground.js';
 gulp.task('chromeBackgroundJS', [], function () {
@@ -2148,7 +2134,7 @@ gulp.task('configureApp', [], function (callback) {
         'verifyExistenceOfBuildInfo',
         callback);
 });
-gulp.task('buildChromeInSrcFolder', ['getAppConfigs'], function (callback) {
+gulp.task('chromeInSrcFolder', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -2156,7 +2142,7 @@ gulp.task('buildChromeInSrcFolder', ['getAppConfigs'], function (callback) {
     }
     runSequence(
         'chromeManifestInSrcFolder',
-        'copyConfigsToSrc',
+        'defaultConfigJsonToSrc',
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
@@ -2191,6 +2177,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
+        'chromeDefaultConfigJson',
         'deleteWwwPrivateConfigs',
         'zipChromeExtension',
         'unzipChromeExtension',
