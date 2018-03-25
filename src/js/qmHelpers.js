@@ -709,9 +709,12 @@ window.qm = {
             return functionName;
         }
     },
-    getAppSettings: function () {
-        if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}
-        return null;
+    getAppSettings: function (successHandler) {
+        if(!successHandler){
+            if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}
+            return null;
+        }
+        qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler);
     },
     getClientId: function(successHandler){
         if(!successHandler){
