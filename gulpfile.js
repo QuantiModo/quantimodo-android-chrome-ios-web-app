@@ -2118,6 +2118,8 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     } else {
         runSequence(
             'configureApp',
+            'deleteWwwConfigs',
+            'deleteWwwPrivateConfigs',
             callback);
     }
 });
