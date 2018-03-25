@@ -5,7 +5,6 @@ angular.module('starter',
     [
         'ionic',
         //'ionic.service.core',
-        //'ionic.cloud',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
