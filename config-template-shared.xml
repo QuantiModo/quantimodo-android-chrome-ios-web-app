@@ -78,7 +78,9 @@
   <plugin name="cordova-android-support-gradle-release" spec="~1.1.2">
     <variable name="ANDROID_SUPPORT_VERSION" value="25.+" />
   </plugin>
-    <plugin name="cordova-android-play-services-gradle-release" spec="~1.2.0" />
+    <plugin name="cordova-android-play-services-gradle-release" spec="https://github.com/mikepsinn/cordova-android-play-services-gradle-release#73ebc0dab54bac4618ccc08b50f8c30658e04160">
+        <variable name="PLAY_SERVICES_VERSION" value="11.+" />
+    </plugin>
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <chcp>
         <config-file url="https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json"/>
