@@ -30,7 +30,7 @@ sudo chown -R `whoami` ~/.npm
 echo "Making hooks and scripts executable"
 sudo chmod +x scripts/*
 sudo chmod +x hooks/*
-sudo chmod +x package-hooks/*
+sudo chmod +x hooks/*
 sudo chmod +x setup-cordova.js
 
 echo "npm install"

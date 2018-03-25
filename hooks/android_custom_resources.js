@@ -12,7 +12,7 @@ var resourceDirs = [
   'res/drawable-xxxhdpi'
 ];
 module.exports = function(ctx) {
-  console.log("started package-hooks/android_custom_resources.js" + ctx.opts.platforms.indexOf('android'));
+  console.log("started hooks/android_custom_resources.js" + ctx.opts.platforms.indexOf('android'));
   if (ctx.opts.platforms.indexOf('android') < 0) {
     console.log("Platform not android so quitting");
     return;
