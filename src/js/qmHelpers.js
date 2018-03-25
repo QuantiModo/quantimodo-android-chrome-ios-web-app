@@ -712,8 +712,12 @@ window.qm = {
         if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}
         return null;
     },
-    getClientId: function(){
-        return qm.api.getClientId();
+    getClientId: function(successHandler){
+        if(!successHandler){
+            return qm.api.getClientId();
+        } else {
+            qm.api.getClientIdWithCallback(successHandler)
+        }
     },
     getPrimaryOutcomeVariable: function(){
         if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){ return qm.getAppSettings().primaryOutcomeVariableDetails;}
