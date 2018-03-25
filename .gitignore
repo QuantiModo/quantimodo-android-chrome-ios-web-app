@@ -60,7 +60,6 @@ src/img/CS6.zip
 src/img/icons/*
 !src/img/icons/.gitkeep
 !src/data/.gitkeep
-!src/configs/*gitkeep*
 !src/chrome_extension/*
 src/js/configuration-app.js
 src/lib/
@@ -105,16 +104,13 @@ gradlew.bat
 local.properties
 gradle/
 success
-!/src/configs/.gitkeep
 www/*
 !/www/gitkeep
-www/configs/*
-!/www/configs/gitkeep
 www/private_configs/*
 !/www/private_configs/gitkeep
 /src/qm-amazon/
 dist/
-'.chcplogin' 
+'.chcplogin'
 
 cordova-hcp\.json
 \.chcplogin

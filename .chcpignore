@@ -1,4 +1,4 @@
-www/configs/default.config.json
+www/default.config.json
 www/private_configs/default.private_config.json
 **/www/private_configs/*
 manifest.json
