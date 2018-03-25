@@ -1549,6 +1549,10 @@ gulp.task('cordovaPlatformVersionAndroid', function (callback) {
     var command = 'cordova platform version android';
     executeCommand(command, callback);
 });
+gulp.task('cordova-android-play-services-gradle-release', function (callback) {
+    var command = 'cordova plugin add cordova-android-play-services-gradle-release --fetch --variable PLAY_SERVICES_VERSION=11.+ && cordova prepare && cordova compile';
+    executeCommand(command, callback);
+});
 gulp.task('downloadGradle', function () {
     return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
         .pipe(fs.createWriteStream('gradle-2.14.1-bin.zip'));
@@ -2106,6 +2110,10 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     logInfo('gulp configureAppAfterNpmInstall');
+    if(process.env.TRAVIS){
+        callback();  // Just handle the build in .travis.yml
+        return;
+    }
     if (process.env.BUDDYBUILD_SCHEME) {
         process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
         logInfo('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to prepareIosApp');
@@ -2403,6 +2411,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'ionicPlatformAddAndroid',
+        'cordova-android-play-services-gradle-release',
         'ionicAddCrosswalk',
         'ionicInfo',
         callback);
