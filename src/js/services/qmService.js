@@ -1096,7 +1096,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessTokenFromLocalStorage: accessTokenFromLocalStorage}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
-            if(!window.isTestUser()){Bugsnag.notify(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");}
+            if(!qm.userHelper.isTestUser()){Bugsnag.notify(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");}
         }
         if (accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
