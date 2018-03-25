@@ -350,12 +350,16 @@ window.qm = {
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
                 }
+                if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
+                    qm.appsManager.getAppSettingsFromApi(successHandler);
+                    return;
+                }
                 qm.appsManager.loadAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){
                         qm.appsManager.setAppSettings(appSettings, successHandler);
                         return;
                     }
-                    qm.appsManager.getAppSettingsFromApi(successHandler)
+                    qm.appsManager.getAppSettingsFromApi(successHandler);
                 })
             });
         },
