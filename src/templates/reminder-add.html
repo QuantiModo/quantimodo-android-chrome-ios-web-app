@@ -123,6 +123,10 @@
             <span class="input-label">Instructions</span>
             <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
         </label>
+        <ion-toggle id="enable-toggle" ng-if="state.trackingReminder.reminderFrequency" ng-model="state.trackingReminder.enabled" ng-change="toggleReminderEnabled()">
+            <div ng-if="state.trackingReminder.enabled"><i class="icon ion-android-notifications"></i> &nbsp Active &nbsp</div>
+            <div ng-if="!state.trackingReminder.enabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
+        </ion-toggle>
         <section layout="row" layout-align="center center" layout-wrap>
             <md-button ng-if="state.trackingReminder && state.trackingReminder.id" class="md-raised md-warn" ng-click="deleteReminder()">Delete</md-button>
             <md-button id="cancelButton" ng-click="goBack()" class="md-raised" >Cancel</md-button>
