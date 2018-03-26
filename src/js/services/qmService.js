@@ -158,6 +158,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("chcp not defined");
                     return false;
                 }
+                qmService.deploy.setVersionInfo();
                 var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
                 qmLog.info("Checking for CHCP updates at " + options['config-file']);
                 // noinspection Annotator
@@ -167,7 +168,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.info('CHCP installUpdate...');
                 // noinspection Annotator
                 chcp.installUpdate(function(error) {
+                    qmService.deploy.setVersionInfo();
                     if (error) {
+                        qmService.deploy.versionInfo.error = error;
                         qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
                         qmService.showMaterialAlert('Update error ' + error.code)
                     } else {
@@ -189,7 +192,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     function noCallback() {}
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
                 }
-            }
+            },
+            setVersionInfo: function () {
+                chcp.getVersionInfo(function(error, data){
+                    qmService.deploy.versionInfo = {
+                        data: data,
+                        error: error
+                    }
+                });
+            },
+            versionInfo: null
         }
     };
     qmService.ionIcons = {
@@ -7009,6 +7021,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
+            if(qmService.deploy.versionInfo){
+                template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.versionInfo) + '\r\n';
+            }
             template = addSnapShotList(template);
             // TODO: Maybe fix me
             //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});
@@ -7023,8 +7038,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var emailBody = encodeURIComponent(template);
         var emailAddress = 'mike@quantimo.do';
         var fallbackUrl = 'http://help.quantimo.do';
-        if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-        } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
+        if($rootScope.isMobile){
+            qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+        } else {
+            qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+        }
     };
     qmService.logEventToGA = function(category, action, label, value, nonInteraction, customDimension, customMetric){
         if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
