@@ -43,14 +43,21 @@ window.qm.chrome = {
         qm.chrome.openOrFocusChromePopupWindow(windowParams);
     },
     createPopup: function(windowParams){
-        qmLog.info("creating popup window", null, windowParams);
-        if(windowParams.url.indexOf('.quantimo.do') === -1){
-            windowParams.url = "https://"+qm.getClientId()+".quantimo.do/ionic/Modo/www/"+windowParams.url;
+        function createPopup(windowParams) {
+            qmLog.info("creating popup window", null, windowParams);
+            chrome.windows.create(windowParams, function (chromeWindow) {
+                qm.storage.setItem('chromeWindowId', chromeWindow.id);
+                chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
+            });
         }
-        chrome.windows.create(windowParams, function (chromeWindow) {
-            qm.storage.setItem('chromeWindowId', chromeWindow.id);
-            chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
-        });
+        if(windowParams.url.indexOf('.quantimo.do') !== -1 || windowParams.url.indexOf('popup.html') !== -1){
+            createPopup(windowParams);
+        } else {
+            qm.client.getClientWebsiteUrl(function (fullWebsiteUrl) {
+                windowParams.url = fullWebsiteUrl;
+                createPopup(windowParams);
+            })
+        }
     },
     canShowChromePopups: function(){
         if(typeof chrome === "undefined" || typeof chrome.windows === "undefined" || typeof chrome.windows.create === "undefined"){
@@ -134,6 +141,7 @@ window.qm.chrome = {
         if(notificationId){chrome.notifications.clear(notificationId);}
     },
     initialize: function () {
+        //return;
         chrome.notifications.onClicked.addListener(function(notificationId) { // Called when the notification is clicked
             qm.chrome.handleNotificationClick(notificationId);
         });
@@ -147,19 +155,23 @@ window.qm.chrome = {
             qm.chrome.scheduleGenericChromeExtensionNotification();
         });
         chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
-            window.qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
-            qm.userHelper.getUserFromLocalStorageOrApi();
-            qm.notifications.refreshIfEmptyOrStale(window.qm.chrome.showRatingOrInboxPopup());
+            qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
+            qm.userHelper.getUserFromLocalStorageOrApi(function () {
+                qm.notifications.refreshIfEmptyOrStale(qm.chrome.showRatingOrInboxPopup());
+            });
         });
-        if(qm.userHelper.getUserFromLocalStorage()){window.qm.chrome.showRatingOrInboxPopup();}
         if (!qm.storage.getItem(qm.items.introSeen)) {
-            window.qmLog.info('introSeen false on chrome extension so opening intro window popup');
-            window.qm.storage.setItem('introSeen', true);
+            qmLog.info('introSeen false on chrome extension so opening intro window popup');
+            qm.storage.setItem('introSeen', true);
             qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.introWindowParams);
+        } else {
+            qm.userHelper.getUserFromLocalStorageOrApi(function () {
+                qm.chrome.showRatingOrInboxPopup();
+            });
         }
     },
     openOrFocusChromePopupWindow: function (windowParams) {
-        qm.chrome.chromeDebug();
+        //qm.chrome.chromeDebug();
         if(!window.qm.chrome.canShowChromePopups()){return;}
         // var chromeWindowId = qm.chrome.createPopupIfNoWindowIdInLocalStorage(windowParams);
         // if(!chromeWindowId){return;}
@@ -260,7 +272,9 @@ window.qm.chrome = {
             window.trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
         }
         if(window.trackingReminderNotification){
-            qm.chrome.openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
+            qm.getClientId(function (clientId) {
+                qm.chrome.openOrFocusChromePopupWindow(getChromeRatingNotificationParams(window.trackingReminderNotification));
+            });
         }
         window.qm.chrome.updateChromeBadge(0);
     },

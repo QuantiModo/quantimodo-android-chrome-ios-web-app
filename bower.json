@@ -14,7 +14,7 @@
     "angular-google-adsense": "^0.4.5",
     "angular-google-analytics": "git+https://github.com/mikepsinn/angular-google-analytics.git#b4a9b7cccd227e5e8e0e8f16ab26aee684f24866",
     "angular-material": "1.1.5",
-    "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#59819305be646f3f353001e183f35d008f6bc6cc",
+    "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#41188cedc99ce5ca689600a43faa3e5483374def",
     "angular-messages": "1.6.1",
     "angular-sanitize": "1.5.3",
     "angular-ui-router": "#0.2.13",
