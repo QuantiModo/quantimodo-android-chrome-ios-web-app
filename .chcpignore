@@ -3,3 +3,4 @@ www/private_configs/default.private_config.json
 **/www/private_configs/*
 manifest.json
 www/manifest.json
+default.config.json
