@@ -77,9 +77,11 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
     });
-    $scope.$on('$ionicView.afterEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...', null);
+    $scope.$on('$ionicView.afterEnter', function(){
+        qmLogService.info('ReminderAddCtrl beforeEnter...');
         qmService.hideLoader();
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
+
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
@@ -287,36 +289,46 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if(!validReminderSettings()){return false;}
         $scope.state.trackingReminder.reminderFrequency = getFrequencySecondsFromFrequencyName($scope.state.selectedFrequencyName);
         $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequencyName;
-        var dateFormat = 'YYYY-MM-DD';
-        $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
-        if($scope.state.selectedStopTrackingDate){$scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);}
-        if($scope.state.selectedStartTrackingDate){$scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);}
+        function applySelectedDatesToReminder() {
+            var dateFormat = 'YYYY-MM-DD';
+            $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
+            if ($scope.state.selectedStopTrackingDate) {
+                $scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);
+            }
+            if ($scope.state.selectedStartTrackingDate) {
+                $scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);
+            }
+        }
+        applySelectedDatesToReminder();
         var remindersArray = [];
         if(typeof $scope.state.trackingReminder.defaultValue === "undefined"){$scope.state.trackingReminder.defaultValue = null;}
         remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
-        if($scope.state.firstReminderStartTimeMoment){
-            $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeMoment);
-            $scope.state.firstReminderStartTimeEpochTime = parseInt($scope.state.firstReminderStartTimeMoment.format("X"));
+        function applyReminderTimesToReminder() {
+            if ($scope.state.firstReminderStartTimeMoment) {
+                $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeMoment);
+                $scope.state.firstReminderStartTimeEpochTime = parseInt($scope.state.firstReminderStartTimeMoment.format("X"));
+            }
+            remindersArray[0] = configureReminderTimeSettings(remindersArray[0], $scope.state.firstReminderStartTimeEpochTime);
+            if ($scope.state.secondReminderStartTimeMoment) {
+                $scope.state.secondReminderStartTimeMoment = moment($scope.state.secondReminderStartTimeMoment);
+                $scope.state.secondReminderStartTimeEpochTime = parseInt($scope.state.secondReminderStartTimeMoment.format("X"));
+            }
+            if ($scope.state.secondReminderStartTimeEpochTime) {
+                remindersArray[1] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
+                remindersArray[1].id = null;
+                remindersArray[1] = configureReminderTimeSettings(remindersArray[1], $scope.state.secondReminderStartTimeEpochTime);
+            }
+            if ($scope.state.thirdReminderStartTimeMoment) {
+                $scope.state.thirdReminderStartTimeMoment = moment($scope.state.thirdReminderStartTimeMoment);
+                $scope.state.thirdReminderStartTimeEpochTime = $scope.state.thirdReminderStartTimeMoment.format("X");
+            }
+            if ($scope.state.thirdReminderStartTimeEpochTime) {
+                remindersArray[2] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
+                remindersArray[2].id = null;
+                remindersArray[2] = configureReminderTimeSettings(remindersArray[2], $scope.state.thirdReminderStartTimeEpochTime);
+            }
         }
-        remindersArray[0] = configureReminderTimeSettings(remindersArray[0], $scope.state.firstReminderStartTimeEpochTime);
-        if($scope.state.secondReminderStartTimeMoment){
-            $scope.state.secondReminderStartTimeMoment = moment($scope.state.secondReminderStartTimeMoment);
-            $scope.state.secondReminderStartTimeEpochTime = parseInt($scope.state.secondReminderStartTimeMoment.format("X"));
-        }
-        if($scope.state.secondReminderStartTimeEpochTime){
-            remindersArray[1] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
-            remindersArray[1].id = null;
-            remindersArray[1] = configureReminderTimeSettings(remindersArray[1], $scope.state.secondReminderStartTimeEpochTime);
-        }
-        if($scope.state.thirdReminderStartTimeMoment){
-            $scope.state.thirdReminderStartTimeMoment = moment($scope.state.thirdReminderStartTimeMoment);
-            $scope.state.thirdReminderStartTimeEpochTime = $scope.state.thirdReminderStartTimeMoment.format("X");
-        }
-        if($scope.state.thirdReminderStartTimeEpochTime){
-            remindersArray[2] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
-            remindersArray[2].id = null;
-            remindersArray[2] = configureReminderTimeSettings(remindersArray[2], $scope.state.thirdReminderStartTimeEpochTime);
-        }
+        applyReminderTimesToReminder();
         if($scope.state.trackingReminder.id){qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
         qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
@@ -358,7 +370,14 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
         $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
         //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
-        if(trackingReminder.stopTrackingDate){$scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);}
+        if(trackingReminder.stopTrackingDate){
+            $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
+            var stopTrackingDateMoment = moment($scope.state.selectedStopTrackingDate);
+            var beforeNow = stopTrackingDateMoment.isBefore();
+            $scope.state.trackingReminder.enabled = (!beforeNow);
+        } else {
+            $scope.state.trackingReminder.enabled = true;
+        }
         if(trackingReminder.startTrackingDate){$scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);}
         if($scope.state.trackingReminder.reminderFrequency !== null){
             $scope.state.selectedFrequencyName = getFrequencyNameFromFrequencySeconds($scope.state.trackingReminder.reminderFrequency);
@@ -506,4 +525,12 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         }, 5, 100);
         return fn;
     })();
+    $scope.toggleReminderEnabled = function (){
+        if(!$scope.state.trackingReminder.enabled){
+            var moment = moment();
+            $scope.state.selectedStopTrackingDate = moment.subtract(1, 'days');
+        } else {
+            $scope.state.selectedStopTrackingDate = null;
+        }
+    }
 }]);
