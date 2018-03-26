@@ -10,7 +10,6 @@
 .idea/
 !.idea/runConfigurations/*
 !.idea/dictionaries/*
-!.idea/libraries/*
 !.idea/modules/*
 !.idea/inspectionProfiles/*
 .vagrant/
@@ -110,11 +109,11 @@ www/private_configs/*
 !/www/private_configs/gitkeep
 /src/qm-amazon/
 dist/
-'.chcplogin'
+.chcplogin
 
-cordova-hcp\.json
-\.chcplogin
+cordova-hcp.json
+.chcplogin
 
-\.chcpenv
+.chcpenv
 
-src/default\.config\.json
+src/default.config.json
