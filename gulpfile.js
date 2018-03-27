@@ -65,10 +65,10 @@ var paths = {
     sass: ['./src/scss/**/*.scss'],
     src:{
         appConfigs: "src/",
-        devCredentials: "src/private_configs/dev-credentials.json",
-        privateConfigs: "src/private_configs/",
+        devCredentials: "src/dev-credentials.json",
+        privateConfigs: "src/",
         defaultConfig: "src/default.config.json",
-        defaultPrivateConfig: "src/private_configs/default.private_config.json",
+        defaultPrivateConfig: "src/default.private_config.json",
         icons: "src/img/icons",
         firebase: "src/lib/firebase/**/*",
         js: "src/js/*.js",
@@ -76,11 +76,11 @@ var paths = {
     },
     www: {
         appConfigs: "www/",
-        devCredentials: "www/private_configs/dev-credentials.json",
-        privateConfigs: "www/private_configs/",
+        devCredentials: "www/dev-credentials.json",
+        privateConfigs: "www/",
         defaultConfig: "www/default.config.json",
         buildInfo: "www/build-info.json",
-        defaultPrivateConfig: "www/private_configs/default.private_config.json",
+        defaultPrivateConfig: "www/default.private_config.json",
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
         js: "www/js/"
@@ -949,7 +949,7 @@ function writePrivateConfigs(path) {
     /** @namespace response.privateConfig */
     if (privateConfig) {
         try {
-            writeToFile(path + '/private_configs/default.private_config.json', prettyJSONStringify(privateConfig));
+            writeToFile(path + '/default.private_config.json', prettyJSONStringify(privateConfig));
         } catch (error) {
             qmLog.error(error);
         }
@@ -1988,8 +1988,8 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json','!src/private_configs',
-        '!src/private_configs/**', '!src/index.html', '!src/configuration-index.html']);
+    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
+        '!src/default.private_config.json', '!src/**', '!src/index.html', '!src/configuration-index.html']);
 });
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', []);
