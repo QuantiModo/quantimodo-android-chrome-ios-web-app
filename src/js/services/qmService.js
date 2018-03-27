@@ -202,6 +202,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             versionInfo: null
+        },
+        navBar: {
+            setFilterBarSearchIcon: function(value){ // Avoid Error: [$rootScope:inprog] $apply already in progress
+                if($rootScope.showFilterBarSearchIcon === value){return;}
+                $timeout(function() { $rootScope.showFilterBarSearchIcon = value; }, 1);
+            }
         }
     };
     qmService.ionIcons = {

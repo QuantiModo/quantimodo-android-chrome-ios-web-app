@@ -3,7 +3,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
 
     if(window.debugMode){qmLogService.debug(null, 'IntroCtrl first starting in state: ' + $state.current.name, null);}
     qmService.initializeApplication(appSettingsResponse);
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.myIntro = {
         ready : false,
         backgroundColor : 'white',

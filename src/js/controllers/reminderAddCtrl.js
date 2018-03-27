@@ -4,7 +4,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
              qmService, qmLogService, ionicTimePicker, $interval) {
     $scope.controller_name = "ReminderAddCtrl";
     qmLogService.debug('Loading ' + $scope.controller_name, null);
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
         units: qm.unitHelper.getProgressivelyMoreUnits(),
         showAddVariableCard : false,
