@@ -128,6 +128,7 @@ var ts = require('gulp-typescript');
 var uglify      = require('gulp-uglify');
 var unzip = require('gulp-unzip');
 var useref = require('gulp-useref');
+var watch = require('gulp-watch');
 var xml2js = require('xml2js');
 var zip = require('gulp-zip');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
@@ -1959,6 +1960,9 @@ gulp.task('cleanCombinedFiles', [], function () {
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
 });
+gulp.task('cleanWwwFolder', [], function () {
+    return cleanFolder('www');
+});
 gulp.task('cleanWwwLibFolder', [], function () {
     return cleanFolder('www/lib');
 });
@@ -2441,17 +2445,6 @@ gulp.task('cordovaHotCodePushLogin', [], function () {
 gulp.task('cordovaHotCodePushBuildDeploy', [], function (callback) {
     return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
 });
-gulp.task('deployToProduction', [], function (callback) {
-    runSequence(
-        'cordovaHotCodePushConfig',
-        'cordovaHotCodePushLogin',
-        //'deleteDevCredentialsFromWww',
-        'deleteWwwPrivateConfigs',
-        //'deleteWwwConfigs',
-        'deleteWwwManifestJson',
-        //'cordovaHotCodePushBuildDeploy',
-        callback);
-});
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
     /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
@@ -2500,10 +2493,22 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         "post-app-status",
         callback);
 });
-var watch = require('gulp-watch');
 gulp.task('watch-src', function () {
     var source = './src', destination = './www';
     gulp.src(source + '/**/*', {base: source})
         .pipe(watch(source, {base: source}))
         .pipe(gulp.dest(destination));
+});
+gulp.task('deployToProduction', [], function (callback) {
+    runSequence(
+        'cleanWwwFolder',
+        'configureApp',
+        'cordovaHotCodePushConfig',
+        'cordovaHotCodePushLogin',
+        //'deleteDevCredentialsFromWww',
+        'deleteWwwPrivateConfigs',
+        //'deleteWwwConfigs',
+        'deleteWwwManifestJson',
+        //'cordovaHotCodePushBuildDeploy',
+        callback);
 });
