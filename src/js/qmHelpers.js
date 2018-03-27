@@ -2132,7 +2132,7 @@ window.qm = {
             return qm.urlHelper.getIonicAppBaseUrl() + relativePath;
         },
         getPrivateConfigJsonUrl: function(){
-            return qm.urlHelper.getAbsoluteUrlFromRelativePath('private_configs/default.private_config.json');
+            return qm.urlHelper.getAbsoluteUrlFromRelativePath('default.private_config.json');
         },
         addUrlQueryParamsToUrl: function (params, url){
             for (var key in params) {

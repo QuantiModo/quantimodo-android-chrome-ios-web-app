@@ -6630,7 +6630,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
 
     qmService.getDevCredentials = function(){
-        return $http.get('private_configs/dev-credentials.json').success(function(response) {
+        return $http.get('dev-credentials.json').success(function(response) {
             if(typeof response !== "string"){
                 if(response.accessToken && !$rootScope.user){
                     qmLogService.info('Using access token from dev-credentials.json', null);
