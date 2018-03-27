@@ -19,7 +19,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             handleExpiredAccessTokenResponse: function (responseBody) {
                 if(responseBody && qm.objectHelper.objectContainsString(responseBody, 'expired')){
-                    $rootScope.user = null;
+                    qmService.rootScope.setUser(null);
                     qmService.auth.deleteAllAccessTokens();
                 }
             }
@@ -215,6 +215,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setProperty: function(property, value){  // Avoid Error: [$rootScope:inprog] $apply already in progress
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
                 $timeout(function() { $rootScope[property] = value; }, 0);
+            },
+            setUser: function(user){
+                qmService.rootScope.setProperty('user', user);
             }
         }
     };
@@ -1094,7 +1097,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No user from local storage but we do have a $rootScope user");
             }
             if(user && qm.auth.accessTokenFromUrl !== user.accessToken){
-                $rootScope.user = null;
+                qmService.rootScope.setUser(null);
                 qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
             }
@@ -1383,7 +1386,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmLogService.debug('Just set up Google Analytics');
     };
     qmService.setUser = function(user){
-        $rootScope.user = user;
+        qmService.rootScope.setUser(user);
         qm.userHelper.setUser(user);
     };
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
@@ -1480,7 +1483,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
     };
     qmService.completelyResetAppState = function(){
-        $rootScope.user = null;
+        qmService.rootScope.setUser(null);
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
         qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
@@ -1940,6 +1943,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform);
+        if(platform.isMobile){
+            if(typeof PushNotification === "undefined"){
+                qmLogService.error('PushNotification is undefined on mobile!');
+            }
+        }
         if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     };
     qmService.getPermissionString = function(){
@@ -5523,7 +5531,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         $rootScope.appSettings.appDesign.onboarding.active = qmService.addColorsCategoriesAndNames(activeOnboardingPages);
     };
-
     qmService.setupUpgradePages = function () {
         var upgradePages = [
             {
@@ -6628,11 +6635,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.storage.setItem('onboarded', true);
             qmService.storage.setItem('introSeen', true);
-            $rootScope.user = null;
+            qmService.rootScope.setUser(null);
             $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){
-            $rootScope.user = window.qmUser;
+            qmService.rootScope.setUser(window.qmUser);
             if($rootScope.user){qmLogService.debug('Got $rootScope.user', null, $rootScope.user);}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
@@ -6668,7 +6675,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //POST sessionTokenObject as-is to your server for step 2.
                 qmService.post('api/v3/human/connect/finish', [], sessionTokenObject).then(function (response) {
                     console.log(response);
-                    $rootScope.user = response.data.user;
+                    qmService.rootScope.setUser(response.data.user);
                 });
                 // Include code here to refresh the page.
             },
@@ -6694,7 +6701,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //POST sessionTokenObject as-is to your server for step 2.
                 qmService.post('api/v3/quantimodo/connect/finish', [], sessionTokenObject, function (response) {
                     console.log(response);
-                    $rootScope.user = response.data.user;
+                    qmService.rootScope.setUser(response.data.user);
                 });
                 // Include code here to refresh the page.
             },
@@ -7070,11 +7077,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.configurePushNotifications = function(){
         $ionicPlatform.ready(function() {
-            if($rootScope.platform.isMobile){
-                if(typeof PushNotification === "undefined"){
-                    qmLogService.error('PushNotification is undefined on mobile!');
-                }
-            }
             if (typeof PushNotification !== "undefined") {
                 var pushConfig = {
                     android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
@@ -7752,7 +7754,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.switchToPatient = function(patientUser){
         if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
-        $rootScope.physicianUser = $rootScope.user;
+        qmService.rootScope.setProperty('physicianUser', $rootScope.user);
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
@@ -7770,8 +7772,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qm.storage.setItem(qm.items.physicianUser, null);
-        $rootScope.physicianUser = null;
-        $rootScope.user = physicianUser;
+        qmService.rootScope.setProperty('physicianUser', null);
+        qmService.rootScope.setUser(physicianUser);
         qmService.goToDefaultState();
         qmService.showInfoToast("Switched back to your account");
     };
@@ -7805,7 +7807,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.afterLogoutDoNotDeleteMeasurements = function(){
         qmService.showBlackRingLoader();
-        $rootScope.user = null;
+        qmService.rootScope.setUser(null);
         saveDeviceTokenToSyncWhenWeLogInAgain();
         window.qm.storage.clearOAuthTokens();
         logOutOfWebsite();
