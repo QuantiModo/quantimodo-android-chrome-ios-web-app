@@ -35,7 +35,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToState('app.import');
     };
     $scope.goToUpgradePage = function () {
-        $rootScope.backButtonState = 'app.onboarding';
+        qmService.backButtonState = 'app.onboarding';
         qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {

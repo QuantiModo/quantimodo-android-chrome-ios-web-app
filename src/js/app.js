@@ -47,7 +47,6 @@ angular.module('starter',
                 qmLogService.error(null, errorMsg);
             };
         }
-        qmService.configurePushNotifications();
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
@@ -62,9 +61,9 @@ angular.module('starter',
         qmService.goToState(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
-        if($rootScope.backButtonState){
-            qmService.goToState($rootScope.backButtonState);
-            $rootScope.backButtonState = null;
+        if(qmService.backButtonState){
+            qmService.goToState(qmService.backButtonState);
+            qmService.backButtonState = null;
             return;
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
