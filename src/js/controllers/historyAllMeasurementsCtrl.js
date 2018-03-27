@@ -174,7 +174,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		measurement.hide = true;
 		qmService.deleteMeasurementFromServer(measurement);
 	};
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.showActionSheetForMeasurement = function(measurement) {
 		$scope.state.measurement = measurement;
 		var variableObject = JSON.parse(JSON.stringify(measurement));

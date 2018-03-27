@@ -5,7 +5,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = qm.getAppSettings().headline;
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     if($rootScope.isMobile){
         if(window && window.plugins && window.plugins.googleplus){
             $scope.showGoogleLoginButton = true;

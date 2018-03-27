@@ -1,7 +1,7 @@
 angular.module('starter')  // Handles all views that have an iFrame
 .controller('ExternalCtrl', ["$scope", "$stateParams", "$rootScope", "$state", "qmService", "qmLogService", function($scope, $stateParams, $rootScope, $state, qmService, qmLogService) {
 	$scope.controller_name = "ExternalCtrl";
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
 	// when page load completes
 	window.closeLoading = function(){qmService.hideLoader();};
 	$scope.$on('$ionicView.beforeEnter', function(e) {
