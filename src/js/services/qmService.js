@@ -212,12 +212,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
         },
         rootScope: {
-            setProperty: function(property, value){  // Avoid Error: [$rootScope:inprog] $apply already in progress
+            setProperty: function(property, value, callback){  // Avoid Error: [$rootScope:inprog] $apply already in progress
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
-                $timeout(function() { $rootScope[property] = value; }, 0);
+                $timeout(function() {
+                    $rootScope[property] = value;
+                    if(callback){callback();}
+                }, 0);
             },
             setUser: function(user){
                 qmService.rootScope.setProperty('user', user);
+            },
+            setShowActionSheetMenu: function(actionSheetFunction){
+                qmService.rootScope.setProperty('showActionSheetMenu', actionSheetFunction);
             }
         }
     };
@@ -1942,12 +1948,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
         platform.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
         qmService.localNotificationsEnabled = platform.isChromeExtension;
-        qmService.rootScope.setProperty('platform', platform);
-        if(platform.isMobile){
-            if(typeof PushNotification === "undefined"){
-                qmLogService.error('PushNotification is undefined on mobile!');
-            }
-        }
+        qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     };
     qmService.getPermissionString = function(){
@@ -6636,7 +6637,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.storage.setItem('onboarded', true);
             qmService.storage.setItem('introSeen', true);
             qmService.rootScope.setUser(null);
-            $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){
             qmService.rootScope.setUser(window.qmUser);
@@ -7077,6 +7077,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.configurePushNotifications = function(){
         $ionicPlatform.ready(function() {
+            if($rootScope.platform.isMobile){
+                if(typeof PushNotification === "undefined"){
+                    qmLogService.error('PushNotification is undefined on mobile!');
+                }
+            }
             if (typeof PushNotification !== "undefined") {
                 var pushConfig = {
                     android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
