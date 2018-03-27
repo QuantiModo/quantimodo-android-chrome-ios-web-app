@@ -14,7 +14,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug($state.current.name + ' beforeEnter...');
         qmService.unHideNavigationMenu();
         $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
-        //$scope.showBarcodeScanner = $rootScope.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName, ['Anything', 'Foods', 'Treatments']));
+        //$scope.showBarcodeScanner = $rootScope.platform.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName, ['Anything', 'Foods', 'Treatments']));
         if ($scope.state.variableSearchParameters.variableCategoryName) {
             $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
@@ -290,7 +290,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             });
         };
     };
-    if($rootScope.isMobile){
+    if($rootScope.platform.isMobile){
         // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
         $scope.scanBarcode = function () {
             function scanSuccessHandler(result) {

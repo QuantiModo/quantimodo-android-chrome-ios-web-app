@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
     <ion-nav-title>{{state.title}}</ion-nav-title>
-    <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
+    <ion-content scroll="{ isBrowserView : platform.isWeb == false }" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshCharts()"></ion-refresher>
         <div ng-cloak>
             <div ng-if="state.variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>

@@ -6,15 +6,15 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.controller_name = "LoginCtrl";
     $scope.headline = qm.getAppSettings().headline;
     qmService.navBar.setFilterBarSearchIcon(false);
-    if($rootScope.isMobile){
+    if($rootScope.platform.isMobile){
         if(window && window.plugins && window.plugins.googleplus){
             $scope.showGoogleLoginButton = true;
         } else {
-            if($rootScope.isMobile){qmLogService.error("Google login not available on mobile!");}
+            if($rootScope.platform.isMobile){qmLogService.error("Google login not available on mobile!");}
         }
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
-        if (!disableFacebookLogin && $rootScope.isIOS && $rootScope.appSettings.appDisplayName === "MoodiModo") {
+        if (!disableFacebookLogin && $rootScope.platform.isIOS && $rootScope.appSettings.appDisplayName === "MoodiModo") {
             qmLogService.debug('Injecting $cordovaFacebook', null);
             $cordovaFacebook = $injector.get('$cordovaFacebook');
             $scope.showFacebookLoginButton = true;
@@ -70,7 +70,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }, 40000);
     };
     function tryToGetUser() {
-        if($rootScope.isChromeExtension){qmService.showBasicLoader();} // Chrome needs to do this because we can't redirect with access token
+        if($rootScope.platform.isChromeExtension){qmService.showBasicLoader();} // Chrome needs to do this because we can't redirect with access token
         qmService.refreshUser().then(function () {
             qmService.hideLoader();
             leaveIfLoggedIn();
@@ -157,11 +157,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             return;
         }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
-        if($rootScope.isChromeApp){
+        if($rootScope.platform.isChromeApp){
             qmService.chromeAppLogin(register);
-        } else if ($rootScope.isChromeExtension) {
+        } else if ($rootScope.platform.isChromeExtension) {
             qmService.chromeExtensionLogin(register);
-        } else if ($rootScope.isAndroid || $rootScope.isIOS || $rootScope.isWindows) {
+        } else if ($rootScope.platform.isAndroid || $rootScope.platform.isIOS || $rootScope.platform.isWindows) {
             qmLogService.debug('$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using qmService.nonNativeMobileLogin', null);
             loginTimeout();
             qmService.nonNativeMobileLogin(register);
