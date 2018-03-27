@@ -378,7 +378,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
     };
     $scope.$on('$stateChangeSuccess', function() {
-        if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
+        qmService.navBar.setOfflineConnectionErrorShowing(false);
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.closeMenu();
