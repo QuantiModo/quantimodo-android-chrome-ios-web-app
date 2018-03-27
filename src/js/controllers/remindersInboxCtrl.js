@@ -5,7 +5,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
 	$scope.controller_name = "RemindersInboxCtrl";
 	qmLogService.debug('Loading ' + $scope.controller_name);
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.state = {
 		showMeasurementBox : false,
 		selectedReminder : false,

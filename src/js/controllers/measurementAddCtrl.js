@@ -4,7 +4,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     $scope.controller_name = "MeasurementAddCtrl";
     var variableCategoryName = $stateParams.variableCategoryName;
     var variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
         measurementIsSetup : false,
         showAddVariable: false,

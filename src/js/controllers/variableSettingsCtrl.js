@@ -3,7 +3,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading, $stateParams, $ionicHistory,
              $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
     function getVariableName() {
         if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}

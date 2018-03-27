@@ -4,7 +4,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
              qmService, qmLogService) {
 	$scope.controller_name = "RemindersManageCtrl";
 	qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
     qmService.sendToLoginIfNecessaryAndComeBack();
 	$scope.state = {
 		showButtons : false,
