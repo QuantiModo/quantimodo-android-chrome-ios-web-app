@@ -10,7 +10,7 @@
             </i>
         </ion-toggle>
         <label ng-click="copyToClipboard(variableObject.chartsLinkStatic)" class="item item-content"
-               ng-if="isWeb && variableObject.shareUserMeasurements === true && variableObject.chartsLinkStatic">
+               ng-if="platform.isWeb && variableObject.shareUserMeasurements === true && variableObject.chartsLinkStatic">
             <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
         </label>
     </div>

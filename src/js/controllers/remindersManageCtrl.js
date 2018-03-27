@@ -41,7 +41,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		];
 		if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 			if(!$scope.stateParams.title) {
-			    if($rootScope.isMobile){
+			    if($rootScope.platform.isMobile){
                     $scope.stateParams.title = "Reminders";
                 } else {
                     $scope.stateParams.title = "Manage Reminders";

@@ -70,7 +70,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(typeof cordova !== "undefined"){
             cordova.InAppBrowser.open(url,target, 'location='+location+',toolbar=yes,clearcache=no,clearsessioncache=no');
         } else {
-            if($rootScope.isWeb){
+            if($rootScope.platform.isWeb){
                 window.open(url, target);  // Otherwise it opens weird popup instead of new tab
             } else {
                 window.open(url, target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
@@ -116,7 +116,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
     };
     function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
-        if ($rootScope.isMobile){
+        if ($rootScope.platform.isMobile){
             // this is the complete list of currently supported params you can pass to the plugin (all optional)
             var options = {
                 //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)

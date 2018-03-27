@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Manage Reminders">
 	<ion-nav-title>{{stateParams.title}}</ion-nav-title>
-	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
 		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
 
 <!--		<div ng-show="user.combineNotifications" class="list card" ng-click="showMoreNotificationInfoPopup()">

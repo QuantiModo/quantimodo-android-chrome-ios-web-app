@@ -177,7 +177,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             return;
         }
         if(connector.name === 'github') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -186,7 +186,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'strava') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -195,7 +195,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'withings') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -203,7 +203,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'fitbit') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -223,7 +223,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'runkeeper') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -233,7 +233,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'rescuetime') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -243,7 +243,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'slice') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -253,7 +253,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'facebook') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -262,7 +262,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'googlefit') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -270,7 +270,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             connectGoogle(connector, scopes);
         }
         if(connector.name === 'googlecalendar') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -278,7 +278,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             connectGoogle(connector, scopes);
         }
         if(connector.name === 'gmail') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -286,7 +286,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             connectGoogle(connector, scopes);
         }
         if(connector.name === 'sleepcloud') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
@@ -294,7 +294,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             connectGoogle(connector, scopes);
         }
         if(connector.name === 'up') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }

@@ -1,13 +1,13 @@
 angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams", function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
-    $rootScope.hideNavigationMenu = true;
+    qmService.rootScope.setProperty('hideNavigationMenu', true);
     $scope.reportedVariableValue = false;
     qmService.navBar.setFilterBarSearchIcon(false);
     qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
         function(primaryOutcomeRatingFrequencyDescription) {
             if (primaryOutcomeRatingFrequencyDescription) {$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
-            if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
-            if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'daily';}
+            if (!primaryOutcomeRatingFrequencyDescription && $rootScope.platform.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
+            if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.platform.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'daily';}
         }
     );
     $scope.sendReminderNotificationEmails = true;
@@ -50,7 +50,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         $scope.showIntervalCard = true;
     };
     $scope.init = function(){
-        $rootScope.hideNavigationMenu = true;
+        qmService.rootScope.setProperty('hideNavigationMenu', true);
         qmLogService.debug($state.current.name + ' initializing...', null);
 
     };
