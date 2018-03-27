@@ -486,7 +486,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.trackingReminder.reminderFrequency = getFrequencySecondsFromFrequencyName($scope.state.selectedFrequencyName);
     };
     $scope.showUnitsDropDown = function(){$scope.showUnitsDropDown = true;};
-    qmService.setShowActionSheetMenu(function() {
+    qmService.rootScope.setShowActionSheetMenu(function() {
         $scope.state.variableObject = $scope.state.trackingReminder;
         $scope.state.variableObject.id = $scope.state.trackingReminder.variableId;
         $scope.state.variableObject.name = $scope.state.trackingReminder.variableName;
