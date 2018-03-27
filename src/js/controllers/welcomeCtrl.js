@@ -1,6 +1,6 @@
 angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams", function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
-    $rootScope.hideNavigationMenu = true;
+    qmService.rootScope.setProperty('hideNavigationMenu', true);
     $scope.reportedVariableValue = false;
     qmService.navBar.setFilterBarSearchIcon(false);
     qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
@@ -50,7 +50,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         $scope.showIntervalCard = true;
     };
     $scope.init = function(){
-        $rootScope.hideNavigationMenu = true;
+        qmService.rootScope.setProperty('hideNavigationMenu', true);
         qmLogService.debug($state.current.name + ' initializing...', null);
 
     };

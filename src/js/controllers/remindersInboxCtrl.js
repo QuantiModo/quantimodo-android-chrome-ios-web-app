@@ -2,7 +2,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$ionicLoading", "$mdToast",
     function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService,
              qmLogService, $ionicLoading, $mdToast) {
-    if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
+    if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
 	$scope.controller_name = "RemindersInboxCtrl";
 	qmLogService.debug('Loading ' + $scope.controller_name);
 	qmService.navBar.setFilterBarSearchIcon(false);
