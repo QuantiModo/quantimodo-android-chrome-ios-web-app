@@ -30,7 +30,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         getScopedVariableObject();
         if (getVariableName()) {
             $scope.state.title = getVariableName() + ' History';
-            qmService.setShowActionSheetMenu(function setActionSheet() {
+            qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
                 return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
             });
         } else {
@@ -42,7 +42,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     });
     function updateNavigationMenuButton() {
             $timeout(function() {
-                qmService.setShowActionSheetMenu(function() {
+                qmService.rootScope.setShowActionSheetMenu(function() {
                     // Show the action sheet
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
@@ -141,7 +141,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         qmService.getMeasurementsFromApi(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
-		qmService.setShowActionSheetMenu(function() {
+		qmService.rootScope.setShowActionSheetMenu(function() {
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},

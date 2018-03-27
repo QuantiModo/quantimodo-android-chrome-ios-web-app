@@ -19,7 +19,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         updateNavigationMenuButton();
     });
     function updateNavigationMenuButton() {
-        qmService.setShowActionSheetMenu(function() {
+        qmService.rootScope.setShowActionSheetMenu(function() {
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
                 buttons: [

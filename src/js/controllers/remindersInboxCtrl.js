@@ -49,7 +49,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         //getFavorites();  Not sure why we need to do this here?
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
 		$scope.stateParams = $stateParams;
-		qmService.setShowActionSheetMenu(function() {
+		qmService.rootScope.setShowActionSheetMenu(function() {
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [

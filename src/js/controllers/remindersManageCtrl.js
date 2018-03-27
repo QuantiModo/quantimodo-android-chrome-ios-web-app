@@ -70,7 +70,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         actionButtons[7] = qmService.actionSheetButtons.settings;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
-		qmService.setShowActionSheetMenu(function() {
+		qmService.rootScope.setShowActionSheetMenu(function() {
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionButtons,
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',

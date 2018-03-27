@@ -8,7 +8,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmService.unHideNavigationMenu();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        qmService.setShowActionSheetMenu(function setActionSheet() {
+        qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
             return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
         });
         initializeCharts();

@@ -380,7 +380,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         }
     };
-    qmService.setShowActionSheetMenu(function() {
+    qmService.rootScope.setShowActionSheetMenu(function() {
         qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.showActionSheetMenu:  $scope.state.variableObject: ', null, $scope.state.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
