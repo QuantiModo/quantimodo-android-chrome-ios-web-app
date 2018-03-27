@@ -18,7 +18,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
 			qmService.refreshUserEmailPreferencesDeferred({userEmail: qm.urlHelper.getParam('userEmail')}, function(user){
-				$rootScope.user = user;
+				qmService.rootScope.setUser(user);
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			}, function(error){
@@ -36,7 +36,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
 	qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-		if($rootScope.isIOS){
+		if($rootScope.platform.isIOS){
 			if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'day' &&
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
@@ -52,18 +52,18 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			encodeURIComponent(qm.api.getBaseUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 		var fallbackUrl = qmService.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
-		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+		if($rootScope.platform.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	$scope.sendBugReport = function() {
 		qmService.sendBugReport();
 	};
 	$scope.contactUs = function() {
-		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
+		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 		else {window.location = '#app/feedback';}
 	};
 	$scope.postIdea = function() {
-		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
+		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 		} else {window.open('https://help.quantimo.do/forums/211661-general', '_blank');}
 	};
 	$scope.combineNotificationChange = function(ev) {
@@ -185,7 +185,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		qmLogService.debug('Logging out...');
-		$rootScope.user = null;
+		qmService.rootScope.setUser(null);
 		showDataClearPopup(ev);
 	};
 	// Convert all data Array to a CSV object
@@ -276,7 +276,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
-    if($rootScope.isAndroid){
+    if($rootScope.platform.isAndroid){
     	$scope.toggleDrawOverAppsPopup = function(ev){
     		qmService.toggleDrawOverAppsPopup(ev);
     	};

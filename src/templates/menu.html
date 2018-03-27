@@ -21,7 +21,7 @@
                     <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
                         <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>
-                    <a  id="navBarAvatar" href="#/app/settings" ng-if="!physicianUser && user && user.avatar && !isMobile" class="button button-clear" >
+                    <a  id="navBarAvatar" href="#/app/settings" ng-if="!physicianUser && user && user.avatar && !platform.isMobile" class="button button-clear" >
                         <img class="menu-avatar" ng-src="{{user.avatar}}">
                     </a>
                     <button id="menu-search-button" class="button button-icon ion-ios-search"
