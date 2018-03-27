@@ -2,7 +2,7 @@ angular.module('starter') // Controls the settings page
 .controller('MapCtrl', ["$scope", "$cordovaGeolocation", "$ionicLoading", "$ionicPlatform", "$rootScope", function($scope, $cordovaGeolocation, $ionicLoading, $ionicPlatform, $rootScope) {
 	$ionicPlatform.ready(function() {
 
-		$rootScope.showFilterBarSearchIcon = false;
+		qmService.navBar.setFilterBarSearchIcon(false);
 
 		$ionicLoading.show({template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'});
 

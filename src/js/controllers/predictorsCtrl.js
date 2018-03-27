@@ -11,8 +11,9 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.filterSearchQuery = '';
     $scope.searching = true;
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
+        qmLogService.info('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
-        $rootScope.showFilterBarSearchIcon = true;
+        qmService.navBar.setFilterBarSearchIcon(true);
         qmService.unHideNavigationMenu();
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
         updateNavigationMenuButton();
@@ -54,7 +55,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     // Have to get url params after entering.  Otherwise, we get params from study if coming back
     $scope.$on('$ionicView.afterEnter', function(e) {
         qm.loaders.robots();
-        qmLogService.debug('beforeEnter state ' + $state.current.name);
+        qmLogService.info('afterEnter state ' + $state.current.name);
         $scope.state.requestParams.aggregated = qm.urlHelper.getParam('aggregated');
         if(!variablesHaveChanged()){return;}
         if (getCauseVariableName()){
@@ -131,6 +132,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.searching = true;
         var params = $scope.state.requestParams;
         params.limit = 10;
+        qmLogService.info('Getting correlations with params ' + JSON.stringify(params));
         qmService.getCorrelationsDeferred(params)
             .then(function (data) {
                 if(data){$scope.state.correlationsExplanation = data.explanation;}
