@@ -203,7 +203,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $timeout(function() { hideSheet(); }, 20000);
         };
          // FYI Using timeout to modify rootScope Seems to solve robot animation problems
-        $timeout(function() { $rootScope.showActionSheetMenu = showActionSheetMenu; }, 1);
+        qmService.setShowActionSheetMenu(showActionSheetMenu);
     }
     $scope.changeVariableSetting = function(variable, propertyToUpdate, ev){
         $mdDialog.show({

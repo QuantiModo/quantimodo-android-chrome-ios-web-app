@@ -380,7 +380,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         }
     };
-    $rootScope.showActionSheetMenu = function() {
+    qmService.setShowActionSheetMenu(function() {
         qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.showActionSheetMenu:  $scope.state.variableObject: ', null, $scope.state.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
@@ -408,5 +408,5 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         });
         qmLogService.debug('Setting hideSheet timeout', null);
         $timeout(function() { hideSheet(); }, 20000);
-    };
+    });
 }]);

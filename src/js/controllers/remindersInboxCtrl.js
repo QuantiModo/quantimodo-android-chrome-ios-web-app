@@ -49,7 +49,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         //getFavorites();  Not sure why we need to do this here?
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
 		$scope.stateParams = $stateParams;
-		$rootScope.showActionSheetMenu = function() {
+		qmService.setShowActionSheetMenu(function() {
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
@@ -89,7 +89,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				}
 			});
 			$timeout(function() {hideSheet();}, 20000);
-		};
+		});
 		if(navigator && navigator.splashscreen) {
 			qmLogService.debug(null, 'ReminderInbox: Hiding splash screen because app is ready', null);
 			navigator.splashscreen.hide();

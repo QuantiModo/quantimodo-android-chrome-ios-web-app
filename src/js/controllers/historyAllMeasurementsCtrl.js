@@ -30,9 +30,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         getScopedVariableObject();
         if (getVariableName()) {
             $scope.state.title = getVariableName() + ' History';
-            $rootScope.showActionSheetMenu = function setActionSheet() {
+            qmService.setShowActionSheetMenu(function setActionSheet() {
                 return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-            };
+            });
         } else {
             updateNavigationMenuButton();
         }
@@ -42,7 +42,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     });
     function updateNavigationMenuButton() {
             $timeout(function() {
-                $rootScope.showActionSheetMenu = function() {
+                qmService.setShowActionSheetMenu(function() {
                     // Show the action sheet
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
@@ -57,7 +57,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                             return true;
                         }
                     });
-                };
+                });
             }, 1);
         }
     function updateMeasurementIfNecessary(){
@@ -141,7 +141,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         qmService.getMeasurementsFromApi(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
-		$rootScope.showActionSheetMenu = function() {
+		qmService.setShowActionSheetMenu(function() {
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
@@ -168,7 +168,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				destructiveButtonClicked: function() {}
 			});
 			$timeout(function() {hideSheet();}, 20000);
-		};
+		});
 	}
 	$scope.deleteMeasurement = function(measurement){
 		measurement.hide = true;
