@@ -204,9 +204,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             versionInfo: null
         },
         navBar: {
-            setFilterBarSearchIcon: function(value){ // Avoid Error: [$rootScope:inprog] $apply already in progress
-                if($rootScope.showFilterBarSearchIcon === value){return;}
-                $timeout(function() { $rootScope.showFilterBarSearchIcon = value; }, 1);
+            setFilterBarSearchIcon: function(value){
+                qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
+            },
+            setOfflineConnectionErrorShowing: function(value){
+                qmService.rootScope.setProperty('offlineConnectionErrorShowing', value)
+            },
+        },
+        rootScope: {
+            setProperty: function(property, value){  // Avoid Error: [$rootScope:inprog] $apply already in progress
+                if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
+                $timeout(function() { $rootScope[property] = value; }, 1);
             }
         }
     };
@@ -223,7 +231,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         study: 'ion-ios-book',
         discoveries: 'ion-ios-analytics'
     };
-    $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
+    qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
             if($state.current.name !== 'app.login' && $state.current.name !== 'app.intro'){
@@ -422,7 +430,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             generalApiErrorHandler(data, status, headers, request, options);
                             if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
                         }
-                        if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
+                        qmService.navBar.setOfflineConnectionErrorShowing(false);
                         if(data.message){ qmLogService.debug(data.message, null, options.stackTrace); }
                         successHandler(data);
                     }
@@ -442,7 +450,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
-        if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
+        qmService.navBar.setOfflineConnectionErrorShowing(false);
         var bodyString = JSON.stringify(body);
         if(!window.qmLog.isDebugMode()){bodyString = bodyString.substring(0, 140);}
         qmLogService.info('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, null, options.stackTrace);
@@ -498,7 +506,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
             qmLogService.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
                 {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
-            $rootScope.offlineConnectionErrorShowing = true;
+            qmService.navBar.setOfflineConnectionErrorShowing(true);
             if ($rootScope.isIOS) {
                 $ionicPopup.show({
                     title: 'NOT CONNECTED',
@@ -506,7 +514,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     template: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
                     buttons: [{
                         text: 'OK', type: 'button-positive', onTap: function () {
-                            $rootScope.offlineConnectionErrorShowing = false;
+                            qmService.navBar.setOfflineConnectionErrorShowing(false);
                         }
                     }]
                 });
