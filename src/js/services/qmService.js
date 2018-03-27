@@ -41,7 +41,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             showEnablePopupsConfirmation: function (ev) {
-                if(!$rootScope.isAndroid){return;}
+                if(!$rootScope.platform.isAndroid){return;}
                 var title = 'Enable Rating Popups';
                 var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in' +
                     ' a fraction of a second?';
@@ -56,7 +56,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if (localNotificationsPluginInstalled()) {cordova.plugins.notification.local.cancelAll();}
             },
             getDrawOverAppsPopupPermissionIfNecessary: function(ev){
-                if(!$rootScope.isAndroid){return false;}
+                if(!$rootScope.platform.isAndroid){return false;}
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){return false;}
                 if(qmService.notifications.drawOverAppsPopupHaveNotBeenConfigured()){
                     qmService.notifications.showEnablePopupsConfirmation(ev);
@@ -499,7 +499,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
                 {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
             $rootScope.offlineConnectionErrorShowing = true;
-            if ($rootScope.isIOS) {
+            if ($rootScope.platform.isIOS) {
                 $ionicPopup.show({
                     title: 'NOT CONNECTED',
                     //subTitle: '',
@@ -960,9 +960,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
         var platform;
-        if($rootScope.isAndroid){platform = 'android';}
-        if($rootScope.isIOS){platform = 'ios';}
-        if($rootScope.isWindows){platform = 'windows';}
+        if($rootScope.platform.isAndroid){platform = 'android';}
+        if($rootScope.platform.isIOS){platform = 'ios';}
+        if($rootScope.platform.isWindows){platform = 'windows';}
         var params = {platform: platform, deviceToken: deviceToken, clientId: qm.api.getClientId(), stacktrace: qmLog.getStackTrace()};
         qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
@@ -1314,7 +1314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function getDeviceTokenToSync(){return qm.storage.getItem(qm.items.deviceTokenToSync);}
     qmService.registerDeviceToken = function(){
         var deferred = $q.defer();
-        if(!$rootScope.isMobile){
+        if(!$rootScope.platform.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
@@ -1358,7 +1358,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         Analytics.set('&ds', qm.platform.getCurrentPlatform());
         Analytics.set('&cn', qm.getAppSettings().appDisplayName);
         Analytics.set('&cs', qm.getAppSettings().appDisplayName);
-        Analytics.set('&cm', $rootScope.currentPlatform);
+        Analytics.set('&cm', $rootScope.platform.currentPlatform);
         Analytics.set('&an', qm.getAppSettings().appDisplayName);
         if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.appIds && qm.getAppSettings().additionalSettings.appIds.googleReversedClientId){
             Analytics.set('&aid', qm.getAppSettings().additionalSettings.appIds.googleReversedClientId);
@@ -1456,7 +1456,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
         qmLogService.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', null, loginUrl);
         var apiUrlMatchesHostName = qm.api.getBaseUrl().indexOf(window.location.hostname);
-        if(apiUrlMatchesHostName === -1 || !$rootScope.isChromeExtension) {
+        if(apiUrlMatchesHostName === -1 || !$rootScope.platform.isChromeExtension) {
             console.warn("sendToNonOAuthBrowserLoginUrl: API url doesn't match auth base url");
         }
         qmService.showBlackRingLoader();
@@ -1916,20 +1916,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     };
     qmService.setPlatformVariables = function () {
+        var platform = {};
         //qmLogService.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
-        $rootScope.isWeb = window.location.href.indexOf('https://') !== -1;
-        $rootScope.isWebView = ionic.Platform.isWebView();
-        $rootScope.isIPad = ionic.Platform.isIPad() && !$rootScope.isWeb;
-        $rootScope.isIOS = ionic.Platform.isIOS() && !$rootScope.isWeb;
-        $rootScope.isAndroid = ionic.Platform.isAndroid() && !$rootScope.isWeb;
-        $rootScope.isWindowsPhone = ionic.Platform.isWindowsPhone() && !$rootScope.isWeb;
-        $rootScope.isChrome = window.chrome ? true : false;
-        $rootScope.currentPlatform = ionic.Platform.platform();
-        $rootScope.currentPlatformVersion = ionic.Platform.version();
-        $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS) && !$rootScope.isWeb;
-        $rootScope.isWindows = window.location.href.indexOf('ms-appx') > -1;
-        $rootScope.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
-        $rootScope.localNotificationsEnabled = $rootScope.isChromeExtension;
+        platform.isWeb = window.location.href.indexOf('https://') !== -1;
+        platform.isWebView = ionic.Platform.isWebView();
+        platform.isIPad = ionic.Platform.isIPad() && !platform.isWeb;
+        platform.isIOS = ionic.Platform.isIOS() && !platform.isWeb;
+        platform.isAndroid = ionic.Platform.isAndroid() && !platform.isWeb;
+        platform.isWindowsPhone = ionic.Platform.isWindowsPhone() && !platform.isWeb;
+        platform.isChrome = window.chrome ? true : false;
+        platform.currentPlatform = ionic.Platform.platform();
+        platform.currentPlatformVersion = ionic.Platform.version();
+        platform.isMobile = (platform.isAndroid || platform.isIOS) && !platform.isWeb;
+        platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
+        platform.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
+        qmService.localNotificationsEnabled = platform.isChromeExtension;
+        qmService.rootScope.setProperty('platform', platform);
     };
     qmService.getPermissionString = function(){
         var str = "";
@@ -2015,8 +2017,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function hideUnavailableConnectors(connectors){
         for(var i = 0; i < connectors.length; i++){
-            //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
-            if(connectors[i].spreadsheetUpload && $rootScope.isMobile) {connectors[i].hide = true;}
+            //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide = true;}
+            if(connectors[i].spreadsheetUpload && $rootScope.platform.isMobile) {connectors[i].hide = true;}
         }
         return connectors;
     }
@@ -2102,7 +2104,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
         return sourceName;
     }
-    function weShouldPostLocation() {return $rootScope.isMobile && getLastLocationNameFromLocalStorage() && getHoursAtLocation();}
+    function weShouldPostLocation() {return $rootScope.platform.isMobile && getLastLocationNameFromLocalStorage() && getHoursAtLocation();}
     qmService.postLocationMeasurementAndSetLocationVariables = function (geoLookupResult, isBackground) {
         if (weShouldPostLocation()) {
             var newMeasurement = {
@@ -2291,7 +2293,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!trackingReminderNotificationSyncScheduled ||
             parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
             qmService.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
-            if(!$rootScope.isMobile){ // Better performance
+            if(!$rootScope.platform.isMobile){ // Better performance
                 qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
             }
             $timeout(function() {
@@ -2301,7 +2303,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.postTrackingReminderNotificationsDeferred();
             }, delayBeforePostingNotificationsInMilliseconds);
         } else {
-            if(!$rootScope.isMobile){ // Better performance
+            if(!$rootScope.platform.isMobile){ // Better performance
                 qmLog.info("Not scheduling sync because one is already scheduled " +
                     qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
             }
@@ -2336,7 +2338,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
      */
     qmService.trackTrackingReminderNotificationDeferred = function(trackingReminderNotification, trackAll){
         var deferred = $q.defer();
-        if(!$rootScope.isMobile){
+        if(!$rootScope.platform.isMobile){
             qmLogService.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ' +
                 JSON.stringify(trackingReminderNotification));
         }
@@ -2416,8 +2418,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
-                    if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
+                    if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
+                    if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -3113,7 +3115,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("No highchartConfig provided to setChartExportingOptions");
             return highchartConfig;
         }
-        highchartConfig.exporting = {enabled: $rootScope.isWeb};
+        highchartConfig.exporting = {enabled: $rootScope.platform.isWeb};
         return highchartConfig;
     }
     qmService.configureDistributionChart = function(dataAndLabels, variableObject){
@@ -4352,7 +4354,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve();
             return deferred.promise;
         }
-        if($rootScope.isIOS){
+        if($rootScope.platform.isIOS){
             console.warn("updateBadgesAndTextOnAllNotifications: updating notifications on iOS might make duplicates");
             //return;
         }
@@ -4507,13 +4509,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve();
             return deferred.promise;
         }
-        if($rootScope.isAndroid){
+        if($rootScope.platform.isAndroid){
             qmLogService.debug('updateOrRecreateNotifications: Updating notifications for Android because Samsung limits number of notifications ' +
                 "that can be scheduled in a day.", null);
             this.updateBadgesAndTextOnAllNotifications();
             deferred.resolve();
         }
-        if($rootScope.isIOS){
+        if($rootScope.platform.isIOS){
             console.warn('updateOrRecreateNotifications: Updating local notifications on iOS might ' +
                 'make duplicates and we cannot recreate here because we will lose the previously set interval');
             this.updateBadgesAndTextOnAllNotifications();
@@ -4528,7 +4530,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('No user for scheduleSingleMostFrequentLocalNotification', null);
             return;
         }
-        if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
+        if(!$rootScope.platform.isMobile && !$rootScope.platform.isChromeExtension){
             qmLogService.debug('Can only schedule notification on mobile or Chrome extension', null);
             return;
         }
@@ -4539,7 +4541,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if(!activeTrackingReminders){activeTrackingReminders = qm.reminderHelper.getActive();}
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-        if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+        if($rootScope.platform.isChromeExtension || $rootScope.platform.isIOS || $rootScope.platform.isAndroid) {
             var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(activeTrackingReminders);
             if(activeTrackingReminders){
                 for (var i = 0; i < activeTrackingReminders.length; i++) {
@@ -4561,7 +4563,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.scheduleAllNotificationsByTrackingReminders = function(trackingRemindersFromApi) {
         qmLogService.info('scheduleAllNotificationsByTrackingReminders', null);
-        if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+        if($rootScope.platform.isChromeExtension || $rootScope.platform.isIOS || $rootScope.platform.isAndroid) {
             for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                 if($rootScope.user.combineNotifications === false){
                     try {this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
@@ -4618,7 +4620,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             });
         }
-        if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+        if ($rootScope.platform.isChromeExtension || $rootScope.platform.isChromeApp) {
             cancelChromeExtensionNotificationsForDeletedReminders(trackingRemindersFromApi);
         }
         $ionicPlatform.ready(function () {
@@ -4776,8 +4778,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             });
-            /** @namespace $rootScope.isChromeApp */
-            if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+            /** @namespace $rootScope.platform.isChromeApp */
+            if ($rootScope.platform.isChromeExtension || $rootScope.platform.isChromeApp) {
                 qm.chrome.scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
             }
         }
@@ -4799,16 +4801,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!notificationSettings.id){notificationSettings.id = qm.getPrimaryOutcomeVariable().id;}
         notificationSettings.title = "How are you?";
         notificationSettings.text = "Open reminder inbox";
-        if($rootScope.isIOS){notificationSettings.sound = "file://sound/silent.ogg";}
-        if($rootScope.isAndroid){notificationSettings.sound = null;}
+        if($rootScope.platform.isIOS){notificationSettings.sound = "file://sound/silent.ogg";}
+        if($rootScope.platform.isAndroid){notificationSettings.sound = null;}
         notificationSettings.badge = 0;
         if(qmService.numberOfPendingNotifications > 0) {
             //notificationSettings.text = qmService.numberOfPendingNotifications + " tracking reminder notifications";
             notificationSettings.badge = 1; // Less stressful
             //notificationSettings.badge = qmService.numberOfPendingNotifications;
         }
-        if($rootScope.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
-        if($rootScope.isIOS){
+        if($rootScope.platform.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
+        if($rootScope.platform.isIOS){
             var everyString = 'minute';
             if (notificationSettings.every > 1) {everyString = 'hour';}
             if (notificationSettings.every > 60) {everyString = 'day';}
@@ -4837,7 +4839,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         });
-        if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+        if ($rootScope.platform.isChromeExtension || $rootScope.platform.isChromeApp) {
             qm.chrome.scheduleGenericChromeExtensionNotification(notificationSettings.every);
             deferred.resolve();
         }
@@ -4866,12 +4868,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve();
             return deferred.promise;
         }
-        if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
+        if(!$rootScope.platform.isMobile && !$rootScope.platform.isChromeExtension){
             qmLogService.debug('Not scheduling notifications because we are not mobile or Chrome extension', null);
             deferred.resolve();
             return deferred.promise;
         }
-        if($rootScope.isAndroid){
+        if($rootScope.platform.isAndroid){
             this.cancelAllNotifications();
             qmLogService.debug('Not scheduling local notifications because Android uses push notifications', null);
             deferred.resolve();
@@ -4890,7 +4892,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve();
             return deferred.promise;
         }
-        if($rootScope.isMobile){
+        if($rootScope.platform.isMobile){
             if(!localNotificationsPluginInstalled()) {
                 deferred.resolve();
                 return deferred.promise;
@@ -4954,8 +4956,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 notificationSettings.badge = 1; // Less stressful
                                 //notificationSettings.badge = qmService.numberOfPendingNotifications;
                             }
-                            if($rootScope.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
-                            if($rootScope.isIOS){notificationSettings.every = 'day';}
+                            if($rootScope.platform.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
+                            if($rootScope.platform.isIOS){notificationSettings.every = 'day';}
                             if(!(notificationSettings.at instanceof Date)){
                                 var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                 qmLogService.error(errorMessage);
@@ -4985,7 +4987,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
             });
         }
-        if($rootScope.isChromeExtension){
+        if($rootScope.platform.isChromeExtension){
             chrome.alarms.getAll(function(existingLocalAlarms) {
                 qmLogService.debug('Existing Chrome alarms before scheduling: ', null, existingLocalAlarms);
                 for (var i = 0; i < existingLocalAlarms.length; i++) {
@@ -5174,7 +5176,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storage.setItem = function(key, value){
         var deferred = $q.defer();
-        if ($rootScope.isChromeApp) {
+        if ($rootScope.platform.isChromeApp) {
             if(typeof value !== "string"){value = JSON.stringify(value);}
             // Code running in a Chrome extension (content script, background page, etc.)
             var obj = {};
@@ -5188,7 +5190,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.storage.getAsStringWithCallback = function(key, callback){
-        if ($rootScope.isChromeApp) {
+        if ($rootScope.platform.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
             chrome.storage.local.get(key,function(val){
                 callback(val[key]);
@@ -5799,12 +5801,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // price	currency	No	The price of a product (e.g. 29.20).
         // example: Analytics.addImpression(baseProductId, name, list, brand, category, variant, position, price);
         Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
-            upgradeSubscriptionProducts.monthly7.name, $rootScope.currentPlatform + ' Upgrade Options',
+            upgradeSubscriptionProducts.monthly7.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
             $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
             upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
             upgradeSubscriptionProducts.monthly7.price);
         Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
-            upgradeSubscriptionProducts.yearly60.name, $rootScope.currentPlatform + ' Upgrade Options',
+            upgradeSubscriptionProducts.yearly60.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
             $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
             upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
             upgradeSubscriptionProducts.yearly60.price);
@@ -6144,7 +6146,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
         variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
     };
-    if($rootScope.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
+    if($rootScope.platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     for (var propertyName in qmService.actionSheetButtons) {
         if( qmService.actionSheetButtons.hasOwnProperty(propertyName) ) {
             qmService.actionSheetButtons[propertyName].id = propertyName;
@@ -6582,7 +6584,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 buttonClass: "button button-large button-assertive"
             },
         ];
-        if($rootScope.isIOS){
+        if($rootScope.platform.isIOS){
             planFeatureCards = JSON.parse(JSON.stringify(planFeatureCards).replace('Android, and iOS', 'any mobile device').replace(', Sleep as Android', ''));
         }
         return planFeatureCards;
@@ -6592,7 +6594,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
-        if($rootScope.isIOS){
+        if($rootScope.platform.isIOS){
             qmService.showBasicLoader();  // Centering is messed up on iOS for some reason
         } else {
             $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
@@ -6976,7 +6978,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return menu;
     }
     function checkHoursSinceLastPushNotificationReceived() {
-        if(!$rootScope.isMobile){return;}
+        if(!$rootScope.platform.isMobile){return;}
         if(!qm.push.getLastPushTimeStampInSeconds()){
             qmLogService.error("Push never received!");
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
@@ -6988,7 +6990,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     function reconfigurePushNotificationsIfNoTokenOnServerOrToSync() {
-        if($rootScope.isMobile && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+        if($rootScope.platform.isMobile && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
             qmLogService.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
             qmService.configurePushNotifications();
         }
@@ -7019,7 +7021,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qm.api.getClientId() + '\r\n';
-            template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
+            template = template + "Platform: " + $rootScope.platform.currentPlatform + '\r\n';
             template = template + "User ID: " + $rootScope.user.id + '\r\n';
             template = template + "User Email: " + $rootScope.user.email + '\r\n';
             //template = template + "App Settings: " + prettyJsonStringify(qm.getAppSettings()) + '\r\n';
@@ -7044,7 +7046,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var emailBody = encodeURIComponent(template);
         var emailAddress = 'mike@quantimo.do';
         var fallbackUrl = 'http://help.quantimo.do';
-        if($rootScope.isMobile){
+        if($rootScope.platform.isMobile){
             qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
         } else {
             qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
@@ -7057,7 +7059,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.configurePushNotifications = function(){
         $ionicPlatform.ready(function() {
-            if($rootScope.isMobile){
+            if($rootScope.platform.isMobile){
                 if(typeof PushNotification === "undefined"){
                     qmLogService.error('PushNotification is undefined on mobile!');
                 }
@@ -7255,7 +7257,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     //         qmLogService.debug("App updates disabled until more testing is done");
     //         return;
     //     }
-    //     if(!$rootScope.isMobile){
+    //     if(!$rootScope.platform.isMobile){
     //         qmLogService.debug("Cannot update app because platform is not mobile");
     //         return;
     //     }
@@ -7297,7 +7299,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     //             if (snapshotAvailable) {
     //                 message = 'Downloading ' + releaseTrack + ' update...';
     //                 qmLogService.debug(message);
-    //                 if($rootScope.isAndroid){
+    //                 if($rootScope.platform.isAndroid){
     //                     qmService.showInfoToast(message);
     //                 }
     //                 qmLogService.error(message);
@@ -7305,12 +7307,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     //                 $ionicDeploy.download().then(function() {
     //                     message = 'Downloaded new version.  Extracting...';
     //                     qmLogService.debug(message);
-    //                     if($rootScope.isAndroid){
+    //                     if($rootScope.platform.isAndroid){
     //                         qmService.showInfoToast(message);
     //                     }
     //                     qmLogService.error(message);
     //                     $ionicDeploy.extract().then(function() {
-    //                         if($rootScope.isAndroid){
+    //                         if($rootScope.platform.isAndroid){
     //                             $ionicPopup.show({
     //                                 title: 'Update available',
     //                                 //subTitle: '',
@@ -7330,7 +7332,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     //                 });
     //             } else {
     //                 message = 'No updates available';
-    //                 if($rootScope.isAndroid){
+    //                 if($rootScope.platform.isAndroid){
     //                     qmService.showInfoToast(message);
     //                 }
     //                 qmLogService.debug(message);
@@ -7341,7 +7343,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
     qmService.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force) {
-        if(!$rootScope.isAndroid){
+        if(!$rootScope.platform.isAndroid){
             qmLogService.debug('Can only show popups on android', null);
             return;
         }
@@ -7514,8 +7516,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
-            self.isMobile = $rootScope.isMobile;
-            self.showHelp = !($rootScope.isMobile);
+            self.platform.isMobile = $rootScope.platform.isMobile;
+            self.showHelp = !($rootScope.platform.isMobile);
             self.title = dataToPass.title;
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
@@ -7657,7 +7659,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,
-            fullscreen: !!($rootScope.isMobile),
+            fullscreen: !!($rootScope.platform.isMobile),
             locals: {dataToPass: dataToPass}
         }).then(function(variable) {
             successHandler(variable);
@@ -7717,7 +7719,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //disableAnimations : true, // iOS
             //disableSuccessBeep: false // iOS and Android
         };
-        if($rootScope.isAndroid){
+        if($rootScope.platform.isAndroid){
             scannerConfig.formats =
                 "QR_CODE," +
                 "DATA_MATRIX," +

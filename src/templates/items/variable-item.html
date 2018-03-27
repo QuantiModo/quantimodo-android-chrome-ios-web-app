@@ -6,8 +6,8 @@
         <button ng-if="trackingReminder.productUrl" class="button button-assertive" ng-click="openUrl(trackingReminder.productUrl, '_blank')">
             <md-tooltip md-direction="down">Buy Now</md-tooltip> <i class="icon ion-bag"></i>
         </button>
-        <button ng-if="!isMobile" class="button button-positive" ng-click="trackingReminder.addMeasurement = true"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp
-        <button ng-if="!isMobile" class="button button-assertive" ng-click="edit(trackingReminder)"> <md-tooltip md-direction="down">Edit settings</md-tooltip> <i class="icon ion-android-notifications-none"></i> </button>&nbsp
-        <button ng-if="!isMobile" class="button button-dark" ng-click="showActionSheet(trackingReminder)"> <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-android-arrow-forward"></i> </button>
+        <button ng-if="!platform.isMobile" class="button button-positive" ng-click="trackingReminder.addMeasurement = true"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp
+        <button ng-if="!platform.isMobile" class="button button-assertive" ng-click="edit(trackingReminder)"> <md-tooltip md-direction="down">Edit settings</md-tooltip> <i class="icon ion-android-notifications-none"></i> </button>&nbsp
+        <button ng-if="!platform.isMobile" class="button button-dark" ng-click="showActionSheet(trackingReminder)"> <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-android-arrow-forward"></i> </button>
     </div>
 </div>

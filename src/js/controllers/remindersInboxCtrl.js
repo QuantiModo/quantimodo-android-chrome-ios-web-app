@@ -79,7 +79,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 					qmService.showInfoToast('Skipping all reminder notifications...');
 					qmService.skipAllTrackingReminderNotificationsDeferred()
 						.then(function(){
-							if($rootScope.localNotificationsEnabled){qmService.setNotificationBadge(0);}
+							if(qmService.localNotificationsEnabled){qmService.setNotificationBadge(0);}
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							qmLogService.error(null, error);
@@ -100,7 +100,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
             $scope.refreshTrackingReminderNotifications();
         }
-        if($rootScope.isWeb){qm.webNotifications.registerServiceWorker();}
+        if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
@@ -125,7 +125,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 	};
 	var isGhostClick = function ($event) {
-		if(!$rootScope.isMobile){return false;}
+		if(!$rootScope.platform.isMobile){return false;}
 		if($event && $scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 && $scope.state.lastClientX === $event.clientX && $scope.state.lastClientY === $event.clientY) {
 			qmLogService.debug(null, 'This event is probably a ghost click so not registering.', null, $event);
 			return true;

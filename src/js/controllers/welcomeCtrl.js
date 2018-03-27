@@ -6,8 +6,8 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
         function(primaryOutcomeRatingFrequencyDescription) {
             if (primaryOutcomeRatingFrequencyDescription) {$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
-            if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
-            if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'daily';}
+            if (!primaryOutcomeRatingFrequencyDescription && $rootScope.platform.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
+            if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.platform.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'daily';}
         }
     );
     $scope.sendReminderNotificationEmails = true;
