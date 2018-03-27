@@ -64,9 +64,7 @@ var paths = {
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
-        appConfigs: "src/",
         devCredentials: "src/dev-credentials.json",
-        privateConfigs: "src/",
         defaultConfig: "src/default.config.json",
         defaultPrivateConfig: "src/default.private_config.json",
         icons: "src/img/icons",
@@ -75,9 +73,7 @@ var paths = {
         serviceWorker: "src/firebase-messaging-sw.js"
     },
     www: {
-        appConfigs: "www/",
         devCredentials: "www/dev-credentials.json",
-        privateConfigs: "www/",
         defaultConfig: "www/default.config.json",
         buildInfo: "www/build-info.json",
         defaultPrivateConfig: "www/default.private_config.json",
@@ -1117,10 +1113,10 @@ gulp.task('deleteNodeModules', function () {
     return cleanFolder('node_modules');
 });
 gulp.task('deleteWwwPrivateConfigs', function () {
-    return cleanFolder(paths.www.privateConfigs);
+    return clean([paths.www.defaultPrivateConfig])
 });
 gulp.task('deleteWwwConfigs', function () {
-    return cleanFolder(paths.www.appConfigs);
+    return clean([paths.www.defaultPrivateConfig]);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
