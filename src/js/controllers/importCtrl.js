@@ -1,7 +1,7 @@
 angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth,
                                                             $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
