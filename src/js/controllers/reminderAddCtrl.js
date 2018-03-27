@@ -486,7 +486,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.trackingReminder.reminderFrequency = getFrequencySecondsFromFrequencyName($scope.state.selectedFrequencyName);
     };
     $scope.showUnitsDropDown = function(){$scope.showUnitsDropDown = true;};
-    $rootScope.showActionSheetMenu = function() {
+    qmService.rootScope.setShowActionSheetMenu(function() {
         $scope.state.variableObject = $scope.state.trackingReminder;
         $scope.state.variableObject.id = $scope.state.trackingReminder.variableId;
         $scope.state.variableObject.name = $scope.state.trackingReminder.variableName;
@@ -517,7 +517,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         });
         qmLogService.debug('Setting hideSheet timeout', null);
         $timeout(function() {hideSheet();}, 20000);
-    };
+    });
     $scope.resetSaveAnimation = (function fn() {
         $scope.value = 0;
         $interval(function() {

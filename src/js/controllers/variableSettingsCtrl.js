@@ -36,7 +36,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         }
     });
     function setShowActionSheetMenu(variableObject) {
-        $rootScope.showActionSheetMenu = function() {
+        qmService.rootScope.setShowActionSheetMenu(function() {
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
@@ -63,7 +63,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
             qmLogService.debug('Setting hideSheet timeout', null);
             $timeout(function() { hideSheet(); }, 20000);
-        };
+        });
     }
     $scope.openTagVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {

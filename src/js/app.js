@@ -55,6 +55,7 @@ angular.module('starter',
     $rootScope.goToState = function(stateName, stateParameters){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
+            /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
@@ -71,6 +72,7 @@ angular.module('starter',
             qmService.goToDefaultState();
             return;
         }
+        /** @namespace qm.getAppSettings().appDesign.defaultState */
         if($ionicHistory.currentStateName() === qm.getAppSettings().appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
@@ -81,11 +83,11 @@ angular.module('starter',
         }
         if(qm.storage.getItem(qm.items.user)){
             qmService.unHideNavigationMenu();
-            window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
+            window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...');
             qmService.goToDefaultState();
             return;
         }
-        window.qmLog.debug(null, 'registerBackButtonAction: Closing the app', null);
+        window.qmLog.debug(null, 'registerBackButtonAction: Closing the app');
         ionic.Platform.exitApp();
     }, 100);
 
