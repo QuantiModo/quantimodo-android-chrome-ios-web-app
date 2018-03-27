@@ -7529,6 +7529,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
+            self.platform = {};
             self.platform.isMobile = $rootScope.platform.isMobile;
             self.showHelp = !($rootScope.platform.isMobile);
             self.title = dataToPass.title;
