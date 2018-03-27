@@ -18,7 +18,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
 			qmService.refreshUserEmailPreferencesDeferred({userEmail: qm.urlHelper.getParam('userEmail')}, function(user){
-				$rootScope.user = user;
+				qmService.rootScope.setUser(user);
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			}, function(error){
@@ -185,7 +185,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		qmLogService.debug('Logging out...');
-		$rootScope.user = null;
+		qmService.rootScope.setUser(null);
 		showDataClearPopup(ev);
 	};
 	// Convert all data Array to a CSV object
