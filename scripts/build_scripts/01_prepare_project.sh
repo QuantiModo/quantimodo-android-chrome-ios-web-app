@@ -71,7 +71,7 @@ cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 echo "Removing ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}"
 rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}"
 
-if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${QUANTIMODO_CLIENT_ID}.private_config.json ]; then
-    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
-    cp "${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json" "${INTERMEDIATE_PATH}/www/private_configs/"
+if [ ! -f ${INTERMEDIATE_PATH}/www//${QUANTIMODO_CLIENT_ID}.private_config.json ]; then
+    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json private config to ${INTERMEDIATE_PATH}/www/${NC}"
+    cp "${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json" "${INTERMEDIATE_PATH}/www/"
 fi

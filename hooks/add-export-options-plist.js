@@ -15,7 +15,7 @@ var FgYellow = "\x1b[33m";
 var Reset = "\x1b[0m";
 
 console.log('hook: root directory is ' + rootdir);
-console.log('MAKE SURE YOUR PRIVATE CONFIG FILE IS IN www/private_configs!');
+console.log('MAKE SURE YOUR PRIVATE CONFIG FILE IS IN www!');
 
 if (platforms.indexOf("ios" > -1)){
 	console.log(FgGreen, "Current platform is " + platforms, Reset);
