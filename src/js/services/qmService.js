@@ -214,7 +214,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         rootScope: {
             setProperty: function(property, value){  // Avoid Error: [$rootScope:inprog] $apply already in progress
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
-                $timeout(function() { $rootScope[property] = value; }, 1);
+                $timeout(function() { $rootScope[property] = value; }, 0);
             }
         }
     };
@@ -5515,7 +5515,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
-    qmService.setupOnboardingPages = function (onboardingPages) {
+    qmService.setupOnboardingPages = function () {
         var onboardingPagesFromLocalStorage = qm.storage.getItem('onboardingPages');
         var activeOnboardingPages = $rootScope.appSettings.appDesign.onboarding.active;
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
@@ -6602,7 +6602,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
-        if($rootScope.platform.isIOS){
+        if(ionic && ionic.Platform && ionic.Platform.isIOS()){
             qmService.showBasicLoader();  // Centering is messed up on iOS for some reason
         } else {
             $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
@@ -6861,7 +6861,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.configureAppSettings = function(appSettings){
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
-            if(!$rootScope.appSettings.additionalSettings.appImages.favicon){return;}
+            if(!qm.getAppSettings().favicon){return;}
             //noinspection JSAnnotator
             document.head || (document.head = document.getElementsByTagName('head')[0]);
             var link = document.createElement('link'), oldLink = document.getElementById('dynamic-favicon');
@@ -6877,9 +6877,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //window.qm.getAppSettings().appDesign.menu = qmService.convertHrefInAllMenus(window.qm.getAppSettings().appDesign.menu);  // Should be done on server
         //window.qm.getAppSettings().appDesign.floatingActionButton = qmService.convertHrefInFab(window.qm.getAppSettings().appDesign.floatingActionButton);
         if(!qm.getAppSettings().appDesign.ionNavBarClass){ qm.getAppSettings().appDesign.ionNavBarClass = "bar-positive"; }
-        qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
-        qmLogService.debug('appSettings.clientId is ' + $rootScope.appSettings.clientId);
-        qmLogService.debug('$rootScope.appSettings: ', null, $rootScope.appSettings);
+        //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
+        // Need to apply immediately before rendering or nav bar color is not set for some reason
+        $rootScope.appSettings = qm.getAppSettings();
+        qmLogService.debug('appSettings.clientId is ' + qm.getAppSettings().clientId);
+        qmLogService.debug('$rootScope.appSettings: ', null, qm.getAppSettings());
         changeFavicon();
     };
     function initializeLocalPopupNotifications(notificationSettings){
@@ -6888,8 +6890,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $ionicPlatform.ready(function () {
             /** @namespace cordova.plugins.notification */
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
-                qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings), null);
-                qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data), null);
+                qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' +
+                    JSON.stringify(notificationSettings));
+                qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
                 qmService.notifications.showAndroidPopupForMostRecentNotification();
             });
             qmLog.info("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
