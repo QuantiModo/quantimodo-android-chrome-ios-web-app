@@ -4,14 +4,14 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.state = {
         showSkipButton: false
     };
-    if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
+    if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
-        $rootScope.hideNavigationMenu = true;
+        qmService.rootScope.setProperty('hideNavigationMenu', true);
         if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         qmService.setupOnboardingPages();
         qmService.hideLoader();
-        $rootScope.hideNavigationMenu = true;
+        qmService.rootScope.setProperty('hideNavigationMenu', true);
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){

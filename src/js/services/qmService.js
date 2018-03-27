@@ -1940,6 +1940,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform);
+        if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     };
     qmService.getPermissionString = function(){
         var str = "";
@@ -6154,7 +6155,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
         variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
     };
-    if($rootScope.platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
     for (var propertyName in qmService.actionSheetButtons) {
         if( qmService.actionSheetButtons.hasOwnProperty(propertyName) ) {
             qmService.actionSheetButtons[propertyName].id = propertyName;
@@ -6876,10 +6876,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.getAppSettings().appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(qm.getAppSettings().appDesign.menu);
         //window.qm.getAppSettings().appDesign.menu = qmService.convertHrefInAllMenus(window.qm.getAppSettings().appDesign.menu);  // Should be done on server
         //window.qm.getAppSettings().appDesign.floatingActionButton = qmService.convertHrefInFab(window.qm.getAppSettings().appDesign.floatingActionButton);
-        $rootScope.appSettings = qm.getAppSettings();
+        if(!qm.getAppSettings().appDesign.ionNavBarClass){ qm.getAppSettings().appDesign.ionNavBarClass = "bar-positive"; }
+        qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         qmLogService.debug('appSettings.clientId is ' + $rootScope.appSettings.clientId);
         qmLogService.debug('$rootScope.appSettings: ', null, $rootScope.appSettings);
-        if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };
     function initializeLocalPopupNotifications(notificationSettings){
@@ -6925,7 +6925,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
-        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
+        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { qmService.rootScope.setProperty('hideNavigationMenu', true); }
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
@@ -6939,7 +6939,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.unHideNavigationMenu = function(){
         var hideMenu = qm.urlHelper.getParam('hideMenu');
         if(!hideMenu){
-            $rootScope.hideNavigationMenu = false;
+            qmService.rootScope.setProperty('hideNavigationMenu', false);
         }
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
