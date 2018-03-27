@@ -70,7 +70,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         actionButtons[7] = qmService.actionSheetButtons.settings;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
-		$rootScope.showActionSheetMenu = function() {
+		qmService.rootScope.setShowActionSheetMenu(function() {
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionButtons,
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -89,7 +89,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				}
 			});
 			$timeout(function() { hideSheet(); }, 20000);
-		};
+		});
 	});
 	if(!$rootScope.reminderOrderParameter){ $rootScope.reminderOrderParameter = 'variableName'; }
 	function showAppropriateHelpInfoCards(){
