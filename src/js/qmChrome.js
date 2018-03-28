@@ -237,7 +237,7 @@ window.qm.chrome = {
         };
     },
     showRatingOrInboxPopup: function () {
-        qm.notifications.refreshIfEmpty(function () {
+        qm.notifications.refreshIfEmptyOrStale(function () {
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qmLog.info("No notifications not opening popup");
                 return false;
