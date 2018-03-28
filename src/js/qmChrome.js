@@ -26,7 +26,7 @@ window.qm.chrome = {
         window.qmLog.debug('showNotificationOrPopupForAlarm alarm: ', null, alarm);
         if(!qm.userHelper.withinAllowedNotificationTimes()){return false;}
         if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
-            qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+            qm.chrome.createSmallInboxNotification();
         } else {
             qm.notifications.refreshAndShowPopupIfNecessary();
         }
@@ -44,6 +44,7 @@ window.qm.chrome = {
     },
     createPopup: function(windowParams){
         function createPopup(windowParams) {
+            windowParams.url = qm.api.addGlobalParams(windowParams.url);
             qmLog.info("creating popup window", null, windowParams);
             chrome.windows.create(windowParams, function (chromeWindow) {
                 qm.storage.setItem('chromeWindowId', chromeWindow.id);
@@ -54,7 +55,7 @@ window.qm.chrome = {
             createPopup(windowParams);
         } else {
             qm.client.getClientWebsiteUrl(function (fullWebsiteUrl) {
-                windowParams.url = fullWebsiteUrl;
+                windowParams.url = fullWebsiteUrl + windowParams.url;
                 createPopup(windowParams);
             })
         }
@@ -253,7 +254,7 @@ window.qm.chrome = {
                 qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
             } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
                 qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-                window.qm.chrome.createSmallNotificationAndOpenInboxInBackground();
+                qm.chrome.createSmallInboxNotification();
             }
         }, function (err) {
             qmLog.error("Not showing popup because of notification refresh error: "+ err);
