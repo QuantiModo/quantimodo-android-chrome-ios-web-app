@@ -465,31 +465,42 @@ window.qm = {
     },
     apiHelper: {},
     arrayHelper: {
-        variableIsArray: function(variable){
-            if(!variable){
-                qmLog.info(variable + " provided to variableIsArray");
+        arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
+            if(!array){
+                qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
                 return false;
             }
-            var isAnArray = Array.isArray(variable);
-            if(isAnArray){return true;}
-            var constructorArray = variable.constructor === Array;
-            if(constructorArray){return true;}
-            var instanceOfArray = variable instanceof Array;
-            if(instanceOfArray){return true;}
-            var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
-            if(prototypeArray){return true;}
+            for (var i = 0; i < array.length; i++) {
+                var obj = array[i];
+                if(obj[propertyName] && obj[propertyName] === propertyValue){
+                    return true;
+                }
+            }
             return false;
+        },
+        concatenateUniqueId: function (preferred, secondary) {
+            var a = preferred.concat(secondary);
+            for (var i = 0; i < a.length; ++i) {
+                for (var j = i + 1; j < a.length; ++j) {
+                    if (a[i].id === a[j].id)
+                        a.splice(j--, 1);
+                }
+            }
         },
         convertToArrayIfNecessary: function(variable){
             if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
             return variable;
         },
-        inArray: function(needle, haystack) {
-            var length = haystack.length;
-            for(var i = 0; i < length; i++) {
-                if(haystack[i] === needle) return true;
+        convertObjectToArray: function (object) {
+            if(!object){
+                qmLog.info(object + " provided to convertObjectToArray");
+                return object;
             }
-            return false;
+            if(qm.arrayHelper.variableIsArray(object)){return object;}
+            var result = Object.keys(object).map(function(key) {
+                return object[key];
+            });
+            return result;
         },
         deleteById: function(id, array){
             array = array.filter(function( obj ) {
@@ -503,16 +514,11 @@ window.qm = {
             });
             return array;
         },
-        convertObjectToArray: function (object) {
-            if(!object){
-                qmLog.info(object + " provided to convertObjectToArray");
-                return object;
-            }
-            if(qm.arrayHelper.variableIsArray(object)){return object;}
-            var result = Object.keys(object).map(function(key) {
-                return object[key];
+        getByProperty: function(propertyName, value, array){
+            array = array.filter(function( obj ) {
+                return obj[propertyName] === value;
             });
-            return result;
+            return array;
         },
         getContaining: function(searchTerm, array){
             searchTerm = searchTerm.toLowerCase();
@@ -524,15 +530,12 @@ window.qm = {
             }
             return matches;
         },
-        concatenateUniqueId: function (preferred, secondary) {
-            var a = preferred.concat(secondary);
-            for(var i=0; i<a.length; ++i) {
-                for(var j=i+1; j<a.length; ++j) {
-                    if(a[i].id === a[j].id)
-                        a.splice(j--, 1);
-                }
+        inArray: function(needle, haystack) {
+            var length = haystack.length;
+            for(var i = 0; i < length; i++) {
+                if(haystack[i] === needle) return true;
             }
-            return a;
+            return false;
         },
         replaceElementInArrayById: function (array, replacementElement) {
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
@@ -566,29 +569,6 @@ window.qm = {
             }
             return array;
         },
-        unsetNullProperties: function (array) {
-            if(!array){
-                qmLog.error("Nothing provided to unsetNullProperties");
-                return null;
-            }
-            for (var i = 0; i < array.length; i++) {
-                array[i] = qm.objectHelper.unsetNullProperties(array[i]);
-            }
-            return array;
-        },
-        arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
-            if(!array){
-                qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
-                return false;
-            }
-            for (var i = 0; i < array.length; i++) {
-                var obj = array[i];
-                if(obj[propertyName] && obj[propertyName] === propertyValue){
-                    return true;
-                }
-            }
-            return false;
-        },
         sortByProperty: function(arrayToSort, propertyName){
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
@@ -601,6 +581,31 @@ window.qm = {
                 arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
             }
             return arrayToSort;
+        },
+        unsetNullProperties: function (array) {
+            if(!array){
+                qmLog.error("Nothing provided to unsetNullProperties");
+                return null;
+            }
+            for (var i = 0; i < array.length; i++) {
+                array[i] = qm.objectHelper.unsetNullProperties(array[i]);
+            }
+            return array;
+        },
+        variableIsArray: function(variable){
+            if(!variable){
+                qmLog.info(variable + " provided to variableIsArray");
+                return false;
+            }
+            var isAnArray = Array.isArray(variable);
+            if(isAnArray){return true;}
+            var constructorArray = variable.constructor === Array;
+            if(constructorArray){return true;}
+            var instanceOfArray = variable instanceof Array;
+            if(instanceOfArray){return true;}
+            var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
+            if(prototypeArray){return true;}
+            return false;
         },
     },
     auth: {
@@ -1027,8 +1032,13 @@ window.qm = {
                 qm.notifications.postTrackingReminderNotifications(body);
             },
         },
-        getFromGlobalsOrLocalStorage : function(){
-            return qm.storage.getItem(qm.items.trackingReminderNotifications);
+        getFromGlobalsOrLocalStorage : function(variableCategoryName){
+            var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
+            if(!notifications || !notifications.length){return [];}
+            if(variableCategoryName){
+                return qm.arrayHelper.getByProperty('variableCategoryName', variableCategoryName, notifications);
+            }
+            return notifications;
         },
         getMostRecentRatingNotificationNotInSyncQueue: function(){
             // Need unique rating notifications because we need to setup initial popup via url params
@@ -1278,8 +1288,8 @@ window.qm = {
             });
             return notificationParams;
         },
-        getNumberInGlobalsOrLocalStorage: function(){
-            var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
+        getNumberInGlobalsOrLocalStorage: function(variableCategoryName){
+            var notifications = qm.notifications.getFromGlobalsOrLocalStorage(variableCategoryName);
             if(notifications){return notifications.length;}
             return 0;
         },
