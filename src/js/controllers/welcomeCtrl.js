@@ -1,6 +1,7 @@
 angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams", function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
     qmService.rootScope.setProperty('hideNavigationMenu', true);
+    $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $scope.reportedVariableValue = false;
     qmService.navBar.setFilterBarSearchIcon(false);
     qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',

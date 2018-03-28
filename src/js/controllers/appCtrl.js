@@ -8,10 +8,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
-
     qmService.numberOfPendingNotifications = null;
-    $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
-    $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
         qmLogService.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
         //$scope.showHelpInfoPopupIfNecessary(e);
