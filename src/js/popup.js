@@ -17,6 +17,7 @@ function setLastValueButtonListeners() {
     document.getElementById('thirdToLastValueButton').onclick = onLastValueButtonClicked;
     document.getElementById('snoozeButton').onclick = onLastValueButtonClicked;
     document.getElementById('skipButton').onclick = onLastValueButtonClicked;
+    document.getElementById('buttonInbox').onclick = inboxButtonClicked;
 }
 function getVariableName() {
     var variableName = window.qm.urlHelper.getParam('variableName');
@@ -230,12 +231,16 @@ function updateQuestion(variableName) {
         qmLog.pushDebug('popup: Setting question display to none ');
         getQuestionElement().style.display = "none";
     } else {
+        getInboxButtonElement().style.display = "none";
         qmLog.pushDebug('NOT setting question display to none because not on Chrome');
     }
     unHidePopup();
 }
 function getQuestionElement() {
     return document.getElementById("question");
+}
+function getInboxButtonElement() {
+    return document.getElementById("buttonInbox");
 }
 function getLastValueElement() {return document.getElementById("lastValue");}
 function getSecondToLastValueElement() {
