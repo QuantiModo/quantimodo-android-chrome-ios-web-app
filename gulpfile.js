@@ -850,6 +850,7 @@ gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');}
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
 gulp.task('deleteWwwManifestJson', function () {return clean(['www/manifest.json']);});
 gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
+gulp.task('deleteDefaultConfigFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
@@ -1112,11 +1113,11 @@ gulp.task('deleteNodeModules', function () {
         'task again.');
     return cleanFolder('node_modules');
 });
-gulp.task('deleteWwwPrivateConfigs', function () {
+gulp.task('deleteWwwPrivateConfig', function () {
     return clean([paths.www.defaultPrivateConfig])
 });
-gulp.task('deleteWwwConfigs', function () {
-    return clean([paths.www.defaultPrivateConfig]);
+gulp.task('deleteWwwIcons', function () {
+    return clean(['www/img/icons/*']);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
@@ -2123,8 +2124,8 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     } else {
         runSequence(
             'configureApp',
-            //'deleteWwwConfigs',
-            'deleteWwwPrivateConfigs',
+            //'deleteDefaultConfigFromWww',
+            'deleteWwwPrivateConfig',
             callback);
     }
 });
@@ -2197,7 +2198,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
         'chromeDefaultConfigJson',
-        'deleteWwwPrivateConfigs',
+        'deleteWwwPrivateConfig',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
@@ -2495,16 +2496,21 @@ gulp.task('watch-src', function () {
         .pipe(watch(source, {base: source}))
         .pipe(gulp.dest(destination));
 });
+gulp.task('deleteAppSpecificFilesFromWww', [], function (callback) {
+    runSequence(
+        'deleteDevCredentialsFromWww',
+        'deleteWwwPrivateConfig',
+        'deleteDefaultConfigFromWww',
+        'deleteWwwIcons',
+        'deleteWwwManifestJson',
+        callback);
+});
 gulp.task('deployToProduction', [], function (callback) {
     runSequence(
-        'cleanWwwFolder',
-        'configureApp',
+        'copySrcToWww',
+        'deleteAppSpecificFilesFromWww',
         'cordovaHotCodePushConfig',
         'cordovaHotCodePushLogin',
-        //'deleteDevCredentialsFromWww',
-        'deleteWwwPrivateConfigs',
-        //'deleteWwwConfigs',
-        'deleteWwwManifestJson',
         //'cordovaHotCodePushBuildDeploy',
         callback);
 });
