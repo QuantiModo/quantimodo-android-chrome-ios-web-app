@@ -700,7 +700,7 @@ window.qm = {
             qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
             if(accessTokenFromUrl){
-                qmLog.info("Got access token from url");
+                qmLog.authDebug("Got access token from url");
             } else {
                 qmLog.authDebug("No access token from url");
             }

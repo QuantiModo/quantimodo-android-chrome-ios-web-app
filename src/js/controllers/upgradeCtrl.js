@@ -34,9 +34,9 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             return obj.id !== $rootScope.upgradePages[0].id; });
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
-            $rootScope.hideMenuButton = false;
+            qmService.rootScope.setProperty('hideMenuButton', false);
             qmService.goToDefaultState();
-        } else { $rootScope.hideMenuButton = true; }
+        } else { qmService.rootScope.setProperty('hideMenuButton', true); }
     };
     if(!$scope.productId){ $scope.productId = 'monthly7'; }
     $scope.monthlySubscription = function () { $scope.productId = 'yearly60'; $scope.upgrade(); };
