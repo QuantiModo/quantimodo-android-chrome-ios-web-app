@@ -28,7 +28,7 @@ angular.module('starter').controller('OnboardingCtrl',
     };
     $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
-        $rootScope.hideMenuButton = true;
+        qmService.rootScope.setProperty('hideMenuButton', true);
         removeImportPage();
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         $scope.circlePage.nextPageButtonText = "Done connecting data sources";
@@ -39,13 +39,13 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {
-        $rootScope.hideMenuButton = false;
+        qmService.rootScope.setProperty('hideMenuButton', false);
         window.qm.storage.setItem(qm.items.onboarded, true);
         qmService.goToDefaultState();
     };
     $scope.goToReminderSearchFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
-        $rootScope.hideMenuButton = true;
+        qmService.rootScope.setProperty('hideMenuButton', true);
         if(!$rootScope.user){
             $rootScope.appSettings.appDesign.onboarding.active = null;
             qm.storage.removeItem('onboardingPages');
@@ -64,7 +64,7 @@ angular.module('starter').controller('OnboardingCtrl',
     };
     $scope.doneOnboarding = function () {
         qmService.goToState('app.remindersInbox');
-        $rootScope.hideMenuButton = false;
+        qmService.rootScope.setProperty('hideMenuButton', false);
         window.qm.storage.setItem(qm.items.onboarded, true);
         qm.storage.removeItem('onboardingPages');
     };
@@ -73,10 +73,10 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
-            $rootScope.hideMenuButton = false;
+            qmService.rootScope.setProperty('hideMenuButton', false);
             qmService.goToDefaultState();
         } else {
-            $rootScope.hideMenuButton = true;
+            qmService.rootScope.setProperty('hideMenuButton', true);
         }
     };
     $scope.goToReminderSearch = function(variableCategoryName) {
