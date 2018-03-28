@@ -2116,6 +2116,9 @@ window.qm = {
             //window.open(url, '_blank', 'location='+showLocation);
             window.open(url, '_blank');
         },
+        getIonicUrlForPath: function(path) {
+            return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
+        },
         getIonicAppBaseUrl: function (){
             var url = window.location.origin + window.location.pathname;
             url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
