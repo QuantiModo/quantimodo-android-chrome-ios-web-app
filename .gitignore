@@ -106,3 +106,7 @@ cordova-hcp.json
 .chcpenv
 
 src/default.config.json
+
+src/chcp\.json
+
+src/chcp\.manifest

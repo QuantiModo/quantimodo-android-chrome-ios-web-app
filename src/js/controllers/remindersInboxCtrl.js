@@ -147,7 +147,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	function refreshIfRunningOutOfNotifications() {
 	    if($scope.state.numberOfDisplayedNotifications < 2){
-	        if(qm.notifications.getNumberInGlobalsOrLocalStorage()){
+	        if(qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
 	            getTrackingReminderNotifications()
             } else {
                 $scope.refreshTrackingReminderNotifications();
@@ -348,9 +348,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
             hideInboxLoader();
 			getTrackingReminderNotifications();
-			if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){getFallbackInboxContent();}
+			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 		}, function (error) {
-            if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){getFallbackInboxContent();}
+            if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 			qmLogService.error(null, '$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
