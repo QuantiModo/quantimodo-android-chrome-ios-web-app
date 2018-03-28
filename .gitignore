@@ -24,9 +24,7 @@
 /fastlane/*
 /hooks/generate_resources_fix_xcode_and_fastlane_beta.sh
 /platforms/
-/resources/
-/src/private_configs/*.json
-/src/README.md
+/resources
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
 build.json
@@ -50,7 +48,6 @@ scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
 supply_json_key_for_google_play.json
-src/configs
 src/configuration-index.html
 src/configuration/
 *.css
@@ -63,16 +60,6 @@ src/img/icons/*
 src/js/configuration-app.js
 src/lib/
 src/manifest.json
-src/manifest.json.enc
-src/private_configs/default.private_config.json.enc
-src/private_configs/sample_private.private_config.json.enc
-src/private_configs/your_quantimodo_client_id_here.private_config.json.enc
-src/private_configs/yourlowercaseappnamehere.private_config.json.enc
-src/default.private_config.json.enc
-src/sample_private.private_config.json.enc
-src/your_quantimodo_client_id_here.private_config.json.enc
-src/yourlowercaseappnamehere.private_config.json.enc
-
 
 # Visual Studio Recommended Folder Exclusions
 platforms
@@ -109,8 +96,6 @@ gradle/
 success
 www/*
 !/www/gitkeep
-www/private_configs/*
-!/www/private_configs/gitkeep
 /src/qm-amazon/
 dist/
 .chcplogin
