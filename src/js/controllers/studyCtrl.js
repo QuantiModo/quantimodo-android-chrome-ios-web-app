@@ -41,7 +41,11 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         } else {
             $scope.correlationObject = studyOrCorrelation;
         }
-        studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        if(studyOrCorrelation.charts){
+            studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        } else {
+            qmLog.info("No charts on: " + JSON.stringify(studyOrCorrelation));
+        }
         $scope.state.study = studyOrCorrelation;
     }
     function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
