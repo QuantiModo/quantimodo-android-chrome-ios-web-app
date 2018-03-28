@@ -7791,7 +7791,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     function logOutOfWebsite() {
-        var afterLogoutGoToUrl = qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+        //var afterLogoutGoToUrl = qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+        var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
         if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
         if(window.location.href.indexOf('.quantimo.do/') === -1){
             afterLogoutGoToUrl = window.location.href;
