@@ -5,3 +5,5 @@ www/default.private_config.json
 manifest.json
 www/manifest.json
 default.config.json
+www/img/icons/*
+**/www/img/icons/*
