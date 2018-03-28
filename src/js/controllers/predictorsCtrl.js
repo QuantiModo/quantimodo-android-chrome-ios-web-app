@@ -135,6 +135,8 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             .then(function (data) {
                 if(data){$scope.state.correlationsExplanation = data.explanation;}
                 if(data.correlations.length) {
+                    qmLogService.info('Got ' + data.correlations.length + ' correlations with params ' + JSON.stringify(params));
+                    qmLogService.info('First correlation is ' + JSON.stringify(data.correlations[0]));
                     if($scope.state.requestParams.offset){
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
                     } else {
@@ -143,6 +145,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                     $scope.state.requestParams.offset = $scope.state.correlationObjects.length;
                     showLoadMoreButtonIfNecessary();
                 } else {
+                    qmLogService.info('Did not get any correlations with params ' + JSON.stringify(params));
                     $scope.state.noCorrelations = true;
                 }
                 hideLoader();
