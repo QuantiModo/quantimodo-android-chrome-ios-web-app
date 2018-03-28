@@ -11,7 +11,7 @@ angular.module('starter') // Controls the settings page
 				for (var i = 0; i < results.length; i++) {
 					var place = results[i];
 					//createMarker(results[i]);
-					window.qmLog.debug(null, 'Place is ', null, place);
+					window.qmLog.debug('Place is ', null, place);
 				}
 			}
 		}

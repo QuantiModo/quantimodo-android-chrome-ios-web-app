@@ -148,7 +148,7 @@ window.qm.chrome = {
         /** @namespace chrome.extension.onMessage */
         chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             // Handles extension-specific requests that come in, such as a request to upload a new measurement
-            window.qmLog.debug(null, 'Received request: ' + request.message, null);
+            window.qmLog.debug('Received request: ' + request.message, null);
             if(request.message === "uploadMeasurements") {qm.api.postMeasurements(request.payload, null);}
         });
         chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed

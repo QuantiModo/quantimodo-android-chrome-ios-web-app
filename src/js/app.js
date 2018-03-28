@@ -83,11 +83,11 @@ angular.module('starter',
         }
         if(qm.storage.getItem(qm.items.user)){
             qmService.unHideNavigationMenu();
-            window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...');
+            window.qmLog.debug('registerBackButtonAction: Going to default state...');
             qmService.goToDefaultState();
             return;
         }
-        window.qmLog.debug(null, 'registerBackButtonAction: Closing the app');
+        window.qmLog.debug('registerBackButtonAction: Closing the app');
         ionic.Platform.exitApp();
     }, 100);
 
