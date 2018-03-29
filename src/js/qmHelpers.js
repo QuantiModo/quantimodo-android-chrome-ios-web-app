@@ -1113,16 +1113,16 @@ window.qm = {
                 qm.notifications.setLastPopupTime();
                 return true;
             }
-            if(qm.notifications.getSecondsSinceLastPopup() > qm.notifications.getMostFrequentReminderIntervalInSeconds()){
-                qm.notifications.setLastPopupTime();
-                return true;
+            var minimumTimeBetweenInMinutes = 30;
+            if(qm.notifications.getMostFrequentReminderIntervalInSeconds() < 30 * 60){
+                minimumTimeBetweenInMinutes = qm.notifications.getMostFrequentReminderIntervalInSeconds()/60;
             }
-            if(qm.notifications.getSecondsSinceLastPopup() > 30 * 60){
+            if(qm.notifications.getSecondsSinceLastPopup() > minimumTimeBetweenInMinutes * 60){
                 qm.notifications.setLastPopupTime();
                 return true;
             }
             qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + qm.notifications.getTimeSinceLastPopupString() +
-                ' and getMostFrequentReminderIntervalInMinutes is ' + qm.notifications.getMostFrequentReminderIntervalInMinutes() + ". path: " + path);
+                ' and most Frequent Interval In Minutes is ' + minimumTimeBetweenInMinutes + ". path: " + path);
             return false;
         },
         getMostFrequentReminderIntervalInMinutes: function(trackingReminders){

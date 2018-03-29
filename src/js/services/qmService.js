@@ -184,8 +184,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if (error) {
                     qmLog.error("CHCP UPDATE ERROR: "+ JSON.stringify(error));
                 } else {
-                    qmService.deploy.installUpdate();
-                    // qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
+                    qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
+                    //qmService.deploy.installUpdate();
                     // var title = 'Update available';
                     // var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
                     // var noText = 'Not now';
@@ -196,6 +196,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             setVersionInfo: function () {
                 chcp.getVersionInfo(function(error, data){
+                    if (error) {
+                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
+                    } else {
+                        qmLog.info('CHCP VERSION: ' + JSON.stringify(data));
+                    }
                     qmService.deploy.versionInfo = {
                         data: data,
                         error: error
@@ -6946,7 +6951,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
             appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         }
-        qmService.deploy.fetchUpdate();
+        //qmService.deploy.fetchUpdate();
     };
     qmService.unHideNavigationMenu = function(){
         var hideMenu = qm.urlHelper.getParam('hideMenu');
