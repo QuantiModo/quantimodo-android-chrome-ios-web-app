@@ -98,9 +98,12 @@ angular.module('starter',
     }
 }])
 .config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
-    "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider",
+    "$ionicConfigProvider", "AnalyticsProvider",
+    //"$opbeatProvider",
     function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
-                 $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
+                 $ionicConfigProvider, AnalyticsProvider
+             //, $opbeatProvider
+    ) {
     //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
     window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
