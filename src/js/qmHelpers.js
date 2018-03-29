@@ -1172,6 +1172,7 @@ window.qm = {
                 qm.notifications.refreshNotifications(callback);
             } else {
                 window.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
+                callback(qm.notifications.getFromGlobalsOrLocalStorage());
             }
         },
         getAllUniqueRatingNotifications: function() {
