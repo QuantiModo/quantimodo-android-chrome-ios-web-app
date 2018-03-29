@@ -85,10 +85,10 @@
         <div class="list card" ng-click="sendBugReport()">
             <a class="item"> <i class="icon ion-bug"></i> &nbsp; Submit Bug Report </a>
         </div>
-        <div ng-if="isAndroid" class="card" >
+        <div ng-if="platform.isAndroid" class="card" >
             <div class="item item-divider"> <i class="icon ion-erlenmeyer-flask"></i> &nbsp Beta Program </div>
             <ion-toggle ng-model="user.getPreviewBuilds" ng-change="getPreviewBuildsChange()"> Request to Join </ion-toggle>
-<!--            <a ng-if="isAndroid" class="item" ng-click="updateApp()">
+<!--            <a ng-if="platform.isAndroid" class="item" ng-click="updateApp()">
                 <i class="icon ion-android-download"></i> &nbsp; Update App
             </a>-->
         </div>
@@ -98,7 +98,7 @@
         <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
             <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
         </div>
-        <div id="beta-download" ng-if="isAndroid" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease, 'yes', '_system')">
+        <div id="beta-download" ng-if="platform.isAndroid" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease, 'yes', '_system')">
             <a class="item"><i class="icon ion-social-android"></i>&nbsp;Download Beta Version</a>
         </div>
         <div ng-if="platform.isChromeExtension" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
