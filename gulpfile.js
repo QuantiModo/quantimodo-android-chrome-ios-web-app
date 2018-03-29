@@ -848,9 +848,6 @@ function writeToFile(filePath, stringContents) {
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
-gulp.task('deleteWwwManifestJson', function () {return clean(['www/manifest.json']);});
-gulp.task('deleteDevCredentialsFromWww', function () {return clean([paths.www.devCredentials]);});
-gulp.task('deleteDefaultConfigFromWww', function () {return clean([paths.www.devCredentials]);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
@@ -2119,12 +2116,11 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
         qmLog.info('Building Android because BUDDYBUILD_SCHEME is not set and we know we\'re on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: ' + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
             'prepareRepositoryForAndroid',
-            //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
+            //'_build-qm-android',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
         runSequence(
             'configureApp',
-            //'deleteDefaultConfigFromWww',
             'deleteWwwPrivateConfig',
             callback);
     }
@@ -2154,7 +2150,7 @@ gulp.task('configureApp', [], function (callback) {
         'verifyExistenceOfBuildInfo',
         callback);
 });
-gulp.task('chromeInSrcFolder', ['getAppConfigs'], function (callback) {
+gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -2236,7 +2232,7 @@ gulp.task('buildMediModo', function (callback) {
         'prepareIosApp',
         callback);
 });
-gulp.task('buildQuantiModoAndroid', function (callback) {
+gulp.task('_build-qm-android', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
         'buildAndroidApp',
@@ -2248,7 +2244,7 @@ gulp.task('buildMediModoAndroid', function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('buildAllChromeExtensions', function (callback) {
+gulp.task('_build-all-chrome', function (callback) {
     runSequence(
         'setMediModoEnvs',
         'buildChromeExtension',
@@ -2361,7 +2357,7 @@ gulp.task('copySrcAndEmulateAndroid', function (callback) {
         'ionicEmulateAndroid',
         callback);
 });
-gulp.task('copySrcAndRunAndroid', function (callback) {
+gulp.task('_copy-src-and-run-android', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'copySrcToWww',
@@ -2419,7 +2415,7 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
+gulp.task('cordova-hcp-config', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var string =
         '{"name": "QuantiModo", '+
@@ -2432,14 +2428,14 @@ gulp.task('cordovaHotCodePushConfig', ['getAppConfigs'], function () {
         '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push"}';
     return writeToFile('cordova-hcp.json', string);
 });
-gulp.task('cordovaHotCodePushLogin', [], function () {
+gulp.task('cordova-hcp-login', [], function () {
     if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
     /** @namespace process.env.AWS_ACCESS_KEY_ID */
     /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
     var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
     return writeToFile('.chcplogin', string);
 });
-gulp.task('cordovaHotCodePushBuildDeploy', [], function (callback) {
+gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
@@ -2496,21 +2492,29 @@ gulp.task('watch-src', function () {
         .pipe(watch(source, {base: source}))
         .pipe(gulp.dest(destination));
 });
-gulp.task('deleteAppSpecificFilesFromWww', [], function (callback) {
-    runSequence(
-        'deleteDevCredentialsFromWww',
-        'deleteWwwPrivateConfig',
-        'deleteDefaultConfigFromWww',
-        'deleteWwwIcons',
-        'deleteWwwManifestJson',
-        callback);
+gulp.task('deleteAppSpecificFilesFromWww', [], function () {
+    return gulp.src([
+        paths.www.defaultConfig,
+        paths.www.defaultPrivateConfig,
+        paths.www.devCredentials,
+        'www/configs/*',
+        'www/private_configs/*',
+        'www/img/icons/*',
+        'www/manifest.json'], {read: false})
+        .pipe(clean());
 });
-gulp.task('deployToProduction', [], function (callback) {
+gulp.task('cordova-hcp-build', [], function (callback) {
+    return executeCommand("cordova-hcp build", callback);
+});
+gulp.task('_cordova-hcp-deploy', [], function (callback) {
+    qmLog.info("Manually run `cordova-hcp deploy` after this");
     runSequence(
+        'cleanWwwFolder',
         'copySrcToWww',
+        'cordova-hcp-config',
+        'cordova-hcp-login',
         'deleteAppSpecificFilesFromWww',
-        'cordovaHotCodePushConfig',
-        'cordovaHotCodePushLogin',
-        //'cordovaHotCodePushBuildDeploy',
+        'cordova-hcp-build',
+        //'cordova-hcp-deploy',
         callback);
 });

@@ -60,7 +60,7 @@ before_install:
 script:
 - yarn install
 - gulp buildAllAndroidAppsWithCleaning
-- gulp buildAllChromeExtensions
+- gulp _build-all-chrome
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
 #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis/build-android.sh && ./travis/package-android.sh ; fi
 env:

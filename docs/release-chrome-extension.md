@@ -11,7 +11,7 @@
 - Create folder in the root of the repository called `build` (if it doesn't already exist)
 - Run `npm install` in root of repo
 - Set ENCRYPTION_SECRET environmental variable (see [Environmental Variables](environmental-variables.md))
-- Run `gulp buildAllChromeExtensions` in the root of the repository
+- Run `gulp _build-all-chrome` in the root of the repository
 
 #### Test Them
 - Install the [Chrome Apps & Extensions Developer Tool](https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc)
