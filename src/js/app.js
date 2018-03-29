@@ -27,7 +27,7 @@ angular.module('starter',
         'angular-cache',
         'angular-d3-word-cloud',
         'ngFileUpload',
-        'ngOpbeat',
+        //'ngOpbeat',
         'angular-web-notification'
         //'ui-iconpicker'
     ]
@@ -101,7 +101,7 @@ angular.module('starter',
     "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider",
     function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
                  $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
-    $opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
+    //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
     window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(qm.urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));}
