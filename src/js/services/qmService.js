@@ -2185,16 +2185,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         var currentTimestamp = window.qm.timeHelper.getUnixTimestampInSeconds();
-        var lastLocationPostUnixtime = parseInt(qm.storage.getItem(qm.items.lastLocationPostUnixtime));
-        var secondsSinceLastPostedLocation = currentTimestamp - lastLocationPostUnixtime;
-        if(lastLocationPostUnixtime && secondsSinceLastPostedLocation < 300){
+        var lastLocationPostUnixTime = parseInt(qm.storage.getItem(qm.items.lastLocationPostUnixTime));
+        var secondsSinceLastPostedLocation = currentTimestamp - lastLocationPostUnixTime;
+        if(lastLocationPostUnixTime && secondsSinceLastPostedLocation < 300){
             message = 'Already posted location ' + secondsSinceLastPostedLocation + " seconds ago";
             qmLogService.debug(message);
             deferred.reject(message);
             return deferred.promise;
         }
         $ionicPlatform.ready(function() {
-            qm.storage.setItem(qm.items.lastLocationPostUnixtime, currentTimestamp);
+            qm.storage.setItem(qm.items.lastLocationPostUnixTime, currentTimestamp);
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
                 qmService.forecastIoWeather(position.coords);
@@ -5469,11 +5469,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }]
         };
     }
-    function getLastPostedWeatherAtTimeUnixtime() {
+    function getLastPostedWeatherAtTimeUnixTime() {
         return Number(qm.storage.getItem('lastPostedWeatherAt'));
     }
     function alreadyPostedWeatherSinceNoonYesterday(){
-        var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixtime();
+        var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixTime();
         if(!lastPostedWeatherAt){return false;}
         if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
             qmLogService.debug('recently posted weather already', null);
