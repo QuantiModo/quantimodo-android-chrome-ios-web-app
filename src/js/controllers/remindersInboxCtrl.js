@@ -40,7 +40,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if ($stateParams.hideNavigationMenu !== true){
             qmService.unHideNavigationMenu();
         }
-		setPageTitle();
+		// setPageTitle(); // Setting title beforeEnter doesn't fix cutoff on Android
 	});
 	$scope.$on('$ionicView.enter', function(e) {
         qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
@@ -97,6 +97,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
+        setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
             $scope.refreshTrackingReminderNotifications();
         }
@@ -108,6 +109,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		$rootScope.hideBackButton = false;
 	});
 	var setPageTitle = function(){
+	    if(!qmService.previouslyLoaded){
+            qmService.previouslyLoaded = true;
+            qmLog.info("Not setting title because it gets cut off initially");
+            return;
+        }
 		if($stateParams.today) {
 			if(getVariableCategoryName() === 'Treatments') {
 				$scope.state.title = "Today's Scheduled Meds";

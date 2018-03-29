@@ -1382,7 +1382,7 @@ gulp.task('ng-annotate', [], function() {
         .pipe(gulp.dest('www/js'));
 });
 function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
-    qmLog.info("Running minify-js-generate-css-and-index-html...");
+    qmLog.info("Running minify-js-generate-css-and-index-html for "+sourceIndexFileName);
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/'+sourceIndexFileName], { restore: true });
@@ -1411,6 +1411,12 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('index.html');
+});
+gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
+    if(doNotMinify){
+        return copyFiles('src/**/*', 'www', []);
+    }
+    return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
 var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
@@ -1981,9 +1987,9 @@ gulp.task('copyIonIconsToWww', [], function () {
 gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
-gulp.task('copySrcToWwwExceptLibrariesAndConfigs', [], function () {
+gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
-        '!src/default.private_config.json', '!src/**', '!src/index.html', '!src/configuration-index.html']);
+        '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon']);
 });
 gulp.task('copySrcToWww', [], function () {
     return copyFiles('src/**/*', 'www', []);
@@ -2019,7 +2025,12 @@ gulp.task('copyIconsToChromeImg', [], function () {
 });
 gulp.task('copyServiceWorkerAndLibraries', [], function () {
     try {
-        copyFiles(paths.src.firebase, paths.www.firebase);
+        copyFiles('src/lib/firebase/firebase-messaging.js', 'www/lib/firebase');
+    } catch (error) {
+        qmLog.error(error);
+    }
+    try {
+        copyFiles('src/lib/firebase/firebase-app.js', 'www/lib/firebase');
     } catch (error) {
         qmLog.error(error);
     }
@@ -2132,13 +2143,14 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
-        'copySrcToWwwExceptLibrariesAndConfigs',
+        'copySrcToWwwExceptJsLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
         'getUnits',  // This is being weird for some reason
         'getAppConfigs',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
+        'minify-js-generate-css-and-android-popup-html',
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
@@ -2512,8 +2524,8 @@ gulp.task('cordova-hcp-deploy', [], function (callback) {
 gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
     qmLog.info("Manually run `cordova-hcp deploy` after this");
     runSequence(
-        //'cleanWwwFolder',
-        //'copySrcToWww',
+        'cleanWwwFolder',
+        'configureApp',
         'cordova-hcp-config',
         'cordova-hcp-login',
         'deleteAppSpecificFilesFromWww',
