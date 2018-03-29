@@ -28,7 +28,7 @@
             <div ng-bind-html="planFeaturesCard.priceHtml"></div><br><br>
             <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
             <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br><br>
-            <div ng-if="isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
+            <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
         </div>
         <div class="card" style="text-align: center" ng-if="platform.isIOS">
             <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
