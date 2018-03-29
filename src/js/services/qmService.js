@@ -184,13 +184,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if (error) {
                     qmLog.error("CHCP UPDATE ERROR: "+ JSON.stringify(error));
                 } else {
-                    qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
-                    var title = 'Update available';
-                    var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
-                    var noText = 'Not now';
-                    function yesCallback() {qmService.deploy.installUpdate();}
-                    function noCallback() {}
-                    qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
+                    qmService.deploy.installUpdate();
+                    // qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
+                    // var title = 'Update available';
+                    // var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
+                    // var noText = 'Not now';
+                    // function yesCallback() {qmService.deploy.installUpdate();}
+                    // function noCallback() {}
+                    // qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
                 }
             },
             setVersionInfo: function () {
