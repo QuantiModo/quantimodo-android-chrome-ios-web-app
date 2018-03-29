@@ -860,13 +860,13 @@ window.qm = {
         lastLocationAddress: 'lastLocationAddress',
         lastLocationName: 'lastLocationName',
         lastLocationNameAndAddress: 'lastLocationNameAndAddress',
-        lastLocationPostUnixtime: 'lastLocationPostUnixtime',
+        lastLocationPostUnixTime: 'lastLocationPostUnixTime',
         lastLocationResultType: 'lastLocationResultType',
         lastLocationUpdateTimeEpochSeconds: 'lastLocationUpdateTimeEpochSeconds',
         lastLongitude: 'lastLongitude',
         lastReminder: 'lastReminder',
         lastStudy: 'lastStudy',
-        lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
+        lastPopupNotificationUnixTimeSeconds: 'lastPopupNotificationUnixTimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
         measurementsQueue: 'measurementsQueue',
         notificationInterval: 'notificationInterval',
@@ -1084,17 +1084,17 @@ window.qm = {
         setLastPopupTime: function(time){
             if(typeof time === "undefined"){time = qm.timeHelper.getUnixTimestampInSeconds();}
             qmLog.pushDebug(arguments.callee.caller.name + " setLastPopupTime to "+ time);
-            qm.storage.setItem(qm.items.lastPopupNotificationUnixtimeSeconds, time);
+            qm.storage.setItem(qm.items.lastPopupNotificationUnixTimeSeconds, time);
             return true;
         },
         getTimeSinceLastPopupString: function(){
-            return qm.timeHelper.getTimeSinceString(qm.notifications.getLastPopupUnixtime());
+            return qm.timeHelper.getTimeSinceString(qm.notifications.getLastPopupUnixTime());
         },
-        getLastPopupUnixtime: function(){
-            return qm.storage.getItem(qm.items.lastPopupNotificationUnixtimeSeconds);
+        getLastPopupUnixTime: function(){
+            return qm.storage.getItem(qm.items.lastPopupNotificationUnixTimeSeconds);
         },
         lastPopupWasBeforeLastReminderTime: function () {
-            var lastTime =  qm.notifications.getLastPopupUnixtime();
+            var lastTime =  qm.notifications.getLastPopupUnixTime();
             qmLog.info("Last popup at " + qm.timeHelper.getTimeSinceString(lastTime));
             if(lastTime < qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getMostFrequentReminderIntervalInSeconds()){
                 qmLog.error("No popups shown since before last reminder time!  Re-initializing popups...");
@@ -1103,13 +1103,13 @@ window.qm = {
             return false;
         },
         getSecondsSinceLastPopup: function(){
-            return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixtime();
+            return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixTime();
         },
         getMostFrequentReminderIntervalInSeconds: function(){
             return qm.notifications.getMostFrequentReminderIntervalInMinutes() * 60;
         },
         canWeShowPopupYet: function(path) {
-            if(!qm.notifications.getLastPopupUnixtime()){
+            if(!qm.notifications.getLastPopupUnixTime()){
                 qm.notifications.setLastPopupTime();
                 return true;
             }
@@ -1534,7 +1534,7 @@ window.qm = {
             var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
             if(!userVariables || !userVariables.length){return null;}
             var userVariable = userVariables[0];
-            userVariable.lastAccessedUnixtime = qm.timeHelper.getUnixTimestampInSeconds();
+            userVariable.lastAccessedUnixTime = qm.timeHelper.getUnixTimestampInSeconds();
             if(updateLatestMeasurementTime){userVariable.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();}
             if(lastValue){
                 userVariable.lastValue = lastValue;
