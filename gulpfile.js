@@ -2506,11 +2506,14 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('cordova-hcp-build', [], function (callback) {
     return executeCommand("cordova-hcp build", callback);
 });
-gulp.task('_cordova-hcp-deploy', [], function (callback) {
+gulp.task('cordova-hcp-deploy', [], function (callback) {
+    return executeCommand("cordova-hcp deploy", callback);  // Causes stdout maxBuffer exceeded error
+});
+gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
     qmLog.info("Manually run `cordova-hcp deploy` after this");
     runSequence(
-        'cleanWwwFolder',
-        'copySrcToWww',
+        //'cleanWwwFolder',
+        //'copySrcToWww',
         'cordova-hcp-config',
         'cordova-hcp-login',
         'deleteAppSpecificFilesFromWww',
