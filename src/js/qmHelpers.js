@@ -1403,10 +1403,23 @@ window.qm = {
             return true;
         },
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
-        isAndroid: function (){return window.location.href.indexOf("android_asset") > -1;},
-        isIOS: function (){return window.location.href.indexOf("var/containers/Bundle") > -1;},
+        isAndroid: function (){
+            if(typeof ionic !== "undefined"){
+                return ionic.Platform.isAndroid() && !qm.platform.isWeb();
+            }
+            return false;
+        },
+        isIOS: function (){
+            if(typeof ionic !== "undefined"){
+                return ionic.Platform.isIOS() && !qm.platform.isWeb();
+            }
+            return false;
+        },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
         getCurrentPlatform: function(){
+            if(typeof ionic !== "undefined"){
+                return ionic.Platform.platform();
+            }
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
             if(qm.platform.isAndroid()){return qm.platform.types.android;}
             if(qm.platform.isIOS()){return qm.platform.types.ios;}
