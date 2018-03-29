@@ -182,7 +182,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             updateCallback: function(error, data) {
                 if (error) {
-                    qmLog.error("CHCP UPDATE ERROR: "+ error);
+                    qmLog.error("CHCP UPDATE ERROR: "+ JSON.stringify(error));
                 } else {
                     qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
                     var title = 'Update available';
@@ -1935,18 +1935,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.setPlatformVariables = function () {
         var platform = {};
         //qmLogService.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
-        platform.isWeb = window.location.href.indexOf('https://') !== -1;
+        platform.isWeb = qm.platform.isWeb();
         platform.isWebView = ionic.Platform.isWebView();
         platform.isIPad = ionic.Platform.isIPad() && !platform.isWeb;
-        platform.isIOS = ionic.Platform.isIOS() && !platform.isWeb;
-        platform.isAndroid = ionic.Platform.isAndroid() && !platform.isWeb;
+        platform.isIOS = qm.platform.isIOS();
+        platform.isAndroid = qm.platform.isAndroid();
         platform.isWindowsPhone = ionic.Platform.isWindowsPhone() && !platform.isWeb;
         platform.isChrome = window.chrome ? true : false;
-        platform.currentPlatform = ionic.Platform.platform();
+        platform.currentPlatform = qm.platform.getCurrentPlatform();
         platform.currentPlatformVersion = ionic.Platform.version();
-        platform.isMobile = (platform.isAndroid || platform.isIOS) && !platform.isWeb;
+        platform.isMobile = qm.platform.isMobile();
         platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
-        platform.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
+        platform.isChromeExtension = qm.platform.isChromeExtension();
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
