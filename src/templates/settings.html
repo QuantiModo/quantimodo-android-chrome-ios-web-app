@@ -85,7 +85,7 @@
         <div class="list card" ng-click="sendBugReport()">
             <a class="item"> <i class="icon ion-bug"></i> &nbsp; Submit Bug Report </a>
         </div>
-        <div ng-if="false" class="card" >
+        <div ng-if="isAndroid" class="card" >
             <div class="item item-divider"> <i class="icon ion-erlenmeyer-flask"></i> &nbsp Beta Program </div>
             <ion-toggle ng-model="user.getPreviewBuilds" ng-change="getPreviewBuildsChange()"> Request to Join </ion-toggle>
 <!--            <a ng-if="isAndroid" class="item" ng-click="updateApp()">

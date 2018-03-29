@@ -154,6 +154,7 @@ window.qm.chrome = {
         });
         chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
             qm.chrome.scheduleGenericChromeExtensionNotification();
+            if(!localStorage.getItem(qm.items.introSeen)){qm.chrome.openIntroWindowPopup();}
         });
         chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
             qmLog.info('onAlarm Listener heard this alarm ', null, alarm);
@@ -161,15 +162,15 @@ window.qm.chrome = {
                 qm.notifications.refreshIfEmptyOrStale(qm.chrome.showRatingOrInboxPopup());
             });
         });
-        if (!qm.storage.getItem(qm.items.introSeen)) {
-            qmLog.info('introSeen false on chrome extension so opening intro window popup');
-            qm.storage.setItem('introSeen', true);
-            qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.introWindowParams);
-        } else {
-            qm.userHelper.getUserFromLocalStorageOrApi(function () {
-                qm.chrome.showRatingOrInboxPopup();
-            });
-        }
+        qm.userHelper.getUserFromLocalStorageOrApi(function () {
+            qm.chrome.showRatingOrInboxPopup();
+        }, function () {
+            qm.chrome.showSignInNotification();
+        });
+    },
+    openIntroWindowPopup: function(){
+        qm.storage.setItem('introSeen', true);
+        qm.chrome.createPopup(qm.chrome.windowParams.introWindowParams);
     },
     openOrFocusChromePopupWindow: function (windowParams) {
         //qm.chrome.chromeDebug();

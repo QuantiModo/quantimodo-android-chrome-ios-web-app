@@ -90,6 +90,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 		qmService.updateUserSettingsDeferred(params);
 		//qmService.autoUpdateApp();
+        qmService.deploy.fetchUpdate();
 	};
 	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
@@ -173,7 +174,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		};
 		ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 	};
-
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
 
