@@ -1950,6 +1950,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
+        qmLog.info("Platform: " + JSON.stringify(platform));
     };
     qmService.getPermissionString = function(){
         var str = "";
