@@ -29,6 +29,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        qmService.navBar.hideNavigationMenu();
         $scope.closeMenu(); // Need to close menu in intro beforeEnter or it will show part of the second slide immediately
         //qmLogService.debug("Entering state " + $state.current.name);
         if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
