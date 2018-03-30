@@ -82,7 +82,7 @@ angular.module('starter',
             return;
         }
         if(qm.storage.getItem(qm.items.user)){
-            qmService.unHideNavigationMenu();
+            qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             window.qmLog.debug('registerBackButtonAction: Going to default state...');
             qmService.goToDefaultState();
             return;

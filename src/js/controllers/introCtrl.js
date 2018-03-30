@@ -40,13 +40,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
             $scope.myIntro.ready = true;
-            qmService.rootScope.setProperty('hideNavigationMenu', true);
+            qmService.navBar.hideNavigationMenu();
         }
         qmService.storage.setItem('introSeen', true);
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
-        qmService.rootScope.setProperty('hideNavigationMenu', true);
+        qmService.navBar.hideNavigationMenu();
         if(navigator && navigator.splashscreen) {
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
