@@ -10,7 +10,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
     var qmService = {
-        storage: {},
         auth: {
             deleteAllAccessTokens: function () {
                 $rootScope.accessToken = null;
@@ -22,6 +21,102 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.rootScope.setUser(null);
                     qmService.auth.deleteAllAccessTokens();
                 }
+            }
+        },
+        deploy: {
+            fetchUpdate: function() {
+                if(typeof chcp === "undefined"){
+                    qmLog.info("chcp not defined");
+                    return false;
+                }
+                qmService.deploy.setVersionInfo();
+                var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
+                qmLog.info("Checking for CHCP updates at " + options['config-file']);
+                // noinspection Annotator
+                chcp.fetchUpdate(qmService.deploy.updateCallback, options);
+            },
+            installUpdate: function(){
+                qmLog.info('CHCP installUpdate...');
+                // noinspection Annotator
+                chcp.installUpdate(function(error) {
+                    qmService.deploy.setVersionInfo();
+                    if (error) {
+                        qmService.deploy.versionInfo.error = error;
+                        qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
+                        qmService.showMaterialAlert('Update error ' + error.code)
+                    } else {
+                        // Automatically restarts
+                        //navigator.app.loadUrl("file:///android_asset/www/index.html");
+                        qmLog.info('CHCP Update installed...');
+                    }
+                });
+            },
+            updateCallback: function(error, data) {
+                if (error) {
+                    qmLog.error("CHCP UPDATE ERROR: "+ JSON.stringify(error));
+                } else {
+                    qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
+                    //qmService.deploy.installUpdate();
+                    // var title = 'Update available';
+                    // var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
+                    // var noText = 'Not now';
+                    // function yesCallback() {qmService.deploy.installUpdate();}
+                    // function noCallback() {}
+                    // qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
+                }
+            },
+            setVersionInfo: function () {
+                chcp.getVersionInfo(function(error, data){
+                    if (error) {
+                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
+                    } else {
+                        qmLog.info('CHCP VERSION: ' + JSON.stringify(data));
+                    }
+                    qmService.deploy.versionInfo = {
+                        data: data,
+                        error: error
+                    }
+                });
+            },
+            versionInfo: null
+        },
+        ionIcons: {
+            history: 'ion-ios-list-outline',
+            reminder: 'ion-android-notifications-none',
+            recordMeasurement: 'ion-compose',
+            charts: 'ion-arrow-graph-up-right',
+            settings: 'ion-settings',
+            help: 'ion-help',
+            refresh: 'ion-android-refresh',
+            predictors: 'ion-log-in',
+            outcomes: 'ion-log-out',
+            study: 'ion-ios-book',
+            discoveries: 'ion-ios-analytics'
+        },
+        navBar: {
+            setFilterBarSearchIcon: function(value){
+                qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
+            },
+            setOfflineConnectionErrorShowing: function(value){
+                qmService.rootScope.setProperty('offlineConnectionErrorShowing', value)
+            },
+            showNavigationMenuIfHideUrlParamNotSet: function(){
+                var hideMenu = qm.urlHelper.getParam('hideMenu');
+                if(!hideMenu){
+                    qmService.navBar.showNavigationMenu();
+                }
+            },
+            hideNavigationMenuIfHideUrlParamSet: function(){
+                var hideMenu = qm.urlHelper.getParam('hideMenu');
+                if(hideMenu){
+                    qmService.navBar.hideNavigationMenu();
+                }
+            },
+            hideNavigationMenu: function(){
+                qmService.rootScope.setProperty('hideNavigationMenu', true);
+            },
+            showNavigationMenu: function(){
+                qmService.rootScope.setProperty('hideNavigationMenu', false);
             }
         },
         notifications: {
@@ -152,71 +247,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
             }
         },
-        deploy: {
-            fetchUpdate: function() {
-                if(typeof chcp === "undefined"){
-                    qmLog.info("chcp not defined");
-                    return false;
-                }
-                qmService.deploy.setVersionInfo();
-                var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
-                qmLog.info("Checking for CHCP updates at " + options['config-file']);
-                // noinspection Annotator
-                chcp.fetchUpdate(qmService.deploy.updateCallback, options);
-            },
-            installUpdate: function(){
-                qmLog.info('CHCP installUpdate...');
-                // noinspection Annotator
-                chcp.installUpdate(function(error) {
-                    qmService.deploy.setVersionInfo();
-                    if (error) {
-                        qmService.deploy.versionInfo.error = error;
-                        qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
-                        qmService.showMaterialAlert('Update error ' + error.code)
-                    } else {
-                        // Automatically restarts
-                        //navigator.app.loadUrl("file:///android_asset/www/index.html");
-                        qmLog.info('CHCP Update installed...');
-                    }
-                });
-            },
-            updateCallback: function(error, data) {
-                if (error) {
-                    qmLog.error("CHCP UPDATE ERROR: "+ JSON.stringify(error));
-                } else {
-                    qmLog.info('CHCP update is loaded: ' + JSON.stringify(data));
-                    //qmService.deploy.installUpdate();
-                    // var title = 'Update available';
-                    // var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
-                    // var noText = 'Not now';
-                    // function yesCallback() {qmService.deploy.installUpdate();}
-                    // function noCallback() {}
-                    // qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
-                }
-            },
-            setVersionInfo: function () {
-                chcp.getVersionInfo(function(error, data){
-                    if (error) {
-                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
-                    } else {
-                        qmLog.info('CHCP VERSION: ' + JSON.stringify(data));
-                    }
-                    qmService.deploy.versionInfo = {
-                        data: data,
-                        error: error
-                    }
-                });
-            },
-            versionInfo: null
-        },
-        navBar: {
-            setFilterBarSearchIcon: function(value){
-                qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
-            },
-            setOfflineConnectionErrorShowing: function(value){
-                qmService.rootScope.setProperty('offlineConnectionErrorShowing', value)
-            },
-        },
         rootScope: {
             setProperty: function(property, value, callback){  // Avoid Error: [$rootScope:inprog] $apply already in progress
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
@@ -231,20 +261,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setShowActionSheetMenu: function(actionSheetFunction){
                 qmService.rootScope.setProperty('showActionSheetMenu', actionSheetFunction);
             }
-        }
-    };
-    qmService.ionIcons = {
-        history: 'ion-ios-list-outline',
-        reminder: 'ion-android-notifications-none',
-        recordMeasurement: 'ion-compose',
-        charts: 'ion-arrow-graph-up-right',
-        settings: 'ion-settings',
-        help: 'ion-help',
-        refresh: 'ion-android-refresh',
-        predictors: 'ion-log-in',
-        outcomes: 'ion-log-out',
-        study: 'ion-ios-book',
-        discoveries: 'ion-ios-analytics'
+        },
+        storage: {},
     };
     qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
@@ -6942,7 +6960,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
-        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { qmService.rootScope.setProperty('hideNavigationMenu', true); }
+        qmService.navBar.hideNavigationMenuIfHideUrlParamSet();
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
@@ -6952,12 +6970,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         }
         //qmService.deploy.fetchUpdate();
-    };
-    qmService.unHideNavigationMenu = function(){
-        var hideMenu = qm.urlHelper.getParam('hideMenu');
-        if(!hideMenu){
-            qmService.rootScope.setProperty('hideNavigationMenu', false);
-        }
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){

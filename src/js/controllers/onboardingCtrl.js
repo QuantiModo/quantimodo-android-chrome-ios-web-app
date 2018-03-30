@@ -7,11 +7,11 @@ angular.module('starter').controller('OnboardingCtrl',
     if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
-        qmService.rootScope.setProperty('hideNavigationMenu', true);
+        qmService.navBar.hideNavigationMenu();
         if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         qmService.setupOnboardingPages();
         qmService.hideLoader();
-        qmService.rootScope.setProperty('hideNavigationMenu', true);
+        qmService.navBar.hideNavigationMenu();
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){

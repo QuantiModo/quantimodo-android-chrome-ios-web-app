@@ -94,7 +94,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.$on('$ionicView.enter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
         qmLogService.debug($state.current.name + ' enter...', null);
-        qmService.rootScope.setProperty('hideNavigationMenu', true);
+        qmService.navBar.hideNavigationMenu();
     });
     $scope.$on('$ionicView.afterEnter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
