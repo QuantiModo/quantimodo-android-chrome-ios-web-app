@@ -29,8 +29,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmService.navBar.hideNavigationMenu();
-        $scope.closeMenu(); // Need to close menu in intro beforeEnter or it will show part of the second slide immediately
+        $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
         //qmLogService.debug("Entering state " + $state.current.name);
         if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
@@ -41,7 +40,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
             $scope.myIntro.ready = true;
-            qmService.navBar.hideNavigationMenu();
         }
         qmService.storage.setItem('introSeen', true);
     });
