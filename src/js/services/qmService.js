@@ -1406,7 +1406,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         Analytics.set('&ds', qm.platform.getCurrentPlatform());
         Analytics.set('&cn', qm.getAppSettings().appDisplayName);
         Analytics.set('&cs', qm.getAppSettings().appDisplayName);
-        Analytics.set('&cm', $rootScope.platform.currentPlatform);
+        Analytics.set('&cm', qm.platform.getCurrentPlatform());
         Analytics.set('&an', qm.getAppSettings().appDisplayName);
         if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.appIds && qm.getAppSettings().additionalSettings.appIds.googleReversedClientId){
             Analytics.set('&aid', qm.getAppSettings().additionalSettings.appIds.googleReversedClientId);
