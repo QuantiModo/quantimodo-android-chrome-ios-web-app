@@ -102,7 +102,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showNavigationMenuIfHideUrlParamNotSet: function(){
                 var hideMenu = qm.urlHelper.getParam('hideMenu');
-                if(!hideMenu){
+                if(!hideMenu && $rootScope.hideNavigationMenu){
                     qmService.navBar.showNavigationMenu();
                 }
             },
@@ -112,10 +112,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.navBar.hideNavigationMenu();
                 }
             },
-            hideNavigationMenu: function(){
+            hideNavigationMenu: function () {
+                qmLog.info("Hiding navigation menu");
                 qmService.rootScope.setProperty('hideNavigationMenu', true);
             },
-            showNavigationMenu: function(){
+            showNavigationMenu: function () {
+                qmLog.info("Showing navigation menu");
                 qmService.rootScope.setProperty('hideNavigationMenu', false);
             }
         },
@@ -251,6 +253,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setProperty: function(property, value, callback){  // Avoid Error: [$rootScope:inprog] $apply already in progress
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return;}
                 $timeout(function() {
+                    var string = value;
+                    if(typeof string !== "string"){
+                        string = JSON.stringify(string);
+                    }
+                    qmLog.info("Setting $rootScope." + property + " to " + string);
                     $rootScope[property] = value;
                     if(callback){callback();}
                 }, 0);
