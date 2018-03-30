@@ -18,7 +18,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.enter", function() {
         qmLogService.debug('enter state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.correlationObject){
             setAllStatePropertiesAndSaveToLocalStorage($stateParams.correlationObject);
         }

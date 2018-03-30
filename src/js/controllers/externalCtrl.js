@@ -7,7 +7,7 @@ angular.module('starter')  // Handles all views that have an iFrame
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'beforeEnter state ' + $state.current.name);
 		qmService.rootScope.setProperty('hideHelpButton', true);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
         qmService.rootScope.setProperty('hideHelpButton', false);

@@ -27,7 +27,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.sendToLoginIfNecessaryAndComeBack();
-        qmService.rootScope.setProperty('hideNavigationMenu', false);
+        qmService.navBar.showNavigationMenu();
         if($stateParams.variableObject){
             setVariableObject($stateParams.variableObject);
             getUserVariableWithTags();

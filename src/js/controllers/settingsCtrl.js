@@ -13,7 +13,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
         $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 		if(qm.urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();

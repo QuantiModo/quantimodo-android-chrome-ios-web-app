@@ -21,7 +21,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     });
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";

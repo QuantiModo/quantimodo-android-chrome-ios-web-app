@@ -14,7 +14,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         qmLogService.info('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
         qmService.navBar.setFilterBarSearchIcon(true);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
         updateNavigationMenuButton();
     });

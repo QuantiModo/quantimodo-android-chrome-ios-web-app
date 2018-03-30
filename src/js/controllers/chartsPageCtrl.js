@@ -5,7 +5,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {title: "Charts"};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
         qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
