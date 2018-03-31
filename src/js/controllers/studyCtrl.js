@@ -232,7 +232,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             qmService.postUserVariableDeferred(postData).then(function (response) {
                 getStudy();
             });
-        }, function() {qmLogService.debug(null, 'User cancelled selection', null);});
+        }, function() {qmLogService.debug('User cancelled selection', null);});
     };
     function VariableSettingsController(qmService, qmLogService, dataToPass) {
         var self = this;

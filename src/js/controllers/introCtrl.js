@@ -1,7 +1,7 @@
 angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse) {
 
-    if(window.debugMode){qmLogService.debug(null, 'IntroCtrl first starting in state: ' + $state.current.name, null);}
+    if(window.debugMode){qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name, null);}
     qmService.initializeApplication(appSettingsResponse);
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.myIntro = {

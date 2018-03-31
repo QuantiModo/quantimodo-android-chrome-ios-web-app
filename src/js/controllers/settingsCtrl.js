@@ -73,7 +73,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				'You will only get a single generic notification instead of a separate notification for each reminder that you create.  All ' +
 				'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.', ev);
 			qmService.cancelAllNotifications().then(function() {
-				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
+				qmLogService.debug('SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
 				if(!qm.storage.getItem(qm.items.deviceTokenOnServer)){
@@ -149,7 +149,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		$scope.state.latestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					qmLogService.debug(null, 'Time not selected', null);
+					qmLogService.debug('Time not selected', null);
 				} else {
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
