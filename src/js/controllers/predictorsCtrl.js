@@ -229,7 +229,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.debug(null, 'Text changed to ' + text, null); }
+        function searchTextChange(text) { $log.debug('Text changed to ' + text, null); }
         function selectedItemChange(item) {
             self.selectedItem = item;
             self.correlationObject = item.correlationObject;
