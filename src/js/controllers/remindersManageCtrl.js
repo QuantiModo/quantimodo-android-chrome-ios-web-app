@@ -3,7 +3,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
     function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,
              qmService, qmLogService) {
 	$scope.controller_name = "RemindersManageCtrl";
-	qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
+	qmLogService.debug('Loading ' + $scope.controller_name, null);
 	qmService.navBar.setFilterBarSearchIcon(false);
     qmService.sendToLoginIfNecessaryAndComeBack();
 	$scope.state = {
@@ -74,9 +74,9 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionButtons,
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+				cancel: function() {qmLogService.debug('CANCELLED', null);},
 				buttonClicked: function(index) {
-					qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+					qmLogService.debug('BUTTON CLICKED', null, index);
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
@@ -169,7 +169,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		reminder.hide = true;
 		qmService.storage.deleteById('trackingReminders', reminder.trackingReminderId);
 			//.then(function(){getTrackingReminders();});
-		qmService.deleteTrackingReminderDeferred(reminder).then(function(){qmLogService.debug(null, 'Reminder deleted', null);}, function(error){
+		qmService.deleteTrackingReminderDeferred(reminder).then(function(){qmLogService.debug('Reminder deleted', null);}, function(error){
 			qmLogService.error('Failed to Delete Reminder: ' + error);
 		});
 	};
@@ -190,9 +190,9 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+			cancel: function() {qmLogService.debug('CANCELLED', null);},
 			buttonClicked: function(index) {
-				qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+				qmLogService.debug('BUTTON CLICKED', null, index);
 				if(index === 0){$scope.edit(trackingReminder);}
 				if(index === 1){qmService.goToState('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}

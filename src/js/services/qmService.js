@@ -1274,7 +1274,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!authorizationUrl) {authorizationUrl = event.data;}
         if(!isQuantiMoDoDomain(authorizationUrl)){return;}
         var authorizationCode = qm.urlHelper.getParam('code', authorizationUrl);
-        if(authorizationCode){qmLogService.debug(null, 'got authorization code from ' + authorizationUrl, null);}
+        if(authorizationCode){qmLogService.debug('got authorization code from ' + authorizationUrl, null);}
         //if(!authorizationCode) {authorizationCode = qm.urlHelper.getParam('token', authorizationUrl);}
         return authorizationCode;
     };
@@ -2026,7 +2026,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshConnectors = function(){
         var stackTrace = qmLog.getStackTrace();
-        if(window.qmLog.isDebugMode()){qmLogService.debug(null, 'Called refresh connectors: ' + stackTrace, null);}
+        if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace, null);}
         var deferred = $q.defer();
         qmService.getConnectorsFromApi({stackTrace: qmLog.getStackTrace()}, function(response){
             qmService.storage.setItem('connectors', JSON.stringify(response.connectors));
@@ -4364,10 +4364,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(notification && notification.data){
                 notificationData = JSON.parse(notification.data);
                 qmLogService.debug('onClick: notification.data : ', null, notificationData);
-            } else {qmLogService.debug(null, 'onClick: No notification.data provided', null);}
+            } else {qmLogService.debug('onClick: No notification.data provided', null);}
             if(notification.id !== locationTrackingNotificationId){
                 /** @namespace cordova.plugins.notification */
-                cordova.plugins.notification.local.clearAll(function () {qmLogService.debug(null, 'onClick: clearAll active notifications', null);}, this);
+                cordova.plugins.notification.local.clearAll(function () {qmLogService.debug('onClick: clearAll active notifications', null);}, this);
             }
             if(notificationData && notificationData.trackingReminderNotificationId){
                 qmLogService.debug('onClick: Notification was a reminder notification not reminder.  ' +
@@ -4526,7 +4526,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     notificationData = JSON.parse(currentNotification.data);
                     qmLogService.debug('onTrigger: notification.data : ', null, notificationData);
                     clearNotificationIfOutsideAllowedTimes(notificationData, currentNotification);
-                } else {qmLogService.debug(null, 'onTrigger: No notification.data provided', null);}
+                } else {qmLogService.debug('onTrigger: No notification.data provided', null);}
                 if(!notificationData){
                     qmLogService.debug('onTrigger: This is a generic notification that sends to inbox, so we\'ll check the API for pending notifications.', null);
                     getNotificationsFromApiAndClearOrUpdateLocalNotifications();
@@ -5355,26 +5355,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     };
     qmService.nonNativeMobileLogin = function(register) {
-        qmLogService.debug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.', null);
+        qmLog.authDebug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
         // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
         //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
         // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
         // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
         var url = qmService.generateV1OAuthUrl(register);
-        qmLog.info("Opening " + url);
+        qmLog.authDebug("Opening " + url);
         var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
         // Commented because I think it's causing "$apply already in progress" error
         // $timeout(function () {
         //     qmLogService.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
         //     ref.close();
         // }, 60000);
-        qmLogService.debug('qmService.nonNativeMobileLogin: listen to its event when the page changes', null);
+        qmLog.authDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
         ref.addEventListener('loadstart', function(event) {
-            qmLogService.debug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri(), null);
+            qmLog.authDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri(), null);
             if(qmService.getAuthorizationCodeFromEventUrl(event)) {
                 var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
                 ref.close();
-                qmLogService.debug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.', null);
+                qmLog.authDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.', null);
                 qmService.fetchAccessTokenAndUserDetails(authorizationCode);
                 qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
             }
@@ -5382,15 +5382,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
     };
     qmService.chromeAppLogin = function(register){
-        qmLogService.debug('login: Use Chrome app (content script, background page, etc.', null);
+        qmLog.authDebug('login: Use Chrome app (content script, background page, etc.');
         var url = qmService.generateV1OAuthUrl(register);
-        chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true
-        }, function() {
+        chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true}, function() {
             var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
             qmService.getAccessTokenFromAuthorizationCode(authorizationCode);
         });
     };
     qmService.chromeExtensionLogin = function(register) {
+        qmLog.authDebug('chromeExtensionLogin');
         function getAfterLoginRedirectUrl() {
             return encodeURIComponent("https://" + $rootScope.appSettings.clientId + ".quantimo.do");
         }
@@ -5398,11 +5398,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
             if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
             loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
-            qmLogService.debug('chromeExtensionLogin loginUrl is ' + loginUrl, null);
+            qmLog.authDebug('chromeExtensionLogin loginUrl is ' + loginUrl);
             return loginUrl;
         }
         function createLoginTabAndClose() {
-            qmLogService.debug('chrome.tabs.create ' + getLoginUrl(), null);
+            qmLog.authDebug('chrome.tabs.create ' + getLoginUrl());
             chrome.tabs.create({ url: getLoginUrl() });
             window.close();
         }
@@ -5527,7 +5527,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return measurementSets;
     }
     qmService.forecastIoWeather = function(coordinates) {
-        if(!$rootScope.user){qmLogService.debug(null, 'No recording weather because we\'re not logged in', null);return;}
+        if(!$rootScope.user){qmLogService.debug('No recording weather because we\'re not logged in', null);return;}
         if(alreadyPostedWeatherSinceNoonYesterday()){return;}
         var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
         var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';

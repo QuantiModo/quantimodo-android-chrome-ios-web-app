@@ -8,7 +8,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);
+		qmLogService.debug('ImportCtrl beforeEnter', null);
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         }
@@ -23,12 +23,12 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         window.qm.storage.setItem(qm.items.hideImportHelpCard, true);
 	};
 	var goToWebImportDataPage = function() {
-		qmLogService.debug(null, 'importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
+		qmLogService.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
 		qmService.goToDefaultState();
 		qmService.getAccessTokenFromAnySource().then(function(accessToken){
 			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
-				qmLogService.debug(null, 'Browser Detected', null);
+				qmLogService.debug('Browser Detected', null);
 				var url = qmService.getQuantiModoUrl("api/v2/account/connectors", true);
 				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
@@ -48,7 +48,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 			}
 		}, function(){
 			qmService.hideLoader();
-			qmLogService.debug(null, 'importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...', null);
+			qmLogService.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...', null);
             qmService.sendToLoginIfNecessaryAndComeBack();
 		});
 	};
@@ -60,7 +60,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 $scope.connectors = connectors;
 				if(connectors) {
 					$scope.$broadcast('scroll.refreshComplete');
-					$ionicLoading.hide().then(function(){qmLogService.debug(null, 'The loading indicator is now hidden', null);});
+					$ionicLoading.hide().then(function(){qmLogService.debug('The loading indicator is now hidden', null);});
 				}
 				$scope.refreshConnectors();
 			});
@@ -73,7 +73,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             buttons: buttons,
             //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+            cancel: function() {qmLogService.debug('CANCELLED', null);},
             buttonClicked: function(index) {
                 if(index === 0){qmService.goToState(qmStates.historyAll, {connectorName: connector.name});}
                 return true;
