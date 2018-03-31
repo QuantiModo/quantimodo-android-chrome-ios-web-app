@@ -63,9 +63,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+				cancel: function() {qmLogService.debug('CANCELLED', null);},
 				buttonClicked: function(index) {
-					qmLogService.debug(null, 'BUTTON CLICKED', null, index);
+					qmLogService.debug('BUTTON CLICKED', null, index);
                     if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: getVariableCategoryName()});}
                     if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : getVariableCategoryName()});}
                     if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : getVariableCategoryName()});}
@@ -91,7 +91,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			$timeout(function() {hideSheet();}, 20000);
 		});
 		if(navigator && navigator.splashscreen) {
-			qmLogService.debug(null, 'ReminderInbox: Hiding splash screen because app is ready', null);
+			qmLogService.debug('ReminderInbox: Hiding splash screen because app is ready', null);
 			navigator.splashscreen.hide();
 		}
 	});
@@ -104,7 +104,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
-		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
+		qmLogService.debug('RemindersInboxCtrl afterLeave', null);
 		$rootScope.hideHomeButton = false;
 		$rootScope.hideBackButton = false;
 	});
@@ -133,14 +133,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	var isGhostClick = function ($event) {
 		if(!$rootScope.platform.isMobile){return false;}
 		if($event && $scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 && $scope.state.lastClientX === $event.clientX && $scope.state.lastClientY === $event.clientY) {
-			qmLogService.debug(null, 'This event is probably a ghost click so not registering.', null, $event);
+			qmLogService.debug('This event is probably a ghost click so not registering.', null, $event);
 			return true;
 		} else {
 		    if(!$event){
 		        qmLogService.error(null, 'No event provided to isGhostClick!');
 		        return false;
             }
-			qmLogService.debug(null, 'This Track event is not a ghost click so registering.', null, $event);
+			qmLogService.debug('This Track event is not a ghost click so registering.', null, $event);
 			$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
 			$scope.state.lastClientX = $event.clientX;
 			$scope.state.lastClientY = $event.clientY;
@@ -423,10 +423,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+			cancel: function() {qmLogService.debug('CANCELLED', null);},
 			buttonClicked: function(index) {
-				qmLogService.debug(null, 'BUTTON CLICKED', null, index);
-                if(index === 0){qmLogService.debug(null, 'clicked variable name', null);}
+				qmLogService.debug('BUTTON CLICKED', null, index);
+                if(index === 0){qmLogService.debug('clicked variable name', null);}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}

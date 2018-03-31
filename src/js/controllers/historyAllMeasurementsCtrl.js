@@ -154,7 +154,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 					{ text: '<i class="icon ion-ios-location-outline"></i>Locations'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+				cancel: function() {qmLogService.debug('CANCELLED', null);},
 				buttonClicked: function(index) {
 					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
 					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}

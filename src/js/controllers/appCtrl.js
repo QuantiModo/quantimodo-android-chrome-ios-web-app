@@ -188,7 +188,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug(null, 'Down voted!', null);}, function () {qmLogService.error('Down vote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug('Down voted!', null);}, function () {qmLogService.error('Down vote failed!');});
             };
             noCallback = function() {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -210,7 +210,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug(null, 'upVote', null);}, function () {qmLogService.error('upVote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug('upVote', null);}, function () {qmLogService.error('upVote failed!');});
             };
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -284,7 +284,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             buttons: actionMenuButtons,
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+            cancel: function() {qmLogService.debug('CANCELLED', null);},
             buttonClicked: function(index) {
                 qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}

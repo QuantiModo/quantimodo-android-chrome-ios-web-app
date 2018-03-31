@@ -5,7 +5,7 @@ angular.module('starter')  // Handles all views that have an iFrame
 	// when page load completes
 	window.closeLoading = function(){qmService.hideLoader();};
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmLogService.debug(null, 'beforeEnter state ' + $state.current.name);
+		qmLogService.debug('beforeEnter state ' + $state.current.name);
 		qmService.rootScope.setProperty('hideHelpButton', true);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 	});
