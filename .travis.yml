@@ -66,6 +66,8 @@ script:
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+notifications:
+  webhooks: https://www.travisbuddy.com/
 #deploy:
 #  provider: releases
 #  api_key:
