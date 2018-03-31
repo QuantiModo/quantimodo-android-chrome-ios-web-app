@@ -102,7 +102,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showNavigationMenuIfHideUrlParamNotSet: function(){
                 var hideMenu = qm.urlHelper.getParam('hideMenu');
-                if(!hideMenu && $rootScope.hideNavigationMenu){
+                if(!hideMenu){
                     qmService.navBar.showNavigationMenu();
                 }
             },
