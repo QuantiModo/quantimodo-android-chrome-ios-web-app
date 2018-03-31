@@ -172,7 +172,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
             if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                    "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
             }
             //window.qmLog.error(error, object); // Avoid infinite recursion
             return object;
