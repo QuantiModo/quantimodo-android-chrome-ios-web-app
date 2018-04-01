@@ -5769,7 +5769,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if(!emailAddress){emailAddress = null;}
         document.addEventListener('deviceready', function () {
-            qmLogService.debug('deviceready', null);
+            qmLogService.debug('deviceready');
             cordova.plugins.email.isAvailable(
                 function (isAvailable) {
                     if(isAvailable){
