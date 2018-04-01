@@ -7837,6 +7837,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         logOutOfWebsite();
         saveDeviceTokenToSyncWhenWeLogInAgain();
         qmService.goToState('app.intro');
+        if(qm.platform.isMobile()){
+            qmLog.info("Restarting app to enable opening login window again");
+            document.location.href = 'index.html';
+        }
     };
     qmService.afterLogoutDoNotDeleteMeasurements = function(){
         qmService.showBlackRingLoader();
