@@ -5360,26 +5360,46 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
         // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
         // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
-        var url = qmService.generateV1OAuthUrl(register);
-        qmLog.authDebug("Opening " + url);
-        var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
-        // Commented because I think it's causing "$apply already in progress" error
-        // $timeout(function () {
-        //     qmLogService.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
-        //     ref.close();
-        // }, 60000);
-        qmLog.authDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
-        ref.addEventListener('loadstart', function(event) {
-            qmLog.authDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri(), null);
-            if(qmService.getAuthorizationCodeFromEventUrl(event)) {
-                var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
-                ref.close();
-                qmLog.authDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.', null);
-                qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            var url = qmService.generateV1OAuthUrl(register);
+            qmLog.authDebug("Opening " + url);
+            window.open = cordova.InAppBrowser.open;
+            qmService.inAppBrowserRef = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            // Commented because I think it's causing "$apply already in progress" error
+            // $timeout(function () {
+            //     qmLogService.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
+            //     ref.close();
+            // }, 60000);
+            qmLog.authDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
+            qmService.inAppBrowserRef.addEventListener('loadstart', function(event) {
+                qmLog.authDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url +
+                    ' is the same as redirection url ' + qmService.getRedirectUri(), null);
+                if(qmService.getAuthorizationCodeFromEventUrl(event)) {
+                    var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
+                    qmService.inAppBrowserRef.close();
+                    qmService.inAppBrowserRef = undefined;
+                    qmLog.authDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code');
+                    qmService.fetchAccessTokenAndUserDetails(authorizationCode);
+                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                }
+                qmService.checkLoadStartEventUrlForErrors(qmService.inAppBrowserRef, event);
+            });
+            qmService.inAppBrowserRef.addEventListener('loaderror', loadErrorCallBack);
+            function loadErrorCallBack(params) {
+                $('#status-message').text("");
+                var scriptErrorMessage = "alert('Sorry we cannot open that page. Message from the server is : " + params.message + "');";
+                qmLog.error(scriptErrorMessage);
+                qmService.inAppBrowserRef.executeScript({ code: scriptErrorMessage }, executeScriptCallBack);
+                qmService.inAppBrowserRef.close();
+                qmService.inAppBrowserRef = undefined;
             }
-            qmService.checkLoadStartEventUrlForErrors(ref, event);
-        });
+            function executeScriptCallBack(params) {
+                if (params[0] == null) {
+                    $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
+                }
+            }
+        }
     };
     qmService.chromeAppLogin = function(register){
         qmLog.authDebug('login: Use Chrome app (content script, background page, etc.');
