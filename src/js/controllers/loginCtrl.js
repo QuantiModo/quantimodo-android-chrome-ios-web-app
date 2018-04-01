@@ -226,13 +226,6 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmService.nonNativeMobileLogin(register);
         });
     };
-    function loginLog(message) {
-        qmLog.authDebug(message, null);
-        if(window.debugMode){
-            alert(message);
-            qmLogService.error(message);
-        }
-    }
     $scope.googleLogin = function(register) {
         $scope.hideGoogleLoginButton = true;
         var timeout = loginTimeout();
@@ -256,17 +249,20 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }, function (errorMessage) {
                     qmLog.setAuthDebug(true);
-                    $scope.googleLogin(register);
                     qmService.hideLoader();
                     qmLog.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                     qmService.nonNativeMobileLogin(true);
                 });
             }, function (errorMessage) {
+                qmLog.error("googleLogin error: " + JSON.stringify(errorMessage));
                 qmLog.setAuthDebug(true);
-                $scope.googleLogin(register);
+                if(!qmService.alreadyRetriedGoogleLogin){
+                    $scope.googleLogin(register);
+                    qmService.alreadyRetriedGoogleLogin = true;
+                } else {
+                    qmService.nonNativeMobileLogin(true);
+                }
                 qmService.hideLoader();
-                qmLog.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
-                qmService.nonNativeMobileLogin(true);
             });
         }
     };
@@ -275,7 +271,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         document.addEventListener('deviceready', deviceReady, false);
         function deviceReady() {
             /** @namespace window.plugins.googleplus */
-            window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('logged out of google!');}, function (fail) {qmLog.authDebug('failed to logout', null, fail);});
+            window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('logged out of google!');},
+                function (fail) {qmLog.authDebug('failed to logout', null, fail);});
             window.plugins.googleplus.disconnect(function (msg) {qmLog.authDebug('disconnect google!');});
         }
     };
@@ -303,7 +300,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                 $scope.nativeSocialLogin('facebook', accessToken);
             }, function (error) {
                 Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
-                qmLog.authDebug('facebook login error' + JSON.stringify(error), null);
+                qmLog.authDebug('facebook login error' + JSON.stringify(error));
             });
     };
     var showLoginModal = function (ev) {
