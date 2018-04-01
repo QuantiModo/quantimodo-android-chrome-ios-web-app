@@ -247,6 +247,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             drawOverAppsPopupCompactInboxNotification: function() {
                 qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
+            },
+            reconfigurePushNotificationsIfNoTokenOnServerOrToSync: function () {
+                if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+                    qmLogService.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
+                    qmService.configurePushNotifications();
+                }
             }
         },
         rootScope: {
@@ -1362,7 +1368,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function getDeviceTokenToSync(){return qm.storage.getItem(qm.items.deviceTokenToSync);}
     qmService.registerDeviceToken = function(){
         var deferred = $q.defer();
-        if(!$rootScope.platform.isMobile){
+        if(!qm.platform.isMobile()){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
@@ -1437,6 +1443,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('This token is already on the server: ' + qm.storage.getItem(qm.items.deviceTokenOnServer));
         }
         qmService.registerDeviceToken();
+        qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         if ($rootScope.sendReminderNotificationEmails) {
             qmService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
@@ -7045,20 +7052,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!$rootScope.platform.isMobile){return;}
         if(!qm.push.getLastPushTimeStampInSeconds()){
             qmLogService.error("Push never received!");
-            reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+            qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
         if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
             qmLogService.error("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                 "minutes (most frequent reminder period)!", "Last push was " +  qm.push.getHoursSinceLastPush() + " hours ago!");
-            reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+            qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
     }
-    function reconfigurePushNotificationsIfNoTokenOnServerOrToSync() {
-        if($rootScope.platform.isMobile && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
-            qmLogService.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
-            qmService.configurePushNotifications();
-        }
-    }
+
     qmService.sendBugReport = function() {
         qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
         function addAppInformationToTemplate(template){
@@ -7078,7 +7080,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(qm.storage.getItem(qm.items.deviceTokenOnServer)){template = template + '\r\n' + "deviceTokenOnServer: " + qm.storage.getItem(qm.items.deviceTokenOnServer) + '\r\n' + '\r\n';}
             if(qm.storage.getItem(qm.items.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qm.storage.getItem(qm.items.deviceTokenToSync) + '\r\n' + '\r\n';}
-            reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+            qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
             template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
             template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
