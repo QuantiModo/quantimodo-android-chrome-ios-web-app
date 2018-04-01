@@ -136,6 +136,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 function initCallbacks() {
                     chrome.alarms.onAlarm.addListener(function(alarm) {
+                        qmService.notifications.showAndroidPopupForMostRecentNotification();
                         log("Received alarm: " + alarm.name + '. Creating notification.');
                         createNotification('created from alarm');
                     });
@@ -149,26 +150,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         log('Showing window via cordova.backgroundapp.show().');
                         cordova.backgroundapp.show();
                     });
-                    log('App started: ' + new Date());
-                    document.addEventListener('deviceready', function() {
-                        log('deviceready. resumeType=' + cordova.backgroundapp.resumeType);
-                        initCallbacks();
-                        // Don't bother drawing UI when running in the background.
-                        if (cordova.backgroundapp.resumeType == 'launch') {
-                            renderUi('initial launch');
-                        } else { // resumeType == ''
-                            log('Running in the background!');
-                        }
-                    });
-                    document.addEventListener('resume', function() {
-                        log('resume event. resumeType=' + cordova.backgroundapp.resumeType);
-                        if (cordova.backgroundapp.resumeType == 'normal-launch') {
-                            renderUi('user launch when backgrounded');
-                        }
-                    });
-                    createNotification('created from button');
-                    createAlarm(5);
                 }
+
                 var numIds = 0;
                 function createNotification(message) {
                     var opts = {
@@ -192,8 +175,30 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         isRendered = true;
                     }
                 }
+                log('App started: ' + new Date());
+                document.addEventListener('deviceready', function() {
+                    log('deviceready. resumeType=' + cordova.backgroundapp.resumeType);
+                    initCallbacks();
+                    // Don't bother drawing UI when running in the background.
+                    if (cordova.backgroundapp.resumeType == 'launch') {
+                        renderUi('initial launch');
+                    } else { // resumeType == ''
+                        log('Running in the background!');
+                    }
+                });
+                document.addEventListener('resume', function() {
+                    qmService.notifications.showAndroidPopupForMostRecentNotification();
+                    log('resume event. resumeType=' + cordova.backgroundapp.resumeType);
+                    if (cordova.backgroundapp.resumeType == 'normal-launch') {
+                        renderUi('user launch when backgrounded');
+                    }
+                });
+                createAlarm(5);
+                createNotification('created from button');
             },
             enableDrawOverAppsPopups: function () {
+
+                qmService.notifications.chromeAndroidHelpers();
                 qm.notifications.setLastPopupTime(null);
                 qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
                 $ionicPlatform.ready(function () {
@@ -206,7 +211,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLogService.error("window.overApps is undefined!");
                     }
                     qmService.notifications.showAndroidPopupForMostRecentNotification();
-                    qmService.chromeAndroidHelpers();
                 });
             },
             showEnablePopupsConfirmation: function (ev) {
@@ -4779,10 +4783,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if (!present) {
                     qmLogService.info('createOrUpdateIonicNotificationForTrackingReminder: Creating notification ' +
                         'because not already set for ' + JSON.stringify(notificationSettings));
-                    cordova.plugins.notification.local.schedule(notificationSettings,
-                        function () {
-                            qmLogService.info('createOrUpdateIonicNotificationForTrackingReminder: notification ' + 'scheduled'+ JSON.stringify(notificationSettings));
-                        });
+                    // cordova.plugins.notification.local.schedule(notificationSettings,
+                    //     function () {
+                    //         qmLogService.info('createOrUpdateIonicNotificationForTrackingReminder: notification ' + 'scheduled'+ JSON.stringify(notificationSettings));
+                    //     });
+                    chrome.alarms.create("genericTrackingReminderNotificationAlarm", {periodInMinutes: 0.1});
                 }
                 if (present) {
                     qmLogService.info('createOrUpdateIonicNotificationForTrackingReminder: Updating notification'+ JSON.stringify(notificationSettings));
@@ -5095,10 +5100,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             try{
                                 qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: ' +
                                     'About to schedule this notification: ', null, JSON.stringify(notificationSettings));
-                                cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
-                                    qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes:' +
-                                        ' notification scheduled: ' + JSON.stringify(notification), null);
-                                });
+                                // cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
+                                //     qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes:' +
+                                //         ' notification scheduled: ' + JSON.stringify(notification), null);
+                                // });
+                                chrome.alarms.create("genericTrackingReminderNotificationAlarm", {periodInMinutes: 0.1});
                             } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                                 qmLogService.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
                                     ' notificationSettings: ' + JSON.stringify(notificationSettings));
@@ -7019,12 +7025,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!notificationSettings.sound){notificationSettings.sound = null;}
         $ionicPlatform.ready(function () {
             /** @namespace cordova.plugins.notification */
-            cordova.plugins.notification.local.schedule(notificationSettings, function(data){
-                qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' +
-                    JSON.stringify(notificationSettings));
-                qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
-                qmService.notifications.showAndroidPopupForMostRecentNotification();
-            });
+            // cordova.plugins.notification.local.schedule(notificationSettings, function(data){
+            //     qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' +
+            //         JSON.stringify(notificationSettings));
+            //     qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
+            //     qmService.notifications.showAndroidPopupForMostRecentNotification();
+            // });
+            chrome.alarms.create("genericTrackingReminderNotificationAlarm", {periodInMinutes: 0.1});
             qmLog.info("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                 qmLogService.info('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
