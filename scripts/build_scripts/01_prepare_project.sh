@@ -60,7 +60,7 @@ export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${QUANTIMODO_CLIENT_ID} config and resource files${NC}"
 cp -R ${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID}/*  "${INTERMEDIATE_PATH}"
-ionic config build
+#ionic config build
 
 cd "${INTERMEDIATE_PATH}"
 #ionic state reset
