@@ -7856,7 +7856,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.completelyResetAppState();
         logOutOfWebsite();
         saveDeviceTokenToSyncWhenWeLogInAgain();
-        qmService.goToState('app.intro');
+        qmService.goToState(qmStates.intro);
         if(qm.platform.isMobile()){
             qmLog.info("Restarting app to enable opening login window again");
             document.location.href = 'index.html';
