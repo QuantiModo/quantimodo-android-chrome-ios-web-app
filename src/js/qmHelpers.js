@@ -1387,6 +1387,7 @@ window.qm = {
     },
     platform: {
         isChromeExtension: function (){
+            if(qm.platform.isMobile()){return false;}
             if(typeof chrome === "undefined"){
                 window.qmLog.debug('chrome is undefined', null, null);
                 return false;
