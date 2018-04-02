@@ -106,7 +106,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(qm.urlHelper.getParam('userEmail')){params.userEmail = qm.urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
             qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
