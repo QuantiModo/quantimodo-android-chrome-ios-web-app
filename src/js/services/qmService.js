@@ -898,9 +898,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         apiInstance.getStudy(params, callback);
         //qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
-    qmService.postUserSettings = function(params, successHandler, errorHandler) {
-        qmService.post('api/v3/userSettings', [], params, successHandler, errorHandler);
-    };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.info('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
@@ -1539,7 +1536,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.updateUserSettingsDeferred = function(params){
         if($rootScope.physicianUser || qm.storage.getItem(qm.items.physicianUser)){return false;} // Let's restrict settings updates to users
         var deferred = $q.defer();
-        qmService.postUserSettings(params, function(response){
+        if(qm.urlHelper.getParam('userEmail')){params.userEmail = qm.urlHelper.getParam('userEmail');}
+        if(qm.userHelper.getUserFromLocalStorage()){params.userId = qm.userHelper.getUserFromLocalStorage().id;}
+        qmService.post('api/v3/userSettings', [], params, function(response){
             if(!params.userEmail) {
                 qmService.refreshUser().then(function(user){
                     qmLogService.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user), null);
