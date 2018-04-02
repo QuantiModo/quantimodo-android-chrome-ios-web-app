@@ -160,7 +160,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
     $scope.toggleVariableShare = function (variableObject, ev) {
-        if(variableObject.shareUserMeasurements){qmService.showShareVariableConfirmation(variableObject, ev);} else {qmService.showUnshareVariableConfirmation(variableObject, ev);}
+        if(variableObject.shareUserMeasurements){qmService.showShareVariableConfirmation(variableObject, ev);} else {qmService.showUnShareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
         qmLogService.debug('Set ' + flagName + ' to true', null);
