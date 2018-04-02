@@ -281,7 +281,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
             if($state.current.name !== 'app.login' && $state.current.name !== 'app.intro'){
-                qmLogService.error("No response provided to qmSdkApiResponseHandler");
+                qmLogService.error("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
             }
             return;
         }
@@ -7445,7 +7445,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function noCallback() {variableObject.shareUserMeasurements = false;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    qmService.showUnshareVariableConfirmation = function(variableObject, ev) {
+    qmService.showUnShareVariableConfirmation = function(variableObject, ev) {
         var title = 'Share Variable';
         var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
             ' and ' + variableObject.name + ' measurements private? Links to studies you ' +
