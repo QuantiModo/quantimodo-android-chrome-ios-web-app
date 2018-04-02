@@ -52,6 +52,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                     }
                 }
                 $scope.state.variableObject = variableObject;
+                qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
+                    return qmService.showVariableObjectActionSheet(getVariableName(), variableObject);
+                });
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
             });
