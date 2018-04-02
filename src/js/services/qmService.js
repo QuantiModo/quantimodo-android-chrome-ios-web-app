@@ -3203,7 +3203,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             xAxisLabels = qm.getPrimaryOutcomeVariableOptionLabels();
             xAxisTitle = '';
         }
-        var chartConfig = {
+        var highchartConfig = {
             chart: {
                 height : 300,
                 type : 'column',
@@ -3258,7 +3258,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 data: data
             }]
         };
-        return setChartExportingOptions(chartConfig);
+        return setChartExportingOptions(highchartConfig);
     };
     qmService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
         if(!measurements){
@@ -3327,7 +3327,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(averageValueByWeekdayArray[i] > maximum){maximum = averageValueByWeekdayArray[i];}
             if(averageValueByWeekdayArray[i] < minimum){minimum = averageValueByWeekdayArray[i];}
         }
-        var chartConfig = {
+        var highchartConfig = {
             chart: {
                 height : 300,
                 type : 'column',
@@ -3364,7 +3364,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 data: averageValueByWeekdayArray
             }]
         };
-        return setChartExportingOptions(chartConfig);
+        return setChartExportingOptions(highchartConfig);
     };
     qmService.configureMonthlyChart = function(averageValueByMonthlyArray, variableObject){
         if(!variableObject.name){
@@ -3378,7 +3378,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(averageValueByMonthlyArray[i] > maximum){maximum = averageValueByMonthlyArray[i];}
             if(averageValueByMonthlyArray[i] < minimum){minimum = averageValueByMonthlyArray[i];}
         }
-        var chartConfig = {
+        var highchartConfig = {
             chart: {
                 height : 300,
                 type : 'column',
@@ -3415,7 +3415,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 data: averageValueByMonthlyArray
             }]
         };
-        return setChartExportingOptions(chartConfig);
+        return setChartExportingOptions(highchartConfig);
     };
     qmService.configureHourlyChart = function(averageValueByHourArray, variableObject){
         if(!variableObject.name){
@@ -3454,7 +3454,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(averageValueByHourArray[i] > maximum){maximum = averageValueByHourArray[i];}
             if(averageValueByHourArray[i] < minimum){minimum = averageValueByHourArray[i];}
         }
-        var chartConfig = {
+        var highchartConfig = {
             chart: {
                 height : 300,
                 type : 'column',
@@ -3493,7 +3493,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 data: averageValueByHourArray
             }]
         };
-        return setChartExportingOptions(chartConfig);
+        return setChartExportingOptions(highchartConfig);
     };
     qmService.processDataAndConfigureLineChart = function(measurements, variableObject) {
         if(!measurements || !measurements.length){
@@ -3571,7 +3571,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             console.warn('Need at least a day worth of data for line chart');
             //return;
         }
-        var chartConfig = {
+        return {
             title: {
                 text: 'Correlations Over Durations of Action',
                 //x: -20 //center
@@ -3581,7 +3581,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
                 //x: -20
             },
-            legend : {enabled : false},
+            legend: {enabled: false},
             xAxis: {
                 title: {text: 'Assumed Duration Of Action'},
                 categories: xAxis
@@ -3595,9 +3595,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }]
             },
             tooltip: {valueSuffix: ''},
-            series : seriesToChart
+            series: seriesToChart
         };
-        return chartConfig;
     };
     qmService.processDataAndConfigureCorrelationsOverOnsetDelaysChart = function(correlations, weightedPeriod) {
         if(!correlations){return false;}
@@ -3752,7 +3751,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         return config;
     };
-    var calculatePearsonsCorrelation = function(xyValues) {
+    var calculatePearsonCorrelation = function(xyValues) {
         var length = xyValues.length;
         var xy = [];
         var x2 = [];
@@ -3842,7 +3841,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 color: 'rgba(223, 83, 83, .5)',
                 data: xyVariableValues
             }],
-            title: {text: title + ' (R = ' + calculatePearsonsCorrelation(xyVariableValues).toFixed(2) + ')'},
+            title: {text: title + ' (R = ' + calculatePearsonCorrelation(xyVariableValues).toFixed(2) + ')'},
             subtitle: {text: ''},
             loading: false
         };
