@@ -857,15 +857,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
     };
     qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
-        qmLogService.debug("getTrackingReminderNotificationsFromApi", null, params, qmLog.getStackTrace());
-        if(!configureQmApiClient('getTrackingReminderNotificationsFromApi', errorHandler)){return false;}
+        var functionName = "getTrackingReminderNotificationsFromApi";
+        qmLogService.debug(functionName, null, params, qmLog.getStackTrace());
+        if(!configureQmApiClient(functionName, errorHandler)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, trackingReminderNotifications, response) {
             if(trackingReminderNotifications && trackingReminderNotifications.length){
                 qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                 checkHoursSinceLastPushNotificationReceived();
             }
-            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler);
+            qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler, {}, functionName);
         }
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
