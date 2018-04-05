@@ -2258,6 +2258,7 @@ gulp.task('buildMediModoAndroid', function (callback) {
 });
 gulp.task('_build-all-chrome', function (callback) {
     runSequence(
+        'cleanBuildFolder',
         'setMediModoEnvs',
         'buildChromeExtension',
         'setMoodiModoEnvs',
