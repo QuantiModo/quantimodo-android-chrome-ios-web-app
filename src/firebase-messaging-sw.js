@@ -83,7 +83,6 @@ function showNotification(pushData) {
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    qm.api.postToQuantiModo(payload, 'v1/deviceTokens');
     showNotification(payload);
 });
 self.addEventListener('push', function(event) {
