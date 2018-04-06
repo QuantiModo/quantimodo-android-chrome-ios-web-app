@@ -2206,7 +2206,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
         'chromeDefaultConfigJson',
-        'deleteWwwPrivateConfig',
+        //'deleteWwwPrivateConfig',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
