@@ -269,7 +269,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, 0);
             },
             setUser: function(user){
-                qmService.rootScope.setProperty('user', user);
+                if(!$rootScope.user && user){
+                    $rootScope.user = user;  // Set user immediately because it's required by some beforeEnter functions
+                } else {
+                    qmService.rootScope.setProperty('user', user);
+                }
             },
             setShowActionSheetMenu: function(actionSheetFunction){
                 qmService.rootScope.setProperty('showActionSheetMenu', actionSheetFunction);
