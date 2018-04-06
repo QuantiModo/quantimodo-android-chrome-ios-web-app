@@ -834,9 +834,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.deleteByProperty('commonVariables', 'variableName', variableName);
         qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
     };
-    qmService.getConnectorsFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/connectors/list', [], params, successHandler, errorHandler);
-    };
     qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
         qmService.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
     };
@@ -2026,21 +2023,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        var connectors = qm.storage.getItem('connectors');
-        if(connectors){
-            connectors = hideUnavailableConnectors(connectors);
-            deferred.resolve(connectors);
-        } else {
-            qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
-        }
+        qm.localForage.getItem(qm.items.connectors, function (connectors) {
+            if(connectors){
+                connectors = hideUnavailableConnectors(connectors);
+                deferred.resolve(connectors);
+            } else {
+                qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
+            }
+        });
         return deferred.promise;
     };
     qmService.refreshConnectors = function(){
         var stackTrace = qmLog.getStackTrace();
         if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace, null);}
         var deferred = $q.defer();
-        qmService.getConnectorsFromApi({stackTrace: qmLog.getStackTrace()}, function(response){
-            qmService.storage.setItem('connectors', JSON.stringify(response.connectors));
+        qm.connectorHelper.getConnectorsFromApi({}, function(response){
             var connectors = hideUnavailableConnectors(response.connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
