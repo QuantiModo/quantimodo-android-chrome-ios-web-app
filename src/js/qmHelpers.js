@@ -734,6 +734,27 @@ window.qm = {
             })
         }
     },
+    connectorHelper: {
+        getConnectorsFromApi: function(params, successCallback, errorHandler){
+            qmLog.info("Getting connectors from API...");
+            function successHandler(connectors){
+                if (connectors) {
+                    qmLog.info("Got connectors from API...");
+                    qm.localForage.setItem(qm.items.connectors, connectors);
+                    if(successCallback){successCallback(connectors);}
+                } else {
+                    qmLog.error("Could not get connectors from API...");
+                }
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.ConnectorsApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+            }
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getConnectors(params, callback);
+        }
+    },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -847,6 +868,7 @@ window.qm = {
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
         commonVariables: 'commonVariables',
+        connectors: 'connectors',
         debugMode: 'debugMode',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
@@ -950,6 +972,33 @@ window.qm = {
                 });
                 successHandler(existingData);
             });
+        },
+        getItem: function(key, successHandler, errorHandler){
+            localforage.getItem(key, function (err, data) {
+                if(err){
+                    if(errorHandler){errorHandler(err);}
+                } else {
+                    successHandler(data);
+                }
+            })
+        },
+        setItem: function(key, value, successHandler, errorHandler){
+            localforage.setItem(key, value, function (err) {
+                if(err){
+                    if(errorHandler){errorHandler(err);}
+                } else {
+                    if(successHandler){successHandler()};
+                }
+            })
+        },
+        removeItem: function(key, value, successHandler, errorHandler){
+            localforage.removeItem(key, function (err) {
+                if(err){
+                    if(errorHandler){errorHandler(err);}
+                } else {
+                    if(successHandler){successHandler()};
+                }
+            })
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -2240,7 +2289,7 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
             }
             var params = qm.api.addGlobalParams({});
-            apiInstance.getUser({}, callback);
+            apiInstance.getUser(params, callback);
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             if(qm.userHelper.getUserFromLocalStorage()){
