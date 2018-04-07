@@ -2332,13 +2332,18 @@ window.qm = {
             qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
         getFromApi: function(params, successHandler, errorHandler){
+            if(!params.limit){params.limit = 50;}
+            params = qm.api.addGlobalParams(params);
+            var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');
+            if(cachedData && successHandler){
+                successHandler(cachedData);
+                return;
+            }
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
             }
-            if(!params.limit){params.limit = 50;}
-            params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
         },
         getByNameFromApi: function(variableName, params, successHandler, errorHandler){
