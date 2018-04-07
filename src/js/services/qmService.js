@@ -735,23 +735,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
-    qmService.getCommonVariablesFromApi = function(params, successHandler, errorHandler){
-        params = addGlobalUrlParamsToObject(params);
-        params.commonOnly = true;
-        var cachedData = qm.api.cacheGet(params, 'getCommonVariablesFromApi');
-        if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
-        }
-        if(!configureQmApiClient('getCommonVariablesFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.VariablesApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCommonVariablesFromApi');
-        }
-        apiInstance.getVariables(params, callback);
-        //var options = {};
-        //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
-    };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
         var options = {};
         qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
@@ -4136,25 +4119,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             errorHandler(error);
         });
     };
-    qmService.storage.getVariables = function(requestParams, successHandler, errorHandler){
-        var variables;
-        if(!variables){ variables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams); }
-        if(requestParams.includePublic){
-            if(!variables){variables = [];}
-            var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, requestParams);
-            if(commonVariables && commonVariables.constructor === Array){
-                variables = variables.concat(commonVariables);
-            } else {
-                qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
-                //putCommonVariablesInLocalStorageUsingJsonFile();
-                putCommonVariablesInLocalStorageUsingApi();
-            }
-        }
-        variables = qmService.removeArrayElementsWithDuplicateIds(variables);
-        if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
-        //variables = addVariableCategoryInfo(variables);
-        return variables;
-    };
     qmService.goToPredictorsList = function(variableName){
         qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
@@ -4276,24 +4240,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
         var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, params);
         if(!commonVariables || !commonVariables.length){
-            putCommonVariablesInLocalStorageUsingApi().then(function (commonVariables) {
+            qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi(function (commonVariables) {
                 successHandler(commonVariables);
             });
         } else {
             successHandler(commonVariables);
         }
     };
-    function putCommonVariablesInLocalStorageUsingApi(){
-        var deferred = $q.defer();
-        qmService.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-            qmService.storage.setItem(qm.items.commonVariables, commonVariables);
-            deferred.resolve(commonVariables);
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    }
     // NOTIFICATION SERVICE
     function localNotificationsPluginInstalled() {
         var installed = true;
@@ -6958,7 +6911,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
-        if(!qm.storage.getItem(qm.items.commonVariables)){putCommonVariablesInLocalStorageUsingApi();}
+        if(!qm.storage.getItem(qm.items.commonVariables)){qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();}
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
@@ -7671,7 +7624,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              */
             function loadAll(variables, excludeLocal) {
                 if(!variables && !excludeLocal){
-                    variables = qmService.storage.getVariables(dataToPass.requestParams);
+                    variables = qm.variablesHelper.getFromLocalStorage(dataToPass.requestParams);
                 }
                 if(!variables || !variables[0]){ return []; }
                 return variables.map( function (variable) {
