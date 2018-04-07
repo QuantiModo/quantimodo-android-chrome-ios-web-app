@@ -43,16 +43,27 @@ angular.module('starter').controller('OnboardingCtrl',
         window.qm.storage.setItem(qm.items.onboarded, true);
         qmService.goToDefaultState();
     };
-    $scope.goToReminderSearchFromOnboarding = function() {
-        $rootScope.hideHomeButton = true;
-        qmService.rootScope.setProperty('hideMenuButton', true);
-        if(!$rootScope.user){
-            $rootScope.appSettings.appDesign.onboarding.active = null;
-            qm.storage.removeItem('onboardingPages');
-            qmService.goToState('app.onboarding');
-            return;
-        }
-        $scope.goToReminderSearch($scope.circlePage.variableCategoryName);
+    $scope.goToReminderSearchFromOnboarding = function(ev) {
+        qmService.showVariableSearchDialog({
+            title: "Enter " + $scope.circlePage.variableCategoryName,
+            helpText: "Pick one you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
+            requestParams: {
+                variableCategoryName : $scope.circlePage.variableCategoryName,
+                includePublic: true,
+            },
+            skipReminderSettingsIfPossible: true
+        }, function (variableObject) {
+            qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
+        }, null, ev);
+        // $rootScope.hideHomeButton = true;
+        // qmService.rootScope.setProperty('hideMenuButton', true);
+        // if(!$rootScope.user){
+        //     $rootScope.appSettings.appDesign.onboarding.active = null;
+        //     qm.storage.removeItem('onboardingPages');
+        //     qmService.goToState('app.onboarding');
+        //     return;
+        // }
+        //$scope.goToReminderSearch($scope.circlePage.variableCategoryName);
     };
     $scope.enableLocationTracking = function (event) {
         $scope.trackLocationChange(event, true);
