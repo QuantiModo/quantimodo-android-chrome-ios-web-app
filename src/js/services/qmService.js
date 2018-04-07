@@ -782,24 +782,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteVoteToApi = function(correlationSet, successHandler ,errorHandler){
         qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
     };
-    qmService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
-        if(query){params.name = "%" + query + "%";}
-        params = addGlobalUrlParamsToObject(params);
-        var cachedData = qm.api.cacheGet(params, 'searchUserVariablesFromApi');
-        if(cachedData && successHandler){
-            successHandler(cachedData);
-            return;
-        }
-        if(!configureQmApiClient('searchUserVariablesFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.VariablesApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'searchUserVariablesFromApi');
-        }
-        apiInstance.getVariables(params, callback);
-        var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
-    };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         if(!configureQmApiClient('getVariableByIdFromApi', errorHandler)){return false;}
         var apiInstance = new Quantimodo.VariablesApi();
@@ -4109,7 +4091,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.searchUserVariablesDeferred = function(variableSearchQuery, params){
         var deferred = $q.defer();
         if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
+        params.searchPhrase = variableSearchQuery;
+        qm.userVariables.getFromApi(params, function(variables){
             deferred.resolve(variables);
         }, function(error){
             qmLogService.error(error);
@@ -4130,36 +4113,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return !haveEnough && !exactMatch;
     }
     // get user variables (without public)
-    qmService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params, excludeLocal){
-        var deferred = $q.defer();
+    qmService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params, successHandler, errorHandler){
         var variables;
-        if(!excludeLocal){
+        if(!params.excludeLocal){
             variables = qmService.storage.searchLocalStorage(qm.items.userVariables, 'name', variableSearchQuery, params);
         }
-        if(params.includePublic && !excludeLocal){
+        if(params.includePublic && !params.excludeLocal){
             if(!variables){variables = [];}
             var commonVariables = qmService.storage.searchLocalStorage(qm.items.commonVariables, 'name', variableSearchQuery, params);
             variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
         }
-        if(!excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
-            deferred.resolve(variables);
-            return deferred.promise;
+        if(!params.excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
+            successHandler(variables);
+            return;
         }
         if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
-            deferred.resolve(variables);
+        params.searchPhrase = variableSearchQuery;
+        qm.userVariables.getFromApi(params, function(variables){
+            successHandler(variables);
         }, function(error){
             qmLogService.error(error);
-            deferred.reject(error);
+            errorHandler(error);
         });
-        return deferred.promise;
     };
-    qmService.storage.getVariables = function(requestParams){
+    qmService.storage.getVariables = function(requestParams, successHandler, errorHandler){
         var variables;
-        if(!variables){ variables = qm.storage.getItem(qm.items.userVariables); }
+        if(!variables){ variables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams); }
         if(requestParams.includePublic){
             if(!variables){variables = [];}
-            var commonVariables = qm.storage.getItem('commonVariables');
+            var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, requestParams);
             if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
@@ -7657,17 +7639,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
                 self.lastApiQuery = query;
-                qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, self.dataToPass.excludeLocal)
-                    .then(function(results){
-                        self.lastResults = results;
-                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                        deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
-                        if(results && results.length){
-                            if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
-                        } else {
-                            if(variableSearchErrorHandler){variableSearchErrorHandler();}
-                        }
-                    });
+                dataToPass.requestParams.excludeLocal = self.dataToPass.excludeLocal;
+                qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, function(results){
+                    self.lastResults = results;
+                    qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
+                    if(results && results.length){
+                        if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
+                    } else {
+                        if(variableSearchErrorHandler){variableSearchErrorHandler();}
+                    }
+                });
                 return deferred.promise;
             }
             function searchTextChange(text) { qmLogService.debug('Text changed to ' + text, null); }
