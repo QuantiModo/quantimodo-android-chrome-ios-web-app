@@ -170,7 +170,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.getCommonVariablesDeferred(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
+                    $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
                     //checkThatVariableNamesExist();
                     $scope.state.searching = false;
                 }
@@ -188,7 +188,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     //var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
                     // Put user variables at top of list
                     //userVariables = qmService.sortByProperty(userVariables, sort);
-                    $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
+                    $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
                     //checkThatVariableNamesExist();
