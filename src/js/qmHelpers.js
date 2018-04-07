@@ -607,6 +607,22 @@ window.qm = {
             if(prototypeArray){return true;}
             return false;
         },
+        removeArrayElementsWithDuplicateIds: function(array) {
+            var a = array.concat();
+            for(var i = 0; i < a.length; i++) {
+                for(var j = i + 1; j < a.length; j++) {
+                    if(!a[i]){qmLogService.error('a[i] not defined!');}
+                    if(!a[j]){
+                        qmLogService.error('a[j] not defined!');
+                        return a;
+                    }
+                    if(a[i].id === a[j].id) {
+                        a.splice(j--, 1);
+                    }
+                }
+            }
+            return a;
+        }
     },
     auth: {
         getAndSaveAccessTokenFromCurrentUrl: function(){
@@ -2299,6 +2315,33 @@ window.qm = {
             qm.userHelper.getUserFromApi(successHandler, errorHandler);
         }
     },
+    commonVariablesHelper: {
+        getCommonVariablesFromApi: function(params, successHandler, errorHandler){
+            params = qm.api.addGlobalParams(params);
+            params.commonOnly = true;
+            var cachedData = qm.api.cacheGet(params, 'getCommonVariablesFromApi');
+            if(cachedData && successHandler){
+                //successHandler(cachedData);
+                //return;
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCommonVariablesFromApi');
+            }
+            apiInstance.getVariables(params, callback);
+            //var options = {};
+            //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
+        },
+        putCommonVariablesInLocalStorageUsingApi: function(successHandler){
+            qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
+                qm.storage.setItem(qm.items.commonVariables, commonVariables);
+                if(successHandler){successHandler(commonVariables);}
+            }, function(error){
+                qmLog.error(error);
+            });
+        }
+    },
     userVariables: {
         saveToLocalStorage: function(userVariables){
             userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
@@ -2372,6 +2415,27 @@ window.qm = {
                     qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
             });
+        }
+    },
+    variablesHelper: {
+        getFromLocalStorage: function (requestParams, successHandler, errorHandler){
+            var variables;
+            if(!variables){ variables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams); }
+            if(requestParams.includePublic){
+                if(!variables){variables = [];}
+                var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, requestParams);
+                if(commonVariables && commonVariables.constructor === Array){
+                    variables = variables.concat(commonVariables);
+                } else {
+                    qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
+                    //putCommonVariablesInLocalStorageUsingJsonFile();
+                    qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
+                }
+            }
+            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
+            if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
+            //variables = addVariableCategoryInfo(variables);
+            return variables;
         }
     },
     webNotifications: {
