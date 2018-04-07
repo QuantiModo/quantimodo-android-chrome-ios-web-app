@@ -831,7 +831,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler) {
         qmService.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
-        qmService.storage.deleteByProperty('commonVariables', 'variableName', variableName);
+        qmService.storage.deleteByProperty(qm.items.commonVariables, 'variableName', variableName);
         qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
     };
     qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
@@ -1099,7 +1099,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.goToState = function(to, params, options){
         qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
-        $state.go(to, params, options);
+        if(to !== "false"){$state.go(to, params, options);}
     };
     function getDefaultState() {
         if(window.designMode){return qmStates.configuration;}
@@ -4138,7 +4138,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if(params.includePublic && !excludeLocal){
             if(!variables){variables = [];}
-            var commonVariables = qmService.storage.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
+            var commonVariables = qmService.storage.searchLocalStorage(qm.items.commonVariables, 'name', variableSearchQuery, params);
             variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
         }
         if(!excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
