@@ -4,7 +4,8 @@
             <div class="inner" style="text-align: center; color: white;">
                 <div ng-include="'templates/fragments/circle-page.html'"></div><br><br>
                 <p style="cursor: pointer" ng-if="circlePage.moreInfo" ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">MORE INFO</p><br>
-                <md-button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText" ng-click="goToReminderSearchFromOnboarding()">
+                <md-button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText"
+                           ng-click="goToReminderSearchFromOnboarding($event)">
                     <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
                 </md-button>
                 <md-button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)"
