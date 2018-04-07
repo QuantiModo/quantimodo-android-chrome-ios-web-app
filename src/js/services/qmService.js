@@ -4291,34 +4291,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, function (error) {deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.getCommonVariablesDeferred = function(params){
-        var deferred = $q.defer();
-        var commonVariables = qm.storage.getElementsWithRequestParams('commonVariables', params);
+    qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
+        var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, params);
         if(!commonVariables || !commonVariables.length){
-            //putCommonVariablesInLocalStorageUsingJsonFile().then(function (commonVariables) {deferred.resolve(commonVariables);});
-            putCommonVariablesInLocalStorageUsingApi().then(function (commonVariables) {deferred.resolve(commonVariables);});
+            putCommonVariablesInLocalStorageUsingApi().then(function (commonVariables) {
+                successHandler(commonVariables);
+            });
         } else {
-            deferred.resolve(commonVariables);
+            successHandler(commonVariables);
         }
-        return deferred.promise;
     };
-    function putCommonVariablesInLocalStorageUsingJsonFile(){
-        var deferred = $q.defer();
-        $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
-            if(!(commonVariables instanceof Array)){
-                qmLogService.error('commonVariables.json is not present!');
-                deferred.reject('commonVariables.json is not present!');
-            } else {
-                qmService.storage.setItem('commonVariables', commonVariables);
-                deferred.resolve(commonVariables);
-            }
-        });
-        return deferred.promise;
-    }
     function putCommonVariablesInLocalStorageUsingApi(){
         var deferred = $q.defer();
         qmService.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-            qmService.storage.setItem('commonVariables', commonVariables);
+            qmService.storage.setItem(qm.items.commonVariables, commonVariables);
             deferred.resolve(commonVariables);
         }, function(error){
             qmLogService.error(error);
