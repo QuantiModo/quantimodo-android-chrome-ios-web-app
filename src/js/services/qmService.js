@@ -6337,22 +6337,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return valueUnitText;
     };
-    qmService.removeArrayElementsWithDuplicateIds = function(array) {
-        var a = array.concat();
-        for(var i = 0; i < a.length; i++) {
-            for(var j = i + 1; j < a.length; j++) {
-                if(!a[i]){qmLogService.error('a[i] not defined!');}
-                if(!a[j]){
-                    qmLogService.error('a[j] not defined!');
-                    return a;
-                }
-                if(a[i].id === a[j].id) {
-                    a.splice(j--, 1);
-                }
-            }
-        }
-        return a;
-    };
     var deleteAllMeasurementsForVariable = function(variableName) {
         qmService.showBlackRingLoader();
         // Delete all measurements for a variable

@@ -607,6 +607,22 @@ window.qm = {
             if(prototypeArray){return true;}
             return false;
         },
+        removeArrayElementsWithDuplicateIds: function(array) {
+            var a = array.concat();
+            for(var i = 0; i < a.length; i++) {
+                for(var j = i + 1; j < a.length; j++) {
+                    if(!a[i]){qmLogService.error('a[i] not defined!');}
+                    if(!a[j]){
+                        qmLogService.error('a[j] not defined!');
+                        return a;
+                    }
+                    if(a[i].id === a[j].id) {
+                        a.splice(j--, 1);
+                    }
+                }
+            }
+            return a;
+        }
     },
     auth: {
         getAndSaveAccessTokenFromCurrentUrl: function(){
@@ -2319,10 +2335,10 @@ window.qm = {
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-                qmService.storage.setItem(qm.items.commonVariables, commonVariables);
+                qm.storage.setItem(qm.items.commonVariables, commonVariables);
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
-                qmLogService.error(error);
+                qmLog.error(error);
             });
         }
     },
@@ -2416,7 +2432,7 @@ window.qm = {
                     qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
                 }
             }
-            variables = qmService.removeArrayElementsWithDuplicateIds(variables);
+            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
             if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
             //variables = addVariableCategoryInfo(variables);
             return variables;
