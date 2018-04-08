@@ -696,6 +696,9 @@ window.qm = {
                     results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
                 }
             }
+            if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
+                results = qm.arrayHelper.getContaining(requestParams.searchPhrase, results);
+            }
             if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
             return results;

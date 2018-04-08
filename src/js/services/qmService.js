@@ -7493,7 +7493,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 self.lastApiQuery = query;
                 dataToPass.requestParams.excludeLocal = self.dataToPass.excludeLocal;
-                qm.variablesHelper.getFromLocalStorageOrApi(query, dataToPass.requestParams, function(results){
+                dataToPass.requestParams.searchPhrase = query;
+                qm.variablesHelper.getFromLocalStorageOrApi(dataToPass.requestParams, function(results){
                     self.lastResults = results;
                     qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
                     deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
