@@ -359,7 +359,7 @@ window.qm = {
                 successHandler(qm.appSettings);
                 return;
             }
-            localforage.getItem(qm.items.appSettings, function(error, appSettings){
+            qm.localForage.getItem(qm.items.appSettings, function(appSettings){
                 if(appSettings){
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
@@ -647,6 +647,7 @@ window.qm = {
             return false;
         },
         removeArrayElementsWithDuplicateIds: function(array) {
+            if(!array){return array;}
             var a = array.concat();
             for(var i = 0; i < a.length; i++) {
                 for(var j = i + 1; j < a.length; j++) {
@@ -1038,7 +1039,7 @@ window.qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
-            localforage.getItem(key, function(error, existingData) {
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var userVariableFromApi = arrayToSave[i];
@@ -1047,22 +1048,20 @@ window.qm = {
                     });
                     existingData.unshift(userVariableFromApi);
                 }
-                localforage.setItem(qm.items.userVariables, existingData);
+                qm.localForage.setItem(qm.items.userVariables, existingData);
             });
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
-            localforage.getItem(key, function(error, existingData) {
-                if(error){
-                    if(errorHandler){errorHandler(error);}
-                    return;
-                }
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
                     var currentValue = obj[propertyName].toLowerCase();
                     return currentValue.indexOf(searchTerm) !== -1;
                 });
                 successHandler(existingData);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
         },
         getItem: function(key, successHandler, errorHandler){
@@ -1095,24 +1094,20 @@ window.qm = {
         getWithFilters: function(localStorageItemName, successHandler, errorHandler, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,
                                  greaterThanPropertyName, greaterThanPropertyValue) {
-            var matchingElements = qm.localForage.getItem(localStorageItemName, function(err, data){
-                if(err){
-                    errorHandler(err);
-                    return;
-                }
-                matchingElements = qm.arrayHelper.filterByPropertyOrSize(data, filterPropertyName, filterPropertyValue,
+            qm.localForage.getItem(localStorageItemName, function(data){
+                data = qm.arrayHelper.filterByPropertyOrSize(data, filterPropertyName, filterPropertyValue,
                     lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
-                successHandler(matchingElements);
+                successHandler(data);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
         },
-        getElementsWithRequestParams: function(localStorageItemName, requestParams) {
-            qm.localForage.getItem(localStorageItemName, function (err, data) {
-                if(err){
-                    errorHandler(err);
-                } else {
-                    data = qm.arrayHelper.filterByRequestParams(data, requestParams);
-                    successHandler(data);
-                }
+        getElementsWithRequestParams: function(localStorageItemName, requestParams, successHandler, errorHandler) {
+            qm.localForage.getItem(localStorageItemName, function (data) {
+                data = qm.arrayHelper.filterByRequestParams(data, requestParams);
+                successHandler(data);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
         }
     },
@@ -2382,7 +2377,8 @@ window.qm = {
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
-                errorHandler(error);
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
             });
         }
     },
@@ -2401,22 +2397,18 @@ window.qm = {
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
         refreshIfLessThanNumberOfReminders: function(){
-            localforage.getItem(qm.items.userVariables, function (error, userVariables) {
+            qm.localForage.getItem(qm.items.userVariables, function (userVariables) {
                 var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-                var numberOfUserVariables =  0;
-                if(userVariables){numberOfUserVariables = userVariables.length;}
+                var numberOfUserVariables = 0;
+                if (userVariables) {numberOfUserVariables = userVariables.length;}
                 qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
-                if(numberOfReminders > numberOfUserVariables){
+                if (numberOfReminders > numberOfUserVariables) {
                     qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                    qm.userVariables.refreshUserVariables();
+                    qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"});
                 }
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
-        },
-        refreshUserVariables: function(){
-            function successHandler(data) {
-                qm.storage.setItem(qm.items.userVariables, data);
-            } // Limit 50 so we don't exceed storage limits
-            qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
         },
         getFromApi: function(params, successHandler, errorHandler){
             if(!params.limit){params.limit = 50;}
@@ -2459,6 +2451,27 @@ window.qm = {
                     }
                     qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
+            });
+        },
+        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
+                successHandler(data);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            qm.userVariables.getFromLocalStorage(params, function(userVariables){
+                if(userVariables && userVariables.length){
+                    successHandler(userVariables);
+                    return;
+                }
+                qm.userVariables.getFromApi(params, function (userVariables) {
+                    successHandler(userVariables);
+                }, function (error) {
+                    errorHandler(error);
+                });
             });
         }
     },

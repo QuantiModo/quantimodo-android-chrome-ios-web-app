@@ -1453,7 +1453,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncAllUserData = function(){
         qmService.syncTrackingReminders();
-        qmService.getFromLocalStorageOrApiDeferred();
+        qm.userVariables.getFromLocalStorageOrApi();
     };
     qmService.refreshUser = function(){
         var deferred = $q.defer();
@@ -4212,29 +4212,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error('Error deleting all measurements for variable: ', error);
             deferred.reject(error);
         });
-        return deferred.promise;
-    };
-    qmService.getFromLocalStorageOrApiDeferred = function(params){
-        var deferred = $q.defer();
-        var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-        if(userVariables && userVariables.length){
-            deferred.resolve(userVariables);
-            return deferred.promise;
-        }
-        if(qm.storage.getAsString(qm.items.userVariables) === "[]"){
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        userVariables = qm.storage.getItem(qm.items.userVariables);
-        if(userVariables && userVariables.length){
-            qmLog.debug('We already have userVariables that didn\'t match filters so no need to refresh them', null);
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        qm.userVariables.refreshUserVariables(function () {
-            userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-            deferred.resolve(userVariables);
-        }, function (error) {deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
