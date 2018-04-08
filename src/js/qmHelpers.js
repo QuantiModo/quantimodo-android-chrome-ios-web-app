@@ -515,13 +515,13 @@ window.qm = {
             return array;
         },
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
-            if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
-            var filteredElementArray = unfilteredElementArray.filter(function( obj ) {
-                var currentObjectValue = obj[filterPropertyName];
-                if(typeof currentObjectValue === "string"){currentObjectValue = currentObjectValue.toLowerCase();}
-                return filterPropertyValue === currentObjectValue;
+            return unfilteredElementArray.filter(function( obj ) {
+                if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
+                    return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
+                } else {
+                    return filterPropertyValue === obj[filterPropertyName];
+                }
             });
-            return filteredElementArray;
         },
         filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
                                          lessThanPropertyName, lessThanPropertyValue,
