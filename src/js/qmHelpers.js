@@ -699,11 +699,7 @@ window.qm = {
                     if(allowedFilterParams.indexOf(filterPropertyNames[i]) === -1){
                         continue;
                     }
-                    results = results.filter(function( obj ) {
-                        if (typeof obj[filterPropertyNames[i]] === "string"){obj[filterPropertyNames[i]] = obj[filterPropertyNames[i]].toLowerCase();}
-                        if (typeof filterPropertyValues[i] === "string"){filterPropertyValues[i] = filterPropertyValues[i].toLowerCase();}
-                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
-                    });
+                    results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
