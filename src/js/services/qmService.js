@@ -7534,7 +7534,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                 });
             }
-            self.searchTextChange();
+            querySearch();
         };
         SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
             "qmService", "qmLogService", "$q", "$log", "dataToPass"];

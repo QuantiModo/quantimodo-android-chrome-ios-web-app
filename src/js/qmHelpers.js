@@ -2521,9 +2521,6 @@ window.qm = {
                 }
 
             });
-        },
-        getFromLocalStorageOrApi: function () {
-
         }
     },
     webNotifications: {
