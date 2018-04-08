@@ -539,7 +539,7 @@ window.qm = {
                 }
             }
             if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
-                matchingElements = qm.arrayHelper.filterByProperty()
+                matchingElements = qm.arrayHelper.filterByProperty(filterPropertyName, filterPropertyValue, matchingElements);
             }
             if(lessThanPropertyName && typeof lessThanPropertyValue !== "undefined"){
                 matchingElements = matchingElements.filter(function( obj ) {
