@@ -517,9 +517,9 @@ window.qm = {
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
             if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
             var filteredElementArray = unfilteredElementArray.filter(function( obj ) {
-                var value = obj[filterPropertyName];
-                if(typeof filterPropertyValue === "string"){value = value.toLowerCase();}
-                return obj.id === value;
+                var currentObjectValue = obj[filterPropertyName];
+                if(typeof currentObjectValue === "string"){currentObjectValue = currentObjectValue.toLowerCase();}
+                return filterPropertyValue === currentObjectValue;
             });
             return filteredElementArray;
         },
