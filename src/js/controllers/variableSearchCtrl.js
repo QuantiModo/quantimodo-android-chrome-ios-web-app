@@ -151,7 +151,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
-                    qmLog.info('variable search results', null, variables);
+                    qmLog.info("Got "  + variables.length + ' variable search results for '+ $scope.state.variableSearchParameters.searchPhrase, null, variables);
                     $scope.state.searching = false;
                     if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
                     showNoVariablesFoundCardIfNecessary(errorHandler);
