@@ -664,6 +664,7 @@ window.qm = {
             return a;
         },
         filterByRequestParams: function(array, requestParams) {
+            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
@@ -684,7 +685,9 @@ window.qm = {
                 } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
                     if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
                     filterPropertyNames.push(key);
-                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
+                } else if (allowedFilterParams.indexOf(key) !== -1){
+                    if(value === false && key === "manualTracking"){ return; }
+                    if(value === null){ return; }
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
                 }
@@ -693,7 +696,14 @@ window.qm = {
                 null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
             if(results){
                 for(var i = 0; i < filterPropertyNames.length; i++){
-                    results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
+                    if(allowedFilterParams.indexOf(filterPropertyNames[i]) === -1){
+                        continue;
+                    }
+                    results = results.filter(function( obj ) {
+                        if (typeof obj[filterPropertyNames[i]] === "string"){obj[filterPropertyNames[i]] = obj[filterPropertyNames[i]].toLowerCase();}
+                        if (typeof filterPropertyValues[i] === "string"){filterPropertyValues[i] = filterPropertyValues[i].toLowerCase();}
+                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
+                    });
                 }
             }
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
