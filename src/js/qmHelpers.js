@@ -2364,6 +2364,10 @@ window.qm = {
             });
         },
         saveToLocalStorage: function(commonVariables){
+            if(!commonVariables){
+                qmLog.error("No commonVariables provided to saveToLocalStorage");
+                return;
+            }
             commonVariables = qm.arrayHelper.convertToArrayIfNecessary(commonVariables);
             var definitelyCommonVariables = [];
             for (var i = 0; i < commonVariables.length; i++) {
