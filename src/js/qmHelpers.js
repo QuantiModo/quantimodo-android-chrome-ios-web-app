@@ -515,13 +515,13 @@ window.qm = {
             return array;
         },
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
-            if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
-            var filteredElementArray = unfilteredElementArray.filter(function( obj ) {
-                var value = obj[filterPropertyName];
-                if(typeof filterPropertyValue === "string"){value = value.toLowerCase();}
-                return obj.id === value;
+            return unfilteredElementArray.filter(function( obj ) {
+                if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
+                    return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
+                } else {
+                    return filterPropertyValue === obj[filterPropertyName];
+                }
             });
-            return filteredElementArray;
         },
         filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,
@@ -699,11 +699,7 @@ window.qm = {
                     if(allowedFilterParams.indexOf(filterPropertyNames[i]) === -1){
                         continue;
                     }
-                    results = results.filter(function( obj ) {
-                        if (typeof obj[filterPropertyNames[i]] === "string"){obj[filterPropertyNames[i]] = obj[filterPropertyNames[i]].toLowerCase();}
-                        if (typeof filterPropertyValues[i] === "string"){filterPropertyValues[i] = filterPropertyValues[i].toLowerCase();}
-                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
-                    });
+                    results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
@@ -1781,6 +1777,7 @@ window.qm = {
                                  lessThanPropertyName, lessThanPropertyValue,
                                  greaterThanPropertyName, greaterThanPropertyValue) {
             var matchingElements = qm.storage.getItem(localStorageItemName);
+            if(!matchingElements){return null;}
             matchingElements = qm.arrayHelper.filterByPropertyOrSize(matchingElements, filterPropertyName, filterPropertyValue,
                 lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
             return matchingElements;
