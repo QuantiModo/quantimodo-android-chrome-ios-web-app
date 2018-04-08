@@ -610,7 +610,7 @@ window.qm = {
         },
         sortByProperty: function(arrayToSort, propertyName){
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
-                qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
+                qmLog.info("Cannot sort by " + propertyName + " because it's not an array!")
                 return arrayToSort;
             }
             if(arrayToSort.length < 2){return arrayToSort;}
@@ -2422,6 +2422,7 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
+                qm.userVariables.saveToLocalStorage(data);
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);

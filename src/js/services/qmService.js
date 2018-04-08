@@ -7460,7 +7460,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var self = this;
             // list of `state` value/display objects
             self.dataToPass = dataToPass;
-            self.items        = loadAll(null, self.dataToPass.excludeLocal);
+            //self.items        = loadAll(null, self.dataToPass.excludeLocal);
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
@@ -7524,13 +7524,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 var deferred = $q.defer();
-                if(!query || query === ""){
-                    self.notFoundText = null;
-                    qmLogService.debug('Why are we searching without a query?');
-                    if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
-                    deferred.resolve(self.items);
-                    return deferred.promise;
-                }
+                // if(!query || query === ""){
+                //     self.notFoundText = null;
+                //     qmLogService.debug('Why are we searching without a query?');
+                //     if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
+                //     deferred.resolve(self.items);
+                //     return deferred.promise;
+                // }
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 if(qmService.arrayHasItemWithNameProperty(self.items)){
                     self.items = qmService.removeItemsWithDifferentName(self.items, query);
@@ -7598,6 +7598,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                 });
             }
+            self.searchTextChange("*");
         };
         SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
             "qmService", "qmLogService", "$q", "$log", "dataToPass"];
