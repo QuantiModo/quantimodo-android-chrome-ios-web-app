@@ -144,8 +144,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLogService.debug($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
-                .then(function(variables){
+            $scope.state.variableSearchParameters.searchPhrase = $scope.state.variableSearchQuery.name;
+            qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function(variables){
                     if(successHandler && variables && variables.length){successHandler();}
                     if(errorHandler && (!variables || !variables.length)){errorHandler();}
                     $scope.state.noVariablesFoundCard.show = false;
@@ -167,7 +167,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
         var params = JSON.parse(JSON.stringify($scope.state.variableSearchParameters));
         params.commonOnly = true;
-        qmService.getCommonVariablesDeferred(params, function (commonVariables) {
+        qm.commonVariablesHelper.getFromLocalStorage().getCommonVariablesDeferred(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));

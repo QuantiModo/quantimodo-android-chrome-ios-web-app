@@ -2380,6 +2380,19 @@ window.qm = {
                 qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
+        },
+        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            qm.commonVariablesHelper.getFromLocalStorage(params, function(variables){
+                if(variables && variables.length){
+                    successHandler(variables);
+                    return;
+                }
+                qm.commonVariablesHelper.getFromApi(params, function (variables) {
+                    successHandler(variables);
+                }, function (error) {
+                    errorHandler(error);
+                });
+            });
         }
     },
     userVariables: {
@@ -2477,8 +2490,16 @@ window.qm = {
         }
     },
     variablesHelper: {
-        getFromLocalStorage: function (requestParams, successHandler, errorHandler){
-            qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function(variables){
+        getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
+            function getFromApi() {
+                qm.userVariables.getFromApi(requestParams, function (variables) {
+                    successHandler(variables);
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                })
+            }
+            qm.userVariables.getFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length){
                     successHandler(variables);
                     return;
@@ -2487,10 +2508,18 @@ window.qm = {
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
                         if(variables && variables.length){
                             successHandler(variables);
+                            return;
                         }
+                        getFromApi();
                     });
+                } else {
+                    getFromApi();
                 }
+
             });
+        },
+        getFromLocalStorageOrApi: function () {
+
         }
     },
     webNotifications: {
