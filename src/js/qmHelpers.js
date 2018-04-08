@@ -2496,11 +2496,15 @@ window.qm = {
             qm.userVariables.getFromLocalStorage(params, function(userVariables){
                 if(userVariables && userVariables.length){
                     successHandler(userVariables);
+                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " in local storage");
                     return;
                 }
+                qmLog.info("No user variables matching " + JSON.stringify(params) + " in local storage");
                 qm.userVariables.getFromApi(params, function (userVariables) {
+                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " from API");
                     successHandler(userVariables);
                 }, function (error) {
+                    qmLog.error(error);
                     errorHandler(error);
                 });
             });
