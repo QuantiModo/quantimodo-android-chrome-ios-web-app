@@ -1782,51 +1782,10 @@ window.qm = {
         getWithFilters: function(localStorageItemName, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,
                                  greaterThanPropertyName, greaterThanPropertyValue) {
-            var unfilteredElementArray = [];
-            var i;
             var matchingElements = qm.storage.getItem(localStorageItemName);
             if(!matchingElements){return null;}
-            if(matchingElements.length){
-                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
-                }
-                if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
-                }
-                if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
-                }
-            }
-            if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    var currentPropertyValue = unfilteredElementArray[i][filterPropertyName];
-                    if(typeof currentPropertyValue === "string"){currentPropertyValue = currentPropertyValue.toLowerCase();}
-                    if(currentPropertyValue === filterPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
-            if(lessThanPropertyName && lessThanPropertyValue){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
-            if(greaterThanPropertyName && greaterThanPropertyValue){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][greaterThanPropertyName] > greaterThanPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
+            matchingElements = qm.arrayHelper.filterByPropertyOrSize(matchingElements, filterPropertyName, filterPropertyValue,
+                lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit) {
@@ -2050,39 +2009,9 @@ window.qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
-            var greaterThanPropertyName = null;
-            var greaterThanPropertyValue = null;
-            var lessThanPropertyName = null;
-            var lessThanPropertyValue = null;
-            var filterPropertyValue = null;
-            var log = [];
-            var filterPropertyValues = [];
-            var filterPropertyNames = [];
-            angular.forEach(requestParams, function(value, key) {
-                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
-                    lessThanPropertyValue = value.replace('(lt)', "");
-                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
-                    lessThanPropertyName = key;
-                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
-                    greaterThanPropertyValue = value.replace('(gt)', "");
-                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
-                    greaterThanPropertyName = key;
-                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
-                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
-                    filterPropertyNames.push(key);
-                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
-                    filterPropertyValues.push(value);
-                    filterPropertyNames.push(key);
-                }
-            }, log);
-            var results =  qm.storage.getWithFilters(localStorageItemName, null,
-                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
-            if(results){
-                for(var i = 0; i < filterPropertyNames.length; i++){
-                    results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
-                }
-            }
-            return results;
+            var array = qm.storage.getItem(localStorageItemName);
+            array = qm.arrayHelper.filterByRequestParams(array, requestParams);
+            return array;
         }
     },
     stringHelper: {
