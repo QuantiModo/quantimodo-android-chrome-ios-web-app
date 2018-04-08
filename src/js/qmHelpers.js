@@ -2468,7 +2468,7 @@ window.qm = {
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
-            qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
                 qmLog.error(error);
