@@ -2357,7 +2357,7 @@ window.qm = {
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-                qm.commonVariablesHelper.saveToLocalStorage(qm.items.commonVariables, commonVariables);
+                qm.commonVariablesHelper.saveToLocalStorage(commonVariables);
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
                 qmLog.error(error);
