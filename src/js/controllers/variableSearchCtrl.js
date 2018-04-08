@@ -175,7 +175,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {qmLogService.error(error);});
+        }, function (error) {
+            qmLog.error(error);
+        });
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
