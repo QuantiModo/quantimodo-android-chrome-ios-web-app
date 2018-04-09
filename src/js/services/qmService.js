@@ -4069,19 +4069,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return setChartExportingOptions(chartConfig);
     };
-    // VARIABLE SERVICE
-    function doWeHaveEnoughVariables(variables){
-        var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
-        return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
-    }
-    function doWeHaveExactMatch(variables, variableSearchQuery){
-        return qmService.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
-    }
-    function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
-        var haveEnough = doWeHaveEnoughVariables(variables);
-        var exactMatch = doWeHaveExactMatch(variables, variableSearchQuery);
-        return !haveEnough && !exactMatch;
-    }
     qmService.goToPredictorsList = function(variableName){
         qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
@@ -5148,12 +5135,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem(requestName, cachedResponse);
     };
     qmService.deleteCachedResponse = function(requestName){qm.storage.removeItem(requestName);};
-    qmService.removeItemsWithDifferentName = function(arrayOfObjects, queryTerm){
-        return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
-    };
-    qmService.arrayHasItemWithNameProperty = function(arrayOfObjects){
-        return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
-    };
     // LOGIN SERVICES
     qmService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         qmService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
@@ -7471,23 +7452,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 var deferred = $q.defer();
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
-                if(qmService.arrayHasItemWithNameProperty(self.items)){
-                    self.items = qmService.removeItemsWithDifferentName(self.items, query);
+                if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items)){
+                    self.items = qm.arrayHelper.removeItemsWithDifferentName(self.items, query);
                     var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
-                    if(qmService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
+                    if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
                         deferred.resolve(self.items);
                         return deferred.promise;
                     }
                 }
                 if(query === self.lastApiQuery && self.lastResults){
                     qmLog.debug("Why are we researching with the same query?");
-                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
+                    deferred.resolve(loadAll(self.lastResults));
                     return deferred.promise;
                 }
                 if(self.lastResults && self.lastResults.length){
                     var matches = qm.arrayHelper.getContaining(query, self.lastResults);
                     if(matches && matches.length){
-                        deferred.resolve(loadAll(matches, self.dataToPass.excludeLocal));
+                        deferred.resolve(loadAll(matches));
                         return deferred.promise;
                     }
                 }
