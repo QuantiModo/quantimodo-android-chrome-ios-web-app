@@ -2364,7 +2364,8 @@ window.qm = {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             params.commonOnly = true;
-            var cachedData = qm.api.cacheGet(params, 'getCommonVariablesFromApi');
+            var cacheKey = 'getCommonVariablesFromApi';
+            var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
                 //successHandler(cachedData);
                 //return;
@@ -2372,7 +2373,8 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCommonVariablesFromApi');
+                qm.commonVariablesHelper.saveToLocalStorage(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
         },
@@ -2442,17 +2444,15 @@ window.qm = {
                 qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
                 if(numberOfReminders > numberOfUserVariables){
                     qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                    qm.userVariables.refreshUserVariables();
+                    qm.userVariables.getFromApi();
                 }
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
             });
         },
-        refreshUserVariables: function(){
-            function successHandler(data) {
-                qm.storage.setItem(qm.items.userVariables, data);
-            } // Limit 50 so we don't exceed storage limits
-            qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
-        },
         getFromApi: function(params, successHandler, errorHandler){
+            if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');

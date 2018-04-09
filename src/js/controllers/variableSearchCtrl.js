@@ -186,14 +186,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.getFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    // Don't sort because it overwrites the order from local storage and from the API
-                    //var sort = ($scope.state.variableSearchParameters.sort) ? $scope.state.variableSearchParameters.sort : '-latestMeasurementTime';
-                    // Put user variables at top of list
-                    //userVariables = qmService.sortByProperty(userVariables, sort);
                     $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
-                    //checkThatVariableNamesExist();
                 }
             } else {
                 if(!$scope.state.variableSearchParameters.includePublic){
@@ -202,7 +197,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 }
                 if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {qmLogService.error(null, error);});
+        }, function (error) {qmLog.error(error);});
     };
     function addUpcToVariableObject(variableObject) {
         if(!variableObject){return;}
