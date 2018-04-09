@@ -197,9 +197,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 }
                 if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {
-            qmLog.error(error);
-        });
+        }, function (error) {qmLog.error(error);});
     };
     function addUpcToVariableObject(variableObject) {
         if(!variableObject){return;}

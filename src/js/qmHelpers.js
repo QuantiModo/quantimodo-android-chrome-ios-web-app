@@ -2442,13 +2442,15 @@ window.qm = {
                 qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
                 if (numberOfReminders > numberOfUserVariables) {
                     qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                    qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"});
+                    qm.userVariables.getFromApi();
                 }
             }, function (error) {
+                qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
         },
         getFromApi: function(params, successHandler, errorHandler){
+            if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
