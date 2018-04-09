@@ -478,6 +478,12 @@ window.qm = {
             }
             return false;
         },
+        arrayHasItemWithNameProperty: function(arrayOfObjects){
+            return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
+        },
+        removeItemsWithDifferentName: function(arrayOfObjects, queryTerm){
+            return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+        },
         concatenateUniqueId: function (preferred, secondary) {
             var a = preferred.concat(secondary);
             for (var i = 0; i < a.length; ++i) {
@@ -514,6 +520,45 @@ window.qm = {
             });
             return array;
         },
+        filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
+            return unfilteredElementArray.filter(function( obj ) {
+                if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
+                    return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
+                } else {
+                    return filterPropertyValue === obj[filterPropertyName];
+                }
+            });
+        },
+        filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
+                                         lessThanPropertyName, lessThanPropertyValue,
+                                         greaterThanPropertyName, greaterThanPropertyValue) {
+            if(!matchingElements){return null;}
+            if(matchingElements.length){
+                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
+                }
+                if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
+                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
+                }
+                if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
+                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
+                }
+            }
+            if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
+                matchingElements = qm.arrayHelper.filterByProperty(filterPropertyName, filterPropertyValue, matchingElements);
+            }
+            if(lessThanPropertyName && typeof lessThanPropertyValue !== "undefined"){
+                matchingElements = matchingElements.filter(function( obj ) {
+                    return obj[lessThanPropertyName] < lessThanPropertyValue;
+                });
+            }
+            if(greaterThanPropertyName && typeof greaterThanPropertyValue !== "undefined"){
+                matchingElements = matchingElements.filter(function( obj ) {
+                    return obj[greaterThanPropertyName] > greaterThanPropertyValue;
+                });
+            }
+            return matchingElements;
+        },
         getByProperty: function(propertyName, value, array){
             array = array.filter(function( obj ) {
                 return obj[propertyName] === value;
@@ -521,6 +566,10 @@ window.qm = {
             return array;
         },
         getContaining: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
             searchTerm = searchTerm.toLowerCase();
             var matches = [];
             for (var i = 0; i < array.length; i++) {
@@ -571,7 +620,7 @@ window.qm = {
         },
         sortByProperty: function(arrayToSort, propertyName){
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
-                qmLog.error("Cannot sort by " + propertyName + " because it's not an array!")
+                qmLog.info("Cannot sort by " + propertyName + " because it's not an array!")
                 return arrayToSort;
             }
             if(arrayToSort.length < 2){return arrayToSort;}
@@ -608,6 +657,7 @@ window.qm = {
             return false;
         },
         removeArrayElementsWithDuplicateIds: function(array) {
+            if(!array){return array;}
             var a = array.concat();
             for(var i = 0; i < a.length; i++) {
                 for(var j = i + 1; j < a.length; j++) {
@@ -622,6 +672,53 @@ window.qm = {
                 }
             }
             return a;
+        },
+        filterByRequestParams: function(array, requestParams) {
+            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome'];
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyValue = null;
+            var log = [];
+            var filterPropertyValues = [];
+            var filterPropertyNames = [];
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
+                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
+                    filterPropertyNames.push(key);
+                } else if (allowedFilterParams.indexOf(key) !== -1){
+                    if(value === false && key === "manualTracking"){ return; }
+                    if(value === null){ return; }
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
+                }
+            }, log);
+            var results = qm.arrayHelper.filterByPropertyOrSize(array, null,
+                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    if(allowedFilterParams.indexOf(filterPropertyNames[i]) === -1){
+                        continue;
+                    }
+                    results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
+                }
+            }
+            if(!results){return null;}
+            if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
+                results = qm.arrayHelper.getContaining(requestParams.searchPhrase, results);
+            }
+            if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
+            results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
+            return results;
         }
     },
     auth: {
@@ -1003,7 +1100,7 @@ window.qm = {
                 if(err){
                     if(errorHandler){errorHandler(err);}
                 } else {
-                    if(successHandler){successHandler()};
+                    if(successHandler){successHandler();}
                 }
             })
         },
@@ -1012,9 +1109,28 @@ window.qm = {
                 if(err){
                     if(errorHandler){errorHandler(err);}
                 } else {
-                    if(successHandler){successHandler()};
+                    if(successHandler){successHandler();}
                 }
             })
+        },
+        getWithFilters: function(localStorageItemName, successHandler, errorHandler, filterPropertyName, filterPropertyValue,
+                                 lessThanPropertyName, lessThanPropertyValue,
+                                 greaterThanPropertyName, greaterThanPropertyValue) {
+            qm.localForage.getItem(localStorageItemName, function(data){
+                data = qm.arrayHelper.filterByPropertyOrSize(data, filterPropertyName, filterPropertyValue,
+                    lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
+                successHandler(data);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getElementsWithRequestParams: function(localStorageItemName, requestParams, successHandler, errorHandler) {
+            qm.localForage.getItem(localStorageItemName, function (data) {
+                data = qm.arrayHelper.filterByRequestParams(data, requestParams);
+                successHandler(data);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
+            });
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -1673,51 +1789,10 @@ window.qm = {
         getWithFilters: function(localStorageItemName, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,
                                  greaterThanPropertyName, greaterThanPropertyValue) {
-            var unfilteredElementArray = [];
-            var i;
             var matchingElements = qm.storage.getItem(localStorageItemName);
             if(!matchingElements){return null;}
-            if(matchingElements.length){
-                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
-                }
-                if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
-                }
-                if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
-                }
-            }
-            if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                if(typeof filterPropertyValue === "string"){filterPropertyValue = filterPropertyValue.toLowerCase();}
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    var currentPropertyValue = unfilteredElementArray[i][filterPropertyName];
-                    if(typeof currentPropertyValue === "string"){currentPropertyValue = currentPropertyValue.toLowerCase();}
-                    if(currentPropertyValue === filterPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
-            if(lessThanPropertyName && lessThanPropertyValue){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
-            if(greaterThanPropertyName && greaterThanPropertyValue){
-                if(matchingElements){unfilteredElementArray = matchingElements;}
-                matchingElements = [];
-                for(i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][greaterThanPropertyName] > greaterThanPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
-                    }
-                }
-            }
+            matchingElements = qm.arrayHelper.filterByPropertyOrSize(matchingElements, filterPropertyName, filterPropertyValue,
+                lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit) {
@@ -1941,39 +2016,9 @@ window.qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
-            var greaterThanPropertyName = null;
-            var greaterThanPropertyValue = null;
-            var lessThanPropertyName = null;
-            var lessThanPropertyValue = null;
-            var filterPropertyValue = null;
-            var log = [];
-            var filterPropertyValues = [];
-            var filterPropertyNames = [];
-            angular.forEach(requestParams, function(value, key) {
-                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
-                    lessThanPropertyValue = value.replace('(lt)', "");
-                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
-                    lessThanPropertyName = key;
-                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
-                    greaterThanPropertyValue = value.replace('(gt)', "");
-                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
-                    greaterThanPropertyName = key;
-                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
-                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
-                    filterPropertyNames.push(key);
-                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
-                    filterPropertyValues.push(value);
-                    filterPropertyNames.push(key);
-                }
-            }, log);
-            var results =  qm.storage.getWithFilters(localStorageItemName, null,
-                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
-            if(results){
-                for(var i = 0; i < filterPropertyNames.length; i++){
-                    results = results.filter(function( obj ) {return obj[filterPropertyNames[i]] === filterPropertyValues[i];});
-                }
-            }
-            return results;
+            var array = qm.storage.getItem(localStorageItemName);
+            array = qm.arrayHelper.filterByRequestParams(array, requestParams);
+            return array;
         }
     },
     stringHelper: {
@@ -2319,7 +2364,8 @@ window.qm = {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             params.commonOnly = true;
-            var cachedData = qm.api.cacheGet(params, 'getCommonVariablesFromApi');
+            var cacheKey = 'getCommonVariablesFromApi';
+            var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
                 //successHandler(cachedData);
                 //return;
@@ -2327,11 +2373,10 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCommonVariablesFromApi');
+                qm.commonVariablesHelper.saveToLocalStorage(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
-            //var options = {};
-            //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
@@ -2339,6 +2384,41 @@ window.qm = {
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
                 qmLog.error(error);
+            });
+        },
+        saveToLocalStorage: function(commonVariables){
+            if(!commonVariables){
+                qmLog.error("No commonVariables provided to saveToLocalStorage");
+                return;
+            }
+            commonVariables = qm.arrayHelper.convertToArrayIfNecessary(commonVariables);
+            var definitelyCommonVariables = [];
+            for (var i = 0; i < commonVariables.length; i++) {
+                if(!commonVariables[i].userId){
+                    definitelyCommonVariables.push(commonVariables[i]);
+                }
+            }
+            qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
+        },
+        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
+                successHandler(data);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            qm.commonVariablesHelper.getFromLocalStorage(params, function(variables){
+                if(variables && variables.length){
+                    successHandler(variables);
+                    return;
+                }
+                qm.commonVariablesHelper.getFromApi(params, function (variables) {
+                    successHandler(variables);
+                }, function (error) {
+                    errorHandler(error);
+                });
             });
         }
     },
@@ -2364,17 +2444,15 @@ window.qm = {
                 qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
                 if(numberOfReminders > numberOfUserVariables){
                     qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                    qm.userVariables.refreshUserVariables();
+                    qm.userVariables.getFromApi();
                 }
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
             });
         },
-        refreshUserVariables: function(){
-            function successHandler(data) {
-                qm.storage.setItem(qm.items.userVariables, data);
-            } // Limit 50 so we don't exceed storage limits
-            qm.userVariables.getFromApi({limit: 50, sort: "-latestMeasurementTime"}, successHandler);
-        },
         getFromApi: function(params, successHandler, errorHandler){
+            if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');
@@ -2415,6 +2493,44 @@ window.qm = {
                     qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
             });
+        },
+        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
+                successHandler(data);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            qm.userVariables.getFromLocalStorage(params, function(userVariables){
+                function doWeHaveEnoughVariables(variables){
+                    var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
+                    return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
+                }
+                function doWeHaveExactMatch(variables, variableSearchQuery){
+                    if(!variableSearchQuery){return true;}
+                    return qm.arrayHelper.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
+                }
+                function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
+                    var haveEnough = doWeHaveEnoughVariables(variables);
+                    var exactMatch = doWeHaveExactMatch(variables, variableSearchQuery);
+                    return !haveEnough && !exactMatch;
+                }
+                if(userVariables && userVariables.length && !shouldWeMakeVariablesSearchAPIRequest(userVariables, params.searchPhrase)){
+                    successHandler(userVariables);
+                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " in local storage");
+                    return;
+                }
+                qmLog.info("No user variables matching " + JSON.stringify(params) + " in local storage");
+                qm.userVariables.getFromApi(params, function (userVariables) {
+                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " from API");
+                    successHandler(userVariables);
+                }, function (error) {
+                    qmLog.error(error);
+                    errorHandler(error);
+                });
+            });
         }
     },
     variablesHelper: {
@@ -2436,6 +2552,34 @@ window.qm = {
             if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
             //variables = addVariableCategoryInfo(variables);
             return variables;
+        },
+        getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
+            function getFromApi() {
+                qm.userVariables.getFromApi(requestParams, function (variables) {
+                    successHandler(variables);
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                })
+            }
+            qm.userVariables.getFromLocalStorage(requestParams, function(variables){
+                if(variables && variables.length){
+                    successHandler(variables);
+                    return;
+                }
+                if(requestParams.includePublic){
+                    qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
+                        if(variables && variables.length){
+                            successHandler(variables);
+                            return;
+                        }
+                        getFromApi();
+                    });
+                } else {
+                    getFromApi();
+                }
+
+            });
         }
     },
     webNotifications: {
