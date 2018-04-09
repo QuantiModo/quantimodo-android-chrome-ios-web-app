@@ -4180,25 +4180,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getFromLocalStorageOrApiDeferred = function(params){
         var deferred = $q.defer();
-        var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-        if(userVariables && userVariables.length){
+        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
             deferred.resolve(userVariables);
-            return deferred.promise;
-        }
-        if(qm.storage.getAsString(qm.items.userVariables) === "[]"){
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        userVariables = qm.storage.getItem(qm.items.userVariables);
-        if(userVariables && userVariables.length){
-            qmLog.debug('We already have userVariables that didn\'t match filters so no need to refresh them', null);
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        qm.userVariables.refreshUserVariables(function () {
-            userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-            deferred.resolve(userVariables);
-        }, function (error) {deferred.reject(error);});
+        }, function (error) {
+            deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
