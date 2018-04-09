@@ -2364,6 +2364,7 @@ window.qm = {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             params.commonOnly = true;
+            if(!params.limit){params.limit = 50;}
             var cacheKey = 'getCommonVariablesFromApi';
             var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
@@ -2455,7 +2456,8 @@ window.qm = {
             if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
-            var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');
+            var cacheKey = 'getUserVariablesFromApi';
+            var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
                 successHandler(cachedData);
                 return;
@@ -2463,7 +2465,8 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+                qm.userVariables.saveToLocalStorage(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
         },
