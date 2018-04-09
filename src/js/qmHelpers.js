@@ -566,6 +566,10 @@ window.qm = {
             return array;
         },
         getContaining: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
             searchTerm = searchTerm.toLowerCase();
             var matches = [];
             for (var i = 0; i < array.length; i++) {
@@ -708,6 +712,7 @@ window.qm = {
                     results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
+            if(!results){return null;}
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
                 results = qm.arrayHelper.getContaining(requestParams.searchPhrase, results);
             }
