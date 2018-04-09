@@ -5142,22 +5142,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             callback(val);
         }
     };
-    qmService.storage.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery, requestParams) {
-        var matchingElements = [];
-        var unfilteredElementArray = qm.storage.getElementsWithRequestParams(localStorageItemName, requestParams);
-        if(!unfilteredElementArray || !unfilteredElementArray.length){return null;}
-        if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
-            qmLogService.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
-            return null;
-        }
-        for(var i = 0; i < unfilteredElementArray.length; i++){
-            if(unfilteredElementArray[i][filterPropertyName].toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1){
-                matchingElements.push(unfilteredElementArray[i]);
-            }
-        }
-        if(requestParams && requestParams.sort){matchingElements = window.qm.arrayHelper.sortByProperty(matchingElements, requestParams.sort);}
-        return matchingElements;
-    };
     qmService.storage.clearStorageExceptForUnitsAndCommonVariables = function(){
         qmLogService.info('Clearing local storage!');
         var commonVariables = qm.storage.getItem(qm.items.commonVariables);
