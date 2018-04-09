@@ -478,6 +478,12 @@ window.qm = {
             }
             return false;
         },
+        arrayHasItemWithNameProperty: function(arrayOfObjects){
+            return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
+        },
+        removeItemsWithDifferentName: function(arrayOfObjects, queryTerm){
+            return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+        },
         concatenateUniqueId: function (preferred, secondary) {
             var a = preferred.concat(secondary);
             for (var i = 0; i < a.length; ++i) {
@@ -2493,7 +2499,20 @@ window.qm = {
         },
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
             qm.userVariables.getFromLocalStorage(params, function(userVariables){
-                if(userVariables && userVariables.length){
+                function doWeHaveEnoughVariables(variables){
+                    var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
+                    return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
+                }
+                function doWeHaveExactMatch(variables, variableSearchQuery){
+                    if(!variableSearchQuery){return true;}
+                    return qm.arrayHelper.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
+                }
+                function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
+                    var haveEnough = doWeHaveEnoughVariables(variables);
+                    var exactMatch = doWeHaveExactMatch(variables, variableSearchQuery);
+                    return !haveEnough && !exactMatch;
+                }
+                if(userVariables && userVariables.length && !shouldWeMakeVariablesSearchAPIRequest(userVariables, params.searchPhrase)){
                     successHandler(userVariables);
                     qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " in local storage");
                     return;
