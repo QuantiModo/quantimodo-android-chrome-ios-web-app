@@ -112,8 +112,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         }
         // If no results or no exact match, show "+ Add [variable]" button for query
         if ((variables.length < 1 || !found)) {
-            $scope.showSearchLoader = false;
-            qmLog.info($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
+            $scope.state.searching = false;
+            qmLog.info($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true');
             $scope.state.showAddVariableButton = true;
             if ($scope.state.nextState === "app.reminderAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
@@ -144,14 +144,14 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmLog.info($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
-                .then(function(variables){
-                    if(successHandler && variables && variables.length){successHandler();}
+            $scope.state.variableSearchParameters.searchPhrase = $scope.state.variableSearchQuery.name;
+            qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function(variables){
+                    if(successHandler && variables && variables.length){successHandler(variables);}
                     if(errorHandler && (!variables || !variables.length)){errorHandler();}
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
-                    qmLog.info('variable search results', null, variables);
+                    qmLog.info("Got "  + variables.length + ' variable search results for '+ $scope.state.variableSearchParameters.searchPhrase, null, variables);
                     $scope.state.searching = false;
                     if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
                     showNoVariablesFoundCardIfNecessary(errorHandler);
@@ -167,7 +167,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
         var params = JSON.parse(JSON.stringify($scope.state.variableSearchParameters));
         params.commonOnly = true;
-        qmService.getCommonVariablesDeferred(params, function (commonVariables) {
+        qm.commonVariablesHelper.getFromLocalStorage().getCommonVariablesDeferred(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
@@ -183,7 +183,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
+        qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));

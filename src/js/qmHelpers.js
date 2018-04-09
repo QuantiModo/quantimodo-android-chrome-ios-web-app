@@ -359,7 +359,7 @@ window.qm = {
                 successHandler(qm.appSettings);
                 return;
             }
-            localforage.getItem(qm.items.appSettings, function(error, appSettings){
+            qm.localForage.getItem(qm.items.appSettings, function(appSettings){
                 if(appSettings){
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
@@ -530,8 +530,8 @@ window.qm = {
             });
         },
         filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
-                                         lessThanPropertyName, lessThanPropertyValue,
-                                         greaterThanPropertyName, greaterThanPropertyValue) {
+                                 lessThanPropertyName, lessThanPropertyValue,
+                                 greaterThanPropertyName, greaterThanPropertyValue) {
             if(!matchingElements){return null;}
             if(matchingElements.length){
                 if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
@@ -1059,7 +1059,7 @@ window.qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
-            localforage.getItem(key, function(error, existingData) {
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var userVariableFromApi = arrayToSave[i];
@@ -1068,22 +1068,20 @@ window.qm = {
                     });
                     existingData.unshift(userVariableFromApi);
                 }
-                localforage.setItem(qm.items.userVariables, existingData);
+                qm.localForage.setItem(qm.items.userVariables, existingData);
             });
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
-            localforage.getItem(key, function(error, existingData) {
-                if(error){
-                    if(errorHandler){errorHandler(error);}
-                    return;
-                }
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
                     var currentValue = obj[propertyName].toLowerCase();
                     return currentValue.indexOf(searchTerm) !== -1;
                 });
                 successHandler(existingData);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
         },
         getItem: function(key, successHandler, errorHandler){
@@ -2380,7 +2378,7 @@ window.qm = {
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-                qm.storage.setItem(qm.items.commonVariables, commonVariables);
+                qm.commonVariablesHelper.saveToLocalStorage(commonVariables);
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
                 qmLog.error(error);
@@ -2437,12 +2435,12 @@ window.qm = {
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
         refreshIfLessThanNumberOfReminders: function(){
-            localforage.getItem(qm.items.userVariables, function (error, userVariables) {
+            qm.localForage.getItem(qm.items.userVariables, function (userVariables) {
                 var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-                var numberOfUserVariables =  0;
-                if(userVariables){numberOfUserVariables = userVariables.length;}
+                var numberOfUserVariables = 0;
+                if (userVariables) {numberOfUserVariables = userVariables.length;}
                 qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
-                if(numberOfReminders > numberOfUserVariables){
+                if (numberOfReminders > numberOfUserVariables) {
                     qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
                     qm.userVariables.getFromApi();
                 }
@@ -2455,6 +2453,7 @@ window.qm = {
             if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
+            var cacheKey = 'getUserVariablesFromApi';
             var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');
             if(cachedData && successHandler){
                 successHandler(cachedData);
@@ -2463,7 +2462,8 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+                qm.userVariables.saveToLocalStorage(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
         },
@@ -2534,25 +2534,6 @@ window.qm = {
         }
     },
     variablesHelper: {
-        getFromLocalStorage: function (requestParams, successHandler, errorHandler){
-            var variables;
-            if(!variables){ variables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams); }
-            if(requestParams.includePublic){
-                if(!variables){variables = [];}
-                var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, requestParams);
-                if(commonVariables && commonVariables.constructor === Array){
-                    variables = variables.concat(commonVariables);
-                } else {
-                    qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
-                    //putCommonVariablesInLocalStorageUsingJsonFile();
-                    qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
-                }
-            }
-            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
-            if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
-            //variables = addVariableCategoryInfo(variables);
-            return variables;
-        },
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {

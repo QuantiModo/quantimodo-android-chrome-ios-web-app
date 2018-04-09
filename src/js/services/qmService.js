@@ -1453,7 +1453,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncAllUserData = function(){
         qmService.syncTrackingReminders();
-        qmService.getFromLocalStorageOrApiDeferred();
+        qm.userVariables.getFromLocalStorageOrApi();
     };
     qmService.refreshUser = function(){
         var deferred = $q.defer();
@@ -4069,20 +4069,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return setChartExportingOptions(chartConfig);
     };
-    // VARIABLE SERVICE
-    // get user variables (without public)
-    qmService.searchUserVariablesDeferred = function(variableSearchQuery, params){
-        var deferred = $q.defer();
-        if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        params.searchPhrase = variableSearchQuery;
-        qm.userVariables.getFromApi(params, function(variables){
-            deferred.resolve(variables);
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.goToPredictorsList = function(variableName){
         qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
@@ -4176,14 +4162,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error('Error deleting all measurements for variable: ', error);
             deferred.reject(error);
         });
-        return deferred.promise;
-    };
-    qmService.getFromLocalStorageOrApiDeferred = function(params){
-        var deferred = $q.defer();
-        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
-            deferred.resolve(userVariables);
-        }, function (error) {
-            deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
@@ -7473,14 +7451,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 var deferred = $q.defer();
-                if(!query || query === ""){
-                    self.notFoundText = null;
-                    qmLogService.debug('Why are we searching without a query?');
-                    if(self.items && self.items.length > 10){
-                        deferred.resolve(self.items);
-                        return deferred.promise;
-                    }
-                }
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                 if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items)){
                     self.items = qm.arrayHelper.removeItemsWithDifferentName(self.items, query);

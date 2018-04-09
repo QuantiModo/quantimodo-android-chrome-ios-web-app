@@ -108,7 +108,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         if(getConnectorName()){params.connectorName = getConnectorName();}
 		if(getVariableName()){
 			if(!$scope.state.variableObject){
-				qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
+				qm.userVariables.getFromLocalStorageOrApi({variableName: getVariableName()}).then(function (variables) {
 					$scope.state.variableObject = variables[0];
 				}, function (error) {qmLogService.error(error);});
 			}
