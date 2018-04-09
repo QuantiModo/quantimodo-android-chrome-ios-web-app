@@ -4083,42 +4083,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    function doWeHaveEnoughVariables(variables){
-        var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
-        return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
-    }
-    function doWeHaveExactMatch(variables, variableSearchQuery){
-        return qmService.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
-    }
-    function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
-        var haveEnough = doWeHaveEnoughVariables(variables);
-        var exactMatch = doWeHaveExactMatch(variables, variableSearchQuery);
-        return !haveEnough && !exactMatch;
-    }
-    // get user variables (without public)
-    qmService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params, successHandler, errorHandler){
-        var variables;
-        if(!params.excludeLocal){
-            variables = qmService.storage.searchLocalStorage(qm.items.userVariables, 'name', variableSearchQuery, params);
-        }
-        if(params.includePublic && !params.excludeLocal){
-            if(!variables){variables = [];}
-            var commonVariables = qmService.storage.searchLocalStorage(qm.items.commonVariables, 'name', variableSearchQuery, params);
-            variables = qm.arrayHelper.concatenateUniqueId(variables, commonVariables);
-        }
-        if(!params.excludeLocal && !shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
-            successHandler(variables);
-            return;
-        }
-        if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        params.searchPhrase = variableSearchQuery;
-        qm.userVariables.getFromApi(params, function(variables){
-            successHandler(variables);
-        }, function(error){
-            qmLogService.error(error);
-            errorHandler(error);
-        });
-    };
     qmService.goToPredictorsList = function(variableName){
         qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
@@ -4216,25 +4180,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getFromLocalStorageOrApiDeferred = function(params){
         var deferred = $q.defer();
-        var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-        if(userVariables && userVariables.length){
+        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
             deferred.resolve(userVariables);
-            return deferred.promise;
-        }
-        if(qm.storage.getAsString(qm.items.userVariables) === "[]"){
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        userVariables = qm.storage.getItem(qm.items.userVariables);
-        if(userVariables && userVariables.length){
-            qmLog.debug('We already have userVariables that didn\'t match filters so no need to refresh them', null);
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        qm.userVariables.refreshUserVariables(function () {
-            userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, params);
-            deferred.resolve(userVariables);
-        }, function (error) {deferred.reject(error);});
+        }, function (error) {
+            deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
@@ -5178,22 +5127,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             callback(val);
         }
     };
-    qmService.storage.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery, requestParams) {
-        var matchingElements = [];
-        var unfilteredElementArray = qm.storage.getElementsWithRequestParams(localStorageItemName, requestParams);
-        if(!unfilteredElementArray || !unfilteredElementArray.length){return null;}
-        if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
-            qmLogService.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
-            return null;
-        }
-        for(var i = 0; i < unfilteredElementArray.length; i++){
-            if(unfilteredElementArray[i][filterPropertyName].toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1){
-                matchingElements.push(unfilteredElementArray[i]);
-            }
-        }
-        if(requestParams && requestParams.sort){matchingElements = window.qm.arrayHelper.sortByProperty(matchingElements, requestParams.sort);}
-        return matchingElements;
-    };
     qmService.storage.clearStorageExceptForUnitsAndCommonVariables = function(){
         qmLogService.info('Clearing local storage!');
         var commonVariables = qm.storage.getItem(qm.items.commonVariables);
@@ -5224,12 +5157,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem(requestName, cachedResponse);
     };
     qmService.deleteCachedResponse = function(requestName){qm.storage.removeItem(requestName);};
-    qmService.removeItemsWithDifferentName = function(arrayOfObjects, queryTerm){
-        return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
-    };
-    qmService.arrayHasItemWithNameProperty = function(arrayOfObjects){
-        return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
-    };
     // LOGIN SERVICES
     qmService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         qmService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
@@ -7483,7 +7410,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var self = this;
             // list of `state` value/display objects
             self.dataToPass = dataToPass;
-            self.items        = loadAll(null, self.dataToPass.excludeLocal);
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
@@ -7550,34 +7476,36 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(!query || query === ""){
                     self.notFoundText = null;
                     qmLogService.debug('Why are we searching without a query?');
-                    if(!self.items || self.items.length < 10){self.items = loadAll(null, self.dataToPass.excludeLocal);}
-                    deferred.resolve(self.items);
-                    return deferred.promise;
+                    if(self.items && self.items.length > 10){
+                        deferred.resolve(self.items);
+                        return deferred.promise;
+                    }
                 }
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
-                if(qmService.arrayHasItemWithNameProperty(self.items)){
-                    self.items = qmService.removeItemsWithDifferentName(self.items, query);
+                if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items)){
+                    self.items = qm.arrayHelper.removeItemsWithDifferentName(self.items, query);
                     var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
-                    if(qmService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
+                    if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
                         deferred.resolve(self.items);
                         return deferred.promise;
                     }
                 }
                 if(query === self.lastApiQuery && self.lastResults){
                     qmLog.debug("Why are we researching with the same query?");
-                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
+                    deferred.resolve(loadAll(self.lastResults));
                     return deferred.promise;
                 }
                 if(self.lastResults && self.lastResults.length){
                     var matches = qm.arrayHelper.getContaining(query, self.lastResults);
                     if(matches && matches.length){
-                        deferred.resolve(loadAll(matches, self.dataToPass.excludeLocal));
+                        deferred.resolve(loadAll(matches));
                         return deferred.promise;
                     }
                 }
                 self.lastApiQuery = query;
                 dataToPass.requestParams.excludeLocal = self.dataToPass.excludeLocal;
-                qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams, function(results){
+                dataToPass.requestParams.searchPhrase = query;
+                qm.variablesHelper.getFromLocalStorageOrApi(dataToPass.requestParams, function(results){
                     self.lastResults = results;
                     qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
                     deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
@@ -7606,10 +7534,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             /**
              * Build `variables` list of key/value pairs
              */
-            function loadAll(variables, excludeLocal) {
-                if(!variables && !excludeLocal){
-                    variables = qm.variablesHelper.getFromLocalStorage(dataToPass.requestParams);
-                }
+            function loadAll(variables) {
                 if(!variables || !variables[0]){ return []; }
                 return variables.map( function (variable) {
                     return {
@@ -7621,6 +7546,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                 });
             }
+            querySearch();
         };
         SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
             "qmService", "qmLogService", "$q", "$log", "dataToPass"];

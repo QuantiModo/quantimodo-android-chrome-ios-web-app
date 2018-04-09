@@ -68,8 +68,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmLogService.debug('compareButtonClick');
         qmService.goToStudyCreationForVariable($scope.state.variableObject);
     };
-    $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
-        {variableObject: $scope.state.variableObject, fromState: $state.current.name});};
+    $scope.recordMeasurementButtonClick = function() {
+        qmLog.info("Going to record measurement for "+JSON.stringify($scope.state.variableObject));
+        qmService.goToState(qmStates.measurementAdd, {variableObject: $scope.state.variableObject, fromState: $state.current.name});
+    };
     $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($scope.state.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){
