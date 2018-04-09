@@ -4069,20 +4069,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return setChartExportingOptions(chartConfig);
     };
-    // VARIABLE SERVICE
-    // get user variables (without public)
-    qmService.searchUserVariablesDeferred = function(variableSearchQuery, params){
-        var deferred = $q.defer();
-        if(!variableSearchQuery){ variableSearchQuery = '*'; }
-        params.searchPhrase = variableSearchQuery;
-        qm.userVariables.getFromApi(params, function(variables){
-            deferred.resolve(variables);
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.goToPredictorsList = function(variableName){
         qmService.goToState(qmStates.predictorsAll, {effectVariableName: variableName});
     };
