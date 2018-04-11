@@ -2378,7 +2378,6 @@ window.qm = {
             apiInstance.getVariables(params, callback);
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
-
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
@@ -2400,6 +2399,7 @@ window.qm = {
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!requestParams.sort || requestParams.sort.indexOf('latestMeasurementTime') !== -1){requestParams.sort = '-numberOfUserVariables';}
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
@@ -2500,6 +2500,7 @@ window.qm = {
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!requestParams.sort || requestParams.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
