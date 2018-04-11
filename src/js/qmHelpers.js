@@ -2361,6 +2361,7 @@ window.qm = {
     commonVariablesHelper: {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
+            if(!params.sort || params.sort.indexOf('latestMeasurementTime') !== -1){params.sort = '-numberOfUserVariables';}
             params.commonOnly = true;
             if(!params.limit){params.limit = 50;}
             var cacheKey = 'getCommonVariablesFromApi';
@@ -2378,7 +2379,6 @@ window.qm = {
             apiInstance.getVariables(params, callback);
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
-
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
@@ -2400,6 +2400,7 @@ window.qm = {
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!requestParams.sort || requestParams.sort.indexOf('latestMeasurementTime') !== -1){requestParams.sort = '-numberOfUserVariables';}
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
@@ -2455,7 +2456,7 @@ window.qm = {
             });
         },
         getFromApi: function(params, successHandler, errorHandler){
-            if(!params){params = {sort: "-latestMeasurementTime"};}
+            if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){params.sort = '-latestMeasurementTime';}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
@@ -2490,6 +2491,7 @@ window.qm = {
             qm.localForage.searchByProperty(qm.items.userVariables, 'name', variableName, function (userVariables) {
                 if(userVariables && userVariables.length){
                     var userVariable = userVariables[0];
+                    /** @namespace userVariable.charts.lineChartWithoutSmoothing */
                     if(typeof params.includeCharts === "undefined" ||
                         (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
                         successHandler(userVariable);
@@ -2500,6 +2502,7 @@ window.qm = {
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!requestParams.sort || requestParams.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
                 successHandler(data);
             }, function (error) {
