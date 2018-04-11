@@ -1014,7 +1014,8 @@ window.qm = {
         units: 'units',
         user: 'user',
         useSmallInbox: 'useSmallInbox',
-        userVariables: 'userVariables'
+        userVariables: 'userVariables',
+        variableCategories: 'variableCategories'
     },
     loaders: {
         robots: function(){
@@ -1059,13 +1060,13 @@ window.qm = {
             localforage.getItem(key, function(error, existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
-                    var userVariableFromApi = arrayToSave[i];
+                    var newObjectToSave = arrayToSave[i];
                     existingData = existingData.filter(function( obj ) {
-                        return obj.id !== userVariableFromApi.id;
+                        return obj.id !== newObjectToSave.id;
                     });
-                    existingData.unshift(userVariableFromApi);
+                    existingData.unshift(newObjectToSave);
                 }
-                localforage.setItem(qm.items.userVariables, existingData);
+                localforage.setItem(key, existingData);
             });
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
@@ -2375,8 +2376,8 @@ window.qm = {
             apiInstance.getVariables(params, callback);
         },
         putCommonVariablesInLocalStorageUsingApi: function(successHandler){
+
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-                qm.storage.setItem(qm.items.commonVariables, commonVariables);
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
                 qmLog.error(error);
@@ -2410,7 +2411,7 @@ window.qm = {
                     successHandler(variables);
                     return;
                 }
-                qm.commonVariablesHelper.getFromApi(params, function (variables) {
+                qm.commonVariablesHelper.getCommonVariablesFromApi(params, function (variables) {
                     successHandler(variables);
                 }, function (error) {
                     errorHandler(error);
@@ -2419,15 +2420,19 @@ window.qm = {
         }
     },
     userVariables: {
-        saveToLocalStorage: function(userVariables){
-            userVariables = qm.arrayHelper.convertToArrayIfNecessary(userVariables);
+        saveToLocalStorage: function(variables){
+            variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
             var definitelyUserVariables = [];
-            for (var i = 0; i < userVariables.length; i++) {
-                if(userVariables[i].userId){
-                    definitelyUserVariables.push(userVariables[i]);
+            var commonVariables = [];
+            for (var i = 0; i < variables.length; i++) {
+                if(variables[i].userId){
+                    definitelyUserVariables.push(variables[i]);
+                } else {
+                    commonVariables.push(variables[i]);
                 }
             }
             qm.localForage.saveWithUniqueId(qm.items.userVariables, definitelyUserVariables);
+            if(commonVariables.length){qm.localForage.saveWithUniqueId(qm.items.commonVariables, commonVariables);}
         },
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
@@ -2552,6 +2557,8 @@ window.qm = {
             return variables;
         },
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
+            if(!requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
+            if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
                     successHandler(variables);
@@ -2561,13 +2568,13 @@ window.qm = {
                 })
             }
             qm.userVariables.getFromLocalStorage(requestParams, function(variables){
-                if(variables && variables.length){
+                if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
                     successHandler(variables);
                     return;
                 }
                 if(requestParams.includePublic){
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
-                        if(variables && variables.length){
+                        if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
                             successHandler(variables);
                             return;
                         }
@@ -2576,7 +2583,6 @@ window.qm = {
                 } else {
                     getFromApi();
                 }
-
             });
         }
     },
@@ -2664,6 +2670,33 @@ window.qm = {
                 var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: deviceTokenString});
                 apiInstance.postDeviceToken(params, callback);
             }
+        }
+    },
+    variableCategoryHelper: {
+        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
+            qmLog.info("Getting variable categories from API...");
+            function globalSuccessHandler(variableCategories){
+                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+                if(successHandler){successHandler(variableCategories);}
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, params, 'getVariableCategoriesFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.getVariableCategories(params, callback);
+        },
+        getVariableCategoriesFromLocalStorageOrApi: function(successHandler, errorHandler){
+            qm.localForage.getItem(qm.items.variableCategories, function(err, data){
+                if (data) {
+                    successHandler(data);
+                } else {
+                    qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                        successHandler(variableCategories);
+                    }, errorHandler)
+                }
+            });
         }
     }
 };
