@@ -5880,19 +5880,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 86400;
         trackingReminder.reminderStartTime = qmService.getUtcTimeStringFromLocalString("19:00:00");
-        var skipReminderSettings = false;
-        if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
-        if(options.skipReminderSettingsIfPossible){
-            if(variableObject.unit.abbreviatedName === '/5'){skipReminderSettings = true;}
-            if(variableObject.unit.abbreviatedName === 'serving'){
-                skipReminderSettings = true;
-                trackingReminder.defaultValue = 1;
-            }
-        }
-        if (!skipReminderSettings) {
+        if(variableObject.variableName === "Blood Pressure"){options.skipReminderSettingsIfPossible = true;}
+        if (!options.skipReminderSettingsIfPossible) {
             qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
             return;
         }
+        if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
         qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', trackingReminder)
             .then(function() {
                 // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
