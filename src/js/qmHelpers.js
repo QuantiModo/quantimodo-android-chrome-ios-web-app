@@ -689,14 +689,16 @@ window.qm = {
                     greaterThanPropertyValue = value.replace('(gt)', "");
                     if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
                     greaterThanPropertyName = key;
-                } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
-                    if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
+                } else if (typeof value === "string" && value !== "Anything" && key !== "sort" && value !== ""){
+                    if(!isNaN(value)){filterPropertyValues.push(Number(filterPropertyValue));} else {filterPropertyValues.push(value);}
                     filterPropertyNames.push(key);
                 } else if (allowedFilterParams.indexOf(key) !== -1){
                     if(value === false && key === "manualTracking"){ return; }
                     if(value === null){ return; }
-                    filterPropertyValues.push(value);
-                    filterPropertyNames.push(key);
+                    if(allowedFilterParams.indexOf(key) !== -1){
+                        filterPropertyValues.push(value);
+                        filterPropertyNames.push(key);
+                    }
                 }
             }, log);
             var results = qm.arrayHelper.filterByPropertyOrSize(array, null,
@@ -2537,25 +2539,6 @@ window.qm = {
         }
     },
     variablesHelper: {
-        getFromLocalStorage: function (requestParams, successHandler, errorHandler){
-            var variables;
-            if(!variables){ variables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, requestParams); }
-            if(requestParams.includePublic){
-                if(!variables){variables = [];}
-                var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, requestParams);
-                if(commonVariables && commonVariables.constructor === Array){
-                    variables = variables.concat(commonVariables);
-                } else {
-                    qmLog.info("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
-                    //putCommonVariablesInLocalStorageUsingJsonFile();
-                    qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
-                }
-            }
-            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
-            if(requestParams && requestParams.sort){variables = window.qm.arrayHelper.sortByProperty(variables, requestParams.sort);}
-            //variables = addVariableCategoryInfo(variables);
-            return variables;
-        },
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
             if(!requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
