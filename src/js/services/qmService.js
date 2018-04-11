@@ -7508,7 +7508,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.variablesHelper.getFromLocalStorageOrApi(dataToPass.requestParams, function(results){
                     self.lastResults = results;
                     qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
+                    deferred.resolve(loadAll(self.lastResults));
                     if(results && results.length){
                         if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
                     } else {
@@ -7517,7 +7517,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 return deferred.promise;
             }
-            function searchTextChange(text) { qmLogService.debug('Text changed to ' + text, null); }
+            function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
             function selectedItemChange(item) {
                 if(!item){return;}
                 self.selectedItem = item;
