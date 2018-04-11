@@ -2361,6 +2361,7 @@ window.qm = {
     commonVariablesHelper: {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
+            if(!params.sort || params.sort.indexOf('latestMeasurementTime') !== -1){params.sort = '-numberOfUserVariables';}
             params.commonOnly = true;
             if(!params.limit){params.limit = 50;}
             var cacheKey = 'getCommonVariablesFromApi';
@@ -2455,7 +2456,7 @@ window.qm = {
             });
         },
         getFromApi: function(params, successHandler, errorHandler){
-            if(!params){params = {sort: "-latestMeasurementTime"};}
+            if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
