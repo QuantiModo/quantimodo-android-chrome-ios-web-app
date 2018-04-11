@@ -2063,8 +2063,11 @@ gulp.task('copyAndroidBuild', [], function () {
     var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
     return copyFiles(paths.apk.outputFolder + '/*.apk', buildFolderPath);
 });
-gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
+gulp.task('copyWwwFolderHtmlToChromeExtension', ['getAppConfigs'], function () {
     return copyFiles('www/*.html', chromeExtensionBuildPath);
+});
+gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
+    return copyFiles('www/**/*', chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
