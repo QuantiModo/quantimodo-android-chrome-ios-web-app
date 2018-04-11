@@ -1533,20 +1533,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
-    qmService.attachVariableCategoryIcons = function(dataArray){
-        if(!dataArray){ return;}
-        var variableCategoryInfo;
-        for(var i = 0; i < dataArray.length; i++){
-            variableCategoryInfo = qmService.getVariableCategoryInfo(dataArray[i].variableCategoryName);
-            if(variableCategoryInfo.ionIcon){
-                if(!dataArray[i].ionIcon){ dataArray[i].ionIcon = variableCategoryInfo.ionIcon;}
-            } else {
-                console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
-                return 'ion-speedometer';
-            }
-        }
-        return dataArray;
-    };
     qmService.getVariableCategoryInfo = function (variableCategoryName) {
         var selectedVariableCategoryObject = $rootScope.variableCategories.Anything;
         if(variableCategoryName && $rootScope.variableCategories[variableCategoryName]){
@@ -2272,7 +2258,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
         qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.qm.timeHelper.getUnixTimestampInMilliseconds());
-        trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
         qmLog.info("Broadcasting qm.storage.getTrackingReminderNotifications");
         $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');
@@ -2712,7 +2697,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var syncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
         if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
-        unfilteredReminders = qmService.attachVariableCategoryIcons(unfilteredReminders);
         if(unfilteredReminders) {
             if(variableCategoryName && variableCategoryName !== 'Anything') {
                 for(var j = 0; j < unfilteredReminders.length; j++){
@@ -5989,7 +5973,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             trackingReminders[i].total = null;
             if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
         }
-        trackingReminders = qmService.attachVariableCategoryIcons(trackingReminders);
         return separateFavoritesAndArchived(trackingReminders);
     }
     function separateFavoritesAndArchived(trackingReminders){
