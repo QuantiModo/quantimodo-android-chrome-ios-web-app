@@ -503,10 +503,9 @@ window.qm = {
                 return object;
             }
             if(qm.arrayHelper.variableIsArray(object)){return object;}
-            var result = Object.keys(object).map(function(key) {
+            return Object.keys(object).map(function(key) {
                 return object[key];
             });
-            return result;
         },
         deleteById: function(id, array){
             array = array.filter(function( obj ) {
@@ -620,7 +619,7 @@ window.qm = {
         },
         sortByProperty: function(arrayToSort, propertyName){
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
-                qmLog.info("Cannot sort by " + propertyName + " because it's not an array!")
+                qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
             }
             if(arrayToSort.length < 2){return arrayToSort;}
@@ -652,9 +651,7 @@ window.qm = {
             if(constructorArray){return true;}
             var instanceOfArray = variable instanceof Array;
             if(instanceOfArray){return true;}
-            var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
-            if(prototypeArray){return true;}
-            return false;
+            return Object.prototype.toString.call(variable) === '[object Array]';
         },
         removeArrayElementsWithDuplicateIds: function(array) {
             if(!array){return array;}
@@ -907,7 +904,7 @@ window.qm = {
                 "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
                 "ratingTextToValueConversionDataSet" : {"depressed" : 1, "sad" : 2, "ok" : 3, "happy" : 4, "ecstatic": 5},
                 trackingQuestion: "How are you?",
-                averageText:"Your average mood is ",
+                averageText:"Your average mood is "
             },
             "Energy Rating" : {
                 id : 108092,
@@ -922,7 +919,7 @@ window.qm = {
                 ratingValueToTextConversionDataSet: {1: "1", 2: "2", 3: "3", 4: "4", 5: "5"},
                 ratingTextToValueConversionDataSet : {"1" : 1, "2" : 2, "3" : 3, "4" : 4, "5" : 5},
                 trackingQuestion:"How is your energy level right now?",
-                averageText:"Your average energy level is ",
+                averageText:"Your average energy level is "
             }
         };
         if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableName){return variables[qm.getAppSettings().primaryOutcomeVariableName];}
@@ -1211,7 +1208,7 @@ window.qm = {
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
                 console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
-            },
+            }
         },
         getFromGlobalsOrLocalStorage : function(variableCategoryName){
             var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
@@ -1628,7 +1625,7 @@ window.qm = {
         enabled: function () {
             if(!qm.userHelper.getUserFromLocalStorage()){return false;}
             return qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled;
-        },
+        }
     },
     reminderHelper: {
         getNumberOfReminders: function(callback){
@@ -1658,8 +1655,7 @@ window.qm = {
             return 0;
         },
         getTrackingRemindersFromLocalStorage: function(){
-            var trackingReminders = qm.storage.getItem(qm.items.trackingReminders);
-            return trackingReminders;
+            return qm.storage.getItem(qm.items.trackingReminders);
         },
         saveToLocalStorage: function(trackingReminders){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
@@ -2121,8 +2117,7 @@ window.qm = {
             var hour = a.getHours();
             var min = a.getMinutes();
             var sec = a.getSeconds();
-            var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            return time;
+            return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
         }
     },
     trackingReminderNotifications : [],
@@ -2209,7 +2204,7 @@ window.qm = {
                 qm.api.responseHandler(error, data, response, successHandler, errorHandler);
             }
             apiInstance.getUnits(callback);
-        },
+        }
     },
     urlHelper: {
         getParam: function(parameterName, url, shouldDecode) {
@@ -2364,6 +2359,7 @@ window.qm = {
         getCommonVariablesFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             params.commonOnly = true;
+            if(!params.limit){params.limit = 50;}
             var cacheKey = 'getCommonVariablesFromApi';
             var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
@@ -2455,7 +2451,8 @@ window.qm = {
             if(!params){params = {sort: "-latestMeasurementTime"};}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
-            var cachedData = qm.api.cacheGet(params, 'getUserVariablesFromApi');
+            var cacheKey = 'getUserVariablesFromApi';
+            var cachedData = qm.api.cacheGet(params, cacheKey);
             if(cachedData && successHandler){
                 successHandler(cachedData);
                 return;
@@ -2463,7 +2460,8 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'UserVariables');
+                qm.userVariables.saveToLocalStorage(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
         },
