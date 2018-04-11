@@ -2682,10 +2682,9 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, params, 'getVariableCategoriesFromApi');
+                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
             }
-            var params = qm.api.addGlobalParams({});
-            apiInstance.getVariableCategories(params, callback);
+            apiInstance.getVariableCategories(callback);
         },
         getVariableCategoriesFromLocalStorageOrApi: function(successHandler, errorHandler){
             qm.localForage.getItem(qm.items.variableCategories, function(err, data){
