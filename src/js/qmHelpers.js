@@ -2456,7 +2456,7 @@ window.qm = {
             });
         },
         getFromApi: function(params, successHandler, errorHandler){
-            if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
+            if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){params.sort = '-latestMeasurementTime';}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
@@ -2491,6 +2491,7 @@ window.qm = {
             qm.localForage.searchByProperty(qm.items.userVariables, 'name', variableName, function (userVariables) {
                 if(userVariables && userVariables.length){
                     var userVariable = userVariables[0];
+                    /** @namespace userVariable.charts.lineChartWithoutSmoothing */
                     if(typeof params.includeCharts === "undefined" ||
                         (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
                         successHandler(userVariable);
