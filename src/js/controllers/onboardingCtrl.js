@@ -80,25 +80,20 @@ angular.module('starter').controller('OnboardingCtrl',
         qm.storage.removeItem('onboardingPages');
     };
     $scope.hideOnboardingPage = function () {
-        $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;});
+        $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {
+            return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;
+        });
         qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        if($scope.circlePage.variableCategoryName && $scope.circlePage.addButtonText){
+            qm.variablesHelper.getFromLocalStorageOrApi({variableCategoryName: $scope.circlePage.variableCategoryName, includePublic: true});
+        }
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             qmService.rootScope.setProperty('hideMenuButton', false);
             qmService.goToDefaultState();
         } else {
             qmService.rootScope.setProperty('hideMenuButton', true);
         }
-    };
-    $scope.goToReminderSearch = function(variableCategoryName) {
-        qmService.goToState('app.reminderSearch',
-            {
-                variableCategoryName : variableCategoryName,
-                fromUrl: window.location.href,
-                hideNavigationMenu: $rootScope.hideNavigationMenu,
-                skipReminderSettingsIfPossible: true,
-                doneState: $state.current.name
-            });
     };
     $scope.postMeasurement = function(circlePage, value) {
         circlePage.measurements = {value: value};
