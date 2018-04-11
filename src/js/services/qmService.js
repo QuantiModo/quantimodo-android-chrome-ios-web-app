@@ -1899,28 +1899,30 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.variableCategories = [];
-    $rootScope.variableCategories = [];
-    $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
-    $rootScope.variableCategories.Anything = qmService.variableCategories.Anything = {
-        defaultUnitAbbreviatedName: '',
-        helpText: "What do you want to record?",
-        variableCategoryNameSingular: "Anything",
-        defaultValuePlaceholderText : "Enter most common value here...",
-        defaultValueLabel : 'Value',
-        addNewVariableCardText : 'Add a new variable',
-        variableCategoryName : '',
-        defaultValue : '',
-        measurementSynonymSingularLowercase : "measurement",
-        ionIcon: "ion-speedometer"};
+    qmService.variableCategories = {
+        Anything: {
+            defaultUnitAbbreviatedName: '',
+            helpText: "What do you want to record?",
+            variableCategoryNameSingular: "Anything",
+            defaultValuePlaceholderText : "Enter most common value here...",
+            defaultValueLabel : 'Value',
+            addNewVariableCardText : 'Add a new variable',
+            variableCategoryName : '',
+            defaultValue : '',
+            measurementSynonymSingularLowercase : "measurement",
+            ionIcon: "ion-speedometer"
+        }
+    };
     qmService.getVariableCategories = function(){
         var deferred = $q.defer();
-        $http.get('data/variableCategories.json').success(function(variableCategories) {
+        qmService.variableCategoryNames = [];
+        qm.variableCategoryHelper.getVariableCategoriesFromLocalStorageOrApi(function(variableCategories) {
             angular.forEach(variableCategories, function(variableCategory, key) {
-                $rootScope.variableCategories[variableCategory.name] = variableCategory;
-                $rootScope.variableCategoryNames.push(variableCategory.name);
+                qmService.variableCategoryNames.push(variableCategory.name);
                 qmService.variableCategories[variableCategory.name] = variableCategory;
             });
+            $rootScope.variableCategoryNames = qmService.variableCategoryNames;
+            $rootScope.variableCategories = qmService.variableCategories;
             setupExplanations();
             deferred.resolve(variableCategories);
         });
@@ -7473,34 +7475,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 var deferred = $q.defer();
-                if(!query || query === ""){
-                    self.notFoundText = null;
-                    qmLogService.debug('Why are we searching without a query?');
-                    if(self.items && self.items.length > 10){
-                        deferred.resolve(self.items);
-                        return deferred.promise;
-                    }
-                }
                 self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
-                if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items)){
-                    self.items = qm.arrayHelper.removeItemsWithDifferentName(self.items, query);
-                    var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
-                    if(qm.arrayHelper.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                        deferred.resolve(self.items);
-                        return deferred.promise;
-                    }
-                }
                 if(query === self.lastApiQuery && self.lastResults){
                     qmLog.debug("Why are we researching with the same query?");
                     deferred.resolve(loadAll(self.lastResults));
                     return deferred.promise;
-                }
-                if(self.lastResults && self.lastResults.length){
-                    var matches = qm.arrayHelper.getContaining(query, self.lastResults);
-                    if(matches && matches.length){
-                        deferred.resolve(loadAll(matches));
-                        return deferred.promise;
-                    }
                 }
                 self.lastApiQuery = query;
                 dataToPass.requestParams.excludeLocal = self.dataToPass.excludeLocal;
@@ -7508,7 +7487,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.variablesHelper.getFromLocalStorageOrApi(dataToPass.requestParams, function(results){
                     self.lastResults = results;
                     qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                    deferred.resolve(loadAll(self.lastResults, self.dataToPass.excludeLocal));
+                    deferred.resolve(loadAll(self.lastResults));
                     if(results && results.length){
                         if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
                     } else {
@@ -7517,7 +7496,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 return deferred.promise;
             }
-            function searchTextChange(text) { qmLogService.debug('Text changed to ' + text, null); }
+            function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
             function selectedItemChange(item) {
                 if(!item){return;}
                 self.selectedItem = item;
@@ -7546,7 +7525,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                 });
             }
-            querySearch();
+            self.querySearch();
         };
         SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
             "qmService", "qmLogService", "$q", "$log", "dataToPass"];
