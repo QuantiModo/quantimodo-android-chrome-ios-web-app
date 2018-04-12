@@ -42,7 +42,7 @@ window.qm = {
         cache: {},
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
-                qmLog.error("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
+                qmLog.info("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url);

@@ -115,7 +115,9 @@ function runFunction(name, arguments)
 self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notification click Received: ' + event.action);
     event.notification.close();
-    if(event.action === ""){qmLog.error("No event action provided! event is: ", null, event);}
+    if(event.action === ""){
+        qmLog.error("No event action provided! event is: ", null, event);
+    }
     if (runFunction(event.action, event.notification.data)) {return;}
     // This looks to see if the current is already open and focuses if it is
     event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
