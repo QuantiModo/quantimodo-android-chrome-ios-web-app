@@ -2535,7 +2535,7 @@ window.qm = {
             if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
-                    successHandler(variables);
+                    if(successHandler){successHandler(variables);}
                 }, function (error) {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
