@@ -18,7 +18,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name, null);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
         qm.reminderHelper.getNumberOfReminders(function (number) {
-            if(number){$scope.state.showSkipButton = true;}
+            if(number > 5){$scope.state.showSkipButton = true;}
         });
     });
     var removeImportPage = function () {
