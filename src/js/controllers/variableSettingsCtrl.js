@@ -228,7 +228,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         $mdDialog.show({
             controller: SelectWikipediaArticleController,
             controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,

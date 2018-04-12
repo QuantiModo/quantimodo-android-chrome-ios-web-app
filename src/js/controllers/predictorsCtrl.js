@@ -176,7 +176,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $mdDialog.show({
             controller: CorrelationSearchCtrl,
             controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
             targetEvent: $event,
             clickOutsideToClose: false // I think true causes auto-close on iOS
