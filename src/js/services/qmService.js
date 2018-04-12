@@ -7529,7 +7529,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $mdDialog.show({
             controller: SelectVariableDialogController,
             controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,
