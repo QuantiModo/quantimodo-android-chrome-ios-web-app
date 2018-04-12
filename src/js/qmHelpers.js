@@ -1612,6 +1612,9 @@ window.qm = {
             android: "android",
             ios: "ios",
             chromeExtension: "chromeExtension"
+        },
+        isDevelopmentMode: function(){
+            return window.location.href.indexOf("://localhost:") !== -1;
         }
     },
     push: {
