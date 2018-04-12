@@ -103,7 +103,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             navigator.splashscreen.hide();
         }
         qmService.hideLoader(0.5);
-        qmService.getDevCredentials();
+        if(qm.platform.isDevelopmentMode()){qmService.getDevCredentials();}
     });
     $scope.register = function() {
         var register = true;
@@ -147,7 +147,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     };
     $scope.login = function(register, event) {
-        if(window.developmentMode && window.devCredentials){
+        if(qm.platform.isDevelopmentMode() && window.devCredentials){
             //showLoginModal(event);
             qmLog.authDebug("$scope.login: has dev credentials");
             qmService.refreshUser();
