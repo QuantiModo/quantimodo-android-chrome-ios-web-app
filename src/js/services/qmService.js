@@ -1142,7 +1142,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.refreshAccessToken(refreshToken, deferred);
         } else if(accessTokenFromLocalStorage){
             deferred.resolve(accessTokenFromLocalStorage);
-        } else if (window.developmentMode) {
+        } else if (qm.platform.isDevelopmentMode()) {
             qmService.getDevCredentials().then(function(){
                 deferred.resolve();
             });
@@ -6535,7 +6535,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //qmService.humanConnect();
         }
     };
-
     qmService.getDevCredentials = function(){
         return $http.get('dev-credentials.json').success(function(response) {
             if(typeof response !== "string"){
