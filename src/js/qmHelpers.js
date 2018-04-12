@@ -1667,7 +1667,6 @@ window.qm = {
                 trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
             }
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
-            qm.userVariables.refreshIfLessThanNumberOfReminders();
         },
         removeArchivedReminders: function(allReminders){
             var activeReminders = qm.reminderHelper.getActive(allReminders);
@@ -2439,21 +2438,6 @@ window.qm = {
         },
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
-        },
-        refreshIfLessThanNumberOfReminders: function(){
-            localforage.getItem(qm.items.userVariables, function (error, userVariables) {
-                var numberOfReminders = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-                var numberOfUserVariables =  0;
-                if(userVariables){numberOfUserVariables = userVariables.length;}
-                qmLog.info(numberOfReminders + " reminders and " + numberOfUserVariables + " user variables in local storage");
-                if(numberOfReminders > numberOfUserVariables){
-                    qmLog.errorOrInfoIfTesting("Refreshing user variables because we have more tracking reminders");
-                    qm.userVariables.getFromApi();
-                }
-            }, function (error) {
-                qmLog.error(error);
-                if(errorHandler){errorHandler(error);}
-            });
         },
         getFromApi: function(params, successHandler, errorHandler){
             if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){params.sort = '-latestMeasurementTime';}
