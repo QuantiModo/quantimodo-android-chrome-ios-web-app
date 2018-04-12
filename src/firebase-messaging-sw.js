@@ -28,7 +28,7 @@ firebase.initializeApp(config);
 var messaging = firebase.messaging();
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
-    console.log(pushData);
+    console.log("push data: ", pushData);
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
         var notificationOptions = {
             actions: [],
@@ -40,7 +40,11 @@ function showNotification(pushData) {
             //lang: string,
             tag: JSON.stringify(pushData)
         };
-        qm.allActions = JSON.parse(pushData.actions);
+        try {
+            qm.allActions = JSON.parse(pushData.actions);
+        } catch (error) {
+            console.error("could not parse actions in pushData: ", pushData);
+        }
         for (var i = 0; i < qm.allActions.length; i++) {
             notificationOptions.actions[i] = {
                 action: qm.allActions[i].callback,
