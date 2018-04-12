@@ -285,7 +285,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
             if($state.current.name !== 'app.login' && $state.current.name !== 'app.intro'){
-                qmLogService.error("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
+                qmLogService.info("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
             }
             return;
         }
