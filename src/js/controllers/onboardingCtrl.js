@@ -15,11 +15,12 @@ angular.module('starter').controller('OnboardingCtrl',
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name, null);
+        qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
         qm.reminderHelper.getNumberOfReminders(function (number) {
             if(number > 5){$scope.state.showSkipButton = true;}
         });
+        initializeAddRemindersPageIfNecessary();
     });
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
@@ -69,6 +70,16 @@ angular.module('starter').controller('OnboardingCtrl',
         $scope.trackLocationChange(event, true);
         $scope.hideOnboardingPage();
     };
+    function initializeAddRemindersPageIfNecessary() {
+        if ($scope.circlePage.variableCategoryName && $scope.circlePage.addButtonText) {
+            qm.variablesHelper.getFromLocalStorageOrApi({
+                variableCategoryName: $scope.circlePage.variableCategoryName,
+                includePublic: true
+            });
+            $scope.circlePage.addButtonText = "Yes";
+            $scope.circlePage.nextPageButtonText = "No";
+        }
+    }
     $scope.connectWeatherOnboarding = function (event) {
         qmService.connectConnectorWithParamsDeferred({}, 'worldweatheronline');
         $scope.hideOnboardingPage();
@@ -85,9 +96,7 @@ angular.module('starter').controller('OnboardingCtrl',
         });
         qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
-        if($scope.circlePage.variableCategoryName && $scope.circlePage.addButtonText){
-            qm.variablesHelper.getFromLocalStorageOrApi({variableCategoryName: $scope.circlePage.variableCategoryName, includePublic: true});
-        }
+        initializeAddRemindersPageIfNecessary();
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             qmService.rootScope.setProperty('hideMenuButton', false);
             qmService.goToDefaultState();
