@@ -2540,13 +2540,13 @@ window.qm = {
             }
             qm.userVariables.getFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                    successHandler(variables);
+                    if(successHandler){successHandler(variables);}
                     return;
                 }
                 if(requestParams.includePublic){
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
                         if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                            successHandler(variables);
+                            if(successHandler){successHandler(variables);}
                             return;
                         }
                         getFromApi();
