@@ -2410,13 +2410,14 @@ window.qm = {
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
             qm.commonVariablesHelper.getFromLocalStorage(params, function(variables){
                 if(variables && variables.length){
-                    successHandler(variables);
+                    if(successHandler){successHandler(variables);}
                     return;
                 }
                 qm.commonVariablesHelper.getCommonVariablesFromApi(params, function (variables) {
-                    successHandler(variables);
+                    if(successHandler){successHandler(variables);}
                 }, function (error) {
-                    errorHandler(error);
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
                 });
             });
         }
