@@ -1145,6 +1145,40 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    localNotifications: {
+         localNotificationsPluginInstalled: function() {
+            var installed = true;
+            if(typeof cordova === "undefined"){
+                qmLog.debug('cordova is undefined!');
+                installed = false;
+            } else if (typeof cordova.plugins === "undefined"){
+                qmLog.debug('cordova.plugins is undefined');
+                installed = false;
+            } else if (typeof cordova.plugins.notification === "undefined"){
+                qmLog.debug('cordova.plugins.notification is undefined');
+                installed = false;
+            }
+            qmLog.debug('localNotificationsPluginInstalled: ' + installed);
+            return installed;
+        },
+        getAllLocalScheduled: function(callback){
+            if(qm.platform.isMobile()){
+                $ionicPlatform.ready(function () {
+                    if(!qm.localNotifications.localNotificationsPluginInstalled()){
+                        qmLog.error("local notifications plugin not installed!");
+                        return;
+                    }
+                    cordova.plugins.notification.local.getAll(function (notifications) {
+                        qmLog.pushDebug('All local notifications: ' + JSON.stringify(notifications));
+                        qm.localForage.setItem(qm.items.scheduledLocalNotifications, notifications);
+                        callback(notifications);
+                    });
+                });
+            } else {
+                callback();
+            }
+        }
+    },
     notifications: {
         actions: {
             trackYesAction: function (data){
@@ -1303,7 +1337,7 @@ window.qm = {
                 qm.notifications.setLastPopupTime();
                 return true;
             }
-            qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + qm.notifications.getTimeSinceLastPopupString() +
+            qmLog.pushDebug('Too soon to show popup!', 'Cannot show popup because last one was only ' + qm.notifications.getTimeSinceLastPopupString() +
                 ' and most Frequent Interval In Minutes is ' + minimumTimeBetweenInMinutes + ". path: " + path);
             return false;
         },
