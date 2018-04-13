@@ -1,16 +1,16 @@
-<div class="card" ng-if="!helpCard.hide" id="{{helpCard.id}}" >
-    <div id="helpInfoCardHeader" class="item item-avatar item-borderless">
+<div class="card connectors-grid-list-dynamic-tiles" ng-if="!helpCard.hide" id="{{helpCard.id}}" style="background-color: #2E294E; border-radius: 15px" >
+    <div id="helpInfoCardHeader" class="item item-avatar item-borderless" style="background-color: #2E294E; padding-left: 0; padding-right: 0">
     <span style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;">
-        <i ng-if="helpCard.icon" class="icon positive {{helpCard.icon}}"></i>
+        <i ng-if="helpCard.icon" class="icon balanced {{helpCard.icon}}"></i>
         <img style="max-width: 40px; max-height: 40px;" ng-if="helpCard.image.url" ng-src="{{helpCard.image.url}}">
     </span>
-        <p style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: black; font-size: 18px;">{{helpCard.title}}</p>
+        <p style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white; font-size: 24px; font-family: 'Open Sans', sans-serif;">{{helpCard.title}}</p>
         <button id="closeButton" class="button button-clear button-assertive" ng-click="hideHelpCard(helpCard)"
                 style="position: absolute; top: 10px; right: 10px; font-size: 25px;" ><i class="ion-close-round"></i>
         </button>
     </div>
-    <div class="item item-body item-borderless" style="text-align: center;">{{helpCard.bodyText}}</div>
-    <div ng-repeat="button in helpCard.buttons" >
+    <div class="item item-body item-borderless" style="padding-top: 5px; color: white; text-align: center; background-color: #2E294E; max-width: 500px; margin: 0 auto; font-size: 14px; font-family: 'Open Sans', sans-serif;">{{helpCard.bodyText}}</div>
+    <div ng-repeat="button in helpCard.buttons">
         <div class="row" >
             <div class="button-bar">
                 <button class="{{button.buttonClass}}"
