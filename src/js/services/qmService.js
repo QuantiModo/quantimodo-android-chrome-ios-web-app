@@ -253,6 +253,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                     qmService.configurePushNotifications();
                 }
+            },
+            getAllLocalScheduled: function(callback){
+                if(qm.platform.isMobile()){
+                    $ionicPlatform.ready(function () {
+                        if(!localNotificationsPluginInstalled()){
+                            qmLog.error("local notifications plugin not installed!");
+                            return;
+                        }
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            qmLog.pushDebug('All local notifications: ' + JSON.stringify(notifications));
+                            qm.localForage.setItem(qm.items.scheduledLocalNotifications, notifications);
+                            callback(notifications);
+                        });
+                    });
+                }
             }
         },
         rootScope: {
@@ -4219,9 +4234,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         cordova.plugins.notification.local.on("update", function(notification) {
-            qmLogService.info('onUpdate: Just updated this notification: ' + JSON.stringify(notification));
-            cordova.plugins.notification.local.getAll(function (notifications) {
-                qmLogService.debug('onUpdate: All notifications after update: ' + JSON.stringify(notifications));
+            qmLog.pushDebug('onUpdate: Just updated this notification: ' + JSON.stringify(notification));
+            qmService.notifications.getAllLocalScheduled(function (notifications) {
+                qmLog.pushDebug('onUpdate: All notifications after update: ' + JSON.stringify(notifications));
             });
         });
         deferred.resolve();
@@ -4287,15 +4302,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         $ionicPlatform.ready(function () {
             if(!qmService.numberOfPendingNotifications){qmService.numberOfPendingNotifications = 0;}
-            cordova.plugins.notification.local.getAll(function (notifications) {
-                qmLogService.debug('onTrigger.updateBadgesAndTextOnAllNotifications: ' + 'All notifications ' + JSON.stringify(notifications));
+            qmService.notifications.getAllLocalScheduled(function (notifications) {
+                qmLog.pushDebug('onTrigger.updateBadgesAndTextOnAllNotifications: ' + 'All notifications ' + JSON.stringify(notifications));
                 for (var i = 0; i < notifications.length; i++) {
                     if(notifications[i].badge === qmService.numberOfPendingNotifications){
                         console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because qmService.numberOfPendingNotifications" +
                             " === notifications[i].badge", notifications[i]);
                         continue;
                     }
-                    qmLogService.debug('onTrigger.updateBadgesAndTextOnAllNotifications' + ':Updating notification', null, notifications[i]);
+                    qmLog.pushDebug('onTrigger.updateBadgesAndTextOnAllNotifications' + ':Updating notification', null, notifications[i]);
                     var notificationSettings = {
                         id: notifications[i].id,
                         badge: qmService.numberOfPendingNotifications,
@@ -4526,15 +4541,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
             if(!localNotificationsPluginInstalled()) {return;}
             /** @namespace cordova.plugins.notification */
-            cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
-                qmLogService.info('cancelIonicNotificationsForDeletedReminders: notification.local.getAll ' +
+            qmService.notifications.getAllLocalScheduled(function (scheduledNotifications) {
+                qmLog.pushDebug('cancelIonicNotificationsForDeletedReminders: notification.local.getAll ' +
                     'scheduledNotifications: ' + JSON.stringify(scheduledNotifications));
                 for (var i = 0; i < scheduledNotifications.length; i++) {
                     var existingReminderFoundInApiResponse = false;
                     for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                         /** @namespace scheduledNotifications[i].id */
                         if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
-                            qmLogService.debug('Server returned a reminder matching' + trackingRemindersFromApi[j], null);
+                            qmLog.pushDebug('Server returned a reminder matching' + trackingRemindersFromApi[j], null);
                             existingReminderFoundInApiResponse = true;
                         }
                     }
@@ -4687,22 +4702,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         if(trackingReminder.reminderFrequency > 0){
-            $ionicPlatform.ready(function () {
-                //qmLogService.debug('Ionic is ready to schedule notifications');
-                if (typeof cordova !== "undefined") {
-                    cordova.plugins.notification.local.getAll(function (notifications) {
-                        qmLogService.info('scheduledNotifications: ' + JSON.stringify(notifications));
-                        qmLogService.debug('scheduleNotificationByReminder: All notifications before scheduling', null, notifications);
-                        for(var i = 0; i < notifications.length; i++){
-                            if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
-                                notifications[i].id === trackingReminder.id){
-                                console.warn("already have a local notification with this trackingReminder's id " +
-                                    "and frequency.  Might be pointlessly rescheduling", trackingReminder);
-                            }
-                        }
-                        if (ionic.Platform.isAndroid()) {scheduleAndroidNotificationByTrackingReminder(trackingReminder);
-                        } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {scheduleIosNotificationByTrackingReminder(trackingReminder);}
-                    });
+            qmService.notifications.getAllLocalScheduled(function (notifications) {
+                qmLog.pushDebug('scheduleNotificationByReminder: All notifications before scheduling', null, notifications);
+                for(var i = 0; i < notifications.length; i++){
+                    if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
+                        notifications[i].id === trackingReminder.id){
+                        console.warn("already have a local notification with this trackingReminder's id " +
+                            "and frequency.  Might be pointlessly rescheduling", trackingReminder);
+                    }
+                }
+                if (ionic.Platform.isAndroid()) {
+                    scheduleAndroidNotificationByTrackingReminder(trackingReminder);
+                } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                    scheduleIosNotificationByTrackingReminder(trackingReminder);
                 }
             });
             /** @namespace $rootScope.platform.isChromeApp */
@@ -4747,24 +4759,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
             notificationSettings.every = everyString;
         }
-        $ionicPlatform.ready(function () {
-            if (localNotificationsPluginInstalled()) {
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    qmLogService.info('scheduleGenericNotification: Local notifications before scheduling: ' + JSON.stringify(notifications), null);
-                    if(notifications[0] && notifications[0].length === 1 &&
-                        notifications[0].every === notificationSettings.every) {
-                        qmLogService.info('Not scheduling generic notification because we already have one with the same frequency.', null);
-                        return;
-                    }
-                    cordova.plugins.notification.local.cancelAll(function () {
-                        qmLogService.info('cancelAllNotifications: notifications have been cancelled', null);
-                        cordova.plugins.notification.local.getAll(function (notifications) {
-                            qmLogService.info('cancelAllNotifications: All notifications after cancelling: ' + JSON.stringify(notifications), null);
-                            initializeLocalPopupNotifications(notificationSettings);
-                        });
-                    });
-                });
+        qmService.notifications.getAllLocalScheduled(function (notifications) {
+            qmLog.pushDebug('scheduleGenericNotification: Local notifications before scheduling: ' + JSON.stringify(notifications), null);
+            if(notifications[0] && notifications[0].length === 1 &&
+                notifications[0].every === notificationSettings.every) {
+                qmLogService.info('Not scheduling generic notification because we already have one with the same frequency.', null);
+                return;
             }
+            cordova.plugins.notification.local.cancelAll(function () {
+                qmLog.pushDebug('cancelAllNotifications: notifications have been cancelled', null);
+                qmService.notifications.getAllLocalScheduled(function (notifications) {
+                    qmLog.pushDebug('cancelAllNotifications: All notifications after cancelling: ' + JSON.stringify(notifications), null);
+                    initializeLocalPopupNotifications(notificationSettings);
+                });
+            });
         });
         if ($rootScope.platform.isChromeExtension || $rootScope.platform.isChromeApp) {
             qm.chrome.scheduleGenericChromeExtensionNotification(notificationSettings.every);
@@ -4789,187 +4797,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes = function(trackingReminders){
-        var deferred = $q.defer();
-        if(!localNotificationsPluginInstalled()) {
-            deferred.resolve();
-            return deferred.promise;
-        }
-        if(!$rootScope.platform.isMobile && !$rootScope.platform.isChromeExtension){
-            qmLogService.debug('Not scheduling notifications because we are not mobile or Chrome extension', null);
-            deferred.resolve();
-            return deferred.promise;
-        }
-        if($rootScope.platform.isAndroid){
-            this.cancelAllNotifications();
-            qmLogService.debug('Not scheduling local notifications because Android uses push notifications', null);
-            deferred.resolve();
-            return deferred.promise;
-        }
-        if(!trackingReminders || !trackingReminders[0]){
-            qmLogService.debug('Not scheduling notifications because we do not have any reminders', null);
-            deferred.resolve();
-            return deferred.promise;
-        }
-        /** @namespace trackingReminders[0].localDailyReminderNotificationTimesForAllReminders */
-        var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimesForAllReminders;
-        qmLogService.debug('localDailyReminderNotificationTimesFromApi: ' + JSON.stringify(localDailyReminderNotificationTimesFromApi), null);
-        if(localDailyReminderNotificationTimesFromApi.length < 1){
-            console.warn('Cannot schedule notifications because ' + 'trackingReminders[0].localDailyReminderNotificationTimes is empty.');
-            deferred.resolve();
-            return deferred.promise;
-        }
-        if($rootScope.platform.isMobile){
-            if(!localNotificationsPluginInstalled()) {
-                deferred.resolve();
-                return deferred.promise;
-            }
-            $ionicPlatform.ready(function () {
-                cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
-                    var notificationSettings = {
-                        every: 60 * 24,
-                        title: "How are you?",
-                        text: "Time to track!",
-                        sound: "file://sound/silent.ogg"
-                    };
-                    qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All ' +
-                        'existing notifications before scheduling', null, existingLocalNotifications);
-                    for (var i = 0; i < existingLocalNotifications.length; i++) {
-                        var existingReminderNotificationTimeFoundInApiResponse = false;
-                        for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
-                            if (parseInt(localDailyReminderNotificationTimesFromApi[j].replace(":", "")) ===
-                                existingLocalNotifications[i].id &&
-                                existingLocalNotifications[i].text === notificationSettings.text
-                            ) {
-                                qmLogService.debug('Server has a reminder notification matching local notification ' +
-                                    JSON.stringify(existingLocalNotifications[i]), null);
-                                existingReminderNotificationTimeFoundInApiResponse = true;
-                            }
-                        }
-                        if(!existingReminderNotificationTimeFoundInApiResponse) {
-                            qmLogService.debug('No matching notification time found so cancelling this local notification ', null, JSON.stringify(existingLocalNotifications[i]));
-                            cordova.plugins.notification.local.cancel(existingLocalNotifications[i].id);
-                        }
-                    }
-                    for (var k = 0; k < localDailyReminderNotificationTimesFromApi.length; k++) {
-                        qmLogService.debug('localDailyReminderNotificationTimesFromApi[k] is ', null, localDailyReminderNotificationTimesFromApi[k]);
-                        var existingLocalNotificationScheduled = false;
-                        for (var l = 0; l < existingLocalNotifications.length; l++) {
-                            if(!localDailyReminderNotificationTimesFromApi[k]){
-                                qmLogService.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
-                                    'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
-                            }
-                            if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
-                                existingLocalNotifications[l].id &&
-                                existingLocalNotifications[l].text === notificationSettings.text) {
-                                qmLogService.debug('Server has a reminder notification matching local notification ' + JSON.stringify(existingLocalNotifications[l]), null);
-                                existingLocalNotificationScheduled = true;
-                            }
-                        }
-                        if(!existingLocalNotificationScheduled) {
-                            if(!localDailyReminderNotificationTimesFromApi[k]){
-                                qmLogService.error("Did not get localDailyReminderNotificationTimesFromApi", trackingReminders);
-                            }
-                            var at = new Date();
-                            var splitUpLocalDailyReminderNotificationTimesFromApi = localDailyReminderNotificationTimesFromApi[k].split(":");
-                            at.setHours(splitUpLocalDailyReminderNotificationTimesFromApi[0]);
-                            at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
-                            var now = new Date();
-                            if(at < now){at = new Date(at.getTime() + 60 * 60 * 24 * 1000);}
-                            qmLogService.debug('No existing local notification so scheduling ', null, JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
-                            notificationSettings.at = at;
-                            notificationSettings.id = parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""));
-                            if(qmService.numberOfPendingNotifications > 0) {
-                                notificationSettings.badge = 1; // Less stressful
-                                //notificationSettings.badge = qmService.numberOfPendingNotifications;
-                            }
-                            if($rootScope.platform.isAndroid){notificationSettings.icon = 'ic_stat_icon_bw';}
-                            if($rootScope.platform.isIOS){notificationSettings.every = 'day';}
-                            if(!(notificationSettings.at instanceof Date)){
-                                var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                qmLogService.error(errorMessage);
-                                return;
-                            }
-                            if(!isNaN(notificationSettings.at) &&
-                                parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
-                                !isNaN(parseInt(notificationSettings.at, 10))){
-                                var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                qmLogService.error(intErrorMessage);
-                                return;
-                            }
-                            try{
-                                qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: ' +
-                                    'About to schedule this notification: ', null, JSON.stringify(notificationSettings));
-                                cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
-                                    qmLogService.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes:' +
-                                        ' notification scheduled: ' + JSON.stringify(notification), null);
-                                });
-                            } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                                qmLogService.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
-                                    ' notificationSettings: ' + JSON.stringify(notificationSettings));
-                            }
-                        }
-                    }
-                });
-                deferred.resolve();
-            });
-        }
-        if($rootScope.platform.isChromeExtension){
-            chrome.alarms.getAll(function(existingLocalAlarms) {
-                qmLogService.debug('Existing Chrome alarms before scheduling: ', null, existingLocalAlarms);
-                for (var i = 0; i < existingLocalAlarms.length; i++) {
-                    var existingAlarmTimeFoundInApiResponse = false;
-                    for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
-                        if (existingLocalAlarms[i].name === localDailyReminderNotificationTimesFromApi[j]) {
-                            qmLogService.debug('Server has a reminder notification time matching time ' + existingLocalAlarms[i].name, null);
-                            existingAlarmTimeFoundInApiResponse = true;
-                        }
-                    }
-                    if(!existingAlarmTimeFoundInApiResponse) {
-                        qmLogService.debug('No api reminder found matching so cancelling this alarm ', null, JSON.stringify(existingLocalAlarms[i]));
-                        chrome.alarms.clear(existingLocalAlarms[i].name);
-                    }
-                }
-                for (var k = 0; k < localDailyReminderNotificationTimesFromApi.length; k++) {
-                    var existingAlarmScheduled = false;
-                    for (var l = 0; l < existingLocalAlarms.length; l++) {
-                        if (existingLocalAlarms[l].name === localDailyReminderNotificationTimesFromApi[k]) {
-                            qmLogService.debug('Server has a reminder notification matching local notification ' +
-                                JSON.stringify(existingLocalAlarms[i]), null);
-                            existingAlarmScheduled = true;
-                        }
-                    }
-                    if(!existingAlarmScheduled) {
-                        if(!localDailyReminderNotificationTimesFromApi[k]){
-                            qmLogService.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
-                                'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
-                        }
-                        var alarmInfo = {};
-                        var at = new Date(); // The 0 there is the key, which sets the date to the epoch
-                        var splitUpLocalDailyReminderNotificationTimesFromApi =
-                            localDailyReminderNotificationTimesFromApi[k].split(":");
-                        at.setHours(splitUpLocalDailyReminderNotificationTimesFromApi[0]);
-                        at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
-                        alarmInfo.when =  at.getTime();
-                        alarmInfo.periodInMinutes = 24 * 60;
-                        qmLogService.debug('No existing local notification so scheduling ', null, alarmInfo);
-                        chrome.alarms.create(localDailyReminderNotificationTimesFromApi[k], alarmInfo);
-                    }
-                }
-            });
-            deferred.resolve();
-        }
-        return deferred.promise;
-    };
     // cancel all existing notifications
     qmService.cancelAllNotifications = function(){
         var deferred = $q.defer();
         if(typeof cordova !== "undefined" && typeof cordova.plugins.notification !== "undefined"){
             $ionicPlatform.ready(function () {
                 cordova.plugins.notification.local.cancelAll(function () {
-                    qmLogService.debug('cancelAllNotifications: notifications have been cancelled', null);
-                    cordova.plugins.notification.local.getAll(function (notifications) {
-                        qmLogService.debug('cancelAllNotifications: All notifications after cancelling' + JSON.stringify(notifications));
+                    qmLog.pushDebug('cancelAllNotifications: notifications have been cancelled', null);
+                    qmService.notifications.getAllLocalScheduled(function (notifications) {
+                        qmLog.pushDebug('cancelAllNotifications: All notifications after cancelling' + JSON.stringify(notifications));
                     });
                     deferred.resolve();
                 });
@@ -4980,7 +4816,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
             });
         } else {
-            qmLogService.debug('cancelAllNotifications: Chrome and cordova are not defined.', null);
+            qmLog.pushDebug('cancelAllNotifications: Chrome and cordova are not defined.', null);
             deferred.resolve();
         }
         return deferred.promise;
