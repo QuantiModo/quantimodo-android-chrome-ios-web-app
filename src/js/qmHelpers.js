@@ -1009,6 +1009,7 @@ window.qm = {
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
         refreshToken: 'refreshToken',
+        scheduledLocalNotifications: 'scheduledLocalNotifications',
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminders: 'trackingReminders',
