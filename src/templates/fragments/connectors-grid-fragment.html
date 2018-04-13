@@ -9,9 +9,11 @@
                   md-colspan="1"
                   md-colspan-sm="1"
                   md-colspan-xs="1"
-                  style="background: blue;" ng-cloak>
+                  style="background: {{connector.backgroundColor}};" ng-cloak>
        <img ng-src="{{connector.image}}" alt="Connector Image" style="width:40%;">
-      <md-grid-tile-footer><h3 style="color:white; border-radius:15px;">{{connector.displayName}} </h3></md-grid-tile-footer>
+      <md-grid-tile-footer>
+          <h3 style="color:white; border-radius:15px;">{{connector.displayName}} </h3>
+      </md-grid-tile-footer>
     </md-grid-tile>
   </md-grid-list>
 </div>
