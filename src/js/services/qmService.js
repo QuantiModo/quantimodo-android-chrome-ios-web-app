@@ -163,7 +163,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             drawOverAppsPopupRatingNotification: function(ratingTrackingReminderNotification, force) {
-                qmLog.info('Called qmService.notifications.drawOverAppsPopupRatingNotification...');
+                qmLog.pushDebug('Called qmService.notifications.drawOverAppsPopupRatingNotification...');
                 if(!ratingTrackingReminderNotification){
                     // Need to use unique rating notifications because we need to setup initial popup via url params
                     ratingTrackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
@@ -171,7 +171,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.notifications.drawOverAppsPopup(qm.notifications.getRatingNotificationPath(ratingTrackingReminderNotification), force);
             },
             drawOverAppsPopup: function(path, force){
-                qmLog.info('Called qmService.notifications.drawOverAppsPopup...');
+                qmLog.pushDebug('Called qmService.notifications.drawOverAppsPopup...');
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){
                     qmLog.error("Cannot show popup because it has been disabled");
                     return false;
@@ -191,7 +191,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     verticalPosition: "bottom",    // set vertical alignment of view.
                     horizontalPosition: "center"  // set horizontal alignment of view.
                 };
-                window.qmLog.info('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
+                qmLog.pushDebug('drawOverAppsPopupRatingNotification options: ' + JSON.stringify(options));
                 /** @namespace window.overApps */
                 window.overApps.startOverApp(options, function (success){
                     if(success.toLowerCase().indexOf('no permission') !== -1){
@@ -232,8 +232,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             },
             showAndroidPopupForMostRecentNotification: function(){
-                if(!qm.platform.isAndroid()){window.qmLog.info('Can only show popups on Android'); return;}
-                qmLog.info('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
+                if(!qm.platform.isAndroid()){qmLog.pushDebug('Can only show popups on Android'); return;}
+                qmLog.pushDebug('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
                 window.qm.notifications.refreshIfEmpty(function () {
                     // Need to use unique rating notifications because we need to setup initial popup via url params
                     if(qm.notifications.getMostRecentRatingNotificationNotInSyncQueue()) {
