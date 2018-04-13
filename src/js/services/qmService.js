@@ -6720,10 +6720,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
     }
-
     qmService.sendBugReport = function() {
         qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
-        function addAppInformationToTemplate(template){
+        function addAppInformationToTemplate(template, callback){
             function addSnapShotList(template) {
                 if(typeof $ionicDeploy !== "undefined"){
                     $ionicPlatform.ready(function () {
@@ -6759,24 +6758,29 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.versionInfo) + '\r\n';
             }
             template = addSnapShotList(template);
-            // TODO: Maybe fix me
-            //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});
-            //template = template + prettyJsonStringify(metaData);
-            qmLogService.error("Bug Report");
-            return template;
+            if(localNotificationsPluginInstalled()){
+                qmService.notifications.getAllLocalScheduled(function (localNotifications) {
+                    template = template + "localNotifications: " + JSON.stringify(localNotifications) + '\r\n';
+                    callback(template);
+                })
+            } else {
+                callback(template);
+            }
         }
         var subjectLine = encodeURIComponent( $rootScope.appSettings.appDisplayName + ' ' + qm.getAppSettings().versionNumber + ' Bug Report');
         var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
             "Additional Information: " + '\r\n';
-        template = addAppInformationToTemplate(template);
-        var emailBody = encodeURIComponent(template);
-        var emailAddress = 'mike@quantimo.do';
-        var fallbackUrl = 'http://help.quantimo.do';
-        if($rootScope.platform.isMobile){
-            qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-        } else {
-            qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-        }
+        addAppInformationToTemplate(template, function(template){
+            var emailBody = encodeURIComponent(template);
+            var emailAddress = 'mike@quantimo.do';
+            var fallbackUrl = 'http://help.quantimo.do';
+            qmLog.error("Bug Report", template);
+            if(qm.platform.isMobile()){
+                qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+            } else {
+                qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+            }
+        });
     };
     qmService.logEventToGA = function(category, action, label, value, nonInteraction, customDimension, customMetric){
         if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
