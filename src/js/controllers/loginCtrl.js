@@ -129,7 +129,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode);  // get access token from authorization code
                         ref.close();  // close the sibling tab
-                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                        // Called twice!  Let's do this later after the user understands the point of popups
+                        //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 }
@@ -207,7 +208,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         ref.close();
                         var withJWT = true;
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
-                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                        // Called twice!  Let's do this later after the user understands the point of popups
+                        //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 });
@@ -246,7 +248,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.hideLoader();
                     qmLog.authDebug('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
-                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                    // Called twice!  Let's do this later after the user understands the point of popups
+                    //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }, function (errorMessage) {
                     qmLog.setAuthDebug(true);
                     qmService.hideLoader();
