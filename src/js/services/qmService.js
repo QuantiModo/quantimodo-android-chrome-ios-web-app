@@ -5081,7 +5081,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.inAppBrowserRef = undefined;
                     qmLog.authDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code');
                     qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                    // Called twice!  Let's do this later after the user understands the point of popups
+                    //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }
                 qmService.checkLoadStartEventUrlForErrors(qmService.inAppBrowserRef, event);
             });
