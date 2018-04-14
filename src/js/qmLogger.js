@@ -258,6 +258,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         console.error('API ERROR URL ' + metaData.test_api_url, metaData);
         delete metaData.apiResponse;
     }
+    metaData.local_notifications = qm.storage.getItem(qm.items.scheduledLocalNotifications);
     //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
     metaData = qmLog.obfuscateSecrets(metaData);
@@ -312,10 +313,7 @@ window.qmLog.setupIntercom = function() {
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
     if(typeof Bugsnag === "undefined"){ console.error('Bugsnag not defined', metaData); return; }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
-    qm.localNotifications.getAllLocalScheduled(function (notifications) {
-        metaData.local_notifications = notifications;
-        Bugsnag.notify(name, message, metaData, logLevel);
-    });
+    Bugsnag.notify(name, message, metaData, logLevel);
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
     var globalLogLevelValue = logLevels[qmLog.getLogLevelName()];
