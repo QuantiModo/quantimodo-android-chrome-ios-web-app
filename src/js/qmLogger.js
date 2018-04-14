@@ -307,7 +307,7 @@ window.qmLog.setupIntercom = function() {
         user_id: qm.userHelper.getUserFromLocalStorage().id,
         app_name: qm.getAppSettings().appDisplayName,
         app_version: qm.getAppSettings().versionNumber,
-        platform: qm.getPlatform()
+        platform: qm.platform.getCurrentPlatform()
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){

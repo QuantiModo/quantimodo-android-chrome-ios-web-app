@@ -170,6 +170,11 @@ window.qm = {
             if(window.location.href.indexOf('.quantimo.do') === -1){
                 return null;
             }
+            function getSubDomain(){
+                var full = window.location.host;
+                var parts = full.split('.');
+                return parts[0].toLowerCase();
+            }
             var subDomain = getSubDomain();
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[getSubDomain()];
             if(clientIdFromAppConfigName){
@@ -238,8 +243,8 @@ window.qm = {
             return qm.appsManager.getQuantiModoApiUrl();
         },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
-            qmLog.info("Making POST request to " + path);
-            var url = window.qm.apiHelper.getRequestUrl(path);
+            var url = window.qm.api.getRequestUrl(path);
+            qmLog.info("Making POST request to " + url);
             try {
                 qm.api.postViaXhr(body, url, successHandler);
             } catch (error) {
@@ -249,6 +254,7 @@ window.qm = {
         },
         getViaXhrOrFetch: function(url, successHandler, errorHandler){
             try {
+                qmLog.info("Making GET request to " + url);
                 qm.api.getViaXhr(url, successHandler);
             } catch (error) {
                 qmLog.error(error); // Need fetch for service worker
@@ -326,6 +332,42 @@ window.qm = {
         },
         postMeasurements: function(measurements, onDoneListener) {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
+        },
+        getRequestUrl: function(path) {
+            function addGlobalQueryParameters(url) {
+                function addQueryParameter(url, name, value){
+                    if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
+                    return url + "&" + name + "=" + value;
+                }
+                if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
+                    url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
+                } else {
+                    window.qmLog.error('No access token!');
+                    if(!qm.serviceWorker){
+                        qm.chrome.showSignInNotification();
+                    }
+                }
+                function getAppName() {
+                    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
+                    return window.qm.urlHelper.getParam('appName');
+                }
+                if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
+                function getAppVersion() {
+                    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
+                    if(qm.appSettings){return qm.appSettings.versionNumber;}
+                    return window.qm.urlHelper.getParam('appVersion');
+                }
+                if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
+                if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
+                return url;
+            }
+            function getAppHostName() {
+                if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
+                return "https://app.quantimo.do";
+            }
+            var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
+            qmLog.debug("Making API request to " + url);
+            return url;
         }
     },
     appsManager: { // jshint ignore:line
@@ -722,6 +764,22 @@ window.qm = {
             if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
             return results;
+        },
+        getUnique: function(array, propertyName) {
+            var flags = [], output = [], l = array.length, i;
+            for( i=0; i<l; i++) {
+                if(flags[array[i][propertyName]]) {continue;}
+                flags[array[i][propertyName]] = true;
+                output.push(array[i]);
+            }
+            return output;
+        },
+        deleteFromArrayByProperty: function(localStorageItemArray, propertyName, propertyValue) {
+            var elementsToKeep = [];
+            for(var i = 0; i < localStorageItemArray.length; i++){
+                if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
+            }
+            return elementsToKeep;
         }
     },
     auth: {
@@ -1369,7 +1427,7 @@ window.qm = {
                 return null;
             }
             qmLog.info("Got " + ratingNotifications.length + " total NON-UNIQUE rating notification from storage");
-            var unique = getUnique(ratingNotifications, 'variableName');
+            var unique = qm.arrayHelper.getUnique(ratingNotifications, 'variableName');
             qmLog.info("Got " + unique.length + " UNIQUE rating notifications");
             return unique;
         },
@@ -1381,7 +1439,7 @@ window.qm = {
                 return null;
             }
             qmLog.info("Got " + notifications.length + " total NON-UNIQUE notification from storage");
-            var unique = getUnique(notifications, 'variableName');
+            var unique = qm.arrayHelper.getUnique(notifications, 'variableName');
             qmLog.info("Got " + unique.length + " UNIQUE notifications");
             return unique;
         },
@@ -1406,7 +1464,7 @@ window.qm = {
                 return null;
             }
             qmLog.info("Got " + last24.length + " total NON-UNIQUE notification due in last 24 from storage");
-            var unique = getUnique(last24, 'variableName');
+            var unique = qm.arrayHelper.getUnique(last24, 'variableName');
             qmLog.info("Got " + unique.length + " UNIQUE notifications");
             return unique;
         },
@@ -1449,7 +1507,7 @@ window.qm = {
                 return;
             }
             // Can't use QM SDK in service worker
-            qm.api.getViaXhrOrFetch(window.qm.apiHelper.getRequestUrl(route), function (response) {
+            qm.api.getViaXhrOrFetch(window.qm.api.getRequestUrl(route), function (response) {
                 if(response.status === 401){
                     qm.chrome.showSignInNotification();
                 } else {
@@ -1461,6 +1519,16 @@ window.qm = {
         refreshAndShowPopupIfNecessary: function(notificationParams) {
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
                 var uniqueNotification = window.qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
+                function objectLength(obj) {
+                    var result = 0;
+                    for(var prop in obj) {
+                        if (obj.hasOwnProperty(prop)) {
+                            // or Object.prototype.hasOwnProperty.call(obj, prop)
+                            result++;
+                        }
+                    }
+                    return result;
+                }
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -1762,7 +1830,7 @@ window.qm = {
             if(!localStorageItemArray){
                 window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
             } else {
-                qm.storage.setItem(localStorageItemName, deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
+                qm.storage.setItem(localStorageItemName, qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
             }
         },
         deleteByPropertyInArray: function (localStorageItemName, propertyName, objectsArray){
@@ -1772,7 +1840,7 @@ window.qm = {
             } else {
                 var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
                 for (var i=0; i < arrayOfValuesForProperty.length; i++) {
-                    localStorageItemArray = deleteFromArrayByProperty(localStorageItemArray, propertyName, arrayOfValuesForProperty[i]);
+                    localStorageItemArray = qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, arrayOfValuesForProperty[i]);
                 }
                 qm.storage.setItem(localStorageItemName, localStorageItemArray);
             }
@@ -2347,7 +2415,7 @@ window.qm = {
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
-                        var url = window.qm.apiHelper.getRequestUrl("v2/auth/login");
+                        var url = window.qm.api.getRequestUrl("v2/auth/login");
                         chrome.tabs.create({"url": url, "selected": true});
                     }
                 }
@@ -2682,108 +2750,17 @@ window.qm = {
                 }
             });
         }
-    }
+    },
+    getSourceName: function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();}
 };
 // returns bool | string
 // if search param is found: returns its value
 // returns false if not found
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
-qm.getSourceName = function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.getPlatform();};
-qm.getPlatform = function(){
-    if(qm.platform.isChromeExtension()){return "chromeExtension";}
-    if(window.location.href.indexOf('https://') !== -1){return "web";}
-    return 'mobile';
-};
-function getSubDomain(){
-    var full = window.location.host;
-    var parts = full.split('.');
-    return parts[0].toLowerCase();
-}
-function getAppName() {
-    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
-    return window.qm.urlHelper.getParam('appName');
-}
-function getAppVersion() {
-    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
-    if(qm.appSettings){return qm.appSettings.versionNumber;}
-    return window.qm.urlHelper.getParam('appVersion');
-}
-function multiplyScreenHeight(factor) {
-    if(typeof screen === "undefined"){return false;}
-    return parseInt(factor * screen.height);
-}
-function multiplyScreenWidth(factor) {
-    if(typeof screen === "undefined"){return false;}
-    return parseInt(factor * screen.height);
-}
-function addGlobalQueryParameters(url) {
-    if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
-        url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
-    } else {
-        window.qmLog.error('No access token!');
-        if(!qm.serviceWorker){
-            qm.chrome.showSignInNotification();
-        }
-    }
-    if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
-    if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
-    if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
-    return url;
-}
-function getAppHostName() {
-    if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
-    return "https://app.quantimo.do";
-}
-function objectLength(obj) {
-    var result = 0;
-    for(var prop in obj) {
-        if (obj.hasOwnProperty(prop)) {
-            // or Object.prototype.hasOwnProperty.call(obj, prop)
-            result++;
-        }
-    }
-    return result;
-}
-window.qm.apiHelper.getRequestUrl = function(path) {
-    var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
-    console.log("Making API request to " + url);
-    return url;
-};
-/**
- * @return {boolean}
- */
-function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (exception) {
-        return false;
-    }
-    return true;
-}
-function deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue) {
-    var elementsToKeep = [];
-    for(var i = 0; i < localStorageItemArray.length; i++){
-        if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
-    }
-    return elementsToKeep;
-}
-function addQueryParameter(url, name, value){
-    if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
-    return url + "&" + name + "=" + value;
-}
 function getSizeInKiloBytes(string) {
     if(typeof value !== "string"){string = JSON.stringify(string);}
     return Math.round(string.length*16/(8*1024));
-}
-function getUnique(array, propertyName) {
-    var flags = [], output = [], l = array.length, i;
-    for( i=0; i<l; i++) {
-        if(flags[array[i][propertyName]]) {continue;}
-        flags[array[i][propertyName]] = true;
-        output.push(array[i]);
-    }
-    return output;
 }
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
