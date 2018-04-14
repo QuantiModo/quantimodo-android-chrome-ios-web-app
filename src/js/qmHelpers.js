@@ -671,6 +671,10 @@ window.qm = {
             return a;
         },
         filterByRequestParams: function(array, requestParams) {
+            if(!requestParams){
+                qmLog.info("No requestParams provided to filterByRequestParams");
+                return array;
+            }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
