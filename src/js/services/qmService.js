@@ -5665,10 +5665,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
-        qmLog.authDebug('Called qmService.sendToLoginIfNecessaryAndComeBack', null);
+        qmLog.authDebug('Called qmService.sendToLoginIfNecessaryAndComeBack');
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
-            if(afterLoginGoToState){
+            if (qm.platform.isDesignMode()) {
+                setAfterLoginGoToState(qmStates.configuration);
+            } else if (afterLoginGoToState){
                 setAfterLoginGoToState(afterLoginGoToState);
             } else {
                 setAfterLoginGoToUrl(afterLoginGoToUrl);
