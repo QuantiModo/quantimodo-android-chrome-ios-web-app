@@ -8,7 +8,7 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
+        if(qmService.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
@@ -36,7 +36,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToState('app.import');
     };
     $scope.goToUpgradePage = function () {
-        qmService.backButtonState = 'app.onboarding';
+        qmService.backButtonState = qmStates.onboarding;
         qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {
@@ -61,7 +61,7 @@ angular.module('starter').controller('OnboardingCtrl',
         // if(!$rootScope.user){
         //     $rootScope.appSettings.appDesign.onboarding.active = null;
         //     qm.storage.removeItem('onboardingPages');
-        //     qmService.goToState('app.onboarding');
+        //     qmService.goToState(qmStates.onboarding);
         //     return;
         // }
         //$scope.goToReminderSearch($scope.circlePage.variableCategoryName);

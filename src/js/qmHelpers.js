@@ -1616,6 +1616,9 @@ window.qm = {
         },
         isDevelopmentMode: function(){
             return window.location.href.indexOf("://localhost:") !== -1;
+        },
+        isDesignMode: function () {
+            return qm.getAppSettings().designMode;
         }
     },
     push: {
