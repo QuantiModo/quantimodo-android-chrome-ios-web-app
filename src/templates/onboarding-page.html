@@ -2,8 +2,7 @@
     <div class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
         <div class="middle">
             <div class="inner" style="text-align: center; color: white;">
-                <div ng-include="'templates/fragments/circle-page.html'"></div><br><br>
-                <p style="cursor: pointer" ng-if="circlePage.moreInfo" ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">MORE INFO</p><br>
+                <div ng-include="'templates/fragments/circle-page.html'"></div>
                 <md-button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText"
                            ng-click="goToReminderSearchFromOnboarding($event)">
                     <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
@@ -38,16 +37,22 @@
                            ng-click="postMeasurement(circlePage, 0)">
                     <i class="ion-close-round"> &nbsp; No &nbsp;</i>
                 </md-button>
+                <br><br><br>
+                <div>
+                    <md-button ng-show="state.showSkipButton && !appSettings.designMode" id="skipButtonWelcome"
+                               class="button circle-page-button" style="font-size: 14px;" ng-click="skipOnboarding()">
+                        &nbsp; Skip Setup &nbsp;
+                    </md-button>
+                    <md-button ng-show="state.showSkipButton && !appSettings.designMode" id="moreInfoButton"
+                               class="button circle-page-button" style="font-size: 14px;" ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">
+                        &nbsp; More Info &nbsp;
+                    </md-button>
+                </div>
                 <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
                     <br>
                     &nbsp&nbsp<i ng-click="openEditAppSettingsModal('onboarding', circlePage)" ><i class="icon ion-edit"></i></i>
                     &nbsp&nbsp<i ng-click="addAppComponentElement('onboarding', circlePage)" class="icon ion-ios-copy-outline" ></i>
                     &nbsp&nbsp<i ng-click="deleteAppComponentElement('onboarding', circlePage)" class="icon ion-trash-a" ></i>
-                </div>
-                <br>
-                <div ng-show="state.showSkipButton && !appSettings.designMode" >
-                    <br>
-                    <md-button id="skipButtonWelcome" class="button circle-page-button" style="font-size: 14px;" ng-click="skipOnboarding()"> &nbsp; SKIP SETUP &nbsp;</md-button>
                 </div>
             </div>
         </div>
