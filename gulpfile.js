@@ -1445,6 +1445,10 @@ gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
+    if(buildDebug){
+        callback();
+        return;
+    }
     try {
         fastlaneSupply('beta', callback, true);
     } catch (error) {
