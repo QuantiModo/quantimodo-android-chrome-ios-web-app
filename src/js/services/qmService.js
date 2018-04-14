@@ -6059,8 +6059,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(answer === "help"){qmService.goToState('app.help');}
             if(answer === 'yes'){yesCallbackFunction(ev);}
             if(answer === 'no' && noCallbackFunction){noCallbackFunction(ev);}
-        }, function() {
-            if(noCallbackFunction){noCallbackFunction(ev);}
+        //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
         });
     };
     qmService.validationFailure = function (message, object) {
