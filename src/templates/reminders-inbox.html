@@ -36,17 +36,17 @@
             <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
             <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         </div>
-        <div id="allCaughtUpCard" class="list card"  ng-if="!loading && state.numberOfDisplayedNotifications === 0 ">
-            <div class="item" style="padding-bottom:10px;">
-                <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
-                <div class="row">
-                    <div class="col" style="padding-top: 0px;"> <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i> </div>
-                    <div class="col col-75"> <h2 style="white-space: normal; text-align: justify; line-height: normal; "> Maybe you should refresh or add some more reminders? </h2> </div>
-                </div>
-                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"> <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i> </button> </div> </div>
-                <div class="row" > <div class="button-bar"> <button class="button button-clear button-royal" style="font-size: 14px;" ng-click="goToState('app.measurementAddSearch')"> <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i> </button> </div> </div>
-                <div class="row" > <div class="button-bar"> <button class="button button-clear button-calm" style="font-size: 14px;" ng-click="goToState('app.historyAll')"> <i class="ion-ios-list-outline"> &nbsp; History &nbsp;</i> </button> </div> </div>
-                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="refreshTrackingReminderNotifications()"> <i class="ion-refresh"> &nbsp; Refresh &nbsp;</i> </button> </div> </div>
+        <div id="allCaughtUpCard" class="list card"  ng-if="!loading && state.numberOfDisplayedNotifications === 0 " style="border-radius: 15px;">
+            <div class="item" style="padding-bottom:50px; background: #00a3ad">
+                <div class="col" style="padding-top: 0px;"> <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i> </div>
+                <p style="color: white; text-align: center; line-height: normal; font-size: 25px; margin-bottom: 20px;">All caught up!</p>
+
+                    <h2 style="color: white; white-space: normal; text-align: center; line-height: normal; margin-bottom: 20px; "> Maybe you should refresh or add some more reminders? </h2>
+
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style=" font-size: 14px;" ng-click="goToState('app.reminderSearch')"> <div style="background: white ; color: #00a3ad; border-radius: 30px; width: 230px; margin: 0 auto;"> <i class="ion-android-notifications" style="font-size: 175%;"> </i> &nbsp; Add a reminder &nbsp; </div> </button> </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-royal" style=" font-size: 14px;" ng-click="goToState('app.measurementAddSearch')"> <div style="background: white ; color: #00a3ad; border-radius: 30px; width: 230px; margin: 0 auto;"> <i class="ion-compose" style="font-size: 175%;"> </i> &nbsp; Record a measurement &nbsp;</div> </button> </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-calm" style=" font-size: 14px;" ng-click="goToState('app.historyAll')"> <div style="background: white ; color: #00a3ad; border-radius: 30px; width: 230px; margin: 0 auto;"> <i class="ion-ios-list-outline" style="font-size: 175%;"> </i> &nbsp; History &nbsp;</div> </button>  </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style=" font-size: 14px;" ng-click="refreshTrackingReminderNotifications()"><div style="background: white ; color: #00a3ad; border-radius: 30px; width: 230px; margin: 0 auto;"> <i class="ion-refresh" style="font-size: 175%;"> </i> &nbsp; Refresh &nbsp;</div> </button> </div> </div>
             </div>
         </div>
         <div ng-if="state.correlationObjects && state.correlationObjects.length"  class="list card">
