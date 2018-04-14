@@ -6859,11 +6859,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     data.deviceToken = qm.storage.getItem(qm.items.deviceTokenOnServer);
                     if(data.additionalData.acknowledge){
                         qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "sendAcknowledgement");
-                        $http.post(qm.apiHelper.getRequestUrl("v1/trackingReminderNotification/received"), data)
-                            .success(function (response) {
-                                qmLog.pushDebug('notification received success response: ' + JSON.stringify(response), null);
-                            }).error(function (response) {
-                            qmLogService.error("notification received error response: "  + JSON.stringify(response));
+                        qm.api.postToQuantiModo(data, "v1/trackingReminderNotification/received", function(response){
+                            qmLog.pushDebug('notification received success response: ' + JSON.stringify(response));
+                        }, function(error){
+                            qmLogService.error("notification received error response: "  + JSON.stringify(error));
                         });
                     }
                 });

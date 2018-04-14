@@ -130,6 +130,17 @@ window.qm.chrome = {
         if(!notificationId){notificationId = null;}
         qm.chrome.updateChromeBadge(0);
         qmLog.info("notificationId: "+ notificationId);
+        /**
+         * @return {boolean}
+         */
+        function IsJsonString(str) {
+            try {
+                JSON.parse(str);
+            } catch (exception) {
+                return false;
+            }
+            return true;
+        }
         if(notificationId === "moodReportNotification") {
             qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.facesWindowParams);
         } else if (notificationId === "signin") {
@@ -295,6 +306,14 @@ window.qm.chrome = {
     }
 };
 if(typeof screen !== "undefined"){
+    function multiplyScreenHeight(factor) {
+        if(typeof screen === "undefined"){return false;}
+        return parseInt(factor * screen.height);
+    }
+    function multiplyScreenWidth(factor) {
+        if(typeof screen === "undefined"){return false;}
+        return parseInt(factor * screen.height);
+    }
     qm.chrome.windowParams = {
         introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
         facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
