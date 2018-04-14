@@ -1407,13 +1407,13 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'));
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(doNotMinify){
+    if(doNotMinify || buildDebug){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if(doNotMinify){
+    if(doNotMinify || buildDebug){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
