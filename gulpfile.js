@@ -1446,6 +1446,7 @@ gulp.task('ionicStateReset', function (callback) {
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(buildDebug){
+        qmLog.info("Not uploading DEBUG build");
         callback();
         return;
     }
