@@ -2252,41 +2252,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.backgroundGeolocationStart = function () {
-        if(typeof backgroundGeoLocation === "undefined"){
-            //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
+        if(typeof BackgroundGeolocation === "undefined"){
+            qmLog.error('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
-        qm.storage.setItem('bgGPS', 1);
-        //qmLogService.debug('Starting qmService.backgroundGeolocationStart');
-        var callbackFn = function(coordinates) {
-            qmLogService.debug('background location is ' + JSON.stringify(coordinates), null);
-            var isBackground = true;
-            qmService.forecastIoWeather(coordinates);
-            lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground);
-            backgroundGeoLocation.finish();
-        };
-        var failureFn = function(error) {
-            var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
-            qmLogService.error(errorMessage);
-            qmLogService.error(errorMessage);
-        };
-        backgroundGeoLocation.configure(callbackFn, failureFn, {
+        // Don't forget to remove listeners at some point!
+        BackgroundGeolocation.events.forEach(function(event){
+            BackgroundGeolocation.removeAllListeners(event);
+        });
+        BackgroundGeolocation.configure({
+            locationProvider: BackgroundGeolocation.ANDROID_DISTANCE_FILTER_PROVIDER,  // Best for background https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
             desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-            stationaryRadius: 50,
-            distanceFilter: 50,
-            debug: false,  // Created notifications with location info
-            stopOnTerminate: false,
+            stationaryRadius: 25, // Stationary radius in meters. When stopped, the minimum distance the device must move beyond the stationary location for aggressive background-tracking to engage.
+            distanceFilter: 25, // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+            debug: true,  //  When enabled, the plugin will emit sounds for life-cycle events of background-geolocation! See debugging sounds table.
+            stopOnTerminate: false, // Enable this in order to force a stop() when the application terminated (e.g. on iOS, double-tap home button, swipe away the app).
+            // ACTIVITY_PROVIDER Settings Start
+            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
+            interval: 5 * 60 * 1000,  // The minimum time interval between location updates in milliseconds.
+            fastestInterval: 60 * 1000,  // Fastest rate in milliseconds at which your app can handle location updates.
+            activitiesInterval: 5 * 60 * 1000,  // Rate in milliseconds at which activity recognition occurs. Larger values will result in fewer activity detections while improving battery life.
+            // ANDROID
+            startForeground: true, //  On Android devices it is recommended to have a notification in the drawer
+            startOnBoot: true, // Start background service on device boot.
             notificationTitle: 'Recording Location',
             notificationText: 'Tap to open inbox',
             notificationIconLarge: null,
             notificationIconSmall: 'ic_stat_icon_bw',
-            startForeground: true, // ANDROID ONLY: On Android devices it is recommended to have a notification in the drawer
-            locationProvider: BackgroundGeolocation.ANDROID_DISTANCE_FILTER_PROVIDER,  // Best for background https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
-            // ACTIVITY_PROVIDER Settings Start
-            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
-            interval: 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
-            fastestInterval: 5 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
-            activitiesInterval: 10 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
             // ACTIVITY_PROVIDER Settings End
             // url: 'http://192.168.81.15:3000/location', // TODO: IMPLEMENT THIS
             // httpHeaders: {
@@ -2299,7 +2291,54 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //     foo: 'bar' // you can also add your own properties
             // }
         });
-        backgroundGeoLocation.start();
+        BackgroundGeolocation.on('stationary', function(stationaryLocation) {
+            qmLog.info('background location stationary so posting measurement ' + JSON.stringify(stationaryLocation));
+            var isBackground = true;
+            qmService.forecastIoWeather(stationaryLocation);
+            lookupGoogleAndFoursquareLocationAndPostMeasurement(stationaryLocation, isBackground);
+            //backgroundGeoLocation.finish();
+        });
+        BackgroundGeolocation.on('error', function(error) {
+            var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
+            qmLog.error(errorMessage);
+        });
+        BackgroundGeolocation.on('start', function() {
+            qmLog.info('[INFO] BackgroundGeolocation service has been started');
+        });
+        BackgroundGeolocation.on('stop', function() {
+            qmLog.info('[INFO] BackgroundGeolocation service has been stopped');
+        });
+        BackgroundGeolocation.on('authorization', function(status) {
+            qmLog.info('[INFO] BackgroundGeolocation authorization status: ' + status);
+            if (status !== BackgroundGeolocation.AUTHORIZED) {
+                // we need to set delay or otherwise alert may not be shown
+                setTimeout(function() {
+                    var showSettings = confirm('App requires location tracking permission. Would you like to open app settings?');
+                    if (showSettings) {
+                        return BackgroundGeolocation.showAppSettings();
+                    }
+                }, 1000);
+            }
+        });
+        BackgroundGeolocation.on('background', function() {
+            qmLog.info('[INFO] App is in background');
+            // you can also reconfigure service (changes will be applied immediately)
+            BackgroundGeolocation.configure({ debug: true });
+        });
+        BackgroundGeolocation.on('foreground', function() {
+            qmLog.info('[INFO] App is in foreground');
+            BackgroundGeolocation.configure({ debug: false });
+        });
+        BackgroundGeolocation.checkStatus(function(status) {
+            qmLog.info('[INFO] BackgroundGeolocation service is running', status.isRunning);
+            qmLog.info('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+            qmLog.info('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+            // you don't need to check status before start (this is just the example)
+            if (!status.isRunning) {
+                BackgroundGeolocation.start(); //triggers start on start event
+            }
+        });
     };
     qmService.backgroundGeolocationInit = function () {
         var deferred = $q.defer();
