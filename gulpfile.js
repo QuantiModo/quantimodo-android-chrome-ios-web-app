@@ -2346,7 +2346,7 @@ gulp.task('xcodeProjectFix', function (callback) {
     return execute(command, callback);
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
-    return execute('ionic platform add android@6.2.2', callback);
+    return execute('ionic platform add android@6.3.0', callback);
 });
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     return execute('ionic platform remove android', callback);
