@@ -79,7 +79,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 					qmService.showInfoToast('Skipping all reminder notifications...');
 					qmService.skipAllTrackingReminderNotificationsDeferred()
 						.then(function(){
-							if(qmService.localNotificationsEnabled){qmService.setNotificationBadge(0);}
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							qmLogService.error(null, error);
@@ -102,7 +101,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.refreshTrackingReminderNotifications();
         }
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
+        autoRefresh();
 	});
+	function autoRefresh() {
+	    $timeout(function () {
+            if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                $scope.refreshTrackingReminderNotifications();
+                autoRefresh();
+            }
+        }, 30 * 60 * 1000)
+    }
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug('RemindersInboxCtrl afterLeave', null);
 		$rootScope.hideHomeButton = false;
@@ -357,7 +365,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 		}, function (error) {
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
-			qmLogService.error(null, '$scope.refreshTrackingReminderNotifications: ' + error);
+			qmLogService.error('$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
 	};
