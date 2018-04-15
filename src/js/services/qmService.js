@@ -2280,9 +2280,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             notificationText: 'Tap to open inbox',
             notificationIconLarge: null,
             notificationIconSmall: 'ic_stat_icon_bw',
+            startForeground: true, // ANDROID ONLY: On Android devices it is recommended to have a notification in the drawer
             locationProvider: BackgroundGeolocation.ANDROID_DISTANCE_FILTER_PROVIDER,  // Best for background https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
             // ACTIVITY_PROVIDER Settings Start
-            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md 
+            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
             interval: 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
             fastestInterval: 5 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
             activitiesInterval: 10 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
