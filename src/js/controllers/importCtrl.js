@@ -1,7 +1,10 @@
-angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth,
-                                                            $ionicActionSheet, Upload, $timeout, $ionicPopup) {
+angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	qmService.navBar.setFilterBarSearchIcon(false);
+	$scope.state = {
+	    connectors: null
+    };
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
@@ -57,10 +60,10 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 		qmService.showBlackRingLoader();
 		qmService.getConnectorsDeferred()
 			.then(function(connectors){
-                $scope.connectors = connectors;
+                $scope.state.connectors = connectors;
 				if(connectors) {
 					$scope.$broadcast('scroll.refreshComplete');
-					$ionicLoading.hide().then(function(){qmLogService.debug('The loading indicator is now hidden', null);});
+					qmService.hideLoader();
 				}
 				$scope.refreshConnectors();
 			});
@@ -492,7 +495,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     $scope.refreshConnectors = function(){
         qmService.refreshConnectors()
             .then(function(connectors){
-                $scope.connectors = connectors;
+                $scope.state.connectors = connectors;
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();

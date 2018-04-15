@@ -914,7 +914,6 @@ window.qm = {
             function successHandler(connectors){
                 if (connectors) {
                     qmLog.info("Got connectors from API...");
-                    qm.localForage.setItem(qm.items.connectors, connectors);
                     if(successCallback){successCallback(connectors);}
                 } else {
                     qmLog.error("Could not get connectors from API...");
