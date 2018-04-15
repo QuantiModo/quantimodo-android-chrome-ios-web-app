@@ -2026,22 +2026,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        qm.localForage.getItem(qm.items.connectors, function (connectors) {
-            if(connectors){
-                connectors = hideUnavailableConnectors(connectors);
-                deferred.resolve(connectors);
-            } else {
-                qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
-            }
-        });
+        var connectors = qm.storage.getItem(qm.items.connectors);
+        if(connectors){
+            //connectors = hideUnavailableConnectors(connectors);
+            deferred.resolve(connectors);
+        } else {
+            qmService.refreshConnectors().then(function(connectors){deferred.resolve(connectors);});
+        }
         return deferred.promise;
     };
     qmService.refreshConnectors = function(){
         var stackTrace = qmLog.getStackTrace();
-        if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace, null);}
+        if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace);}
         var deferred = $q.defer();
         qm.connectorHelper.getConnectorsFromApi({}, function(response){
             var connectors = hideUnavailableConnectors(response.connectors);
+            qm.storage.setItem(qm.items.connectors, connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
