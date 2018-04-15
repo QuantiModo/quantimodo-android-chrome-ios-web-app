@@ -191,6 +191,9 @@ var buildingFor = {
     },
     chrome: function () {
         return process.env.BUILD_CHROME;
+    },
+    mobile: function () {
+        return buildingFor.android() || buildingFor.ios()
     }
 };
 var Quantimodo = require('quantimodo');
@@ -925,6 +928,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         addBuildInfoToAppSettings();
         writeDefaultConfigJson('src');
         writeDefaultConfigJson('www');
+        if(buildingFor.mobile()){writePrivateConfigs('www');}
         qmLog.info("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
