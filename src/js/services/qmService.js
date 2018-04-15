@@ -4255,7 +4255,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function getLocalNotificationSettings() {
             if (!activeTrackingReminders) {activeTrackingReminders = qm.reminderHelper.getActive();}
             var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes(activeTrackingReminders);
+            var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes();
             if (activeTrackingReminders) {
                 for (var i = 0; i < activeTrackingReminders.length; i++) {
                     if (activeTrackingReminders[i].reminderFrequency === mostFrequentIntervalInMinutes * 60) {
