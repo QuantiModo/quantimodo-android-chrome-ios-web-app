@@ -1,4 +1,5 @@
 /* eslint-disable no-process-env */
+var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID;
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials, versionNumbers;
 var androidX86ReleaseName = 'android-x86-release';
@@ -139,7 +140,7 @@ bugsnag.onBeforeNotify(function (notification) {
     var metaData = notification.events[0].metaData;
     // modify meta-data
     metaData.subsystem = { name: getCurrentServerContext() };
-    metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
+    metaData.client_id = QUANTIMODO_CLIENT_ID;
     metaData.build_link = getBuildLink();
 });
 var qmLog = {
@@ -213,36 +214,36 @@ function getBuildLink() {
     if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
 function setClientId(callback) {
-    if(process.env.QUANTIMODO_CLIENT_ID){
-        qmLog.info('Client id already set to ' + process.env.QUANTIMODO_CLIENT_ID);
+    if(QUANTIMODO_CLIENT_ID){
+        qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
         if (callback) {callback();}
         return;
     }
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
-        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH.replace('apps/', '');
+        QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH.replace('apps/', '');
     }
     if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
-        process.env.QUANTIMODO_CLIENT_ID = process.env.CIRCLE_BRANCH.replace('apps/', '');
+        QUANTIMODO_CLIENT_ID = process.env.CIRCLE_BRANCH.replace('apps/', '');
         qmLog.info("Using CIRCLE_BRANCH as client id: " + process.env.CIRCLE_BRANCH);
     }
     if(argv.clientId){
-        process.env.QUANTIMODO_CLIENT_ID = argv.clientId;
+        QUANTIMODO_CLIENT_ID = argv.clientId;
         qmLog.info("Using argv.clientId as client id: " + argv.clientId);
     }
-    if(process.env.QUANTIMODO_CLIENT_ID){
-        process.env.QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID.replace('apps/', '');
-        qmLog.info('Stripped apps/ and now client id is ' + process.env.QUANTIMODO_CLIENT_ID);
+    if(QUANTIMODO_CLIENT_ID){
+        QUANTIMODO_CLIENT_ID = QUANTIMODO_CLIENT_ID.replace('apps/', '');
+        qmLog.info('Stripped apps/ and now client id is ' + QUANTIMODO_CLIENT_ID);
     }
-    if (!process.env.QUANTIMODO_CLIENT_ID) {
+    if (!QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
             qmLog.info('current git branch: ' + branch);
-            if (!process.env.QUANTIMODO_CLIENT_ID) {
+            if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
-                    qmLog.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
-                    process.env.QUANTIMODO_CLIENT_ID = branch;
+                    qmLog.info('Setting QUANTIMODO_CLIENT_ID using branch name ' + branch);
+                    QUANTIMODO_CLIENT_ID = branch;
                 } else {
-                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to quantimodo client id');
-                    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
+                    console.warn('No QUANTIMODO_CLIENT_ID set.  Falling back to quantimodo client id');
+                    QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
             if (callback) {callback();}
@@ -251,9 +252,9 @@ function setClientId(callback) {
         if (callback) {callback();}
     }
 }
-function getChromeExtensionZipFilename() {return process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
+function getChromeExtensionZipFilename() {return QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
 function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtensionZipFilename();}
-function getPathToUnzippedChromeExtension() {return buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension';}
+function getPathToUnzippedChromeExtension() {return buildPath + '/' + QUANTIMODO_CLIENT_ID + '-chrome-extension';}
 function readDevCredentials(){
     try{
         devCredentials = JSON.parse(fs.readFileSync(paths.src.devCredentials));
@@ -289,13 +290,13 @@ function getSubStringAfterLastSlash(myString) {
 }
 function convertFilePathToPropertyName(filePath) {
     var propertyName = getSubStringAfterLastSlash(filePath);
-    propertyName = propertyName.replace(process.env.QUANTIMODO_CLIENT_ID, '');
+    propertyName = propertyName.replace(QUANTIMODO_CLIENT_ID, '');
     propertyName = propertyName.replace('.zip', '').replace('.apk', '');
     propertyName = convertToCamelCase(propertyName);
     return propertyName;
 }
 function getS3RelativePath(relative_filename) {
-    return  'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+    return  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
 }
 function getS3Url(relative_filename) {
     return s3BaseUrl + getS3RelativePath(relative_filename);
@@ -475,7 +476,7 @@ function setVersionNumbersInWidget(parsedXmlFile) {
 function getPostRequestOptions() {
     var options = getRequestOptions('/api/v1/appSettings');
     options.method = "POST";
-    options.body = {clientId: process.env.QUANTIMODO_CLIENT_ID};
+    options.body = {clientId: QUANTIMODO_CLIENT_ID};
     return options;
 }
 function obfuscateSecrets(object){
@@ -513,7 +514,7 @@ function postAppStatus() {
     return makeApiRequest(options);
 }
 function makeApiRequest(options, successHandler) {
-    qmLog.info('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
+    qmLog.info('Making request to ' + options.uri + ' with clientId: ' + QUANTIMODO_CLIENT_ID);
     qmLog.debug(options.uri, options);
     //options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
@@ -535,7 +536,7 @@ function postNotifyCollaborators(appType) {
 function getRequestOptions(path) {
     var options = {
         uri: appHostName + path,
-        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, includeClientSecret: true},
+        qs: {clientId: QUANTIMODO_CLIENT_ID, includeClientSecret: true},
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
@@ -593,7 +594,7 @@ function getFileNameFromUrl(url) {
 }
 function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
-    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
+    var downloadUrl = appHostName + '/api/v2/download?client_id=' + QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     qmLog.info("Downloading " + downloadUrl + ' to ' + decryptedFilename);
     return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
@@ -805,12 +806,12 @@ function chromeManifest(outputPath, backgroundScriptArray) {
 }
 gulp.task('chromeIFrameHtml', [], function () {
     return gulp.src(['src/chrome_default_popup_iframe.html'])
-        .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
+        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
         .pipe(gulp.dest(chromeExtensionBuildPath));
 });
 gulp.task('chromeOptionsHtml', [], function () {
     return gulp.src(['src/chrome_options.html'])
-        .pipe(replace("quantimodo.quantimo.do", process.env.QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
+        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
         .pipe(gulp.dest(chromeExtensionBuildPath));
 });
 gulp.task('chromeManifestInBuildFolder', ['getAppConfigs'], function () {
@@ -900,7 +901,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', ['setClientId'], function () {
-    if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
+    if(appSettings && appSettings.clientId === QUANTIMODO_CLIENT_ID){
         qmLog.info("Already have appSettings for " + appSettings.clientId);
         return;
     }
@@ -1152,7 +1153,7 @@ gulp.task('getClientIdFromUserInput', function () {
     inquirer.prompt([{
         type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + getAppsListUrl() + ": "
     }], function (answers) {
-        process.env.QUANTIMODO_CLIENT_ID = answers.clientId.trim();
+        QUANTIMODO_CLIENT_ID = answers.clientId.trim();
         deferred.resolve();
     });
     return deferred.promise;
@@ -1162,7 +1163,7 @@ gulp.task('getUpdatedVersion', ['getClientIdFromUserInput'], function () {
     var deferred = q.defer();
     inquirer.prompt([{
         type: 'confirm', name: 'updatedVersion', 'default': false,
-        message: 'Have you updated the app\'s version number in chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/manifest.json ?'
+        message: 'Have you updated the app\'s version number in chromeApps/' + QUANTIMODO_CLIENT_ID + '/manifest.json ?'
     }], function (answers) {
         /** @namespace answers.updatedVersion */
         if (answers.updatedVersion) {
@@ -1176,11 +1177,11 @@ gulp.task('getUpdatedVersion', ['getClientIdFromUserInput'], function () {
     return deferred.promise;
 });
 gulp.task('copyWwwFolderToChromeApp', ['getUpdatedVersion'], function () {
-    return copyFiles('www/**/*', 'chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/www');
+    return copyFiles('www/**/*', 'chromeApps/' + QUANTIMODO_CLIENT_ID + '/www');
 });
 gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function () {
-    return gulp.src(['chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'])
-        .pipe(zip(process.env.QUANTIMODO_CLIENT_ID + '.zip'))
+    return gulp.src(['chromeApps/' + QUANTIMODO_CLIENT_ID + '/**/*'])
+        .pipe(zip(QUANTIMODO_CLIENT_ID + '.zip'))
         .pipe(gulp.dest('chromeApps/zips'));
 });
 gulp.task('openChromeAuthorizationPage', ['zipChromeApp'], function () {
@@ -1258,10 +1259,10 @@ gulp.task("upload-combined-debug-apk-to-s3", function() {
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
     var deferred = q.defer();
-    var source = fs.createReadStream('./chromeApps/zips/' + process.env.QUANTIMODO_CLIENT_ID + '.zip');
+    var source = fs.createReadStream('./chromeApps/zips/' + QUANTIMODO_CLIENT_ID + '.zip');
     // upload the package
     var options = {
-        url: 'https://www.googleapis.com/upload/chromewebstore/v1.1/items/' + appIds[process.env.QUANTIMODO_CLIENT_ID],
+        url: 'https://www.googleapis.com/upload/chromewebstore/v1.1/items/' + appIds[QUANTIMODO_CLIENT_ID],
         method: 'PUT',
         headers: {'Authorization': 'Bearer ' + access_token, 'x-goog-api-version': '2'}
     };
@@ -1312,7 +1313,7 @@ gulp.task('publishToGoogleAppStore', ['shouldPublish'], function () {
     var deferred = q.defer();
     // upload the package
     var options = {
-        url: 'https://www.googleapis.com/chromewebstore/v1.1/items/' + appIds[process.env.QUANTIMODO_CLIENT_ID] + '/publish?publishTarget=trustedTesters',
+        url: 'https://www.googleapis.com/chromewebstore/v1.1/items/' + appIds[QUANTIMODO_CLIENT_ID] + '/publish?publishTarget=trustedTesters',
         method: 'POST',
         headers: {'Authorization': 'Bearer ' + access_token, 'x-goog-api-version': '2', 'publishTarget': 'trustedTesters', 'Content-Length': '0'}
     };
@@ -1917,13 +1918,13 @@ gulp.task('setEnvsFromBranchName', [], function (callback) {
         callback);
 });
 gulp.task('setMediModoEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'medimodo';
+    QUANTIMODO_CLIENT_ID = 'medimodo';
     runSequence(
         'getAppConfigs',
         callback);
 });
 gulp.task('setMoodiModoEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
+    QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
         'getAppConfigs',
         callback);
@@ -1934,7 +1935,7 @@ gulp.task('setAppEnvs', ['setClientId'], function (callback) {
         callback);
 });
 gulp.task('setQuantiModoEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
+    QUANTIMODO_CLIENT_ID = 'quantimodo';
     runSequence(
         'getAppConfigs',
         callback);
@@ -1978,16 +1979,16 @@ gulp.task('cleanWwwLibFolder', [], function () {
 gulp.task('copyAppResources', [
     //'cleanResources'
 ], function () {
-    if(!process.env.QUANTIMODO_CLIENT_ID){
+    if(!QUANTIMODO_CLIENT_ID){
         qmLog.error("No QUANTIMODO_CLIENT_ID so falling back to quantimodo");
-        process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
+        QUANTIMODO_CLIENT_ID = 'quantimodo';
     }
     qmLog.info('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
-    var sourcePath = 'apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*';
+    var sourcePath = 'apps/' + QUANTIMODO_CLIENT_ID + '/**/*';
     qmLog.info("Copying " + sourcePath + "...");
     //return copyFiles(sourcePath, '.');
     return gulp.src([sourcePath], {
-        base: 'apps/' + process.env.QUANTIMODO_CLIENT_ID
+        base: 'apps/' + QUANTIMODO_CLIENT_ID
     }).pipe(gulp.dest('.'));
 });
 gulp.task('copyIonIconsToWww', [], function () {
@@ -2027,7 +2028,7 @@ gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copyIconsToWwwImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
+    return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
 });
 gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
@@ -2055,7 +2056,7 @@ gulp.task('copyServiceWorkerAndLibraries', [], function () {
     }
 });
 gulp.task('copyIconsToSrcImg', [], function () {
-    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
+    return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -2068,8 +2069,8 @@ gulp.task('copyAndroidResources', [], function () {
     return copyFiles('resources/android/**/*', 'platforms/android');
 });
 gulp.task('copyAndroidBuild', [], function () {
-    if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
-    var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    if (!QUANTIMODO_CLIENT_ID) {throw 'QUANTIMODO_CLIENT_ID not set!';}
+    var buildFolderPath = buildPath + '/apks/' + QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
     return copyFiles(paths.apk.outputFolder + '/*.apk', buildFolderPath);
 });
 gulp.task('copyWwwFolderHtmlToChromeExtension', ['getAppConfigs'], function () {
@@ -2130,7 +2131,7 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     qmLog.info('gulp configureAppAfterNpmInstall');
     if (process.env.BUDDYBUILD_SCHEME) {
-        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
+        QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
         qmLog.info('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to prepareIosApp');
         runSequence(
             'prepareIosApp',
