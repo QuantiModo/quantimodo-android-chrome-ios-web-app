@@ -2266,7 +2266,7 @@ gulp.task('_build-qm-android', function (callback) {
 gulp.task('buildMediModoAndroid', function (callback) {
     runSequence(
         'setMediModoEnvs',
-        'buildAndroidApp',
+        'buildAndroidAfterCleaning',
         callback);
 });
 gulp.task('_build-all-chrome', function (callback) {
