@@ -1438,7 +1438,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
         qmService.setUser(user);
         if(qm.urlHelper.getParam('doNotRemember')){return;}
-        qmService.backgroundGeolocationInit();
+        qmService.backgroundGeolocationStartIfEnabled();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
         if(qm.storage.getItem(qm.items.deviceTokenOnServer)){
@@ -2296,7 +2296,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var isBackground = true;
             qmService.forecastIoWeather(stationaryLocation);
             lookupGoogleAndFoursquareLocationAndPostMeasurement(stationaryLocation, isBackground);
-            //backgroundGeoLocation.finish();
+            //BackgroundGeolocation.finish();
         });
         BackgroundGeolocation.on('error', function(error) {
             var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
@@ -2340,23 +2340,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         });
     };
-    qmService.backgroundGeolocationInit = function () {
+    qmService.backgroundGeolocationStartIfEnabled = function () {
         var deferred = $q.defer();
-        //qmLogService.debug('Starting qmService.backgroundGeolocationInit');
+        //qmLogService.debug('Starting qmService.backgroundGeolocationStartIfEnabled');
         if (qm.storage.getItem('bgGPS')) {
             $ionicPlatform.ready(function() { qmService.backgroundGeolocationStart(); });
             deferred.resolve();
         } else {
-            var error = 'qmService.backgroundGeolocationInit failed because $rootScope.user.trackLocation is not true';
+            var error = 'qmService.backgroundGeolocationStartIfEnabled failed because $rootScope.user.trackLocation is not true';
             //qmLogService.debug(error);
             deferred.reject(error);
         }
         return deferred.promise;
     };
     qmService.backgroundGeolocationStop = function () {
-        if(typeof backgroundGeoLocation !== "undefined"){
+        if(typeof BackgroundGeolocation !== "undefined"){
             qm.storage.setItem('bgGPS', 0);
-            backgroundGeoLocation.stop();
+            BackgroundGeolocation.stop();
         }
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
@@ -6169,7 +6169,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         //putCommonVariablesInLocalStorageUsingJsonFile();
         if(!qm.storage.getItem(qm.items.commonVariables)){qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();}
-        qmService.backgroundGeolocationInit();
+        qmService.backgroundGeolocationStartIfEnabled();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
         qmService.navBar.hideNavigationMenuIfHideUrlParamSet();
