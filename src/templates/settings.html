@@ -24,7 +24,7 @@
             <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
                 Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
-            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
+            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)">
                 <div><i class="icon ion-map"></i> &nbsp Record with Measurements &nbsp</div>
             </ion-toggle>
             <ion-toggle ng-model="backgroundLocationTracking" ng-change="backgroundLocationChange()">
