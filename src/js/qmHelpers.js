@@ -1052,6 +1052,7 @@ window.qm = {
         hideImportHelpCard: 'hideImportHelpCard',
         introSeen: 'introSeen',
         lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
+        lastLocalNotificationTime: 'lastLocalNotificationTime',
         lastLatitude: 'lastLatitude',
         lastLocationAddress: 'lastLocationAddress',
         lastLocationName: 'lastLocationName',
@@ -1333,6 +1334,9 @@ window.qm = {
         },
         getTimeSinceLastPopupString: function(){
             return qm.timeHelper.getTimeSinceString(qm.notifications.getLastPopupUnixTime());
+        },
+        getTimeSinceLastLocalNotification: function(){
+            return qm.timeHelper.getTimeSinceString(qm.storage.getItem(qm.items.lastLocalNotificationTime));
         },
         getLastPopupUnixTime: function(){
             return qm.storage.getItem(qm.items.lastPopupNotificationUnixTimeSeconds);
