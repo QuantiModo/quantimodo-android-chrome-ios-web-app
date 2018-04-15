@@ -532,7 +532,7 @@ function postNotifyCollaborators(appType) {
 function getRequestOptions(path) {
     var options = {
         uri: appHostName + path,
-        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
+        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, includeClientSecret: true},
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
@@ -658,8 +658,8 @@ function generateConfigXmlFromTemplate(callback) {
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
-    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_ID);
-    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', process.env.QUANTIMODO_CLIENT_SECRET);
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', appSettings.clientId);
+    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', appSettings.clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
             throw new Error('ERROR: failed to read xml file', err);
@@ -911,9 +911,9 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
             appSettings.versionNumber = versionNumbers.ionicApp;
             appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
             appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
-            if (!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
-                appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
-            }
+            // if (!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
+            //     appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+            // }
             buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
             delete appSettings.additionalSettings.buildSettings;
             /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
