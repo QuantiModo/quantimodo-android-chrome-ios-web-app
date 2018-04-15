@@ -67,6 +67,8 @@ module.exports = function(ctx) {
           copies.push([filePath, destPath]);
         }
       }
+      console.log("Copying drawable-xxxhdpi-v11 to drawable for geolocation icon");
+      shell.exec( "cp -Rf resources/android/res/drawable-xxxhdpi-v11/* platforms/android/res/drawable", {silent:true} );
       copies.map(function(args) {
         return copy.apply(copy, args);
       });
