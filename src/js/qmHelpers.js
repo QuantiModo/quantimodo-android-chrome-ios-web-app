@@ -1065,6 +1065,7 @@ window.qm = {
         lastPopupNotificationUnixTimeSeconds: 'lastPopupNotificationUnixTimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
         measurementsQueue: 'measurementsQueue',
+        mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
@@ -1353,7 +1354,7 @@ window.qm = {
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixTime();
         },
         getMostFrequentReminderIntervalInSeconds: function(){
-            return qm.notifications.getMostFrequentReminderIntervalInMinutes() * 60;
+            return qm.storage.getItem(qm.items.mostFrequentReminderIntervalInSeconds);
         },
         canWeShowPopupYet: function(path) {
             if(!qm.notifications.getLastPopupUnixTime()){
@@ -1361,8 +1362,8 @@ window.qm = {
                 return true;
             }
             var minimumTimeBetweenInMinutes = 30;
-            if(qm.notifications.getMostFrequentReminderIntervalInSeconds() < 30 * 60){
-                minimumTimeBetweenInMinutes = qm.notifications.getMostFrequentReminderIntervalInSeconds()/60;
+            if(qm.notifications.getMostFrequentReminderIntervalInMinutes() < 30){
+                minimumTimeBetweenInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes();
             }
             if(qm.notifications.getSecondsSinceLastPopup() > minimumTimeBetweenInMinutes * 60){
                 qm.notifications.setLastPopupTime();
@@ -1372,18 +1373,10 @@ window.qm = {
                 ' and most Frequent Interval In Minutes is ' + minimumTimeBetweenInMinutes + ". path: " + path);
             return false;
         },
-        getMostFrequentReminderIntervalInMinutes: function(trackingReminders){
-            if(!trackingReminders){trackingReminders = qm.storage.getItem(qm.items.trackingReminders);}
-            var shortestInterval = 86400;
-            if(trackingReminders){
-                for (var i = 0; i < trackingReminders.length; i++) {
-                    var currentFrequency = trackingReminders[i].reminderFrequency;
-                    if(currentFrequency && currentFrequency < shortestInterval){
-                        shortestInterval = currentFrequency;
-                    }
-                }
-            }
-            return shortestInterval/60;
+        getMostFrequentReminderIntervalInMinutes: function(){
+            var mostFrequentReminderIntervalInSeconds = qm.storage.getItem(qm.items.mostFrequentReminderIntervalInSeconds);
+            if(!mostFrequentReminderIntervalInSeconds){mostFrequentReminderIntervalInSeconds = 86400;}
+            return mostFrequentReminderIntervalInSeconds/60;
         },
         setLastNotificationsRefreshTime: function(){
             window.qm.storage.setLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
@@ -1748,6 +1741,16 @@ window.qm = {
             if(sizeInKb > 2000){
                 trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
             }
+            var mostFrequentReminderIntervalInSeconds = 86400;
+            if(trackingReminders){
+                for (var i = 0; i < trackingReminders.length; i++) {
+                    var currentFrequency = trackingReminders[i].reminderFrequency;
+                    if(currentFrequency && currentFrequency < mostFrequentReminderIntervalInSeconds){
+                        mostFrequentReminderIntervalInSeconds = currentFrequency;
+                    }
+                }
+            }
+            qm.storage.setItem(qm.items.mostFrequentReminderIntervalInMinutes, mostFrequentReminderIntervalInSeconds);
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
         },
         removeArchivedReminders: function(allReminders){
