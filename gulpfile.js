@@ -2191,6 +2191,7 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         'cleanWwwLibFolder',
         'cleanChromeBuildFolder',
         'bowerInstall',
+        'configureApp',
         'copyIonIconsToWww',
         'copyWwwFolderToChromeExtension',
         'buildChromeExtensionWithoutCleaning',
