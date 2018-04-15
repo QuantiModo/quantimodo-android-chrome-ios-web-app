@@ -298,8 +298,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.backgroundLocationTracking = !$scope.backgroundLocationTracking;
         if($scope.backgroundLocationTracking){
             qm.storage.setItem('bgGPS', 1);
-            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
-            qmService.backgroundGeolocationInit();
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
+            qmService.backgroundGeolocationStartIfEnabled();
             qmService.showInfoToast('Background location tracking enabled');
             qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         } else  {

@@ -66,8 +66,8 @@ angular.module('starter').controller('OnboardingCtrl',
         // }
         //$scope.goToReminderSearch($scope.circlePage.variableCategoryName);
     };
-    $scope.enableLocationTracking = function (event) {
-        $scope.trackLocationChange(event, true);
+    $scope.enableLocationTrackingWithMeasurements = function (event) {
+        $scope.trackLocationWithMeasurementsChange(event, true);
         $scope.hideOnboardingPage();
     };
     function initializeAddRemindersPageIfNecessary() {

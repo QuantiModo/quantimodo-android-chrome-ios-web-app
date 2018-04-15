@@ -358,14 +358,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToDefaultState(providedStateParams);
         }
     };
-    $scope.trackLocationChange = function(event, trackLocation) {
+    $scope.trackLocationWithMeasurementsChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
         qmLogService.debug('trackLocation', null, $rootScope.user.trackLocation);
         qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
         if($rootScope.user && $rootScope.user.trackLocation){
-            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
-        }
-        if($rootScope.user.trackLocation){
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
             qmService.showInfoToast('Location tracking enabled');
             qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         }
