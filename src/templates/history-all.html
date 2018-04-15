@@ -16,7 +16,7 @@
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
-             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
+             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
           </div>
          <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
              <div class="item" >

@@ -8,7 +8,7 @@
                     <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
                 </md-button>
                 <md-button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)"
-                        ng-click="enableLocationTracking($event)">
+                        ng-click="enableLocationTrackingWithMeasurements($event)">
                     <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
                 </md-button>
                 <md-button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)"
