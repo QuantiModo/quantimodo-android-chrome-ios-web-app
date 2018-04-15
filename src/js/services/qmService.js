@@ -1804,8 +1804,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     function addLocationDataToMeasurement(measurementObject) {
         if(!measurementObject.latitude){measurementObject.latitude = qm.storage.getItem(qm.items.lastLatitude);}
-        if(!measurementObject.longitude){measurementObject.latitude = qm.storage.getItem(qm.items.lastLongitude);}
-        if(!measurementObject.location){measurementObject.latitude = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
+        if(!measurementObject.longitude){measurementObject.longitude = qm.storage.getItem(qm.items.lastLongitude);}
+        if(!measurementObject.location){measurementObject.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
         return measurementObject;
     }
     // used when adding a new measurement from record measurement OR updating a measurement through the queue
@@ -4283,6 +4283,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmLog.pushDebug("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
                             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                                 qmLog.pushDebug('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
+                                qm.storage.setItem(qm.items.lastLocalNotificationTime, qm.timeHelper.getUnixTimestampInSeconds());
                                 qmService.notifications.showAndroidPopupForMostRecentNotification();
                             });
                         });
@@ -6205,7 +6206,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
             template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
-            template = template + "lastPushReceived: " + qm.push.getTimeSinceLastPushString() + '\r\n';
+            template = template + "last Push Received: " + qm.push.getTimeSinceLastPushString() + '\r\n';
+            template = template + "last Local Notification Triggered: " + qm.notifications.getTimeSinceLastLocalNotification() + '\r\n';
             template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
             template = template + "QuantiModo Client ID: " + qm.api.getClientId() + '\r\n';
@@ -6278,6 +6280,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
                 push.on('notification', function(data) {
+                    qm.storage.setItem(qm.items.lastPushTimestamp, qm.timeHelper.getUnixTimestampInSeconds());
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "received");
                     qmLog.pushDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
@@ -6304,10 +6307,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         document.location.href = data.additionalData.url;
                     }
                     if(!finishPushes) {
-                        qmLog.pushDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, null);
+                        qmLog.pushDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                         return;
                     }
-                    push.finish(function () {qmLog.pushDebug('processing of push data is finished: ' + JSON.stringify(data), null);});
+                    push.finish(function () {qmLog.pushDebug('processing of push data is finished: ' + JSON.stringify(data));});
                     data.deviceToken = qm.storage.getItem(qm.items.deviceTokenOnServer);
                     if(data.additionalData.acknowledge){
                         qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "sendAcknowledgement");
@@ -6323,16 +6326,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.exception(e, e.message, pushConfig);
                 });
                 var finishPush = function (data) {
-                    qmService.storage.setItem(qm.items.lastPushTimestamp, window.qm.timeHelper.getUnixTimestampInSeconds());
                     $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
                     if(!finishPushes){
                         qmLogService.error('Not doing push.finish', 'Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, data);
                         return;
                     }
                     push.finish(function() {
-                        qmLog.pushDebug('Push callback finished', 'accept callback finished for data.additionalData.notId: ' + data.additionalData.notId, null, data);
+                        qmLog.pushDebug('Push callback finished', 'accept callback finished for data.additionalData.notId: ' +
+                            data.additionalData.notId, null, data);
                     }, function() {
-                        qmLogService.error('Push callback failed', 'accept callback failed for data.additionalData.notId: ' + data.additionalData.notId, null, data);
+                        qmLogService.error('Push callback failed', 'accept callback failed for data.additionalData.notId: ' +
+                            data.additionalData.notId, null, data);
                     }, data.additionalData.notId);
                 };
                 window.trackYesAction = function (data){
