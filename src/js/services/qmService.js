@@ -2271,7 +2271,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(errorMessage);
         };
         backgroundGeoLocation.configure(callbackFn, failureFn, {
-            locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
             desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
             stationaryRadius: 50,
             distanceFilter: 50,
@@ -2281,9 +2280,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             notificationText: 'Tap to open inbox',
             notificationIconLarge: null,
             notificationIconSmall: 'ic_stat_icon_bw',
-            interval: 100 * 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
-            fastestInterval: 500000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
-            activitiesInterval: 15 * 60 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            locationProvider: BackgroundGeolocation.ANDROID_DISTANCE_FILTER_PROVIDER,  // Best for background https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
+            // ACTIVITY_PROVIDER Settings Start
+            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md 
+            interval: 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            fastestInterval: 5 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            activitiesInterval: 10 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            // ACTIVITY_PROVIDER Settings End
             // url: 'http://192.168.81.15:3000/location', // TODO: IMPLEMENT THIS
             // httpHeaders: {
             //     'X-FOO': 'bar'
