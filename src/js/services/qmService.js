@@ -1305,8 +1305,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 redirect_uri: qmService.getRedirectUri()
             }
         };
-        qmLogService.debug('getAccessTokenFromAuthorizationCode: request is ', null, request);
-        qmLogService.debug(JSON.stringify(request), null);
+        qmLog.authDebug('getAccessTokenFromAuthorizationCode url:' + url + ' request is ', null, request);
+        qmLog.authDebug(JSON.stringify(request));
         // post
         $http(request).success(function (response) {
             if(response.error){
@@ -4513,14 +4513,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error("Error generating access token");
                     qmService.storage.setItem('user', null);
                 } else {
-                    qmLogService.debug('Access token received', null, response);
+                    qmLog.authDebug('Access token received', null, response);
                     qm.auth.saveAccessTokenResponse(response);
-                    qmLogService.debug('get user details from server and going to defaultState...', null);
+                    qmLog.authDebug('get user details from server and going to defaultState...');
                     qmService.showBlackRingLoader();
                     qmService.refreshUser().then(function(user){
                         qmService.hideLoader();
                         qmService.syncAllUserData();
-                        qmLogService.debug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user), null);
+                        qmLog.authDebug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user), null);
                     }, function(error){
                         qmService.hideLoader();
                         qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));

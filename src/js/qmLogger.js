@@ -383,7 +383,7 @@ window.qmLog.authDebug = function(message) {
     if(!qmLog.authDebugEnabled && window.localStorage){
         qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
     }
-    if(qmLog.authDebugEnabled){
+    if(qmLog.authDebugEnabled || qmLog.debugMode){
         if(qm.platform.isMobile()){
             qmLog.error(message, message, null);
         } else {
