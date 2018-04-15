@@ -22,7 +22,7 @@ nvm install 4.4.4
 nvm use 4.4.4
 
 echo -e "${GREEN}Installing Ionic...${DEFAULT}"
-sudo npm install -g cordova ionic
+sudo npm install -g cordova@7.1.0 ionic@2.2.3
 
 echo -e "${GREEN}Installing Gulp...${DEFAULT}"
 sudo npm install -g gulp

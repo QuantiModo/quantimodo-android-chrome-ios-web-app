@@ -54,7 +54,7 @@ before_install:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim
 #  jq ios-deploy cocoapods ; rvm use system ; pod setup ; fi
 - nvm install 8
-- yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower
+- yarn global add cordova@7.1.0 ionic@2.2.3 gulp bower
 #before_script:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:

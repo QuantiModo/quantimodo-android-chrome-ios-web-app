@@ -19,8 +19,8 @@ echo "ANDROID_HOME=~/android-sdk-linux" >> /home/vagrant/.bashrc
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /home/vagrant/.bashrc
 echo "PATH=\$PATH:~/android-sdk-linux/tools:~/android-sdk-linux/platform-tools" >> /home/vagrant/.bashrc
 
-npm install -g cordova
-npm install -g ionic
+npm install -g cordova@7.1.0
+npm install -g ionic@2.2.3
 
 bash $DIR/android_22install
 
