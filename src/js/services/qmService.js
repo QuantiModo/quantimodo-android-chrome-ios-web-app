@@ -2253,7 +2253,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.backgroundGeolocationStart = function () {
         if(typeof BackgroundGeolocation === "undefined"){
-            qmLog.error('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
+            if(typeof backgroundGeolocation === "undefined"){
+                qmLog.error('Cannot execute backgroundGeolocationStart because BackgroundGeolocation and backgroundGeolocation is not defined');
+            } else {
+                qmLog.error('Cannot execute backgroundGeolocationStart because BackgroundGeolocation is not defined. However, backgroundGeolocation is defined');
+            }
             return;
         }
         // Don't forget to remove listeners at some point!
@@ -2319,6 +2323,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }, 1000);
             }
+        });
+        BackgroundGeolocation.on('event', function(event) {
+            qmLog.info('[INFO] Event detected '+JSON.stringify(event));
+            // you can also reconfigure service (changes will be applied immediately)
         });
         BackgroundGeolocation.on('background', function() {
             qmLog.info('[INFO] App is in background');
