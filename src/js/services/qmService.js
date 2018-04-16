@@ -2251,12 +2251,60 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.backgroundGeolocationStart = function () {
+    qmService.backgroundGeolocationStartV2 = function () {
+        if(typeof backgroundGeolocation === "undefined"){
+            qmLog.error('Cannot execute backgroundGeolocationStartV2 because BackgroundGeolocation and backgroundGeolocation is not defined');
+            return;
+        }
+        qm.storage.setItem('bgGPS', 1);
+        var callbackFn = function(coordinates) {
+            qmLogService.debug('background location is ' + JSON.stringify(coordinates), null);
+            var isBackground = true;
+            qmService.forecastIoWeather(coordinates);
+            lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground);
+            backgroundGeolocation.finish();
+        };
+        var failureFn = function(error) {
+            var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
+            qmLogService.error(errorMessage);
+        };
+        backgroundGeolocation.configure(callbackFn, failureFn, {
+            desiredAccuracy: 25,
+            stationaryRadius: 50,
+            distanceFilter: 50,
+            debug: false,  // Created notifications with location info
+            stopOnTerminate: false,
+            notificationTitle: 'Recording Location',
+            notificationText: 'Tap to open inbox',
+            notificationIconLarge: null,
+            notificationIconSmall: 'ic_stat_icon_bw',
+            startForeground: true, // ANDROID ONLY: On Android devices it is recommended to have a notification in the drawer
+            locationProvider: backgroundGeolocation.ANDROID_DISTANCE_FILTER_PROVIDER,  // Best for background https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
+            // ACTIVITY_PROVIDER Settings Start
+            // locationProvider: BackgroundGeolocation.ANDROID_ACTIVITY_PROVIDER, // Best for foreground https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
+            interval: 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            fastestInterval: 5 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            activitiesInterval: 10 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+            // ACTIVITY_PROVIDER Settings End
+            // url: 'http://192.168.81.15:3000/location', // TODO: IMPLEMENT THIS
+            // httpHeaders: {
+            //     'X-FOO': 'bar'
+            // },
+            // // customize post properties
+            // postTemplate: {
+            //     lat: '@latitude',
+            //     lon: '@longitude',
+            //     foo: 'bar' // you can also add your own properties
+            // }
+        });
+        backgroundGeolocation.start();
+    };
+    qmService.backgroundGeolocationStartV3 = function () {
         if(typeof BackgroundGeolocation === "undefined"){
             if(typeof backgroundGeolocation === "undefined"){
-                qmLog.error('Cannot execute backgroundGeolocationStart because BackgroundGeolocation and backgroundGeolocation is not defined');
+                qmLog.error('Cannot execute backgroundGeolocationStartV2 because BackgroundGeolocation and backgroundGeolocation is not defined');
             } else {
-                qmLog.error('Cannot execute backgroundGeolocationStart because BackgroundGeolocation is not defined. However, backgroundGeolocation is defined');
+                qmLog.error('Cannot execute backgroundGeolocationStartV2 because BackgroundGeolocation is not defined. However, backgroundGeolocation is defined');
             }
             return;
         }
@@ -2352,7 +2400,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         //qmLogService.debug('Starting qmService.backgroundGeolocationStartIfEnabled');
         if (qm.storage.getItem('bgGPS')) {
-            $ionicPlatform.ready(function() { qmService.backgroundGeolocationStart(); });
+            $ionicPlatform.ready(function() { qmService.backgroundGeolocationStartV2(); });
             deferred.resolve();
         } else {
             var error = 'qmService.backgroundGeolocationStartIfEnabled failed because $rootScope.user.trackLocation is not true';
@@ -2362,9 +2410,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.backgroundGeolocationStop = function () {
+        qm.storage.setItem('bgGPS', 0);
         if(typeof BackgroundGeolocation !== "undefined"){
-            qm.storage.setItem('bgGPS', 0);
             BackgroundGeolocation.stop();
+        }
+        if(typeof backgroundGeolocation !== "undefined"){
+            backgroundGeolocation.stop();
         }
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
