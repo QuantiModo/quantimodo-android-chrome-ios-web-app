@@ -91,7 +91,7 @@
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
   <plugin name="cordova-plugin-drawoverapps" spec="https://github.com/mikepsinn/cordova-plugin-drawoverapps#335ccb112fc791364d20ad053360daff4f7b2def" />
-  <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
+  <plugin name="cordova-plugin-geolocation" version="4.0.1"/>
   <plugin name="cordova-plugin-inappbrowser" version="2.0.2"/>
   <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
