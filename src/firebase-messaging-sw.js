@@ -59,6 +59,9 @@ function showNotification(pushData) {
         }
         //event.waitUntil(self.registration.showNotification(title, pushData));
         console.log("Notification options", notificationOptions);
+        if(!pushData.title || pushData.title === "undefined"){
+            qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
+        }
         self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
