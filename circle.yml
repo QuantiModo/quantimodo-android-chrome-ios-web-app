@@ -40,7 +40,7 @@ dependencies:
     #- if [[ $CIRCLE_BRANCH == *"feature"* ]]; then curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq; fi  # Avoid conflicting simultaneous GI testing
 
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower yarn; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi  # Done in gulpBuildAllAndroidApps

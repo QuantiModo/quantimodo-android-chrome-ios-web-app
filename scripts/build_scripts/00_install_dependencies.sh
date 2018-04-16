@@ -31,7 +31,7 @@ gem install pilot
 gem install xcodeproj -v 0.28.2
 gem install cocoapods -v 0.39.0
 npm install -g grunt-cli@0.1.13
-npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower # Adding plugins from Github doesn't work on cordova@7.0.0
+npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower yarn # Adding plugins from Github doesn't work on cordova@7.0.0
 
 cd "${INTERMEDIATE_PATH}" && npm install && gulp configureApp && bower install --allow-root
 #&& ionic config build

@@ -75,7 +75,7 @@ echo "Generating image resources for $QUANTIMODO_CLIENT_ID..."
 
 #ionic config build
 
-npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower  # Adding plugins from Github doesn't work on cordova@7.0.0
+npm install -g gulp cordova@7.1.0 ionic@2.2.3 bower yarn  # Adding plugins from Github doesn't work on cordova@7.0.0
 npm install -g ios-sim ios-deploy
 ionic platform rm ios
 ionic platform add ios@4.1.0
