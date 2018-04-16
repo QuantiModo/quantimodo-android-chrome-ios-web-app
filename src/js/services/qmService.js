@@ -6800,29 +6800,31 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         "Result: " + self.barcode + "\n" +
                         "Format: " + self.barcodeFormat + "\n" +
                         "Cancelled: " + result.cancelled);
-                    var localMatches = qm.storage.getWithFilters(qm.items.userVariables, 'upc', self.barcode);
-                    if(localMatches && localMatches.length){
-                        self.items = localMatches;
-                        qmLog.info("Found local match", null, localMatches);
-                        return;
-                    }
-                    var doneSearching = false;
-                    function variableSearchErrorHandler() {
-                        doneSearching = true;
-                        qmService.hideLoader();
-                        self.querySearch = '';
-                        var errorMessage = "Couldn't find anything matching barcode " + self.barcodeFormat + " " + self.barcode;
-                        qmLog.error(errorMessage);
-                        qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                            "I'll link the code to your selected variable so scanning should work in the future. ");
-                    }
-                    function variableSearchSuccessHandler() {
-                        doneSearching = true;
-                        qmService.hideLoader();
-                    }
-                    $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
-                    qmService.showBlackRingLoader();
-                    querySearch(self.barcode, variableSearchSuccessHandler, variableSearchErrorHandler);
+                    qm.userVariables.getFromLocalStorage({upc: self.barcode}, function(localMatches){
+                        if(localMatches && localMatches.length){
+                            self.items = localMatches;
+                            qmLog.info("Found local match", null, localMatches);
+                            return;
+                        }
+                        var doneSearching = false;
+                        function variableSearchErrorHandler() {
+                            doneSearching = true;
+                            qmService.hideLoader();
+                            //self.querySearch = '';
+                            var errorMessage = "Couldn't find anything matching barcode " + self.barcodeFormat + " " + self.barcode;
+                            qmLog.error(errorMessage);
+                            qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
+                                "I'll link the code to your selected variable so scanning should work in the future. ");
+                        }
+                        function variableSearchSuccessHandler() {
+                            doneSearching = true;
+                            qmService.hideLoader();
+                        }
+                        $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
+                        qmService.showBlackRingLoader();
+                        self.dialogParameters.requestParams.upc = self.barcode;
+                        querySearch(null, variableSearchSuccessHandler, variableSearchErrorHandler);
+                    });
                 }
                 qmService.scanBarcode(scanSuccessHandler);
             };
