@@ -42,8 +42,8 @@
                         </span>
                     </md-item-template>
                     <md-not-found  id="variable-not-found">
-                        <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
-                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.createNewVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
+                        <span ng-if="ctrl.dialogParameters.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
+                        <a ng-if="!ctrl.dialogParameters.doNotCreateNewVariables" ng-click="ctrl.createNewVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
                     </md-not-found>
                 </md-autocomplete>
             </form>

@@ -456,14 +456,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var showActionSheet = qmService.getVariableObjectActionSheet(variable.name, variable);
             showActionSheet();
         }
-        var dataToPass = {
+        var dialogParameters = {
             title: 'Select Variable',
             helpText: "Search for a variable to add a measurement, reminder, view history, or see relationships",
             placeholder: "Search for a variable...",
             buttonText: "Select Variable",
             requestParams: {includePublic: true}
         };
-        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, ev);
+        qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, ev);
     };
     $scope.switchToPatient = qmService.switchToPatient;
     $scope.trustAsHtml = function(string) {
