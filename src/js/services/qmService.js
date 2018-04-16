@@ -5597,11 +5597,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
     }
     qmService.showMaterialAlert = function(title, textContent, ev){
-        AlertDialogController.$inject = ["$scope", "$mdDialog", "dataToPass"];
-        function AlertDialogController($scope, $mdDialog, dataToPass) {
+        AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
+        function AlertDialogController($scope, $mdDialog, dialogParameters) {
             var self = this;
-            self.title = dataToPass.title;
-            self.textContent = dataToPass.textContent;
+            self.title = dialogParameters.title;
+            self.textContent = dialogParameters.textContent;
             $scope.hide = function() {$mdDialog.hide();};
             self.cancel = function() {$mdDialog.cancel();};
             $scope.answer = function(answer) {$mdDialog.hide(answer);};
@@ -5619,7 +5619,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             targetEvent: ev,
             clickOutsideToClose: false,
             fullscreen: false,
-            locals: {dataToPass: {title: title, textContent: textContent}}
+            locals: {dialogParameters: {title: title, textContent: textContent}}
         })
             .then(function(answer) {
                 if(answer === "help"){qmService.goToState('app.help');}
@@ -5629,13 +5629,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
     };
     qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev, noText){
-        ConfirmationDialogController.$inject = ["$scope", "$mdDialog", "dataToPass"];
+        ConfirmationDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
         if(!noText){noText = 'Cancel';}
-        function ConfirmationDialogController($scope, $mdDialog, dataToPass) {
+        function ConfirmationDialogController($scope, $mdDialog, dialogParameters) {
             var self = this;
-            self.title = dataToPass.title;
-            self.textContent = dataToPass.textContent;
-            self.noText = dataToPass.noText;
+            self.title = dialogParameters.title;
+            self.textContent = dialogParameters.textContent;
+            self.noText = dialogParameters.noText;
             $scope.hide = function() {$mdDialog.hide();};
             self.cancel = function() {$mdDialog.cancel();};
             self.getHelp = function(){
@@ -5653,7 +5653,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             targetEvent: ev,
             clickOutsideToClose: false,
             fullscreen: false,
-            locals: {dataToPass: {title: title, textContent: textContent, noText: noText}}
+            locals: {dialogParameters: {title: title, textContent: textContent, noText: noText}}
         }).then(function(answer) {
             if(answer === "help"){qmService.goToState('app.help');}
             if(answer === 'yes'){yesCallbackFunction(ev);}
@@ -6814,21 +6814,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return buttons;
     };
-    qmService.showVariableSearchDialog = function(dataToPass, successHandler, errorHandler, ev){
+    qmService.showVariableSearchDialog = function(dialogParameters, successHandler, errorHandler, ev){
         var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                      qmLogService, $q, $log, dataToPass) {
+                                                      qmLogService, $q, $log, dialogParameters) {
             var self = this;
             // list of `state` value/display objects
-            self.dataToPass = dataToPass;
+            self.dialogParameters = dialogParameters;
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
             self.platform = {};
             self.platform.isMobile = $rootScope.platform.isMobile;
             self.showHelp = !($rootScope.platform.isMobile);
-            self.title = dataToPass.title;
-            self.helpText = dataToPass.helpText;
-            self.placeholder = dataToPass.placeholder;
+            self.title = dialogParameters.title;
+            self.helpText = dialogParameters.helpText;
+            self.placeholder = dialogParameters.placeholder;
             self.createNewVariable = createNewVariable;
             self.getHelp = function(){
                 if(self.helpText && !self.showHelp){return self.showHelp = true;}
@@ -6898,9 +6898,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return deferred.promise;
                 }
                 self.lastApiQuery = query;
-                dataToPass.requestParams.excludeLocal = self.dataToPass.excludeLocal;
-                dataToPass.requestParams.searchPhrase = query;
-                qm.variablesHelper.getFromLocalStorageOrApi(dataToPass.requestParams, function(results){
+                dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                dialogParameters.requestParams.searchPhrase = query;
+                qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(results){
                     self.lastResults = results;
                     qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
                     deferred.resolve(loadAll(self.lastResults));
@@ -6944,7 +6944,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             querySearch();
         };
         SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-            "qmService", "qmLogService", "$q", "$log", "dataToPass"];
+            "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
         $mdDialog.show({
             controller: SelectVariableDialogController,
             controllerAs: 'ctrl',
@@ -6953,7 +6953,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             targetEvent: ev,
             clickOutsideToClose: false,
             fullscreen: !!($rootScope.platform.isMobile),
-            locals: {dataToPass: dataToPass}
+            locals: {dialogParameters: dialogParameters}
         }).then(function(variable) {
             successHandler(variable);
         }, function(error) {
