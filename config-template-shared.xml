@@ -100,7 +100,7 @@
   <plugin name="cordova-plugin-x-socialsharing" spec="~5.2.1" />
   <plugin name="de.appplant.cordova.plugin.local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications#53262c8242e9b932758d2086071865e27909204f" />
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
-  <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
+  <plugin name="cordova-plugin-googleplus" version="5.3.0">
     <variable name="REVERSED_CLIENT_ID" value="REVERSED_CLIENT_ID_PLACEHOLDER" />
   </plugin>
     <plugin name="cordova-plugin-mauron85-background-geolocation" version="2.3.5">
