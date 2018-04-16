@@ -549,10 +549,10 @@ function getRequestOptions(path) {
     return options;
 }
 function getAppEditUrl() {
-    return getAppsListUrl() + '/' + appSettings.clientId + '/edit';
+    return getAppsListUrl() + '?clientId=' + appSettings.clientId;
 }
 function getAppsListUrl() {
-    return appHostName + '/api/v2/apps';
+    return 'https://app.quantimo.do/ionic/Modo/www/configuration-index.html#/app/configuration';
 }
 function getAppDesignerUrl() {
     return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
