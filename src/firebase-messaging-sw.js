@@ -29,6 +29,10 @@ var messaging = firebase.messaging();
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     console.log("push data: ", pushData);
+    if(!pushData.title && pushData.data) {
+        console.log("Weird push format");
+        pushData = pushData.data;
+    }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
         var notificationOptions = {
             actions: [],
