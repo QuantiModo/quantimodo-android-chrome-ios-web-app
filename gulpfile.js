@@ -1664,7 +1664,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
-    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#fbed1de6538f4054d852f6e17d46fed9579ac0bb", function (error) {
         if (error !== null) {
             qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
         } else {
