@@ -500,6 +500,7 @@ function obfuscateStringify(message, object) {
         object = obfuscateSecrets(object);
         objectString = ':  ' + prettyJSONStringify(object);
     }
+    if (objectString.length > 140) {objectString = objectString.substring(0, 140) + '...';}
     message += objectString;
     if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
     if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
