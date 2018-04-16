@@ -607,7 +607,7 @@ function unzipFile(pathToZipFile, pathToOutputFolder) {
         .pipe(gulp.dest(pathToOutputFolder));
 }
 function getCordovaBuildCommand(releaseStage, platform) {
-    var command = 'cordova build --' + releaseStage + ' ' + platform;
+    var command = 'cordova build --' + releaseStage + ' ' + platform + ' --nofetch';
     //if(buildDebug){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
     return command;
 }
@@ -1434,14 +1434,14 @@ gulp.task('uglify-error-debugging', function (cb) {
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
-    executeCommand('cordova plugin rm phonegap-facebook-plugin', callback);
+    executeCommand('cordova plugin rm phonegap-facebook-plugin --nofetch', callback);
 });
 gulp.task('deleteGooglePlusPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
 gulp.task('ionicPlatformAddIOS', function (callback) {
-    executeCommand('ionic platform add ios', callback);
+    executeCommand('cordova platform add ios --nofetch', callback);
 });
 gulp.task('ionicServe', function (callback) {
     qmLog.info("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from an administrative command prompt in the root of the repository.");
@@ -1610,6 +1610,47 @@ gulp.task('addFacebookPlugin', ['getAppConfigs'], function () {
     });
     return deferred.promise;
 });
+function addCustomPlugin(name, url, sha1, callback){
+    var path = 'custom-plugins/' + name;
+    var addPlugin = function (callback) {
+        executeCommand('cordova plugin add ' + path + ' --nofetch --nosave --link', function (error) {
+            if (error !== null) {
+                qmLog.error('ERROR: THERE WAS AN ERROR:ADDING THE '+ name +' PLUGIN***', error);
+            } else {
+                qmLog.info(name + ' plugin successfully added!');
+                executeCommand('cd ' + path + ' && git checkout ' + sha1, function (error) {
+                    if (error !== null) {
+                        qmLog.error('ERROR: THERE WAS AN ERROR:ADDING THE '+ name +' PLUGIN***', error);
+                    } else {
+                        qmLog.info(name + ' plugin successfully added!');
+                    }
+                    callback();
+                });
+            }
+        });
+
+    };
+    fs.exists(path, function (exists) {
+        if (exists) {
+            qmLog.info(name + ' repo already cloned. Adding to project...');
+            addPlugin(callback);
+        } else {
+            qmLog.info(name + ' repo not found, cloning ' + url + '...');
+            executeCommand('cd custom-plugins && git clone ' + url, function (error) {
+                if (error !== null) {
+                    qmLog.error('ERROR: THERE WAS AN ERROR:DOWNLOADING THE '+ name +' PLUGIN***', error);
+                } else {
+                    qmLog.info(name +' plugin downloaded. Adding to project...');
+                    addPlugin(callback);
+                }
+            });
+        }
+    });
+}
+gulp.task('addLocalNotificationsPlugin', [], function (callback) {
+    addCustomPlugin('cordova-plugin-local-notifications', 'https://github.com/katzer/cordova-plugin-local-notifications.git',
+        '53262c8242e9b932758d2086071865e27909204f', callback);
+});
 //gulp.task('addGooglePlusPlugin', ['deleteGooglePlusPlugin'] , function(){
 // Can't do this because failure of deleteGooglePlusPlugin prevents next task.  Use runSequence instead
 gulp.task('addGooglePlusPlugin', [], function () {
@@ -1640,7 +1681,7 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
             if(callback){callback();}
         } else {
             qmLog.error('drawoverapps plugin NOT installed! Installing now');
-            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#cordova7.1", function (error) {
+            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#cordova7.1 --nofetch", function (error) {
                 if (error !== null) {
                     qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
                 } else {
@@ -1664,7 +1705,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
-    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#fbed1de6538f4054d852f6e17d46fed9579ac0bb", function (error) {
+    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#fbed1de6538f4054d852f6e17d46fed9579ac0bb --nofetch", function (error) {
         if (error !== null) {
             qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
         } else {
@@ -2347,10 +2388,10 @@ gulp.task('xcodeProjectFix', function (callback) {
     return execute(command, callback);
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
-    return execute('ionic platform add android@6.3.0', callback);
+    return execute('cordova platform add android@6.3.0 --nofetch', callback);
 });
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
-    return execute('ionic platform remove android', callback);
+    return execute('cordova platform remove android', callback);
 });
 function buildAndroidDebug(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
@@ -2401,10 +2442,10 @@ gulp.task('ionicResourcesAndroid', [], function (callback) {
     return execute('ionic resources android', callback);
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
-    return execute('ionic run android', callback);
+    return execute('cordova run android --nofetch', callback);
 });
 gulp.task('ionicEmulateAndroid', [], function (callback) {
-    return execute('ionic emulate android', callback);
+    return execute('cordova emulate android --nofetch', callback);
 });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
