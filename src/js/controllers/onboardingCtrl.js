@@ -54,6 +54,16 @@ angular.module('starter').controller('OnboardingCtrl',
             },
             skipReminderSettingsIfPossible: true
         }, function (variableObject) {
+            if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
+                $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
+                $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
+                $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
+                $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
+                $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
+                    variableObject.variableCategoryName.toLowerCase() + '?';
+                qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
+            }
             qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
         }, null, ev);
         // $rootScope.hideHomeButton = true;
