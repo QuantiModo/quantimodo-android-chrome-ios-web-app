@@ -5643,19 +5643,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.syncTrackingReminders();
             });
     };
-    qmService.addToRemindersUsingVariableObject = function (variableObject, options) {
+    qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
         var doneState = getDefaultState();
         if(options.doneState){doneState = options.doneState;}
-        if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
-            $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
-            $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
-            $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
-            $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
-            $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
-                variableObject.variableCategoryName.toLowerCase() + '?';
-            qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
-        }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;

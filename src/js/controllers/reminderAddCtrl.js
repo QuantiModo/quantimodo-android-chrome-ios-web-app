@@ -336,7 +336,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         applyReminderTimesToReminder();
         if($scope.state.trackingReminder.id){qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
-        qmService.showInfoToast("Saving " + $scope.state.trackingReminder.variableName + '...');
         qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
             qmService.syncTrackingReminders(true).then(function () {
                 var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
