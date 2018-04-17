@@ -537,9 +537,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
-            actionSheetButton.id = id;
-            if(actionSheetButton.text && actionSheetButton.text.indexOf('<span ') !== -1){return actionSheetButton;}
-            actionSheetButton.text = '<span id="' + id + '"><i class="icon ' + actionSheetButton.icon + '"></i>' + actionSheetButton.text + '</span>';
+            if(!actionSheetButton.id && id){actionSheetButton.id = id;}
+            if(actionSheetButton.text && actionSheetButton.text.indexOf('<span ') === -1){
+                actionSheetButton.text = '<span id="' + id + '"><i class="icon ' + actionSheetButton.icon + '"></i>' + actionSheetButton.text + '</span>';
+            }
             return actionSheetButton;
         },
         addHtmlToAllActionSheetButtons: function(){
@@ -613,7 +614,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(buttons.length > 8){break;}
                     }
                 }
-                for (var j = 0; j < buttons.length; j++) {qmLog.debug("Button text: " + buttons[j].text)}
+                for (var j = 0; j < buttons.length; j++) {
+                    qmLog.debug("Button text: " + buttons[j].text);
+                    buttons[j] = qmService.actionSheets.addHtmlToActionSheetButton(buttons[j]);
+                }
                 var actionSheetParams = {
                     buttons: buttons,
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
