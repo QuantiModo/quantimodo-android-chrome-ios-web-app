@@ -737,7 +737,7 @@ window.qm = {
                 } else {
                     if(value === false && key === "manualTracking"){ return; }
                     if(value === null || value === "" || value === "Anything"){ return; }
-                    if(allowedFilterParams.indexOf(key) !== -1){
+                    if(allowedFilterParams.indexOf(key) === -1){
                         qmLog.error(key + " is not in allowed filter params");
                     } else {
                         qmLog.info("filtering by " + key);
