@@ -34,6 +34,13 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.variableSearchQuery.barcode = $scope.state.variableSearchQuery.name = "028400064057";
             $scope.onVariableSearch(function(){});
         }
+        if(qm.urlHelper.getParam('upc')){
+            qmService.barcodeScanner.scanSuccessHandler({text: qm.urlHelper.getParam('upc')}, {}, function (variables) {
+                console.log(variables)
+            }, function(error){
+                console.error(error);
+            })
+        }
     });
     $scope.selectVariable = function(variableObject) {
         variableObject = addUpcToVariableObject(variableObject);
@@ -204,9 +211,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     };
     function addUpcToVariableObject(variableObject) {
         if(!variableObject){return;}
-        if($scope.state.variableSearchQuery.barcode){
-            variableObject.upc =  $scope.state.variableSearchQuery.barcode;
-            $scope.state.variableSearchQuery.barcode = null;
+        if(qmService.barcode){
+            variableObject.upc =  qmService.barcode;
+            qmService.barcode = null;
         }
         return variableObject;
     }
@@ -290,43 +297,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             });
         };
     };
-    if($rootScope.platform.isMobile){
-        // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
-        $scope.scanBarcode = function () {
-            function scanSuccessHandler(result) {
-                $scope.state.variableSearchQuery.barcode = result.text;
-                $scope.state.variableSearchQuery.barcodeFormat = result.format;
-                qmLog.pushDebug("We got a barcode\n" +
-                    "Result: " + $scope.state.variableSearchQuery.barcode + "\n" +
-                    "Format: " + $scope.state.variableSearchQuery.barcodeFormat + "\n" +
-                    "Cancelled: " + result.cancelled);
-                var localMatches = qm.storage.getWithFilters(qm.items.userVariables, 'upc', $scope.state.variableSearchQuery.barcode);
-                if(localMatches && localMatches.length){
-                    $scope.variableSearchResults = localMatches;
-                    qmLog.info("Found local match", null, localMatches);
-                    return;
-                }
-                var doneSearching = false;
-                function variableSearchErrorHandler() {
-                    doneSearching = true;
-                    qmService.hideLoader();
-                    $scope.state.variableSearchQuery.name = '';
-                    var errorMessage = "Couldn't find anything matching barcode " + $scope.state.variableSearchQuery.barcodeFormat
-                        + " " + $scope.state.variableSearchQuery.barcode;
-                    qmLog.error(errorMessage);
-                    qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                        "I'll link the code to your selected variable so scanning should work in the future. ")
-                }
-                function variableSearchSuccessHandler() {
-                    doneSearching = true;
-                    qmService.hideLoader();
-                }
-                $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
-                qmService.showBlackRingLoader();
-                $scope.state.variableSearchQuery.name = $scope.state.variableSearchQuery.barcode;
-                $scope.onVariableSearch(variableSearchSuccessHandler, variableSearchErrorHandler);
-            };
-            qmService.scanBarcode(scanSuccessHandler);
-        }
+    // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
+    $scope.scanBarcode = function () {
+        qmService.barcodeScanner.scanBarcode($scope.state.variableSearchParameters, variableSearchSuccessHandler, function (error) {
+            qmLog.error(error);
+        });
     }
+
 }]);
