@@ -245,20 +245,18 @@ window.qm = {
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             var url = window.qm.api.getRequestUrl(path);
             qmLog.info("Making POST request to " + url);
-            try {
+            if(typeof XMLHttpRequest !== "undefined"){
                 qm.api.postViaXhr(body, url, successHandler);
-            } catch (error) {
-                qmLog.error(error);  // Need fetch for service worker
-                qm.api.postViaFetch(body, url, successHandler, errorHandler);
+            } else {
+                qm.api.postViaFetch(body, url, successHandler, errorHandler);  // Need fetch for service worker
             }
         },
         getViaXhrOrFetch: function(url, successHandler, errorHandler){
-            try {
-                qmLog.info("Making GET request to " + url);
-                qm.api.getViaXhr(url, successHandler);
-            } catch (error) {
-                qmLog.error(error); // Need fetch for service worker
-                qm.api.getViaFetch(url, successHandler, errorHandler);
+            qmLog.info("Making GET request to " + url);
+            if(typeof XMLHttpRequest !== "undefined"){
+                qm.api.getViaXhr(url, successHandler, errorHandler);
+            } else {
+                qm.api.getViaFetch(url, successHandler, errorHandler);  // Need fetch for service worker
             }
         },
         getAppSettingsUrl: function (callback) {
