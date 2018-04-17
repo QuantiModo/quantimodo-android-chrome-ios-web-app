@@ -7,6 +7,7 @@ matrix:
   - os: linux
     sudo: false
     language: android
+    jdk: oraclejdk8
     android:
       components:
       - tools
@@ -23,8 +24,6 @@ matrix:
         - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
           key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
         packages:
-        - oracle-java8-installer
-        - oracle-java8-set-default
         - yarn
         - jq
         - imagemagick
