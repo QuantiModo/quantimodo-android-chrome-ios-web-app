@@ -444,8 +444,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         self.title = "No UPC matches found";
                         querySearch();
                         qmLog.error(userErrorMessage);
+                        showVariableList();
                     });
                 };
+                function showVariableList() {
+                    setTimeout(function(){document.querySelector('#variable-search-box').focus();}, 0);
+                }
                 function createNewVariable(variableName) {
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
                     $mdDialog.cancel();
