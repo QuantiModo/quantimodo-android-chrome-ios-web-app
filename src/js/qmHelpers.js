@@ -1158,6 +1158,7 @@ window.qm = {
             })
         },
         setItem: function(key, value, successHandler, errorHandler){
+            value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
             localforage.setItem(key, value, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
