@@ -24,9 +24,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         barcodeScanner: {
+            upcToAttach: null,
             scanSuccessHandler: function (scanResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 requestParams = requestParams || {};
-                qmLog.pushDebug("We got a barcode\n" + "Result: " + self.barcode + "\n" + "Format: " + self.barcodeFormat + "\n" + "Cancelled: " + scanResult.cancelled);
+                qmLog.pushDebug("We got a barcode\n" + "Result: " + scanResult.text + "\n" + "Format: " + scanResult.format +
+                    "\n" + "Cancelled: " + scanResult.cancelled);
                 var doneSearching = false;
                 $timeout(function() {
                     if(!doneSearching){
@@ -46,13 +48,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.error(error);
                     doneSearching = true;
                     qmService.hideLoader();
-                    var errorMessage = "Couldn't find anything matching barcode " + qmService.barcodeFormat + " " + qmService.barcode;
+                    var errorMessage = "I couldn't find anything matching barcode " + scanResult.format + " " + scanResult.text;
                     qmLog.error(errorMessage);
-                    qmService.barcode = scanResult.text;
-                    qmService.barcodeFormat = scanResult.format;
-                    qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                        "I'll link the code to your selected variable so scanning should work in the future. ");
-                    variableSearchErrorHandler(error);
+                    var userErrorMessage = errorMessage + ".  Try a manual search and " +
+                        "I'll link the code to your selected variable so scanning should work in the future.";
+                    qmService.barcodeScanner.upcToAttach = scanResult.text;
+                    if (variableSearchErrorHandler) {
+                        variableSearchErrorHandler(userErrorMessage);
+                    } else {
+                        qmService.showMaterialAlert("No matches found", userErrorMessage);
+                    }
                 })
             },
             scanBarcode: function (requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
@@ -89,6 +94,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.error("Barcode scan failure! error: " + error);
                     qmService.showMaterialAlert("Barcode scan failed!", "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
                 }, scannerConfig);
+            },
+            addUpcToVariableObject: function (variableObject) {
+                if(!variableObject){return;}
+                if(qmService.barcodeScanner.upcToAttach){
+                    variableObject.upc =  qmService.barcodeScanner.upcToAttach;
+                    qmService.barcodeScanner.upcToAttach = null;
+                }
+                return variableObject;
             }
         },
         deploy: {
@@ -413,9 +426,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 self.finish = function() {
                     self.items = null;
+                    $scope.variable = qmService.barcodeScanner.addUpcToVariableObject($scope.variable);
                     $mdDialog.hide($scope.variable);
                 };
                 self.scanBarcode = function() {
+                    self.helpText = "Searching for variable by barcode...";
+                    self.title = "Barcode Search";
                     qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
                         if (variables && variables.length) {
                             self.items = convertVariablesToToResultsList(variables);
@@ -423,10 +439,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             self.searchText = variables[0].name
                             //$mdDialog.hide(variables[0]);
                         }
-                    }, function (error) {
-                        qmLog.error(error);
+                    }, function (userErrorMessage) {
+                        self.helpText = userErrorMessage;
+                        self.title = "No UPC matches found";
+                        querySearch();
+                        qmLog.error(userErrorMessage);
+                        showVariableList();
                     });
                 };
+                function showVariableList() {
+                    setTimeout(function(){document.querySelector('#variable-search-box').focus();}, 0);
+                }
                 function createNewVariable(variableName) {
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
                     $mdDialog.cancel();
@@ -1724,8 +1747,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.reject('No deviceTokenToSync in localStorage');
             return deferred.promise;
         }
-        if(qm.push.getHoursSinceLastPush() > 24){
-            qmLogService.error("Registering for pushes even though we got a notification in the last 24 hours");
+        var message = "last push was received " + qm.push.getHoursSinceLastPush() + " hours ago";
+        if(qm.push.getHoursSinceLastPush() < 24){
+            qmLog.pushDebug("Not registering for pushes because " + message);
+            return;
+        } else {
+            qmLog.pushDebug(message);
         }
         qm.storage.removeItem(qm.items.deviceTokenToSync);
         qmLogService.debug('Posting deviceToken to server: ', null, deviceTokenToSync);
