@@ -426,7 +426,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 self.finish = function() {
                     self.items = null;
-                    $scope.variable = qm.barcodeScanner.addUpcToVariableObject($scope.variable);
+                    $scope.variable = qmService.barcodeScanner.addUpcToVariableObject($scope.variable);
                     $mdDialog.hide($scope.variable);
                 };
                 self.scanBarcode = function() {
