@@ -35,7 +35,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }, 15000);
                 qmService.showBlackRingLoader();
-                requestParams.upc = qmService.barcode;
+                requestParams.upc = scanResult.text;
+                requestParams.barcodeFormat = scanResult.format;
                 requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;
                 qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
                     variableSearchSuccessHandler(variables);
@@ -383,6 +384,130 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setShowActionSheetMenu: function(actionSheetFunction){
                 qmService.rootScope.setProperty('showActionSheetMenu', actionSheetFunction);
             }
+        },
+        showVariableSearchDialog: function(dialogParameters, successHandler, errorHandler, ev){
+            var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
+                                                          qmLogService, $q, $log, dialogParameters) {
+                var self = this;
+                // list of `state` value/display objects
+                self.dialogParameters = dialogParameters;
+                self.querySearch   = querySearch;
+                self.selectedItemChange = selectedItemChange;
+                self.searchTextChange   = searchTextChange;
+                self.platform = {};
+                self.platform.isMobile = $rootScope.platform.isMobile;
+                self.showHelp = !($rootScope.platform.isMobile);
+                self.showHelp = true;
+                self.title = dialogParameters.title;
+                self.helpText = dialogParameters.helpText;
+                self.placeholder = dialogParameters.placeholder;
+                self.createNewVariable = createNewVariable;
+                self.getHelp = function(){
+                    if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                    qmService.goToState(window.qmStates.help);
+                    $mdDialog.cancel();
+                };
+                self.cancel = function() {
+                    self.items = null;
+                    $mdDialog.cancel();
+                };
+                self.finish = function() {
+                    self.items = null;
+                    $mdDialog.hide($scope.variable);
+                };
+                self.scanBarcode = function() {
+                    qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
+                        if (variables && variables.length) {
+                            self.items = variables;
+                            self.selectedItemChange(variables[0]);
+                            self.searchText = variables[0].name
+                            //$mdDialog.hide(variables[0]);
+                        }
+                    }, function (error) {
+                        qmLog.error(error);
+                    });
+                };
+                function createNewVariable(variableName) {
+                    qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
+                    $mdDialog.cancel();
+                }
+                function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
+                    var deferred = $q.defer();
+                    if(!query || query === ""){
+                        if(self.items && self.items.length > 10){
+                            deferred.resolve(self.items);
+                            return deferred.promise;
+                        }
+                    }
+                    self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
+                    if(query === self.lastApiQuery && self.lastResults){
+                        qmLog.debug("Why are we researching with the same query?");
+                        deferred.resolve(loadAll(self.lastResults));
+                        return deferred.promise;
+                    }
+                    self.lastApiQuery = query;
+                    dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                    dialogParameters.requestParams.searchPhrase = query;
+                    qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(results){
+                        self.lastResults = results;
+                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        deferred.resolve(loadAll(self.lastResults));
+                        if(results && results.length){
+                            if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
+                        } else {
+                            if(variableSearchErrorHandler){variableSearchErrorHandler();}
+                        }
+                    });
+                    return deferred.promise;
+                }
+                function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
+                function selectedItemChange(item) {
+                    if(!item){return;}
+                    self.selectedItem = item;
+                    self.buttonText = "Select " + item.variable.name;
+                    if(self.barcode){
+                        item.variable.barcode = item.variable.upc = self.barcode;
+                        item.variable.barcodeFormat = self.barcodeFormat;
+                    }
+                    $scope.variable = item.variable;
+                    qm.userVariables.saveToLocalStorage(item.variable);
+                    qmLogService.debug('Item changed to ' + item.variable.name);
+                    self.finish();
+                }
+                /**
+                 * Build `variables` list of key/value pairs
+                 */
+                function loadAll(variables) {
+                    if(!variables || !variables[0]){ return []; }
+                    return variables.map( function (variable) {
+                        return {
+                            value: variable.name.toLowerCase(),
+                            name: variable.name,
+                            variable: variable,
+                            ionIcon: variable.ionIcon,
+                            subtitle: variable.subtitle
+                        };
+                    });
+                }
+                querySearch();
+            };
+            SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
+                "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
+            $mdDialog.show({
+                controller: SelectVariableDialogController,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/dialogs/variable-search-dialog.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: !!($rootScope.platform.isMobile),
+                locals: {dialogParameters: dialogParameters}
+            }).then(function(variable) {
+                successHandler(variable);
+            }, function(error) {
+                if(errorHandler){errorHandler(error);}
+                qmLogService.debug('User cancelled selection');
+            });
         },
         storage: {},
     };
@@ -6881,127 +7006,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return buttons;
     };
-    qmService.showVariableSearchDialog = function(dialogParameters, successHandler, errorHandler, ev){
-        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                      qmLogService, $q, $log, dialogParameters) {
-            var self = this;
-            // list of `state` value/display objects
-            self.dialogParameters = dialogParameters;
-            self.querySearch   = querySearch;
-            self.selectedItemChange = selectedItemChange;
-            self.searchTextChange   = searchTextChange;
-            self.platform = {};
-            self.platform.isMobile = $rootScope.platform.isMobile;
-            self.showHelp = !($rootScope.platform.isMobile);
-            self.title = dialogParameters.title;
-            self.helpText = dialogParameters.helpText;
-            self.placeholder = dialogParameters.placeholder;
-            self.createNewVariable = createNewVariable;
-            self.getHelp = function(){
-                if(self.helpText && !self.showHelp){return self.showHelp = true;}
-                qmService.goToState(window.qmStates.help);
-                $mdDialog.cancel();
-            };
-            self.cancel = function() {
-                self.items = null;
-                $mdDialog.cancel();
-            };
-            self.finish = function() {
-                self.items = null;
-                $mdDialog.hide($scope.variable);
-            };
-            self.scanBarcode = function() {
-                qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
-                    if (variables && variables.length) {
-                        self.items = variables;
-                        $mdDialog.hide(variables[0]);
-                    }
-                }, function (error) {
-                    qmLog.error(error);
-                });
-            };
-            function createNewVariable(variableName) {
-                qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
-                $mdDialog.cancel();
-            }
-            function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
-                var deferred = $q.defer();
-                if(!query || query === ""){
-                    if(self.items && self.items.length > 10){
-                        deferred.resolve(self.items);
-                        return deferred.promise;
-                    }
-                }
-                self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
-                if(query === self.lastApiQuery && self.lastResults){
-                    qmLog.debug("Why are we researching with the same query?");
-                    deferred.resolve(loadAll(self.lastResults));
-                    return deferred.promise;
-                }
-                self.lastApiQuery = query;
-                dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
-                dialogParameters.requestParams.searchPhrase = query;
-                qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(results){
-                    self.lastResults = results;
-                    qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                    deferred.resolve(loadAll(self.lastResults));
-                    if(results && results.length){
-                        if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
-                    } else {
-                        if(variableSearchErrorHandler){variableSearchErrorHandler();}
-                    }
-                });
-                return deferred.promise;
-            }
-            function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
-            function selectedItemChange(item) {
-                if(!item){return;}
-                self.selectedItem = item;
-                self.buttonText = "Select " + item.variable.name;
-                if(self.barcode){
-                    item.variable.barcode = item.variable.upc = self.barcode;
-                    item.variable.barcodeFormat = self.barcodeFormat;
-                }
-                $scope.variable = item.variable;
-                qm.userVariables.saveToLocalStorage(item.variable);
-                qmLogService.debug('Item changed to ' + item.variable.name);
-                self.finish();
-            }
-            /**
-             * Build `variables` list of key/value pairs
-             */
-            function loadAll(variables) {
-                if(!variables || !variables[0]){ return []; }
-                return variables.map( function (variable) {
-                    return {
-                        value: variable.name.toLowerCase(),
-                        name: variable.name,
-                        variable: variable,
-                        ionIcon: variable.ionIcon,
-                        subtitle: variable.subtitle
-                    };
-                });
-            }
-            querySearch();
-        };
-        SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-            "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
-        $mdDialog.show({
-            controller: SelectVariableDialogController,
-            controllerAs: 'ctrl',
-            templateUrl: 'templates/dialogs/variable-search-dialog.html',
-            parent: angular.element(document.body),
-            targetEvent: ev,
-            clickOutsideToClose: false,
-            fullscreen: !!($rootScope.platform.isMobile),
-            locals: {dialogParameters: dialogParameters}
-        }).then(function(variable) {
-            successHandler(variable);
-        }, function(error) {
-            if(errorHandler){errorHandler(error);}
-            qmLogService.debug('User cancelled selection');
-        });
-    };
+
     qmService.trackByFavorite = function(trackingReminder, modifiedReminderValue) {
         if (typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null) {
             modifiedReminderValue = trackingReminder.defaultValue;
