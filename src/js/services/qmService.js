@@ -23,6 +23,73 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
+        barcodeScanner: {
+            scanSuccessHandler: function (scanResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
+                requestParams = requestParams || {};
+                qmLog.pushDebug("We got a barcode\n" + "Result: " + self.barcode + "\n" + "Format: " + self.barcodeFormat + "\n" + "Cancelled: " + scanResult.cancelled);
+                var doneSearching = false;
+                $timeout(function() {
+                    if(!doneSearching){
+                        qmService.hideLoader();
+                        variableSearchErrorHandler("variable search timeout");
+                    }
+                }, 15000);
+                qmService.showBlackRingLoader();
+                requestParams.upc = qmService.barcode;
+                requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;
+                qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                    variableSearchSuccessHandler(variables);
+                    doneSearching = true;
+                    qmService.hideLoader();
+                }, function (error) {
+                    qmLog.error(error);
+                    doneSearching = true;
+                    qmService.hideLoader();
+                    var errorMessage = "Couldn't find anything matching barcode " + qmService.barcodeFormat + " " + qmService.barcode;
+                    qmLog.error(errorMessage);
+                    qmService.barcode = scanResult.text;
+                    qmService.barcodeFormat = scanResult.format;
+                    qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
+                        "I'll link the code to your selected variable so scanning should work in the future. ");
+                    variableSearchErrorHandler(error);
+                })
+            },
+            scanBarcode: function (requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
+                requestParams = requestParams || {};
+                var scannerConfig = {
+                    //preferFrontCamera : true, // iOS and Android
+                    showFlipCameraButton : true, // iOS and Android
+                    showTorchButton : true, // iOS and Android
+                    torchOn: true, // Android, launch with the torch switched on (if available)
+                    //saveHistory: true, // Android, save scan history (default false)
+                    prompt : "Place a barcode inside the scan area", // Android
+                    //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+                    //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+                    //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+                    //disableAnimations : true, // iOS
+                    //disableSuccessBeep: false // iOS and Android
+                };
+                if(qm.platform.isAndroid()){
+                    scannerConfig.formats =
+                        "QR_CODE," +
+                        "DATA_MATRIX," +
+                        //"UPC_E," + // False positives on Android
+                        "UPC_A," +
+                        "EAN_8," +
+                        //"EAN_13," + // False positives on Android
+                        "CODE_128," +
+                        "CODE_39," +
+                        "ITF"
+                }
+                /** @namespace cordova.plugins.barcodeScanner */
+                cordova.plugins.barcodeScanner.scan(function (result) {
+                    qmService.barcodeScanner.scanSuccessHandler(result, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
+                }, function (error) {
+                    qmLog.error("Barcode scan failure! error: " + error);
+                    qmService.showMaterialAlert("Barcode scan failed!", "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
+                }, scannerConfig);
+            }
+        },
         deploy: {
             fetchUpdate: function() {
                 if(typeof chcp === "undefined"){
@@ -6844,40 +6911,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $mdDialog.hide($scope.variable);
             };
             self.scanBarcode = function() {
-                function scanSuccessHandler(result) {
-                    self.barcode = result.text;
-                    self.barcodeFormat = result.format;
-                    qmLog.pushDebug("We got a barcode\n" +
-                        "Result: " + self.barcode + "\n" +
-                        "Format: " + self.barcodeFormat + "\n" +
-                        "Cancelled: " + result.cancelled);
-                    qm.userVariables.getFromLocalStorage({upc: self.barcode}, function(localMatches){
-                        if(localMatches && localMatches.length){
-                            self.items = localMatches;
-                            qmLog.info("Found local match", null, localMatches);
-                            return;
-                        }
-                        var doneSearching = false;
-                        function variableSearchErrorHandler() {
-                            doneSearching = true;
-                            qmService.hideLoader();
-                            //self.querySearch = '';
-                            var errorMessage = "Couldn't find anything matching barcode " + self.barcodeFormat + " " + self.barcode;
-                            qmLog.error(errorMessage);
-                            qmService.showMaterialAlert("Couldn't find barcode", errorMessage + ".  Try a manual search and " +
-                                "I'll link the code to your selected variable so scanning should work in the future. ");
-                        }
-                        function variableSearchSuccessHandler() {
-                            doneSearching = true;
-                            qmService.hideLoader();
-                        }
-                        $timeout(function() {if(!doneSearching){variableSearchErrorHandler();}}, 15000);
-                        qmService.showBlackRingLoader();
-                        self.dialogParameters.requestParams.upc = self.barcode;
-                        querySearch(null, variableSearchSuccessHandler, variableSearchErrorHandler);
-                    });
-                }
-                qmService.scanBarcode(scanSuccessHandler);
+                qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
+                    if (variables && variables.length) {
+                        self.items = variables;
+                        $mdDialog.hide(variables[0]);
+                    }
+                }, function (error) {
+                    qmLog.error(error);
+                });
             };
             function createNewVariable(variableName) {
                 qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
@@ -6997,40 +7038,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminder.tally = null;
             }
         }, 2000);
-    };
-    qmService.scanBarcode = function (successHandler) {
-        var scannerConfig = {
-            //preferFrontCamera : true, // iOS and Android
-            showFlipCameraButton : true, // iOS and Android
-            showTorchButton : true, // iOS and Android
-            torchOn: true, // Android, launch with the torch switched on (if available)
-            //saveHistory: true, // Android, save scan history (default false)
-            prompt : "Place a barcode inside the scan area", // Android
-            //resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
-            //formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
-            //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
-            //disableAnimations : true, // iOS
-            //disableSuccessBeep: false // iOS and Android
-        };
-        if($rootScope.platform.isAndroid){
-            scannerConfig.formats =
-                "QR_CODE," +
-                "DATA_MATRIX," +
-                //"UPC_E," + // False positives on Android
-                "UPC_A," +
-                "EAN_8," +
-                //"EAN_13," + // False positives on Android
-                "CODE_128," +
-                "CODE_39," +
-                "ITF"
-        }
-        function errorHandler(error) {
-            qmLog.error("Barcode scan failure!  error: " + error);
-            qmService.showMaterialAlert("Barcode scan failed!",
-                "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
-        }
-        /** @namespace cordova.plugins.barcodeScanner */
-        cordova.plugins.barcodeScanner.scan(successHandler, errorHandler, scannerConfig);
     };
     qmService.switchToPatient = function(patientUser){
         if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
