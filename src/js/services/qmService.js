@@ -530,8 +530,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             relationships: { icon: qmService.ionIcons.discoveries, text: 'Relationships'},
             recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
             refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
-            reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
-            reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
+            reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
+            reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
             settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
             studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
             variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
@@ -558,12 +558,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             if(!variableName){variableName = variableObject.name;}
-            var stateParams = {variableName: variableName};
-            if(variableObject){stateParams.variableObject = variableObject;}
             qmLog.info("Getting action sheet for variable " + variableName);
-            function handleActionSheetButtonClick(button, stateParams) {
+            function handleActionSheetButtonClick(button) {
+                var stateParams = {};
+                if(button.stateParams){stateParams = button.stateParams;}
+                stateParams.variableName = variableName;
+                if(variableObject){stateParams.variableObject = variableObject;}
                 if(button.state){
-                    if(button.stateParams){stateParams = button.stateParams;}
                     qmService.goToState(button.state, stateParams);
                     return true;
                 }
@@ -623,7 +624,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED'); return true;},
                     buttonClicked: function(index, button) {
-                        return handleActionSheetButtonClick(button, stateParams);
+                        return handleActionSheetButtonClick(button);
                     }
                 };
                 if(variableObject.userId){

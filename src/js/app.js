@@ -1259,7 +1259,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: false,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {
@@ -1315,7 +1316,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: true,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {
