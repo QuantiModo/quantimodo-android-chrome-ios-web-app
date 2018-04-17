@@ -2584,6 +2584,7 @@ window.qm = {
             });
         },
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            params = params || {};
             qm.userVariables.getFromLocalStorage(params, function(userVariables){
                 function doWeHaveEnoughVariables(variables){
                     var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
@@ -2616,6 +2617,7 @@ window.qm = {
     },
     variablesHelper: {
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
+            requestParams = requestParams || {};
             if(!requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
             function getFromApi() {
