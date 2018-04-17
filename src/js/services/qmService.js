@@ -1219,7 +1219,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
-        trackingReminderNotificationsArray[0] = qmService.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
+        trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
         var options = {};
         options.doNotSendToLogin = false;
         options.doNotShowOfflineError = true;
@@ -1243,7 +1243,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.info('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
-        trackingRemindersArray[0] = qmService.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
+        trackingRemindersArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
     };
     qmService.postStudy = function(body, successHandler, errorHandler){
@@ -7125,11 +7125,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         window.qm.storage.setItem(qm.items.introSeen, false);
         window.qm.storage.setItem(qm.items.onboarded, false);
         qmService.goToState('app.intro');
-    };
-    qmService.addTimeZoneOffsetProperty = function(obj){
-        var a = new Date();
-        obj.timeZoneOffset = a.getTimezoneOffset();
-        return obj;
     };
     return qmService;
 }]);
