@@ -719,7 +719,7 @@ window.qm = {
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;

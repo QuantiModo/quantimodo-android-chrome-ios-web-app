@@ -384,10 +384,10 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.showActionSheetMenu:  $scope.state.variableObject: ', null, $scope.state.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
-                qmService.actionSheetButtons.reminderAdd,
-                qmService.actionSheetButtons.charts,
-                qmService.actionSheetButtons.historyAllVariable,
-                qmService.actionSheetButtons.variableSettings,
+                qmService.actionSheets.actionSheetButtons.reminderAdd,
+                qmService.actionSheets.actionSheetButtons.charts,
+                qmService.actionSheets.actionSheetButtons.historyAllVariable,
+                qmService.actionSheets.actionSheetButtons.variableSettings,
                 { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
