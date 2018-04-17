@@ -565,7 +565,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 stateParams.variableName = variableName;
                 if(variableObject){stateParams.variableObject = variableObject;}
                 if(button.state){
-                    qmService.goToState(button.state, stateParams);
+                    if(button.state === qmStates.reminderAdd && variableObject){
+                        qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
+                    } else {
+                        qmService.goToState(button.state, stateParams);
+                    }
                     return true;
                 }
                 if(button.action){
@@ -1919,6 +1923,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
                 return 'ion-speedometer';
             }
+            dataArray[i] = qmService.addVariableCategoryImagePaths(dataArray[i])
         }
         return dataArray;
     };
@@ -3062,19 +3067,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return moment().hours(localHour).minutes(minutes);
     };
     qmService.addToTrackingReminderSyncQueue = function(trackingReminder) {
-        qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', trackingReminder);
+        qmService.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
         qmLog.checkUrlAndStorageForDebugMode();
-        var trackingReminderSyncQueue = qm.storage.getItem('trackingReminderSyncQueue');
+        var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' + JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
+            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
+                JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
                     qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
                     if(response && response.data){
-                        qm.storage.removeItem('trackingReminderSyncQueue');
                         if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
                         if(!response.data.trackingReminders){
                             qmLogService.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
@@ -3083,6 +3088,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         } else {
                             qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
                             qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
+                            qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
                         }
                         if(!response.data.trackingReminderNotifications){
                             qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
@@ -3219,7 +3225,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var defaultReminders = qmService.getDefaultReminders();
                 if(defaultReminders && defaultReminders.length){
                     qmService.storage.addToOrReplaceByIdAndMoveToFront(
-                        'trackingReminderSyncQueue', defaultReminders).then(function () {
+                        qm.items.trackingReminderSyncQueue, defaultReminders).then(function () {
                         qmService.syncTrackingReminders().then(function (trackingReminders){ deferred.resolve(trackingReminders);});
                     });
                     qmLogService.debug('Creating default reminders ' + JSON.stringify(defaultReminders), null);
@@ -4878,8 +4884,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
         var deferred = $q.defer();
-        qm.storage.addToOrReplaceByIdAndMoveToFront(localStorageItemName, replacementElementArray);
-        deferred.resolve();
+        var array = qm.storage.addToOrReplaceByIdAndMoveToFront(localStorageItemName, replacementElementArray);
+        deferred.resolve(array);
         return deferred.promise;
     };
     qmService.storage.setItem = function(key, value){
@@ -5646,7 +5652,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
         var doneState = getDefaultState();
         if(options.doneState){doneState = options.doneState;}
-        var trackingReminder = {};
+        var trackingReminder = JSON.parse(JSON.stringify(variableObject));
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
         trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
@@ -5660,10 +5666,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return;
         }
         if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
-        qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', trackingReminder)
+        trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
+        qmService.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder)
             .then(function() {
                 // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                qmService.goToState(doneState, {trackingReminder: trackingReminder});
+                qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
                 qmService.syncTrackingReminders();
             });
     };
@@ -5813,7 +5820,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         variableObject.name = trackingReminder.variableName;
         return variableObject;
     };
-    qmService.addImagePaths = function(object){
+    qmService.addVariableCategoryImagePaths = function(object){
         if(object.variableCategoryName){
             var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
             if(!object.pngPath){object.pngPath = pathPrefix + '.png';}

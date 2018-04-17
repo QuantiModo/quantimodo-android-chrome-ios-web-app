@@ -336,7 +336,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         applyReminderTimesToReminder();
         if($scope.state.trackingReminder.id){qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
-        qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
+        qmService.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, remindersArray).then(function() {
             qmService.syncTrackingReminders(true).then(function () {
                 var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
                 qmService.showInfoToast(toastMessage);
@@ -415,7 +415,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
             $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
         }
-        $scope.state.trackingReminder = qmService.addImagePaths($scope.state.trackingReminder);
+        $scope.state.trackingReminder = qmService.addVariableCategoryImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
         setHideDefaultValueField();
     };
