@@ -718,6 +718,8 @@ window.qm = {
                 return array;
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
+            var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
@@ -735,9 +737,11 @@ window.qm = {
                     greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     greaterThanPropertyName = key;
                 } else {
-                    if(value === false && key === "manualTracking"){ return; }
-                    if(value === null || value === "" || value === "Anything"){ return; }
-                    if(allowedFilterParams.indexOf(key) === -1){
+                    if (value === false && key === "manualTracking") { return; }
+                    if (value === null || value === "" || value === "Anything") { return; }
+                    if (excludedFilterParams.indexOf(key) !== -1) {
+                        return;
+                    } else if (allowedFilterParams.indexOf(key) === -1) {
                         qmLog.error(key + " is not in allowed filter params");
                     } else {
                         qmLog.info("filtering by " + key);

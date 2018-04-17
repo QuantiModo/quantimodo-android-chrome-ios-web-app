@@ -2002,7 +2002,7 @@ gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
     return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
         '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon']);
 });
-gulp.task('copySrcToWww', [], function () {
+gulp.task('_copy-src-to-www', [], function () {
     return copyFiles('src/**/*', 'www', []);
 });
 gulp.task('copySrcJsToWww', [], function () {
@@ -2384,7 +2384,7 @@ gulp.task('prepareQuantiModoIos', function (callback) {
 gulp.task('copySrcAndEmulateAndroid', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToWww',
+        '_copy-src-to-www',
         //'copySrcToAndroidWww',
         'ionicEmulateAndroid',
         callback);
@@ -2392,7 +2392,7 @@ gulp.task('copySrcAndEmulateAndroid', function (callback) {
 gulp.task('_copy-src-and-run-android', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'copySrcToWww',
+        '_copy-src-to-www',
         //'copySrcToAndroidWww',
         'ionicRunAndroid',
         callback);
