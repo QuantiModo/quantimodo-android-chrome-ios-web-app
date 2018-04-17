@@ -187,7 +187,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                     { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-thumbsup"></i> Seems Right' },
-                    qmService.actionSheetButtons.refresh
+                    qmService.actionSheets.actionSheetButtons.refresh
                 ],
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',

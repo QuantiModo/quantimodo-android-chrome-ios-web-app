@@ -396,7 +396,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.searchTextChange   = searchTextChange;
                 self.platform = {};
                 self.platform.isMobile = $rootScope.platform.isMobile;
-                self.showHelp = !($rootScope.platform.isMobile);
+                //self.showHelp = !($rootScope.platform.isMobile);
                 self.showHelp = true;
                 self.title = dialogParameters.title;
                 self.helpText = dialogParameters.helpText;
@@ -418,8 +418,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 self.scanBarcode = function() {
                     qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
                         if (variables && variables.length) {
-                            self.items = variables;
-                            self.selectedItemChange(variables[0]);
+                            self.items = convertVariablesToToResultsList(variables);
+                            //self.selectedItemChange(self.items[0]);
                             self.searchText = variables[0].name
                             //$mdDialog.hide(variables[0]);
                         }
@@ -442,18 +442,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                     if(query === self.lastApiQuery && self.lastResults){
                         qmLog.debug("Why are we researching with the same query?");
-                        deferred.resolve(loadAll(self.lastResults));
+                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         return deferred.promise;
                     }
                     self.lastApiQuery = query;
                     dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
                     dialogParameters.requestParams.searchPhrase = query;
-                    qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(results){
-                        self.lastResults = results;
+                    qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
+                        self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
-                        deferred.resolve(loadAll(self.lastResults));
-                        if(results && results.length){
-                            if(variableSearchSuccessHandler){variableSearchSuccessHandler(results);}
+                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
+                        if(variables && variables.length){
+                            if(variableSearchSuccessHandler){variableSearchSuccessHandler(variables);}
                         } else {
                             if(variableSearchErrorHandler){variableSearchErrorHandler();}
                         }
@@ -477,7 +477,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 /**
                  * Build `variables` list of key/value pairs
                  */
-                function loadAll(variables) {
+                function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
                         return {
@@ -511,6 +511,150 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         storage: {},
     };
+    qmService.actionSheets = {
+        actionSheetButtons: {
+            charts: { state: qmStates.charts,  icon: qmService.ionIcons.charts, text: 'Charts'},
+            chartSearch: { state: qmStates.chartSearch,  icon: qmService.ionIcons.charts, text: 'Charts'},
+            compare: { icon: qmService.ionIcons.study, text: 'Compare Another Variable'},
+            help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
+            historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
+            historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
+            historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
+            lastValuesAction: { icon: qmService.ionIcons.recordMeasurement },
+            measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+            measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+            measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+            outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
+            openUrl: { icon: qmService.ionIcons.outcomes, text: 'Go to Website'},
+            predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
+            relationships: { icon: qmService.ionIcons.discoveries, text: 'Relationships'},
+            recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
+            refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
+            reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
+            reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
+            settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
+            studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
+            variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
+        },
+        addHtmlToActionSheetButton: function(actionSheetButton, id) {
+            if(!actionSheetButton.id && id){actionSheetButton.id = id;}
+            if(actionSheetButton.text && actionSheetButton.text.indexOf('<span ') === -1){
+                actionSheetButton.text = '<span id="' + id + '"><i class="icon ' + actionSheetButton.icon + '"></i>' + actionSheetButton.text + '</span>';
+            }
+            return actionSheetButton;
+        },
+        addHtmlToAllActionSheetButtons: function(){
+            for (var propertyName in qmService.actionSheets.actionSheetButtons) {
+                if( qmService.actionSheets.actionSheetButtons.hasOwnProperty(propertyName) ) {
+                    qmService.actionSheets.actionSheetButtons[propertyName] =
+                        qmService.actionSheets.addHtmlToActionSheetButton(qmService.actionSheets.actionSheetButtons[propertyName], propertyName);
+                }
+            }
+        },
+        getVariableObjectActionSheet: function(variableName, variableObject){
+            if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
+            if(!variableObject){
+                window.qmLog.error("Could not get variable for action sheet");
+                return;
+            }
+            if(!variableName){variableName = variableObject.name;}
+            var stateParams = {variableName: variableName};
+            if(variableObject){stateParams.variableObject = variableObject;}
+            qmLog.info("Getting action sheet for variable " + variableName);
+            function handleActionSheetButtonClick(button, stateParams) {
+                if(button.state){
+                    if(button.stateParams){stateParams = button.stateParams;}
+                    qmService.goToState(button.state, stateParams);
+                    return true;
+                }
+                if(button.action){
+                    qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+                }
+                if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
+                    qmService.goToStudyCreationForVariable(variableObject);
+                }
+                if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
+                    qmService.goToCorrelationsListForVariable(variableObject);
+                }
+                if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
+                    qmService.goToCorrelationsListForVariable(variableObject);
+                }
+                return false; // Don't close if clicking top variable name
+            }
+            return function() {
+                qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+                var buttons = [
+                    qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: variableName}, 'variableName'),
+                    qmService.actionSheets.actionSheetButtons.measurementAddVariable,
+                    qmService.actionSheets.actionSheetButtons.reminderAdd
+                ];
+                if(variableObject.userId){
+                    buttons.push(qmService.actionSheets.actionSheetButtons.charts);
+                    buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
+                    buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
+                }
+                if(variableObject){buttons.push(qmService.actionSheets.actionSheetButtons.compare);}
+                if(variableObject && variableObject.outcome){
+                    buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
+                } else {
+                    buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
+                }
+                if(variableObject.actionArray) {
+                    for (var i = 0; i < variableObject.actionArray.length; i++) {
+                        var actionArrayItem = variableObject.actionArray[i];
+                        qmLog.debug("Action array item: " + JSON.stringify(actionArrayItem));
+                        if (actionArrayItem.action !== "snooze") {
+                            buttons.push({
+                                action: actionArrayItem,
+                                id: actionArrayItem.callback,
+                                text:  '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
+                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
+                            });
+                        }
+                        if(buttons.length > 8){break;}
+                    }
+                }
+                for (var j = 0; j < buttons.length; j++) {
+                    qmLog.debug("Button text: " + buttons[j].text);
+                    buttons[j] = qmService.actionSheets.addHtmlToActionSheetButton(buttons[j]);
+                }
+                var actionSheetParams = {
+                    buttons: buttons,
+                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                    cancel: function() {qmLogService.debug('CANCELLED'); return true;},
+                    buttonClicked: function(index, button) {
+                        return handleActionSheetButtonClick(button, stateParams);
+                    }
+                };
+                if(variableObject.userId){
+                    actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete All';
+                    actionSheetParams.destructiveButtonClicked = function() {
+                        qmService.showDeleteAllMeasurementsForVariablePopup(variableName);
+                        return true;
+                    };
+                }
+                var hideSheet = $ionicActionSheet.show(actionSheetParams);
+                $timeout(function() {hideSheet();}, 30000);
+            };
+        },
+        showVariableObjectActionSheet: function(variableName, variableObject){
+            var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variableName, variableObject);
+            return showActionSheet();
+        },
+        addActionArrayButtonsToActionSheet: function(actionArray, buttons){
+            if(!actionArray){
+                qmLogService.error("No action array provided to addActionArrayButtonsToActionSheet!");
+                return;
+            }
+            for(var i=0; i < actionArray.length; i++){
+                if(actionArray[i].action !== "snooze"){
+                    buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + actionArray[i].title});
+                }
+            }
+            return buttons;
+        },
+    };
+    qmService.actionSheets.addHtmlToAllActionSheetButtons();
     qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
@@ -2183,7 +2327,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isChromeExtension = qm.platform.isChromeExtension();
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
-        if(platform.isMobile){qmService.actionSheetButtons.compare.text = "Compare Another";}
+        if(platform.isMobile){qmService.actionSheets.actionSheetButtons.compare.text = "Compare Another";}
         qmLog.info("Platform: " + JSON.stringify(platform));
     };
     qmService.getPermissionString = function(){
@@ -2581,7 +2725,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info('[INFO] BackgroundGeolocation service is running', status.isRunning);
             qmLog.info('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
             qmLog.info('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
             // you don't need to check status before start (this is just the example)
             if (!status.isRunning) {
                 BackgroundGeolocation.start(); //triggers start on start event
@@ -4523,6 +4666,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getFromLocalStorageOrApiDeferred = function(params){
         var deferred = $q.defer();
         qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
+            params = params || {};
             deferred.resolve(userVariables);
         }, function (error) {
             deferred.reject(error);});
@@ -4970,7 +5114,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }]
         };
     }
-    function createOutdorrHumidityMeasurement(data) {
+    function createOutdoorHumidityMeasurement(data) {
         return {
             variableCategoryName: "Environment",
             variableName: "Outdoor Humidity",
@@ -5031,7 +5175,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         measurementSets.push(createWeatherIconMeasurementSet(data));
         measurementSets.push(createOutdoorWeatherMeasurementSet(data));
         measurementSets.push(createBarometricPressureMeasurement(data));
-        measurementSets.push(createOutdorrHumidityMeasurement(data));
+        measurementSets.push(createOutdoorHumidityMeasurement(data));
         if (data.daily.data[0].visibility) {
             measurementSets.push(createOutdoorVisibilityMeasurement(data));
         }
@@ -5678,38 +5822,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         variableObject.name = trackingReminder.variableName;
         return variableObject;
     };
-    qmService.actionSheetButtons = {
-        charts: { state: qmStates.charts,  icon: qmService.ionIcons.charts, text: 'Charts'},
-        chartSearch: { state: qmStates.chartSearch,  icon: qmService.ionIcons.charts, text: 'Charts'},
-        compare: { icon: qmService.ionIcons.study, text: 'Compare Another Variable'},
-        help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
-        historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
-        historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
-        historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
-        lastValuesAction: { icon: qmService.ionIcons.recordMeasurement },
-        measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
-        openUrl: { icon: qmService.ionIcons.outcomes, text: 'Go to Website'},
-        predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
-        relationships: { icon: qmService.ionIcons.discoveries, text: 'Relationships'},
-        recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-        refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
-        reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
-        reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder'},
-        settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
-        studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
-        variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
-    };
-    for (var propertyName in qmService.actionSheetButtons) {
-        if( qmService.actionSheetButtons.hasOwnProperty(propertyName) ) {
-            qmService.actionSheetButtons[propertyName].id = propertyName;
-            qmService.actionSheetButtons[propertyName].text = '<span id="'+ propertyName + '"><i class="icon ' +
-                qmService.actionSheetButtons[propertyName].icon + '"></i>' +
-                qmService.actionSheetButtons[propertyName].text + '</span>';
-        }
-    }
     qmService.addImagePaths = function(object){
         if(object.variableCategoryName){
             var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
@@ -6908,105 +7020,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return $stateParams.variableName;
     };
-    qmService.showVariableObjectActionSheet = function(variableName, variableObject){
-        var showActionSheet = qmService.getVariableObjectActionSheet(variableName, variableObject);
-        return showActionSheet();
-    };
-    qmService.getVariableObjectActionSheet = function(variableName, variableObject){
-        if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
-        if(!variableObject){
-            window.qmLog.error("Could not get variable for action sheet");
-            return;
-        }
-        if(!variableName){variableName = variableObject.name;}
-        var stateParams = {variableName: variableName};
-        if(variableObject){stateParams.variableObject = variableObject;}
-        qmLog.info("Getting action sheet for variable " + variableName);
-        function handleActionSheetButtonClick(button, stateParams) {
-            if(button.state){
-                if(button.stateParams){stateParams = button.stateParams;}
-                qmService.goToState(button.state, stateParams);
-                return true;
-            }
-            if(button.action){
-                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
-            }
-            if(button.id === qmService.actionSheetButtons.compare.id){
-                qmService.goToStudyCreationForVariable(variableObject);
-            }
-            if(button.id === qmService.actionSheetButtons.predictors.id){
-                qmService.goToCorrelationsListForVariable(variableObject);
-            }
-            if(button.id === qmService.actionSheetButtons.outcomes.id){
-                qmService.goToCorrelationsListForVariable(variableObject);
-            }
-            return true;
-        }
-        return function() {
-            qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
-            var buttons = [
-                qmService.actionSheetButtons.measurementAddVariable,
-                qmService.actionSheetButtons.reminderAdd
-            ];
-            if(variableObject.userId){
-                buttons.push(qmService.actionSheetButtons.charts);
-                buttons.push(qmService.actionSheetButtons.historyAllVariable);
-                buttons.push(qmService.actionSheetButtons.variableSettings);
-            }
-            if(variableObject){buttons.push(qmService.actionSheetButtons.compare);}
-            if(variableObject && variableObject.outcome){
-                buttons.push(qmService.actionSheetButtons.predictors);
-            } else {
-                buttons.push(qmService.actionSheetButtons.outcomes);
-            }
-            if(variableObject.actionArray) {
-                for (var i = 0; i < variableObject.actionArray.length; i++) {
-                    var actionArrayItem = variableObject.actionArray[i];
-                    qmLog.debug("Action array item: " + JSON.stringify(actionArrayItem));
-                    if (actionArrayItem.action !== "snooze") {
-                        buttons.push({
-                            action: actionArrayItem,
-                            id: actionArrayItem.callback,
-                            text:  '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
-                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
-                        });
-                    }
-                    if(buttons.length > 8){break;}
-                }
-            }
-            for (var j = 0; j < buttons.length; j++) {qmLog.debug("Button text: " + buttons[j].text)}
-            var actionSheetParams = {
-                buttons: buttons,
-                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {qmLogService.debug('CANCELLED'); return true;},
-                buttonClicked: function(index, button) {
-                    return handleActionSheetButtonClick(button, stateParams);
-                }
-            };
-            if(variableObject.userId){
-                actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete All';
-                actionSheetParams.destructiveButtonClicked = function() {
-                    qmService.showDeleteAllMeasurementsForVariablePopup(variableName);
-                    return true;
-                };
-            }
-            var hideSheet = $ionicActionSheet.show(actionSheetParams);
-            $timeout(function() {hideSheet();}, 20000);
-        };
-    };
-    qmService.addActionArrayButtonsToActionSheet = function(actionArray, buttons){
-        if(!actionArray){
-            qmLogService.error("No action array provided to addActionArrayButtonsToActionSheet!");
-            return;
-        }
-        for(var i=0; i < actionArray.length; i++){
-            if(actionArray[i].action !== "snooze"){
-                buttons.push({ text: '<i class="icon ion-android-done-all"></i> Record ' + actionArray[i].title});
-            }
-        }
-        return buttons;
-    };
-
     qmService.trackByFavorite = function(trackingReminder, modifiedReminderValue) {
         if (typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null) {
             modifiedReminderValue = trackingReminder.defaultValue;

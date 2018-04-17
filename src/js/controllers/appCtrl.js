@@ -271,9 +271,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var actionMenuButtons = [
             { text: '<i class="icon ion-gear-a"></i>Edit' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
-            qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.historyAllVariable,
-            qmService.actionSheetButtons.variableSettings
+            qmService.actionSheets.actionSheetButtons.charts,
+            qmService.actionSheets.actionSheetButtons.historyAllVariable,
+            qmService.actionSheets.actionSheetButtons.variableSettings
         ];
         /** @namespace qm.getAppSettings().favoritesController */
         if(qm.getAppSettings().favoritesController && qm.getAppSettings().favoritesController.actionMenuButtons){
@@ -453,7 +453,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function selectVariable(variable) {
             $scope.variableObject = variable;
             qmLogService.debug('Selected variable: ' + variable.name);
-            var showActionSheet = qmService.getVariableObjectActionSheet(variable.name, variable);
+            var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variable.name, variable);
             showActionSheet();
         }
         var dialogParameters = {

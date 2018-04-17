@@ -30,8 +30,8 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                     { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
                     { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
                     { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
-                    qmService.actionSheetButtons.refresh,
-                    qmService.actionSheetButtons.settings
+                    qmService.actionSheets.actionSheetButtons.refresh,
+                    qmService.actionSheets.actionSheetButtons.settings
                 ],
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug('CANCELLED', null); },
