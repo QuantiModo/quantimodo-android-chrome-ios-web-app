@@ -75,7 +75,12 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         } else if (qm.getPrimaryOutcomeVariable()){
             $scope.state.variableObject = qm.getPrimaryOutcomeVariable();
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
-        } else { $scope.goBack(); }
+        } else {
+            $scope.goBack();
+        }
+        if($stateParams.skipReminderSettingsIfPossible){
+            $scope.save();
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('ReminderAddCtrl beforeEnter...');
