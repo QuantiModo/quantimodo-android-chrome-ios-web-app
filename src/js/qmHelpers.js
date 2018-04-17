@@ -2203,6 +2203,11 @@ window.qm = {
             var min = a.getMinutes();
             var sec = a.getSeconds();
             return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        },
+        addTimeZoneOffsetProperty: function(obj){
+            var a = new Date();
+            obj.timeZoneOffset = a.getTimezoneOffset();
+            return obj;
         }
     },
     trackingReminderNotifications : [],
@@ -2643,6 +2648,16 @@ window.qm = {
                     getFromApi();
                 }
             });
+        },
+        putManualTrackingFirst: function (variables) {
+            var manualTracking = variables.filter(function (variableToCheck) {
+                return variableToCheck.manualTracking === true;
+            });
+            var nonManual = variables.filter(function (variableToCheck) {
+                return variableToCheck.manualTracking !== true;
+            });
+            var merged = manualTracking.concat(nonManual);
+            return merged;
         }
     },
     webNotifications: {
@@ -2754,6 +2769,14 @@ window.qm = {
                         successHandler(variableCategories);
                     }, errorHandler)
                 }
+            });
+        },
+        getVariableCategory: function(variableCategoryName, successHandler){
+            qm.variableCategoryHelper.getVariableCategoriesFromLocalStorageOrApi(function (variableCategories) {
+               var match = variableCategories.find(function (category) {
+                    category.name = variableCategoryName;
+               });
+                successHandler(match);
             });
         }
     },
