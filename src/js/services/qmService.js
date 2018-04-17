@@ -4666,6 +4666,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getFromLocalStorageOrApiDeferred = function(params){
         var deferred = $q.defer();
         qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
+            params = params || {};
             deferred.resolve(userVariables);
         }, function (error) {
             deferred.reject(error);});
