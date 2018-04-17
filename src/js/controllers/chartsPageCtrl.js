@@ -9,7 +9,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
         qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
-            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
         });
         initializeCharts();
         if (!clipboard.supported) {
@@ -53,7 +53,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                 }
                 $scope.state.variableObject = variableObject;
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
-                    return qmService.showVariableObjectActionSheet(getVariableName(), variableObject);
+                    return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), variableObject);
                 });
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');

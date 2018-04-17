@@ -40,10 +40,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    qmService.actionSheetButtons.measurementAddVariable,
-                    qmService.actionSheetButtons.reminderAdd,
-                    qmService.actionSheetButtons.chartSearch,
-                    qmService.actionSheetButtons.historyAllVariable,
+                    qmService.actionSheets.actionSheetButtons.measurementAddVariable,
+                    qmService.actionSheets.actionSheetButtons.reminderAdd,
+                    qmService.actionSheets.actionSheetButtons.chartSearch,
+                    qmService.actionSheets.actionSheetButtons.historyAllVariable,
                     { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
                     { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                 ],
