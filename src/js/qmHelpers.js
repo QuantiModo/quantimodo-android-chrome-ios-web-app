@@ -717,43 +717,39 @@ window.qm = {
                 qmLog.info("No requestParams provided to filterByRequestParams");
                 return array;
             }
-            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome'];
+            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
             var lessThanPropertyValue = null;
-            var filterPropertyValue = null;
             var log = [];
             var filterPropertyValues = [];
             var filterPropertyNames = [];
             angular.forEach(requestParams, function(value, key) {
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
-                    if(!isNaN(lessThanPropertyValue)){lessThanPropertyValue = Number(lessThanPropertyValue);}
+                    lessThanPropertyValue = Number(lessThanPropertyValue);
                     lessThanPropertyName = key;
                 } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
                     greaterThanPropertyValue = value.replace('(gt)', "");
-                    if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
+                    greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     greaterThanPropertyName = key;
-                } else if (typeof value === "string" && value !== "Anything" && key !== "sort" && value !== ""){
-                    if(!isNaN(value)){filterPropertyValues.push(Number(filterPropertyValue));} else {filterPropertyValues.push(value);}
-                    filterPropertyNames.push(key);
-                } else if (allowedFilterParams.indexOf(key) !== -1){
+                } else {
                     if(value === false && key === "manualTracking"){ return; }
-                    if(value === null){ return; }
+                    if(value === null || value === "" || value === "Anything"){ return; }
                     if(allowedFilterParams.indexOf(key) !== -1){
-                        filterPropertyValues.push(value);
-                        filterPropertyNames.push(key);
+                        qmLog.error(key + " is not in allowed filter params");
+                    } else {
+                        qmLog.info("filtering by " + key);
                     }
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
                 }
             }, log);
-            var results = qm.arrayHelper.filterByPropertyOrSize(array, null,
-                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
+            var results = qm.arrayHelper.filterByPropertyOrSize(array, null, null, lessThanPropertyName, lessThanPropertyValue,
+                greaterThanPropertyName, greaterThanPropertyValue);
             if(results){
                 for(var i = 0; i < filterPropertyNames.length; i++){
-                    if(allowedFilterParams.indexOf(filterPropertyNames[i]) === -1){
-                        continue;
-                    }
                     results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
