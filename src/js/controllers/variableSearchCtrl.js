@@ -138,6 +138,17 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(errorHandler){errorHandler();}
         $scope.state.noVariablesFoundCard.show = true;
     }
+    function variableSearchSuccessHandler(variables, successHandler, errorHandler){
+        if(successHandler && variables && variables.length){successHandler();}
+        if(errorHandler && (!variables || !variables.length)){errorHandler();}
+        $scope.state.noVariablesFoundCard.show = false;
+        $scope.state.showAddVariableButton = false;
+        $scope.state.variableSearchResults = variables;
+        qmLog.info('variable search results', null, variables);
+        $scope.state.searching = false;
+        if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
+        showNoVariablesFoundCardIfNecessary(errorHandler);
+    }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
@@ -146,15 +157,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.searching = true;
             qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
                 .then(function(variables){
-                    if(successHandler && variables && variables.length){successHandler();}
-                    if(errorHandler && (!variables || !variables.length)){errorHandler();}
-                    $scope.state.noVariablesFoundCard.show = false;
-                    $scope.state.showAddVariableButton = false;
-                    $scope.state.variableSearchResults = variables;
-                    qmLog.info('variable search results', null, variables);
-                    $scope.state.searching = false;
-                    if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
-                    showNoVariablesFoundCardIfNecessary(errorHandler);
+                    variableSearchSuccessHandler(variables, successHandler, errorHandler);
                 });
         } else {
             populateUserVariables();
