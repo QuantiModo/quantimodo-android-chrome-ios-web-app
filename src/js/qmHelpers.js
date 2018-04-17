@@ -1130,7 +1130,7 @@ window.qm = {
                     });
                     existingData.unshift(newObjectToSave);
                 }
-                localforage.setItem(key, existingData);
+                qm.localForage.setItem(key, existingData);
             });
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
@@ -1720,7 +1720,7 @@ window.qm = {
             if(!qm.api.configureClient('getTrackingRemindersFromApi', errorHandler)){return false;}
             var apiInstance = new Quantimodo.RemindersApi();
             function callback(error, data, response) {
-                qm.reminderHelper.saveToLocalStorage(data);
+                if (data) { qm.reminderHelper.saveToLocalStorage(data); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
             }
             params = qm.api.addGlobalParams(params);
@@ -2461,7 +2461,7 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.commonVariablesHelper.saveToLocalStorage(data);
+                if (data) { qm.commonVariablesHelper.saveToLocalStorage(data); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
@@ -2514,6 +2514,10 @@ window.qm = {
     },
     userVariables: {
         saveToLocalStorage: function(variables){
+            if(!variables){
+                qmLog.error("No variables provided to userVariables.saveToLocalStorage");
+                return;
+            }
             variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
             var definitelyUserVariables = [];
             var commonVariables = [];
@@ -2544,7 +2548,7 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                qm.userVariables.saveToLocalStorage(data);
+                if (data) { qm.userVariables.saveToLocalStorage(data); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
