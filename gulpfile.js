@@ -2005,7 +2005,7 @@ gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
 gulp.task('_copy-src-to-www', [], function () {
     return copyFiles('src/**/*', 'www', []);
 });
-gulp.task('copySrcJsToWww', [], function () {
+gulp.task('_copy-src-js-to-www', [], function () {
     return copyFiles('src/js/**/*', 'www/js');
 });
 gulp.task('copyConfigsToSrc', [], function () {
