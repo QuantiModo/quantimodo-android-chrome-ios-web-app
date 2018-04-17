@@ -1074,7 +1074,7 @@ window.qm = {
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminders: 'trackingReminders',
-        trackingReminderSyncQueue: ' trackingReminderSyncQueue',
+        trackingReminderSyncQueue: 'trackingReminderSyncQueue',
         units: 'units',
         user: 'user',
         useSmallInbox: 'useSmallInbox',
@@ -1391,7 +1391,7 @@ window.qm = {
         addToSyncQueue: function(trackingReminderNotification){
             qm.notifications.deleteById(trackingReminderNotification.id);
             qm.userVariables.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
-            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
+            return qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
