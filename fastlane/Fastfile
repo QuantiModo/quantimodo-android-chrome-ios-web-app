@@ -37,7 +37,7 @@ platform :ios do
     ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     #sh "cd .. && ruby hooks/after_platform_add.bak/xcodeprojectfix.rb"
 
-    match(git_url: "git@github.com:mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
+    match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
       app_identifier: ENV["APP_IDENTIFIER"],
       type: "appstore",
       readonly: true)
