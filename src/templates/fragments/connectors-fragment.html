@@ -1,4 +1,4 @@
-<div ng-if="!connector.hide" class="item" ng-repeat="connector in state.connectors">
+<div ng-if="!connector.hide" class="item" ng-repeat="connector in state.connectors | filter:state.searchText">
         <div class="row">
             <div class="col col-20" style="padding-top: 10px;">
                 <img ng-src="{{connector.image}}" alt="Connector Image" style="width: 40px; height: 40px;">
