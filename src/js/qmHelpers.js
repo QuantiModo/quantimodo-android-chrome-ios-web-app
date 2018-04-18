@@ -243,13 +243,14 @@ window.qm = {
             return qm.appsManager.getQuantiModoApiUrl();
         },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
-            var url = window.qm.api.getRequestUrl(path);
-            qmLog.info("Making POST request to " + url);
-            if(typeof XMLHttpRequest !== "undefined"){
-                qm.api.postViaXhr(body, url, successHandler);
-            } else {
-                qm.api.postViaFetch(body, url, successHandler, errorHandler);  // Need fetch for service worker
-            }
+            qm.api.getRequestUrl(path, function(url){
+                qmLog.info("Making POST request to " + url);
+                if(typeof XMLHttpRequest !== "undefined"){
+                    qm.api.postViaXhr(body, url, successHandler);
+                } else {
+                    qm.api.postViaFetch(body, url, successHandler, errorHandler);  // Need fetch for service worker
+                }
+            });
         },
         getViaXhrOrFetch: function(url, successHandler, errorHandler){
             qmLog.info("Making GET request to " + url);
@@ -331,41 +332,43 @@ window.qm = {
         postMeasurements: function(measurements, onDoneListener) {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
         },
-        getRequestUrl: function(path) {
-            function addGlobalQueryParameters(url) {
-                function addQueryParameter(url, name, value){
-                    if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
-                    return url + "&" + name + "=" + value;
-                }
-                if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
-                    url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
-                } else {
-                    window.qmLog.error('No access token!');
-                    if(!qm.serviceWorker){
-                        qm.chrome.showSignInNotification();
+        getRequestUrl: function(path, successHandler) {
+            qm.userHelper.getUserFromLocalStorageOrApi(function(user){
+                function addGlobalQueryParameters(url) {
+                    function addQueryParameter(url, name, value){
+                        if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
+                        return url + "&" + name + "=" + value;
                     }
+                    if (qm.auth.getAccessTokenFromUrlUserOrStorage(user)) {
+                        url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
+                    } else {
+                        window.qmLog.error('No access token!');
+                        if(!qm.serviceWorker){
+                            qm.chrome.showSignInNotification();
+                        }
+                    }
+                    function getAppName() {
+                        if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
+                        return window.qm.urlHelper.getParam('appName');
+                    }
+                    if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
+                    function getAppVersion() {
+                        if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
+                        if(qm.appSettings){return qm.appSettings.versionNumber;}
+                        return window.qm.urlHelper.getParam('appVersion');
+                    }
+                    if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
+                    if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
+                    return url;
                 }
-                function getAppName() {
-                    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().name;}
-                    return window.qm.urlHelper.getParam('appName');
+                function getAppHostName() {
+                    if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
+                    return "https://app.quantimo.do";
                 }
-                if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
-                function getAppVersion() {
-                    if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
-                    if(qm.appSettings){return qm.appSettings.versionNumber;}
-                    return window.qm.urlHelper.getParam('appVersion');
-                }
-                if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
-                if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
-                return url;
-            }
-            function getAppHostName() {
-                if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
-                return "https://app.quantimo.do";
-            }
-            var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
-            qmLog.debug("Making API request to " + url);
-            return url;
+                var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
+                qmLog.debug("Making API request to " + url);
+                successHandler(url);
+            })
         }
     },
     appsManager: { // jshint ignore:line
@@ -800,7 +803,8 @@ window.qm = {
                 qm.storage.setItem(qm.items.accessToken, accessToken);
             }
         },
-        getAccessTokenFromUrlUserOrStorage: function() {
+        getAccessTokenFromUrlUserOrStorage: function(user) {
+            if(user){window.qmUser = user;}
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
                 return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             }
@@ -1501,15 +1505,18 @@ window.qm = {
                 if(errorHandler){errorHandler();}
                 return;
             }
-            // Can't use QM SDK in service worker
-            qm.api.getViaXhrOrFetch(window.qm.api.getRequestUrl(route), function (response) {
-                if(response.status === 401){
-                    qm.chrome.showSignInNotification();
-                } else {
-                    qm.storage.setTrackingReminderNotifications(response.data);
-                    if(successHandler){successHandler(response.data);}
-                }
-            })
+            qm.api.getRequestUrl(route, function(url){
+                // Can't use QM SDK in service worker
+                qm.api.getViaXhrOrFetch(url, function (response) {
+                    if(response.status === 401){
+                        qm.chrome.showSignInNotification();
+                    } else {
+                        qm.storage.setTrackingReminderNotifications(response.data);
+                        if(successHandler){successHandler(response.data);}
+                    }
+                })
+            });
+
         },
         refreshAndShowPopupIfNecessary: function(notificationParams) {
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
@@ -2383,15 +2390,26 @@ window.qm = {
             }
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
-        getUserFromLocalStorage: function(){
+        getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
-            if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
-            return window.qmUser;
+            if(!successHandler) {
+                if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
+                return window.qmUser;
+            }
+            if(window.qmUser){
+                successHandler(window.qmUser);
+                return
+            }
+            qm.localForage.getItem(qm.items.user, function(user){
+                window.qmUser = user;
+                successHandler(user);
+            });
         },
         isTestUser: function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;},
         setUser: function(user){
             window.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
+            qm.localForage.setItem(qm.items.user, user);
             if(!user){return;}
             window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
             if(qm.urlHelper.getParam('doNotRemember')){return;}
@@ -2425,8 +2443,9 @@ window.qm = {
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
-                        var url = window.qm.api.getRequestUrl("v2/auth/login");
-                        chrome.tabs.create({"url": url, "selected": true});
+                        qm.api.getRequestUrl("v2/auth/login", function(url){
+                            chrome.tabs.create({"url": url, "selected": true});
+                        });
                     }
                 }
             }
@@ -2439,11 +2458,13 @@ window.qm = {
             apiInstance.getUser(params, callback);
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
-            if(qm.userHelper.getUserFromLocalStorage()){
-                if(successHandler){successHandler(qm.userHelper.getUserFromLocalStorage());}
-                return;
-            }
-            qm.userHelper.getUserFromApi(successHandler, errorHandler);
+            qm.userHelper.getUserFromLocalStorage(function(user) {
+                if(user) {
+                    successHandler(user);
+                    return;
+                }
+                qm.userHelper.getUserFromApi(successHandler, errorHandler);
+            });
         }
     },
     commonVariablesHelper: {
