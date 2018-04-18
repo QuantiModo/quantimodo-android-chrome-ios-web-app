@@ -35,7 +35,7 @@ platform :ios do
   lane :beta do
 
     ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
-    #sh "cd .. && ruby hooks/after_platform_add.bak/xcodeprojectfix.rb"
+    #sh "cd .. && ruby hooks/xcodeprojectfix.rb"
 
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
       app_identifier: ENV["APP_IDENTIFIER"],

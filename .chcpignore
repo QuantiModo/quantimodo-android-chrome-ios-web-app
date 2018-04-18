@@ -1,0 +1,9 @@
+www/default.config.json
+www/private_configs/default.private_config.json
+**/www/private_configs/*
+www/default.private_config.json
+manifest.json
+www/manifest.json
+default.config.json
+www/img/icons/*
+**/www/img/icons/*

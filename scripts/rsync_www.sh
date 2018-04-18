@@ -5,7 +5,7 @@ IONIC_PATH="${QM_DOCKER_PATH}/public.built/ionic/Modo"
 CHROME_EXTENSION_PATH="${IONIC_PATH}/resources/chrome_extension"
 
 APP_PATH=${IONIC_PATH}/resources/chrome_app
-APP_CONFIG=${QM_DOCKER_PATH}/configs/ionic/private_configs/${QUANTIMODO_CLIENT_ID}.private_config.json
+APP_CONFIG=${QM_DOCKER_PATH}/configs/ionic/${QUANTIMODO_CLIENT_ID}.private_config.json
 
 # rsync -a /vagrant/public.built/ionic/Modo/www/ /vagrant/public.built/ionic/Modo/resources/chrome_extension/www
 

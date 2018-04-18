@@ -7,18 +7,18 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
 	$scope.userEmail = qm.urlHelper.getParam('userEmail');
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
         $scope.debugMode = qmLog.debugMode;
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
-        $scope.drawOverAppsPopupEnabled = qm.notifications.drawOverAppsPopupEnabled();
+        $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 		if(qm.urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
 			qmService.refreshUserEmailPreferencesDeferred({userEmail: qm.urlHelper.getParam('userEmail')}, function(user){
-				$rootScope.user = user;
+				qmService.rootScope.setUser(user);
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			}, function(error){
@@ -36,7 +36,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
 	qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-		if($rootScope.isIOS){
+		if($rootScope.platform.isIOS){
 			if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'day' &&
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
@@ -52,18 +52,18 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			encodeURIComponent(qm.api.getBaseUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 		var fallbackUrl = qmService.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
-		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+		if($rootScope.platform.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	$scope.sendBugReport = function() {
 		qmService.sendBugReport();
 	};
 	$scope.contactUs = function() {
-		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
+		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 		else {window.location = '#app/feedback';}
 	};
 	$scope.postIdea = function() {
-		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
+		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 		} else {window.open('https://help.quantimo.do/forums/211661-general', '_blank');}
 	};
 	$scope.combineNotificationChange = function(ev) {
@@ -73,7 +73,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				'You will only get a single generic notification instead of a separate notification for each reminder that you create.  All ' +
 				'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.', ev);
 			qmService.cancelAllNotifications().then(function() {
-				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
+				qmLogService.debug('SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
 				if(!qm.storage.getItem(qm.items.deviceTokenOnServer)){
@@ -90,6 +90,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 		qmService.updateUserSettingsDeferred(params);
 		//qmService.autoUpdateApp();
+        qmService.deploy.fetchUpdate();
 	};
 	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
@@ -105,7 +106,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(qm.urlHelper.getParam('userEmail')){params.userEmail = qm.urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
             qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
@@ -132,7 +132,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'Please change the latest reminder time and try again or select a different earliest reminder time.', ev);
 					} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 						$rootScope.user.earliestReminderTime = newEarliestReminderTime;
-                        var params = qmService.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
+                        var params = qm.timeHelper.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
 					}
@@ -148,7 +148,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		$scope.state.latestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					qmLogService.debug(null, 'Time not selected', null);
+					qmLogService.debug('Time not selected', null);
 				} else {
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
@@ -161,7 +161,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'change the earliest reminder time and try again or select a different latest reminder time.', ev);
 					} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 						$rootScope.user.latestReminderTime = newLatestReminderTime;
-                        var params = qmService.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
+                        var params = qm.timeHelper.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
 					}
@@ -173,7 +173,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		};
 		ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 	};
-
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
 
@@ -185,7 +184,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		qmLogService.debug('Logging out...');
-		$rootScope.user = null;
+		qmService.rootScope.setUser(null);
 		showDataClearPopup(ev);
 	};
 	// Convert all data Array to a CSV object
@@ -276,18 +275,18 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
-    if($rootScope.isAndroid){
+    if($rootScope.platform.isAndroid){
     	$scope.toggleDrawOverAppsPopup = function(ev){
     		qmService.toggleDrawOverAppsPopup(ev);
     	};
-    	$scope.togglePushNotificationsEnabled = function(){
-    		// Toggle is done by the HTML
-            //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
-            qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
-            if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
-            if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
-        };
     }
+    $scope.togglePushNotificationsEnabled = function(){
+        // Toggle is done by the HTML
+        //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
+        qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
+        if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
+        if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
+    };
     $scope.toggleDebugMode = function(){
         $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
     };
@@ -299,8 +298,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.backgroundLocationTracking = !$scope.backgroundLocationTracking;
         if($scope.backgroundLocationTracking){
             qm.storage.setItem('bgGPS', 1);
-            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
-            qmService.backgroundGeolocationInit();
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
+            qmService.backgroundGeolocationStartIfEnabled();
             qmService.showInfoToast('Background location tracking enabled');
             qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         } else  {
@@ -315,24 +314,24 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
     	qmService.sendBugReport();
     	return;
         // Appending dialog to document.body to cover sidenav in docs app
-        var confirm = $mdDialog.prompt()
-            .title('Are you sure you want to delete your data?')
-            .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
-            .placeholder('What should I do better?')
-            .ariaLabel('Deletion reason')
-            //.initialValue('Buddy')
-            .targetEvent(ev)
-            .required(true)
-            .ok('DELETE ACCOUNT')
-            .cancel('Give me another chance?');
-
-        $mdDialog.show(confirm).then(function(reason) {
-            qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
-            qm.userHelper.deleteUserAccount(reason, function () {
-                qmService.completelyResetAppStateAndLogout();
-            });
-        }, function(reason) {
-            qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
-        });
+        // var confirm = $mdDialog.prompt()
+        //     .title('Are you sure you want to delete your data?')
+        //     .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
+        //     .placeholder('What should I do better?')
+        //     .ariaLabel('Deletion reason')
+        //     //.initialValue('Buddy')
+        //     .targetEvent(ev)
+        //     .required(true)
+        //     .ok('DELETE ACCOUNT')
+        //     .cancel('Give me another chance?');
+        //
+        // $mdDialog.show(confirm).then(function(reason) {
+        //     qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
+        //     qm.userHelper.deleteUserAccount(reason, function () {
+        //         qmService.completelyResetAppStateAndLogout();
+        //     });
+        // }, function(reason) {
+        //     qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
+        // });
     }
 }]);

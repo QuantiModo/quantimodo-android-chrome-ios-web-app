@@ -1,8 +1,8 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 !/fastlane/
-!/src/private_configs/
-!/src/private_configs/your_quantimodo_client_id_here.private_config.json
+!/src/
+!/src/your_quantimodo_client_id_here.private_config.json
 *.app.dSYM.zip
 *.ipa
 *.keystore
@@ -10,7 +10,6 @@
 .idea/
 !.idea/runConfigurations/*
 !.idea/dictionaries/*
-!.idea/libraries/*
 !.idea/modules/*
 !.idea/inspectionProfiles/*
 .vagrant/
@@ -25,9 +24,7 @@
 /fastlane/*
 /hooks/generate_resources_fix_xcode_and_fastlane_beta.sh
 /platforms/
-/resources/
-/src/private_configs/*.json
-/src/README.md
+/resources
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
 build.json
@@ -51,7 +48,6 @@ scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
 supply_json_key_for_google_play.json
-src/configs
 src/configuration-index.html
 src/configuration/
 *.css
@@ -60,17 +56,10 @@ src/img/CS6.zip
 src/img/icons/*
 !src/img/icons/.gitkeep
 !src/data/.gitkeep
-!src/configs/*gitkeep*
 !src/chrome_extension/*
 src/js/configuration-app.js
 src/lib/
 src/manifest.json
-src/manifest.json.enc
-src/private_configs/default.private_config.json.enc
-src/private_configs/sample_private.private_config.json.enc
-src/private_configs/your_quantimodo_client_id_here.private_config.json.enc
-src/private_configs/yourlowercaseappnamehere.private_config.json.enc
-
 
 # Visual Studio Recommended Folder Exclusions
 platforms
@@ -105,10 +94,19 @@ gradlew.bat
 local.properties
 gradle/
 success
-!/src/configs/.gitkeep
 www/*
 !/www/gitkeep
-www/configs/*
-!/www/configs/gitkeep
-www/private_configs/*
-!/www/private_configs/gitkeep
+/src/qm-amazon/
+dist/
+.chcplogin
+
+cordova-hcp.json
+.chcplogin
+
+.chcpenv
+
+src/default.config.json
+
+src/chcp\.json
+
+src/chcp\.manifest

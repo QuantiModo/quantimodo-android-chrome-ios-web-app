@@ -16,12 +16,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     $scope.$on('$ionicView.beforeEnter', function(e) {
         if($stateParams.refresh){$scope.state.history = null;}
         $scope.state.moreDataCanBeLoaded = true;
-        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getAsString('hideHistoryPageInstructionsCard');
+        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getItem('hideHistoryPageInstructionsCard');
         updateMeasurementIfNecessary();
     });
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
@@ -30,9 +30,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         getScopedVariableObject();
         if (getVariableName()) {
             $scope.state.title = getVariableName() + ' History';
-            $rootScope.showActionSheetMenu = function setActionSheet() {
-                return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-            };
+            qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
+                return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            });
         } else {
             updateNavigationMenuButton();
         }
@@ -42,12 +42,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
     });
     function updateNavigationMenuButton() {
             $timeout(function() {
-                $rootScope.showActionSheetMenu = function() {
+                qmService.rootScope.setShowActionSheetMenu(function() {
                     // Show the action sheet
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
-                            qmService.actionSheetButtons.refresh,
-                            qmService.actionSheetButtons.settings
+                            qmService.actionSheets.actionSheetButtons.refresh,
+                            qmService.actionSheets.actionSheetButtons.settings
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function() { qmLogService.debug('CANCELLED', null); },
@@ -57,12 +57,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                             return true;
                         }
                     });
-                };
+                });
             }, 1);
         }
     function updateMeasurementIfNecessary(){
-        if($stateParams.updatedMeasurement && $scope.state.history && $scope.state.history.length){
-            $scope.state.history = qm.arrayHelper.replaceElementInArrayById($scope.state.history, $stateParams.updatedMeasurement);
+        if($stateParams.updatedMeasurementHistory){
+            $scope.state.history = $stateParams.updatedMeasurementHistory;
         }
     }
     function hideLoader() {
@@ -89,15 +89,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		qmLog.info("Could not get variableName")
 	}
 	$scope.editMeasurement = function(measurement){
-		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
-		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
+		//measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
+		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name,
+            fromUrl: window.location.href, currentMeasurementHistory: $scope.state.history});
 	};
 	$scope.refreshHistory = function(){
         $scope.state.history = [];
 		$scope.getHistory();
 	};
 	$scope.getHistory = function(){
-	    if($scope.state.loading){return qmLog.info("Already getting measurements!");}
+        if($scope.state.loading){return qmLog.info("Already getting measurements!");}
         if(!$scope.state.moreDataCanBeLoaded){return qmLog.info("No more measurements!");}
         $scope.state.loading = true;
         if(!$scope.state.history){$scope.state.history = [];}
@@ -113,7 +114,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 			}
 		}
 		function successHandler(measurements) {
-		    if(!measurements || measurements.length < params.limit){$scope.state.moreDataCanBeLoaded = false;}
+            if(!measurements || measurements.length < params.limit){$scope.state.moreDataCanBeLoaded = false;}
             if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
             measurements = qmService.addInfoAndImagesToMeasurements(measurements);
             if(!qm.arrayHelper.variableIsArray($scope.state.history)){
@@ -140,7 +141,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         qmService.getMeasurementsFromApi(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
-		$rootScope.showActionSheetMenu = function() {
+		qmService.rootScope.setShowActionSheetMenu(function() {
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
@@ -153,7 +154,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 					{ text: '<i class="icon ion-ios-location-outline"></i>Locations'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+				cancel: function() {qmLogService.debug('CANCELLED', null);},
 				buttonClicked: function(index) {
 					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
 					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}
@@ -167,13 +168,13 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				destructiveButtonClicked: function() {}
 			});
 			$timeout(function() {hideSheet();}, 20000);
-		};
+		});
 	}
 	$scope.deleteMeasurement = function(measurement){
 		measurement.hide = true;
 		qmService.deleteMeasurementFromServer(measurement);
 	};
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.showActionSheetForMeasurement = function(measurement) {
 		$scope.state.measurement = measurement;
 		var variableObject = JSON.parse(JSON.stringify(measurement));
@@ -181,14 +182,14 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         variableObject.name = measurement.variableName;
         var buttons = [
             { text: '<i class="icon ion-edit"></i>Edit Measurement'},
-            qmService.actionSheetButtons.reminderAdd,
-            qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.historyAllVariable,
-            qmService.actionSheetButtons.variableSettings,
-            qmService.actionSheetButtons.relationships
+            qmService.actionSheets.actionSheetButtons.reminderAdd,
+            qmService.actionSheets.actionSheetButtons.charts,
+            qmService.actionSheets.actionSheetButtons.historyAllVariable,
+            qmService.actionSheets.actionSheetButtons.variableSettings,
+            qmService.actionSheets.actionSheetButtons.relationships
         ];
         if(measurement.url){
-            buttons.push(qmService.actionSheetButtons.openUrl);
+            buttons.push(qmService.actionSheets.actionSheetButtons.openUrl);
         }
 		var hideSheet = $ionicActionSheet.show({
 			buttons: buttons,

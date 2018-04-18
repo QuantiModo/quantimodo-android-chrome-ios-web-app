@@ -32,7 +32,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                     return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
-        qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties(variableObject);
+        qm.userVariables.saveToLocalStorage(variableObject);
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -74,7 +74,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
         qmService.showBlackRingLoader();
-        qm.userVariableHelper.saveSingleUserVariableToLocalStorageAndUnsetLargeProperties($rootScope.variableObject);
+        qm.userVariables.saveToLocalStorage($rootScope.variableObject);
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -91,14 +91,14 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         $scope.stateParams = $stateParams;
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
-            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
+            qm.userVariables.getByName('Anxiety', {}, null, function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
                 qmService.hideLoader();
             });
         }
         if(!$scope.stateParams.userTaggedVariableObject){
             qmService.showBlackRingLoader();
-            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
+            qm.userVariables.getByName('Overall Mood', {}, null, function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
                 qmService.hideLoader();
             });

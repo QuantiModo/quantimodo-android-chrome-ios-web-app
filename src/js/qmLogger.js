@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
 // BLACK BOX THESE
 // \.min\.js$ — for all minified sources
@@ -5,14 +6,47 @@
 // qmLogService.js
 // bugsnag.js
 // node_modules and bower_components — for dependencies
-//     ~ — home for dependencies in Webpack bundle
+// — home for dependencies in Webpack bundle
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
-window.qmLog = {debugMode:false};
+window.qmLog = {
+    debugMode:false,
+    mobileDebug: false,
+    logLevel: "info",
+    setAuthDebug: function (value) {
+        qmLog.authDebugEnabled = value;
+    },
+    setMobileDebug: function (value) {
+        qmLog.mobileDebug = value;
+    },
+    obfuscateSecrets: function(object){
+        if(typeof object !== 'object'){return object;}
+        try {
+            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        } catch (error) {
+            if(typeof Bugsnag !== "undefined"){
+                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                    "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
+            }
+            //window.qmLog.error(error, object); // Avoid infinite recursion
+            return object;
+        }
+        for (var propertyName in object) {
+            if (object.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    object[propertyName] = "HIDDEN";
+                } else {
+                    object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
+                }
+            }
+        }
+        return object;
+    }
+};
 if(typeof Bugsnag !== "undefined"){
     Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 }
-
 var logMetaData = false;
 if(!window.qmUser){
     if(typeof localStorage !== "undefined"){
@@ -20,8 +54,7 @@ if(!window.qmUser){
     }
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
-qmLog.mobileDebug = false;
-qmLog.logLevel = "info";
+
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}
@@ -33,6 +66,7 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
+    return "info";
     if(window.location.href.indexOf('utopia.quantimo.do') > -1){
         return "debug";
     }
@@ -58,7 +92,7 @@ window.qmLog.checkUrlAndStorageForDebugMode = function () {
         console.log("Set debugMode in local storage");
         return true;
     }
-    console.log("No debug url param!");
+    //console.debug("No debug url param!");
     return false;
 };
 window.qmLog.isDebugMode = function() {
@@ -134,9 +168,9 @@ window.qmLog.getEnv = function(){
     if(window.location.origin.indexOf('local') !== -1){env = "development";}
     if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
     if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qmUser){
-        if(qmUser.email && qmUser.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qmUser.displayName && qmUser.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    if(qm.getUser()){
+        if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
     }
     if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
     return env;
@@ -154,39 +188,18 @@ qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
         qmLog.error(name, message, metaData, stackTrace);
     }
 };
+
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
-    function obfuscateSecrets(object){
-        if(typeof object !== 'object'){return object;}
-        try {
-            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
-        } catch (error) {
-            if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
-            }
-            //window.qmLog.error(error, object); // Avoid infinite recursion
-            return object;
-        }
-        for (var propertyName in object) {
-            if (object.hasOwnProperty(propertyName)) {
-                var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
-                    object[propertyName] = "HIDDEN";
-                } else {
-                    object[propertyName] = obfuscateSecrets(object[propertyName]);
-                }
-            }
-        }
-        return object;
-    }
+
     function getTestUrl() {
         function getCurrentRoute() {
             var parts = window.location.href.split("#/app");
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if(window.qmUser){
-            url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);
+        if(qm.getUser()){
+            url +=  "?userEmail=" + encodeURIComponent(qm.getUser().email);
         }
         return url;
     }
@@ -232,6 +245,10 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     } else {
         metaData.stackTrace = qmLog.getStackTrace();
     }
+    function addQueryParameter(url, name, value){
+        if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
+        return url + "&" + name + "=" + value;
+    }
     if(metaData.apiResponse){
         var request = metaData.apiResponse.req;
         metaData.test_api_url = request.method + " " + request.url;
@@ -241,10 +258,10 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         console.error('API ERROR URL ' + metaData.test_api_url, metaData);
         delete metaData.apiResponse;
     }
+    metaData.local_notifications = qm.storage.getItem(qm.items.scheduledLocalNotifications);
     //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
-    //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
-    metaData = obfuscateSecrets(metaData);
+    metaData = qmLog.obfuscateSecrets(metaData);
     return metaData;
 };
 window.qmLog.setupBugsnag = function(){
@@ -257,7 +274,7 @@ window.qmLog.setupBugsnag = function(){
             Bugsnag.appVersion = qm.getAppSettings().versionNumber;
             Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
-        if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
+        if(qm.getUser()){Bugsnag.user = qmLog.obfuscateSecrets(qm.getUser());}
     } else {
         qmLog.error('Bugsnag is not defined');
     }
@@ -266,8 +283,8 @@ window.qmLog.setupBugsnag = function(){
 window.qmLog.setupUserVoice = function() {
     if (typeof UserVoice !== "undefined") {
         UserVoice.push(['identify', {
-            email: qmUser.email, // User’s email address
-            name: qmUser.displayName, // User’s real name
+            email: qm.getUser().email, // User’s email address
+            name: qm.getUser().displayName, // User’s real name
             created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
             id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
             type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
@@ -290,7 +307,7 @@ window.qmLog.setupIntercom = function() {
         user_id: qm.userHelper.getUserFromLocalStorage().id,
         app_name: qm.getAppSettings().appDisplayName,
         app_version: qm.getAppSettings().versionNumber,
-        platform: qm.getPlatform()
+        platform: qm.platform.getCurrentPlatform()
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
@@ -321,14 +338,12 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
-    if(!qmLog.shouldWeLog("debug")){return;}
+    if(!qmLog.shouldWeLog("debug")){
+        //console.debug("Not logging debug message: " + name);
+        return;
+    }
     message = addCallerFunctionToMessage(message);
-    var logString = name;
-    if(logString !== message){logString = logString + ": " + message;}
-    if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
-    //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
-    //bugsnagNotify(name, message, metaData, "debug", stackTrace);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
     name = name || message;
@@ -355,19 +370,40 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     console.error("ERROR: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
     metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     bugsnagNotify(name, message, metaData, "error", stackTrace);
-    if(window.qmLog.mobileDebug){alert(name + ": " + message);}
+    //if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    var authDebug = window.location.href.indexOf("authDebug") !== -1;
-    if(authDebug){
-        qmLog.info(message, message, null);
+    //qmLog.authDebugEnabled = true;
+    if(!qmLog.authDebugEnabled){
+        qmLog.authDebugEnabled = window.location.href.indexOf("authDebug") !== -1;
+        if(qmLog.authDebugEnabled && window.localStorage){
+            localStorage.setItem('authDebugEnabled', "true");
+        }
+    }
+    if(!qmLog.authDebugEnabled && window.localStorage){
+        qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
+    }
+    if(qmLog.authDebugEnabled || qmLog.debugMode){
+        if(qm.platform.isMobile()){
+            qmLog.error(message, message, null);
+        } else {
+            qmLog.info(message, message, null);
+        }
     } else {
+        //console.log("Log level is " + qmLog.getLogLevelName());
         qmLog.debug(message, message, null);
     }
 };
 window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
-    var pushDebug = false;
-    if(pushDebug || qmLog.debugMode){
+    //qmLog.pushDebugEnabled = true;
+    if(!qmLog.pushDebugEnabled){
+        qmLog.pushDebugEnabled = window.location.href.indexOf("pushDebugEnabled") !== -1;
+        if(qmLog.pushDebugEnabled && window.localStorage){
+            localStorage.setItem('pushDebugEnabled', "true");
+        }
+    }
+    if(!qmLog.pushDebugEnabled && window.localStorage){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
+    if(qmLog.pushDebugEnabled || qmLog.debugMode){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
         qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);

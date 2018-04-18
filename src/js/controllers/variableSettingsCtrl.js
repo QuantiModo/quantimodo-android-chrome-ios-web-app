@@ -3,7 +3,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading, $stateParams, $ionicHistory,
              $ionicActionSheet, qmService, qmLogService) {
     $scope.controller_name = "VariableSettingsCtrl";
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
     function getVariableName() {
         if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}
@@ -14,7 +14,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function getUserVariableWithTags() {
         if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        qmService.getUserVariablesFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+        qm.userVariables.getFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
             qmService.hideLoader();
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);
@@ -27,7 +27,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.sendToLoginIfNecessaryAndComeBack();
-        $rootScope.hideNavigationMenu = false;
+        qmService.navBar.showNavigationMenu();
         if($stateParams.variableObject){
             setVariableObject($stateParams.variableObject);
             getUserVariableWithTags();
@@ -36,14 +36,14 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         }
     });
     function setShowActionSheetMenu(variableObject) {
-        $rootScope.showActionSheetMenu = function() {
+        qmService.rootScope.setShowActionSheetMenu(function() {
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    qmService.actionSheetButtons.measurementAddVariable,
-                    qmService.actionSheetButtons.reminderAdd,
-                    qmService.actionSheetButtons.chartSearch,
-                    qmService.actionSheetButtons.historyAllVariable,
+                    qmService.actionSheets.actionSheetButtons.measurementAddVariable,
+                    qmService.actionSheets.actionSheetButtons.reminderAdd,
+                    qmService.actionSheets.actionSheetButtons.chartSearch,
+                    qmService.actionSheets.actionSheetButtons.historyAllVariable,
                     { text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
                     { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                 ],
@@ -63,7 +63,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
             qmLogService.debug('Setting hideSheet timeout', null);
             $timeout(function() { hideSheet(); }, 20000);
-        };
+        });
     }
     $scope.openTagVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {
@@ -84,7 +84,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 });
             }
         }
-        var dataToPass = {
+        var dialogParameters = {
             title: 'Add an ingredient',
             helpText: "Search for a variable like an ingredient or category " +
             "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
@@ -96,7 +96,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             excludeLocal: true, // Necessary because API does complex filtering,
             doNotCreateNewVariables: true
         };
-        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
+        qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
     };
     $scope.openTageeVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {
@@ -117,7 +117,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 });
             }
         }
-        var dataToPass = {
+        var dialogParameters = {
             title: 'Add a variable containing ' + selectVariable.name,
             helpText: "Search for a variable " +
             " for which " + $scope.state.variableObject.name.toUpperCase() + " is an ingredient or category.  Then " +
@@ -128,7 +128,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             requestParams: {includePublic: true, tagVariableId: $scope.state.variableObject.id},
             excludeLocal: true // Necessary because API does complex filtering
         };
-        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
+        qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
     };
     $scope.openJoinVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {
@@ -146,7 +146,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
             $mdDialog.hide();
         }
-        var dataToPass = {
+        var dialogParameters = {
             title: 'Join a Duplicate',
             helpText: "Search for a duplicated or synonymous variable that you'd like to join to " +
                 $scope.state.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
@@ -158,18 +158,18 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             excludeLocal: true, // Necessary because API does complex filtering
             doNotCreateNewVariables: true
         };
-        qmService.showVariableSearchDialog(dataToPass, selectVariable, null, $event);
+        qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
     };
-    var SelectWikipediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dataToPass) {
+    var SelectWikipediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log, dialogParameters) {
         var self = this;
         // list of `state` value/display objects
         self.items        = loadAll();
         self.querySearch   = querySearch;
         self.selectedItemChange = selectedItemChange;
         self.searchTextChange   = searchTextChange;
-        self.title = dataToPass.title;
-        self.helpText = dataToPass.helpText;
-        self.placeholder = dataToPass.placeholder;
+        self.title = dialogParameters.title;
+        self.helpText = dialogParameters.helpText;
+        self.placeholder = dialogParameters.placeholder;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);
@@ -180,7 +180,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         function querySearch (query) {
             self.notFoundText = "No articles matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
             var deferred = $q.defer();
-            if(!query || !query.length){ query = dataToPass.variableName; }
+            if(!query || !query.length){ query = dialogParameters.variableName; }
             wikipediaFactory.searchArticles({
                 term: query, // Searchterm
                 //lang: '<LANGUAGE>', // (optional) default: 'en'
@@ -207,7 +207,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             $scope.state.variableObject.wikipediaPage = item.page;
             $scope.state.variableObject.wikipediaExtract = item.page.extract;
             self.selectedItem = item;
-            self.buttonText = dataToPass.buttonText;
+            self.buttonText = dialogParameters.buttonText;
         }
         /**
          * Build `variables` list of key/value pairs
@@ -223,18 +223,18 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
         }
     };
-    SelectWikipediaArticleController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dataToPass"];
+    SelectWikipediaArticleController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
     $scope.searchWikipediaArticle = function (ev) {
         $mdDialog.show({
             controller: SelectWikipediaArticleController,
             controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,
             fullscreen: false,
             locals: {
-                dataToPass: {
+                dialogParameters: {
                     title: "Select Wikipedia Article",
                     helpText: "Change the search query until you see a relevant article in the search results.  This article will be included in studies involving this variable.",
                     placeholder: "Search for a Wikipedia article...",
@@ -335,7 +335,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){ $scope.state.variableObject = null; }
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
+        qm.userVariables.getByName(variableName, params, refresh, function(variableObject){
             $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
             qmService.hideLoader();
             $scope.state.variableObject = variableObject;

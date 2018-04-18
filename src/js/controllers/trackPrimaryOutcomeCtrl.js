@@ -1,7 +1,8 @@
 angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$state", "$timeout", "$rootScope", "$ionicLoading", "qmService", "qmLogService", function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLogService) {
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
-    $rootScope.showFilterBarSearchIcon = false;
+    $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.showRatingFaces = true;
     $scope.averagePrimaryOutcomeVariableImage = false;
     $scope.averagePrimaryOutcomeVariableValue = false;
@@ -9,7 +10,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmLogService.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;

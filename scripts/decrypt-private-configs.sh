@@ -10,8 +10,8 @@ if [[ -z "$ENCRYPTION_SECRET" ]]; then
     exit 1
 fi
 
-echo "DECRYPTING ./scripts/private_configs/$QUANTIMODO_CLIENT_ID.private_config.json.enc..."
+echo "DECRYPTING ./scripts/$QUANTIMODO_CLIENT_ID.private_config.json.enc..."
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
--in "./scripts/private_configs/$QUANTIMODO_CLIENT_ID.private_config.json.enc" -d -a \
--out "./www/private_configs/$QUANTIMODO_CLIENT_ID.private_config.json"
+-in "./scripts/$QUANTIMODO_CLIENT_ID.private_config.json.enc" -d -a \
+-out "./www/$QUANTIMODO_CLIENT_ID.private_config.json"

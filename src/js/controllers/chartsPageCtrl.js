@@ -2,15 +2,15 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "qmLogService", "clipboard",
     function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
     $scope.controller_name = "ChartsPageCtrl";
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {title: "Charts"};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        $rootScope.showActionSheetMenu = function setActionSheet() {
-            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-        };
+        qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
+            return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+        });
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
@@ -30,9 +30,6 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         if($stateParams.variableObject){
             return $scope.state.variableObject = $stateParams.variableObject;
         }
-        if(qm.userVariableHelper.getUserVariablesFromLocalStorage(getVariableName())){
-            return $scope.state.variableObject = qm.userVariableHelper.getUserVariablesFromLocalStorageByName(getVariableName());
-        }
         return $scope.state.variableObject;
     }
     function initializeCharts() {
@@ -46,8 +43,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         }
     }
     function getCharts(refresh) {
-        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(getVariableName(), {includeCharts: true}, refresh)
-            .then(function (variableObject) {
+        qm.userVariables.getByName(getVariableName(), {includeCharts: true}, refresh, function (variableObject) {
                 if(!variableObject.charts){
                     qmLog.error("No charts!");
                     if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
@@ -56,6 +52,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                     }
                 }
                 $scope.state.variableObject = variableObject;
+                qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
+                    return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), variableObject);
+                });
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -69,8 +68,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmLogService.debug('compareButtonClick');
         qmService.goToStudyCreationForVariable($scope.state.variableObject);
     };
-    $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
-        {variableObject: $scope.state.variableObject, fromState: $state.current.name});};
+    $scope.recordMeasurementButtonClick = function() {
+        qmLog.info("Going to record measurement for "+JSON.stringify($scope.state.variableObject));
+        qmService.goToState(qmStates.measurementAdd, {variableObject: $scope.state.variableObject, fromState: $state.current.name});
+    };
     $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($scope.state.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){

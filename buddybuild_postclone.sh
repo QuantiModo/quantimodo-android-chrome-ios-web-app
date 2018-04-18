@@ -11,7 +11,7 @@ echo "Current folder is $PWD..."
 
 echo "Making scripts and hooks executable..."
 chmod -R a+x ./hooks
-chmod -R a+x ./package-hooks
+chmod -R a+x ./hooks
 chmod -R a+x ./scripts
 
 echo "Running npm install -g gulp bower ionic cordova"
