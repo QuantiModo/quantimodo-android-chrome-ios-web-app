@@ -1738,8 +1738,8 @@ window.qm = {
             if(trackingReminders && trackingReminders.length){return trackingReminders.length;}
             return 0;
         },
-        getTrackingRemindersFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.trackingReminders);
+        getTrackingRemindersFromLocalStorage: function(requestParams){
+            return qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
         },
         saveToLocalStorage: function(trackingReminders){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
@@ -1787,7 +1787,7 @@ window.qm = {
                 return trackingReminder.reminderFrequency !== 0 &&
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
-        }
+        },
     },
     ratingImages: {
         positive : [
@@ -2647,11 +2647,17 @@ window.qm = {
     variablesHelper: {
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
             requestParams = requestParams || {};
-            if(!requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
+            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 2){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 3;}
+            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
+            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
+            function sortAndReturnVariables(variables) {
+                variables = qm.variablesHelper.putManualTrackingFirst(variables);
+                if(successHandler){successHandler(variables);}
+            }
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
-                    if(successHandler){successHandler(variables);}
+                    sortAndReturnVariables(variables);
                 }, function (error) {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
@@ -2659,13 +2665,18 @@ window.qm = {
             }
             qm.userVariables.getFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                    if(successHandler){successHandler(variables);}
+                    sortAndReturnVariables(variables);
+                    return;
+                }
+                var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
+                if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
+                    sortAndReturnVariables(reminders);
                     return;
                 }
                 if(requestParams.includePublic){
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
                         if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                            if(successHandler){successHandler(variables);}
+                            sortAndReturnVariables(variables);
                             return;
                         }
                         getFromApi();
