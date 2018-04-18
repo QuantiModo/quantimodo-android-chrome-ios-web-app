@@ -2381,7 +2381,7 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
-gulp.task('copySrcAndEmulateAndroid', function (callback) {
+gulp.task('_copy-src-and-emulate-android', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         '_copy-src-to-www',
