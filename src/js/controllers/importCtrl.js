@@ -3,7 +3,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	$scope.controller_name = "ImportCtrl";
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.state = {
-	    connectors: null
+	    connectors: null,
+        searchText: null
     };
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
