@@ -18,17 +18,17 @@
             <h2>IMPORT ISSUE</h2>
             <p ng-bind-html="connector.updateError"></p>
         </div>-->
-        <div class="button-bar" ng-if="connector.spreadsheetUpload">
-            <button ng-repeat="button in connector.buttons" class="button button-clear button-balanced"
-                    style="text-overflow: clip;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
+        <div class="buttons" style="text-align: center;" ng-if="connector.spreadsheetUpload">
+            <button ng-repeat="button in connector.buttons" class="button button-balanced"
+                    style="text-overflow: clip; margin: 5px;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
                 <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i> </button>
         </div>
-        <div class="button-bar" ng-if="!connector.spreadsheetUpload">
-            <button ng-repeat="button in connector.buttons" class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="connectorAction(connector, button)">
+        <div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUpload">
+            <button ng-repeat="button in connector.buttons" class="button button-balanced" style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button)">
                 <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
             </button>
         </div>
-        <div class="button-bar" ng-if="connector.loadingText">
-            <button class="button button-clear button-royal" style="text-overflow: clip;" ng-click=""> <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i> </button>
+        <div class="buttons" style="text-align: center;" ng-if="connector.loadingText">
+            <button class="button button-royal" style="text-overflow: clip; margin: 5px;" ng-click=""> <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i> </button>
         </div>
 </div>
