@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
-    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }">
+    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
         <div class="card" ng-show="showImportHelpCard" id="importHelpCard" >
             <div class="item item-avatar item-borderless">
@@ -25,8 +25,19 @@
             </div>
             <br>
         </div>
-        <div class="list card" ng-if="connectors"><div ng-include="'templates/fragments/connectors-fragment.html'"></div></div>
-<!--        <div id="import-iframe" ng-if="!isMobile">
+        <div class="card" ng-show="!state.connectors" style="border-radius: 15px;">
+            <div class="item" > <div class="row"><ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Loading services...</p></div> </div>
+        </div>
+        <div ng-if="state.connectors" class="list">
+            <div class="item-input-inset">
+                <label class="item-input-wrapper">
+                    <i class="icon ion-ios7-search placeholder-icon"></i>
+                    <input id="filter-box" type="search" placeholder="Filter by name or type" ng-model="state.searchText">
+                </label>
+            </div>
+            <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
+        </div>
+<!--        <div id="import-iframe" ng-if="!platform.isMobile">
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>

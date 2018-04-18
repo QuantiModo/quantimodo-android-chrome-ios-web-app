@@ -1,8 +1,8 @@
 angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope", "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
                                       $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
-    VariableSettingsController.$inject = ["qmService", "qmLogService", "dataToPass"];
+    VariableSettingsController.$inject = ["qmService", "qmLogService", "dialogParameters"];
     $scope.controller_name = "StudyCtrl";
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on("$ionicView.beforeEnter", function() {
         $scope.loadingCharts = true;  // Need to do this here so robot works properly
         qmLogService.debug('beforeEnter state ' + $state.current.name);
@@ -18,7 +18,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.enter", function() {
         qmLogService.debug('enter state ' + $state.current.name);
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.correlationObject){
             setAllStatePropertiesAndSaveToLocalStorage($stateParams.correlationObject);
         }
@@ -41,7 +41,11 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         } else {
             $scope.correlationObject = studyOrCorrelation;
         }
-        studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        if(studyOrCorrelation.charts){
+            studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        } else {
+            qmLog.info("No charts on: " + JSON.stringify(studyOrCorrelation));
+        }
         $scope.state.study = studyOrCorrelation;
     }
     function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
@@ -183,7 +187,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                     { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-thumbsup"></i> Seems Right' },
-                    qmService.actionSheetButtons.refresh
+                    qmService.actionSheets.actionSheetButtons.refresh
                 ],
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -203,7 +207,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $timeout(function() { hideSheet(); }, 20000);
         };
          // FYI Using timeout to modify rootScope Seems to solve robot animation problems
-        $timeout(function() { $rootScope.showActionSheetMenu = showActionSheetMenu; }, 1);
+        qmService.rootScope.setShowActionSheetMenu(showActionSheetMenu);
     }
     $scope.changeVariableSetting = function(variable, propertyToUpdate, ev){
         $mdDialog.show({
@@ -215,7 +219,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             clickOutsideToClose: false,
             fullscreen: false,
             locals: {
-                dataToPass: {
+                dialogParameters: {
                     propertyToUpdate: propertyToUpdate,
                     buttonText: "Save",
                     variable: variable
@@ -228,16 +232,16 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             qmService.postUserVariableDeferred(postData).then(function (response) {
                 getStudy();
             });
-        }, function() {qmLogService.debug(null, 'User cancelled selection', null);});
+        }, function() {qmLogService.debug('User cancelled selection', null);});
     };
-    function VariableSettingsController(qmService, qmLogService, dataToPass) {
+    function VariableSettingsController(qmService, qmLogService, dialogParameters) {
         var self = this;
-        self.title = qmService.explanations[dataToPass.propertyToUpdate].title;
-        self.helpText = qmService.explanations[dataToPass.propertyToUpdate].explanation;
-        self.placeholder = qmService.explanations[dataToPass.propertyToUpdate].title;
-        if(qmService.explanations[dataToPass.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dataToPass.propertyToUpdate].unitName;}
-        self.value = dataToPass.variable[dataToPass.propertyToUpdate];
-        self.unitName = qmService.explanations[dataToPass.propertyToUpdate].unitName;
+        self.title = qmService.explanations[dialogParameters.propertyToUpdate].title;
+        self.helpText = qmService.explanations[dialogParameters.propertyToUpdate].explanation;
+        self.placeholder = qmService.explanations[dialogParameters.propertyToUpdate].title;
+        if(qmService.explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dialogParameters.propertyToUpdate].unitName;}
+        self.value = dialogParameters.variable[dialogParameters.propertyToUpdate];
+        self.unitName = qmService.explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);
@@ -248,8 +252,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $mdDialog.cancel();
         };
         self.finish = function() {
-            dataToPass.variable[dataToPass.propertyToUpdate] = self.value;
-            $mdDialog.hide(dataToPass.variable);
+            dialogParameters.variable[dialogParameters.propertyToUpdate] = self.value;
+            $mdDialog.hide(dialogParameters.variable);
         };
     }
 }]);

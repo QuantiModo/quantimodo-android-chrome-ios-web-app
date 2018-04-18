@@ -11,7 +11,7 @@
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
-                <a style="font-size: 35px;" ng-if="state.variableSearchQuery.name == '' && isMobile" on-touch="scanBarcode()">
+                <a style="font-size: 35px;" ng-if="state.variableSearchQuery.name == '' && platform.isMobile" on-touch="scanBarcode()">
                     <i class="icon ion-ios-camera placeholder-icon"></i>
                     &nbsp
                 </a>

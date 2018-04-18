@@ -1,4 +1,4 @@
-### www/configs/yourappnamehere.js
+### www/default.config.json
 
 These are the five options (available on the Track page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 

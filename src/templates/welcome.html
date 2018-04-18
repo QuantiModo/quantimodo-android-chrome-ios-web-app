@@ -34,7 +34,7 @@
 						Ask for a rating
 					</div>
 
-					<div ng-hide="isIOS">
+					<div ng-hide="platform.isIOS">
 						<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
 							<option value="never">Never</option>
 							<option value="hourly">Hourly</option>
@@ -43,7 +43,7 @@
 							<option value="daily">Daily</option>
 						</select>
 					</div>
-					<div ng-show="isIOS">
+					<div ng-show="platform.isIOS">
 						<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
 							<option value="never">Never</option>
 							<option value="hour">Hourly</option>

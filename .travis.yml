@@ -7,6 +7,7 @@ matrix:
   - os: linux
     sudo: false
     language: android
+    jdk: oraclejdk8
     android:
       components:
       - tools
@@ -23,8 +24,6 @@ matrix:
         - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
           key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
         packages:
-        - oracle-java8-installer
-        - oracle-java8-set-default
         - yarn
         - jq
         - imagemagick
@@ -60,12 +59,14 @@ before_install:
 script:
 - yarn install
 - gulp buildAllAndroidAppsWithCleaning
-- gulp buildAllChromeExtensions
+- gulp _build-all-chrome
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
 #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis/build-android.sh && ./travis/package-android.sh ; fi
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+notifications:
+  webhooks: https://www.travisbuddy.com/
 #deploy:
 #  provider: releases
 #  api_key:

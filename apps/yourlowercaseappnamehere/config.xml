@@ -19,7 +19,7 @@
   </feature>
   <icon src="resources/icon.png"/>
   <platform name="android">
-    <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
+    <hook type="after_prepare" src="hooks/android_custom_resources.js" />
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">
@@ -51,8 +51,8 @@
     <splash src="resources/ios/splash/Default-Portrait~ipad.png" width="768" height="1024"/>
     <splash src="resources/ios/splash/Default@2x~iphone.png" width="640" height="960"/>
     <splash src="resources/ios/splash/Default~iphone.png" width="320" height="480"/>
-    <hook type="after_prepare" src="package-hooks/ios9_allow_native_fb.sh"/>
-    <hook type="after_prepare" src="package-hooks/ios_disable_bitcode.js"/>
+    <hook type="after_prepare" src="hooks/ios9_allow_native_fb.sh"/>
+    <hook type="after_prepare" src="hooks/ios_disable_bitcode.js"/>
     <hook type="after_build" src="hooks/generate_resources_fix_xcode_and_fastlane_beta.sh"/>
   </platform>
   <preference name="android-minSdkVersion" value="16" />

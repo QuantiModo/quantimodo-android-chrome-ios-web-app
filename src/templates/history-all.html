@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
-    <ion-nav-title ng-if="isMobile">History</ion-nav-title>
-    <ion-nav-title ng-if="!isMobile">{{state.title}}</ion-nav-title>
-     <ion-content ng-class="{ isBrowserView : isWeb == true }">
+    <ion-nav-title ng-if="platform.isMobile">History</ion-nav-title>
+    <ion-nav-title ng-if="!platform.isMobile">{{state.title}}</ion-nav-title>
+     <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
          <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory && (!state.history || !state.history.length)">
              <div class="item" style="padding-bottom:10px;">
@@ -16,7 +16,7 @@
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
-             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
+             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
           </div>
          <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
              <div class="item" >
@@ -40,6 +40,7 @@
                    style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"> </i>
                 <img ng-if="historyItem.pngPath" ng-src="{{historyItem.pngPath}}" style="border-radius: 0"
                      ng-click="showActionSheetForMeasurement(historyItem)">
+                <p id="hidden-measurement-id" ng-hide="true">{{historyItem.id}}</p>
                 <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;"
                     ng-click="showActionSheetForMeasurement(historyItem)">
                     {{historyItem.displayValueAndUnitString}} {{historyItem.variableName}}
@@ -54,19 +55,19 @@
                     <button ng-if="historyItem.productUrl" class="button button-assertive" ng-click="openUrl(historyItem.productUrl, 'no', '_system')">
                         <md-tooltip md-direction="down">Buy Now</md-tooltip> <i class="icon ion-bag"></i>
                     </button>
-                    <button ng-if="!isMobile" class="button button-dark" ng-click="showActionSheetForMeasurement(historyItem)">
+                    <button ng-if="!platform.isMobile" class="button button-dark" ng-click="showActionSheetForMeasurement(historyItem)">
                         <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-more"></i>
                     </button>
                 </div>
             </div>
         </ion-list>
-         <div class="card" ng-show="state.loading">
+         <div class="card" ng-show="state.loading" style="border-radius: 15px;">
              <div class="item" > <div class="row">
                  <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp {{state.loadingText}}</p>
              </div> </div>
          </div>
          <!--Infinite scroll doesn't work on web for some reason.  Various solutions like collection-repeat cause double scroll bar-->
-         <div style="text-align: center;" ng-if="state.moreDataCanBeLoaded && !isMobile && !state.loading">
+         <div style="text-align: center;" ng-if="state.moreDataCanBeLoaded && !platform.isMobile && !state.loading">
              <md-button class="md-raised md-primary" ng-click="getHistory()"><i class="icon ion-refresh"></i>&nbsp; Load More </md-button>
          </div>
          <ion-infinite-scroll ng-if="state.moreDataCanBeLoaded" on-infinite="getHistory()" distance="10%"></ion-infinite-scroll>

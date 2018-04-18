@@ -17,6 +17,7 @@ function setLastValueButtonListeners() {
     document.getElementById('thirdToLastValueButton').onclick = onLastValueButtonClicked;
     document.getElementById('snoozeButton').onclick = onLastValueButtonClicked;
     document.getElementById('skipButton').onclick = onLastValueButtonClicked;
+    document.getElementById('buttonInbox').onclick = inboxButtonClicked;
 }
 function getVariableName() {
     var variableName = window.qm.urlHelper.getParam('variableName');
@@ -26,7 +27,13 @@ function getVariableName() {
     }
 }
 function valenceNegative() {
-    if(window.trackingReminderNotification.valence === "negative"){return true;}
+    if(!window.trackingReminderNotification){
+        qmLog.error("window.trackingReminderNotification not set!");
+        qm.notifications.closePopup();
+    }
+    if(window.trackingReminderNotification.valence === "negative"){
+        return true;
+    }
 }
 var inboxButtonClicked = function() {
     window.qmLog.info('inboxButtonClicked');
@@ -37,9 +44,10 @@ var inboxButtonClicked = function() {
         OverApps.closeWebView();
         OverApps.openApp();
     } else {
-        window.qmLog.error('OverApps not defined');
+        window.qmLog.info('OverApps not defined');
         qm.chrome.windowParams.fullInboxWindowParams.focused = true;
-        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.fullInboxWindowParams);
+        qm.chrome.createPopup(qm.chrome.windowParams.fullInboxWindowParams);
+        hidePopupPostNotificationsDeleteLocalAndClosePopup();
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
@@ -81,9 +89,9 @@ var onFaceButtonClicked = function() {
             unit: "/5"
         }]
     };
-    window.pushMeasurements(request.payload, null);
+    qm.api.postMeasurements(request.payload, null);
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
-    closePopup();
+    qm.notifications.closePopup();
 };
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
@@ -161,7 +169,7 @@ function displaySendingTextAndPostMeasurements() {
         sectionSendingMood.innerText = "Sending mood";
         sectionSendingMood.style.display = "block";
         sectionSendingMood.className = "visible";
-        window.pushMeasurements(measurement, function(response) {
+        qm.api.postMeasurements(measurement, function(response) {
             sectionSendingMood.className = "invisible";
             setTimeout(function()
             {
@@ -224,12 +232,16 @@ function updateQuestion(variableName) {
         qmLog.pushDebug('popup: Setting question display to none ');
         getQuestionElement().style.display = "none";
     } else {
+        getInboxButtonElement().style.display = "none";
         qmLog.pushDebug('NOT setting question display to none because not on Chrome');
     }
     unHidePopup();
 }
 function getQuestionElement() {
     return document.getElementById("question");
+}
+function getInboxButtonElement() {
+    return document.getElementById("buttonInbox");
 }
 function getLastValueElement() {return document.getElementById("lastValue");}
 function getSecondToLastValueElement() {

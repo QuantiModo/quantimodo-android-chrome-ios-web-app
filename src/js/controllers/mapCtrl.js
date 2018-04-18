@@ -2,7 +2,7 @@ angular.module('starter') // Controls the settings page
 .controller('MapCtrl', ["$scope", "$cordovaGeolocation", "$ionicLoading", "$ionicPlatform", "$rootScope", function($scope, $cordovaGeolocation, $ionicLoading, $ionicPlatform, $rootScope) {
 	$ionicPlatform.ready(function() {
 
-		$rootScope.showFilterBarSearchIcon = false;
+		qmService.navBar.setFilterBarSearchIcon(false);
 
 		$ionicLoading.show({template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'});
 
@@ -11,7 +11,7 @@ angular.module('starter') // Controls the settings page
 				for (var i = 0; i < results.length; i++) {
 					var place = results[i];
 					//createMarker(results[i]);
-					window.qmLog.debug(null, 'Place is ', null, place);
+					window.qmLog.debug('Place is ', null, place);
 				}
 			}
 		}

@@ -11,50 +11,49 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.filterSearchQuery = '';
     $scope.searching = true;
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name);
+        qmLogService.info('beforeEnter state ' + $state.current.name);
         $scope.showSearchFilterBox = false;
-        $rootScope.showFilterBarSearchIcon = true;
-        qmService.unHideNavigationMenu();
+        qmService.navBar.setFilterBarSearchIcon(true);
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
         updateNavigationMenuButton();
     });
     function updateNavigationMenuButton() {
-        $timeout(function() {
-            $rootScope.showActionSheetMenu = function() {
-                // Show the action sheet
-                var hideSheet = $ionicActionSheet.show({
-                    buttons: [
-                        { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
-                        { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
-                        { text: '<i class="icon ion-arrow-down-c"></i>Positive Relationships' },
-                        { text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships' },
-                        { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
-                        { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
-                        { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
-                        qmService.actionSheetButtons.refresh,
-                        qmService.actionSheetButtons.settings
-                    ],
-                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                    cancel: function() { qmLogService.debug('CANCELLED', null); },
-                    buttonClicked: function(index) {
-                        if(index === 0){populateCorrelationList('-statisticalSignificance');}
-                        if(index === 1){populateCorrelationList('-qmScore');}
-                        if(index === 2){populateCorrelationList('correlationCoefficient');}
-                        if(index === 3){populateCorrelationList('-correlationCoefficient');}
-                        if(index === 4){populateCorrelationList('-numberOfUsers');}
-                        if(index === 5){populateCorrelationList('pValue');}
-                        if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
-                        if(index === 7){$scope.refreshList();}
-                        if(index === 8){qmService.goToState(qmStates.settings);}
-                        return true;
-                    }
-                });
-            };
-        }, 1);
+        qmService.rootScope.setShowActionSheetMenu(function() {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Positive Relationships' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Number of Participants' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product' },
+                    qmService.actionSheets.actionSheetButtons.refresh,
+                    qmService.actionSheets.actionSheetButtons.settings
+                ],
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() { qmLogService.debug('CANCELLED', null); },
+                buttonClicked: function(index) {
+                    if(index === 0){populateCorrelationList('-statisticalSignificance');}
+                    if(index === 1){populateCorrelationList('-qmScore');}
+                    if(index === 2){populateCorrelationList('correlationCoefficient');}
+                    if(index === 3){populateCorrelationList('-correlationCoefficient');}
+                    if(index === 4){populateCorrelationList('-numberOfUsers');}
+                    if(index === 5){populateCorrelationList('pValue');}
+                    if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
+                    if(index === 7){$scope.refreshList();}
+                    if(index === 8){qmService.goToState(qmStates.settings);}
+                    return true;
+                }
+            });
+        });
     }
     // Have to get url params after entering.  Otherwise, we get params from study if coming back
     $scope.$on('$ionicView.afterEnter', function(e) {
         qm.loaders.robots();
-        qmLogService.debug('beforeEnter state ' + $state.current.name);
+        qmLogService.info('afterEnter state ' + $state.current.name);
         $scope.state.requestParams.aggregated = qm.urlHelper.getParam('aggregated');
         if(!variablesHaveChanged()){return;}
         if (getCauseVariableName()){
@@ -131,10 +130,13 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.searching = true;
         var params = $scope.state.requestParams;
         params.limit = 10;
+        qmLogService.info('Getting correlations with params ' + JSON.stringify(params));
         qmService.getCorrelationsDeferred(params)
             .then(function (data) {
                 if(data){$scope.state.correlationsExplanation = data.explanation;}
                 if(data.correlations.length) {
+                    qmLogService.info('Got ' + data.correlations.length + ' correlations with params ' + JSON.stringify(params));
+                    qmLogService.info('First correlation is ' + JSON.stringify(data.correlations[0]));
                     if($scope.state.requestParams.offset){
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
                     } else {
@@ -143,6 +145,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                     $scope.state.requestParams.offset = $scope.state.correlationObjects.length;
                     showLoadMoreButtonIfNecessary();
                 } else {
+                    qmLogService.info('Did not get any correlations with params ' + JSON.stringify(params));
                     $scope.state.noCorrelations = true;
                 }
                 hideLoader();
@@ -173,7 +176,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $mdDialog.show({
             controller: CorrelationSearchCtrl,
             controllerAs: 'ctrl',
-            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
             targetEvent: $event,
             clickOutsideToClose: false // I think true causes auto-close on iOS
@@ -226,7 +229,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.debug(null, 'Text changed to ' + text, null); }
+        function searchTextChange(text) { $log.debug('Text changed to ' + text, null); }
         function selectedItemChange(item) {
             self.selectedItem = item;
             self.correlationObject = item.correlationObject;
