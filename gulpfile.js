@@ -2537,6 +2537,10 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('cordova-hcp-build', [], function (callback) {
     return executeCommand("cordova-hcp build", callback);
 });
+gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
+    console.log("After this, run cordova-hcp server and cordova run android in new window");
+    return executeCommand("cordova plugin add cordova-hot-code-push-local-dev-addon", callback);
+});
 gulp.task('cordova-hcp-deploy', [], function (callback) {
     return executeCommand("cordova-hcp deploy", callback);  // Causes stdout maxBuffer exceeded error
 });
