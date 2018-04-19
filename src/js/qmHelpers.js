@@ -402,7 +402,7 @@ window.qm = {
                 successHandler(qm.appSettings);
                 return;
             }
-            localforage.getItem(qm.items.appSettings, function(error, appSettings){
+            qm.localForage.getItem(qm.items.appSettings, function(appSettings){
                 if(appSettings){
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
@@ -431,7 +431,7 @@ window.qm = {
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
                     if(response.privateConfig){
                         qm.privateConfig = response.privateConfig;
-                        localforage.setItem(qm.items.privateConfig, response.privateConfig);
+                        qm.localForage.setItem(qm.items.privateConfig, response.privateConfig);
                     }
                     if(!response.appSettings){
                         qmLog.error("No appSettings response from "+ appSettingsUrl);
@@ -446,7 +446,7 @@ window.qm = {
                 if(parsedResponse){
                     window.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
                     qm.appSettings = parsedResponse;
-                    localforage.setItem(qm.items.appSettings, qm.appSettings);
+                    qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
                 }
                 callback(parsedResponse);
             }, function () {
@@ -486,7 +486,7 @@ window.qm = {
                     }
                 }
                 qm.appSettings = appSettings;
-                localforage.setItem(qm.items.appSettings, qm.appSettings);
+                qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
                 if(callback){callback(appSettings);}
             })
         },
@@ -508,6 +508,7 @@ window.qm = {
     },
     apiHelper: {},
     arrayHelper: {
+
         arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
             if(!array){
                 qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
@@ -781,7 +782,26 @@ window.qm = {
                 if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
             }
             return elementsToKeep;
-        }
+        },
+        addToOrReplaceByIdAndMoveToFront: function(localStorageItemArray, replacementElementArray){
+            if(!(replacementElementArray instanceof Array)){replacementElementArray = [replacementElementArray];}
+            // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
+            var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
+            var found = false;
+            if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    found = false;
+                    for (var j = 0; j < replacementElementArray.length; j++){
+                        if(replacementElementArray[j].id &&
+                            localStorageItemArray[i].id === replacementElementArray[j].id){
+                            found = true;
+                        }
+                    }
+                    if(!found){elementsToKeep.push(localStorageItemArray[i]);}
+                }
+            }
+            return elementsToKeep;
+        },
     },
     auth: {
         getAndSaveAccessTokenFromCurrentUrl: function(){
@@ -1011,6 +1031,10 @@ window.qm = {
         },
         getItem: function(key){
             return qm.storage.getGlobal(key);
+        },
+        removeItem: function(key){
+            qmLog.debug("Removing " + key + " from globals");
+            delete qm.globals[key];
         }
     },
     globals: {},
@@ -1125,7 +1149,7 @@ window.qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
-            localforage.getItem(key, function(error, existingData) {
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var newObjectToSave = arrayToSave[i];
@@ -1139,20 +1163,27 @@ window.qm = {
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
-            localforage.getItem(key, function(error, existingData) {
-                if(error){
-                    if(errorHandler){errorHandler(error);}
-                    return;
-                }
+            qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
                     var currentValue = obj[propertyName].toLowerCase();
                     return currentValue.indexOf(searchTerm) !== -1;
                 });
                 successHandler(existingData);
-            });
+            }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
+            var fromGlobals = qm.globalHelper.getItem(qm.items);
+            if(fromGlobals || fromGlobals === false || fromGlobals === 0){
+                successHandler(fromGlobals);
+                return
+            }
+            if(typeof "localforage" === "undefined"){
+                var error = "localforage not defined so can't get " + key + "!";
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+                return;
+            }
             localforage.getItem(key, function (err, data) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1163,6 +1194,13 @@ window.qm = {
         },
         setItem: function(key, value, successHandler, errorHandler){
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
+            qm.globalHelper.setItem(key, value);
+            if(typeof localforage === "undefined"){
+                var errorMessage = "local storage is undefined so can't set " + key;
+                qmLog.error(errorMessage);
+                if(errorHandler){errorHandler(errorMessage)};
+                return;
+            }
             localforage.setItem(key, value, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1172,6 +1210,7 @@ window.qm = {
             })
         },
         removeItem: function(key, value, successHandler, errorHandler){
+            qm.globalHelper.removeItem(key);
             localforage.removeItem(key, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1197,6 +1236,16 @@ window.qm = {
                 successHandler(data);
             }, function (error) {
                 if(errorHandler){errorHandler(error);}
+            });
+        },
+        addToOrReplaceByIdAndMoveToFront: function(localStorageItemName, replacementElementArray, successHandler){
+            qmLog.debug('qm.localForage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
+                JSON.stringify(replacementElementArray).substring(0,20)+'...');
+            // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
+            qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
+                var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
+                qm.localForage.setItem(localStorageItemName, elementsToKeep);
+                if(successHandler){successHandler(elementsToKeep);}
             });
         }
     },
@@ -1917,7 +1966,7 @@ window.qm = {
         },
         removeItem: function(key){
             qmLog.debug("Removing " + key + " from local storage");
-            delete qm.globals[key];
+            qm.globalHelper.removeItem(key);
             if(typeof localStorage === "undefined"){
                 qmLog.debug("localStorage not defined");
                 return false;
@@ -1942,26 +1991,9 @@ window.qm = {
         addToOrReplaceByIdAndMoveToFront: function(localStorageItemName, replacementElementArray){
             qmLog.debug('qm.storage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
                 JSON.stringify(replacementElementArray).substring(0,20)+'...');
-            if(!(replacementElementArray instanceof Array)){
-                replacementElementArray = [replacementElementArray];
-            }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
-            var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
-            var found = false;
-            if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
-                for(var i = 0; i < localStorageItemArray.length; i++){
-                    found = false;
-                    for (var j = 0; j < replacementElementArray.length; j++){
-                        if(replacementElementArray[j].id &&
-                            localStorageItemArray[i].id === replacementElementArray[j].id){
-                            found = true;
-                        }
-                    }
-                    if(!found){elementsToKeep.push(localStorageItemArray[i]);}
-                }
-            }
-            localforage.setItem(localStorageItemName, elementsToKeep);
+            var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
             qm.storage.setItem(localStorageItemName, elementsToKeep);
             return elementsToKeep;
         },

@@ -336,13 +336,12 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         applyReminderTimesToReminder();
         if($scope.state.trackingReminder.id){qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
-        qmService.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, remindersArray).then(function() {
-            qmService.syncTrackingReminders(true).then(function () {
-                var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
-                qmService.showInfoToast(toastMessage);
-                qmService.hideLoader();
-                $scope.goBack(); // We can't go back until we get new notifications
-            });
+        qmService.addToTrackingReminderSyncQueue(remindersArray);
+        qmService.syncTrackingReminders(true).then(function () {
+            var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
+            qmService.showInfoToast(toastMessage);
+            qmService.hideLoader();
+            $scope.goBack(); // We can't go back until we get new notifications
         });
     };
     function getFrequencyNameFromFrequencySeconds(frequencyName) {
