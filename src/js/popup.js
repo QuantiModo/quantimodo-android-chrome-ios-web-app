@@ -284,6 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
     qm.notifications.refreshIfEmptyOrStale();
     qmLog.pushDebug("popup addEventListener: calling getUserFromLocalStorage...");
     qm.userHelper.getUserFromLocalStorageOrApi();
-    qmLog.pushDebug("popup addEventListener: calling setupBugsnag...");
-    qmLog.setupBugsnag();
 });
+qmLog.pushDebug("popup addEventListener: calling setupBugsnag...");
+qmLog.setupBugsnag();
