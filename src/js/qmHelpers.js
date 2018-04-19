@@ -1178,7 +1178,7 @@ window.qm = {
                 successHandler(fromGlobals);
                 return
             }
-            if(typeof "localforage" === "undefined"){
+            if(typeof localforage === "undefined"){
                 var error = "localforage not defined so can't get " + key + "!";
                 qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
