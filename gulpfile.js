@@ -260,7 +260,7 @@ function readDevCredentials(){
         devCredentials = JSON.parse(fs.readFileSync(paths.src.devCredentials));
         qmLog.info("Using dev credentials from " + paths.src.devCredentials + ". This file is ignored in .gitignore and should never be committed to any repository.");
     } catch (error){
-        qmLog.info('No existing dev credentials found');
+        qmLog.debug('No existing dev credentials found');
         devCredentials = {};
     }
 }
