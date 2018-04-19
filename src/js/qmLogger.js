@@ -274,6 +274,7 @@ window.qmLog.setupBugsnag = function(){
             Bugsnag.appVersion = qm.getAppSettings().versionNumber;
             Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
+        Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
         if(qm.getUser()){Bugsnag.user = qmLog.obfuscateSecrets(qm.getUser());}
     } else {
         qmLog.error('Bugsnag is not defined');
