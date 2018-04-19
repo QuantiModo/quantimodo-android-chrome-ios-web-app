@@ -71,36 +71,26 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodOk") {ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
-    if(window.trackingReminderNotification){
+    if(!window.trackingReminderNotification){
+        qmLog.error("No window.trackingReminderNotification to post or add to queue!");
+    } else {
         qmLog.pushDebug('popup onFaceButtonClicked: window.trackingReminderNotification exists. Calling addToSyncQueueAndCloseOrUpdateQuestion..');
         window.trackingReminderNotification.modifiedValue = ratingValue;
-        return addToSyncQueueAndCloseOrUpdateQuestion();
-    } else {
-        qmLog.error("No window.trackingReminderNotification to post or add to queue!");
     }
-    var request = {
-        message: "uploadMeasurements",
-        payload: [{
-            measurements: [{startTimeEpoch: Math.floor(Date.now() / 1000), value: ratingValue}],
-            variableName: getVariableName(),
-            sourceName: "MoodiModo Chrome",
-            category: "Mood",
-            combinationOperation: "MEAN",
-            unit: "/5"
-        }]
-    };
-    qm.api.postMeasurements(request.payload, null);
-    if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
-    qm.notifications.closePopup();
+    return addToSyncQueueAndCloseOrUpdateQuestion();
+    // TODO: Figure out how to send in background with chrome.extension.sendMessage(request);
+    //if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
 };
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
     if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
-    window.notificationsSyncQueue.push(window.trackingReminderNotification);
-    if(window.trackingReminderNotification.id){
-        qm.notifications.deleteById(window.trackingReminderNotification.id);
-    } else {
-        qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName); // TODO: Why was this commented?
+    if(window.trackingReminderNotification){
+        window.notificationsSyncQueue.push(window.trackingReminderNotification);
+        if(window.trackingReminderNotification.id){
+            qm.notifications.deleteById(window.trackingReminderNotification.id);
+        } else {
+            qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName); // TODO: Why was this commented?
+        }
     }
     window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     if(!window.trackingReminderNotification){
