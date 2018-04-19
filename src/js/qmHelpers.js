@@ -1805,7 +1805,7 @@ window.qm = {
                     }
                 }
             }
-            qm.storage.setItem(qm.items.mostFrequentReminderIntervalInMinutes, mostFrequentReminderIntervalInSeconds);
+            qm.storage.setItem(qm.items.mostFrequentReminderIntervalInSeconds, mostFrequentReminderIntervalInSeconds);
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
         },
         removeArchivedReminders: function(allReminders){
