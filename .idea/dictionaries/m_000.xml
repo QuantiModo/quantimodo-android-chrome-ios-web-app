@@ -2,6 +2,8 @@
   <dictionary name="m_000">
     <words>
       <w>bugsnag</w>
+      <w>chcp</w>
+      <w>chcpbuild</w>
       <w>cordova</w>
       <w>envs</w>
       <w>falsey</w>
