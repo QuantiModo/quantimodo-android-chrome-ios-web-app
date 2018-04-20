@@ -153,26 +153,6 @@ function unHidePopup() {
 //     sectionRate.style.display = "block";
 //     sectionRate.className = "visible";
 // }
-function displaySendingTextAndPostMeasurements() {
-    var sectionRate = getRatingSectionElement();
-    var sectionSendingMood = document.getElementById("sectionSendingMood");
-    sectionRate.className = "invisible";
-    setTimeout(function() {
-        sectionRate.style.display = "none";
-        sectionSendingMood.innerText = "Sending mood";
-        sectionSendingMood.style.display = "block";
-        sectionSendingMood.className = "visible";
-        qm.api.postMeasurements(measurement, function(response) {
-            sectionSendingMood.className = "invisible";
-            setTimeout(function()
-            {
-                window.close();
-            }, 300);
-        });
-        qm.notifications.clearNotifications();
-    }, 400 );
-}
-
 function updateQuestion(variableName) {
     qmLog.pushDebug("popup: updateQuestion...");
     if(!variableName || typeof variableName !== "string"){
