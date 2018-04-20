@@ -144,13 +144,13 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.build_link = getBuildLink();
 });
 var qmLog = {
-    error: function (message, object) {
-        console.error(obfuscateStringify(message, object));
+    error: function (message, object, maxCharacters) {
+        console.error(obfuscateStringify(message, object, maxCharacters));
         bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
     },
-    info: function (message, object) {console.log(obfuscateStringify(message, object));},
-    debug: function (message, object) {
-        if(buildDebug){qmLog.info("BUILD DEBUG: " + message, object);}
+    info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
+    debug: function (message, object, maxCharacters) {
+        if(buildDebug){qmLog.info("BUILD DEBUG: " + message, object, maxCharacters);}
     },
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
@@ -160,7 +160,7 @@ var qmLog = {
 var majorMinorVersionNumbers = '2.8.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
-qmLog.info("Environmental Variables:", process.env);
+qmLog.info("Environmental Variables:", process.env, 5000);
 function setVersionNumbers() {
     var date = new Date();
     function getPatchVersionNumber() {
@@ -499,13 +499,14 @@ function obfuscateSecrets(object){
     }
     return object;
 }
-function obfuscateStringify(message, object) {
+function obfuscateStringify(message, object, maxCharacters) {
+    maxCharacters = maxCharacters || 140;
     var objectString = '';
     if(object){
         object = obfuscateSecrets(object);
         objectString = ':  ' + prettyJSONStringify(object);
     }
-    if (objectString.length > 140) {objectString = objectString.substring(0, 140) + '...';}
+    if (objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
     message += objectString;
     if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
     if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
