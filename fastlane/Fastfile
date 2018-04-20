@@ -46,6 +46,7 @@ platform :ios do
       add_to_search_list: true
     )
 
+    puts "Unlock keychain to prevent generating multiple keychains which increases build time (https://github.com/fastlane/fastlane/issues/7505#issuecomment-267445102)"
     unlock_keychain(
       path: ENV["MATCH_KEYCHAIN_NAME"],
       add_to_search_list: :replace,
@@ -70,7 +71,7 @@ platform :ios do
 
     gym(scheme: app_display_name,
         project: xcodeproj) # Build your app - more options available # Build your app - more options available
-        
+
     pilot(
        skip_submission: true,
        distribute_external: false,
