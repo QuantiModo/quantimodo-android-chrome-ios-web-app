@@ -61,18 +61,23 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
     )
 
+    puts("Automatically generate and renewing push notification profiles with pem..."
     pem
 
+    puts "recreate_schemes for some reason..."
     recreate_schemes(project: xcodeproj)
 
+    puts "Building app with gym..."
     gym(scheme: app_display_name,
         project: xcodeproj) # Build your app - more options available # Build your app - more options available
 
+    puts "Uploading build to iTunes Connect with pilot..."
     pilot(
-       skip_submission: true,
-       distribute_external: false,
-       skip_waiting_for_build_processing: true
-     )
+        username: ENV["FASTLANE_USER"],
+        skip_submission: true,
+        distribute_external: false,
+        skip_waiting_for_build_processing: true
+    )
 
     # sh "your_script.sh"
     # You can also use other beta testing services here (run `fastlane actions`)
