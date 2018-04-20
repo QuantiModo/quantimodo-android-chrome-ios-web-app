@@ -1442,8 +1442,11 @@ gulp.task('deleteGooglePlusPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
-gulp.task('ionicPlatformAddIOS', function (callback) {
+gulp.task('platformAddIOS', function (callback) {
     executeCommand('ionic platform add ios', callback);
+});
+gulp.task('buildIOS', function (callback) {
+    executeCommand('ionic build ios', callback);
 });
 gulp.task('ionicServe', function (callback) {
     qmLog.info("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from an administrative command prompt in the root of the repository.");
@@ -1846,7 +1849,7 @@ gulp.task('makeIosApp', function (callback) {
     runSequence(
         'deleteIOSApp',
         'deleteFacebookPlugin',
-        'ionicPlatformAddIOS',
+        'platformAddIOS',
         'ionicResources',
         'addFacebookPlugin',
         //'addGooglePlusPlugin',
@@ -2243,6 +2246,14 @@ gulp.task('buildQuantiModo', function (callback) {
         'buildChromeExtension',
         'buildAndroidApp',
         'prepareIosApp',
+        callback);
+});
+gulp.task('buildQuantiModoIOS', function (callback) {
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareIosApp',
+        'platformAddIOS',
+        'buildIOS',
         callback);
 });
 gulp.task('buildMoodiModo', function (callback) {

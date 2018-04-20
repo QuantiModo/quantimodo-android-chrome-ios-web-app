@@ -64,7 +64,7 @@ before_install:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp prepareQuantiModoIos; cordova build ios; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildQuantiModoIOS; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 #- gulp _build-all-chrome
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
