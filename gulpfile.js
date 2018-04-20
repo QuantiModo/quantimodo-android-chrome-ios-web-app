@@ -2115,7 +2115,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
 });
 gulp.task('prepareIosApp', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
-    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose,  delete platforms/ios/cordova/node_modules, and run npm install in platforms/ios/cordova");
+    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'cleanPlugins',
@@ -2575,6 +2575,9 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
     return executeCommand("cordova-hcp deploy", callback);  // Causes stdout maxBuffer exceeded error
+});
+gulp.task('ios-sim-fix', [], function (callback) {
+    return executeCommand("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
 gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
