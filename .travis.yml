@@ -52,6 +52,7 @@ cache:
   - $HOME/Library/Caches/Yarn/v1/
   - $HOME/.cache/yarn/v1/
 before_install:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
 - bundle install
 - bundle update
 - export LANG=en_US.UTF-8
