@@ -2473,16 +2473,17 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
 });
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
-    var string =
-        //'{"name": "QuantiModo", '+
-        '{"name": "'+appSettings.appDisplayName+'", '+
-        '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
-        '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
-        '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
-        //'"ios_identifier": "",' +
-        //'"android_identifier": "",' +
-        '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push/"+}';
-    writeToFile('cordova-hcp.json', string);
+    var chcpJson = {
+        "name": appSettings.appDisplayName,
+        "s3bucket": "qm-cordova-hot-code-push",
+        "s3region": "eu-west-1",
+        "s3prefix": appSettings.clientId + "/dev",
+        "ios_identifier": appSettings.additionalSettings.appIds.appleId,
+        "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
+        "update": "resume",
+        "content_url": "https://s3-eu-west-1.amazonaws.com/" + appSettings.clientId + "/dev"
+    };
+    writeToFile('cordova-hcp.json', prettyJSONStringify(chcpJson));
     var chcpBuildOptions = {
         "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
         "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/production/www/chcp.json"},
@@ -2575,7 +2576,7 @@ gulp.task('cordova-hcp-deploy', [], function (callback) {
     return executeCommand("cordova-hcp deploy", callback);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
-    qmLog.info("Manually run `cordova-hcp deploy` after this");
+    qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
     runSequence(
         'cleanWwwFolder',
         'configureApp',

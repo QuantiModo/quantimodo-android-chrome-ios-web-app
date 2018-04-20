@@ -110,3 +110,5 @@ src/default.config.json
 src/chcp\.json
 
 src/chcp\.manifest
+
+chcpbuild\.options
