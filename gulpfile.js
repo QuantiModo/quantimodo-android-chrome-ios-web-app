@@ -2115,6 +2115,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
 });
 gulp.task('prepareIosApp', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
+    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose,  delete platforms/ios/cordova/node_modules, and run npm install in platforms/ios/cordova");
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'cleanPlugins',
