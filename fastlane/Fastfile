@@ -61,8 +61,12 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
     )
 
-    puts "Automatically generate and renewing push notification profiles with pem..."
-    pem
+    if ENV["TRAVIS"]
+      puts "Can't use pem on Travis..."
+    else
+      puts "Automatically generate and renewing push notification profiles with pem..."
+      pem
+    end
 
     puts "recreate_schemes for some reason..."
     recreate_schemes(project: xcodeproj)
