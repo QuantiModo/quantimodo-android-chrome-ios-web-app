@@ -161,13 +161,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             versionInfo: null
         },
-        geLocation: {
-            getFoursquareClientSecret: function(){
-                if(qm.connectorHelper)
-            },
-            FOURSQUARE_CLIENT_ID: null,
-            GOOGLE_MAPS_API_KEY: null
-        },
         ionIcons: {
             history: 'ion-ios-list-outline',
             reminder: 'ion-android-notifications-none',
