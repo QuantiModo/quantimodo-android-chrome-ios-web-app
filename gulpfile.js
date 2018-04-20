@@ -181,14 +181,17 @@ function setVersionNumbers() {
 }
 setVersionNumbers();
 var buildingFor = {
+    platform: null,
     web: function () {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
     },
     android: function () {
+        if(buildingFor.platform === 'android'){ return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
         return process.env.BUILD_ANDROID;
     },
-    ios:function () {
+    ios: function () {
+        if (buildingFor.platform === 'ios'){ return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
     },
@@ -2249,6 +2252,7 @@ gulp.task('buildQuantiModo', function (callback) {
         callback);
 });
 gulp.task('buildQuantiModoIOS', function (callback) {
+    buildingFor.platform = 'ios';
     runSequence(
         'setQuantiModoEnvs',
         'ionicPlatformRemoveIOS',
