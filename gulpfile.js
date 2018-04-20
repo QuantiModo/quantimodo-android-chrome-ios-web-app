@@ -2251,6 +2251,7 @@ gulp.task('buildQuantiModo', function (callback) {
 gulp.task('buildQuantiModoIOS', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
+        'ionicPlatformRemoveIOS',
         'prepareIosApp',
         'platformAddIOS',
         'buildIOS',
@@ -2364,6 +2365,9 @@ gulp.task('ionicPlatformAddAndroid', function (callback) {
 });
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     return execute('ionic platform remove android', callback);
+});
+gulp.task('ionicPlatformRemoveIOS', function (callback) {
+    return execute('ionic platform remove ios', callback);
 });
 function buildAndroidDebug(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
