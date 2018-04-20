@@ -2257,7 +2257,7 @@ gulp.task('buildQuantiModoIOS', function (callback) {
         'setQuantiModoEnvs',
         'ionicPlatformRemoveIOS',
         'prepareIosApp',
-        'platformAddIOS',
+        //'platformAddIOS', Run ionic platform add ios because MaxListenersExceededWarning: Possible EventEmitter memory leak detected
         //'buildIOS', Run ionic build ios manually because stdout maxBuffer exceeded
         callback);
 });
