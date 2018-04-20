@@ -82,7 +82,6 @@
   </plugin>
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <chcp>
-        <config-file url="https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json"/>
         <auto-download enabled="true" />
         <auto-install enabled="true" />
     </chcp>
