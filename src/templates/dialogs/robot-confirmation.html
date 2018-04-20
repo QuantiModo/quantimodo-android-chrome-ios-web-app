@@ -9,14 +9,14 @@
           top: -110%;
           left: 50%;
           margin-left: -37.5px;">
+        <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+          <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+        </md-button>
         <h2 style="color: rgba(255,255,255,0.75);
                   text-align: center;
                   height: inherit;
                   width: inherit;
                   line-height: 2.9;">{{ctrl.title}}</h2>
-        <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
-            <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
-        </md-button>
         <md-button class="md-icon-button" ng-click="ctrl.cancel()">
             <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
         </md-button>
@@ -28,9 +28,9 @@
       </div>
     </md-dialog-content>
     <md-dialog-actions layout="row">
-      <md-button id="helpButton" ng-click="answer('help')" ng-if="!platform.isMobile">Help</md-button>
-      <md-button id="noButton" ng-click="answer('no')">{{ctrl.noText}}</md-button>
-      <md-button id="yesButton" ng-click="answer('yes')">Yes</md-button>
+      <md-button id="helpButton" ng-click="answer('help')" ng-if="!platform.isMobile" style="min-width: 40px;">Help</md-button>
+      <md-button id="noButton" ng-click="answer('no')" style="min-width: 40px;">{{ctrl.noText}}</md-button>
+      <md-button id="yesButton" ng-click="answer('yes')" style="min-width: 40px;">Yes</md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>
