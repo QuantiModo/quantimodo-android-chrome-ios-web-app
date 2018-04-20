@@ -2254,7 +2254,7 @@ gulp.task('buildQuantiModoIOS', function (callback) {
         'ionicPlatformRemoveIOS',
         'prepareIosApp',
         'platformAddIOS',
-        'buildIOS',
+        //'buildIOS', Run ionic build ios manually because stdout maxBuffer exceeded
         callback);
 });
 gulp.task('buildMoodiModo', function (callback) {
