@@ -2490,20 +2490,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getLocationInfoFromGoogleMaps = function ($http) {
-        var GOOGLE_MAPS_API_KEY = qm.privateConfig.GOOGLE_MAPS_API_KEY;
-        if (!GOOGLE_MAPS_API_KEY) {qmLogService.error('Please add GOOGLE_MAPS_API_KEY to private config');}
         function lookup(latitude, longitude) {
-            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=' + GOOGLE_MAPS_API_KEY);
+            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude +
+                '&key=' + qm.geoLocation.getGoogleMapsApiKey());
         }
         return {lookup: lookup};
     };
     qmService.getLocationInfoFromFoursquare = function ($http) {
-        var FOURSQUARE_CLIENT_ID = qm.privateConfig.FOURSQUARE_CLIENT_ID;
-        var FOURSQUARE_CLIENT_SECRET = qm.privateConfig.FOURSQUARE_CLIENT_SECRET;
-        if (!FOURSQUARE_CLIENT_ID) {qmLogService.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');}
         function whatsAt(latitude, longitude) {
             return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + latitude + ',' + longitude +
-                '&intent=browse&radius=30&client_id=' + FOURSQUARE_CLIENT_ID + '&client_secret=' + FOURSQUARE_CLIENT_SECRET + '&v=20151201');
+                '&intent=browse&radius=30&client_id=' + qm.geoLocation.getFoursqureClientId() + '&client_secret=' +
+                qm.geoLocation.getFoursquareClientSecret() + '&v=20151201');
         }
         return {whatsAt: whatsAt};
     };
@@ -2567,6 +2564,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return qm.storage.getItem(qm.items.lastLatitude) !== coordinates.latitude && qm.storage.getItem(qm.items.lastLongitude) !== coordinates.longitude;
     }
     function lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground) {
+        if (!qm.geoLocation.getFoursqureClientId() || !qm.geoLocation.getFoursquareClientSecret()) {
+            qmLog.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');
+            return;
+        }
+        if (!qm.geoLocation.getGoogleMapsApiKey()) {
+            qmLog.error('Please add GOOGLE_MAPS_API_KEY to private config');
+            return;
+        }
         if(!coordinatesChanged(coordinates)){return;}
         qmService.getLocationInfoFromFoursquareOrGoogleMaps(coordinates.latitude, coordinates.longitude).then(function (geoLookupResult) {
             if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){qmLogService.error('getLocationInfoFromFoursquareOrGoogleMaps was '+ JSON.stringify(geoLookupResult));}
