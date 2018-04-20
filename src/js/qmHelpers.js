@@ -948,6 +948,28 @@ window.qm = {
             }
             params = qm.api.addGlobalParams(params);
             apiInstance.getConnectors(params, callback);
+        },
+        getConnectorsFromLocalStorage: function(){
+            return qm.storage.getItem(qm.items.connectors);
+        },
+        getConnectorsFromLocalStorageOrApi: function(successHandler, errorHandler){
+            var connectors = qm.storage.getItem(qm.items.connectors);
+            if(connectors){successHandler(connectors); return;}
+            qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
+        },
+        getConnectorByName: function (connectorName, successHandler) {
+            if(!successHandler){
+                var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
+                return connectors.find(function(connector){
+                    return connector.name === connectorName.toLowerCase();
+                });
+            }
+            qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function (connectors) {
+                var match = connectors.find(function(connector){
+                    return connector.name === connectorName.toLowerCase();
+                });
+                successHandler(match);
+            })
         }
     },
     functionHelper: {
@@ -958,8 +980,23 @@ window.qm = {
             return functionName;
         }
     },
-    geoLoction: function(){
-        var foursquareConnector = qm.connectorHelper.getConn
+    geoLocation: {
+        getFoursqureClientId: function () {
+            if(qm.privateConfig.FOURSQUARE_CLIENT_ID){return qm.privateConfig.FOURSQUARE_CLIENT_ID;}
+            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID;}
+            var connector = qm.connectorHelper.getConnectorByName('foursquare');
+            if(connector){return connector.connectorClientId;}
+        },
+        getFoursquareClientSecret: function () {
+            if(qm.privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.privateConfig.FOURSQUARE_CLIENT_SECRET;}
+            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET;}
+            var connector = qm.connectorHelper.getConnectorByName('foursquare');
+            if(connector){return connector.connectorClientSecret;}
+        },
+        getGoogleMapsApiKey: function () {
+            if(qm.privateConfig.GOOGLE_MAPS_API_KEY){return qm.privateConfig.GOOGLE_MAPS_API_KEY;}
+            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY){return qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY;}
+        }
     },
     getAppSettings: function (successHandler) {
         if(!successHandler){
