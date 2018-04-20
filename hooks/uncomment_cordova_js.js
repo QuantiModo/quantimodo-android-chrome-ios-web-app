@@ -2,10 +2,7 @@
 var fs = require('fs');
 function replace_string_in_file(filename, to_replace, replace_with) {
     var data = fs.readFileSync(filename, 'utf8');
-    if(!data){
-        console.log("No data to replace from " + filename);
-        return;
-    }
+    if(!data){console.log("No data to replace from " + filename); return;}
     console.log('hooks/uncomment_cordova_js.js replace_string_in ' + filename);
     var result = data.replace(new RegExp(to_replace, "g"), replace_with);
     fs.writeFileSync(filename, result, 'utf8');
