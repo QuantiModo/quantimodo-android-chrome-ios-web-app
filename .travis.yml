@@ -52,6 +52,7 @@ cache:
   - $HOME/Library/Caches/Yarn/v1/
   - $HOME/.cache/yarn/v1/
 before_install:
+- echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
 - bundle install
 - bundle update
@@ -64,7 +65,8 @@ before_install:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildQuantiModoIOS; ionic platform add ios; ionic build ios; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildQuantiModoIOS; ionic platform add ios; ionic build ios --release; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export APP_DISPLAY_NAME=QuantiModo && fastlane beta --capture_output; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 #- gulp _build-all-chrome
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
