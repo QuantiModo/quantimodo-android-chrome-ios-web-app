@@ -37,10 +37,32 @@ platform :ios do
     ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     #sh "cd .. && ruby hooks/xcodeprojectfix.rb"
 
+    create_keychain(
+      name: ENV["MATCH_KEYCHAIN_NAME"],
+      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      add_to_search_list: true
+    )
+
+    unlock_keychain(
+      path: ENV["MATCH_KEYCHAIN_NAME"],
+      add_to_search_list: :replace,
+      password: ENV['MATCH_KEYCHAIN_PASSWORD']
+    )
+
+    register_devices(
+      devices_file: "./fastlane/devices.txt",
+    )
+
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
       app_identifier: ENV["APP_IDENTIFIER"],
       type: "appstore",
-      readonly: true)
+      readonly: true,  #readonly mode to be sure it won't create any new certificates or profiles.
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
+    )
 
     pem
 
