@@ -185,9 +185,11 @@ var buildingFor = {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
     },
     android: function () {
+        if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
         return process.env.BUILD_ANDROID;
     },
     ios:function () {
+        if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
     },
     chrome: function () {
