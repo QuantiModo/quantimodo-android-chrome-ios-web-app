@@ -2256,6 +2256,7 @@ gulp.task('buildQuantiModo', function (callback) {
 });
 gulp.task('buildQuantiModoIOS', function (callback) {
     buildingFor.platform = 'ios';
+    console.warn("Run `ionic platform add ios` and `ionic build ios` manually after this");
     runSequence(
         'setQuantiModoEnvs',
         'ionicPlatformRemoveIOS',
@@ -2477,7 +2478,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function () {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "eu-west-1",
-        "s3prefix": appSettings.clientId + "/dev",
+        "s3prefix": appSettings.clientId + "/dev/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
