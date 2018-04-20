@@ -53,10 +53,6 @@ platform :ios do
       password: ENV['MATCH_KEYCHAIN_PASSWORD']
     )
 
-    register_devices(
-      devices_file: "./fastlane/devices.txt",
-    )
-
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
       app_identifier: ENV["APP_IDENTIFIER"],
       type: "appstore",
