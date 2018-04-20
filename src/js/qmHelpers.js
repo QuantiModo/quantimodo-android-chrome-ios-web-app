@@ -958,6 +958,9 @@ window.qm = {
             return functionName;
         }
     },
+    geoLoction: function(){
+        var foursquareConnector = qm.connectorHelper.getConn
+    },
     getAppSettings: function (successHandler) {
         if(!successHandler){
             if(qm.appsManager.getAppSettingsFromMemory()){return qm.appsManager.getAppSettingsFromMemory();}

@@ -58,7 +58,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         qmService.showMaterialAlert("No matches found", userErrorMessage);
                     }
-                })
+                });
             },
             scanBarcode: function (requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
                 requestParams = requestParams || {};
@@ -85,7 +85,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         //"EAN_13," + // False positives on Android
                         "CODE_128," +
                         "CODE_39," +
-                        "ITF"
+                        "ITF";
                 }
                 /** @namespace cordova.plugins.barcodeScanner */
                 cordova.plugins.barcodeScanner.scan(function (result) {
@@ -160,6 +160,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             versionInfo: null
+        },
+        geLocation: {
+            getFoursquareClientSecret: function(){
+                if(qm.connectorHelper)
+            },
+            FOURSQUARE_CLIENT_ID: null,
+            GOOGLE_MAPS_API_KEY: null
         },
         ionIcons: {
             history: 'ion-ios-list-outline',
