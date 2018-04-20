@@ -2180,6 +2180,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
+        'cordova-hcp-config',
         'buildInfo',
         'setVersionNumberInFiles',
         'createSuccessFile',
@@ -2473,15 +2474,21 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var string =
-        '{"name": "QuantiModo", '+
-        //'{"name": "'+appSettings.appDisplayName+'", '+
+        //'{"name": "QuantiModo", '+
+        '{"name": "'+appSettings.appDisplayName+'", '+
         '"s3bucket": "qm-cordova-hot-code-push", "s3prefix": "", "s3region": "us-east-1",' +
-        // '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
-        // '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
-        '"ios_identifier": "",' +
-        '"android_identifier": "",' +
-        '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push"}';
-    return writeToFile('cordova-hcp.json', string);
+        '"ios_identifier": "'+appSettings.additionalSettings.appIds.appleId + '",' +
+        '"android_identifier": "'+appSettings.additionalSettings.appIds.appIdentifier + '",' +
+        //'"ios_identifier": "",' +
+        //'"android_identifier": "",' +
+        '"update": "resume", "content_url": "https://s3.amazonaws.com/qm-cordova-hot-code-push/"+}';
+    writeToFile('cordova-hcp.json', string);
+    var chcpBuildOptions = {
+        "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
+        "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/production/www/chcp.json"},
+        "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/qa/chcp.json"}
+    };
+    return writeToFile('chcpbuild.options', prettyJSONStringify(chcpBuildOptions));
 });
 gulp.task('cordova-hcp-login', [], function () {
     if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}

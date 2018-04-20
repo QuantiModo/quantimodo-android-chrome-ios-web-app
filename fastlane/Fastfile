@@ -61,7 +61,7 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
     )
 
-    puts("Automatically generate and renewing push notification profiles with pem..."
+    puts "Automatically generate and renewing push notification profiles with pem..."
     pem
 
     puts "recreate_schemes for some reason..."
