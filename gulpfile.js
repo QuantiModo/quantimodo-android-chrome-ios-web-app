@@ -253,6 +253,11 @@ function getBuildLink() {
     if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
 function setBranchName(callback) {
+    if (process.env.TRAVIS_BRANCH){
+        qmGit.branchName = process.env.TRAVIS_BRANCH;
+        if (callback) {callback(branch);}
+        return;
+    }
     git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
         if(err){qmLog.error(err);}
         qmGit.branchName = branch;
