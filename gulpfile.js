@@ -2223,7 +2223,7 @@ gulp.task('configureApp', [], function (callback) {
         'getUnits',  // This is being weird for some reason
         'getAppConfigs',
         'uglify-error-debugging',
-        //'minify-js-generate-css-and-index-html',
+        'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
         'downloadIcon',
         'resizeIcons',
