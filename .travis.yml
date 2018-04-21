@@ -65,7 +65,7 @@ before_install:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildQuantiModoIOS; ionic platform add ios; ionic build ios --release; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildQuantiModoIOS; ionic platform add ios; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export APP_DISPLAY_NAME=QuantiModo && export APP_IDENTIFIER="com.quantimodo.quantimodo" && fastlane deploy; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 #- gulp _build-all-chrome
