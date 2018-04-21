@@ -106,6 +106,7 @@ var defaultRequestOptions = {strictSSL: false};
 var download = require('gulp-download-stream');
 var es = require('event-stream');
 var exec = require('child_process').exec;
+var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
 var filter = require('gulp-filter');
 var fs = require('fs');
 var git = require('gulp-git');
@@ -369,9 +370,11 @@ function uploadToS3(filePath) {
     });
 }
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
-function execute(command, callback, suppressErrors) {
+function execute(command, callback, suppressErrors, lotsOfOutput) {
     qmLog.debug('executing ' + command);
-    var my_child_process = exec(command, function (error, stdout, stderr) {
+    var executionFunction = exec;
+    if(lotsOfOutput){executionFunction = spawn;}
+    var my_child_process = executionFunction(command, function (error, stdout, stderr) {
         if (error !== null) {
             if (suppressErrors) {
                 qmLog.info('ERROR: exec ' + error);
@@ -383,13 +386,6 @@ function execute(command, callback, suppressErrors) {
     });
     my_child_process.stdout.pipe(process.stdout);
     my_child_process.stderr.pipe(process.stderr);
-}
-function executeCommand(command, callback) {
-    exec(command, function (err, stdout, stderr) {
-        qmLog.info(stdout);
-        qmLog.info(stderr);
-        callback(err);
-    });
 }
 function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     if (!process.env.ENCRYPTION_SECRET) {
@@ -473,7 +469,7 @@ function fastlaneSupply(track, callback) {
     }
     /** @namespace appSettings.additionalSettings.appIds.appIdentifier */
     /** @namespace appSettings.additionalSettings.appIds */
-    executeCommand('fastlane supply' +
+    execute('fastlane supply' +
         ' --apk_paths ' + apk_paths +
         ' --track ' + track +
         ' --skip_upload_metadata ' +
@@ -1457,24 +1453,24 @@ gulp.task('uglify-error-debugging', function (cb) {
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
-    executeCommand('cordova plugin rm phonegap-facebook-plugin', callback);
+    execute('cordova plugin rm phonegap-facebook-plugin', callback);
 });
 gulp.task('deleteGooglePlusPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
 gulp.task('platformAddIOS', function (callback) {
-    executeCommand('ionic platform add ios', callback);
+    execute('ionic platform add ios', callback);
 });
 gulp.task('buildIOS', function (callback) {
-    executeCommand('ionic build ios', callback);
+    execute('ionic build ios', callback, false, true);
 });
 gulp.task('ionicServe', function (callback) {
     qmLog.info("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from an administrative command prompt in the root of the repository.");
-    executeCommand('ionic serve', callback);
+    execute('ionic serve', callback);
 });
 gulp.task('ionicStateReset', function (callback) {
-    executeCommand('ionic state reset', callback);
+    execute('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(buildDebug){
@@ -1496,12 +1492,12 @@ gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], fun
     }
 });
 gulp.task('ionicResources', function (callback) {
-    executeCommand('ionic resources', callback);
+    execute('ionic resources', callback);
 });
 gulp.task('androidDebugKeystoreInfo', function (callback) {
     qmLog.info('androidDebugKeystoreInfo gets stuck for some reason');
     callback();
-    //executeCommand("keytool -exportcert -list -v -alias androiddebugkey -keystore debug.keystore", callback);
+    //execute("keytool -exportcert -list -v -alias androiddebugkey -keystore debug.keystore", callback);
 });
 gulp.task('gitPull', function () {
     var commandForGit = 'git pull';
@@ -1570,15 +1566,15 @@ gulp.task('ionicUploadAllApps', function (callback) {
 });
 gulp.task('ionicAddCrosswalk', function (callback) {
     var command = 'ionic plugin add cordova-plugin-crosswalk-webview@2.2.0';  // Trying 2.2.0 to fix XWalkWebViewEngine is not abstract and does not override abstract method evaluateJavascript
-    executeCommand(command, callback);
+    execute(command, callback);
 });
 gulp.task('ionicInfo', function (callback) {
     var command = 'ionic info';
-    executeCommand(command, callback);
+    execute(command, callback);
 });
 gulp.task('cordovaPlatformVersionAndroid', function (callback) {
     var command = 'cordova platform version android';
-    executeCommand(command, callback);
+    execute(command, callback);
 });
 gulp.task('downloadGradle', function () {
     return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
@@ -2522,7 +2518,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
             if(err) {return qmLog.error(err);}
             chcpLogin(function(err){
                 if(err) {return qmLog.error(err);}
-                executeCommand("cordova-hcp build", callback);
+                execute("cordova-hcp build", callback);
             });
         });
     });
@@ -2535,7 +2531,7 @@ function chcpLogin(callback){
     return writeToFileWithCallback('.chcplogin', string, callback);
 }
 gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
-    return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
+    return execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
@@ -2603,17 +2599,17 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         .pipe(clean());
 });
 gulp.task('cordova-hcp-build', [], function (callback) {
-    return executeCommand("cordova-hcp build", callback);
+    return execute("cordova-hcp build", callback);
 });
 gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
-    return executeCommand("cordova plugin add cordova-hot-code-push-local-dev-addon", callback);
+    return execute("cordova plugin add cordova-hot-code-push-local-dev-addon", callback);
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
-    return executeCommand("cordova-hcp deploy", callback);  // Causes stdout maxBuffer exceeded error
+    return execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('ios-sim-fix', [], function (callback) {
-    return executeCommand("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
+    return execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
 gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
