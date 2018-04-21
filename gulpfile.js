@@ -913,7 +913,7 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
     return fs.writeFile(filePath, stringContents, callback);
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
-gulp.task('deleteSuccessFile', function () {return clean(['success']);});
+gulp.task('deleteSuccessFile', function () {return cleanFiles(['success']);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
@@ -1180,13 +1180,13 @@ gulp.task('deleteNodeModules', function () {
     return cleanFolder('node_modules');
 });
 gulp.task('deleteWwwPrivateConfig', function () {
-    return clean([paths.www.defaultPrivateConfig])
+    return cleanFiles([paths.www.defaultPrivateConfig])
 });
 gulp.task('delete-chcp-login', function () {
-    return clean([paths.chcpLogin])
+    return cleanFiles([paths.chcpLogin])
 });
 gulp.task('deleteWwwIcons', function () {
-    return clean(['www/img/icons/*']);
+    return cleanFiles(['www/img/icons/*']);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
@@ -2162,10 +2162,10 @@ gulp.task('copyWwwIconsToSrc', [], function () {
     return copyFiles(paths.www.icons + "/*", paths.src.icons);
 });
 gulp.task('removeTransparentPng', [], function () {
-    return gulp.src('resources/icon.png', {read: false}).pipe(clean());
+    return cleanFiles('resources/icon.png');
 });
 gulp.task('removeTransparentPsd', [], function () {
-    return gulp.src('resources/icon.psd', {read: false}).pipe(clean());
+    return cleanFiles('resources/icon.psd');
 });
 gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
     execute('convert -flatten resources/icon.png resources/icon.png', callback);
@@ -2662,15 +2662,14 @@ gulp.task('watch-src', function () {
         .pipe(gulp.dest(destination));
 });
 gulp.task('deleteAppSpecificFilesFromWww', [], function () {
-    return gulp.src([
+    return cleanFiles([
         paths.www.defaultConfig,
         paths.www.defaultPrivateConfig,
         paths.www.devCredentials,
         'www/configs/*',
         'www/private_configs/*',
         'www/img/icons/*',
-        'www/manifest.json'], {read: false})
-        .pipe(clean());
+        'www/manifest.json']);
 });
 gulp.task('cordova-hcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
