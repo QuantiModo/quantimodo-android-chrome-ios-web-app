@@ -414,36 +414,20 @@ function execute(command, callback, suppressErrors, lotsOfOutput) {
         var program = arguments.shift();
         var ps = spawn(program, arguments);
         ps.on('exit', function (code, signal) {
-            qmLog.info(command + ' exited with ' + `code ${code} and signal ${signal}`);
+            qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
             if(callback){callback();}
         });
-        ps.stdout.on('data', (data) => {
-            qmLog.info(command + ` stdout: ${data}`);
-        });
-        ps.stderr.on('data', (data) => {
-            qmLog.error(command + ` stderr: ${data}`);
-        });
-        ps.on('close', (code) => {
-            if (code !== 0) {
-                qmLog.error(command + ` process exited with code ${code}`);
-            }
-        });
-
+        ps.stdout.on('data', function (data) {qmLog.info(command + ' stdout: ' + data);});
+        ps.stderr.on('data', function (data) {qmLog.error(command + '  stderr: ' + data);});
+        ps.on('close', function (code) {if (code !== 0) {qmLog.error(command + ' process exited with code ' + code);}});
     } else {
         var my_child_process = exec(command, function (error, stdout, stderr) {
-            if (error !== null) {
-                if (suppressErrors) {
-                    qmLog.info('ERROR: exec ' + error);
-                } else {
-                    qmLog.error('ERROR: exec ' + error);
-                }
-            }
+            if (error !== null) {if (suppressErrors) {qmLog.info('ERROR: exec ' + error);} else {qmLog.error('ERROR: exec ' + error);}}
             callback(error, stdout);
         });
         my_child_process.stdout.pipe(process.stdout);
         my_child_process.stderr.pipe(process.stderr);
     }
-
 }
 function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     if (!process.env.ENCRYPTION_SECRET) {
