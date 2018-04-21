@@ -387,6 +387,7 @@ function execute(command, callback, suppressErrors, lotsOfOutput) {
         var ps = spawn(program, arguments);
         ps.on('exit', function (code, signal) {
             qmLog.info(command + ' exited with ' + `code ${code} and signal ${signal}`);
+            if(callback){callback();}
         });
         ps.stdout.on('data', (data) => {
             qmLog.info(command + ` stdout: ${data}`);
