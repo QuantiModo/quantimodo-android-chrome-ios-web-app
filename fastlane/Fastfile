@@ -135,6 +135,11 @@ platform :ios do
           #keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
           team_id: team_id
     )
+    update_project_provisioning(
+        xcodeproj: xcodeproj,
+        profile: ENV["sigh_#{app_identifier}_appstore_profile-path"],
+        build_configuration: "Release"
+    )
     cordova(platform: 'ios', team_id: team_id)
     appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'])
   end
