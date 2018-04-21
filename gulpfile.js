@@ -55,6 +55,18 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
+var qmGit = {
+    branchName: null,
+    isMaster: function () {
+        return qmGit.branchName === "master"
+    },
+    isDevelop: function () {
+        return qmGit.branchName === "develop"
+    },
+    isFeature: function () {
+        return qmGit.branchName.indexOf("feature") !== -1;
+    }
+};
 var paths = {
     apk: {
         combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
@@ -856,6 +868,11 @@ function writeToFile(filePath, stringContents) {
     qmLog.info("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
+}
+function writeToFileWithCallback(filePath, stringContents, callback) {
+    qmLog.info("Writing to " + filePath);
+    if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
+    return fs.writeFile(filePath, stringContents, callback);
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
 gulp.task('deleteSuccessFile', function () {return clean(['success']);});
@@ -2127,6 +2144,7 @@ gulp.task('prepareIosApp', function (callback) {
         'useWhiteIcon',
         'ionicResourcesIos',
         'copyIconsToWwwImg',
+        'cordova-hcp-config',
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
@@ -2472,33 +2490,50 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('cordova-hcp-config', ['getAppConfigs'], function () {
+gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
+    if(false && buildingFor.web()){
+        qmLog.info("Not using cordova-hcp on web builds");
+        callback();
+        return;
+    }
+    var path = "dev";
+    if(qmGit.isMaster()){path = "production";}
+    if(qmGit.isDevelop()){path = "qa";}
+    if(buildDebug){path = "dev";}
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var chcpJson = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "eu-west-1",
-        "s3prefix": appSettings.clientId + "/dev/",
+        "s3prefix": appSettings.clientId + "/"+path+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
-        "content_url": "https://s3-eu-west-1.amazonaws.com/" + appSettings.clientId + "/dev"
+        "content_url": "https://s3-eu-west-1.amazonaws.com/" + appSettings.clientId + "/" + path
     };
-    writeToFile('cordova-hcp.json', prettyJSONStringify(chcpJson));
-    var chcpBuildOptions = {
-        "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
-        "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/production/www/chcp.json"},
-        "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/qa/chcp.json"}
-    };
-    return writeToFile('chcpbuild.options', prettyJSONStringify(chcpBuildOptions));
+    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
+        if(err) {return qmLog.error(err);}
+        var chcpBuildOptions = {
+            "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
+            "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/production/www/chcp.json"},
+            "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/qa/chcp.json"}
+        };
+        return writeToFileWithCallback('chcpbuild.options', prettyJSONStringify(chcpBuildOptions), function(err){
+            if(err) {return qmLog.error(err);}
+            chcpLogin(function(err){
+                if(err) {return qmLog.error(err);}
+                executeCommand("cordova-hcp build", callback);
+            });
+        });
+    });
 });
-gulp.task('cordova-hcp-login', [], function () {
+function chcpLogin(callback){
     if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
     /** @namespace process.env.AWS_ACCESS_KEY_ID */
     /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
     var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
-    return writeToFile('.chcplogin', string);
-});
+    return writeToFileWithCallback('.chcplogin', string, callback);
+}
 gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     return executeCommand("cordova-hcp build && cordova-hcp deploy", callback);
 });
@@ -2522,6 +2557,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
         'uncommentCordovaJsInIndexHtml',
+        'cordova-hcp-config',
         'copyAndroidLicenses',
         'bowerInstall',
         'configureApp',
@@ -2585,9 +2621,8 @@ gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
         'cleanWwwFolder',
         'configureApp',
         'cordova-hcp-config',
-        'cordova-hcp-login',
-        'deleteAppSpecificFilesFromWww',
-        'cordova-hcp-build',
+        //'deleteAppSpecificFilesFromWww',
+        //'cordova-hcp-build',
         //'cordova-hcp-deploy',
         callback);
 });
