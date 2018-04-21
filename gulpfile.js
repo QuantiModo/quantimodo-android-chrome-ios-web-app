@@ -93,7 +93,8 @@ var paths = {
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
         js: "www/js/"
-    }
+    },
+    chcpLogin: '.chcplogin'
 };
 var argv = require('yargs').argv;
 var bower = require('bower');
@@ -1138,6 +1139,9 @@ gulp.task('deleteNodeModules', function () {
 gulp.task('deleteWwwPrivateConfig', function () {
     return clean([paths.www.defaultPrivateConfig])
 });
+gulp.task('delete-chcp-login', function () {
+    return clean([paths.chcpLogin])
+});
 gulp.task('deleteWwwIcons', function () {
     return clean(['www/img/icons/*']);
 });
@@ -1459,10 +1463,10 @@ gulp.task('deleteGooglePlusPlugin', function (callback) {
     qmLog.info('If this doesn\'t work, just use gulp cleanPlugins');
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
-gulp.task('platformAddIOS', function (callback) {
+gulp.task('platform-add-ios', function (callback) {
     execute('ionic platform add ios', callback);
 });
-gulp.task('buildIOS', function (callback) {
+gulp.task('ionic-build-ios', function (callback) {
     execute('ionic build ios', callback, false, true);
 });
 gulp.task('ionicServe', function (callback) {
@@ -1866,7 +1870,7 @@ gulp.task('makeIosApp', function (callback) {
     runSequence(
         'deleteIOSApp',
         'deleteFacebookPlugin',
-        'platformAddIOS',
+        'platform-add-ios',
         'ionicResources',
         'addFacebookPlugin',
         //'addGooglePlusPlugin',
@@ -2126,7 +2130,7 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
 });
-gulp.task('prepareIosApp', function (callback) {
+gulp.task('build-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
@@ -2141,6 +2145,10 @@ gulp.task('prepareIosApp', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'cordova-hcp-config',
+        'platform-add-ios',
+        'ionic-build-ios',
+        'cordova-hcp-deploy',
+        'delete-chcp-login',
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
@@ -2152,14 +2160,14 @@ gulp.task('zipBuild', [], function () {
 gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
     return uploadBuildToS3("buddybuild.zip");
 });
-// Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
+// Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     qmLog.info('gulp configureAppAfterNpmInstall');
     if (process.env.BUDDYBUILD_SCHEME) {
         QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
-        qmLog.info('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to prepareIosApp');
+        qmLog.info('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to build-ios-app');
         runSequence(
-            'prepareIosApp',
+            'build-ios-app',
             callback);
     } else if (process.env.BUDDYBUILD_SECURE_FILES) {
         qmLog.info('Building Android because BUDDYBUILD_SCHEME is not set and we know we\'re on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: ' + process.env.BUDDYBUILD_SECURE_FILES);
@@ -2257,7 +2265,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
 gulp.task('prepareMoodiModoIos', function (callback) {
     runSequence(
         'setMoodiModoEnvs',
-        'prepareIosApp',
+        'build-ios-app',
         callback);
 });
 gulp.task('buildQuantiModo', function (callback) {
@@ -2265,7 +2273,7 @@ gulp.task('buildQuantiModo', function (callback) {
         'setQuantiModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
-        'prepareIosApp',
+        'build-ios-app',
         callback);
 });
 gulp.task('buildQuantiModoIOS', function (callback) {
@@ -2273,10 +2281,7 @@ gulp.task('buildQuantiModoIOS', function (callback) {
     console.warn("Run `ionic platform add ios` and `ionic build ios` manually after this");
     runSequence(
         'setQuantiModoEnvs',
-        'ionicPlatformRemoveIOS',
-        'prepareIosApp',
-        //'platformAddIOS', Run ionic platform add ios because MaxListenersExceededWarning: Possible EventEmitter memory leak detected
-        //'buildIOS', Run ionic build ios manually because stdout maxBuffer exceeded
+        'build-ios-app',
         callback);
 });
 gulp.task('buildMoodiModo', function (callback) {
@@ -2284,7 +2289,7 @@ gulp.task('buildMoodiModo', function (callback) {
         'setMoodiModoEnvs',
         'buildChromeExtension',
         //'buildAndroidApp',
-        'prepareIosApp',
+        'build-ios-app',
         callback);
 });
 gulp.task('buildMediModo', function (callback) {
@@ -2292,7 +2297,7 @@ gulp.task('buildMediModo', function (callback) {
         'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
-        'prepareIosApp',
+        'build-ios-app',
         callback);
 });
 gulp.task('_build-qm-android', function (callback) {
@@ -2388,7 +2393,7 @@ gulp.task('ionicPlatformAddAndroid', function (callback) {
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     return execute('ionic platform remove android', callback);
 });
-gulp.task('ionicPlatformRemoveIOS', function (callback) {
+gulp.task('platform-remove-ios', function (callback) {
     return execute('ionic platform remove ios', callback);
 });
 function buildAndroidDebug(callback){
@@ -2417,7 +2422,7 @@ gulp.task('cordovaBuildAndroid', function (callback) {
 gulp.task('prepareQuantiModoIos', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
-        'prepareIosApp',
+        'build-ios-app',
         callback);
 });
 gulp.task('_copy-src-and-emulate-android', function (callback) {
@@ -2528,7 +2533,7 @@ function chcpLogin(callback){
     /** @namespace process.env.AWS_ACCESS_KEY_ID */
     /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
     var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
-    return writeToFileWithCallback('.chcplogin', string, callback);
+    return writeToFileWithCallback(paths.chcpLogin, string, callback);
 }
 gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     return execute("cordova-hcp build && cordova-hcp deploy", callback);
@@ -2570,6 +2575,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicInfo',
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
+        'cordova-hcp-deploy',
+        'delete-chcp-login',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
         //'outputCombinedApkVersionCode',
