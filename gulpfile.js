@@ -983,6 +983,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
         appSettings = response.appSettings;
+        process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;  // Need env for Fastlane
+        process.env.APP_IDENTIFIER = appSettings.additionalSettings.appIdentifier;  // Need env for Fastlane
         if(response.privateConfig){privateConfig = response.privateConfig;}
         function addBuildInfoToAppSettings() {
             appSettings.buildServer = getCurrentServerContext();
@@ -2205,6 +2207,7 @@ gulp.task('build-ios-app', function (callback) {
         'ionic-build-ios',
         'cordova-hcp-deploy',
         'delete-chcp-login',
+        'fastlaneBetaIos',
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
@@ -2392,6 +2395,14 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
         'downloadChromeExtension',
         'setQuantiModoEnvs',
         'downloadChromeExtension',
+        callback);
+});
+gulp.task('buildAllIosApps', function (callback) {
+    runSequence(
+        'setMediModoEnvs',
+        'build-ios-app',
+        'setQuantiModoEnvs',
+        'build-ios-app',
         callback);
 });
 gulp.task('buildAllAndroidApps', function (callback) {
