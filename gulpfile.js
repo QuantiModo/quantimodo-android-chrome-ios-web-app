@@ -498,7 +498,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
 function resizeIcon(callback, resolution) {
     var outputIconPath = paths.www.icons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
-    return execute(command, function (error) {
+    execute(command, function (error) {
         if (error) {
             qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             qmLog.info('ERROR: ' + JSON.stringify(error));
@@ -1755,7 +1755,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
-    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+    execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
         if (error !== null) {
             qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
         } else {
@@ -2184,13 +2184,13 @@ gulp.task('removeTransparentPsd', [], function () {
     return gulp.src('resources/icon.psd', {read: false}).pipe(clean());
 });
 gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
-    return execute('convert -flatten resources/icon.png resources/icon.png', callback);
+    execute('convert -flatten resources/icon.png resources/icon.png', callback);
 });
 gulp.task('bowerInstall', [], function (callback) {
-    return execute('bower install --allow-root', callback);
+    execute('bower install --allow-root', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
-    return execute('ionic resources ios', callback);
+    execute('ionic resources ios', callback);
 });
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
@@ -2463,34 +2463,34 @@ gulp.task('buildAndReleaseIosApp', function (callback) {
 });
 gulp.task('fastlaneBetaIos', function (callback) {
     var command = 'fastlane beta';
-    return execute(command, callback);
+    execute(command, callback);
 });
 gulp.task('xcodeProjectFix', function (callback) {
     var command = 'ruby hooks/xcodeprojectfix.rb';
-    return execute(command, callback);
+    execute(command, callback);
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
-    return execute('ionic platform add android@6.2.2', callback);
+    execute('ionic platform add android@6.2.2', callback);
 });
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
-    return execute('ionic platform remove android', callback);
+    execute('ionic platform remove android', callback);
 });
 gulp.task('platform-remove-ios', function (callback) {
-    return execute('ionic platform remove ios', callback);
+    execute('ionic platform remove ios', callback);
 });
 function buildAndroidDebug(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidDebug = "BUILDING";
     postAppStatus();
-    return execute(getCordovaBuildCommand('debug', 'android'), callback);
+    execute(getCordovaBuildCommand('debug', 'android'), callback);
 }
 function buildAndroidRelease(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidRelease = "BUILDING";
     postAppStatus();
-    return execute(getCordovaBuildCommand('release', 'android'), callback);
+    execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
     if(buildDebug){
@@ -2524,13 +2524,13 @@ gulp.task('_copy-src-and-run-android', function (callback) {
         callback);
 });
 gulp.task('ionicResourcesAndroid', [], function (callback) {
-    return execute('ionic resources android', callback);
+    execute('ionic resources android', callback);
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
-    return execute('ionic run android', callback);
+    execute('ionic run android', callback);
 });
 gulp.task('ionicEmulateAndroid', [], function (callback) {
-    return execute('ionic emulate android', callback);
+    execute('ionic emulate android', callback);
 });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
@@ -2618,7 +2618,7 @@ function chcpLogin(callback){
     return writeToFileWithCallback(paths.chcpLogin, string, callback);
 }
 gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
-    return execute("cordova-hcp build && cordova-hcp deploy", callback);
+    execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     buildingFor.platform = qmPlatform.android;
@@ -2689,7 +2689,7 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         .pipe(clean());
 });
 gulp.task('cordova-hcp-build', [], function (callback) {
-    return execute("cordova-hcp build", callback);
+    execute("cordova-hcp build", callback);
 });
 gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
@@ -2704,10 +2704,10 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
-    return execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+    execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('ios-sim-fix', [], function (callback) {
-    return execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
+    execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
 gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
