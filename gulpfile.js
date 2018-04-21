@@ -16,6 +16,26 @@ var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var platformCurrentlyBuildingFor;
+var qmPlatform = {
+    isOSX: function(){
+        return process.platform === 'darwin';
+    },
+    isLinux: function(){
+        return process.platform === 'linux';
+    },
+    isWindows: function(){
+        return !qmPlatform.isOSX() && !qmPlatform.isLinux();
+    },
+    getPlatform: function(){
+        if(platformCurrentlyBuildingFor){return platformCurrentlyBuildingFor;}
+        if(qmPlatform.isOSX()){return qmPlatform.ios;}
+        if(qmPlatform.isWindows()){return qmPlatform.android;}
+        return qmPlatform.web;
+    },
+    ios: 'ios',
+    android: 'android',
+    web: 'web'
+};
 var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 // Setup platforms to build that are supported on current hardware
 // See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
@@ -2641,7 +2661,15 @@ gulp.task('cordova-hcp-build', [], function (callback) {
 });
 gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
-    return execute("cordova plugin add cordova-hot-code-push-local-dev-addon", callback);
+    var runCommand = "cordova run android";
+    if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
+    execute("cordova plugin add cordova-hot-code-push-local-dev-addon", function () {
+        execute(runCommand, function () {
+            execute("cordova-hcp server", function () {
+                //callback();
+            }, false, false);
+        }, false, false);
+    }, false, false);
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
     return execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
