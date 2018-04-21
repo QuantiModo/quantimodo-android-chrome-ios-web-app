@@ -2220,7 +2220,6 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
-        'cordova-hcp-config',
         'buildInfo',
         'setVersionNumberInFiles',
         'createSuccessFile',
