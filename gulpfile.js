@@ -232,6 +232,15 @@ function getBuildLink() {
     if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
     if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
+function setBranchName(callback) {
+    git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+        if(err){qmLog.error(err);}
+        qmGit.branchName = branch;
+        qmLog.info('current git branch: ' + branch);
+        if (callback) {callback(branch);}
+    });
+}
+setBranchName();
 function setClientId(callback) {
     if(QUANTIMODO_CLIENT_ID){
         qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
@@ -254,8 +263,7 @@ function setClientId(callback) {
         qmLog.info('Stripped apps/ and now client id is ' + QUANTIMODO_CLIENT_ID);
     }
     if (!QUANTIMODO_CLIENT_ID) {
-        git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-            qmLog.info('current git branch: ' + branch);
+        setBranchName(function (branch) {
             if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
                     qmLog.info('Setting QUANTIMODO_CLIENT_ID using branch name ' + branch);
