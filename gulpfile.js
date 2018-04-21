@@ -2361,6 +2361,12 @@ gulp.task('buildMediModo', function (callback) {
         'build-ios-app',
         callback);
 });
+gulp.task('buildMediModoIos', function (callback) {
+    runSequence(
+        'setMediModoEnvs',
+        'build-ios-app',
+        callback);
+});
 gulp.task('_build-qm-android', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
