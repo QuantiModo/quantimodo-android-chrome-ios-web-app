@@ -2154,6 +2154,7 @@ gulp.task('build-ios-app', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'cleanPlugins',
+        'platform-remove-ios',
         'configureApp',
         //'copyAppResources',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
@@ -2164,6 +2165,7 @@ gulp.task('build-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'platform-add-ios',
+        'ios-sim-fix',
         'ionic-build-ios',
         'cordova-hcp-deploy',
         'delete-chcp-login',
