@@ -133,6 +133,7 @@ var fs = require('fs');
 var git = require('gulp-git');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var ifElse = require('gulp-if-else');
 var inquirer = require('inquirer');
 var jeditor = require('gulp-json-editor');
 var lazypipe = require('lazypipe');
@@ -1477,7 +1478,13 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         //sourceRoot: "src/lib/",
         includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
-    return gulp.src("src/"+sourceIndexFileName)
+    var renameForCacheBusting = buildingFor.web();
+    if (renameForCacheBusting) {
+        qmLog.info("Renaming minified files for cache busting");
+    } else {
+        qmLog.info("Not renaming minified files because we can't remove from old ones from cordova hcp server");
+    }
+    return gulp.src("src/" + sourceIndexFileName)
     //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
@@ -1487,9 +1494,9 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(csso())               // Minify any CSS sources
         .pipe(cssFilter.restore)
         .pipe(indexHtmlFilter)
-        .pipe(rev())                // Rename the concatenated files (but not index.html)
+        .pipe(ifElse(renameForCacheBusting, rev))                // Rename the concatenated files for cache busting (but not index.html)
         .pipe(indexHtmlFilter.restore)
-        .pipe(revReplace())         // Substitute in new filenames
+        .pipe(ifElse(renameForCacheBusting, revReplace))         // Substitute in new filenames for cache busting
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         .pipe(gulp.dest('www'));
 }
@@ -2614,6 +2621,7 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     return execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
+    buildingFor.platform = qmPlatform.android;
     /** @namespace appSettings.additionalSettings.monetizationSettings */
     /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
     if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){

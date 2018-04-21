@@ -3703,6 +3703,12 @@ gulp-header@1.8.2:
     object-assign "*"
     through2 "^2.0.0"
 
+gulp-if-else@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/gulp-if-else/-/gulp-if-else-1.0.3.tgz#4e08b15c03f90aeca7bc319a0f5857fe2d7474c3"
+  dependencies:
+    gulp-util "^3.0.1"
+
 gulp-if@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/gulp-if/-/gulp-if-2.0.2.tgz#a497b7e7573005041caa2bc8b7dda3c80444d629"
