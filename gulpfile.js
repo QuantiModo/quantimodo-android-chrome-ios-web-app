@@ -987,7 +987,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     function successHandler(response) {
         appSettings = response.appSettings;
         process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;  // Need env for Fastlane
-        process.env.APP_IDENTIFIER = appSettings.additionalSettings.appIdentifier;  // Need env for Fastlane
+        process.env.APP_IDENTIFIER = appSettings.additionalSettings.appIds.appIdentifier;  // Need env for Fastlane
         if(response.privateConfig){privateConfig = response.privateConfig;}
         function addBuildInfoToAppSettings() {
             appSettings.buildServer = getCurrentServerContext();
