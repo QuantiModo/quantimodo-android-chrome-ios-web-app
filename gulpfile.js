@@ -373,20 +373,38 @@ function uploadToS3(filePath) {
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
 function execute(command, callback, suppressErrors, lotsOfOutput) {
     qmLog.debug('executing ' + command);
-    var executionFunction = exec;
-    if(lotsOfOutput){executionFunction = spawn;}
-    var my_child_process = executionFunction(command, function (error, stdout, stderr) {
-        if (error !== null) {
-            if (suppressErrors) {
-                qmLog.info('ERROR: exec ' + error);
-            } else {
-                qmLog.error('ERROR: exec ' + error);
+    if(lotsOfOutput){
+        var ps = spawn(command, []);
+        ps.on('exit', function (code, signal) {
+            qmLog.info(command + ' exited with ' + `code ${code} and signal ${signal}`);
+        });
+        ps.stdout.on('data', (data) => {
+            qmLog.info(command + ` stdout: ${data}`);
+        });
+        ps.stderr.on('data', (data) => {
+            qmLog.error(command + ` stderr: ${data}`);
+        });
+        ps.on('close', (code) => {
+            if (code !== 0) {
+                qmLog.error(command + ` process exited with code ${code}`);
             }
-        }
-        callback(error, stdout);
-    });
-    my_child_process.stdout.pipe(process.stdout);
-    my_child_process.stderr.pipe(process.stderr);
+        });
+
+    } else {
+        var my_child_process = exec(command, function (error, stdout, stderr) {
+            if (error !== null) {
+                if (suppressErrors) {
+                    qmLog.info('ERROR: exec ' + error);
+                } else {
+                    qmLog.error('ERROR: exec ' + error);
+                }
+            }
+            callback(error, stdout);
+        });
+        my_child_process.stdout.pipe(process.stdout);
+        my_child_process.stderr.pipe(process.stderr);
+    }
+
 }
 function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     if (!process.env.ENCRYPTION_SECRET) {
@@ -2195,7 +2213,7 @@ gulp.task('configureApp', [], function (callback) {
         'getUnits',  // This is being weird for some reason
         'getAppConfigs',
         'uglify-error-debugging',
-        'minify-js-generate-css-and-index-html',
+        //'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
         'downloadIcon',
         'resizeIcons',
@@ -2263,6 +2281,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         callback);
 });
 gulp.task('prepareMoodiModoIos', function (callback) {
+    buildingFor.platform = 'ios';
     runSequence(
         'setMoodiModoEnvs',
         'build-ios-app',
