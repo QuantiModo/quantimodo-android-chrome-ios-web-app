@@ -382,7 +382,9 @@ function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');
 function execute(command, callback, suppressErrors, lotsOfOutput) {
     qmLog.debug('executing ' + command);
     if(lotsOfOutput){
-        var ps = spawn(command, []);
+        var arguments = command.split(" ");
+        var program = arguments.shift();
+        var ps = spawn(program, arguments);
         ps.on('exit', function (code, signal) {
             qmLog.info(command + ' exited with ' + `code ${code} and signal ${signal}`);
         });
