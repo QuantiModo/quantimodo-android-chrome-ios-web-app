@@ -483,7 +483,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
     }
     var disconnectConnector = function (connector, button){
-        button.text = 'Disconnected';
+        button.text = 'Reconnect';
         qmService.disconnectConnectorDeferred(connector.name).then(function (){
             $scope.refreshConnectors();
         }, function(error) {

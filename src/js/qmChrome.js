@@ -109,19 +109,25 @@ window.qm.chrome = {
         });
     },
     getAllWindowsFocusOrCreateNewPopup: function (windowParams) {
-        console.log("getAllWindowsFocusOrCreateNewPopup");
-        chrome.windows.getAll(function (windows) {
-            for (var i = 0; i < windows.length; i++) {
-                var window = windows[i];
-                console.log("current window", window);
-                if(window.type === "popup"){
-                    console.log("Focusing existing popup", window);
-                    chrome.windows.update(window.id, {focused: true});
-                    return;
-                }
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            if(!user.pushNotificationsEnabled){
+                qmLog.pushDebug("Not showing chrome popup because notifications are disabled");
+                return;
             }
-            qm.chrome.createPopup(windowParams);
-        });
+            console.log("getAllWindowsFocusOrCreateNewPopup");
+            chrome.windows.getAll(function (windows) {
+                for (var i = 0; i < windows.length; i++) {
+                    var window = windows[i];
+                    console.log("current window", window);
+                    if(window.type === "popup"){
+                        console.log("Focusing existing popup", window);
+                        chrome.windows.update(window.id, {focused: true});
+                        return;
+                    }
+                }
+                qm.chrome.createPopup(windowParams);
+            });
+        })
     },
     handleNotificationClick: function(notificationId) {
         window.qmLog.debug('onClicked: notificationId:' + notificationId);
@@ -249,27 +255,33 @@ window.qm.chrome = {
         };
     },
     showRatingOrInboxPopup: function () {
-        qm.notifications.refreshIfEmptyOrStale(function () {
-            if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
-                qmLog.info("No notifications not opening popup");
-                return false;
-            }
-            if(qm.getUser().combineNotifications){
-                qm.chrome.createSmallInboxNotification();
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            if(!user.pushNotificationsEnabled){
+                qmLog.pushDebug("Not showing chrome popup because notifications are disabled");
                 return;
             }
-            window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
-            if(window.trackingReminderNotification){
-                qm.chrome.showRatingPopup(window.trackingReminderNotification);
-            } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
-                qmLog.info("No rating notifications so opening compactInboxWindow popup");
-                qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
-            } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
-                qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-                qm.chrome.createSmallInboxNotification();
-            }
-        }, function (err) {
-            qmLog.error("Not showing popup because of notification refresh error: "+ err);
+            qm.notifications.refreshIfEmptyOrStale(function () {
+                if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
+                    qmLog.info("No notifications not opening popup");
+                    return false;
+                }
+                if(qm.getUser().combineNotifications){
+                    qm.chrome.createSmallInboxNotification();
+                    return;
+                }
+                window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+                if(window.trackingReminderNotification){
+                    qm.chrome.showRatingPopup(window.trackingReminderNotification);
+                } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
+                    qmLog.info("No rating notifications so opening compactInboxWindow popup");
+                    qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
+                } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
+                    qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
+                    qm.chrome.createSmallInboxNotification();
+                }
+            }, function (err) {
+                qmLog.error("Not showing popup because of notification refresh error: "+ err);
+            });
         });
     },
     showRatingPopup: function(trackingReminderNotification){
