@@ -12,7 +12,7 @@ A generic app that can be easily configured to help the user track and optimize 
 # 5-Minute Quick Start
 1. Fork this repository.
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community](https://taco.visualstudio.com/), which automatically installs everything you need!)
-1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower`. # Adding plugins from Github doesn't work on cordova@7.0.0
+1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli`. # Adding plugins from Github doesn't work on cordova@7.0.0
 (Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
 1. Run `npm install` in the root of this repository.
 1. Create your application at [app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
