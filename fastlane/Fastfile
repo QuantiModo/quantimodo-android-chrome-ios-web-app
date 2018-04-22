@@ -95,7 +95,7 @@ platform :ios do
       puts "Can't use pem on Travis..."
     else
       puts "Automatically generate and renewing push notification profiles with pem..."
-      pem
+      pem(app_identifier: app_identifier)
     end
 
     puts "recreate_schemes for some reason..."
