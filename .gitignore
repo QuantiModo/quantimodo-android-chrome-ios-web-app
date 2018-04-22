@@ -112,3 +112,6 @@ src/chcp\.json
 src/chcp\.manifest
 
 chcpbuild\.options
+*.pkey
+*.pem
+*.p12
