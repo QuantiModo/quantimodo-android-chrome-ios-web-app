@@ -86,7 +86,8 @@ var qmGit = {
     },
     isFeature: function () {
         return qmGit.branchName.indexOf("feature") !== -1;
-    }
+    },
+    accessToken: process.env.GITHUB_ACCESS_TOKEN
 };
 var paths = {
     apk: {
@@ -850,7 +851,8 @@ gulp.task('scripts', function () {
     }
 });
 var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/src/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
-    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'qm-amazon/qmUrlUpdater.js'];
+    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'];
+if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
     var chromeExtensionManifest = {
@@ -2414,9 +2416,11 @@ gulp.task('_build-all-chrome', function (callback) {
         'buildChromeExtensionWithoutCleaning',
         callback);
 });
-gulp.task('downloadQmAmazonJs', function () {
-    return download("https://utopia.quantimo.do/dist/qmUrlUpdater.js")
-        .pipe(gulp.dest("www/js/"));
+gulp.task('downloadQmAmazonJs', function (callback) {
+    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', function (err) {
+        if (err) {qmLog.info(err);}
+        callback();
+    });
 });
 gulp.task('downloadAllChromeExtensions', function (callback) {
     runSequence(
