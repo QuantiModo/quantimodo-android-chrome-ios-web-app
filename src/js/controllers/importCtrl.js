@@ -1,5 +1,5 @@
-angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup",
-    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup) {
+angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup, $mdDialog) {
 	$scope.controller_name = "ImportCtrl";
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.state = {
@@ -123,7 +123,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
         }
     };
-    var connectConnector = function(connector, button){
+    var connectConnector = function(connector, button, ev){
+        qmService.connector = connector;
         if(!userCanConnect()){
             qmService.goToState('app.upgrade');
             return;
@@ -443,6 +444,44 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
         }
     };
+    function amazonSettings(connector, button, ev) {
+        qmService.connector = connector;
+        function DialogController($scope, $mdDialog, qmService) {
+            var connector = qmService.connector;
+            $scope.appSettings = qm.getAppSettings();
+            var addAffiliateTag  = connector.connectInstructions.parameters.find(function (obj) {return obj.key === 'addAffiliateTag';});
+            $scope.addAffiliateTag = isTruthy(addAffiliateTag.defaultValue);
+            var importPurchases  = connector.connectInstructions.parameters.find(function (obj) {return obj.key === 'importPurchases';});
+            $scope.importPurchases = isTruthy(importPurchases.defaultValue);
+            $scope.onToggle = function(){
+                var params = { importPurchases: $scope.importPurchases || false, addAffiliateTag: $scope.addAffiliateTag || false };
+                connectWithParams(params, connector.name);
+            };
+            var self = this;
+            self.title = "Amazon Settings";
+            $scope.hide = function() {$mdDialog.hide();};
+            $scope.cancel = function() {$mdDialog.cancel();};
+            $scope.getHelp = function(){
+                if(self.helpText && !self.showHelp){return self.showHelp = true;}
+                qmService.goToState(window.qmStates.help);
+                $mdDialog.cancel();
+            };
+            $scope.answer = function(answer) {$mdDialog.hide(answer);};
+        }
+        $mdDialog.show({
+            controller: DialogController,
+            templateUrl: 'templates/dialogs/amazon-settings.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose:true,
+            fullscreen: false // Only for -xs, -sm breakpoints.
+        })
+            .then(function(answer) {
+                $scope.status = 'You said the information was "' + answer + '".';
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
+            });
+    }
     var disconnectConnector = function (connector, button){
         button.text = 'Disconnected';
         qmService.disconnectConnectorDeferred(connector.name).then(function (){
@@ -458,11 +497,13 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         $scope.safeApply();
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
-    $scope.connectorAction = function(connector, button){
+    $scope.connectorAction = function(connector, button, ev){
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
             disconnectConnector(connector, button);
         } else if(button.text.toLowerCase().indexOf('connect') !== -1){
-            connectConnector(connector, button);
+            connectConnector(connector, button, ev);
+        } else if(button.text.toLowerCase().indexOf('settings') !== -1){
+            amazonSettings(connector, button, ev);
         } else if(button.text.toLowerCase().indexOf('get it') !== -1){
             getItHere(connector, button);
         } else if(button.text.toLowerCase().indexOf('update') !== -1){
