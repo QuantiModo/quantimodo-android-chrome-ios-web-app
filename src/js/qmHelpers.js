@@ -97,6 +97,18 @@ window.qm = {
             for(var i = 0; i < passableUrlParameters.length; i++){
                 if(qm.urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);}
             }
+            for (var property in urlParams) {
+                if (urlParams.hasOwnProperty(property)) {
+                    if(typeof urlParams[property] === "undefined"){
+                        qmLog.error(property + " is undefined!");
+                        delete urlParams[property];
+                    }
+                    if(typeof urlParams[property] === ""){
+                        qmLog.error(property + " is empty string!");
+                        delete urlParams[property];
+                    }
+                }
+            }
             if(url){
                 url = qm.urlHelper.addUrlQueryParamsToUrl(urlParams, url);
                 return url;
@@ -431,6 +443,10 @@ window.qm = {
         getAppSettingsFromApi: function (successHandler) {
             qm.api.getAppSettingsUrl(function(appSettingsUrl){
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
+                    if(!response){
+                        qmLog.error("No response from " + appSettingsUrl);
+                        return;
+                    }
                     if(response.privateConfig){
                         qm.privateConfig = response.privateConfig;
                         qm.localForage.setItem(qm.items.privateConfig, response.privateConfig);
@@ -2741,6 +2757,10 @@ window.qm = {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 })
+            }
+            if(requestParams.excludeLocal){ // excludeLocal is necessary for complex filtering like tag searches
+                getFromApi();
+                return;
             }
             qm.userVariables.getFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
