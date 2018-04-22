@@ -401,10 +401,7 @@ function checkAwsEnvs() {
     return true;
 }
 function uploadToS3(filePath) {
-    if(!checkAwsEnvs()){
-        qmLog.info("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
-        return;
-    }
+    if(!checkAwsEnvs()){return;}
     fs.stat(filePath, function (err, stat) {
         if (!err) {
             qmLog.info("Uploading " + filePath + "...");
@@ -498,6 +495,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function zipAndUploadToS3(folderPath, zipFileName) {
+    if(!checkAwsEnvs()){return;}
     var s3Path = getS3RelativePath(folderPath + '.zip');
     qmLog.info("Zipping " + folderPath + " to " + s3Path);
     qmLog.debug('If this fails, make sure there are no symlinks.');
