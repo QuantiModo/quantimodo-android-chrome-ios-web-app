@@ -34,7 +34,8 @@ var qmPlatform = {
     },
     ios: 'ios',
     android: 'android',
-    web: 'web'
+    web: 'web',
+    chrome: 'chrome'
 };
 var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 // Setup platforms to build that are supported on current hardware
@@ -230,11 +231,12 @@ var buildingFor = {
     },
     ios: function () {
         if (process.env.BUDDYBUILD_SCHEME) {return true;}
-        if (buildingFor.platform === 'ios'){ return true; }
+        if (buildingFor.platform === qmPlatform.ios){ return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
     },
     chrome: function () {
+        if (buildingFor.platform === qmPlatform.chrome){ return true; }
         return process.env.BUILD_CHROME;
     },
     mobile: function () {
