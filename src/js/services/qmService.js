@@ -106,7 +106,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         deploy: {
             fetchUpdate: function() {
-                if(!qm.deploy.chcpIsDefined()){return false;}
+                if(!qmService.deploy.chcpIsDefined()){return false;}
                 qmService.deploy.setVersionInfo();
                 var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
                 qmLog.info("Checking for CHCP updates at " + options['config-file']);
@@ -152,7 +152,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return true;
             },
             setVersionInfo: function () {
-                if(!qm.deploy.chcpIsDefined()){return false;}
+                if(!qmService.deploy.chcpIsDefined()){return false;}
                 chcp.getVersionInfo(function(error, data){
                     if (error) {
                         qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
