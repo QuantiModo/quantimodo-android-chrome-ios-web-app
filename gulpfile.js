@@ -223,11 +223,13 @@ var buildingFor = {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
     },
     android: function () {
-        if(buildingFor.platform === 'android'){ return true; }
+        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
+        if (buildingFor.platform === 'android'){ return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
         return process.env.BUILD_ANDROID;
     },
     ios: function () {
+        if (process.env.BUDDYBUILD_SCHEME) {return true;}
         if (buildingFor.platform === 'ios'){ return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
@@ -272,6 +274,9 @@ function setBranchName(callback) {
 }
 setBranchName();
 function setClientId(callback) {
+    if (process.env.BUDDYBUILD_SCHEME) {
+        QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
+    }
     if(QUANTIMODO_CLIENT_ID){
         qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
         if (callback) {callback();}
@@ -2217,24 +2222,16 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 // Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     qmLog.info('gulp configureAppAfterNpmInstall');
-    if (process.env.BUDDYBUILD_SCHEME) {
-        QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
-        qmLog.info('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to build-ios-app');
-        runSequence(
-            'build-ios-app',
-            callback);
-    } else if (process.env.BUDDYBUILD_SECURE_FILES) {
-        qmLog.info('Building Android because BUDDYBUILD_SCHEME is not set and we know we\'re on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: ' + process.env.BUDDYBUILD_SECURE_FILES);
-        runSequence(
-            'prepareRepositoryForAndroid',
-            //'_build-qm-android',  // Had to do this previously because buildAndroid wasn't working
-            callback);
-    } else {
-        runSequence(
-            'configureApp',
-            'deleteWwwPrivateConfig',
-            callback);
+    if(!buildingFor.web()){
+        qmLog.info("Not configuring app after yarn install because we're building for mobile");
+        callback();
+        return;
     }
+    runSequence(
+        'configureApp',
+        'deleteWwwPrivateConfig',
+        callback);
+
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(
