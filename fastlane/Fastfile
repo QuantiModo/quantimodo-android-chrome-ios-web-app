@@ -81,6 +81,7 @@ platform :ios do
       create_keychain(
         name: name,
         password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        default_keychain: true,
         unlock: true,
         timeout: false,
         add_to_search_list: true

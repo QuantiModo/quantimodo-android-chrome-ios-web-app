@@ -199,15 +199,17 @@ qmLog.info("Environmental Variables:", process.env, 5000);
 function setVersionNumbers() {
     var date = new Date();
     function getPatchVersionNumber() {
-        var date = new Date();
         var monthNumber = (date.getMonth() + 1).toString();
         var dayOfMonth = ('0' + date.getDate()).slice(-2);
         return monthNumber + dayOfMonth;
     }
+    function getIosMinorVersionNumber() {
+        return (date.getHours() * 60 + date.getMinutes()).toString();
+    }
     function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
     function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
     versionNumbers = {
-        iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.0',
+        iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
         //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
         androidVersionCode: getLongDateFormat() + appendLeadingZero(date.getHours()),
         ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
