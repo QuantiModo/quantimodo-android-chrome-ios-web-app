@@ -168,7 +168,7 @@ platform :ios do
         build_configuration: "Release"
     )
     cordova(platform: 'ios', team_id: team_id)
-    appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'])
+    appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
   end
 
   # You can define as many lanes as you want
