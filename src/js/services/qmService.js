@@ -531,9 +531,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         return deferred.promise;
                     }
-                    self.lastApiQuery = query;
                     dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
-                    dialogParameters.requestParams.searchPhrase = query;
+                    if(query && query !== ""){
+                        dialogParameters.requestParams.searchPhrase = query;
+                        self.lastApiQuery = query;
+                    }
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
