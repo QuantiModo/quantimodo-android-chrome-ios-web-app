@@ -86,6 +86,7 @@ window.qm = {
             }
             if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();}
             if(!urlParams.clientId && qm.api.getClientId()){urlParams.clientId = qm.api.getClientId();}
+            urlParams.platform = qm.platform.getCurrentPlatform();
             if(window.devCredentials){
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
@@ -359,6 +360,7 @@ window.qm = {
                     }
                     if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
                     if(qm.api.getClientId()){url = addQueryParameter(url, 'clientId', qm.api.getClientId());}
+                    url = addQueryParameter(url, 'platform', qm.platform.getCurrentPlatform());
                     return url;
                 }
                 function getAppHostName() {
@@ -1763,13 +1765,18 @@ window.qm = {
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
         getCurrentPlatform: function(){
-            if(typeof ionic !== "undefined"){
-                return ionic.Platform.platform();
-            }
+            return qm.platform.types.chromeExtension;
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
             if(qm.platform.isAndroid()){return qm.platform.types.android;}
             if(qm.platform.isIOS()){return qm.platform.types.ios;}
             if(qm.platform.isWeb()){return qm.platform.types.web;}
+            if(typeof ionic !== "undefined"){
+                var ionicPlatform = ionic.Platform.platform();
+                qmLog.error("Could not determine platform so returning " + ionicPlatform);
+                return ionicPlatform;
+            } else {
+                qmLog.error("Could not determine platform");
+            }
         },
         types: {
             web: "web",
