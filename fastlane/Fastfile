@@ -75,17 +75,25 @@ platform :ios do
     #sh "cd .. && ruby hooks/xcodeprojectfix.rb"
 
     def ensure_temp_keychain(name)
-      delete_keychain(
-        name: name
-      ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
-      create_keychain(
-        name: name,
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        timeout: false,
-        add_to_search_list: true
-      )
+      begin
+        delete_keychain(
+            name: name
+        ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+      rescue
+        puts 'Error deleting keychain!'
+      end
+      begin
+        create_keychain(
+            name: name,
+            password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+            default_keychain: true,
+            unlock: true,
+            timeout: false,
+            add_to_search_list: true
+        )
+      rescue
+        puts 'Error creating keychain!'
+      end
     end
 
     if ENV["TRAVIS"]
