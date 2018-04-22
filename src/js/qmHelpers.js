@@ -97,6 +97,18 @@ window.qm = {
             for(var i = 0; i < passableUrlParameters.length; i++){
                 if(qm.urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);}
             }
+            for (var property in urlParams) {
+                if (urlParams.hasOwnProperty(property)) {
+                    if(typeof urlParams[property] === "undefined"){
+                        qmLog.error(property + " is undefined!");
+                        delete urlParams[property];
+                    }
+                    if(typeof urlParams[property] === ""){
+                        qmLog.error(property + " is empty string!");
+                        delete urlParams[property];
+                    }
+                }
+            }
             if(url){
                 url = qm.urlHelper.addUrlQueryParamsToUrl(urlParams, url);
                 return url;
