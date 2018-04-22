@@ -74,32 +74,31 @@ platform :ios do
     ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     #sh "cd .. && ruby hooks/xcodeprojectfix.rb"
 
-    # Might need this for local builds
-    # def ensure_temp_keychain(name)
-    #   delete_keychain(
-    #     name: name
-    #   ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
-    #   create_keychain(
-    #     name: name,
-    #     password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-    #     unlock: true,
-    #     timeout: false
-    #   )
-    # end
-    #
-    # ensure_temp_keychain match_keychain_name
+    def ensure_temp_keychain(name)
+      delete_keychain(
+        name: name
+      ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+      create_keychain(
+        name: name,
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        unlock: true,
+        timeout: false
+      )
+    end
 
     if ENV["TRAVIS"]
-        create_keychain(
-            name: match_keychain_name,
-            password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-            default_keychain: true,
-            unlock: true,
-            timeout: 3600,
-            add_to_search_list: true
-        )
+        ensure_temp_keychain match_keychain_name
+        # create_keychain(
+        #     name: match_keychain_name,
+        #     password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        #     default_keychain: true,
+        #     unlock: true,
+        #     timeout: 3600,
+        #     add_to_search_list: true
+        # )
     else
         puts "Not messing up local keychain. Maybe use deploy lane locally"
+        # ensure_temp_keychain match_keychain_name
     end
 
 
