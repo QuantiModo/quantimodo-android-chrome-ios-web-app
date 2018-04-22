@@ -82,7 +82,8 @@ platform :ios do
         name: name,
         password: ENV["MATCH_KEYCHAIN_PASSWORD"],
         unlock: true,
-        timeout: false
+        timeout: false,
+        add_to_search_list: true
       )
     end
 
