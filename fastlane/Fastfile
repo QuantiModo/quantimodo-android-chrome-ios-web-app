@@ -64,6 +64,13 @@ platform :ios do
   desc "This will also make sure the profile is up to date"
   lane :beta do
 
+      if ENV["TRAVIS"]
+          puts "Running beta lane..."
+      else
+          puts "Use `bundle exec fastlane deploy` locally because fastlane beta messes up your keychain and doesn't work anyway..."
+          abort
+      end
+
     ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     #sh "cd .. && ruby hooks/xcodeprojectfix.rb"
 
