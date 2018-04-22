@@ -2446,7 +2446,10 @@ gulp.task('buildAndReleaseIosApp', function (callback) {
         callback);
 });
 gulp.task('fastlaneBetaIos', function (callback) {
-    var command = 'fastlane beta';
+    var lane = 'deploy'; // Only works on Mac-Mini for some reason
+    if(process.env.TRAVIS){lane = 'beta';} // Only works on Travis for some reason
+    // export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8 && export APP_DISPLAY_NAME=MediModo && export APP_IDENTIFIER=com.quantimodo.medimodo && bundle exec fastlane beta
+    var command = 'export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8 && bundle exec fastlane ' + lane;
     execute(command, callback);
 });
 gulp.task('xcodeProjectFix', function (callback) {
