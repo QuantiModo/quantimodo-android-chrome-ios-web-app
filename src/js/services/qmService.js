@@ -106,10 +106,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         deploy: {
             fetchUpdate: function() {
-                if(typeof chcp === "undefined"){
-                    qmLog.info("chcp not defined");
-                    return false;
-                }
+                if(!qm.deploy.chcpIsDefined()){return false;}
                 qmService.deploy.setVersionInfo();
                 var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
                 qmLog.info("Checking for CHCP updates at " + options['config-file']);
@@ -146,7 +143,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     // qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
                 }
             },
+            chcpIsDefined: function(){
+                if(!qm.platform.isMobile()){return false;}
+                if(typeof chcp === "undefined"){
+                    qmLog.error("chcp not defined");
+                    return false;
+                }
+                return true;
+            },
             setVersionInfo: function () {
+                if(!qm.deploy.chcpIsDefined()){return false;}
                 chcp.getVersionInfo(function(error, data){
                     if (error) {
                         qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
@@ -6617,6 +6623,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
             appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         }
+        qmService.deploy.setVersionInfo();
         //qmService.deploy.fetchUpdate();
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
@@ -6709,9 +6716,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            if(qmService.deploy.versionInfo){
-                template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.versionInfo) + '\r\n';
-            }
+            template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.versionInfo) + '\r\n';
             template = addSnapShotList(template);
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
