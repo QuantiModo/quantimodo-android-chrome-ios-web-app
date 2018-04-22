@@ -388,60 +388,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         clipboard.copyText(text);
         qmService.showInfoToast('Copied ' + name + ' to clipboard!');
     };
-    var verifyEmailAddressAndExecuteCallback = function (callback) {
-        if($rootScope.user.email || $rootScope.user.userEmail){
-            callback();
-            return;
-        }
-        $scope.updateEmailAndExecuteCallback(callback);
-    };
-    var sendCouponEmail = function () {
-        qmService.sendEmailViaAPIDeferred('couponInstructions');
-        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.');
-    };
-    var sendFitbitEmail = function () {
-        qmService.sendEmailViaAPIDeferred('fitbit');
-        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.');
-    };
-    var sendChromeEmail = function () {
-        qmService.sendEmailViaAPIDeferred('chrome');
-        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.');
-    };
     $scope.sendEmailAfterVerification = function(emailType) {
-        if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
-        if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
-        if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail); }
+        qmService.sendEmailAfterVerification(emailType);
     };
     $scope.updateEmailAndExecuteCallback = function (callback) {
-        if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
-        var myPopup = $ionicPopup.show({
-            template: '<label class="item item-input">' +
-            '<i class="icon ion-email placeholder-icon"></i>' +
-            '<input type="email" placeholder="Email" ng-model="data.email"></label>',
-            title: 'Update Email',
-            subTitle: 'Enter Your Email Address',
-            scope: $scope,
-            buttons: [
-                { text: 'Cancel' },
-                {
-                    text: '<b>Save</b>',
-                    type: 'button-positive',
-                    onTap: function(e) {
-                        if (!$scope.data.email) {
-                            //don't allow the user to close unless he enters email
-                            e.preventDefault();
-                        } else {
-                            return $scope.data;
-                        }
-                    }
-                }
-            ]
-        });
-        myPopup.then(function(res) {
-            qmService.updateUserSettingsDeferred({email: $scope.data.email});
-            $rootScope.user.email = $scope.data.email;
-            if(callback){ callback(); }
-        });
+        qmService.updateEmailAndExecuteCallback(callback);
     };
     $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {

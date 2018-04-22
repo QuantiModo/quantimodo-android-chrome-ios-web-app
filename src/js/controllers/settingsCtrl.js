@@ -208,7 +208,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			callback();
 			return;
 		}
-		$scope.updateEmailAndExecuteCallback(callback);
+        qmService.updateEmailAndExecuteCallback(callback);
 	};
 	var exportRequestAlert = function (ev) {
         qmService.showMaterialAlert('Export Request Sent!', 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!', ev);
