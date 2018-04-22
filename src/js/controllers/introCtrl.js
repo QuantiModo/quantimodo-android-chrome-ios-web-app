@@ -1,9 +1,9 @@
 angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse) {
 
-    if(window.debugMode){qmLogService.debug(null, 'IntroCtrl first starting in state: ' + $state.current.name, null);}
+    if(window.debugMode){qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name, null);}
     qmService.initializeApplication(appSettingsResponse);
-    $rootScope.showFilterBarSearchIcon = false;
+    qmService.navBar.setFilterBarSearchIcon(false);
     $scope.myIntro = {
         ready : false,
         backgroundColor : 'white',
@@ -13,7 +13,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             if($state.current.name.indexOf('intro') !== -1){
                 // Called to navigate to the main app
                 if(qmService.sendToLogin()){ return; }
-                qmService.goToState('app.onboarding');
+                if(qm.platform.isDesignMode()){
+                    qmService.goToState(qmStates.configuration);
+                } else {
+                    qmService.goToState(qmStates.onboarding);
+                }
             } else {
                 console.error('Why are we calling $scope.myIntro.startApp from state other than into?');
             }
@@ -29,8 +33,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
         //qmLogService.debug("Entering state " + $state.current.name);
-        if(!$rootScope.appSettings){$rootScope.appSettings = window.qm.getAppSettings();}
+        if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
@@ -39,13 +44,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
             $scope.myIntro.ready = true;
-            $rootScope.hideNavigationMenu = true;
         }
         qmService.storage.setItem('introSeen', true);
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
-        $rootScope.hideNavigationMenu = true;
+        qmService.navBar.hideNavigationMenu();
         if(navigator && navigator.splashscreen) {
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();

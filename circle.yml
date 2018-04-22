@@ -66,7 +66,7 @@ general:
       - develop
       #- master
       - /release\/.*/ # or ignore regexes
-      - /feature\/.*/ # or ignore regexes
+      #- /feature\/.*/ # or ignore regexes
   artifacts:
     - "platforms/android/build/outputs/apk"
     - "plugins/de.appplant.cordova.plugin.local-notification"
@@ -102,7 +102,7 @@ deployment:
   staging:
     branch: develop
     commands:
-      - gulp buildAllChromeExtensions # Build Chrome first in case Android upload fails
+      - gulp _build-all-chrome # Build Chrome first in case Android upload fails
       - gulp buildAllAndroidAppsWithCleaning
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:

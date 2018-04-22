@@ -5,7 +5,6 @@ angular.module('starter',
     [
         'ionic',
         //'ionic.service.core',
-        //'ionic.cloud',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -28,15 +27,14 @@ angular.module('starter',
         'angular-cache',
         'angular-d3-word-cloud',
         'ngFileUpload',
-        'ngOpbeat',
+        //'ngOpbeat',
         'angular-web-notification'
         //'ui-iconpicker'
     ]
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
-    window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
-    qmService.getPrivateConfigs();
+    qm.appsManager.loadPrivateConfigFromJsonFile();
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
@@ -48,7 +46,6 @@ angular.module('starter',
                 qmLogService.error(null, errorMsg);
             };
         }
-        qmService.configurePushNotifications();
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
@@ -57,15 +54,16 @@ angular.module('starter',
     $rootScope.goToState = function(stateName, stateParameters){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
+            /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
         qmService.goToState(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
-        if($rootScope.backButtonState){
-            qmService.goToState($rootScope.backButtonState);
-            $rootScope.backButtonState = null;
+        if(qmService.backButtonState){
+            qmService.goToState(qmService.backButtonState);
+            qmService.backButtonState = null;
             return;
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
@@ -73,6 +71,7 @@ angular.module('starter',
             qmService.goToDefaultState();
             return;
         }
+        /** @namespace qm.getAppSettings().appDesign.defaultState */
         if($ionicHistory.currentStateName() === qm.getAppSettings().appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
@@ -82,12 +81,12 @@ angular.module('starter',
             return;
         }
         if(qm.storage.getItem(qm.items.user)){
-            qmService.unHideNavigationMenu();
-            window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
+            qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
+            window.qmLog.debug('registerBackButtonAction: Going to default state...');
             qmService.goToDefaultState();
             return;
         }
-        window.qmLog.debug(null, 'registerBackButtonAction: Closing the app', null);
+        window.qmLog.debug('registerBackButtonAction: Closing the app');
         ionic.Platform.exitApp();
     }, 100);
 
@@ -97,12 +96,14 @@ angular.module('starter',
         qm.storage.setItem(qm.items.onboarded, true);
     }
 }])
-.config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider", "$ionicConfigProvider", "AnalyticsProvider", "$opbeatProvider", function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
-                 $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
-    $opbeatProvider.config({
-        orgId: '10d58117acb546c08a2cae66d650480d',
-        appId: 'fc62a74505'
-    });
+.config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
+    "$ionicConfigProvider", "AnalyticsProvider",
+    //"$opbeatProvider",
+    function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
+                 $ionicConfigProvider, AnalyticsProvider
+             //, $opbeatProvider
+    ) {
+    //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
     window.debugMode = (qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(qm.urlHelper.getParam(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));}
@@ -142,11 +143,15 @@ angular.module('starter',
     };
 
     var config_resolver = {
-        appSettingsResponse: function($http){
-            return $http({method: 'GET', url: qm.api.getAppSettingsUrl()});
+        appSettingsResponse: function($q){
+            var deferred = $q.defer();
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
+                deferred.resolve(appSettings);
+            });
+            return deferred.promise;
         }
     };
-    //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
+    //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([qm.appsManager.getAppConfig(), qm.appsManager.getPrivateConfig()]);}];
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),
@@ -230,13 +235,13 @@ angular.module('starter',
         "welcome": "app.welcome"
     };
     $stateProvider
-        .state('intro', {
-            cache: true,
-            url: '/',
-            templateUrl: 'templates/intro-tour-new.html',
-            controller: 'IntroCtrl',
-            resolve : config_resolver
-        })
+        // .state('intro', {
+        //     cache: true,
+        //     url: '/',
+        //     templateUrl: 'templates/intro-tour-new.html',
+        //     controller: 'IntroCtrl',
+        //     resolve : config_resolver
+        // })
         .state('app', {
             url: "/app",
             templateUrl: "templates/menu.html",
@@ -377,7 +382,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                variableName: null
+                variableName: null,
+                currentMeasurementHistory: null
             },
             views: {
                 'menuContent': {
@@ -970,12 +976,17 @@ angular.module('starter',
         .state(qmStates.history, {
             url: "/history",
             params: {
-                updatedMeasurement: null
+                updatedMeasurementHistory: null,
+                variableObject : null,
+                refresh: null,
+                variableCategoryName: null,
+                connectorName: null,
+                sourceName: null
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/history-primary-outcome-variable.html",
-                    controller: 'HistoryPrimaryOutcomeCtrl'
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
                 }
             }
         })
@@ -986,7 +997,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 connectorName: null,
                 sourceName: null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1000,7 +1011,7 @@ angular.module('starter',
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1015,7 +1026,7 @@ angular.module('starter',
             cache: true,
             params: {
                 variableObject : null,
-                updatedMeasurement: null,
+                updatedMeasurementHistory: null,
                 refresh: null
             },
             views: {
@@ -1127,7 +1138,8 @@ angular.module('starter',
                 title: "Manage Scheduled Meds",
                 helpText: "Here you can add and manage your scheduled medications.  Long-press on a medication for more options.  You can drag down to refresh.",
                 addButtonText: "Add scheduled medication",
-                variableCategoryName : 'Treatments'
+                variableCategoryName : 'Treatments',
+                trackingReminders: null
             },
             views: {
                 'menuContent': {
@@ -1174,7 +1186,8 @@ angular.module('starter',
                 }
             },
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             }
         })
         .state(qmStates.remindersManageCategory, {
@@ -1186,7 +1199,9 @@ angular.module('starter',
                     controller: 'RemindersManageCtrl'
                 }
             },
-            params: {}
+            params: {
+                trackingReminders: null
+            }
         })
         .state(qmStates.remindersList, {
             cache: false,
@@ -1198,7 +1213,8 @@ angular.module('starter',
                 }
             },
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             }
         })
         .state(qmStates.remindersListCategory, {
@@ -1210,13 +1226,16 @@ angular.module('starter',
                     controller: 'RemindersManageCtrl'
                 }
             },
-            params: {}
+            params: {
+                trackingReminders: null
+            }
         })
         .state(qmStates.variableList, {
             cache: true,
             url: "/variable-list",
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             },
             views: {
                 'menuContent': {
@@ -1228,7 +1247,9 @@ angular.module('starter',
         .state(qmStates.variableListCategory, {
             cache: true,
             url: "/variable-list-category/:variableCategoryName",
-            params: {},
+            params: {
+                trackingReminders: null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",
@@ -1248,7 +1269,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: false,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {
@@ -1304,7 +1326,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: true,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {
@@ -1316,7 +1339,7 @@ angular.module('starter',
 
     if (!qm.storage.getItem(qm.items.introSeen)) {
         //console.debug("Intro not seen so setting default route to intro");
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/app/intro');
     } else if (!qm.storage.getItem(qm.items.onboarded)) {
         //console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');

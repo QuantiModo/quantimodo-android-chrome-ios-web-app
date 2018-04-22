@@ -1,9 +1,7 @@
 {
   "name": "quantimodo-ionic",
   "private": false,
-  "devDependencies": {
-    "ionic-platform-web-client": "^0.7.1"
-  },
+  "devDependencies": {},
   "dependencies": {
     "angular": "1.6.1",
     "angular-animate": "1.5.3",
@@ -14,7 +12,7 @@
     "angular-google-adsense": "^0.4.5",
     "angular-google-analytics": "git+https://github.com/mikepsinn/angular-google-analytics.git#b4a9b7cccd227e5e8e0e8f16ab26aee684f24866",
     "angular-material": "1.1.5",
-    "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#59819305be646f3f353001e183f35d008f6bc6cc",
+    "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#41188cedc99ce5ca689600a43faa3e5483374def",
     "angular-messages": "1.6.1",
     "angular-sanitize": "1.5.3",
     "angular-ui-router": "#0.2.13",
@@ -29,10 +27,10 @@
     "highcharts-ng": "1.1.0",
     "ionic": "driftyco/ionic-bower#1.3.1",
     "ionic-datepicker": "~1.1.0",
-    "ionic-platform-web-client": "^0.7.1",
     "ionic-timepicker": "0.6.0",
     "Ionicons": "ionicons#^2.0.1",
     "jquery": "~2.1.4",
+    "localforage": "^1.5.6",
     "moment": "~2.10.3",
     "ng-cordova-oauth": "git+https://github.com/mikepsinn/ng-cordova-oauth.git#802be8d1363253572f4dadbdfdcdf5f0b7e576d5",
     "ng-material-floating-button": "ng-mfb#^0.6.2",
@@ -40,7 +38,7 @@
     "oclazyload": "~1.0.4",
     "pluralize": "^1.2.1",
     "ng-file-upload": "^12.2.13",
-    "quantimodo": "5.9.20115",
+    "quantimodo": "5.9.42215",
     "opbeat-angular": "^3.15.0",
     "angular-material-icons": "^0.7.1",
     "angular-web-notification": "^1.2.26",

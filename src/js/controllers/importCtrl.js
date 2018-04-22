@@ -1,16 +1,20 @@
-angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth,
-                                                            $ionicActionSheet, Upload, $timeout, $ionicPopup) {
+angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
-	$rootScope.showFilterBarSearchIcon = false;
+	qmService.navBar.setFilterBarSearchIcon(false);
+	$scope.state = {
+	    connectors: null,
+        searchText: null
+    };
     function userCanConnect() {
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
         return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmLogService.debug(null, 'ImportCtrl beforeEnter', null);
+		qmLogService.debug('ImportCtrl beforeEnter', null);
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
-            qmService.unHideNavigationMenu();
+            qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         }
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
@@ -23,17 +27,17 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         window.qm.storage.setItem(qm.items.hideImportHelpCard, true);
 	};
 	var goToWebImportDataPage = function() {
-		qmLogService.debug(null, 'importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
+		qmLogService.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
 		qmService.goToDefaultState();
 		qmService.getAccessTokenFromAnySource().then(function(accessToken){
 			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
-				qmLogService.debug(null, 'Browser Detected', null);
+				qmLogService.debug('Browser Detected', null);
 				var url = qmService.getQuantiModoUrl("api/v2/account/connectors", true);
 				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
 				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
-                qmService.unHideNavigationMenu();
+                qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 				//noinspection JSCheckFunctionSignatures
 				qmService.goToDefaultState();
 			} else {
@@ -41,14 +45,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 				if(accessToken){ targetUrl += "access_token=" + accessToken; }
 				var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 				ref.addEventListener('exit', function(){
-                    qmService.unHideNavigationMenu();
+                    qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
 					//noinspection JSCheckFunctionSignatures
 					qmService.goToDefaultState();
 				});
 			}
 		}, function(){
 			qmService.hideLoader();
-			qmLogService.debug(null, 'importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...', null);
+			qmLogService.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...', null);
             qmService.sendToLoginIfNecessaryAndComeBack();
 		});
 	};
@@ -57,10 +61,10 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 		qmService.showBlackRingLoader();
 		qmService.getConnectorsDeferred()
 			.then(function(connectors){
-                $scope.connectors = connectors;
+                $scope.state.connectors = connectors;
 				if(connectors) {
 					$scope.$broadcast('scroll.refreshComplete');
-					$ionicLoading.hide().then(function(){qmLogService.debug(null, 'The loading indicator is now hidden', null);});
+					qmService.hideLoader();
 				}
 				$scope.refreshConnectors();
 			});
@@ -73,7 +77,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             buttons: buttons,
             //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
+            cancel: function() {qmLogService.debug('CANCELLED', null);},
             buttonClicked: function(index) {
                 if(index === 0){qmService.goToState(qmStates.historyAll, {connectorName: connector.name});}
                 return true;
@@ -124,7 +128,6 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmService.goToState('app.upgrade');
             return;
         }
-        var scopes;
         var myPopup;
         var options;
         //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
@@ -169,149 +172,126 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
         }
         if(connector.name === 'slack') {
-            webConnect(connector);
-            return;
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.slack(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'netatmo') {
             webConnect(connector);
             return;
         }
-        if(connector.name === 'github') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+        if(connector.name === 'foursquare') {
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = ['user', 'repo'];
-            $cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
-                scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+            $cordovaOauth.foursquare(connector.connectorClientId)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+        }
+        if(connector.name === 'github') {
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'strava') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = ['public'];
-            $cordovaOauth.strava(window.private_keys.STRAVA_CLIENT_ID, window.private_keys.STRAVA_CLIENT_SECRET,
-                scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+            $cordovaOauth.strava(connector.connectorClientId, connector.connectorClientSecret, connector.scopes).then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'withings') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            $cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
+            $cordovaOauth.withings(connector.connectorClientId, connector.connectorClientSecret)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'fitbit') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [
-                'activity',
-                'heartrate',
-                'location',
-                'nutrition',
-                'profile',
-                'settings',
-                'sleep',
-                'social',
-                'weight'
-            ];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
+            $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'runkeeper') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
+            $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'rescuetime') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = ['time_data', 'category_data', 'productivity_data'];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
+            $cordovaOauth.rescuetime(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'slice') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [];
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
+            $cordovaOauth.slice(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'facebook') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = ['user_likes', 'user_posts'];
-            $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
+            $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'googlefit') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = 'https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.body.read https://www.googleapis.com/auth/fitness.nutrition.read https://www.googleapis.com/auth/fitness.location.read';
-            connectGoogle(connector, scopes);
+            connectGoogle(connector, connector.scopes);
         }
         if(connector.name === 'googlecalendar') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes =  "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly";
-            connectGoogle(connector, scopes);
+            connectGoogle(connector, connector.scopes);
         }
         if(connector.name === 'gmail') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes =  "https://www.googleapis.com/auth/gmail.readonly";
-            connectGoogle(connector, scopes);
+            connectGoogle(connector, connector.scopes);
         }
         if(connector.name === 'sleepcloud') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes =  "https://www.googleapis.com/auth/userinfo.email";
-            connectGoogle(connector, scopes);
+            connectGoogle(connector, connector.scopes);
         }
         if(connector.name === 'up') {
-            if($rootScope.isWeb || $rootScope.isChromeExtension){
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [
-                'basic_read',
-                'extended_read',
-                'location_read',
-                'friends_read',
-                'mood_read',
-                'move_read',
-                'sleep_read',
-                'meal_read',
-                'weight_read',
-                'heartrate_read',
-                'generic_event_read'
-            ];
-            $cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
+            $cordovaOauth.jawbone(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                 .then(function(result) { connectWithToken(result);
                 }, function(error) { connectorErrorHandler(error); });
         }
@@ -492,7 +472,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     $scope.refreshConnectors = function(){
         qmService.refreshConnectors()
             .then(function(connectors){
-                $scope.connectors = connectors;
+                $scope.state.connectors = connectors;
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
