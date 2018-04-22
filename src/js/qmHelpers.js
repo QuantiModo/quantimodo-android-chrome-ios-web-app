@@ -72,6 +72,8 @@ window.qm = {
         addGlobalParams: function (urlParams) {
             var url;
             if(!urlParams){urlParams = {};}
+            delete urlParams.force;  // Used locally only
+            delete urlParams.excludeLocal;  // Used locally only
             if(typeof urlParams === "string"){
                 url = urlParams;
                 urlParams = {};
