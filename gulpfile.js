@@ -218,6 +218,14 @@ function setVersionNumbers() {
     qmLog.info(JSON.stringify(versionNumbers));
 }
 setVersionNumbers();
+var qm = {
+    client: {
+        getClientId: function () {
+            if(QUANTIMODO_CLIENT_ID){return QUANTIMODO_CLIENT_ID;}
+
+        }
+    }
+};
 var buildingFor = {
     platform: null,
     web: function () {
@@ -316,6 +324,7 @@ function setClientId(callback) {
         if (callback) {callback();}
     }
 }
+setClientId();
 function getChromeExtensionZipFilename() {return QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
 function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtensionZipFilename();}
 function getPathToUnzippedChromeExtension() {return buildPath + '/' + QUANTIMODO_CLIENT_ID + '-chrome-extension';}
@@ -377,7 +386,7 @@ function uploadBuildToS3(filePath) {
     return uploadToS3(filePath);
 }
 function uploadAppImagesToS3(filePath) {
-    //appSettings.additionalSettings.appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP contructor
+    //appSettings.additionalSettings.appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP constructor
     return uploadToS3(filePath);
 }
 function checkAwsEnvs() {
@@ -487,6 +496,23 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
     return gulp.src([folderPath + '/**/*'])
         .pipe(zip(zipFileName))
         .pipe(gulp.dest(destinationFolder));
+}
+function zipAndUploadToS3(folderPath, zipFileName) {
+    var s3Path = getS3RelativePath(folderPath + '.zip');
+    qmLog.info("Zipping " + folderPath + " to " + s3Path);
+    qmLog.debug('If this fails, make sure there are no symlinks.');
+    return gulp.src([folderPath + '/**/*'])
+        .pipe(zip(zipFileName))
+        .pipe(s3({
+            Bucket: 'quantimodo',
+            ACL: 'public-read',
+            keyTransform: function(relative_filename) {
+                return s3Path;
+            }
+        }, {
+            maxRetries: 5,
+            logger: console
+        }));
 }
 function resizeIcon(callback, resolution) {
     var outputIconPath = paths.www.icons + '/icon_' + resolution + '.png';
@@ -1554,7 +1580,11 @@ gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], fun
     }
 });
 gulp.task('ionicResources', function (callback) {
-    execute('ionic resources', callback);
+    execute('ionic resources', function () {
+        qmLog.info("Uploading resources in case ionic resources command breaks");
+        zipAndUploadToS3('resources', 'resources');
+        callback();
+    });
 });
 gulp.task('androidDebugKeystoreInfo', function (callback) {
     qmLog.info('androidDebugKeystoreInfo gets stuck for some reason');
@@ -2183,7 +2213,11 @@ gulp.task('bowerInstall', [], function (callback) {
     execute('bower install --allow-root', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
-    execute('ionic resources ios', callback);
+    execute('ionic resources ios', function () {
+        qmLog.info("Uploading ios resources in case ionic resources ios command breaks");
+        zipAndUploadToS3('resources', 'resources-ios');
+        callback();
+    });
 });
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
@@ -2512,7 +2546,11 @@ gulp.task('_copy-src-and-run-android', function (callback) {
         callback);
 });
 gulp.task('ionicResourcesAndroid', [], function (callback) {
-    execute('ionic resources android', callback);
+    execute('ionic resources android', function () {
+        qmLog.info("Uploading android resources in case ionic resources command breaks");
+        zipAndUploadToS3('resources', 'resources-android');
+        callback();
+    });
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
     execute('ionic run android', callback);
