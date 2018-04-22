@@ -21,7 +21,7 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       if(typeof window.fabric !== 'undefined' && typeof window.fabric.Crashlytics !== 'undefined'){
         window.fabric.Crashlytics.addLog("ERROR: "+message+", stacktrace: "+stacktrace);
       } else {
-        window.qmLog.debug(null, 'window.fabric.Crashlytics is undefined!', null);
+        window.qmLog.debug('window.fabric.Crashlytics is undefined!', null);
       }
     };
   }]);

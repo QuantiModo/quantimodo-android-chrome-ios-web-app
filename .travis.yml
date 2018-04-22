@@ -4,9 +4,18 @@ branches:
   - develop
 matrix:
   include:
-  - os: linux
+  - env: PLATFORM=ios-10.0
+    os: osx
+    osx_image: xcode7.3
+    language: node_js
+    node_js: '4.2'
+    rvm:
+      - 2.2.5
+  - env: PLATFORM=android-7.0
+    os: linux
     sudo: false
     language: android
+    jdk: oraclejdk8
     android:
       components:
       - tools
@@ -23,8 +32,6 @@ matrix:
         - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
           key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
         packages:
-        - oracle-java8-installer
-        - oracle-java8-set-default
         - yarn
         - jq
         - imagemagick
@@ -32,9 +39,6 @@ matrix:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
     - google-gdk-license-.+
-#  - os: osx
-#    language: objective-c
-#    osx_image: xcode8.3
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
@@ -48,24 +52,30 @@ cache:
   - $HOME/Library/Caches/Yarn/v1/
   - $HOME/.cache/yarn/v1/
 before_install:
+- echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
 - bundle install
 - bundle update
 - export LANG=en_US.UTF-8
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim
 #  jq ios-deploy cocoapods ; rvm use system ; pod setup ; fi
 - nvm install 8
-- yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
+- yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
 #before_script:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
 - yarn install
-- gulp buildAllAndroidAppsWithCleaning
-- gulp buildAllChromeExtensions
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+- cordova-hcp deploy
+#- gulp _build-all-chrome
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
 #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis/build-android.sh && ./travis/package-android.sh ; fi
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+notifications:
+  webhooks: https://www.travisbuddy.com/
 #deploy:
 #  provider: releases
 #  api_key:

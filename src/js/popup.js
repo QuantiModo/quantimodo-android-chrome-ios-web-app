@@ -1,5 +1,8 @@
 /** @namespace window.qmLog */
 var ratingPopupHeight, ratingPopupWidth;
+var qmPopup = {
+    trackingReminderNotification: null
+};
 function setFaceButtonListeners() {
     qmLog.pushDebug("popup: Setting face button onclick listeners");
     document.getElementById('buttonMoodDepressed').onclick = onFaceButtonClicked;
@@ -17,6 +20,7 @@ function setLastValueButtonListeners() {
     document.getElementById('thirdToLastValueButton').onclick = onLastValueButtonClicked;
     document.getElementById('snoozeButton').onclick = onLastValueButtonClicked;
     document.getElementById('skipButton').onclick = onLastValueButtonClicked;
+    document.getElementById('buttonInbox').onclick = inboxButtonClicked;
 }
 function getVariableName() {
     var variableName = window.qm.urlHelper.getParam('variableName');
@@ -26,7 +30,13 @@ function getVariableName() {
     }
 }
 function valenceNegative() {
-    if(window.trackingReminderNotification.valence === "negative"){return true;}
+    if(!qmPopup.trackingReminderNotification){
+        qmLog.error("qmPopup.trackingReminderNotification not set!");
+        qm.notifications.closePopup();
+    }
+    if(qmPopup.trackingReminderNotification.valence === "negative"){
+        return true;
+    }
 }
 var inboxButtonClicked = function() {
     window.qmLog.info('inboxButtonClicked');
@@ -37,9 +47,10 @@ var inboxButtonClicked = function() {
         OverApps.closeWebView();
         OverApps.openApp();
     } else {
-        window.qmLog.error('OverApps not defined');
-        qm.chrome.fullInboxWindowParams.focused = true;
-        openOrFocusChromePopupWindow(qm.chrome.fullInboxWindowParams);
+        window.qmLog.info('OverApps not defined');
+        qm.chrome.windowParams.fullInboxWindowParams.focused = true;
+        qm.chrome.createPopup(qm.chrome.windowParams.fullInboxWindowParams);
+        hidePopupPostNotificationsDeleteLocalAndClosePopup();
     }
 };
 function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
@@ -63,44 +74,38 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodOk") {ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
-    if(window.trackingReminderNotification){
-        qmLog.pushDebug('popup onFaceButtonClicked: window.trackingReminderNotification exists. Calling addToSyncQueueAndCloseOrUpdateQuestion..');
-        window.trackingReminderNotification.modifiedValue = ratingValue;
-        return addToSyncQueueAndCloseOrUpdateQuestion();
+    if(!qmPopup.trackingReminderNotification){
+        qmLog.error("No qmPopup.trackingReminderNotification to post or add to queue!");
     } else {
-        qmLog.error("No window.trackingReminderNotification to post or add to queue!");
+        qmLog.pushDebug('popup onFaceButtonClicked: qmPopup.trackingReminderNotification exists. Calling addToSyncQueueAndCloseOrUpdateQuestion..');
+        qmPopup.trackingReminderNotification.modifiedValue = ratingValue;
     }
-    var request = {
-        message: "uploadMeasurements",
-        payload: [{
-            measurements: [{startTimeEpoch: Math.floor(Date.now() / 1000), value: ratingValue}],
-            variableName: getVariableName(),
-            sourceName: "MoodiModo Chrome",
-            category: "Mood",
-            combinationOperation: "MEAN",
-            unit: "/5"
-        }]
-    };
-    window.pushMeasurements(request.payload, null);
-    if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
-    closePopup();
+    return addToSyncQueueAndCloseOrUpdateQuestion();
+    // TODO: Figure out how to send in background with chrome.extension.sendMessage(request);
+    //if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
 };
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
     if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
-    window.notificationsSyncQueue.push(window.trackingReminderNotification);
-    //window.qm.notifications.deleteByVariableName(window.trackingReminderNotification.variableName);
-    window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
-    if(!window.trackingReminderNotification){
+    if(qmPopup.trackingReminderNotification){
+        window.notificationsSyncQueue.push(qmPopup.trackingReminderNotification);
+        if(qmPopup.trackingReminderNotification.id){
+            qm.notifications.deleteById(qmPopup.trackingReminderNotification.id);
+        } else {
+            qm.notifications.deleteByVariableName(qmPopup.trackingReminderNotification.variableName); // TODO: Why was this commented?
+        }
+    }
+    qmPopup.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
+    if(!qmPopup.trackingReminderNotification){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...');
     }
     if(window.notificationsSyncQueue.length > 10){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: notificationsSyncQueue.length > 10 so posting and closing popup...');
     }
-    if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
+    if(qmPopup.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: Calling updateQuestion for ' +
-            trackingReminderNotification.variableName + '..');
-        updateQuestion(window.trackingReminderNotification.variableName);
+            qmPopup.trackingReminderNotification.variableName + '..');
+        updateQuestion(qmPopup.trackingReminderNotification.variableName);
     } else {
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: Calling hidePopupPostNotificationsDeleteLocalAndClosePopup...');
         hidePopupPostNotificationsDeleteLocalAndClosePopup();
@@ -110,18 +115,18 @@ var onLastValueButtonClicked = function() {
     var buttonId = this.id;
     qmLog.pushDebug('onLastValueButtonClicked buttonId ' + buttonId);
     if (buttonId === "lastValueButton") {
-        window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[0].modifiedValue;
+        qmPopup.trackingReminderNotification.action = 'track';
+        qmPopup.trackingReminderNotification.modifiedValue = qmPopup.trackingReminderNotification.actionArray[0].modifiedValue;
     } else if (buttonId === "secondToLastValueButton") {
-        window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[1].modifiedValue;
+        qmPopup.trackingReminderNotification.action = 'track';
+        qmPopup.trackingReminderNotification.modifiedValue = qmPopup.trackingReminderNotification.actionArray[1].modifiedValue;
     } else if (buttonId === "thirdToLastValueButton") {
-        window.trackingReminderNotification.action = 'track';
-        window.trackingReminderNotification.modifiedValue = trackingReminderNotification.actionArray[2].modifiedValue;
+        qmPopup.trackingReminderNotification.action = 'track';
+        qmPopup.trackingReminderNotification.modifiedValue = qmPopup.trackingReminderNotification.actionArray[2].modifiedValue;
     } else if (buttonId === "snoozeButton") {
-        window.trackingReminderNotification.action = 'snooze';
+        qmPopup.trackingReminderNotification.action = 'snooze';
     } else if (buttonId === "skipButton") {
-        window.trackingReminderNotification.action = 'skip';
+        qmPopup.trackingReminderNotification.action = 'skip';
     }
     addToSyncQueueAndCloseOrUpdateQuestion();
 };
@@ -148,48 +153,28 @@ function unHidePopup() {
 //     sectionRate.style.display = "block";
 //     sectionRate.className = "visible";
 // }
-function displaySendingTextAndPostMeasurements() {
-    var sectionRate = getRatingSectionElement();
-    var sectionSendingMood = document.getElementById("sectionSendingMood");
-    sectionRate.className = "invisible";
-    setTimeout(function() {
-        sectionRate.style.display = "none";
-        sectionSendingMood.innerText = "Sending mood";
-        sectionSendingMood.style.display = "block";
-        sectionSendingMood.className = "visible";
-        window.pushMeasurements(measurement, function(response) {
-            sectionSendingMood.className = "invisible";
-            setTimeout(function()
-            {
-                window.close();
-            }, 300);
-        });
-        qm.notifications.clearNotifications();
-    }, 400 );
-}
-
 function updateQuestion(variableName) {
     qmLog.pushDebug("popup: updateQuestion...");
     if(!variableName || typeof variableName !== "string"){
         qmLog.pushDebug("popup: variableName is ..." + JSON.stringify(variableName));
-        if(!window.trackingReminderNotification){
-            qmLog.pushDebug("popup: no window.trackingReminderNotification present. Calling  getMostRecentUniqueNotificationNotInSyncQueue...");
-            window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
-            if(!window.trackingReminderNotification){
+        if(!qmPopup.trackingReminderNotification){
+            qmLog.pushDebug("popup: no qmPopup.trackingReminderNotification present. Calling  getMostRecentUniqueNotificationNotInSyncQueue...");
+            qmPopup.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
+            if(!qmPopup.trackingReminderNotification){
                 qmLog.pushDebug("popup: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...");
                 qm.notifications.closePopup();
                 return;
             }
         }
-        variableName = window.trackingReminderNotification.variableName;
-        qmLog.pushDebug("popup: window.trackingReminderNotification.variableName is " + variableName);
+        variableName = qmPopup.trackingReminderNotification.variableName;
+        qmLog.pushDebug("popup: qmPopup.trackingReminderNotification.variableName is " + variableName);
     }
     var questionText;
-    if(trackingReminderNotification.unitAbbreviatedName === '/5'){
+    if(qmPopup.trackingReminderNotification.unitAbbreviatedName === '/5'){
         questionText = "How is your " + variableName.toLowerCase() + "?";
         if(variableName.toLowerCase() === 'meditation'){
-            qmLog.error("Asking "+questionText+"!",  "trackingReminderNotification is: "+JSON.stringify(trackingReminderNotification), {
-                trackingReminderNotification: trackingReminderNotification});
+            qmLog.error("Asking "+questionText+"!",  "qmPopup.trackingReminderNotification is: " + JSON.stringify(qmPopup.trackingReminderNotification),
+                {trackingReminderNotification: qmPopup.trackingReminderNotification});
         }
         getRatingSectionElement().style.display = "block";
         getLastValueSectionElement().style.display = "none";
@@ -205,14 +190,14 @@ function updateQuestion(variableName) {
                 buttonElement.style.display = "none";
             }
         }
-        setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), trackingReminderNotification.actionArray[0]);
-        setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), trackingReminderNotification.actionArray[1]);
-        setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), trackingReminderNotification.actionArray[2]);
+        setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[0]);
+        setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[1]);
+        setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[2]);
         getRatingSectionElement().style.display = "none";
         getLastValueSectionElement().style.display = "block";
-        questionText = "Record " + variableName + " (" + trackingReminderNotification.unitAbbreviatedName + ")";
+        questionText = "Record " + variableName + " (" + qmPopup.trackingReminderNotification.unitAbbreviatedName + ")";
     }
-    if(trackingReminderNotification.question){questionText = trackingReminderNotification.question;}
+    if(qmPopup.trackingReminderNotification.question){questionText = qmPopup.trackingReminderNotification.question;}
     window.qmLog.pushDebug('popup: Updating question to ' + questionText);
     getQuestionElement().innerHTML = questionText;
     document.title = questionText;
@@ -220,12 +205,16 @@ function updateQuestion(variableName) {
         qmLog.pushDebug('popup: Setting question display to none ');
         getQuestionElement().style.display = "none";
     } else {
+        getInboxButtonElement().style.display = "none";
         qmLog.pushDebug('NOT setting question display to none because not on Chrome');
     }
     unHidePopup();
 }
 function getQuestionElement() {
     return document.getElementById("question");
+}
+function getInboxButtonElement() {
+    return document.getElementById("buttonInbox");
 }
 function getLastValueElement() {return document.getElementById("lastValue");}
 function getSecondToLastValueElement() {
@@ -251,15 +240,15 @@ document.addEventListener('DOMContentLoaded', function() {
     ratingPopupHeight = window.innerHeight;
     ratingPopupWidth = window.innerWidth;
     if(window.qm.urlHelper.getParam("trackingReminderNotificationId")){
-        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.qm.urlHelper.getParam('trackingReminderNotificationId'),
+        qmPopup.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.qm.urlHelper.getParam('trackingReminderNotificationId'),
             variableName: window.qm.urlHelper.getParam("variableName"), valence: window.qm.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
     } else {
         qmLog.pushDebug("popup addEventListener: calling getMostRecentUniqueNotificationNotInSyncQueue...");
-        window.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
+        qmPopup.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
     }
-    if (window.trackingReminderNotification){
+    if (qmPopup.trackingReminderNotification){
         qmLog.pushDebug("popup addEventListener: calling updateQuestion...");
-        updateQuestion(window.trackingReminderNotification.variableName);
+        updateQuestion(qmPopup.trackingReminderNotification.variableName);
     } else {
         qmLog.pushDebug("popup addEventListener: Calling hidePopup...");
         hidePopup();
@@ -274,10 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
     qmLog.pushDebug("popup addEventListener: calling qm.notifications.refreshIfEmptyOrStale...");
     qm.notifications.refreshIfEmptyOrStale();
     qmLog.pushDebug("popup addEventListener: calling getUserFromLocalStorage...");
-    if(!qm.userHelper.getUserFromLocalStorage()){
-        qmLog.pushDebug("popup addEventListener: calling getUserFromApi...");
-        window.qm.userHelper.getUserFromApi();
-    }
-    qmLog.pushDebug("popup addEventListener: calling setupBugsnag...");
-    qmLog.setupBugsnag();
+    qm.userHelper.getUserFromLocalStorageOrApi();
 });
+qmLog.pushDebug("popup addEventListener: calling setupBugsnag...");
+qmLog.setupBugsnag();

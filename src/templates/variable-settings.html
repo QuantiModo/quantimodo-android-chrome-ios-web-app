@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Settings">
     <ion-nav-title>Variable Settings</ion-nav-title>
-    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : isWeb == true }" ng-cloak>
+    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }" ng-cloak>
         <ion-refresher on-refresh="refreshUserVariable()"></ion-refresher>
         <div ng-show="state.variableObject">
             <div id="variablePropertiesCard" class="card variable-settings" >
@@ -29,24 +29,24 @@
                 <md-card-content>
                     <div ng-if="state.variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
                         <span>Default Unit</span>
-                        <md-select ng-model="state.variableObject.unitId" ng-show="!isMobile">
+                        <md-select ng-model="state.variableObject.unitId" ng-show="!platform.isMobile">
                             <md-option ng-repeat="unit in state.variableObject.availableDefaultUnits" ng-value="unit.id" >
                                 {{unit.name}}
                             </md-option>
                         </md-select>
-                        <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="isMobile"
+                        <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="platform.isMobile"
                                 ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableDefaultUnits">
                         </select>
                     </div>
-                    <div ng-if="state.variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
+                    <div ng-if="state.variableObject.variableCategoryName" layout="row" layout-align="space-between center">
                         <span>Variable Category</span>
-                        <md-select ng-model="state.variableObject.userVariableVariableCategoryName" ng-show="!isMobile">
+                        <md-select ng-model="state.variableObject.variableCategoryName" ng-show="!platform.isMobile">
                             <md-option ng-repeat="variableCategoryName in variableCategoryNames" ng-value="variableCategoryName" >
                                 {{variableCategoryName}}
                             </md-option>
                         </md-select>
-                        <select id="variableCategorySelector" ng-show="isMobile"
-                                ng-model="state.variableObject.userVariableVariableCategoryName">
+                        <select id="variableCategorySelector" ng-show="platform.isMobile"
+                                ng-model="state.variableObject.variableCategoryName">
                             <option ng-repeat="variableCategoryName in variableCategoryNames"
                                     ng-value="variableCategoryName">{{variableCategoryName}}
                             </option>

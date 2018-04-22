@@ -1,0 +1,9 @@
+<span class="buttons" ng-repeat="actionItem in trackingReminderNotification.actionArray" >
+    <button class="button button-assertive"
+            ng-if="actionItem.action !== 'snooze'"
+            on-hold="trackAllWithConfirmation(trackingReminderNotification, actionItem.modifiedValue, $event)"
+            ng-click="track(trackingReminderNotification, actionItem.modifiedValue, $event)">
+        <md-tooltip md-direction="down" ng-if="!platform.isMobile">{{actionItem.longTitle}}</md-tooltip>
+        {{actionItem.title}}
+    </button>
+</span>

@@ -1,12 +1,12 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
-    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } "><br>
-        <md-card ng-if="isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
+    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : platform.isWeb == true } "><br>
+        <md-card ng-if="platform.isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
             <md-card-title>
                 <md-card-title-media> <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Upgrade Image"></div> </md-card-title-media>
                 <md-card-title-text> <span style="text-align: center; padding-left: 15px" class="md-headline">{{appSettings.appDesign.upgradePleadingCard.web.text}}</span> </md-card-title-text>
             </md-card-title>
         </md-card>
-        <md-card ng-if="!isWeb && appSettings.appDesign.upgradePleadingCard">
+        <md-card ng-if="!platform.isWeb && appSettings.appDesign.upgradePleadingCard">
             <img ng-src="{{appSettings.appDesign.upgradePleadingCard.mobile.image}}" class="md-card-image" alt="Ivy">
             <md-card-title>
                 <md-card-title-text> <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span> </md-card-title-text>
@@ -28,9 +28,9 @@
             <div ng-bind-html="planFeaturesCard.priceHtml"></div><br><br>
             <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
             <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br><br>
-            <div ng-if="isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
+            <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
         </div>
-        <div class="card" style="text-align: center" ng-if="isIOS">
+        <div class="card" style="text-align: center" ng-if="platform.isIOS">
             <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
             <div class="item item-text-wrap">
                 By signing up, you get all of the features above for $6.99 USD per month.
@@ -40,7 +40,7 @@
                 You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
             </div>
         </div>
-        <div class="card" style="text-align: center" ng-if="isIOS">
+        <div class="card" style="text-align: center" ng-if="platform.isIOS">
             <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Yearly </div>
             <div class="item item-text-wrap">
                 By signing up, you get all of the features above for $59.99 USD per year.

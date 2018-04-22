@@ -36,23 +36,23 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmLogService.debug('Selected predictor ' + variable.name);
     }
     $scope.selectOutcomeVariable = function (ev) {
-        var dataToPass = {
+        var dialogParameters = {
             title: qmService.explanations.outcomeSearch.title,
                 helpText: qmService.explanations.outcomeSearch.textContent,
                 placeholder: "Search for an outcome...",
                 buttonText: "Select Variable",
                 requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
         };
-        qmService.showVariableSearchDialog(dataToPass, setOutcomeVariable, null, ev);
+        qmService.showVariableSearchDialog(dialogParameters, setOutcomeVariable, null, ev);
     };
     $scope.selectPredictorVariable = function (ev) {
-        var dataToPass = {
+        var dialogParameters = {
             title: qmService.explanations.predictorSearch.title,
             helpText: qmService.explanations.predictorSearch.textContent,
             placeholder: "Search for a predictor...",
             buttonText: "Select Variable",
             requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
         };
-        qmService.showVariableSearchDialog(dataToPass, setPredictorVariable, null, ev);
+        qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
     };
 }]);

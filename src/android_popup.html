@@ -48,11 +48,15 @@
     }
     </style>
 	<script src="cordova.js"></script>
+      <!-- build:js scripts/popup-combined-head-libraries.js -->
 	<script src="custom-lib/bugsnag.js"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
+    <script src="lib/quantimodo/quantimodo-web.js"></script>
+    <script src="lib/localforage/dist/localforage.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
     <script src="js/qmChrome.js"></script>
     <script src="js/popup.js"></script>
+      <!-- endbuild -->
   </head>
   <body>
 	  <!--<img style="width: 24px; left:10px; position: absolute;" src="https://app.quantimo.do/ionic/Modo/www/img/intro/inbox.svg" id="buttonInbox">-->
@@ -72,6 +76,7 @@
               z<sup> z<sup> z</sup></sup>
           </button>
           <button id="skipButton" style="color: #d9534f; border: 3px solid #d9534f; font-size: 24px;" type="button" class="btn btn-danger btn-circle btn-xl">X</button>
+          <button id="buttonInbox" style="color: #5cb85c; border: 3px solid #5cb85c; font-size: 24px;" type="button" class="btn btn-success btn-circle btn-xl">?</button>
       </section>
 	  <section id="loader">
 		  <!--<img src="img/loaders/rainbow-loader.gif" id="popTartCat">-->

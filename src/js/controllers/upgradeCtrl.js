@@ -19,12 +19,12 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         },
     ];
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
-        $rootScope.showFilterBarSearchIcon = false;
+        qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
-        if($rootScope.isChromeExtension){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
+        if($rootScope.platform.isChromeExtension){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = qmService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
-        qmService.unHideNavigationMenu();
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.setupUpgradePages();
         qmService.hideLoader();
     });
@@ -34,16 +34,16 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             return obj.id !== $rootScope.upgradePages[0].id; });
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
-            $rootScope.hideMenuButton = false;
+            qmService.rootScope.setProperty('hideMenuButton', false);
             qmService.goToDefaultState();
-        } else { $rootScope.hideMenuButton = true; }
+        } else { qmService.rootScope.setProperty('hideMenuButton', true); }
     };
     if(!$scope.productId){ $scope.productId = 'monthly7'; }
     $scope.monthlySubscription = function () { $scope.productId = 'yearly60'; $scope.upgrade(); };
     $scope.yearlySubscription = function () { $scope.productId = 'yearly60';  $scope.upgrade(); };
     var mobilePurchaseDebug = false;
     $scope.upgrade = function (ev) {
-        if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
+        if($rootScope.platform.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
     };
     var webUpgrade = function(ev) {
         qmLogService.error(null, 'User clicked upgrade button');
@@ -155,12 +155,12 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     };
     function getSubscriptionProvider() {
         var subscriptionProvider = 'unknown';
-        if($rootScope.isAndroid){ subscriptionProvider = 'google';}
-        if($rootScope.isIOS){subscriptionProvider = 'apple';}
+        if($rootScope.platform.isAndroid){ subscriptionProvider = 'google';}
+        if($rootScope.platform.isIOS){subscriptionProvider = 'apple';}
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.isIOS){ return $rootScope.appSettings.clientId + '_' + baseProductId; }
+        if($rootScope.platform.isIOS){ return $rootScope.appSettings.clientId + '_' + baseProductId; }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {
@@ -208,8 +208,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                     ok: 'OK' });
                 $mdDialog.show(alert).finally(function() { alert = undefined; });
             }
-            if($rootScope.isIOS){ showErrorAlert(); } // We want to alert the Apple Reviews about their stupid errors
-            if($rootScope.isAndroid){ handleSubscribeResponse(baseProductId, error); } // Sometimes Android has an error message even though it actually succeeds
+            if($rootScope.platform.isIOS){ showErrorAlert(); } // We want to alert the Apple Reviews about their stupid errors
+            if($rootScope.platform.isAndroid){ handleSubscribeResponse(baseProductId, error); } // Sometimes Android has an error message even though it actually succeeds
             qmLogService.error(null, 'inAppPurchase.catch error ' + JSON.stringify(error));
         });
     }

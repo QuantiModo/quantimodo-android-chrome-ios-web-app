@@ -5,7 +5,7 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
       <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
 <!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
-    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/;">
+    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;">
     <title></title>
     <link href="css/app.min.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
@@ -17,6 +17,7 @@
     <link rel="shortcut icon" href="img/icons/icon_16.png">
     <script src="custom-lib/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
     <!-- build:js scripts/combined-head-libraries.js -->
+    <script src="lib/localforage/dist/localforage.js"></script>
     <script src="lib/jquery/dist/jquery.min.js"></script>  <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
@@ -48,7 +49,6 @@
     <script src="js/controllers/iframeScreenCtrl.js"></script>
     <script src="js/controllers/predictorsCtrl.js"></script>
     <script src="js/controllers/externalCtrl.js"></script>
-    <script src="js/controllers/historyPrimaryOutcomeCtrl.js"></script>
     <script src="js/controllers/historyAllMeasurementsCtrl.js"></script>
     <script src="js/controllers/importCtrl.js"></script>
     <script src="js/controllers/variableSearchCtrl.js"></script>

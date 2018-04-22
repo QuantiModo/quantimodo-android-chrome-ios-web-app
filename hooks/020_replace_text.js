@@ -1,34 +1,24 @@
 #!/usr/bin/env node
-
 // this plugin replaces arbitrary text in arbitrary files
 //
 // Look for the string CONFIGURE HERE for areas that need configuration
 //
-
-console.log('Runing 020_replace.js');
-
+console.log('Running hooks/020_replace.js...');
 var fs = require('fs');
 var path = require('path');
-
 var rootdir = process.argv[2];
-
 function replace_string_in_file(filename, to_replace, replace_with) {
     var data = fs.readFileSync(filename, 'utf8');
-
+    if(!data){console.log("No data to replace from " + filename); return;}
     console.log('hooks/020_replace_text.js replace_string_in_file');
     var result = data.replace(new RegExp(to_replace, "g"), replace_with);
     fs.writeFileSync(filename, result, 'utf8');
 }
-
 var target = "stage";
-if (process.env.TARGET) {
-    target = process.env.TARGET;
-}
-
+if (process.env.TARGET) {target = process.env.TARGET;}
 if (rootdir) {
     var ourconfigfile = path.join(rootdir, "config", "project.json");
     var configobj = JSON.parse(fs.readFileSync(ourconfigfile, 'utf8'));
-
     // CONFIGURE HERE
     // with the names of the files that contain tokens you want replaced.  Replace files that have been copied via the prepare step.
     var filestoreplace = [
@@ -48,5 +38,4 @@ if (rootdir) {
             //console.log("missing: "+fullfilename);
         }
     });
-
 }
