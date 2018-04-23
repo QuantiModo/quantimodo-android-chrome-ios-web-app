@@ -206,14 +206,23 @@ function setVersionNumbers() {
         return monthNumber + dayOfMonth;
     }
     function getIosMinorVersionNumber() {
-        return (date.getHours() * 60 + date.getMinutes()).toString();
+        return (getMinutesSinceMidnight()).toString();
+    }
+    function getMinutesSinceMidnight() {
+        return date.getHours() * 60 + date.getMinutes();
+    }
+    function getAndroidMinorVersionNumber() {
+        var number = getMinutesSinceMidnight() * 99 / 1440;
+        number = Math.round(number);
+        number = appendLeadingZero(number);
+        return number;
     }
     function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
     function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
     versionNumbers = {
         iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
         //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
-        androidVersionCode: getLongDateFormat() + appendLeadingZero(date.getHours()),
+        androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
         ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
     };
     qmLog.info(JSON.stringify(versionNumbers));

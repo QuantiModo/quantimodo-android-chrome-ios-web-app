@@ -451,6 +451,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, 0);
             },
             setUser: function(user){
+                if(user && user.data && user.data.user){user = user.data.user;}
                 if(!$rootScope.user && user){
                     $rootScope.user = user;  // Set user immediately because it's required by some beforeEnter functions
                 } else {
@@ -531,9 +532,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         return deferred.promise;
                     }
-                    self.lastApiQuery = query;
                     dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
-                    dialogParameters.requestParams.searchPhrase = query;
+                    if(query && query !== ""){
+                        dialogParameters.requestParams.searchPhrase = query;
+                        self.lastApiQuery = query;
+                    }
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
@@ -991,8 +994,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
             } else {
-                qmLog.error('No access token for POST ' + route + ". $rootScope.user is " + JSON.stringify($rootScope.user), options.stackTrace);
-                qmLog.error('No access token for POST ' + route + ". qm.getUser() returns " + JSON.stringify(qm.getUser()), options.stackTrace);
+                if(route.indexOf('googleIdToken') === -1){
+                    qmLog.error('No access token for POST ' + route + ". $rootScope.user is " + JSON.stringify($rootScope.user), options.stackTrace);
+                    qmLog.error('No access token for POST ' + route + ". qm.getUser() returns " + JSON.stringify(qm.getUser()), options.stackTrace);
+                }
             }
             function generalSuccessHandler(response){
                 var responseString = JSON.stringify(response);

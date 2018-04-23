@@ -24,7 +24,7 @@
                 <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i> </button>
         </div>
         <div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUpload">
-            <button ng-repeat="button in connector.buttons" class="button button-balanced" style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button)">
+            <button ng-repeat="button in connector.buttons" class="button button-balanced" style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button, $event)">
                 <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
             </button>
         </div>
