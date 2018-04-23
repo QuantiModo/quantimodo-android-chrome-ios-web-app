@@ -117,7 +117,7 @@ window.qm = {
             }
             return urlParams;
         },
-        getClientId: function(){
+        getClientId: function(successHandler){
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 qm.clientId = qm.api.getClientIdFromQueryParameters();
             }
@@ -146,7 +146,9 @@ window.qm = {
                 qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
-            return qm.clientId;
+            if (!successHandler) {return qm.clientId;}
+            if(qm.clientId){successHandler(qm.clientId);}
+            qm.api.getClientIdWithCallback(successHandler);
         },
         getClientIdWithCallback: function(successHandler){
             if(qm.api.getClientId()){
