@@ -451,7 +451,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, 0);
             },
             setUser: function(user){
-                if(user.data && user.data.user){user = user.data.user;}
+                if(user && user.data && user.data.user){user = user.data.user;}
                 if(!$rootScope.user && user){
                     $rootScope.user = user;  // Set user immediately because it's required by some beforeEnter functions
                 } else {
