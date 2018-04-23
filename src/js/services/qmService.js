@@ -2426,6 +2426,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isMobile = qm.platform.isMobile();
         platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
         platform.isChromeExtension = qm.platform.isChromeExtension();
+        platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         if(platform.isMobile){qmService.actionSheets.actionSheetButtons.compare.text = "Compare Another";}
@@ -5493,10 +5494,41 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.postCreditCardDeferred = function(body){
         var deferred = $q.defer();
+        qmService.recordUpgradeProductPurchase(body.productId, null, 1);
+        qmService.showBlackRingLoader();
         qmService.postCreditCard(body, function(response){
             qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+            qmLogService.error(null, 'Got successful upgrade response from API');
+            qmService.hideLoader();
+            qmLogService.debug(JSON.stringify(response), null);
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Thank you!')
+                    .textContent("Let's get started!")
+                    .ariaLabel('OK!')
+                    .ok('Get Started')
+            ).finally(function() {
+                $scope.goBack();
+                /** @namespace response.data.purchaseId */
+                qmService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
+            });
             deferred.resolve(response);
         }, function(response){
+            qmLogService.error(null, response);
+            var message = '';
+            if(response.error){ message = response.error; }
+            qmService.hideLoader();
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Could not upgrade')
+                    .textContent(message + '  Please try again or contact mike@quantimo.do for help.')
+                    .ariaLabel('Error')
+                    .ok('OK')
+            );
             deferred.reject(response);
         });
         return deferred.promise;

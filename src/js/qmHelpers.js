@@ -1769,6 +1769,9 @@ window.qm = {
             return true;
         },
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
+        isWebOrChrome: function () {
+            return qm.platform.isWeb() || qm.platform.isChromeExtension();
+        },
         isAndroid: function (){
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
