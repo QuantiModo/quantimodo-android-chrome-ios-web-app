@@ -2504,6 +2504,7 @@ window.qm = {
         },
         isTestUser: function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;},
         setUser: function(user){
+            if(user.data && user.data.user){user = user.data.user;}
             window.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
             qm.localForage.setItem(qm.items.user, user);
