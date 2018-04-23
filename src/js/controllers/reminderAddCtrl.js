@@ -81,6 +81,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($stateParams.skipReminderSettingsIfPossible){
             //$scope.save();
         }
+        if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
+            $scope.state.showAddVariableCard = true;
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('ReminderAddCtrl beforeEnter...');
