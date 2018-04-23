@@ -1155,29 +1155,36 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
     return verifyExistenceOfFile(getPathToChromeExtensionZip());
 });
 gulp.task('getCommonVariables', function () {
-    var url = appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3';
-    qmLog.info('gulp getCommonVariables from '+ url);
-    return request(url, defaultRequestOptions)
-        .pipe(source('commonVariables.json'))
-        .pipe(streamify(jeditor(function (commonVariables) {
-            return commonVariables;
-        })))
-        .pipe(gulp.dest('./www/data/'));
+    return getConstantsFromApiAndWriteToJson('commonVariables',
+        'public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
 });
-gulp.task('getUnits', function (callback) {
-    var url = appHostName + '/api/v1/units';
-    qmLog.info('gulp getUnits from '+ url);
+gulp.task('getUnits', function () {
+    return getConstantsFromApiAndWriteToJson('units');
+});
+function getConstantsFromApiAndWriteToJson(type, urlPath){
+    if(!urlPath){urlPath = type;}
+    var url = appHostName + '/api/v1/' + urlPath;
+    qmLog.info('gulp ' + type + ' from '+ url);
+    var destinations = [
+        './src/data/',
+        './www/data/'
+    ];
+    var pipeLine = request(url, defaultRequestOptions)
+        .pipe(source(type + '.json'))
+        .pipe(streamify(jeditor(function (constants) {
+            return constants;
+        })));
     try {
-        request(url, defaultRequestOptions)
-            .pipe(source('units.json'))
-            .pipe(streamify(jeditor(function (units) {
-                return units;
-            })))
-            .pipe(gulp.dest('./www/data/'));
+        destinations.forEach(function (d) {
+            pipeLine = pipeLine.pipe(gulp.dest(d));
+        });
     } catch (error) {
         qmLog.error(error);
     }
-    callback();
+    return pipeLine;
+}
+gulp.task('getVariableCategories', function () {
+    return getConstantsFromApiAndWriteToJson('variableCategories');
 });
 gulp.task('getSHA1FromAPK', function () {
     qmLog.info('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
@@ -2288,7 +2295,8 @@ gulp.task('configureApp', [], function (callback) {
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
-        'getUnits',  // This is being weird for some reason
+        'getUnits',
+        'getVariableCategories',
         'getAppConfigs',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
