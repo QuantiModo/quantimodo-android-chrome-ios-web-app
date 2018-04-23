@@ -1769,6 +1769,9 @@ window.qm = {
             return true;
         },
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
+        isWebOrChrome: function () {
+            return qm.platform.isWeb() || qm.platform.isChromeExtension();
+        },
         isAndroid: function (){
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
@@ -2504,6 +2507,7 @@ window.qm = {
         },
         isTestUser: function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;},
         setUser: function(user){
+            if(user && user.data && user.data.user){user = user.data.user;}
             window.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
             qm.localForage.setItem(qm.items.user, user);
