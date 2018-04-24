@@ -48,6 +48,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     if(!$rootScope.user){qmService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...', null);
         var backView = $ionicHistory.backView();
+        qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
+            $scope.state.variableCategories = variableCategories;
+        });
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.sendToLoginIfNecessaryAndComeBack();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
@@ -80,6 +83,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         }
         if($stateParams.skipReminderSettingsIfPossible){
             //$scope.save();
+        }
+        if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
+            $scope.state.showAddVariableCard = true;
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){

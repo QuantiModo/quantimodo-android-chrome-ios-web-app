@@ -2,6 +2,9 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                                                               $rootScope, $stateParams, qmService, qmLogService, $locale) {
     WebUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
+    $scope.state = {
+        coupon: null
+    };
     $scope.signUpQuestions = [
         {
             question: "What do you do with my data?",
@@ -28,6 +31,9 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         qmService.setupUpgradePages();
         qmService.hideLoader();
     });
+    $scope.$on('$ionicView.afterEnter', function(e) { qmLogService.debug('afterEnter state ' + $state.current.name, null);
+        if(qm.platform.isWebOrChrome() || qm.platform.isChromeExtension()){stripeSetup();}
+    });
     $scope.useLitePlan = function () {if($stateParams.litePlanState){qmService.goToState($stateParams.litePlanState);} else { $scope.goBack();}};
     $scope.hideUpgradePage = function () {
         $rootScope.upgradePages = $rootScope.upgradePages.filter(function( obj ) {
@@ -45,11 +51,13 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     $scope.upgrade = function (ev) {
         if($rootScope.platform.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
     };
+    // Deprecated
     var webUpgrade = function(ev) {
         qmLogService.error(null, 'User clicked upgrade button');
         $mdDialog.show({
             controller: WebUpgradeDialogController,
-            templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
+            //templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
+            templateUrl: 'templates/credit-card-stripe.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: false,
@@ -64,43 +72,68 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                 'productId': answer.productId,
                 'coupon': answer.coupon
             };
-            qmService.recordUpgradeProductPurchase(answer.productId, null, 1);
-            qmService.showBlackRingLoader();
-            qmService.postCreditCardDeferred(body).then(function (response) {
-                qmLogService.error(null, 'Got successful upgrade response from API');
-                qmService.hideLoader();
-                qmLogService.debug(JSON.stringify(response), null);
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .parent(angular.element(document.querySelector('#popupContainer')))
-                        .clickOutsideToClose(true)
-                        .title('Thank you!')
-                        .textContent("Let's get started!")
-                        .ariaLabel('OK!')
-                        .ok('Get Started')
-                ).finally(function() {
-                    $scope.goBack();
-                    /** @namespace response.data.purchaseId */
-                    qmService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
-                });
-            }, function (response) {
-                qmLogService.error(null, response);
-                var message = '';
-                if(response.error){ message = response.error; }
-                qmService.hideLoader();
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .parent(angular.element(document.querySelector('#popupContainer')))
-                        .clickOutsideToClose(true)
-                        .title('Could not upgrade')
-                        .textContent(message + '  Please try again or contact mike@quantimo.do for help.')
-                        .ariaLabel('Error')
-                        .ok('OK')
-                );
-            });
+            qmService.postCreditCardDeferred(body);
         }, function() {  $scope.status = 'You cancelled the dialog.'; });
     };
     var purchaseDebugMode = false;
+    function getFormObj(formId) {
+        var formObj = {};
+        var inputs = $('#'+formId).serializeArray();
+        $.each(inputs, function (i, input) {formObj[input.name] = input.value;});
+        return formObj;
+    }
+    function stripeTokenHandler(token) {
+        var formObject = getFormObj('payment-form');
+        formObject.productId = $scope.productId;
+        formObject.couponCode =  $scope.state.coupon;
+        formObject.stripeToken = token;
+        qmService.postCreditCardDeferred(formObject);
+    }
+    function stripeSetup() {
+        var stripe = Stripe('pk_live_jwzyvmlPu1cU7ZQ5LbanoELX');  // Create a Stripe client.
+        var elements = stripe.elements();  // Create an instance of Elements.
+        // Custom styling can be passed to options when creating an Element.
+        var style = {
+            base: {
+                color: '#32325d',
+                lineHeight: '18px',
+                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a'
+            }
+        };
+        var card = elements.create('card', {style: style});  // Create an instance of the card Element.
+        card.mount('#card-element');  // Add an instance of the card Element into the `card-element` <div>.
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });  // Handle real-time validation errors from the card Element.
+        var form = document.getElementById('payment-form'); // Handle form submission.
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    // Inform the user if there was an error.
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    stripeTokenHandler(result.token); // Send the token to your server.
+                }
+            });
+        });
+    }
+     // Deprecated
     function WebUpgradeDialogController($scope, $mdDialog) {
         $scope.productId = 'monthly7';
         var currentYear = new Date().getFullYear();
