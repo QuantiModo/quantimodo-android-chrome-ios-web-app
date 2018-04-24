@@ -2892,31 +2892,35 @@ window.qm = {
     },
     variableCategoryHelper: {
         getVariableCategoriesFromApi: function (successHandler, errorHandler) {
-            qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){successHandler(variableCategories);}
-            }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.VariablesApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
-            }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromLocalStorageOrApi: function(successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.variableCategories, function(data){
-                if (data) {
-                    successHandler(data);
-                } else {
-                    qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                        successHandler(variableCategories);
-                    }, errorHandler)
-                }
+            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
+                qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                successHandler(variableCategories);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
+            // qmLog.info("Getting variable categories from API...");
+            // function globalSuccessHandler(variableCategories){
+            //     qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+            //     if(successHandler){successHandler(variableCategories);}
+            // }
+            // qm.api.configureClient();
+            // var apiInstance = new Quantimodo.VariablesApi();
+            // function callback(error, data, response) {
+            //     qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            // }
+            // apiInstance.getVariableCategories(callback);
+        },
+        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
+            if (qm.globalHelper.getItem(qm.items.variableCategories)) {
+                successHandler(qm.globalHelper.getItem(qm.items.variableCategories));
+            } else {
+                qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                    successHandler(variableCategories);
+                }, errorHandler)
+            }
         },
         getVariableCategory: function(variableCategoryName, successHandler){
-            qm.variableCategoryHelper.getVariableCategoriesFromLocalStorageOrApi(function (variableCategories) {
+            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
                var match = variableCategories.find(function (category) {
                     category.name = variableCategoryName;
                });
