@@ -4,7 +4,10 @@
         <i ng-if="helpCard.icon" class="icon balanced {{helpCard.icon}}"></i>
         <img style="max-width: 40px; max-height: 40px;" ng-if="helpCard.image.url" ng-src="{{helpCard.image.url}}">
     </span>
-        <p style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white; font-size: 24px; font-family: 'Open Sans', sans-serif;">{{helpCard.title}}</p>
+        <span style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; font-family: 'Open Sans', sans-serif;">
+            <p ng-if="!platform.isMobile" style="font-size: 24px; color: white; ">{{helpCard.title}}</p>
+            <p ng-if="platform.isMobile" style="font-size: 18px; color: white; ">{{helpCard.title}}</p>
+        </span>
         <button id="closeButton" class="button button-clear button-assertive" ng-click="hideHelpCard(helpCard)"
                 style="position: absolute; top: 10px; right: 10px; font-size: 25px;" ><i class="ion-close-round"></i>
         </button>
