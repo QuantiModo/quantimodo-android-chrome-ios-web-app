@@ -2390,7 +2390,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         ionIcon: "ion-speedometer"};
     qmService.getVariableCategories = function(){
         var deferred = $q.defer();
-        $http.get('data/variableCategories.json').success(function(variableCategories) {
+        qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function(variableCategories) {
             angular.forEach(variableCategories, function(variableCategory, key) {
                 $rootScope.variableCategories[variableCategory.name] = variableCategory;
                 $rootScope.variableCategoryNames.push(variableCategory.name);
