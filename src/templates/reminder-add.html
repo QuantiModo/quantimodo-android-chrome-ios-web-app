@@ -19,8 +19,8 @@
                     <md-select id="categorySelectorMaterial"
                                ng-model="state.trackingReminder.variableCategoryName"
                                ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
-                        <md-option ng-repeat="variableCategoryName in state.variableCategoryNames"
-                                   value="{{variableCategoryName}}" >{{variableCategoryName}}
+                        <md-option ng-repeat="variableCategory in state.variableCategories" ng-if="variableCategory.manualTracking"
+                                   value="{{variableCategory.name}}" >{{variableCategory.variableCategoryNameSingular}}
                         </md-option>
                     </md-select>
                 </md-input-container>

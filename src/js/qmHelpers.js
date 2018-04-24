@@ -2905,7 +2905,7 @@ window.qm = {
             apiInstance.getVariableCategories(callback);
         },
         getVariableCategoriesFromLocalStorageOrApi: function(successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.variableCategories, function(err, data){
+            qm.localForage.getItem(qm.items.variableCategories, function(data){
                 if (data) {
                     successHandler(data);
                 } else {
