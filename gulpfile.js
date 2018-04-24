@@ -2632,12 +2632,12 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     var chcpJson = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
-        "s3region": "eu-west-1",
+        "s3region": "us-east-1",
         "s3prefix": appSettings.clientId + "/"+path+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
-        "content_url": "https://s3-eu-west-1.amazonaws.com/" + appSettings.clientId + "/" + path
+        "content_url": "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
         if(err) {return qmLog.error(err);}
