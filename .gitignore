@@ -115,3 +115,5 @@ chcpbuild\.options
 *.pkey
 *.pem
 *.p12
+
+yarn-error\.log
