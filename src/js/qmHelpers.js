@@ -117,7 +117,7 @@ window.qm = {
             }
             return urlParams;
         },
-        getClientId: function(){
+        getClientId: function(successHandler){
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 qm.clientId = qm.api.getClientIdFromQueryParameters();
             }
@@ -146,7 +146,9 @@ window.qm = {
                 qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
-            return qm.clientId;
+            if (!successHandler) {return qm.clientId;}
+            if(qm.clientId){successHandler(qm.clientId);}
+            qm.api.getClientIdWithCallback(successHandler);
         },
         getClientIdWithCallback: function(successHandler){
             if(qm.api.getClientId()){
@@ -1769,6 +1771,9 @@ window.qm = {
             return true;
         },
         isWeb: function (){return window.location.href.indexOf("https://") > -1;},
+        isWebOrChrome: function () {
+            return qm.platform.isWeb() || qm.platform.isChromeExtension();
+        },
         isAndroid: function (){
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
@@ -2887,31 +2892,35 @@ window.qm = {
     },
     variableCategoryHelper: {
         getVariableCategoriesFromApi: function (successHandler, errorHandler) {
-            qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){successHandler(variableCategories);}
-            }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.VariablesApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
-            }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromLocalStorageOrApi: function(successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.variableCategories, function(err, data){
-                if (data) {
-                    successHandler(data);
-                } else {
-                    qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                        successHandler(variableCategories);
-                    }, errorHandler)
-                }
+            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
+                qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                successHandler(variableCategories);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
             });
+            // qmLog.info("Getting variable categories from API...");
+            // function globalSuccessHandler(variableCategories){
+            //     qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+            //     if(successHandler){successHandler(variableCategories);}
+            // }
+            // qm.api.configureClient();
+            // var apiInstance = new Quantimodo.VariablesApi();
+            // function callback(error, data, response) {
+            //     qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            // }
+            // apiInstance.getVariableCategories(callback);
+        },
+        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
+            if (qm.globalHelper.getItem(qm.items.variableCategories)) {
+                successHandler(qm.globalHelper.getItem(qm.items.variableCategories));
+            } else {
+                qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                    successHandler(variableCategories);
+                }, errorHandler)
+            }
         },
         getVariableCategory: function(variableCategoryName, successHandler){
-            qm.variableCategoryHelper.getVariableCategoriesFromLocalStorageOrApi(function (variableCategories) {
+            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
                var match = variableCategories.find(function (category) {
                     category.name = variableCategoryName;
                });
