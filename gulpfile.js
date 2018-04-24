@@ -2740,11 +2740,12 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
-        execute(runCommand, function () {
+        //execute(runCommand, function () {
             execute("cordova-hcp server", function () {
+                qmLog.info("Execute command "+ runCommand + " in new terminal now");
                 //callback();
             }, false, false);
-        }, false, false);
+        //}, false, false);
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
