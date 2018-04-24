@@ -2494,17 +2494,25 @@ window.qm = {
         },
         getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
+            function checkUserId(user) {
+                if(user && !user.id){
+                    qmLog.error("No user id in "+JSON.stringify(qmUser));
+                    qm.userHelper.setUser(null);
+                    return null;
+                }
+                return user;
+            }
             if(!successHandler) {
                 if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
-                return window.qmUser;
+                return checkUserId(window.qmUser);
             }
             if(window.qmUser){
-                successHandler(window.qmUser);
+                successHandler(checkUserId(window.qmUser));
                 return
             }
             qm.localForage.getItem(qm.items.user, function(user){
                 window.qmUser = user;
-                successHandler(user);
+                successHandler(checkUserId(user));
             });
         },
         isTestUser: function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;},
