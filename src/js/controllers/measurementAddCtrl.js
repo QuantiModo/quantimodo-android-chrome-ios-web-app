@@ -251,15 +251,15 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $scope.state.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
-        if(variableObject.unit && variableObject.unit.abbreviatedName){
-            setupUnit(variableObject.unit.abbreviatedName, variableObject.valence);
-        } else if (variableObject.defaultUnitAbbreviatedName){
-            setupUnit(variableObject.defaultUnitAbbreviatedName, variableObject.valence);
+        if(variableObject.unit && variableObject.unit.abbreviatedName){variableObject.unitAbbreviatedName = variableObject.unit.abbreviatedName;}
+        if(variableObject.defaultUnitAbbreviatedName){variableObject.unitAbbreviatedName = variableObject.defaultUnitAbbreviatedName;}
+        if(variableObject.unitAbbreviatedName){
+            setupUnit(variableObject.unitAbbreviatedName, variableObject.valence);
         } else if (variableObject.variableCategoryName){
             setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
         }
         if(variableObject.upc){$scope.state.measurement.upc = variableObject.upc;}
-        $scope.state.measurement.inputType = variableObject.inputType;
+        if(variableObject.inputType){$scope.state.measurement.inputType = variableObject.inputType;}
         $scope.state.measurement.variableName = variableObject.name;
         $scope.state.measurement.maximumAllowedValue = variableObject.maximumAllowedValue;
         $scope.state.measurement.minimumAllowedValue = variableObject.minimumAllowedValue;

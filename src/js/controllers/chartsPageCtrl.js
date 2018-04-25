@@ -8,9 +8,11 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
-        qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
-            return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-        });
+        if(getScopedVariableObject()){
+            qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
+                return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            });
+        }
         initializeCharts();
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
@@ -44,20 +46,26 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     }
     function getCharts(refresh) {
         qm.userVariables.getByName(getVariableName(), {includeCharts: true}, refresh, function (variableObject) {
-                if(!variableObject.charts){
-                    qmLog.error("No charts!");
-                    if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
-                        qmService.goToDefaultState();
-                        return;
-                    }
+            qmLog.info("Got variable " + variableObject.name);
+            if(!variableObject.charts){
+                qmLog.error("No charts!");
+                if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
+                    qmService.goToDefaultState();
+                    return;
                 }
-                $scope.state.variableObject = variableObject;
+            }
+            $scope.state.variableObject = variableObject;
+            if(variableObject){
+                qmLog.info("Setting action sheet with variable " + variableObject.name);
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
                     return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), variableObject);
                 });
-                qmService.hideLoader();
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+            } else {
+                qmLog.error("No variable for action sheet!");
+            }
+            qmService.hideLoader();
+            $scope.$broadcast('scroll.refreshComplete');
+        });
     }
     $scope.refreshCharts = function () {getCharts(true);};
     $scope.addNewReminderButtonClick = function() {
