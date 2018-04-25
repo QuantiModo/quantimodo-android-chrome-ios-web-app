@@ -61,16 +61,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(correlationObject.effectVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
         } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
     };
-    $scope.openUrl = function(url, location, target){
-        location = location || "no";
-        target = target || '_blank';
+    $scope.openUrl = function (url, showLocationBar, windowTarget) {
+        showLocationBar = showLocationBar || "no";
+        windowTarget = windowTarget || '_blank';
         if(typeof cordova !== "undefined"){
-            cordova.InAppBrowser.open(url,target, 'location='+location+',toolbar=yes,clearcache=no,clearsessioncache=no');
+            cordova.InAppBrowser.open(url,windowTarget, 'location='+showLocationBar+',toolbar=yes,clearcache=no,clearsessioncache=no');
         } else {
             if($rootScope.platform.isWeb){
-                window.open(url, target);  // Otherwise it opens weird popup instead of new tab
+                window.open(url, windowTarget);  // Otherwise it opens weird popup instead of new tab
             } else {
-                window.open(url, target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                window.open(url, windowTarget, 'location='+showLocationBar+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
             }
         }
     };
