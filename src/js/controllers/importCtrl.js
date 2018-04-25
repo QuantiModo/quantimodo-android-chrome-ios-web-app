@@ -496,7 +496,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         qmService.updateConnector(connector.name);
         $scope.safeApply();
     };
-    var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
+    var getItHere = function (connector){
+        $scope.openUrl(connector.getItUrl, 'no', '_system');
+    };
     $scope.connectorAction = function(connector, button, ev){
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
             disconnectConnector(connector, button);
