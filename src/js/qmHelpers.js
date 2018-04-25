@@ -3,7 +3,7 @@
 /** @namespace window.qm.chrome */
 /* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
-String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+String.prototype.toCamelCase = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 window.qm = {
     analytics: {
         eventCategories: {
@@ -1750,6 +1750,16 @@ window.qm = {
             if(!object){return false;}
             var haystack = JSON.stringify(object).toLowerCase();
             return haystack.indexOf(needle) !== -1;
+        },
+        snakeToCamelCaseProperties: function(object){
+            for (var prop in object) {
+                if (object.hasOwnProperty(prop)) {
+                    var camel = prop.toCamelCase();
+                    object[camel] = object[prop];
+                    delete object[prop];
+                }
+            }
+            return object;
         }
     },
     platform: {
@@ -2240,6 +2250,9 @@ window.qm = {
                 return  haystack.slice(0, i);
             else
                 return haystack;
+        },
+        toCamelCaseCase: function(string) {
+            return string.toCamelCase();
         }
     },
     studyHelper: {
@@ -2415,7 +2428,7 @@ window.qm = {
                 var parameterKeyValuePairs = queryString.split('&');
                 for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                    if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                    if (currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()) {
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
                         if(typeof shouldDecode !== "undefined")  {
                             return decodeURIComponent(currentParameterKeyValuePair[1]);
@@ -2495,6 +2508,10 @@ window.qm = {
         getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
             function checkUserId(user) {
+                if(user.ID){
+                    user.id = user.ID;
+                    user = qm.objectHelper.snakeToCamelCaseProperties(user);
+                }
                 if(user && !user.id){
                     qmLog.error("No user id in "+JSON.stringify(qmUser));
                     qm.userHelper.setUser(null);
