@@ -313,13 +313,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 		qmLogService.info('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 		$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-		if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}
+		//if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}  // TODO: Why was did we only do this if we had notifications?  It loads forever if category inbox has no notifications
+        hideInboxLoader();
 		if($state.current.name === "app.remindersInboxCompact"){
 			$scope.trackingReminderNotifications = trackingReminderNotifications;
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 			qmLogService.info('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
-			//getFallbackInboxContent();
+            if(!$scope.state.numberOfDisplayedNotifications){getFallbackInboxContent();}  // TODO: Why was this commented?
 		}
 	};
 	var hideInboxLoader = function(){
