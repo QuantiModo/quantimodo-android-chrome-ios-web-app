@@ -143,6 +143,9 @@ window.qm = {
             //     clientId = "default"; // On mobile
             // }
             if(!qm.clientId){
+                qm.clientId = qm.api.getClientIdFromAwsPath();
+            }
+            if(!qm.clientId){
                 qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
@@ -181,6 +184,10 @@ window.qm = {
             if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
             if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
             if(clientId){qm.storage.setItem('clientId', clientId);}
+            return clientId;
+        },
+        getClientIdFromAwsPath: function() {
+            var clientId = qm.stringHelper.getStringBetween(window.location.href, 's3.amazonaws.com/', '/dev');
             return clientId;
         },
         getClientIdFromSubDomain: function(){
@@ -2253,6 +2260,12 @@ window.qm = {
         },
         toCamelCaseCase: function(string) {
             return string.toCamelCase();
+        },
+        getStringBetween: function(string, firstString, secondString){
+            var between = string.match(firstString+"(.*)"+secondString);
+            if(!between){return null;}
+            console.log(between[1] + " is between " + firstString + " and " + secondString + " in " +  string);
+            return between[1];
         }
     },
     studyHelper: {
