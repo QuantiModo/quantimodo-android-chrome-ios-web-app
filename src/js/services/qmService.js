@@ -10,6 +10,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
     var qmService = {
+        api: {
+             headersGetter: function(headers) {
+                var headersObj = typeof headers === 'object' ? headers : undefined;
+                return function(name) {
+                    if (!headersObj) headersObj =  parseHeaders(headers);
+                    if (name) {
+                        var value = headersObj[lowercase(name)];
+                        if (value === void 0) {value = null;}
+                        return value;
+                    }
+                    return headersObj;
+                };
+            }
+        },
         auth: {
             deleteAllAccessTokens: function () {
                 $rootScope.accessToken = null;
@@ -940,10 +954,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 .success(function (data, status, headers) {
                     qmLogService.debug('Got ' + route + ' ' + status + ' response: ' + ': ' + JSON.stringify(data).substring(0, 140) + '...', null, options.stackTrace);
                     if(!data) {
-                        if (typeof Bugsnag !== "undefined") {
-                            var groupingHash = 'No data returned from this request';
-                            Bugsnag.notify(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
-                        }
+                        var groupingHash = 'No data returned from this request';
+                        qmLog.error(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                     } else {
                         if (data.error) {
                             generalApiErrorHandler(data, status, headers, request, options);
@@ -1603,7 +1615,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessTokenFromLocalStorage: accessTokenFromLocalStorage}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
-            if(!qm.userHelper.isTestUser()){Bugsnag.notify(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");}
+            if(!qm.userHelper.isTestUser()){qmLog.error(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");}
         }
         if (accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
@@ -2123,7 +2135,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!result){
             var errorName = 'startTimeEpoch is earlier than last year';
             var errorMessage = startTimeEpoch + ' ' + errorName;
-            Bugsnag.notify(errorName, errorMessage, {startTimeEpoch :startTimeEpoch}, "error");
+            qmLog.error(errorName, errorMessage, {startTimeEpoch :startTimeEpoch}, "error");
             qmLogService.error(errorMessage);
         }
         return startTimeEpoch;
@@ -3582,7 +3594,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(parsedNote.url && parsedNote.message){
                     measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                 } else {
-                    Bugsnag.notify("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                    qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
                 }
             }
             if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
@@ -5061,10 +5073,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                     });
                 }
-            }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-            qmService.hideLoader();
-            qmService.storage.setItem('user', null);
-        });
+            }).catch(function(exception){
+                qmLog.error(exception);
+                qmService.hideLoader();
+                qmService.storage.setItem('user', null);
+            });
     };
     function getRootDomain(url){
         var parts = url.split('.');

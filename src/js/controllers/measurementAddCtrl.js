@@ -107,10 +107,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             return false;
         } else {
             if(!qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName)){
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
-                        ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
-                }
+            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
+                ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
             } else {$scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName).id;}
         }
         return true;
@@ -128,8 +126,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.skipTrackingReminderNotification(params, function(){
                 qmLogService.debug($state.current.name + ': skipTrackingReminderNotification', null);
             }, function(error){
-                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error");
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(error); }
+                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error" + error);
             });
         }
         $scope.state.selectedDate = moment($scope.state.selectedDate);
