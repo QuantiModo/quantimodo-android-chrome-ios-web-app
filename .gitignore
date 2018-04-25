@@ -51,11 +51,11 @@ supply_json_key_for_google_play.json
 src/configuration-index.html
 src/configuration/
 *.css
-src/data/commonVariables.json
+src/data/*.json
 src/img/CS6.zip
 src/img/icons/*
 !src/img/icons/.gitkeep
-!src/data/.gitkeep
+
 !src/chrome_extension/*
 src/js/configuration-app.js
 src/lib/
@@ -110,3 +110,10 @@ src/default.config.json
 src/chcp\.json
 
 src/chcp\.manifest
+
+chcpbuild\.options
+*.pkey
+*.pem
+*.p12
+
+yarn-error\.log

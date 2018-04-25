@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
-console.log("started android_custom_resources");
+var shell = require( "shelljs" );
+console.log("Started copying android_custom_resources and icons hook...");
 var sourceDir = 'resources/android/custom';
 var platformDir = 'platforms/android';
 var resourceDirs = [
@@ -67,6 +68,9 @@ module.exports = function(ctx) {
           copies.push([filePath, destPath]);
         }
       }
+      // console.log("Copying drawable-xxxhdpi-v11 to drawable for geolocation icon");
+      // shell.exec("cp resources/android/res/drawable-xxhdpi/* platforms/android/res/drawable", {silent:true} ); // Must be done first
+      // shell.exec("cp resources/android/res/drawable-xxhdpi-v11/* platforms/android/res/drawable", {silent:true} );
       copies.map(function(args) {
         return copy.apply(copy, args);
       });

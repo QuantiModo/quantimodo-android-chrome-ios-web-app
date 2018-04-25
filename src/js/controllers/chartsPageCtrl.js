@@ -9,7 +9,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
         qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
-            return qmService.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
+            return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
         });
         initializeCharts();
         if (!clipboard.supported) {
@@ -53,7 +53,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                 }
                 $scope.state.variableObject = variableObject;
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
-                    return qmService.showVariableObjectActionSheet(getVariableName(), variableObject);
+                    return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), variableObject);
                 });
                 qmService.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete');
@@ -68,8 +68,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         qmLogService.debug('compareButtonClick');
         qmService.goToStudyCreationForVariable($scope.state.variableObject);
     };
-    $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd',
-        {variableObject: $scope.state.variableObject, fromState: $state.current.name});};
+    $scope.recordMeasurementButtonClick = function() {
+        qmLog.info("Going to record measurement for "+JSON.stringify($scope.state.variableObject));
+        qmService.goToState(qmStates.measurementAdd, {variableObject: $scope.state.variableObject, fromState: $state.current.name});
+    };
     $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($scope.state.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){

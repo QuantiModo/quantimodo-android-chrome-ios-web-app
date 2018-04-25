@@ -18,6 +18,30 @@ window.qmLog = {
     },
     setMobileDebug: function (value) {
         qmLog.mobileDebug = value;
+    },
+    obfuscateSecrets: function(object){
+        if(typeof object !== 'object'){return object;}
+        try {
+            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        } catch (error) {
+            if(typeof Bugsnag !== "undefined"){
+                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                    "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
+            }
+            //window.qmLog.error(error, object); // Avoid infinite recursion
+            return object;
+        }
+        for (var propertyName in object) {
+            if (object.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    object[propertyName] = "HIDDEN";
+                } else {
+                    object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
+                }
+            }
+        }
+        return object;
     }
 };
 if(typeof Bugsnag !== "undefined"){
@@ -144,9 +168,9 @@ window.qmLog.getEnv = function(){
     if(window.location.origin.indexOf('local') !== -1){env = "development";}
     if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
     if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qmUser){
-        if(qmUser.email && qmUser.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qmUser.displayName && qmUser.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    if(qm.getUser()){
+        if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
     }
     if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
     return env;
@@ -164,40 +188,18 @@ qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
         qmLog.error(name, message, metaData, stackTrace);
     }
 };
+
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
-    function obfuscateSecrets(object){
-        if(typeof object !== 'object'){return object;}
-        try {
-            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
-        } catch (error) {
-            if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
-                    "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
-            }
-            //window.qmLog.error(error, object); // Avoid infinite recursion
-            return object;
-        }
-        for (var propertyName in object) {
-            if (object.hasOwnProperty(propertyName)) {
-                var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
-                    object[propertyName] = "HIDDEN";
-                } else {
-                    object[propertyName] = obfuscateSecrets(object[propertyName]);
-                }
-            }
-        }
-        return object;
-    }
+
     function getTestUrl() {
         function getCurrentRoute() {
             var parts = window.location.href.split("#/app");
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if(window.qmUser){
-            url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);
+        if(qm.getUser()){
+            url +=  "?userEmail=" + encodeURIComponent(qm.getUser().email);
         }
         return url;
     }
@@ -256,10 +258,10 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         console.error('API ERROR URL ' + metaData.test_api_url, metaData);
         delete metaData.apiResponse;
     }
+    metaData.local_notifications = qm.storage.getItem(qm.items.scheduledLocalNotifications);
     //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
-    //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
-    metaData = obfuscateSecrets(metaData);
+    metaData = qmLog.obfuscateSecrets(metaData);
     return metaData;
 };
 window.qmLog.setupBugsnag = function(){
@@ -272,7 +274,8 @@ window.qmLog.setupBugsnag = function(){
             Bugsnag.appVersion = qm.getAppSettings().versionNumber;
             Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
-        if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
+        Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+        if(qm.getUser()){Bugsnag.user = qmLog.obfuscateSecrets(qm.getUser());}
     } else {
         qmLog.error('Bugsnag is not defined');
     }
@@ -281,8 +284,8 @@ window.qmLog.setupBugsnag = function(){
 window.qmLog.setupUserVoice = function() {
     if (typeof UserVoice !== "undefined") {
         UserVoice.push(['identify', {
-            email: qmUser.email, // User’s email address
-            name: qmUser.displayName, // User’s real name
+            email: qm.getUser().email, // User’s email address
+            name: qm.getUser().displayName, // User’s real name
             created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
             id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
             type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
@@ -305,7 +308,7 @@ window.qmLog.setupIntercom = function() {
         user_id: qm.userHelper.getUserFromLocalStorage().id,
         app_name: qm.getAppSettings().appDisplayName,
         app_version: qm.getAppSettings().versionNumber,
-        platform: qm.getPlatform()
+        platform: qm.platform.getCurrentPlatform()
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
@@ -381,7 +384,7 @@ window.qmLog.authDebug = function(message) {
     if(!qmLog.authDebugEnabled && window.localStorage){
         qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
     }
-    if(qmLog.authDebugEnabled){
+    if(qmLog.authDebugEnabled || qmLog.debugMode){
         if(qm.platform.isMobile()){
             qmLog.error(message, message, null);
         } else {

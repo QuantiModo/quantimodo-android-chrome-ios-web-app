@@ -3703,6 +3703,12 @@ gulp-header@1.8.2:
     object-assign "*"
     through2 "^2.0.0"
 
+gulp-if-else@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/gulp-if-else/-/gulp-if-else-1.0.3.tgz#4e08b15c03f90aeca7bc319a0f5857fe2d7474c3"
+  dependencies:
+    gulp-util "^3.0.1"
+
 gulp-if@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/gulp-if/-/gulp-if-2.0.2.tgz#a497b7e7573005041caa2bc8b7dda3c80444d629"
@@ -7272,9 +7278,9 @@ qs@~6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
-quantimodo@5.9.20115:
-  version "5.9.20115"
-  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.9.20115.tgz#5eb7914b5dc9cdb127236dcc6e1e94b693d317f0"
+quantimodo@5.9.42418:
+  version "5.9.42418"
+  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.9.42418.tgz#3e5afef16bee5886eeb27f4adf31179f27fc8c58"
   dependencies:
     superagent "3.5.2"
 

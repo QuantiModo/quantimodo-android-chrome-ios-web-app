@@ -1,6 +1,6 @@
 angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope", "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
                                       $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
-    VariableSettingsController.$inject = ["qmService", "qmLogService", "dataToPass"];
+    VariableSettingsController.$inject = ["qmService", "qmLogService", "dialogParameters"];
     $scope.controller_name = "StudyCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on("$ionicView.beforeEnter", function() {
@@ -187,7 +187,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                     { text: '<i class="icon ion-log-in"></i>' + getCauseVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-log-out"></i>' + getEffectVariableName().substring(0,15) + ' Settings' },
                     { text: '<i class="icon ion-thumbsup"></i> Seems Right' },
-                    qmService.actionSheetButtons.refresh
+                    qmService.actionSheets.actionSheetButtons.refresh
                 ],
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -219,7 +219,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             clickOutsideToClose: false,
             fullscreen: false,
             locals: {
-                dataToPass: {
+                dialogParameters: {
                     propertyToUpdate: propertyToUpdate,
                     buttonText: "Save",
                     variable: variable
@@ -234,14 +234,14 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             });
         }, function() {qmLogService.debug('User cancelled selection', null);});
     };
-    function VariableSettingsController(qmService, qmLogService, dataToPass) {
+    function VariableSettingsController(qmService, qmLogService, dialogParameters) {
         var self = this;
-        self.title = qmService.explanations[dataToPass.propertyToUpdate].title;
-        self.helpText = qmService.explanations[dataToPass.propertyToUpdate].explanation;
-        self.placeholder = qmService.explanations[dataToPass.propertyToUpdate].title;
-        if(qmService.explanations[dataToPass.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dataToPass.propertyToUpdate].unitName;}
-        self.value = dataToPass.variable[dataToPass.propertyToUpdate];
-        self.unitName = qmService.explanations[dataToPass.propertyToUpdate].unitName;
+        self.title = qmService.explanations[dialogParameters.propertyToUpdate].title;
+        self.helpText = qmService.explanations[dialogParameters.propertyToUpdate].explanation;
+        self.placeholder = qmService.explanations[dialogParameters.propertyToUpdate].title;
+        if(qmService.explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dialogParameters.propertyToUpdate].unitName;}
+        self.value = dialogParameters.variable[dialogParameters.propertyToUpdate];
+        self.unitName = qmService.explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);
@@ -252,8 +252,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $mdDialog.cancel();
         };
         self.finish = function() {
-            dataToPass.variable[dataToPass.propertyToUpdate] = self.value;
-            $mdDialog.hide(dataToPass.variable);
+            dialogParameters.variable[dialogParameters.propertyToUpdate] = self.value;
+            $mdDialog.hide(dialogParameters.variable);
         };
     }
 }]);

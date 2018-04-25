@@ -132,7 +132,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'Please change the latest reminder time and try again or select a different earliest reminder time.', ev);
 					} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 						$rootScope.user.earliestReminderTime = newEarliestReminderTime;
-                        var params = qmService.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
+                        var params = qm.timeHelper.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
 					}
@@ -161,7 +161,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 							'change the earliest reminder time and try again or select a different latest reminder time.', ev);
 					} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 						$rootScope.user.latestReminderTime = newLatestReminderTime;
-                        var params = qmService.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
+                        var params = qm.timeHelper.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
 						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
                         qmService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
 					}
@@ -208,7 +208,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			callback();
 			return;
 		}
-		$scope.updateEmailAndExecuteCallback(callback);
+        qmService.updateEmailAndExecuteCallback(callback);
 	};
 	var exportRequestAlert = function (ev) {
         qmService.showMaterialAlert('Export Request Sent!', 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!', ev);
@@ -298,8 +298,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.backgroundLocationTracking = !$scope.backgroundLocationTracking;
         if($scope.backgroundLocationTracking){
             qm.storage.setItem('bgGPS', 1);
-            qmLogService.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
-            qmService.backgroundGeolocationInit();
+            qmLogService.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
+            qmService.backgroundGeolocationStartIfEnabled();
             qmService.showInfoToast('Background location tracking enabled');
             qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         } else  {

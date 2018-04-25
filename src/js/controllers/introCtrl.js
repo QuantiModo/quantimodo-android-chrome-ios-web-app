@@ -13,7 +13,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             if($state.current.name.indexOf('intro') !== -1){
                 // Called to navigate to the main app
                 if(qmService.sendToLogin()){ return; }
-                qmService.goToState('app.onboarding');
+                if(qm.platform.isDesignMode()){
+                    qmService.goToState(qmStates.configuration);
+                } else {
+                    qmService.goToState(qmStates.onboarding);
+                }
             } else {
                 console.error('Why are we calling $scope.myIntro.startApp from state other than into?');
             }

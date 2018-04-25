@@ -82,7 +82,6 @@
   </plugin>
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <chcp>
-        <config-file url="https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json"/>
         <auto-download enabled="true" />
         <auto-install enabled="true" />
     </chcp>
@@ -90,7 +89,7 @@
   <plugin name="cordova-plugin-console" spec="~1.0.3"/>
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
-  <plugin name="cordova-plugin-drawoverapps" spec="https://github.com/mikepsinn/cordova-plugin-drawoverapps#335ccb112fc791364d20ad053360daff4f7b2def" />
+  <plugin name="cordova-plugin-drawoverapps" spec="https://github.com/mikepsinn/cordova-plugin-drawoverapps#cordova6.5" />
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
   <plugin name="cordova-plugin-inappbrowser" version="2.0.2"/>
   <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
@@ -103,7 +102,13 @@
   <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
     <variable name="REVERSED_CLIENT_ID" value="REVERSED_CLIENT_ID_PLACEHOLDER" />
   </plugin>
-  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="https://github.com/mikepsinn/cordova-plugin-mauron85-background-geolocation-phonegapbuild#a404c12b6187a633ed9c8c9bd6532f9fbf2c700e">
+<!--    <plugin name="cordova-plugin-mauron85-background-geolocation" version="2.3.5">
+        <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
+        <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="25+" />
+        <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" />
+        <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
+    </plugin>-->
+  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="https://github.com/mauron85/cordova-plugin-background-geolocation#3c0ffb0d680f4bdcac10da9ae686a406ce3f940d">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
   </plugin>
   <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.8" >

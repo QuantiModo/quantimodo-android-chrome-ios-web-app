@@ -53,13 +53,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-                    qmService.actionSheetButtons.historyAll,
-					qmService.actionSheetButtons.reminderAdd,
-                    qmService.actionSheetButtons.measurementAddSearch,
-            		qmService.actionSheetButtons.charts,
-                    qmService.actionSheetButtons.settings,
-                    qmService.actionSheetButtons.help,
-                    qmService.actionSheetButtons.refresh
+                    qmService.actionSheets.actionSheetButtons.historyAll,
+					qmService.actionSheets.actionSheetButtons.reminderAdd,
+                    qmService.actionSheets.actionSheetButtons.measurementAddSearch,
+            		qmService.actionSheets.actionSheetButtons.charts,
+                    qmService.actionSheets.actionSheetButtons.settings,
+                    qmService.actionSheets.actionSheetButtons.help,
+                    qmService.actionSheets.actionSheetButtons.refresh
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -79,7 +79,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 					qmService.showInfoToast('Skipping all reminder notifications...');
 					qmService.skipAllTrackingReminderNotificationsDeferred()
 						.then(function(){
-							if(qmService.localNotificationsEnabled){qmService.setNotificationBadge(0);}
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							qmLogService.error(null, error);
@@ -102,7 +101,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.refreshTrackingReminderNotifications();
         }
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
+        autoRefresh();
 	});
+	function autoRefresh() {
+	    $timeout(function () {
+            if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                $scope.refreshTrackingReminderNotifications();
+                autoRefresh();
+            }
+        }, 30 * 60 * 1000)
+    }
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug('RemindersInboxCtrl afterLeave', null);
 		$rootScope.hideHomeButton = false;
@@ -357,7 +365,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 		}, function (error) {
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
-			qmLogService.error(null, '$scope.refreshTrackingReminderNotifications: ' + error);
+			qmLogService.error('$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
 	};
@@ -411,14 +419,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		var buttons = [
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
-            qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.historyAllVariable
+            qmService.actionSheets.actionSheetButtons.charts,
+            qmService.actionSheets.actionSheetButtons.historyAllVariable
         ];
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
         buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
-        buttons.push(qmService.actionSheetButtons.variableSettings);
+        buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',

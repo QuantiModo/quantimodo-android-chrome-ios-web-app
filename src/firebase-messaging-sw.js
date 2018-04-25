@@ -28,7 +28,11 @@ firebase.initializeApp(config);
 var messaging = firebase.messaging();
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
-    console.log(pushData);
+    console.log("push data: ", pushData);
+    if(!pushData.title && pushData.data) {
+        console.log("Weird push format");
+        pushData = pushData.data;
+    }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
         var notificationOptions = {
             actions: [],
@@ -40,7 +44,11 @@ function showNotification(pushData) {
             //lang: string,
             tag: JSON.stringify(pushData)
         };
-        qm.allActions = JSON.parse(pushData.actions);
+        try {
+            qm.allActions = JSON.parse(pushData.actions);
+        } catch (error) {
+            console.error("could not parse actions in pushData: ", pushData);
+        }
         for (var i = 0; i < qm.allActions.length; i++) {
             notificationOptions.actions[i] = {
                 action: qm.allActions[i].callback,
@@ -55,6 +63,9 @@ function showNotification(pushData) {
         }
         //event.waitUntil(self.registration.showNotification(title, pushData));
         console.log("Notification options", notificationOptions);
+        if(!pushData.title || pushData.title === "undefined"){
+            qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
+        }
         self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
@@ -111,7 +122,9 @@ function runFunction(name, arguments)
 self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notification click Received: ' + event.action);
     event.notification.close();
-    if(event.action === ""){qmLog.error("No event action provided! event is: ", null, event);}
+    if(event.action === ""){
+        qmLog.error("No event action provided! event is: ", null, event);
+    }
     if (runFunction(event.action, event.notification.data)) {return;}
     // This looks to see if the current is already open and focuses if it is
     event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {

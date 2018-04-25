@@ -109,19 +109,25 @@ window.qm.chrome = {
         });
     },
     getAllWindowsFocusOrCreateNewPopup: function (windowParams) {
-        console.log("getAllWindowsFocusOrCreateNewPopup");
-        chrome.windows.getAll(function (windows) {
-            for (var i = 0; i < windows.length; i++) {
-                var window = windows[i];
-                console.log("current window", window);
-                if(window.type === "popup"){
-                    console.log("Focusing existing popup", window);
-                    chrome.windows.update(window.id, {focused: true});
-                    return;
-                }
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            if(!user.pushNotificationsEnabled){
+                qmLog.pushDebug("Not showing chrome popup because notifications are disabled");
+                return;
             }
-            qm.chrome.createPopup(windowParams);
-        });
+            console.log("getAllWindowsFocusOrCreateNewPopup");
+            chrome.windows.getAll(function (windows) {
+                for (var i = 0; i < windows.length; i++) {
+                    var window = windows[i];
+                    console.log("current window", window);
+                    if(window.type === "popup"){
+                        console.log("Focusing existing popup", window);
+                        chrome.windows.update(window.id, {focused: true});
+                        return;
+                    }
+                }
+                qm.chrome.createPopup(windowParams);
+            });
+        })
     },
     handleNotificationClick: function(notificationId) {
         window.qmLog.debug('onClicked: notificationId:' + notificationId);
@@ -130,6 +136,17 @@ window.qm.chrome = {
         if(!notificationId){notificationId = null;}
         qm.chrome.updateChromeBadge(0);
         qmLog.info("notificationId: "+ notificationId);
+        /**
+         * @return {boolean}
+         */
+        function IsJsonString(str) {
+            try {
+                JSON.parse(str);
+            } catch (exception) {
+                return false;
+            }
+            return true;
+        }
         if(notificationId === "moodReportNotification") {
             qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.facesWindowParams);
         } else if (notificationId === "signin") {
@@ -238,27 +255,33 @@ window.qm.chrome = {
         };
     },
     showRatingOrInboxPopup: function () {
-        qm.notifications.refreshIfEmptyOrStale(function () {
-            if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
-                qmLog.info("No notifications not opening popup");
-                return false;
-            }
-            if(qm.getUser().combineNotifications){
-                qm.chrome.createSmallInboxNotification();
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            if(!user.pushNotificationsEnabled){
+                qmLog.pushDebug("Not showing chrome popup because notifications are disabled");
                 return;
             }
-            window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
-            if(window.trackingReminderNotification){
-                qm.chrome.showRatingPopup(window.trackingReminderNotification);
-            } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
-                qmLog.info("No rating notifications so opening compactInboxWindow popup");
-                qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
-            } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
-                qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
-                qm.chrome.createSmallInboxNotification();
-            }
-        }, function (err) {
-            qmLog.error("Not showing popup because of notification refresh error: "+ err);
+            qm.notifications.refreshIfEmptyOrStale(function () {
+                if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
+                    qmLog.info("No notifications not opening popup");
+                    return false;
+                }
+                if(qm.getUser().combineNotifications){
+                    qm.chrome.createSmallInboxNotification();
+                    return;
+                }
+                window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
+                if(window.trackingReminderNotification){
+                    qm.chrome.showRatingPopup(window.trackingReminderNotification);
+                } else if (qm.storage.getItem(qm.items.useSmallInbox)) {
+                    qmLog.info("No rating notifications so opening compactInboxWindow popup");
+                    qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.compactInboxWindowParams);
+                } else if (qm.notifications.getNumberInGlobalsOrLocalStorage()) {
+                    qmLog.info("Got an alarm so checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)");
+                    qm.chrome.createSmallInboxNotification();
+                }
+            }, function (err) {
+                qmLog.error("Not showing popup because of notification refresh error: "+ err);
+            });
         });
     },
     showRatingPopup: function(trackingReminderNotification){
@@ -295,6 +318,14 @@ window.qm.chrome = {
     }
 };
 if(typeof screen !== "undefined"){
+    function multiplyScreenHeight(factor) {
+        if(typeof screen === "undefined"){return false;}
+        return parseInt(factor * screen.height);
+    }
+    function multiplyScreenWidth(factor) {
+        if(typeof screen === "undefined"){return false;}
+        return parseInt(factor * screen.height);
+    }
     qm.chrome.windowParams = {
         introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
         facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},

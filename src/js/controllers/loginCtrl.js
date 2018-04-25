@@ -2,7 +2,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
-    $scope.state = { loading: false};
+    $scope.state = { loading: false, alreadyRetried: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = qm.getAppSettings().headline;
     qmService.navBar.setFilterBarSearchIcon(false);
@@ -103,7 +103,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             navigator.splashscreen.hide();
         }
         qmService.hideLoader(0.5);
-        qmService.getDevCredentials();
+        if(qm.platform.isDevelopmentMode()){qmService.getDevCredentials();}
     });
     $scope.register = function() {
         var register = true;
@@ -129,7 +129,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode);  // get access token from authorization code
                         ref.close();  // close the sibling tab
-                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                        // Called twice!  Let's do this later after the user understands the point of popups
+                        //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 }
@@ -147,7 +148,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     };
     $scope.login = function(register, event) {
-        if(window.developmentMode && window.devCredentials){
+        if(qm.platform.isDevelopmentMode() && window.devCredentials){
             //showLoginModal(event);
             qmLog.authDebug("$scope.login: has dev credentials");
             qmService.refreshUser();
@@ -182,8 +183,13 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.retryLogin = function(){
         qmLog.setAuthDebug(true);
         qmLog.error("Clicked retry login!");
-        $scope.circlePage.title = 'Please try logging in again';
-    }
+        if($scope.state.alreadyRetried){
+            showLoginModal()
+        } else {
+            $scope.state.alreadyRetried = true;
+            $scope.circlePage.title = 'Please try logging in again';
+        }
+    };
     $scope.nativeSocialLogin = function(provider, accessToken){
         qmLog.authDebug('$scope.nativeSocialLogin: Going to try to qmService.getTokensAndUserViaNativeSocialLogin for ' + provider + ' provider', null);
         qmService.getTokensAndUserViaNativeSocialLogin(provider, accessToken).then(function(response){
@@ -207,7 +213,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                         ref.close();
                         var withJWT = true;
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
-                        qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                        // Called twice!  Let's do this later after the user understands the point of popups
+                        //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                     }
                     qmService.checkLoadStartEventUrlForErrors(ref, event);
                 });
@@ -246,7 +253,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.hideLoader();
                     qmLog.authDebug('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
-                    qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
+                    // Called twice!  Let's do this later after the user understands the point of popups
+                    //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
                 }, function (errorMessage) {
                     qmLog.setAuthDebug(true);
                     qmService.hideLoader();
@@ -322,7 +330,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmService.showBasicLoader();
             qmService.refreshUser().then(function () {
                 $mdDialog.hide();
-                qmService.goToState('app.remindersInbox');
+                qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
             });
         };
     }

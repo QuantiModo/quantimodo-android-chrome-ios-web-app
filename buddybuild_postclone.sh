@@ -15,11 +15,11 @@ chmod -R a+x ./hooks
 chmod -R a+x ./scripts
 
 echo "Running npm install -g gulp bower ionic cordova"
-npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower # Adding plugins from Github doesn't work on cordova@7.0.0
+npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli # Adding plugins from Github doesn't work on cordova@7.0.0
 
 echo "QUANTIMODO_CLIENT_ID is ${QUANTIMODO_CLIENT_ID}"
 
-if [ -z "${BUDDYBUILD_SCHEME}" ];
+if [[ "$PLATFORM" =~ ios" ]];
     then
         echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is not set ${BUDDYBUILD_SCHEME}"
         echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is not set ${BUDDYBUILD_SCHEME}"

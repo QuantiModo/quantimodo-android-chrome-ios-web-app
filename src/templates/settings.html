@@ -24,11 +24,18 @@
             <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
                 Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
-            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
-                <div><i class="icon ion-map"></i> &nbsp Record with Measurements &nbsp</div>
+            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)">
+                <div><i class="icon ion-map"></i> &nbsp
+                    <span ng-if="!platform.isMobile">Record with Measurements</span>
+                    <span ng-if="platform.isMobile">with Measurements</span>
+                    &nbsp
+                </div>
             </ion-toggle>
             <ion-toggle ng-model="backgroundLocationTracking" ng-change="backgroundLocationChange()">
-                <div><i class="icon ion-map"></i> &nbsp Ongoing Background Recording &nbsp</div>
+                <div><i class="icon ion-map"></i> &nbsp
+                    <span ng-if="!platform.isMobile">Ongoing Background Recording</span>
+                    <span ng-if="platform.isMobile">Background Recording</span>
+                    &nbsp</div>
             </ion-toggle>
         </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>

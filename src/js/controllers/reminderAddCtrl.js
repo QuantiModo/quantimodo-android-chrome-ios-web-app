@@ -48,6 +48,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     if(!$rootScope.user){qmService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...', null);
         var backView = $ionicHistory.backView();
+        qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
+            $scope.state.variableCategories = variableCategories;
+        });
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.sendToLoginIfNecessaryAndComeBack();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
@@ -75,7 +78,15 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         } else if (qm.getPrimaryOutcomeVariable()){
             $scope.state.variableObject = qm.getPrimaryOutcomeVariable();
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
-        } else { $scope.goBack(); }
+        } else {
+            $scope.goBack();
+        }
+        if($stateParams.skipReminderSettingsIfPossible){
+            //$scope.save();
+        }
+        if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
+            $scope.state.showAddVariableCard = true;
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('ReminderAddCtrl beforeEnter...');
@@ -281,7 +292,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         return frequencyChart[frequencyName];
     }
     $scope.save = function(){
-        qmLogService.info('Clicked save reminder', null);
+        qmLogService.info('Clicked save reminder');
         if($stateParams.favorite){
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
@@ -331,13 +342,12 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         applyReminderTimesToReminder();
         if($scope.state.trackingReminder.id){qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
-        qmService.storage.addToOrReplaceByIdAndMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
-            qmService.syncTrackingReminders(true).then(function () {
-                var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
-                qmService.showInfoToast(toastMessage);
-                qmService.hideLoader();
-                $scope.goBack(); // We can't go back until we get new notifications
-            });
+        qmService.addToTrackingReminderSyncQueue(remindersArray);
+        qmService.syncTrackingReminders(true).then(function () {
+            var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
+            qmService.showInfoToast(toastMessage);
+            qmService.hideLoader();
+            $scope.goBack(); // We can't go back until we get new notifications
         });
     };
     function getFrequencyNameFromFrequencySeconds(frequencyName) {
@@ -410,7 +420,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
             $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
         }
-        $scope.state.trackingReminder = qmService.addImagePaths($scope.state.trackingReminder);
+        $scope.state.trackingReminder = qmService.addVariableCategoryImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
         setHideDefaultValueField();
     };
@@ -493,10 +503,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmLogService.debug('ReminderAddCtrl.showActionSheetMenu:   $scope.state.variableObject: ', null, $scope.state.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
-                qmService.actionSheetButtons.measurementAddVariable,
-                qmService.actionSheetButtons.charts,
-                qmService.actionSheetButtons.historyAllVariable,
-                qmService.actionSheetButtons.variableSettings,
+                qmService.actionSheets.actionSheetButtons.measurementAddVariable,
+                qmService.actionSheets.actionSheetButtons.charts,
+                qmService.actionSheets.actionSheetButtons.historyAllVariable,
+                qmService.actionSheets.actionSheetButtons.variableSettings,
                 { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',

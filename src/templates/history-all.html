@@ -16,7 +16,7 @@
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
-             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
+             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
           </div>
          <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
              <div class="item" >
@@ -52,7 +52,7 @@
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
                 </p>
                 <div class="buttons">
-                    <button ng-if="historyItem.productUrl" class="button button-assertive" ng-click="openUrl(historyItem.productUrl, 'no', '_system')">
+                    <button ng-if="historyItem.productUrl" class="button button-assertive" ng-click="openUrl(historyItem.productUrl, 'yes', '_system')">
                         <md-tooltip md-direction="down">Buy Now</md-tooltip> <i class="icon ion-bag"></i>
                     </button>
                     <button ng-if="!platform.isMobile" class="button button-dark" ng-click="showActionSheetForMeasurement(historyItem)">
@@ -61,7 +61,7 @@
                 </div>
             </div>
         </ion-list>
-         <div class="card" ng-show="state.loading">
+         <div class="card" ng-show="state.loading" style="border-radius: 15px;">
              <div class="item" > <div class="row">
                  <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp {{state.loadingText}}</p>
              </div> </div>

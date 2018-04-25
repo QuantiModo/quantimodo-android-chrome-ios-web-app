@@ -34,7 +34,6 @@ angular.module('starter',
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
-    window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qm.appsManager.loadPrivateConfigFromJsonFile();
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
@@ -1139,7 +1138,8 @@ angular.module('starter',
                 title: "Manage Scheduled Meds",
                 helpText: "Here you can add and manage your scheduled medications.  Long-press on a medication for more options.  You can drag down to refresh.",
                 addButtonText: "Add scheduled medication",
-                variableCategoryName : 'Treatments'
+                variableCategoryName : 'Treatments',
+                trackingReminders: null
             },
             views: {
                 'menuContent': {
@@ -1186,7 +1186,8 @@ angular.module('starter',
                 }
             },
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             }
         })
         .state(qmStates.remindersManageCategory, {
@@ -1198,7 +1199,9 @@ angular.module('starter',
                     controller: 'RemindersManageCtrl'
                 }
             },
-            params: {}
+            params: {
+                trackingReminders: null
+            }
         })
         .state(qmStates.remindersList, {
             cache: false,
@@ -1210,7 +1213,8 @@ angular.module('starter',
                 }
             },
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             }
         })
         .state(qmStates.remindersListCategory, {
@@ -1222,13 +1226,16 @@ angular.module('starter',
                     controller: 'RemindersManageCtrl'
                 }
             },
-            params: {}
+            params: {
+                trackingReminders: null
+            }
         })
         .state(qmStates.variableList, {
             cache: true,
             url: "/variable-list",
             params: {
-                variableCategoryName : null
+                variableCategoryName : null,
+                trackingReminders: null
             },
             views: {
                 'menuContent': {
@@ -1240,7 +1247,9 @@ angular.module('starter',
         .state(qmStates.variableListCategory, {
             cache: true,
             url: "/variable-list-category/:variableCategoryName",
-            params: {},
+            params: {
+                trackingReminders: null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",
@@ -1260,7 +1269,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: false,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {
@@ -1316,7 +1326,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 favorite: true,
-                doneState: null
+                doneState: null,
+                skipReminderSettingsIfPossible: null
             },
             views: {
                 'menuContent': {

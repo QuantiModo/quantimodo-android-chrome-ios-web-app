@@ -9,7 +9,7 @@
             <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
                 <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
             </md-button>
-            <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+            <md-button id="search-cancel-button" class="md-icon-button" ng-click="ctrl.cancel()">
                 <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
             </md-button>
         </div>
@@ -17,7 +17,7 @@
     <md-dialog-content ng-cloak>
         <div class="md-dialog-content">
             <form ng-submit="$event.preventDefault()">
-                <p ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
+                <p id="variable-search-help-text" ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
                 <md-autocomplete id="variable-search-box"
                         md-no-cache="false"
                         md-selected-item="ctrl.selectedItem"
@@ -31,19 +31,19 @@
                         placeholder="{{ctrl.placeholder}}"
                         md-menu-class="autocomplete-custom-template"
                         md-autofocus="true">
-                    <md-item-template>
-                        <span class="item-title">
+                    <md-item-template id="variable-item">
+                        <span class="item-title" id="variable-item-title">
                             <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
                             <i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>
                             <span> {{item.name}} </span>
                         </span>
-                        <span class="item-metadata">
+                        <span class="item-metadata" id="variable-item-sub-title">
                             <span><small>{{item.subtitle}}</small></span>
                         </span>
                     </md-item-template>
-                    <md-not-found>
-                        <span ng-if="ctrl.dataToPass.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
-                        <a ng-if="!ctrl.dataToPass.doNotCreateNewVariables" ng-click="ctrl.createNewVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
+                    <md-not-found  id="variable-not-found">
+                        <span ng-if="ctrl.dialogParameters.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
+                        <a ng-if="!ctrl.dialogParameters.doNotCreateNewVariables" ng-click="ctrl.createNewVariable(ctrl.searchText)">Create new "{{ctrl.searchText}}" variable</a>
                     </md-not-found>
                 </md-autocomplete>
             </form>
