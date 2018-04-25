@@ -1080,6 +1080,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
             JSON.stringify(request), null, options.stackTrace);
         qmLogService.debug('HEADERS: ' + JSON.stringify(headers), null, options.stackTrace);
+        qm.auth.deleteAllAccessTokens();
         setAfterLoginGoToUrlAndSendToLogin();
     }
     function getPathWithoutQuery(request) {
