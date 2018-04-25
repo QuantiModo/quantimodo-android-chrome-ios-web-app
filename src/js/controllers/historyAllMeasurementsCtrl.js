@@ -99,7 +99,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 	};
 	$scope.getHistory = function(){
         if($scope.state.loading){return qmLog.info("Already getting measurements!");}
-        if(!$scope.state.moreDataCanBeLoaded){return qmLog.info("No more measurements!");}
+        if(!$scope.state.moreDataCanBeLoaded){
+            hideLoader();
+            return qmLog.info("No more measurements!");
+        }
         $scope.state.loading = true;
         if(!$scope.state.history){$scope.state.history = [];}
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
