@@ -232,7 +232,22 @@ var qm = {
     client: {
         getClientId: function () {
             if(QUANTIMODO_CLIENT_ID){return QUANTIMODO_CLIENT_ID;}
-
+            return null;
+        },
+        setClientId: function(clientId){
+            QUANTIMODO_CLIENT_ID = clientId;
+        },
+        clientIds: {
+            medimodo: 'medimodo',
+            quantimodo: 'quantimodo'
+        }
+    },
+    buildSettings: {
+        getDoNotMinify: function(){
+            return doNotMinify;
+        },
+        setDoNotMinify(value){
+            doNotMinify = value;
         }
     }
 };
@@ -1549,6 +1564,7 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
 });
 var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
+    if(qm.buildSettings.getDoNotMinify()){cb(); return;}
     pump([
         gulp.src('src/js/**/*.js'),
         uglify(),
@@ -2129,8 +2145,10 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
-    return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
-        '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon']);
+    if(!qm.buildSettings.getDoNotMinify()){
+        return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
+            '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon']);
+    }
 });
 gulp.task('_copy-src-to-www', [], function () {
     return copyFiles('src/**/*', 'www', []);
@@ -2755,14 +2773,14 @@ gulp.task('cordova-hcp-deploy', [], function (callback) {
 gulp.task('ios-sim-fix', [], function (callback) {
     execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
-gulp.task('_cordova-hcp-pre-deploy', [], function (callback) {
+gulp.task('cordova-hcp-dev-config-and-deploy-medimodo', [], function (callback) {
+    qm.client.setClientId(qm.client.clientIds.medimodo);
+    qm.buildSettings.setDoNotMinify(true);
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
     runSequence(
-        'cleanWwwFolder',
         'configureApp',
         'cordova-hcp-config',
-        //'deleteAppSpecificFilesFromWww',
-        //'cordova-hcp-build',
-        //'cordova-hcp-deploy',
+        'cordova-hcp-build',
+        'cordova-hcp-deploy',
         callback);
 });

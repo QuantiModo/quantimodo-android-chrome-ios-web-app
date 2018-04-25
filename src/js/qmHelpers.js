@@ -3,7 +3,7 @@
 /** @namespace window.qm.chrome */
 /* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
-String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+String.prototype.toCamelCase = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 window.qm = {
     analytics: {
         eventCategories: {
@@ -143,6 +143,9 @@ window.qm = {
             //     clientId = "default"; // On mobile
             // }
             if(!qm.clientId){
+                qm.clientId = qm.api.getClientIdFromAwsPath();
+            }
+            if(!qm.clientId){
                 qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
@@ -181,6 +184,10 @@ window.qm = {
             if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
             if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
             if(clientId){qm.storage.setItem('clientId', clientId);}
+            return clientId;
+        },
+        getClientIdFromAwsPath: function() {
+            var clientId = qm.stringHelper.getStringBetween(window.location.href, 's3.amazonaws.com/', '/dev');
             return clientId;
         },
         getClientIdFromSubDomain: function(){
@@ -1750,6 +1757,16 @@ window.qm = {
             if(!object){return false;}
             var haystack = JSON.stringify(object).toLowerCase();
             return haystack.indexOf(needle) !== -1;
+        },
+        snakeToCamelCaseProperties: function(object){
+            for (var prop in object) {
+                if (object.hasOwnProperty(prop)) {
+                    var camel = prop.toCamelCase();
+                    object[camel] = object[prop];
+                    delete object[prop];
+                }
+            }
+            return object;
         }
     },
     platform: {
@@ -2240,6 +2257,15 @@ window.qm = {
                 return  haystack.slice(0, i);
             else
                 return haystack;
+        },
+        toCamelCaseCase: function(string) {
+            return string.toCamelCase();
+        },
+        getStringBetween: function(string, firstString, secondString){
+            var between = string.match(firstString+"(.*)"+secondString);
+            if(!between){return null;}
+            console.log(between[1] + " is between " + firstString + " and " + secondString + " in " +  string);
+            return between[1];
         }
     },
     studyHelper: {
@@ -2415,7 +2441,7 @@ window.qm = {
                 var parameterKeyValuePairs = queryString.split('&');
                 for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                    if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                    if (currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()) {
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
                         if(typeof shouldDecode !== "undefined")  {
                             return decodeURIComponent(currentParameterKeyValuePair[1]);
@@ -2495,6 +2521,10 @@ window.qm = {
         getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
             function checkUserId(user) {
+                if(user && user.ID){
+                    user.id = user.ID;
+                    user = qm.objectHelper.snakeToCamelCaseProperties(user);
+                }
                 if(user && !user.id){
                     qmLog.error("No user id in "+JSON.stringify(qmUser));
                     qm.userHelper.setUser(null);
@@ -2709,8 +2739,8 @@ window.qm = {
                         successHandler(userVariable);
                         return;
                     }
-                    qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
+                qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
