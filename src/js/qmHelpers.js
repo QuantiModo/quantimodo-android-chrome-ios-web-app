@@ -2739,8 +2739,8 @@ window.qm = {
                         successHandler(userVariable);
                         return;
                     }
-                    qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
+                qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
