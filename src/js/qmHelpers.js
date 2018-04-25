@@ -2508,7 +2508,7 @@ window.qm = {
         getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
             function checkUserId(user) {
-                if(user.ID){
+                if(user && user.ID){
                     user.id = user.ID;
                     user = qm.objectHelper.snakeToCamelCaseProperties(user);
                 }
