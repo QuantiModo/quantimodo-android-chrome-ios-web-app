@@ -2632,12 +2632,12 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     var chcpJson = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
-        "s3region": "eu-west-1",
+        "s3region": "us-east-1",
         "s3prefix": appSettings.clientId + "/"+path+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
-        "content_url": "https://s3-eu-west-1.amazonaws.com/" + appSettings.clientId + "/" + path
+        "content_url": "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
         if(err) {return qmLog.error(err);}
@@ -2739,12 +2739,14 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
-    execute("cordova plugin add cordova-hot-code-push-local-dev-addon", function () {
-        execute(runCommand, function () {
+    cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
+    execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
+        //execute(runCommand, function () {
             execute("cordova-hcp server", function () {
+                qmLog.info("Execute command "+ runCommand + " in new terminal now");
                 //callback();
             }, false, false);
-        }, false, false);
+        //}, false, false);
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', [], function (callback) {
