@@ -910,14 +910,14 @@ window.qm = {
                 return accessToken;
             } else {
                 qmLog.error('No expiresAtMilliseconds!');
-                Bugsnag.notify('No expiresAtMilliseconds!',
+                qmLog.error('No expiresAtMilliseconds!',
                     'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                     {groupingHash: 'No expiresAtMilliseconds!'},
                     "error");
             }
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
             qmLog.error(groupingHash);
-            Bugsnag.notify(groupingHash,
+            qmLog.error(groupingHash,
                 'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                 {groupingHash: groupingHash}, "error");
         },

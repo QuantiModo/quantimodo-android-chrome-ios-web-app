@@ -13,19 +13,15 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
     var qmLogService = {};
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
-        Bugsnag.context = $state.current.name;
+        qmLog.context = $state.current.name;
         return message;
     }
     qmLogService.setupBugsnag = function(){
         var deferred = $q.defer();
-        if (typeof Bugsnag !== "undefined") {
-            qmLog.setupBugsnag();
-            Bugsnag.metaData.platform = ionic.Platform.platform();
-            Bugsnag.metaData.platformVersion = ionic.Platform.version();
-            deferred.resolve();
-        } else {
-            deferred.reject('Bugsnag is not defined');
-        }
+        qmLog.setupBugsnag();
+        qmLog.metaData.platform = ionic.Platform.platform();
+        qmLog.metaData.platformVersion = ionic.Platform.version();
+        deferred.resolve();
         return deferred.promise;
     };
     qmLogService.debug = function (name, message, metaData, stackTrace) {
@@ -54,7 +50,7 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
     qmLogService.exception = function(exception, name, metaData){
         qmLogService.error('ERROR: ' + exception.message);
         qmLogService.setupBugsnag().then(function () {
-            Bugsnag.notifyException(exception, name, metaData);
+            qmLog.errorException(exception, name, metaData);
         }, function (error) {qmLogService.error(error);});
     };
     return qmLogService;
