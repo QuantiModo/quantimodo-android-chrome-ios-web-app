@@ -25,8 +25,36 @@
                 </a>
                 <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
             </div>
-            <div ng-bind-html="planFeaturesCard.priceHtml"></div><br><br>
-            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+            <span ng-if="!platform.isWebOrChrome"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
+            <div ng-cloak name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;">
+                <div class="md-dialog-content">
+                    <md-radio-group ng-model="productId">
+                        <md-radio-button value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                        <md-radio-button value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                    </md-radio-group>
+                    <md-input-container class="md-block">
+                        <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
+                        <input ng-model="state.coupon" placeholder="Coupon Code (optional)" ng-required="false">
+                    </md-input-container>
+                    <form action="/charge" method="post" id="payment-form">
+                        <div class="form-row">
+                            <!--<label for="card-element">Credit or debit card</label>-->
+                            <div id="card-element">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+                        </div>
+                        <br>
+                        <button class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+                        <!--<button>Submit Payment</button>-->
+                    </form>
+                </div>
+            </div>
+            <span ng-if="!platform.isWebOrChrome" >
+                <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+            </span>
             <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br><br>
             <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
         </div>
