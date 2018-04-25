@@ -108,7 +108,7 @@
         <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" />
         <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
     </plugin>-->
-  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="https://github.com/mikepsinn/cordova-plugin-mauron85-background-geolocation-phonegapbuild#a404c12b6187a633ed9c8c9bd6532f9fbf2c700e">
+  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="https://github.com/mauron85/cordova-plugin-background-geolocation#3c0ffb0d680f4bdcac10da9ae686a406ce3f940d">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
   </plugin>
   <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.8" >
