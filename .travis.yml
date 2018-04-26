@@ -57,7 +57,6 @@ before_install:
 - bundle install
 - bundle update
 - export LANG=en_US.UTF-8
-#  jq ios-deploy cocoapods ; rvm use system ; pod setup ; fi
 - nvm install 8
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
 - yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
@@ -67,10 +66,7 @@ script:
 - yarn install
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-- cordova-hcp deploy
-#- gulp _build-all-chrome
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/build-ios.sh && ./travis/package-ios.sh ; fi
-#- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis/build-android.sh && ./travis/package-android.sh ; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
