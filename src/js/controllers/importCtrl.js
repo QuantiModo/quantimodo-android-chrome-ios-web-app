@@ -7,6 +7,10 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         searchText: null
     };
     function userCanConnect() {
+        if(!$rootScope.user){
+            qmService.refreshUser();
+            return true;
+        }
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
         return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
