@@ -1805,7 +1805,6 @@ window.qm = {
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
         getCurrentPlatform: function(){
-            return qm.platform.types.chromeExtension;
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
             if(qm.platform.isAndroid()){return qm.platform.types.android;}
             if(qm.platform.isIOS()){return qm.platform.types.ios;}
