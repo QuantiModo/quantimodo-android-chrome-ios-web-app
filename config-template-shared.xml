@@ -110,6 +110,7 @@
     </plugin>-->
   <plugin name="cordova-plugin-mauron85-background-geolocation" spec="https://github.com/mauron85/cordova-plugin-background-geolocation#3c0ffb0d680f4bdcac10da9ae686a406ce3f940d">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
+    <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
   </plugin>
   <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.8" >
       <param name="CAMERA_USAGE_DESCRIPTION" value="Easily track your diet using your phone's camera as a barcode scanner" />
