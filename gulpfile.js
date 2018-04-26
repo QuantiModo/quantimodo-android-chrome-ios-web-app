@@ -2767,8 +2767,11 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
         //}, false, false);
     }, false, false);
 });
-gulp.task('cordova-hcp-deploy', [], function (callback) {
+gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+});
+gulp.task('cordova-hcp-login', [], function (callback) {
+    chcpLogin(callback);
 });
 gulp.task('ios-sim-fix', [], function (callback) {
     execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
