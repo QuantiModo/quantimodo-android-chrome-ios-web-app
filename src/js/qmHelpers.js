@@ -2525,7 +2525,7 @@ window.qm = {
                     user = qm.objectHelper.snakeToCamelCaseProperties(user);
                 }
                 if(user && !user.id){
-                    qmLog.error("No user id in "+JSON.stringify(qmUser));
+                    console.error("No user id in "+ JSON.stringify(qmUser));  // Don't use qmLog.error to avoid infinite loop
                     qm.userHelper.setUser(null);
                     return null;
                 }
