@@ -614,6 +614,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         },
         storage: {},
+        search: {
+            reminderSearch: function(successHandler, ev, variableCategoryName){
+                var title = 'Enter a variable';
+                if(variableCategoryName){
+                    var variableCategory = qm.variableCategoryHelper.getVariableCategory(variableCategoryName);
+                    if(variableCategory){
+                        title =  "Enter a " + variableCategory.variableCategoryNameSingular;
+                    }
+                }
+                qmService.showVariableSearchDialog({
+                    title: title,
+                    helpText: "Pick one you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
+                    requestParams: {variableCategoryName : variableCategoryName, includePublic: true},
+                    skipReminderSettingsIfPossible: true
+                }, function (variableObject) {
+                    if(successHandler){successHandler(variableObject);}
+                    qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
+                }, null, ev);
+            }
+        }
     };
     qmService.actionSheets = {
         actionSheetButtons: {

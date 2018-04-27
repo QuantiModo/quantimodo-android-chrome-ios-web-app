@@ -45,15 +45,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToDefaultState();
     };
     $scope.goToReminderSearchFromOnboarding = function(ev) {
-        qmService.showVariableSearchDialog({
-            title: "Enter " + $scope.circlePage.variableCategoryName,
-            helpText: "Pick one you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
-            requestParams: {
-                variableCategoryName : $scope.circlePage.variableCategoryName,
-                includePublic: true,
-            },
-            skipReminderSettingsIfPossible: true
-        }, function (variableObject) {
+        qmService.search.reminderSearch(function (variableObject) {
             if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
                 $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
                 $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
@@ -64,8 +56,7 @@ angular.module('starter').controller('OnboardingCtrl',
                     variableObject.variableCategoryName.toLowerCase() + '?';
                 qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
             }
-            qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
-        }, null, ev);
+        }, ev, $scope.circlePage.variableCategoryName);
         // $rootScope.hideHomeButton = true;
         // qmService.rootScope.setProperty('hideMenuButton', true);
         // if(!$rootScope.user){
