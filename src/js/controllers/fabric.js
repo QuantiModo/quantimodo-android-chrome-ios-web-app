@@ -13,11 +13,7 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       } else {
          stacktrace = "No stack trace provided with exception";
       }
-      if (typeof Bugsnag !== "undefined") {
-          //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-          Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {groupingHash: message}, "error");
-      }
-
+      qmLog.error("ERROR: " + message, "Stacktrace: " + stacktrace, {groupingHash: message}, "error");
       if(typeof window.fabric !== 'undefined' && typeof window.fabric.Crashlytics !== 'undefined'){
         window.fabric.Crashlytics.addLog("ERROR: "+message+", stacktrace: "+stacktrace);
       } else {

@@ -3,7 +3,7 @@
 /** @namespace window.qm.chrome */
 /* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
-String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+String.prototype.toCamelCase = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 window.qm = {
     analytics: {
         eventCategories: {
@@ -143,6 +143,9 @@ window.qm = {
             //     clientId = "default"; // On mobile
             // }
             if(!qm.clientId){
+                qm.clientId = qm.api.getClientIdFromAwsPath();
+            }
+            if(!qm.clientId){
                 qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
@@ -181,6 +184,10 @@ window.qm = {
             if(!clientId){clientId = window.qm.urlHelper.getParam('lowerCaseAppName');}
             if(!clientId){clientId = window.qm.urlHelper.getParam('quantimodoClientId');}
             if(clientId){qm.storage.setItem('clientId', clientId);}
+            return clientId;
+        },
+        getClientIdFromAwsPath: function() {
+            var clientId = qm.stringHelper.getStringBetween(window.location.href, 's3.amazonaws.com/', '/dev');
             return clientId;
         },
         getClientIdFromSubDomain: function(){
@@ -903,14 +910,14 @@ window.qm = {
                 return accessToken;
             } else {
                 qmLog.error('No expiresAtMilliseconds!');
-                Bugsnag.notify('No expiresAtMilliseconds!',
+                qmLog.error('No expiresAtMilliseconds!',
                     'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                     {groupingHash: 'No expiresAtMilliseconds!'},
                     "error");
             }
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
             qmLog.error(groupingHash);
-            Bugsnag.notify(groupingHash,
+            qmLog.error(groupingHash,
                 'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                 {groupingHash: groupingHash}, "error");
         },
@@ -1750,6 +1757,16 @@ window.qm = {
             if(!object){return false;}
             var haystack = JSON.stringify(object).toLowerCase();
             return haystack.indexOf(needle) !== -1;
+        },
+        snakeToCamelCaseProperties: function(object){
+            for (var prop in object) {
+                if (object.hasOwnProperty(prop)) {
+                    var camel = prop.toCamelCase();
+                    object[camel] = object[prop];
+                    delete object[prop];
+                }
+            }
+            return object;
         }
     },
     platform: {
@@ -1788,7 +1805,6 @@ window.qm = {
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
         getCurrentPlatform: function(){
-            return qm.platform.types.chromeExtension;
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
             if(qm.platform.isAndroid()){return qm.platform.types.android;}
             if(qm.platform.isIOS()){return qm.platform.types.ios;}
@@ -2240,6 +2256,18 @@ window.qm = {
                 return  haystack.slice(0, i);
             else
                 return haystack;
+        },
+        toCamelCaseCase: function(string) {
+            return string.toCamelCase();
+        },
+        getStringBetween: function(string, firstString, secondString){
+            var between = string.match(firstString+"(.*)"+secondString);
+            if(!between){return null;}
+            console.log(between[1] + " is between " + firstString + " and " + secondString + " in " +  string);
+            return between[1];
+        },
+        getStringAfter: function(fullString, substring){
+            return fullString.split(substring)[1];
         }
     },
     studyHelper: {
@@ -2415,7 +2443,7 @@ window.qm = {
                 var parameterKeyValuePairs = queryString.split('&');
                 for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                    if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                    if (currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()) {
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
                         if(typeof shouldDecode !== "undefined")  {
                             return decodeURIComponent(currentParameterKeyValuePair[1]);
@@ -2495,8 +2523,12 @@ window.qm = {
         getUserFromLocalStorage: function(successHandler){
             if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
             function checkUserId(user) {
+                if(user && user.ID){
+                    user.id = user.ID;
+                    user = qm.objectHelper.snakeToCamelCaseProperties(user);
+                }
                 if(user && !user.id){
-                    qmLog.error("No user id in "+JSON.stringify(qmUser));
+                    console.error("No user id in "+ JSON.stringify(qmUser));  // Don't use qmLog.error to avoid infinite loop
                     qm.userHelper.setUser(null);
                     return null;
                 }
@@ -2709,8 +2741,8 @@ window.qm = {
                         successHandler(userVariable);
                         return;
                     }
-                    qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
                 }
+                qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
@@ -2899,35 +2931,58 @@ window.qm = {
         }
     },
     variableCategoryHelper: {
-        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
+        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
             qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
-                qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                if(!variableCategories){
+                    qmLog.error("No variable categories from json file!");
+                } else {
+                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                }
                 successHandler(variableCategories);
             }, function (error) {
                 if(errorHandler){errorHandler(error);}
             });
-            // qmLog.info("Getting variable categories from API...");
-            // function globalSuccessHandler(variableCategories){
-            //     qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-            //     if(successHandler){successHandler(variableCategories);}
-            // }
-            // qm.api.configureClient();
-            // var apiInstance = new Quantimodo.VariablesApi();
-            // function callback(error, data, response) {
-            //     qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
-            // }
-            // apiInstance.getVariableCategories(callback);
+        },
+        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
+            qmLog.info("Getting variable categories from API...");
+            function globalSuccessHandler(variableCategories){
+                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+                if(successHandler){successHandler(variableCategories);}
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            }
+            apiInstance.getVariableCategories(callback);
         },
         getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            if (qm.globalHelper.getItem(qm.items.variableCategories)) {
-                successHandler(qm.globalHelper.getItem(qm.items.variableCategories));
+            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
+                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
             } else {
-                qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                    successHandler(variableCategories);
+                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
+                    if(!variableCategories){
+                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                            successHandler(variableCategories);
+                        }, errorHandler)
+                    } else {
+                        successHandler(variableCategories);
+                    }
                 }, errorHandler)
             }
         },
+        getVariableCategoriesFromGlobals: function(){
+            return qm.globalHelper.getItem(qm.items.variableCategories);
+        },
         getVariableCategory: function(variableCategoryName, successHandler){
+            if(!successHandler){
+                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+                if(variableCategories){
+                    return variableCategories.find(function(variableCategory){
+                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
+                    });
+                }
+            }
             qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
                var match = variableCategories.find(function (category) {
                     category.name = variableCategoryName;

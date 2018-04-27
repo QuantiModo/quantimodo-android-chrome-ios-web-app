@@ -307,7 +307,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                 }
                 $scope.nativeSocialLogin('facebook', accessToken);
             }, function (error) {
-                Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
+                qmLog.error("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                 qmLog.authDebug('facebook login error' + JSON.stringify(error));
             });
     };

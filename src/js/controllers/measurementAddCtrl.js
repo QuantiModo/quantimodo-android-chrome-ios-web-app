@@ -75,11 +75,11 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
     };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-        qmService.showInfoToast('Deleting measurement...');
         var backStateParams = {};
         if($stateParams.currentMeasurementHistory){
             backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
         }
+        qmService.showInfoToast('Deleting '+ $scope.state.measurement.variableName +' measurement');
         qmService.deleteMeasurementFromServer($scope.state.measurement);
         $scope.goBack(backStateParams);
     };
@@ -107,10 +107,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             return false;
         } else {
             if(!qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName)){
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
-                        ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
-                }
+            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
+                ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
             } else {$scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName).id;}
         }
         return true;
@@ -128,8 +126,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.skipTrackingReminderNotification(params, function(){
                 qmLogService.debug($state.current.name + ': skipTrackingReminderNotification', null);
             }, function(error){
-                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error");
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(error); }
+                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error" + error);
             });
         }
         $scope.state.selectedDate = moment($scope.state.selectedDate);
@@ -251,15 +248,15 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $scope.state.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
-        if(variableObject.unit && variableObject.unit.abbreviatedName){
-            setupUnit(variableObject.unit.abbreviatedName, variableObject.valence);
-        } else if (variableObject.defaultUnitAbbreviatedName){
-            setupUnit(variableObject.defaultUnitAbbreviatedName, variableObject.valence);
+        if(variableObject.unit && variableObject.unit.abbreviatedName){variableObject.unitAbbreviatedName = variableObject.unit.abbreviatedName;}
+        if(variableObject.defaultUnitAbbreviatedName){variableObject.unitAbbreviatedName = variableObject.defaultUnitAbbreviatedName;}
+        if(variableObject.unitAbbreviatedName){
+            setupUnit(variableObject.unitAbbreviatedName, variableObject.valence);
         } else if (variableObject.variableCategoryName){
             setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
         }
         if(variableObject.upc){$scope.state.measurement.upc = variableObject.upc;}
-        $scope.state.measurement.inputType = variableObject.inputType;
+        if(variableObject.inputType){$scope.state.measurement.inputType = variableObject.inputType;}
         $scope.state.measurement.variableName = variableObject.name;
         $scope.state.measurement.maximumAllowedValue = variableObject.maximumAllowedValue;
         $scope.state.measurement.minimumAllowedValue = variableObject.minimumAllowedValue;
