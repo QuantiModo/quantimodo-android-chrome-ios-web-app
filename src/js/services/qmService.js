@@ -615,22 +615,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         storage: {},
         search: {
-            reminderSearch: function(successHandler, ev, variableCategoryName){
+            getTitle: function(variableCategoryName){
                 var title = 'Enter a variable';
                 if(variableCategoryName){
                     var variableCategory = qm.variableCategoryHelper.getVariableCategory(variableCategoryName);
-                    if(variableCategory){
-                        title =  "Enter a " + variableCategory.variableCategoryNameSingular;
-                    }
+                    if(variableCategory){title =  "Enter a " + variableCategory.variableCategoryNameSingular;}
                 }
+                return title;
+            },
+            reminderSearch: function(successHandler, ev, variableCategoryName){
                 qmService.showVariableSearchDialog({
-                    title: title,
+                    title: qmService.search.getTitle(variableCategoryName),
                     helpText: "Pick one you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
                     requestParams: {variableCategoryName : variableCategoryName, includePublic: true},
                     skipReminderSettingsIfPossible: true
                 }, function (variableObject) {
                     if(successHandler){successHandler(variableObject);}
                     qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
+                }, null, ev);
+            },
+            measurementAddSearch: function(successHandler, ev, variableCategoryName){
+                qmService.showVariableSearchDialog({
+                    title: qmService.search.getTitle(variableCategoryName),
+                    helpText: "Pick one you'd like to record a measurement for.",
+                    requestParams: {variableCategoryName : variableCategoryName, includePublic: true}
+                }, function (variableObject) {
+                    if(successHandler){successHandler(variableObject);}
+                    $rootScope.goToState(qmStates.measurementAdd, {variableObject: variableObject, doneState: "false"}); // false must have quotes
                 }, null, ev);
             }
         }
@@ -5841,6 +5852,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
         qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
+        if(successHandler){successHandler(trackingReminder);}
+        qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+           qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
+        });
         qmService.syncTrackingReminders();
     };
     qmService.getDefaultReminders = function(){
@@ -6664,7 +6679,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
     var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
-    qmService.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
+    qmService.showInfoToast = function(text) {
+        $mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));
+    };
+    qmService.showToastWithButton = function(textContent, buttonText, buttonFunction) {
+        var toast = $mdToast.simple()
+            .textContent(textContent)
+            .action(buttonText)
+            .highlightAction(true)
+            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
+            .hideDelay(10000)
+            .position(getToastPosition());
+        $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { buttonFunction(); } });
+    };
     qmService.configureAppSettings = function(appSettings){
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
