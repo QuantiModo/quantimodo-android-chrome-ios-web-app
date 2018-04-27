@@ -51,12 +51,20 @@ angular.module('starter',
         }
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-    $rootScope.goToState = function(stateName, stateParameters){
+    $rootScope.goToState = function(stateName, stateParameters, ev){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
             /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
+            if(stateName === qmStates.reminderSearch){
+                qmService.search.reminderSearch(null, ev, stateParameters.variableCategoryName);
+                return;
+            }
+            if(stateName === qmStates.measurementAddSearch) {
+                qmService.search.measurementAddSearch(null, ev, stateParameters.variableCategoryName);
+                return;
+            }
         }
         qmService.goToState(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
