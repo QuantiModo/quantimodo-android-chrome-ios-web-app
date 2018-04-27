@@ -641,11 +641,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
-            if(!actionSheetButton.id && id){actionSheetButton.id = id;}
+            if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
+            if(!actionSheetButton.id){
+                if (id) {
+                    actionSheetButton.id = id;
+                } else if (actionSheetButton.ionIcon){
+                    actionSheetButton.id = actionSheetButton.ionIcon;
+                }
+            }
             if(actionSheetButton.text && actionSheetButton.text.indexOf('<span ') === -1){
                 actionSheetButton.text = '<span id="' + id + '"><i class="icon ' + actionSheetButton.icon + '"></i>' + actionSheetButton.text + '</span>';
             }
             return actionSheetButton;
+        },
+        addHtmlToActionSheetButtonArray: function(buttons) {
+            buttons = JSON.parse(JSON.stringify(buttons));
+            buttons = buttons.map(function(button){
+                button = qmService.actionSheets.addHtmlToActionSheetButton(button, button.action);
+                return button;
+            });
+            return buttons;
         },
         addHtmlToAllActionSheetButtons: function(){
             for (var propertyName in qmService.actionSheets.actionSheetButtons) {
@@ -655,6 +670,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
+        handleActionSheetButtonClick: function(button) {
+            var stateParams = {};
+            if(button.stateParams){stateParams = button.stateParams;}
+            stateParams.variableName = variableName;
+            if(variableObject){stateParams.variableObject = variableObject;}
+            if(button.state){
+                if(button.state === qmStates.reminderAdd && variableObject){
+                    qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
+                } else {
+                    qmService.goToState(button.state, stateParams);
+                }
+                return true;
+            }
+            if(button.action && button.action.modifiedValue){
+                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
+                qmService.goToStudyCreationForVariable(variableObject);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
+                qmService.goToCorrelationsListForVariable(variableObject);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
+                qmService.goToCorrelationsListForVariable(variableObject);
+            }
+            return false; // Don't close if clicking top variable name
+        },
         getVariableObjectActionSheet: function(variableName, variableObject){
             if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
             if(!variableObject){
@@ -663,33 +705,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(!variableName){variableName = variableObject.name;}
             qmLog.info("Getting action sheet for variable " + variableName);
-            function handleActionSheetButtonClick(button) {
-                var stateParams = {};
-                if(button.stateParams){stateParams = button.stateParams;}
-                stateParams.variableName = variableName;
-                if(variableObject){stateParams.variableObject = variableObject;}
-                if(button.state){
-                    if(button.state === qmStates.reminderAdd && variableObject){
-                        qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
-                    } else {
-                        qmService.goToState(button.state, stateParams);
-                    }
-                    return true;
-                }
-                if(button.action){
-                    qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
-                    qmService.goToStudyCreationForVariable(variableObject);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
-                }
-                return false; // Don't close if clicking top variable name
-            }
             return function() {
                 qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
                 var buttons = [
@@ -732,7 +747,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED'); return true;},
                     buttonClicked: function(index, button) {
-                        return handleActionSheetButtonClick(button);
+                        return qm.actionSheets.handleActionSheetButtonClick(button);
                     }
                 };
                 if(variableObject.userId){
@@ -763,7 +778,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return buttons;
         },
     };
-    qmService.actionSheets.addHtmlToAllActionSheetButtons();
+    qmService.actionSheets.addHtmlToAllActionSheetButtons(qmService.actionSheets.actionSheetButtons);
     qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
