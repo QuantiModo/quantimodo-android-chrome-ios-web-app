@@ -481,7 +481,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
                                                           qmLogService, $q, $log, dialogParameters) {
                 var self = this;
-                // list of `state` value/display objects
+                if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
+                    var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParameters.requestParams.variableCategoryName);
+                    if(variableCategory){
+                        dialogParameters.title = 'Select a '+ variableCategory.variableCategoryNameSingular;
+                        dialogParameters.placeholder.replace('variable', variableCategory.variableCategoryNameSingular);
+                        dialogParameters.helpText.replace('variable', variableCategory.variableCategoryNameSingular);
+                    }
+                }
+                if(qm.platform.isMobile()){
+                    dialogParameters.placeholder += ' or press camera to scan';
+                    dialogParameters.helpText += '. Press the camera button to scan a barcode.';
+                }
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
                 self.selectedItemChange = selectedItemChange;
