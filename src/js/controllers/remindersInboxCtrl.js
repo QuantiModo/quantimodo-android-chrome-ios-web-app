@@ -117,11 +117,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		$rootScope.hideBackButton = false;
 	});
 	var setPageTitle = function(){
-	    if(!qmService.previouslyLoaded){
-            qmService.previouslyLoaded = true;
-            qmLog.info("Not setting title because it gets cut off initially");
-            return;
-        }
 		if($stateParams.today) {
 			if(getVariableCategoryName() === 'Treatments') {
 				$scope.state.title = "Today's Scheduled Meds";
