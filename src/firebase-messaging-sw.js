@@ -126,9 +126,10 @@ self.addEventListener('notificationclick', function(event) {
         qmLog.error("No event action provided! event is: ", null, event);
     }
     if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {return;}
-    var basePath = '/ionic/Modo/src/index.html#/app/';
+    var basePath = '/ionic/Modo/www/index.html#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
     if(event.action && event.action.indexOf("https://") !== -1){
+        event.action.replace('/src/', '/www/');
         var route = qm.stringHelper.getStringAfter(event.action, basePath);
         urlPathToOpen = basePath + route;
     }
