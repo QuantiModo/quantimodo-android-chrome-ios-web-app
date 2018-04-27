@@ -15,8 +15,8 @@
     <!-- inject:css -->
     <!-- endinject -->
     <link rel="shortcut icon" href="img/icons/icon_16.png">
-    <script src="custom-lib/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>  <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
     <!-- build:js scripts/combined-head-libraries.js -->
+    <script src="lib/bugsnag/dist/bugsnag.js"></script>
     <script src="lib/localforage/dist/localforage.js"></script>
     <script src="lib/jquery/dist/jquery.min.js"></script>  <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -105,6 +105,7 @@
     <script type="text/javascript" src="lib/simple-web-notification/web-notification.js"></script>
     <script type="text/javascript" src="lib/angular-web-notification/angular-web-notification.js"></script>
     <script src="lib/firebase/firebase.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <!--<script src='https://connect.humanapi.co/connect.js'></script>-->
     <!--<script src='https://app.quantimo.do/api/v1/connect.js'></script>-->
     <!-- I think we're already including UserVoice in the JavaScript <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>-->

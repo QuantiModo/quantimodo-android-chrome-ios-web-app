@@ -54,3 +54,8 @@ ion-side-menu-content.menu-disabled {
     height: 18px;
     width: 18px;
 }
+// Fixed truncated header bar titles
+.title.title-center.header-item {
+    left: 49px!important;
+    right: 49px!important;
+}

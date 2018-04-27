@@ -51,12 +51,20 @@ angular.module('starter',
         }
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-    $rootScope.goToState = function(stateName, stateParameters){
+    $rootScope.goToState = function(stateName, stateParameters, ev){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
             /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
+            if(stateName === qmStates.reminderSearch){
+                qmService.search.reminderSearch(null, ev, stateParameters.variableCategoryName);
+                return;
+            }
+            if(stateName === qmStates.measurementAddSearch) {
+                qmService.search.measurementAddSearch(null, ev, stateParameters.variableCategoryName);
+                return;
+            }
         }
         qmService.goToState(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
@@ -136,7 +144,6 @@ angular.module('starter',
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
-    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
     Array.prototype.contains = function(obj) {
         var i = this.length;
         while (i--) {if (this[i] === obj) {return true;}}
@@ -1382,9 +1389,9 @@ angular.module('starter',
 });
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
-        if (typeof Bugsnag !== "undefined") {
-            Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-            Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
+        if (typeof bugsnag !== "undefined") {
+            window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
+            bugsnagClient.notify(exception, {diagnostics: {cause: cause}});
         }
     };
 });

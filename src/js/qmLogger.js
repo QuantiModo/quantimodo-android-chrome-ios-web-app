@@ -42,10 +42,12 @@ window.qmLog = {
             }
         }
         return object;
-    }
+    },
+    metaData : {},
+    context: null
 };
-if(typeof Bugsnag !== "undefined"){
-    Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+if(typeof bugsnag !== "undefined"){
+    window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
 }
 var logMetaData = false;
 if(!window.qmUser){
@@ -188,10 +190,9 @@ qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
         qmLog.error(name, message, metaData, stackTrace);
     }
 };
-
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
-
+    metaData.context = qmLog.context;
     function getTestUrl() {
         function getCurrentRoute() {
             var parts = window.location.href.split("#/app");
@@ -265,17 +266,21 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
     return metaData;
 };
 window.qmLog.setupBugsnag = function(){
-    if (typeof Bugsnag !== "undefined") {
-        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-        Bugsnag.releaseStage = qmLog.getEnv();
-        if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
-        Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
+    if (typeof bugsnag !== "undefined") {
+        var options = {
+            apiKey: "ae7bc49d1285848342342bb5c321a2cf",
+            releaseStage: qmLog.getEnv(),
+            //notifyReleaseStages: [ 'staging', 'production' ],
+            metaData: qmLog.addGlobalMetaData(null, null, {}, null, null),
+            user: { id: '123', name: 'B. Nag', email: 'bugs.nag@bugsnag.com' },
+            beforeSend: function (report) {}
+        };
+        if(qm.getUser()){options.user = qmLog.obfuscateSecrets(qm.getUser());}
         if(qm.getAppSettings()){
-            Bugsnag.appVersion = qm.getAppSettings().versionNumber;
-            Bugsnag.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
+            options.appVersion = qm.getAppSettings().versionNumber;
+            options.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
-        Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-        if(qm.getUser()){Bugsnag.user = qmLog.obfuscateSecrets(qm.getUser());}
+        window.bugsnagClient = bugsnag(options);
     } else {
         qmLog.error('Bugsnag is not defined');
     }
@@ -312,9 +317,9 @@ window.qmLog.setupIntercom = function() {
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
-    if(typeof Bugsnag === "undefined"){ console.error('Bugsnag not defined', metaData); return; }
+    if(typeof bugsnagClient === "undefined"){ console.error('bugsnagClient not defined', metaData); return; }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
-    Bugsnag.notify(name, message, metaData, logLevel);
+    bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: metaData});
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
     var globalLogLevelValue = logLevels[qmLog.getLogLevelName()];
