@@ -125,18 +125,32 @@ self.addEventListener('notificationclick', function(event) {
     if(event.action === ""){
         qmLog.error("No event action provided! event is: ", null, event);
     }
-    if (runFunction(event.action, event.notification.data)) {return;}
+    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {return;}
+    var basePath = '/ionic/Modo/src/index.html#/app/';
+    var urlPathToOpen = basePath + 'reminders-inbox';
+    if(event.action && event.action.indexOf("https://") !== -1){
+        var route = qm.stringHelper.getStringAfter(event.action, basePath);
+        urlPathToOpen = basePath + route;
+    }
     // This looks to see if the current is already open and focuses if it is
     event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
         for (var i = 0; i < clientList.length; i++) {
             var client = clientList[i];
-            var url = client.url;
-            console.log(url);
-            if ('focus' in client){
-                return client.focus();
+            var currentlyOpenUrl = client.url;
+            console.log(currentlyOpenUrl + " is open already");
+            if(currentlyOpenUrl.indexOf(urlPathToOpen) !== -1){
+                if ('focus' in client) {
+                    console.log("Focusing " + currentlyOpenUrl);
+                    return client.focus();
+                }
             }
         }
-        if (clients.openWindow)
-            return clients.openWindow('/ionic/Modo/src/index.html#/app/reminders-inbox');
+        if (clients.openWindow) {
+            console.log("Opening new " + urlPathToOpen + " window");
+            return clients.openWindow(urlPathToOpen);
+        } else {
+            console.error("Can't open windows!")
+        }
+
     }));
 });
