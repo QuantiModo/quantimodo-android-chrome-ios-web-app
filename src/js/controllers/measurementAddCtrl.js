@@ -75,11 +75,11 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
     };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-        qmService.showInfoToast('Deleting measurement...');
         var backStateParams = {};
         if($stateParams.currentMeasurementHistory){
             backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
         }
+        qmService.showInfoToast('Deleting '+ $scope.state.measurement.variableName +' measurement');
         qmService.deleteMeasurementFromServer($scope.state.measurement);
         $scope.goBack(backStateParams);
     };

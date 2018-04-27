@@ -2392,6 +2392,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.storage.deleteById('primaryOutcomeVariableMeasurements', measurement.id);
         qmService.storage.deleteByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
+        qmService.showInfoToast("Deleted " + measurement.variableName + " measurement");
         qmService.deleteV1Measurements(measurement, function(response){
             deferred.resolve(response);
             qmLogService.debug('deleteMeasurementFromServer success ' + JSON.stringify(response), null);
@@ -3172,6 +3173,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteTrackingReminderDeferred = function(reminderToDelete){
         var deferred = $q.defer();
         qmService.storage.deleteTrackingReminder(reminderToDelete);
+        qmService.showInfoToast("Deleted " + reminderToDelete.variableName);
         if(!reminderToDelete.id){
             deferred.resolve();
             return deferred.promise;
@@ -6192,6 +6194,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var deleteAllMeasurementsForVariable = function(variableName) {
         qmService.showBlackRingLoader();
         // Delete all measurements for a variable
+        qmService.showInfoToast("Deleted all " + variableName + " measurements");
         qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
             if (variableName === qm.getPrimaryOutcomeVariable().name) {
