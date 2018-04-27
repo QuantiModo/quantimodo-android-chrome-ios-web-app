@@ -74,19 +74,30 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 			});
 	};
     $scope.showActionSheetForConnector = function(connector) {
-        var buttons = [
-            {text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + connector.displayName + ' History'}
-        ];
+        var connectorButtons = JSON.parse(JSON.stringify(connector.buttons));
+        connectorButtons.push({text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + connector.displayName + ' History',
+            id: 'history', state: qmStates.historyAll, stateParams: {connectorName: connector.name}});
+        connectorButtons = qmService.actionSheets.addHtmlToActionSheetButtonArray(connectorButtons);
+        connectorButtons.map(function (button) {
+            button.connector = connector;
+            return button;
+        });
         var hideSheetForNotification = $ionicActionSheet.show({
-            buttons: buttons,
-            //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+            buttons: connectorButtons,
+            destructiveText: (connector.connected) ? '<i class="icon ion-trash-a"></i>Disconnect ' : null,
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmLogService.debug('CANCELLED', null);},
+            cancel: function() {qmLogService.debug('CANCELLED');},
             buttonClicked: function(index) {
-                if(index === 0){qmService.goToState(qmStates.historyAll, {connectorName: connector.name});}
+                if(connectorButtons[index].state){
+                    qmService.actionSheets.handleActionSheetButtonClick(connectorButtons[index]);
+                } else {
+                    $scope.connectorAction(connector, connectorButtons[index]);
+                }
                 return true;
             },
-            destructiveButtonClicked: function() {}
+            destructiveButtonClicked: function() {
+                disconnectConnector(connector)
+            }
         });
     };
     $scope.uploadSpreadsheet = function(file, errFiles, connector, button) {
@@ -504,6 +515,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         $scope.openUrl(connector.getItUrl, 'no', '_system');
     };
     $scope.connectorAction = function(connector, button, ev){
+        connector.message = null;
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
             disconnectConnector(connector, button);
         } else if(button.text.toLowerCase().indexOf('connect') !== -1){

@@ -2265,6 +2265,9 @@ window.qm = {
             if(!between){return null;}
             console.log(between[1] + " is between " + firstString + " and " + secondString + " in " +  string);
             return between[1];
+        },
+        getStringAfter: function(fullString, substring){
+            return fullString.split(substring)[1];
         }
     },
     studyHelper: {
