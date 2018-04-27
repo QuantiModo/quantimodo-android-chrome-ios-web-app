@@ -2957,8 +2957,8 @@ window.qm = {
             apiInstance.getVariableCategories(callback);
         },
         getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            if (qm.globalHelper.getItem(qm.items.variableCategories)) {
-                successHandler(qm.globalHelper.getItem(qm.items.variableCategories));
+            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
+                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
             } else {
                 qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
                     if(!variableCategories){
@@ -2971,7 +2971,18 @@ window.qm = {
                 }, errorHandler)
             }
         },
+        getVariableCategoriesFromGlobals: function(){
+            return qm.globalHelper.getItem(qm.items.variableCategories);
+        },
         getVariableCategory: function(variableCategoryName, successHandler){
+            if(!successHandler){
+                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+                if(variableCategories){
+                    return variableCategories.find(function(variableCategory){
+                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
+                    });
+                }
+            }
             qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
                var match = variableCategories.find(function (category) {
                     category.name = variableCategoryName;
