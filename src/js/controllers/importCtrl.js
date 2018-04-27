@@ -513,7 +513,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         $scope.safeApply();
     };
     var getItHere = function (connector){
-        $scope.openUrl(connector.getItUrl, 'no', '_system');
+        $scope.openUrl(connector.getItUrl, 'yes', '_system');
     };
     $scope.connectorAction = function(connector, button, ev){
         connector.message = null;
