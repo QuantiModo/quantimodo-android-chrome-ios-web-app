@@ -43,7 +43,8 @@ window.qmLog = {
         }
         return object;
     },
-    metaData : {}
+    metaData : {},
+    context: null
 };
 if(typeof bugsnag !== "undefined"){
     window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
