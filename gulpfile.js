@@ -749,8 +749,8 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
-    parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
-        value: (buildSettings.xwalkMultipleApk) ? true : false}});
+    parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
+    parsedXmlFile.widget.chcp['config-file'] = {$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
     return parsedXmlFile;
 }
 function outputPluginVersionNumber(folderName) {
@@ -760,7 +760,7 @@ function outputPluginVersionNumber(folderName) {
         //console.log(prettyJSONStringify(xml));
         parseString(xml, function (err, parsedXmlFile) {
             if (err) {
-                throw new Error('ERROR: failed to read xml file', err);
+                throw new Error('ERROR: failed to read xml file' + err);
             } else {
                 console.log(folderName + " version: " + parsedXmlFile.plugin.$.version);
             }
@@ -781,7 +781,7 @@ function generateConfigXmlFromTemplate(callback) {
     xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', appSettings.clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
-            throw new Error('ERROR: failed to read xml file', err);
+            throw new Error('ERROR: failed to read xml file' + err);
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
