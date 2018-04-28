@@ -757,7 +757,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                     qmService.actionSheets.actionSheetButtons.reminderAdd
                 ];
-                if(variableObject.userId){
+                if(variableObject.userId && variableObject.numberOfRawMeasurements){
                     buttons.push(qmService.actionSheets.actionSheetButtons.charts);
                     buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
                     buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
