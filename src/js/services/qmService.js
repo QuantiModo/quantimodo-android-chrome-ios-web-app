@@ -526,8 +526,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if (variables && variables.length) {
                             self.items = convertVariablesToToResultsList(variables);
                             //self.selectedItemChange(self.items[0]);
-                            self.searchText = variables[0].name
-                            //$mdDialog.hide(variables[0]);
+                            self.searchText = variables[0].name;
+                            //qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
+                            $mdDialog.hide(variables[0]);
                         }
                     }, function (userErrorMessage) {
                         self.helpText = userErrorMessage;
@@ -539,7 +540,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 function showVariableList() {
                     $timeout(function(){
-                        document.querySelector('#variable-search-box').focus();
+                        if(self.items && self.items.length){
+                            document.querySelector('#variable-search-box').focus();
+                        }
                     }, 100);
                 }
                 function createNewVariable(variableName) {

@@ -750,7 +750,7 @@ window.qm = {
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
