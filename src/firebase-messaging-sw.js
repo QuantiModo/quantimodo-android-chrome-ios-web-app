@@ -66,6 +66,8 @@ function showNotification(pushData) {
         if(!pushData.title || pushData.title === "undefined"){
             qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
         }
+        /** @namespace pushData.notId */
+        notificationOptions.tag = pushData.notId;
         self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
