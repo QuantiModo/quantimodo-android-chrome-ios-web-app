@@ -6952,7 +6952,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 push.on('error', function(e) {
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "error", e.message);
-                    qmLogService.exception(e, e.message, pushConfig);
+                    qmLogService.error("Push error", e.message, pushConfig);
                 });
                 var finishPush = function (data) {
                     $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
