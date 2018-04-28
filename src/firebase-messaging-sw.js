@@ -34,6 +34,7 @@ function showNotification(pushData) {
         pushData = pushData.data;
     }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
+        /** @namespace pushData.notId */
         var notificationOptions = {
             actions: [],
             requireInteraction: true,
@@ -42,8 +43,9 @@ function showNotification(pushData) {
             //dir: NotificationDirection,
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
-            tag: JSON.stringify(pushData)
+            tag: String(pushData.notId)
         };
+        if(pushData.variableName){notificationOptions.tag = pushData.variableName;}
         try {
             qm.allActions = JSON.parse(pushData.actions);
         } catch (error) {
@@ -66,8 +68,6 @@ function showNotification(pushData) {
         if(!pushData.title || pushData.title === "undefined"){
             qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
         }
-        /** @namespace pushData.notId */
-        notificationOptions.tag = pushData.notId;
         self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
