@@ -34,7 +34,6 @@ function showNotification(pushData) {
         pushData = pushData.data;
     }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
-        /** @namespace pushData.notId */
         var notificationOptions = {
             actions: [],
             requireInteraction: true,
@@ -43,9 +42,8 @@ function showNotification(pushData) {
             //dir: NotificationDirection,
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
-            tag: String(pushData.notId)
+            tag: pushData.title
         };
-        if(pushData.variableName){notificationOptions.tag = pushData.variableName;}
         try {
             qm.allActions = JSON.parse(pushData.actions);
         } catch (error) {
