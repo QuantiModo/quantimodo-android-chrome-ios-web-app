@@ -2636,12 +2636,15 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-function getCHCPContentUrl(){
+function getCHCPContentPath(){
     var path = "dev";
     if(qmGit.isMaster()){path = "production";}
     if(qmGit.isDevelop()){path = "qa";}
     if(buildDebug){path = "dev";}
-    return "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path;
+    return path;
+}
+function getCHCPContentUrl(){
+    return "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + getCHCPContentPath();
 }
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     if(false && buildingFor.web()){
@@ -2649,13 +2652,12 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         callback();
         return;
     }
-
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var chcpJson = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "us-east-1",
-        "s3prefix": appSettings.clientId + "/"+path+"/",
+        "s3prefix": appSettings.clientId + "/"+getCHCPContentPath()+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
