@@ -750,7 +750,6 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
-    parsedXmlFile.widget.chcp['config-file'] = null;
     return parsedXmlFile;
 }
 function outputPluginVersionNumber(folderName) {
@@ -785,6 +784,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
         }
     });
@@ -2636,16 +2636,20 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
+function getCHCPContentUrl(){
+    var path = "dev";
+    if(qmGit.isMaster()){path = "production";}
+    if(qmGit.isDevelop()){path = "qa";}
+    if(buildDebug){path = "dev";}
+    return "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path;
+}
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     if(false && buildingFor.web()){
         qmLog.info("Not using cordova-hcp on web builds");
         callback();
         return;
     }
-    var path = "dev";
-    if(qmGit.isMaster()){path = "production";}
-    if(qmGit.isDevelop()){path = "qa";}
-    if(buildDebug){path = "dev";}
+
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var chcpJson = {
         "name": appSettings.appDisplayName,
@@ -2655,7 +2659,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
-        "content_url": "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path
+        "content_url": getCHCPContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
         if(err) {return qmLog.error(err);}
