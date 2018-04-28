@@ -478,7 +478,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         showVariableSearchDialog: function(dialogParameters, successHandler, errorHandler, ev){
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                          qmLogService, $q, $log, dialogParameters) {
+                                                          qmLogService, $q, $log, dialogParameters, $timeout) {
                 var self = this;
                 if(!dialogParameters.placeholder){dialogParameters.placeholder = "Enter a variable";}
                 if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
@@ -526,8 +526,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if (variables && variables.length) {
                             self.items = convertVariablesToToResultsList(variables);
                             //self.selectedItemChange(self.items[0]);
-                            self.searchText = variables[0].name
-                            //$mdDialog.hide(variables[0]);
+                            self.searchText = variables[0].name;
+                            //qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
+                            $mdDialog.hide(variables[0]);
                         }
                     }, function (userErrorMessage) {
                         self.helpText = userErrorMessage;
@@ -538,7 +539,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 };
                 function showVariableList() {
-                    setTimeout(function(){document.querySelector('#variable-search-box').focus();}, 0);
+                    $timeout(function(){
+                        if(self.items && self.items.length){
+                            document.querySelector('#variable-search-box').focus();
+                        }
+                    }, 100);
                 }
                 function createNewVariable(variableName) {
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
@@ -566,6 +571,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        showVariableList();
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         if(variables && variables.length){
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(variables);}
@@ -607,7 +613,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 querySearch();
             };
             SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-                "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
+                "qmService", "qmLogService", "$q", "$log", "dialogParameters", "$timeout"];
             $mdDialog.show({
                 controller: SelectVariableDialogController,
                 controllerAs: 'ctrl',
@@ -754,7 +760,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                     qmService.actionSheets.actionSheetButtons.reminderAdd
                 ];
-                if(variableObject.userId){
+                if(variableObject.userId && variableObject.numberOfRawMeasurements){
                     buttons.push(qmService.actionSheets.actionSheetButtons.charts);
                     buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
                     buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
