@@ -42,7 +42,7 @@ function showNotification(pushData) {
             //dir: NotificationDirection,
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
-            tag: JSON.stringify(pushData)
+            tag: pushData.title
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
@@ -66,8 +66,6 @@ function showNotification(pushData) {
         if(!pushData.title || pushData.title === "undefined"){
             qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
         }
-        /** @namespace pushData.notId */
-        notificationOptions.tag = pushData.notId;
         self.registration.showNotification(pushData.title, notificationOptions);
     })
 }
