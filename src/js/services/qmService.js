@@ -481,6 +481,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
                                                           qmLogService, $q, $log, dialogParameters) {
                 var self = this;
+                if(!dialogParameters.placeholder){dialogParameters.placeholder = "Enter a variable";}
                 if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
                     var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParameters.requestParams.variableCategoryName);
                     if(variableCategory){
