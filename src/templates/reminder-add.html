@@ -147,7 +147,7 @@
         <section layout="row" layout-align="center center" layout-wrap>
             <md-button ng-if="state.trackingReminder && state.trackingReminder.id" class="md-raised md-warn" ng-click="deleteReminder()">Delete</md-button>
             <md-button id="cancelButton" ng-click="goBack()" class="md-raised" >Cancel</md-button>
-            <md-button id="saveButton" class="md-raised md-primary" ng-click="save()">Save</md-button>
+            <md-button id="saveButton" class="md-raised md-primary" ng-click="save()">{{state.savingText}}</md-button>
         </section>
         <section layout="row" layout-align="center center" ng-if="!state.showMoreOptions" layout-wrap>
             <md-button id="moreOptions" ng-click="showMoreOptions()" class="md-raised" >More options...</md-button>
