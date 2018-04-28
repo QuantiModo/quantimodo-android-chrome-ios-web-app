@@ -750,7 +750,7 @@ window.qm = {
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
@@ -1787,7 +1787,12 @@ window.qm = {
             window.qmLog.debug('isChromeExtension returns true', null, null);
             return true;
         },
-        isWeb: function (){return window.location.href.indexOf("https://") > -1;},
+        isWeb: function (){
+            var isWeb = false;
+            if(window.location.href.indexOf("https://") > -1){isWeb = true;}
+            if(window.location.href.indexOf("http://localhost:") > -1){isWeb = true;}
+            return isWeb;
+        },
         isWebOrChrome: function () {
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
         },
