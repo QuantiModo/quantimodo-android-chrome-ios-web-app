@@ -538,7 +538,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 };
                 function showVariableList() {
-                    setTimeout(function(){document.querySelector('#variable-search-box').focus();}, 0);
+                    setTimeout(function(){
+                        document.querySelector('#variable-search-box').focus();
+                    }, 0);
                 }
                 function createNewVariable(variableName) {
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
