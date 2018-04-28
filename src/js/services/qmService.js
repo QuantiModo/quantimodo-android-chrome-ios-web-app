@@ -481,7 +481,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
                                                           qmLogService, $q, $log, dialogParameters) {
                 var self = this;
-                // list of `state` value/display objects
+                if(!dialogParameters.placeholder){dialogParameters.placeholder = "Enter a variable";}
+                if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
+                    var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParameters.requestParams.variableCategoryName);
+                    if(variableCategory){
+                        dialogParameters.title = 'Select '+ variableCategory.variableCategoryNameSingular.toLowerCase();
+                        dialogParameters.placeholder = dialogParameters.placeholder.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                        dialogParameters.helpText = dialogParameters.helpText.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                    }
+                }
+                if(qm.platform.isMobile()){
+                    dialogParameters.placeholder += ' or press camera to scan';
+                    dialogParameters.helpText += '. Press the camera button to scan a barcode.';
+                }
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
                 self.selectedItemChange = selectedItemChange;
@@ -626,7 +638,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             reminderSearch: function(successHandler, ev, variableCategoryName){
                 qmService.showVariableSearchDialog({
                     title: qmService.search.getTitle(variableCategoryName),
-                    helpText: "Pick one you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
+                    helpText: "Pick a variable you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
                     requestParams: {variableCategoryName : variableCategoryName, includePublic: true},
                     skipReminderSettingsIfPossible: true
                 }, function (variableObject) {
@@ -637,7 +649,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             measurementAddSearch: function(successHandler, ev, variableCategoryName){
                 qmService.showVariableSearchDialog({
                     title: qmService.search.getTitle(variableCategoryName),
-                    helpText: "Pick one you'd like to record a measurement for.",
+                    helpText: "Pick a variable you'd like to record a measurement for.",
                     requestParams: {variableCategoryName : variableCategoryName, includePublic: true}
                 }, function (variableObject) {
                     if(successHandler){successHandler(variableObject);}
