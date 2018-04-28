@@ -750,7 +750,7 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
-    parsedXmlFile.widget.chcp['config-file'] = {$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
+    parsedXmlFile.widget.chcp['config-file'] = null;
     return parsedXmlFile;
 }
 function outputPluginVersionNumber(folderName) {
