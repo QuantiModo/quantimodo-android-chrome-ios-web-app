@@ -749,8 +749,7 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
-    parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
-        value: (buildSettings.xwalkMultipleApk) ? true : false}});
+    parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
     return parsedXmlFile;
 }
 function outputPluginVersionNumber(folderName) {
@@ -760,7 +759,7 @@ function outputPluginVersionNumber(folderName) {
         //console.log(prettyJSONStringify(xml));
         parseString(xml, function (err, parsedXmlFile) {
             if (err) {
-                throw new Error('ERROR: failed to read xml file', err);
+                throw new Error('ERROR: failed to read xml file' + err);
             } else {
                 console.log(folderName + " version: " + parsedXmlFile.plugin.$.version);
             }
@@ -781,10 +780,11 @@ function generateConfigXmlFromTemplate(callback) {
     xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', appSettings.clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
-            throw new Error('ERROR: failed to read xml file', err);
+            throw new Error('ERROR: failed to read xml file' + err);
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
         }
     });
@@ -2636,26 +2636,32 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
+function getCHCPContentPath(){
+    var path = "dev";
+    if(qmGit.isMaster()){path = "production";}
+    if(qmGit.isDevelop()){path = "qa";}
+    if(buildDebug){path = "dev";}
+    return path;
+}
+function getCHCPContentUrl(){
+    return "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + getCHCPContentPath();
+}
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     if(false && buildingFor.web()){
         qmLog.info("Not using cordova-hcp on web builds");
         callback();
         return;
     }
-    var path = "dev";
-    if(qmGit.isMaster()){path = "production";}
-    if(qmGit.isDevelop()){path = "qa";}
-    if(buildDebug){path = "dev";}
     /** @namespace appSettings.additionalSettings.appIds.appleId */
     var chcpJson = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "us-east-1",
-        "s3prefix": appSettings.clientId + "/"+path+"/",
+        "s3prefix": appSettings.clientId + "/"+getCHCPContentPath()+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
         "update": "resume",
-        "content_url": "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + path
+        "content_url": getCHCPContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
         if(err) {return qmLog.error(err);}
