@@ -526,7 +526,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if (variables && variables.length) {
                             self.items = convertVariablesToToResultsList(variables);
                             //self.selectedItemChange(self.items[0]);
-                            self.searchText = variables[0].name
+                            self.searchText = variables[0].name;
+                            qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
                             //$mdDialog.hide(variables[0]);
                         }
                     }, function (userErrorMessage) {
