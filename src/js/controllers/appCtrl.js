@@ -410,7 +410,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var dialogParameters = {
             title: 'Select Variable',
             helpText: "Search for a variable to add a measurement, reminder, view history, or see relationships",
-            placeholder: "Search for a variable...",
+            placeholder: "Search for a variable", // Don't use ellipses because we append to this sometimes
             buttonText: "Select Variable",
             requestParams: {includePublic: true}
         };
