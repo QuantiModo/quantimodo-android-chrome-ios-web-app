@@ -1,5 +1,5 @@
-<div ng-show="state.correlationObjects.length" style="padding: 10px;">
-    <div class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;">
+<div ng-show="state.correlationObjects.length" style="padding: 10px;" >
+    <div class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;" >
         <i class="icon {{state.correlationsExplanation.ionIcon}}"
            style="position: absolute;
 							top: 15px;
@@ -11,16 +11,16 @@
 							color: white;
 							border-radius: 4px;"
         ></i>
-        <p style="font-size: 25px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;">
+        <p style="font-size: 25px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;" >
             {{state.correlationsExplanation.title}}
         </p>
     </div>
-    <div class="item item-body" style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;" >
+    <div class="item item-body" style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;">
         {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
         <br>
-        <div class="button-bar" style="margin-top: 20px; margin-bottom: 10px;">
+        <div class="button-bar" style="margin-top: 20px; margin-bottom: 10px;" >
             <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)"
-               style="text-overflow: clip;"><div style="background: white ; color: #F48120; border-radius: 30px; width: 230px; margin: 0 auto;"><i class="ion-information-circled" style="font-size: 150%; ">  </i> Improve Predictions </div></a>
+               style="text-overflow: clip;"><div style="background: white ; color: #F48120; border-radius: 30px; width: 230px; margin: 0 auto;"><i class="ion-information-circled" style="font-size: 150%; " >  </i> Improve Predictions </div></a>
         </div>
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
