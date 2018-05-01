@@ -2857,11 +2857,12 @@ window.qm = {
                     sortAndReturnVariables(variables);
                     return;
                 }
-                var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
-                if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
-                    sortAndReturnVariables(reminders);
-                    return;
-                }
+                // Using reminders in variable searches creates duplicates and lots of problems
+                // var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
+                // if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
+                //     sortAndReturnVariables(reminders);
+                //     return;
+                // }
                 if(requestParams.includePublic){
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
                         if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
