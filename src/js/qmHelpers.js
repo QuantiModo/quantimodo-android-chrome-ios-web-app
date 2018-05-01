@@ -1281,6 +1281,7 @@ window.qm = {
         getItem: function(key, successHandler, errorHandler){
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
+                qmLog.info("Got " + fromGlobals.length + " " + key + " from from Globals");
                 successHandler(fromGlobals);
                 return
             }
@@ -1290,10 +1291,13 @@ window.qm = {
                 if(errorHandler){errorHandler(error);}
                 return;
             }
+            qmLog.info("Getting "+ key + " from localforage...");
             localforage.getItem(key, function (err, data) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
                 } else {
+                    qmLog.info("Got " + data.length + " " + key + " from localforage");
+                    qm.globalHelper.setItem(key, data);
                     successHandler(data);
                 }
             })
