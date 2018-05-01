@@ -668,6 +668,7 @@ window.qm = {
                 qmLog.error("No array provided to getContaining");
                 return array;
             }
+            qmLog.info("Called getWithNameContainingEveryWord...");
             searchTerm = searchTerm.toLowerCase();
             var filterBy = searchTerm.split(/\s+/);
             return array.filter(function(item){
@@ -728,6 +729,7 @@ window.qm = {
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName){
+            qmLog.info("Sorting by "+propertyName+"...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
@@ -1269,6 +1271,7 @@ window.qm = {
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
+            qmLog.info("searching " + key + " by " + propertyName + " " + searchTerm);
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
@@ -1279,6 +1282,7 @@ window.qm = {
             }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
+            qmLog.debug("Getting " + key + " from globals");
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
                 successHandler(fromGlobals);
@@ -1290,6 +1294,7 @@ window.qm = {
                 if(errorHandler){errorHandler(error);}
                 return;
             }
+            qmLog.info("Getting " + key + " from localforage");
             localforage.getItem(key, function (err, data) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1624,6 +1629,7 @@ window.qm = {
         },
         deleteById: function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);},
         undo: function(){
+            qmLog.info("Called undo notifcation tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!notificationsSyncQueue){ return false; }
             notificationsSyncQueue[0].hide = false;
@@ -2129,6 +2135,7 @@ window.qm = {
             if(key === "userVariables" && typeof value === "string"){
                 qmLog.error("userVariables should not be a string!");
             }
+            qmLog.info("Setting " + key + " in globals");
             qm.globals[key] = value;
         },
         setLastRequestTime: function(type, route){
@@ -2187,6 +2194,7 @@ window.qm = {
             }
         },
         getGlobal: function(key){
+            qmLog.debug("getting " + key + " from globals");
             if(typeof qm.globals[key] === "undefined"){return null;}
             if(qm.globals[key] === "false"){return false;}
             if(qm.globals[key] === "true"){return true;}
@@ -2214,6 +2222,7 @@ window.qm = {
                 return null;
             }
             if (item && typeof item === "string"){
+                qmLog.info("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
                 window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
@@ -2265,6 +2274,7 @@ window.qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
+            qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
             var array = qm.storage.getItem(localStorageItemName);
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
@@ -2310,6 +2320,9 @@ window.qm = {
         },
         getStringAfter: function(fullString, substring){
             return fullString.split(substring)[1];
+        },
+        truncateIfGreaterThan(string, maxCharacters){
+            if(string.length > maxCharacters){return string.substring(0, maxCharacters) + '...';} else { return string;}
         }
     },
     studyHelper: {
@@ -2876,7 +2889,11 @@ window.qm = {
                 }
             });
         },
-        putManualTrackingFirst: function (variables) {
+        putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return;
+            }
             var manualTracking = variables.filter(function (variableToCheck) {
                 return variableToCheck.manualTracking === true;
             });
@@ -2887,6 +2904,10 @@ window.qm = {
             return merged;
         },
         defaultVariableSort: function (variables) {
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return null;
+            }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
             function getValue(object){
                 return object.lastSelectedAt || object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
