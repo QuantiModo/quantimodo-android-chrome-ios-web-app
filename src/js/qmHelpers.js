@@ -2695,8 +2695,8 @@ window.qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            if(!requestParams.sort || requestParams.sort.indexOf('latestMeasurementTime') !== -1){requestParams.sort = '-numberOfUserVariables';}
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
+                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
                 successHandler(data);
             }, function (error) {
                 qmLog.error(error);
@@ -2789,8 +2789,8 @@ window.qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            if(!requestParams.sort || requestParams.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
+                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
                 successHandler(data);
             }, function (error) {
                 qmLog.error(error);
@@ -2837,7 +2837,7 @@ window.qm = {
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
             function sortAndReturnVariables(variables) {
-                variables = qm.variablesHelper.putManualTrackingFirst(variables);
+                if(!requestParams.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
                 if(successHandler){successHandler(variables);}
             }
             function getFromApi() {
@@ -2884,6 +2884,20 @@ window.qm = {
             });
             var merged = manualTracking.concat(nonManual);
             return merged;
+        },
+        defaultVariableSort: function (variables) {
+            variables = qm.variablesHelper.putManualTrackingFirst(variables);
+            function getValue(object){
+                return object.lastSelectedAt || object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+            }
+            variables.sort(function(a, b) {
+                var aValue = getValue(a);
+                var bValue = getValue(b);
+                if(aValue < bValue) return 1;
+                if(aValue > bValue) return -1;
+                return 0;
+            });
+            return variables;
         }
     },
     webNotifications: {
