@@ -651,6 +651,43 @@ window.qm = {
             }
             return matches;
         },
+        getWithNameContaining: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
+            searchTerm = searchTerm.toLowerCase();
+            return array.filter(function(item){
+               var name = item.name || item.variableName;
+               name = name.toLowerCase();
+               return name.indexOf(searchTerm) !== -1;
+            });
+        },
+        getWithNameContainingEveryWord: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
+            searchTerm = searchTerm.toLowerCase();
+            var filterBy = searchTerm.split(/\s+/);
+            return array.filter(function(item){
+                var name = item.name || item.variableName;
+                name = name.toLowerCase();
+                var result = filterBy.every(function (word){
+                    var exists = name.indexOf(word);
+                    if(exists !== -1){return true;}
+                    if(item.synonyms && item.synonyms.length){
+                        var synonyms = JSON.stringify(item.synonyms).toLowerCase();
+                        if(synonyms.indexOf(word) !== -1){return true;}
+                    }
+                    if(item.alias){
+                        var alias = item.alias.toLowerCase();
+                        if(alias.indexOf(word) !== -1){return true;}
+                    }
+                });
+                return result;
+            });
+        },
         inArray: function(needle, haystack) {
             var length = haystack.length;
             for(var i = 0; i < length; i++) {
@@ -790,7 +827,7 @@ window.qm = {
             }
             if(!results){return null;}
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
-                results = qm.arrayHelper.getContaining(requestParams.searchPhrase, results);
+                results = qm.arrayHelper.getWithNameContainingEveryWord(requestParams.searchPhrase, results);
             }
             if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
