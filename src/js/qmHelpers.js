@@ -1255,10 +1255,17 @@ window.qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
+            qmLog.info("saving " + key + " with unique id");
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var newObjectToSave = arrayToSave[i];
+                    var existingObjectToReplace = existingData.find(function( obj ) {
+                        return obj.id === newObjectToSave.id;
+                    });
+                    if(existingObjectToReplace && existingObjectToReplace.lastSelectedAt){
+                        newObjectToSave.lastSelectedAt = existingObjectToReplace.lastSelectedAt;
+                    }
                     existingData = existingData.filter(function( obj ) {
                         return obj.id !== newObjectToSave.id;
                     });
