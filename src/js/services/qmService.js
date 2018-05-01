@@ -591,6 +591,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         item.variable.barcodeFormat = self.barcodeFormat;
                     }
                     $scope.variable = item.variable;
+                    item.variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();
                     qm.userVariables.saveToLocalStorage(item.variable);
                     qmLogService.debug('Item changed to ' + item.variable.name);
                     self.finish();
