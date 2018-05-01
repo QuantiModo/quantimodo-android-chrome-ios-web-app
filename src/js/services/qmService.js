@@ -718,11 +718,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
-        handleActionSheetButtonClick: function(button) {
+        handleActionSheetButtonClick: function(button, variableObject) {
             var stateParams = {};
             if(button.stateParams){stateParams = button.stateParams;}
-            stateParams.variableName = variableName;
-            if(variableObject){stateParams.variableObject = variableObject;}
+            if(variableObject){
+                stateParams.variableObject = variableObject;
+                stateParams.variableName = variableObject.name || variableObject.variableName;
+            }
             if(button.state){
                 if(button.state === qmStates.reminderAdd && variableObject){
                     qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
@@ -795,7 +797,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED'); return true;},
                     buttonClicked: function(index, button) {
-                        return qm.actionSheets.handleActionSheetButtonClick(button);
+                        return qmService.actionSheets.handleActionSheetButtonClick(button, variableObject);
                     }
                 };
                 if(variableObject.userId){
