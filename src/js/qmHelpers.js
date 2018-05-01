@@ -1279,7 +1279,7 @@ window.qm = {
             }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
-            var fromGlobals = qm.globalHelper.getItem(qm.items);
+            var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
                 successHandler(fromGlobals);
                 return
