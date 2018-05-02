@@ -1583,8 +1583,13 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
-gulp.task('upload-source-maps', [], function() {
+gulp.task('upload-source-maps', [], function(callback) {
     fs.readdir('www/scripts', function (err, files) {
+        if(!files){
+            qmLog.info("No source maps to upload");
+            callback();
+            return;
+        }
         files.forEach(function(file) {
             if(file.indexOf('.map') !== -1){return;}
             var options = {
@@ -1604,7 +1609,8 @@ gulp.task('upload-source-maps', [], function() {
             qmLog.info("Upload options", options);
             bugsnagSourceMaps.upload(options, function(err) {
                 if (err) {throw new Error('Could not upload source map for ' + file + " because " + err.message);}
-                console.log(file+ ' source map was uploaded successfully.');
+                console.log(file+ ' source map uploaded successfully');
+                callback();
             });
         });
     });
