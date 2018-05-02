@@ -602,6 +602,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
+                        if(!variable.name && variable.variableName){
+                            variable.name = variable.variableName;
+                        }
+                        if(!variable.name){
+                            qmLog.error("No variable name!");
+                            return;
+                        }
                         return {
                             value: variable.name.toLowerCase(),
                             name: variable.name,
@@ -759,7 +766,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return function() {
                 qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
                 var buttons = [
-                    qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: variableName}, 'variableName'),
+                    qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: qmService.getTruncatedVariableName(variableName)}, 'variableName'),
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                     qmService.actionSheets.actionSheetButtons.reminderAdd
                 ];
@@ -2957,6 +2964,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
+        qmLog.info("Called postTrackingReminderNotificationsDeferred...");
         var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
@@ -2970,6 +2978,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(successHandler){successHandler(response);}
             deferred.resolve(response);
         }, function(error){
+            qmLog.info("Called postTrackingReminderNotificationsToApi...");
             var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(newNotificationsSyncQueue){
                 trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
