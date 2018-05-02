@@ -651,6 +651,44 @@ window.qm = {
             }
             return matches;
         },
+        getWithNameContaining: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
+            searchTerm = searchTerm.toLowerCase();
+            return array.filter(function(item){
+               var name = item.name || item.variableName;
+               name = name.toLowerCase();
+               return name.indexOf(searchTerm) !== -1;
+            });
+        },
+        getWithNameContainingEveryWord: function(searchTerm, array){
+            if(!array){
+                qmLog.error("No array provided to getContaining");
+                return array;
+            }
+            qmLog.info("Called getWithNameContainingEveryWord...");
+            searchTerm = searchTerm.toLowerCase();
+            var filterBy = searchTerm.split(/\s+/);
+            return array.filter(function(item){
+                var name = item.name || item.variableName;
+                name = name.toLowerCase();
+                var result = filterBy.every(function (word){
+                    var exists = name.indexOf(word);
+                    if(exists !== -1){return true;}
+                    if(item.synonyms && item.synonyms.length){
+                        var synonyms = JSON.stringify(item.synonyms).toLowerCase();
+                        if(synonyms.indexOf(word) !== -1){return true;}
+                    }
+                    if(item.alias){
+                        var alias = item.alias.toLowerCase();
+                        if(alias.indexOf(word) !== -1){return true;}
+                    }
+                });
+                return result;
+            });
+        },
         inArray: function(needle, haystack) {
             var length = haystack.length;
             for(var i = 0; i < length; i++) {
@@ -691,6 +729,7 @@ window.qm = {
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName){
+            qmLog.info("Sorting by "+propertyName+"...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
@@ -790,7 +829,7 @@ window.qm = {
             }
             if(!results){return null;}
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
-                results = qm.arrayHelper.getContaining(requestParams.searchPhrase, results);
+                results = qm.arrayHelper.getWithNameContainingEveryWord(requestParams.searchPhrase, results);
             }
             if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
@@ -1166,6 +1205,7 @@ window.qm = {
         onboarded: 'onboarded',
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
+        primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -1218,10 +1258,17 @@ window.qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
+            qmLog.info("saving " + key + " with unique id");
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var newObjectToSave = arrayToSave[i];
+                    var existingObjectToReplace = existingData.find(function( obj ) {
+                        return obj.id === newObjectToSave.id;
+                    });
+                    if(existingObjectToReplace && existingObjectToReplace.lastSelectedAt){
+                        newObjectToSave.lastSelectedAt = existingObjectToReplace.lastSelectedAt;
+                    }
                     existingData = existingData.filter(function( obj ) {
                         return obj.id !== newObjectToSave.id;
                     });
@@ -1230,8 +1277,19 @@ window.qm = {
                 qm.localForage.setItem(key, existingData);
             });
         },
+        deleteById: function(key, id) {
+            qmLog.info("deleting " + key + " by id " + id);
+            qm.localForage.getItem(key, function(existingData) {
+                if(!existingData){existingData = [];}
+                existingData = existingData.filter(function( obj ) {
+                    return obj.id !== id;
+                });
+                qm.localForage.setItem(key, existingData);
+            });
+        },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
+            qmLog.info("searching " + key + " by " + propertyName + " " + searchTerm);
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
@@ -1242,7 +1300,8 @@ window.qm = {
             }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
-            var fromGlobals = qm.globalHelper.getItem(qm.items);
+            qmLog.debug("Getting " + key + " from globals");
+            var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
                 successHandler(fromGlobals);
                 return
@@ -1253,6 +1312,7 @@ window.qm = {
                 if(errorHandler){errorHandler(error);}
                 return;
             }
+            qmLog.info("Getting " + key + " from localforage");
             localforage.getItem(key, function (err, data) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1587,6 +1647,7 @@ window.qm = {
         },
         deleteById: function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);},
         undo: function(){
+            qmLog.info("Called undo notifcation tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!notificationsSyncQueue){ return false; }
             notificationsSyncQueue[0].hide = false;
@@ -2092,6 +2153,7 @@ window.qm = {
             if(key === "userVariables" && typeof value === "string"){
                 qmLog.error("userVariables should not be a string!");
             }
+            qmLog.info("Setting " + key + " in globals");
             qm.globals[key] = value;
         },
         setLastRequestTime: function(type, route){
@@ -2150,6 +2212,7 @@ window.qm = {
             }
         },
         getGlobal: function(key){
+            qmLog.debug("getting " + key + " from globals");
             if(typeof qm.globals[key] === "undefined"){return null;}
             if(qm.globals[key] === "false"){return false;}
             if(qm.globals[key] === "true"){return true;}
@@ -2177,6 +2240,7 @@ window.qm = {
                 return null;
             }
             if (item && typeof item === "string"){
+                qmLog.info("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
                 window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
@@ -2228,6 +2292,7 @@ window.qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
+            qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
             var array = qm.storage.getItem(localStorageItemName);
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
@@ -2273,6 +2338,9 @@ window.qm = {
         },
         getStringAfter: function(fullString, substring){
             return fullString.split(substring)[1];
+        },
+        truncateIfGreaterThan(string, maxCharacters){
+            if(string.length > maxCharacters){return string.substring(0, maxCharacters) + '...';} else { return string;}
         }
     },
     studyHelper: {
@@ -2658,8 +2726,8 @@ window.qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            if(!requestParams.sort || requestParams.sort.indexOf('latestMeasurementTime') !== -1){requestParams.sort = '-numberOfUserVariables';}
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
+                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
                 successHandler(data);
             }, function (error) {
                 qmLog.error(error);
@@ -2752,8 +2820,8 @@ window.qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            if(!requestParams.sort || requestParams.sort.indexOf('numberOfUserVariables') !== -1){requestParams.sort = '-latestMeasurementTime';}
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
+                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
                 successHandler(data);
             }, function (error) {
                 qmLog.error(error);
@@ -2800,7 +2868,7 @@ window.qm = {
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
             function sortAndReturnVariables(variables) {
-                variables = qm.variablesHelper.putManualTrackingFirst(variables);
+                if(!requestParams.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
                 if(successHandler){successHandler(variables);}
             }
             function getFromApi() {
@@ -2820,11 +2888,12 @@ window.qm = {
                     sortAndReturnVariables(variables);
                     return;
                 }
-                var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
-                if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
-                    sortAndReturnVariables(reminders);
-                    return;
-                }
+                // Using reminders in variable searches creates duplicates and lots of problems
+                // var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
+                // if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
+                //     sortAndReturnVariables(reminders);
+                //     return;
+                // }
                 if(requestParams.includePublic){
                     qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
                         if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
@@ -2838,7 +2907,11 @@ window.qm = {
                 }
             });
         },
-        putManualTrackingFirst: function (variables) {
+        putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return;
+            }
             var manualTracking = variables.filter(function (variableToCheck) {
                 return variableToCheck.manualTracking === true;
             });
@@ -2847,6 +2920,24 @@ window.qm = {
             });
             var merged = manualTracking.concat(nonManual);
             return merged;
+        },
+        defaultVariableSort: function (variables) {
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return null;
+            }
+            variables = qm.variablesHelper.putManualTrackingFirst(variables);
+            function getValue(object){
+                return object.lastSelectedAt || object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+            }
+            variables.sort(function(a, b) {
+                var aValue = getValue(a);
+                var bValue = getValue(b);
+                if(aValue < bValue) return 1;
+                if(aValue > bValue) return -1;
+                return 0;
+            });
+            return variables;
         }
     },
     webNotifications: {
