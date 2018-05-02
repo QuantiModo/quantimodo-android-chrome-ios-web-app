@@ -5542,17 +5542,36 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.recordUpgradeProductPurchase(body.productId, null, 1);
         qmService.showBlackRingLoader();
-        qmService.postCreditCard(body, function(response){
-            qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
-            qmLogService.error(null, 'Got successful upgrade response from API');
+        function upgradeErrorHandler(response){
+            qmLog.error("Upgrade failed", null, response);
+            var message = 'Please try again or contact mike@quantimo.do for help.';
+            if(response.error){ message = response.error + '  ' + message; }
             qmService.hideLoader();
-            qmLogService.debug(JSON.stringify(response), null);
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Could not upgrade')
+                    .textContent(message)
+                    .ariaLabel('Error')
+                    .ok('OK')
+            );
+        }
+        qmService.postCreditCard(body, function(response){
+            qmService.hideLoader();
+            qmLogService.debug(JSON.stringify(response));
+            if(!response || !response.user){
+                upgradeErrorHandler(response);
+                return;
+            }
+            qmLogService.error('Successful upgrade response from API');
+            qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
             $mdDialog.show(
                 $mdDialog.alert()
                     .parent(angular.element(document.querySelector('#popupContainer')))
                     .clickOutsideToClose(true)
                     .title('Thank you!')
-                    .textContent("Let's get started!")
+                    .textContent("I'm eternally grateful for your generous support!")
                     .ariaLabel('OK!')
                     .ok('Get Started')
             ).finally(function() {
@@ -5562,19 +5581,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             deferred.resolve(response);
         }, function(response){
-            qmLogService.error(null, response);
-            var message = '';
-            if(response.error){ message = response.error; }
-            qmService.hideLoader();
-            $mdDialog.show(
-                $mdDialog.alert()
-                    .parent(angular.element(document.querySelector('#popupContainer')))
-                    .clickOutsideToClose(true)
-                    .title('Could not upgrade')
-                    .textContent(message + '  Please try again or contact mike@quantimo.do for help.')
-                    .ariaLabel('Error')
-                    .ok('OK')
-            );
+            upgradeErrorHandler(response);
             deferred.reject(response);
         });
         return deferred.promise;
