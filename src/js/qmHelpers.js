@@ -2968,7 +2968,7 @@ window.qm = {
         },
         defaultVariableSort: function (variables) {
             if(!variables){
-                qmLog.error("no variables provided to putManualTrackingFirst");
+                qmLog.info("no variables provided to putManualTrackingFirst");
                 return null;
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
