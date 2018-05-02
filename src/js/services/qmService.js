@@ -1109,6 +1109,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var pathWithoutQuery = getPathWithoutQuery(request);
         var doNotShowOfflineError = false;
         if (options && options.doNotShowOfflineError) {doNotShowOfflineError = true;}
+        /** @namespace $rootScope.offlineConnectionErrorShowing */
         if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
             qmLogService.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
                 {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
@@ -1620,7 +1621,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return qm.auth.accessTokenFromUrl;
     };
     qmService.goToState = function(to, params, options){
-        qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        //qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        qmLogService.info('Going to state ' + to);
         if(to !== "false"){$state.go(to, params, options);}
     };
     function getDefaultState() {
@@ -1648,7 +1650,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
             var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
             if(accessTokenFromLocalStorage && qm.auth.accessTokenFromUrl !== accessTokenFromLocalStorage){
-                qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
             var user = qm.storage.getItem(qm.items.user);
@@ -1662,7 +1664,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(user && qm.auth.accessTokenFromUrl !== user.accessToken){
                 qmService.rootScope.setUser(null);
-                qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
             }
             if(!qm.urlHelper.getParam('doNotRemember')){
@@ -2055,7 +2057,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setUser(null);
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
-        qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+        qm.storage.clearStorageExceptForUnitsAndCommonVariables();
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
@@ -2528,7 +2530,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        var connectors = qm.storage.getItem(qm.items.connectors);
+        var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
         if(connectors){
             //connectors = hideUnavailableConnectors(connectors);
             deferred.resolve(connectors);
@@ -5074,14 +5076,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             callback(val);
         }
     };
-    qmService.storage.clearStorageExceptForUnitsAndCommonVariables = function(){
-        qmLogService.info('Clearing local storage!');
-        var commonVariables = qm.storage.getItem(qm.items.commonVariables);
-        var units = qm.storage.getItem(qm.items.units);
-        qm.storage.clear();
-        qm.storage.setItem(qm.items.commonVariables, commonVariables);
-        qm.storage.setItem(qm.items.units, units);
-    };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
             qmLogService.error('No params provided to getCachedResponse');
@@ -6458,7 +6452,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         qmLogService.debug('getUserFromLocalStorageOrRefreshIfNecessary', null);
         if(qm.urlHelper.getParam('refreshUser')){
-            qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.storage.setItem('onboarded', true);
             qmService.storage.setItem('introSeen', true);
             qmService.rootScope.setUser(null);
@@ -7001,7 +6995,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 window.trackFiveRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                    qmLog.pushDebug('trackFiveRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
