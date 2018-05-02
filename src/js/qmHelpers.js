@@ -2637,7 +2637,7 @@ window.qm = {
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
         getUserFromLocalStorage: function(successHandler){
-            if(!window.qmUser) {window.qmUser = qm.storage.getItem('user');}
+            if(!window.qmUser) {window.qmUser = qm.storage.getItem(qm.items.user);}
             function checkUserId(user) {
                 if(user && user.ID){
                     user.id = user.ID;

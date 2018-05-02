@@ -119,6 +119,7 @@ var paths = {
     chcpLogin: '.chcplogin'
 };
 var argv = require('yargs').argv;
+var bugsnagSourceMaps = require('bugsnag-sourcemaps');
 var bower = require('bower');
 var change = require('gulp-change');
 var clean = require('gulp-rimraf');
@@ -158,6 +159,7 @@ var source = require('vinyl-source-stream');
 var sourcemaps = require('gulp-sourcemaps');
 var streamify = require('gulp-streamify');
 var templateCache = require('gulp-angular-templatecache');
+var through = require('through2');
 var ts = require('gulp-typescript');
 var uglify      = require('gulp-uglify');
 var unzip = require('gulp-unzip');
@@ -1040,6 +1042,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
             appSettings.buildServer = getCurrentServerContext();
             appSettings.buildLink = getBuildLink();
             appSettings.versionNumber = versionNumbers.ionicApp;
+            appSettings.androidVersionCode = versionNumbers.androidVersionCode;
             appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
             appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
             // if (!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
@@ -1552,7 +1555,21 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(indexHtmlFilter.restore)
         .pipe(ifElse(renameForCacheBusting, revReplace))         // Substitute in new filenames for cache busting
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
-        .pipe(gulp.dest('www'));
+        //.pipe(rev.manifest('rev-manifest.json'))
+        // .pipe(through.obj(function (file, enc, cb) {
+        //     console.log(file.revOrigPath); //=> /Users/.../project_manage.js
+        //     console.log(file.revHash); //=> '4ad9f04399'
+        //
+        //     // write the NEW path
+        //     file.path = modify(file.revOrigPath, function (name, ext) {
+        //         return name + '_' + file.revHash + '.min' + ext;
+        //     }); //=> 'project_manage_4ad9f04399.min.js
+        //     console.log(file.path);
+        //     // send it back to stream
+        //     cb(null, file);
+        // }))
+        .pipe(gulp.dest('www'))
+        ;
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     if(doNotMinify || buildDebug){
@@ -1565,6 +1582,38 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
+});
+gulp.task('upload-source-maps', [], function(callback) {
+    fs.readdir('www/scripts', function (err, files) {
+        if(!files){
+            qmLog.info("No source maps to upload");
+            callback();
+            return;
+        }
+        files.forEach(function(file) {
+            if(file.indexOf('.map') !== -1){return;}
+            var options = {
+                apiKey: 'ae7bc49d1285848342342bb5c321a2cf',
+                appVersion: versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
+                //codeBundleId: '1.0-123', // optional (react-native only)
+                minifiedUrl: '*'+file, // supports wildcards
+                sourceMap: 'www/scripts/'+file+'.map', // file path of the source map on the current machine
+                minifiedFile: 'www/scripts/'+file, // file path of the minified file on the current machine
+                uploadSources: true,
+                overwrite: true, // whether you want to overwrite previously uploaded source maps
+                // sources: {
+                //     'http://example.com/assets/main.js': path.resolve(__dirname, 'path/to/main.js'),
+                //     'http://example.com/assets/utils.js': path.resolve(__dirname, 'path/to/utils.js'),
+                // },
+            };
+            qmLog.info("Upload options", options);
+            bugsnagSourceMaps.upload(options, function(err) {
+                if (err) {throw new Error('Could not upload source map for ' + file + " because " + err.message);}
+                console.log(file+ ' source map uploaded successfully');
+                callback();
+            });
+        });
+    });
 });
 var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
@@ -2327,6 +2376,7 @@ gulp.task('configureApp', [], function (callback) {
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
+        'upload-source-maps',
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
