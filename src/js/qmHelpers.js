@@ -11,6 +11,23 @@ window.qm = {
             inbox: "inbox"
         }
     },
+    appMode: {
+        isTesting: function(){
+            return qm.appMode.getAppMode() === 'testing';
+        },
+        getAppMode: function(){
+            var env = "production";
+            if(window.location.origin.indexOf('local') !== -1){env = "development";}
+            if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
+            if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
+            if(qm.getUser()){
+                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+            }
+            if(window.location.href.indexOf("medimodo.heroku") !== -1){env = "testing";}
+            return env;
+        }
+    },
     apiPaths: {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
