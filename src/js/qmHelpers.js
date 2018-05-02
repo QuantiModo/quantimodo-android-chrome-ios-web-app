@@ -1254,6 +1254,10 @@ window.qm = {
         }
     },
     localForage: {
+        clear: function () {
+            qmLog.info("Clearing localforage!");
+            localforage.clear();
+        },
         saveWithUniqueId: function(key, arrayToSave) {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
@@ -2296,6 +2300,15 @@ window.qm = {
             var array = qm.storage.getItem(localStorageItemName);
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
+        },
+        clearStorageExceptForUnitsAndCommonVariables: function(){
+            qmLog.info('Clearing local storage!');
+            var commonVariables = qm.storage.getItem(qm.items.commonVariables);
+            var units = qm.storage.getItem(qm.items.units);
+            qm.storage.clear();
+            qm.storage.setItem(qm.items.commonVariables, commonVariables);
+            qm.storage.setItem(qm.items.units, units);
+            qm.localForage.clear();
         }
     },
     stringHelper: {
