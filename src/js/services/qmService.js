@@ -669,6 +669,47 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $rootScope.goToState(qmStates.measurementAdd, {variableObject: variableObject, doneState: "false"}); // false must have quotes
                 }, null, ev);
             }
+        },
+        stateHelper: {
+            goBack: function(providedStateParams){
+                qmLog.info("Called goBack with state params: "+JSON.stringify(providedStateParams));
+                function skipSearchPages() {
+                    if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
+                        $ionicHistory.removeBackView();
+                        backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
+                        stateId = backView.stateName;
+                        //$ionicHistory.goBack(-2);
+                        //qmService.goToDefaultState(stateParams);
+                        //return;
+                    }
+                }
+                function addProvidedStateParamsToBackViewStateParams() {
+                    for (var key in providedStateParams) {
+                        if (providedStateParams.hasOwnProperty(key)) {
+                            if (providedStateParams[key] && providedStateParams[key] !== "") {
+                                if (!backView.stateParams) {backView.stateParams = {};}
+                                backView.stateParams[key] = providedStateParams[key];
+                                stateId += "_" + key + "=" + providedStateParams[key];
+                            }
+                        }
+                    }
+                    //backView.stateId = stateId;  // TODO: What is this for?
+                }
+                if($ionicHistory.viewHistory().backView){
+                    var backView = $ionicHistory.backView();
+                    qmLog.info("backView.stateName is " + backView.stateName);
+                    var stateId = backView.stateName;
+                    skipSearchPages();
+                    if(providedStateParams){
+                        addProvidedStateParamsToBackViewStateParams();
+                    }
+                    qmLog.info('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
+                    $ionicHistory.goBack();
+                } else {
+                    qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
+                    qmService.goToDefaultState(providedStateParams);
+                }
+            }
         }
     };
     qmService.actionSheets = {
@@ -5575,7 +5616,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     .ariaLabel('OK!')
                     .ok('Get Started')
             ).finally(function() {
-                $scope.goBack();
+                qmService.stateHelper.goBack();
                 /** @namespace response.data.purchaseId */
                 qmService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
             });
