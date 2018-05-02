@@ -99,7 +99,7 @@
                 <i class="icon ion-android-download"></i> &nbsp; Update App
             </a>-->
         </div>
-        <div ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
+        <div id="downgrade-button" ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
             <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>
         </div>
         <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">

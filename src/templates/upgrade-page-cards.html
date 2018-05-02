@@ -26,13 +26,13 @@
                 <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
             </div>
             <span ng-if="!platform.isWebOrChrome"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
-            <div ng-cloak name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;">
-                <div class="md-dialog-content">
+            <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
+                <div id="plans" class="md-dialog-content">
                     <md-radio-group ng-model="productId">
-                        <md-radio-button value="monthly7">Monthly at $6.99/mo</md-radio-button>
-                        <md-radio-button value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                        <md-radio-button id="monthly-radio" value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                        <md-radio-button id="yearly-radio" value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
                     </md-radio-group>
-                    <md-input-container class="md-block">
+                    <md-input-container id="coupon-code-input" class="md-block">
                         <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
                         <input ng-model="state.coupon" placeholder="Coupon Code (optional)" ng-required="false">
                     </md-input-container>
@@ -47,7 +47,7 @@
                             <div id="card-errors" role="alert"></div>
                         </div>
                         <br>
-                        <button class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+                        <button id="upgrade-button" class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
                         <!--<button>Submit Payment</button>-->
                     </form>
                 </div>
