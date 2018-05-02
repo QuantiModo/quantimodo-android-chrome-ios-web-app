@@ -2046,7 +2046,8 @@ gulp.task('buildInfo', ['getAppConfigs'], function () {
         buildServer: getCurrentServerContext,
         buildLink: getBuildLink(),
         versionNumber: versionNumbers.ionicApp,
-        versionNumbers: versionNumbers
+        versionNumbers: versionNumbers,
+        gitBranch: qmGit.branchName
     };
     writeToFile("./www/build-info.json", buildInfo);
 });
