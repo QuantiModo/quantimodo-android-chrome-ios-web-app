@@ -3,6 +3,11 @@
     <ion-content scroll="{ isBrowserView : platform.isWeb == false }" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshCharts()"></ion-refresher>
         <div ng-cloak>
+            <div class="card" ng-show="!state.variableObject.charts" style="border-radius: 15px;">
+                <div class="item" > <div class="row">
+                    <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+                </div> </div>
+            </div>
             <div ng-if="state.variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>
             <div ng-if="state.variableObject" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
             <div class="card list" id="statisticsCard" ng-if="state.variableObject.numberOfRawMeasurements">
