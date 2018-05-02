@@ -1109,6 +1109,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var pathWithoutQuery = getPathWithoutQuery(request);
         var doNotShowOfflineError = false;
         if (options && options.doNotShowOfflineError) {doNotShowOfflineError = true;}
+        /** @namespace $rootScope.offlineConnectionErrorShowing */
         if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
             qmLogService.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
                 {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
@@ -2529,7 +2530,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        var connectors = qm.storage.getItem(qm.items.connectors);
+        var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
         if(connectors){
             //connectors = hideUnavailableConnectors(connectors);
             deferred.resolve(connectors);
@@ -6994,7 +6995,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 window.trackFiveRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                    qmLog.pushDebug('trackFiveRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };

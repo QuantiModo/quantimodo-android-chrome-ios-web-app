@@ -1018,10 +1018,15 @@ window.qm = {
             apiInstance.getConnectors(params, callback);
         },
         getConnectorsFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.connectors);
+            var connectors = qm.storage.getItem(qm.items.connectors);
+            if(connectors.connectors){
+                qm.storage.setItem(qm.items.connectors, connectors.connectors);
+                return connectors.connectors;
+            }
+            return connectors;
         },
         getConnectorsFromLocalStorageOrApi: function(successHandler, errorHandler){
-            var connectors = qm.storage.getItem(qm.items.connectors);
+            var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
             if(connectors){successHandler(connectors); return;}
             qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
         },
