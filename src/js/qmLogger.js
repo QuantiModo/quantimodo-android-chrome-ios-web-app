@@ -252,12 +252,12 @@ window.qmLog.setupBugsnag = function(){
             releaseStage: qm.appMode.getAppMode(),
             //notifyReleaseStages: [ 'staging', 'production' ],
             metaData: qmLog.addGlobalMetaData(null, null, {}, null, null),
-            user: { id: '123', name: 'B. Nag', email: 'bugs.nag@bugsnag.com' },
+            user: qm.userHelper.getUserFromLocalStorage(),
             beforeSend: function (report) {}
         };
         if(qm.getUser()){options.user = qmLog.obfuscateSecrets(qm.getUser());}
         if(qm.getAppSettings()){
-            options.appVersion = qm.getAppSettings().versionNumber;
+            options.appVersion = qm.getAppSettings().androidVersionCode;
             options.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
         window.bugsnagClient = bugsnag(options);
