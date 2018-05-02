@@ -2352,8 +2352,12 @@ window.qm = {
         getStringAfter: function(fullString, substring){
             return fullString.split(substring)[1];
         },
-        truncateIfGreaterThan(string, maxCharacters){
-            if(string.length > maxCharacters){return string.substring(0, maxCharacters) + '...';} else { return string;}
+        truncateIfGreaterThan: function (string, maxCharacters) {
+            if(string.length > maxCharacters){
+                return string.substring(0, maxCharacters) + '...';
+            } else {
+                return string;
+            }
         }
     },
     studyHelper: {
