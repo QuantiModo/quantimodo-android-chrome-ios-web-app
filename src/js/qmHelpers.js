@@ -2751,6 +2751,10 @@ window.qm = {
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
+                return;
+            }
             if(!requestParams){requestParams = {};}
             qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
                 if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
@@ -2776,7 +2780,7 @@ window.qm = {
         },
         refreshIfNecessary: function(){
             //putCommonVariablesInLocalStorageUsingJsonFile();
-            qm.commonVariablesHelper.getFromLocalStorage(function (commonVariables) {
+            qm.commonVariablesHelper.getFromLocalStorage({}, function (commonVariables) {
                 if(!commonVariables || !commonVariables.length){
                     qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
                 }
@@ -2928,7 +2932,7 @@ window.qm = {
                 getFromApi();
                 return;
             }
-            qm.userVariables.getFromLocalStorage(requestParams, function(variables){
+            qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
                     sortAndReturnVariables(variables);
                     return;
@@ -2939,17 +2943,7 @@ window.qm = {
                 //     sortAndReturnVariables(reminders);
                 //     return;
                 // }
-                if(requestParams.includePublic){
-                    qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (variables) {
-                        if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                            sortAndReturnVariables(variables);
-                            return;
-                        }
-                        getFromApi();
-                    });
-                } else {
-                    getFromApi();
-                }
+                getFromApi();
             });
         },
         putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
@@ -2983,7 +2977,23 @@ window.qm = {
                 return 0;
             });
             return variables;
-        }
+        },
+        getUserAndCommonVariablesFromLocalStorage: function(requestParams, successHandler){
+            requestParams = requestParams || {};
+            qm.userVariables.getFromLocalStorage(requestParams, function(userVariables){
+                userVariables = userVariables || [];
+                if(!requestParams.includePublic){
+                    successHandler(userVariables);
+                    return;
+                }
+                qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (commonVariables) {
+                    commonVariables = commonVariables || [];
+                    var both = userVariables.concat(commonVariables);
+                    both = qm.arrayHelper.getUnique(both, 'id');
+                    successHandler(both);
+                });
+            });
+        },
     },
     webNotifications: {
         initializeFirebase: function(){
