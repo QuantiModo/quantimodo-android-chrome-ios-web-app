@@ -225,6 +225,7 @@ function setVersionNumbers() {
         androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
         ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
     };
+    versionNumbers.buildVersionNumber = versionNumbers.androidVersionCode;
     qmLog.info(JSON.stringify(versionNumbers));
 }
 setVersionNumbers();
@@ -249,6 +250,9 @@ var qm = {
         setDoNotMinify(value){
             doNotMinify = value;
         }
+    },
+    getBuildVersionNumber: function () {
+        return versionNumbers.androidVersionCode
     }
 };
 var buildingFor = {
@@ -2042,6 +2046,7 @@ gulp.task('buildInfo', ['getAppConfigs'], function () {
         buildServer: getCurrentServerContext,
         buildLink: getBuildLink(),
         versionNumber: versionNumbers.ionicApp
+        versionNumbers: versionNumbers,
     };
     writeToFile("./www/build-info.json", buildInfo);
 });
@@ -2112,7 +2117,7 @@ gulp.task('cleanChromeBuildFolder', [], function () {
 });
 gulp.task('cleanCombinedFiles', [], function () {
     qmLog.info("Running cleanCombinedFiles...");
-    return cleanFiles(['www/css/combined*', 'www/scripts/combined*']);
+    return cleanFiles(['www/css/combined*', 'www/scripts/combined*', 'www/scripts/*combined-*']);
 });
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
