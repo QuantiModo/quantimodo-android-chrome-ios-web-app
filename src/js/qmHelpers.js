@@ -1018,10 +1018,15 @@ window.qm = {
             apiInstance.getConnectors(params, callback);
         },
         getConnectorsFromLocalStorage: function(){
-            return qm.storage.getItem(qm.items.connectors);
+            var connectors = qm.storage.getItem(qm.items.connectors);
+            if(connectors.connectors){
+                qm.storage.setItem(qm.items.connectors, connectors.connectors);
+                return connectors.connectors;
+            }
+            return connectors;
         },
         getConnectorsFromLocalStorageOrApi: function(successHandler, errorHandler){
-            var connectors = qm.storage.getItem(qm.items.connectors);
+            var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
             if(connectors){successHandler(connectors); return;}
             qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
         },
@@ -1254,6 +1259,10 @@ window.qm = {
         }
     },
     localForage: {
+        clear: function () {
+            qmLog.info("Clearing localforage!");
+            localforage.clear();
+        },
         saveWithUniqueId: function(key, arrayToSave) {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
@@ -2296,6 +2305,15 @@ window.qm = {
             var array = qm.storage.getItem(localStorageItemName);
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
+        },
+        clearStorageExceptForUnitsAndCommonVariables: function(){
+            qmLog.info('Clearing local storage!');
+            var commonVariables = qm.storage.getItem(qm.items.commonVariables);
+            var units = qm.storage.getItem(qm.items.units);
+            qm.storage.clear();
+            qm.storage.setItem(qm.items.commonVariables, commonVariables);
+            qm.storage.setItem(qm.items.units, units);
+            qm.localForage.clear();
         }
     },
     stringHelper: {
@@ -2339,8 +2357,12 @@ window.qm = {
         getStringAfter: function(fullString, substring){
             return fullString.split(substring)[1];
         },
-        truncateIfGreaterThan(string, maxCharacters){
-            if(string.length > maxCharacters){return string.substring(0, maxCharacters) + '...';} else { return string;}
+        truncateIfGreaterThan: function (string, maxCharacters) {
+            if(string.length > maxCharacters){
+                return string.substring(0, maxCharacters) + '...';
+            } else {
+                return string;
+            }
         }
     },
     studyHelper: {
