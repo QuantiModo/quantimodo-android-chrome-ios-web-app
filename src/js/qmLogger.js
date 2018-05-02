@@ -160,26 +160,11 @@ qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
     }
     return metaData;
 };
-window.qmLog.getEnv = function(){
-    var env = "production";
-    if(window.location.origin.indexOf('local') !== -1){env = "development";}
-    if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
-    if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qm.getUser()){
-        if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
-    }
-    if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
-    return env;
-};
-qmLog.envIsTesting = function(){
-    return qmLog.getEnv() === 'testing';
-};
 qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
-    if(qmLog.envIsTesting()){
+    if(qm.appMode.isTesting()){
         qmLog.info(name, message, metaData, stackTrace);
     } else {
         qmLog.error(name, message, metaData, stackTrace);
@@ -264,7 +249,7 @@ window.qmLog.setupBugsnag = function(){
     if (typeof bugsnag !== "undefined") {
         var options = {
             apiKey: "ae7bc49d1285848342342bb5c321a2cf",
-            releaseStage: qmLog.getEnv(),
+            releaseStage: qm.appMode.getAppMode(),
             //notifyReleaseStages: [ 'staging', 'production' ],
             metaData: qmLog.addGlobalMetaData(null, null, {}, null, null),
             user: { id: '123', name: 'B. Nag', email: 'bugs.nag@bugsnag.com' },
