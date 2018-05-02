@@ -2161,30 +2161,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.getLocalPrimaryOutcomeMeasurements = function(){
-        var primaryOutcomeVariableMeasurements = qm.storage.getItem('primaryOutcomeVariableMeasurements');
-        if(!primaryOutcomeVariableMeasurements) {primaryOutcomeVariableMeasurements = [];}
-        var measurementsQueue = getPrimaryOutcomeMeasurementsFromQueue();
-        if(measurementsQueue){primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);}
-        primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.sort(function(a,b){
-            if(a.startTimeEpoch < b.startTimeEpoch){return 1;}
-            if(a.startTimeEpoch> b.startTimeEpoch){return -1;}
-            return 0;
-        });
-        return qmService.addInfoAndImagesToMeasurements(primaryOutcomeVariableMeasurements);
-    };
-    function getPrimaryOutcomeMeasurementsFromQueue() {
-        var measurementsQueue = qm.storage.getItem('measurementsQueue');
-        var primaryOutcomeMeasurements = [];
-        if(measurementsQueue){
-            for(var i = 0; i < measurementsQueue.length; i++){
-                if(measurementsQueue[i].variableName === qm.getPrimaryOutcomeVariable().name){
-                    primaryOutcomeMeasurements.push(measurementsQueue[i]);
-                }
-            }
-        }
-        return primaryOutcomeMeasurements;
-    }
     qmService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
@@ -2197,7 +2173,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
         qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
-                qmService.storage.setItem('primaryOutcomeVariableMeasurements', primaryOutcomeMeasurementsFromApi);
+                qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
             }
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
@@ -2368,7 +2344,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
             updateMeasurementInQueue(measurementInfo);
         } else if(measurementInfo.id) {
-            qmService.storage.deleteById('primaryOutcomeVariableMeasurements', measurementInfo.id);
+            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurementInfo.id);
             qmService.addToMeasurementsQueue(measurementInfo);
         } else {
             qmService.addToMeasurementsQueue(measurementInfo);
@@ -2417,7 +2393,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.deleteMeasurementFromServer = function(measurement){
         var deferred = $q.defer();
-        qmService.storage.deleteById('primaryOutcomeVariableMeasurements', measurement.id);
+        qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurement.id);
         qmService.storage.deleteByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
         qmService.showInfoToast("Deleted " + measurement.variableName + " measurement");
         qmService.deleteV1Measurements(measurement, function(response){
@@ -3701,9 +3677,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getWeekdayChartConfigForPrimaryOutcome = function () {
         var deferred = $q.defer();
-        deferred.resolve(qmService.processDataAndConfigureWeekdayChart(
-            qm.storage.getItem('primaryOutcomeVariableMeasurements'),
-            qm.getPrimaryOutcomeVariable()));
+        qm.localForage.getItem(qm.items.primaryOutcomeMeasurements, function(measurements){
+            deferred.resolve(qmService.processDataAndConfigureWeekdayChart(measurements, qm.getPrimaryOutcomeVariable()));
+        });
         return deferred.promise;
     };
     qmService.generateDistributionArray = function(allMeasurements){
@@ -6228,7 +6204,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
             if (variableName === qm.getPrimaryOutcomeVariable().name) {
-                qmService.storage.setItem('primaryOutcomeVariableMeasurements',[]);
+                qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements,[]);
                 qmService.storage.setItem('measurementsQueue',[]);
                 qmService.storage.setItem('averagePrimaryOutcomeVariableValue',0);
                 qmService.storage.setItem('lastMeasurementSyncTime', 0);
@@ -7060,29 +7036,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     finishPush(data);
                 };
             }
-            window.notification_callback = function(reportedVariable, reportingTime){
-                var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-                var val = false;
-                if(reportedVariable === "repeat_rating"){
-                    val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
-                } else {
-                    val = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
-                }
-                if(val){
-                    localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
-                    var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime};
-                    if(localStorage['primaryOutcomeVariableMeasurements']){
-                        var allMeasurements = JSON.parse(localStorage['primaryOutcomeVariableMeasurements']);
-                        allMeasurements.push(allMeasurementsObject);
-                        localStorage['primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
-                    }
-                    if(localStorage['measurementsQueue']){
-                        var measurementsQueue = JSON.parse(localStorage['measurementsQueue']);
-                        measurementsQueue.push(allMeasurementsObject);
-                        localStorage['measurementsQueue'] = JSON.stringify(measurementsQueue);
-                    }
-                }
-            };
             qmService.registerDeviceToken();
         });
     };
