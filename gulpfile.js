@@ -1610,9 +1610,9 @@ gulp.task('upload-source-maps', [], function(callback) {
             bugsnagSourceMaps.upload(options, function(err) {
                 if (err) {throw new Error('Could not upload source map for ' + file + " because " + err.message);}
                 console.log(file+ ' source map uploaded successfully');
-                callback();
             });
         });
+        callback();
     });
 });
 var pump = require('pump');
