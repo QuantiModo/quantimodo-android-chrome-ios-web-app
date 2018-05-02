@@ -141,7 +141,6 @@ var inquirer = require('inquirer');
 var jeditor = require('gulp-json-editor');
 var lazypipe = require('lazypipe');
 var minifyCss = require('gulp-minify-css');
-var modify = require('gulp-modify');
 var ngAnnotate = require('gulp-ng-annotate');
 var open = require('gulp-open');
 var parseString = require('xml2js').parseString;
