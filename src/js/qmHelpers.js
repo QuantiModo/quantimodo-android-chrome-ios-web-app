@@ -1205,6 +1205,7 @@ window.qm = {
         onboarded: 'onboarded',
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
+        primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -1273,6 +1274,16 @@ window.qm = {
                     });
                     existingData.unshift(newObjectToSave);
                 }
+                qm.localForage.setItem(key, existingData);
+            });
+        },
+        deleteById: function(key, id) {
+            qmLog.info("deleting " + key + " by id " + id);
+            qm.localForage.getItem(key, function(existingData) {
+                if(!existingData){existingData = [];}
+                existingData = existingData.filter(function( obj ) {
+                    return obj.id !== id;
+                });
                 qm.localForage.setItem(key, existingData);
             });
         },
