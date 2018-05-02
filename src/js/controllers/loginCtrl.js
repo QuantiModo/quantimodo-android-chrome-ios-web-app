@@ -160,9 +160,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             return;
         }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
-        if($rootScope.platform.isChromeApp){
-            qmService.chromeAppLogin(register);
-        } else if ($rootScope.platform.isChromeExtension) {
+        if (qm.platform.isChromeExtension()) {
             qmService.chromeExtensionLogin(register);
         } else if ($rootScope.platform.isAndroid || $rootScope.platform.isIOS || $rootScope.platform.isWindows) {
             qmLog.authDebug('$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using qmService.nonNativeMobileLogin', null);

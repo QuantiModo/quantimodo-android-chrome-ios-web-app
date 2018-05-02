@@ -5052,29 +5052,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storage.setItem = function(key, value){
         var deferred = $q.defer();
-        if ($rootScope.platform.isChromeApp) {
-            if(typeof value !== "string"){value = JSON.stringify(value);}
-            // Code running in a Chrome extension (content script, background page, etc.)
-            var obj = {};
-            obj[key] = value;
-            chrome.storage.local.set(obj);
-            deferred.resolve();
-        } else {
-            window.qm.storage.setItem(key, value);
-            deferred.resolve();
-        }
+        window.qm.storage.setItem(key, value);
+        deferred.resolve();
         return deferred.promise;
     };
     qmService.storage.getAsStringWithCallback = function(key, callback){
-        if ($rootScope.platform.isChromeApp) {
-            // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(key,function(val){
-                callback(val[key]);
-            });
-        } else {
-            var val = qm.storage.getItem(key);
-            callback(val);
-        }
+        var val = qm.storage.getItem(key);
+        callback(val);
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
