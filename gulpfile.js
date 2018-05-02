@@ -2266,12 +2266,13 @@ gulp.task('build-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
+        'ionicInfo',
         'uncommentCordovaJsInIndexHtml',
         'cleanPlugins',
-        'platform-remove-ios',
         'configureApp',
         //'copyAppResources',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
+        'platform-remove-ios',
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
@@ -2279,6 +2280,7 @@ gulp.task('build-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'platform-add-ios',
+        'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
         'cordova-hcp-deploy',
