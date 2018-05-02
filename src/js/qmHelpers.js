@@ -1309,6 +1309,10 @@ window.qm = {
             }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to localForage.getItem!");
+                return;
+            }
             qmLog.debug("Getting " + key + " from globals");
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
