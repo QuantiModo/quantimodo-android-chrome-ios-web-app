@@ -25,7 +25,7 @@ window.qmLog = {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
             if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                bugsnagClient.notify("Could not decouple object to obfuscate secrets: " + error ,
                     "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
             }
             //window.qmLog.error(error, object); // Avoid infinite recursion
@@ -314,6 +314,10 @@ window.qmLog.setupIntercom = function() {
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
     if(typeof bugsnagClient === "undefined"){ console.error('bugsnagClient not defined', metaData); return; }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
+    if(!name){name = "No error name provided";}
+    if(!message){message = "No error message provided";}
+    if(typeof name !== "string"){name = JSON.stringify(name);}
+    if(typeof message !== "string"){message = JSON.stringify(message);}
     bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: metaData});
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
