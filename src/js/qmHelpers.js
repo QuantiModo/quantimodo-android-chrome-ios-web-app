@@ -1309,6 +1309,10 @@ window.qm = {
             }, errorHandler);
         },
         getItem: function(key, successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to localForage.getItem!");
+                return;
+            }
             qmLog.debug("Getting " + key + " from globals");
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
@@ -2769,6 +2773,14 @@ window.qm = {
                     if(errorHandler){errorHandler(error);}
                 });
             });
+        },
+        refreshIfNecessary: function(){
+            //putCommonVariablesInLocalStorageUsingJsonFile();
+            qm.commonVariablesHelper.getFromLocalStorage(function (commonVariables) {
+                if(!commonVariables || !commonVariables.length){
+                    qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
+                }
+            });
         }
     },
     userVariables: {
@@ -2880,6 +2892,17 @@ window.qm = {
                     errorHandler(error);
                 });
             });
+        },
+        refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
+            qm.reminderHelper.getNumberOfReminders(function (number) {
+                if(number){
+                    qm.userVariables.getFromLocalStorage({}, function (userVariables) {
+                        if(!userVariables || userVariables.length < number){
+                            qm.userVariables.getFromApi();
+                        }
+                    });
+                }
+            })
         }
     },
     variablesHelper: {

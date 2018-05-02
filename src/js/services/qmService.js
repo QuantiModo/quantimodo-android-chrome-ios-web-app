@@ -6727,8 +6727,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
-        //putCommonVariablesInLocalStorageUsingJsonFile();
-        if(!qm.storage.getItem(qm.items.commonVariables)){qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();}
+        qm.commonVariablesHelper.refreshIfNecessary();
+        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
         qmService.backgroundGeolocationStartIfEnabled();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
