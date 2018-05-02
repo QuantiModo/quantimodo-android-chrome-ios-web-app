@@ -2069,6 +2069,12 @@ var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
     return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
 });
+gulp.task('uncommentBugsnagInIndexHtml', function () {
+    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/bugsnag/dist/bugsnag.js"></script>-->', '<script src="lib/bugsnag/dist/bugsnag.js"></script>');
+});
+gulp.task('uncommentOpbeatInIndexHtml', function () {
+    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->', '<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>');
+});
 gulp.task('commentOrUncommentCordovaJs', function () {
     if(process.env.BUILD_IOS || process.env.BUILD_ANDROID){
         console.log("Uncommenting cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
@@ -2373,6 +2379,8 @@ gulp.task('configureApp', [], function (callback) {
         'getUnits',
         'getVariableCategories',
         'getAppConfigs',
+        'uncommentBugsnagInIndexHtml',
+        'uncommentOpbeatInIndexHtml',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
