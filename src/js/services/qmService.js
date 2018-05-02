@@ -1620,7 +1620,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return qm.auth.accessTokenFromUrl;
     };
     qmService.goToState = function(to, params, options){
-        qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        //qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        qmLogService.info('Going to state ' + to);
         if(to !== "false"){$state.go(to, params, options);}
     };
     function getDefaultState() {
