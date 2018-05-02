@@ -2045,8 +2045,8 @@ gulp.task('buildInfo', ['getAppConfigs'], function () {
         builtAt: timeHelper.getUnixTimestampInSeconds(),
         buildServer: getCurrentServerContext,
         buildLink: getBuildLink(),
-        versionNumber: versionNumbers.ionicApp
-        versionNumbers: versionNumbers,
+        versionNumber: versionNumbers.ionicApp,
+        versionNumbers: versionNumbers
     };
     writeToFile("./www/build-info.json", buildInfo);
 });
