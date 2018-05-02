@@ -19,6 +19,7 @@
     "body-parser": "^1.18.2",
     "bower": "~1.3.3",
     "bugsnag": "^1.11.0",
+    "bugsnag-sourcemaps": "1.0.3",
     "eslint": "^4.19.0",
     "event-stream": "^3.3.2",
     "express": "^4.16.3",
