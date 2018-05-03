@@ -262,7 +262,7 @@ window.qmLog.setupBugsnag = function(){
         }
         window.bugsnagClient = bugsnag(options);
     } else {
-        qmLog.error('Bugsnag is not defined');
+        if(qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
     }
 };
 //window.qmLog.setupBugsnag();
@@ -297,7 +297,10 @@ window.qmLog.setupIntercom = function() {
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
-    if(typeof bugsnagClient === "undefined"){ console.error('bugsnagClient not defined', metaData); return; }
+    if(typeof bugsnagClient === "undefined") {
+        if (!qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', metaData);}
+        return;
+    }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
     if(!name){name = "No error name provided";}
     if(!message){message = "No error message provided";}

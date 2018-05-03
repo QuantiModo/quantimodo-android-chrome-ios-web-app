@@ -13,18 +13,25 @@ window.qm = {
     },
     appMode: {
         isTesting: function(){
-            return qm.appMode.getAppMode() === 'testing';
+            if(qm.getUser()){
+                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){return true;}
+                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            }
+            return window.location.href.indexOf("medimodo.heroku") !== -1;
+
+        },
+        isDevelopment: function(){
+            if(window.location.origin.indexOf('http://localhost:') !== -1){return true;}
+            return window.location.origin.indexOf('local.quantimo.do') !== -1;
+        },
+        isStaging: function(){
+            return window.location.origin.indexOf('staging.') !== -1;
         },
         getAppMode: function(){
             var env = "production";
-            if(window.location.origin.indexOf('local') !== -1){env = "development";}
-            if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
-            if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-            if(qm.getUser()){
-                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
-            }
-            if(window.location.href.indexOf("medimodo.heroku") !== -1){env = "testing";}
+            if(qm.appMode.isStaging()){env = "staging";}
+            if(qm.appMode.isDevelopment()){env = "development";}
+            if(qm.appMode.isTesting()){env = "testing";}
             return env;
         }
     },
