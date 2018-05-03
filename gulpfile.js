@@ -87,6 +87,7 @@ var qmGit = {
     isFeature: function () {
         return qmGit.branchName.indexOf("feature") !== -1;
     },
+    currentGitCommitSha: require('child_process').execSync('git rev-parse HEAD').toString().trim(),
     accessToken: process.env.GITHUB_ACCESS_TOKEN
 };
 var paths = {
@@ -180,7 +181,7 @@ bugsnag.onBeforeNotify(function (notification) {
     // modify meta-data
     metaData.subsystem = { name: getCurrentServerContext() };
     metaData.client_id = QUANTIMODO_CLIENT_ID;
-    metaData.build_link = getBuildLink();
+    metaData.build_link = qm.buildInfoHelper.getBuildLink();
 });
 var qmLog = {
     error: function (message, object, maxCharacters) {
@@ -253,9 +254,45 @@ var qm = {
             doNotMinify = value;
         }
     },
-    getBuildVersionNumber: function () {
-        return versionNumbers.androidVersionCode
-    }
+    buildInfoHelper: {
+        alreadyMinified: function(){
+            if(!qm.buildInfoHelper.getPreviousBuildInfo().gitCommitShaHash){return false;}
+            return qm.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash === qm.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash;
+        },
+        previousBuildInfo: {
+            iosCFBundleVersion: null,
+            builtAt: null,
+            buildServer: null,
+            buildLink: null,
+            versionNumber: null,
+            versionNumbers: null,
+            gitBranch: null,
+            gitCommitShaHash: null
+        },
+        getCurrentBuildInfo: function () {
+            return qm.buildInfoHelper.currentBuildInfo = {
+                iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
+                builtAt: timeHelper.getUnixTimestampInSeconds(),
+                buildServer: getCurrentServerContext(),
+                buildLink: qm.buildInfoHelper.getBuildLink(),
+                versionNumber: versionNumbers.ionicApp,
+                versionNumbers: versionNumbers,
+                gitBranch: qmGit.branchName,
+                gitCommitShaHash: require('child_process').execSync('git rev-parse HEAD').toString().trim()
+            };
+        },
+        getPreviousBuildInfo: function () {
+            return JSON.parse(fs.readFileSync(paths.www.buildInfo));
+        },
+        writeBuildInfo: function () {
+            var buildInfo = qm.buildInfoHelper.currentBuildInfo;
+            writeToFile(paths.www.buildInfo, buildInfo);
+        },
+        getBuildLink: function() {
+            if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+            if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+        }
+    },
 };
 var buildingFor = {
     platform: null,
@@ -289,15 +326,11 @@ quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
 function getCurrentServerContext() {
-    var currentServerContext = "local";
     if(process.env.CIRCLE_BRANCH){return "circleci";}
     if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
     return process.env.HOSTNAME;
 }
-function getBuildLink() {
-    if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
-    if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
-}
+
 function setBranchName(callback) {
     function setBranch(branch, callback) {
         qmGit.branchName = branch;
@@ -1040,7 +1073,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         if(response.privateConfig){privateConfig = response.privateConfig;}
         function addBuildInfoToAppSettings() {
             appSettings.buildServer = getCurrentServerContext();
-            appSettings.buildLink = getBuildLink();
+            appSettings.buildLink = qm.buildInfoHelper.getBuildLink();
             appSettings.versionNumber = versionNumbers.ionicApp;
             appSettings.androidVersionCode = versionNumbers.androidVersionCode;
             appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
@@ -2095,16 +2128,7 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(gulp.dest('./'));
 });
 gulp.task('buildInfo', ['getAppConfigs'], function () {
-    var buildInfo = {
-        iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
-        builtAt: timeHelper.getUnixTimestampInSeconds(),
-        buildServer: getCurrentServerContext,
-        buildLink: getBuildLink(),
-        versionNumber: versionNumbers.ionicApp,
-        versionNumbers: versionNumbers,
-        gitBranch: qmGit.branchName
-    };
-    writeToFile("./www/build-info.json", buildInfo);
+    qm.buildInfoHelper.writeBuildInfo();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
