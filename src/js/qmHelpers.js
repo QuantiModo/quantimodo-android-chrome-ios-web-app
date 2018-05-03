@@ -538,8 +538,12 @@ window.qm = {
                         appSettings[propertyName] = buildInfo[propertyName];
                     }
                 }
+                if(!appSettings.gottenAt){appSettings.gottenAt = qm.timeHelper.getUnixTimestampInSeconds();}
                 qm.appSettings = appSettings;
                 qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
+                if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
+                    qm.appsManager.getAppSettingsFromApi();
+                }
                 if(callback){callback(appSettings);}
             })
         },
