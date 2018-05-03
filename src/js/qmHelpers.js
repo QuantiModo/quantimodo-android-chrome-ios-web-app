@@ -27,6 +27,9 @@ window.qm = {
         isStaging: function(){
             return window.location.origin.indexOf('staging.') !== -1;
         },
+        isBuilder: function(){
+            return window.location.href.indexOf('configuration-index.html') !== -1;
+        },
         getAppMode: function(){
             var env = "production";
             if(qm.appMode.isStaging()){env = "staging";}
@@ -215,9 +218,8 @@ window.qm = {
             return clientId;
         },
         getClientIdFromSubDomain: function(){
-            if(window.location.href.indexOf('.quantimo.do') === -1){
-                return null;
-            }
+            if(window.location.href.indexOf('.quantimo.do') === -1){return null;}
+            if(qm.appMode.isBuilder()){return null;}
             function getSubDomain(){
                 var full = window.location.host;
                 var parts = full.split('.');
