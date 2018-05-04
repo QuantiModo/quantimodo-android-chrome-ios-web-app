@@ -170,6 +170,7 @@ function updateQuestion(variableName) {
         qmLog.pushDebug("popup: qmPopup.trackingReminderNotification.variableName is " + variableName);
     }
     var questionText;
+    variableName = qmPopup.trackingReminderNotification.displayName || variableName;
     if(qmPopup.trackingReminderNotification.unitAbbreviatedName === '/5'){
         questionText = "How is your " + variableName.toLowerCase() + "?";
         if(variableName.toLowerCase() === 'meditation'){
@@ -196,6 +197,7 @@ function updateQuestion(variableName) {
         getRatingSectionElement().style.display = "none";
         getLastValueSectionElement().style.display = "block";
         questionText = "Record " + variableName + " (" + qmPopup.trackingReminderNotification.unitAbbreviatedName + ")";
+        if(qmPopup.trackingReminderNotification.unitAbbreviatedName === 'count'){questionText = "Record " + variableName;}
     }
     if(qmPopup.trackingReminderNotification.question){questionText = qmPopup.trackingReminderNotification.question;}
     window.qmLog.pushDebug('popup: Updating question to ' + questionText);
