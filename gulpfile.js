@@ -652,13 +652,13 @@ function obfuscateSecrets(object){
     return object;
 }
 function obfuscateStringify(message, object, maxCharacters) {
-    maxCharacters = maxCharacters || 140;
+    if(maxCharacters !== false){maxCharacters = maxCharacters || 140;}
     var objectString = '';
     if(object){
         object = obfuscateSecrets(object);
         objectString = ':  ' + prettyJSONStringify(object);
     }
-    if (objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
+    if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
     message += objectString;
     if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
     if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
