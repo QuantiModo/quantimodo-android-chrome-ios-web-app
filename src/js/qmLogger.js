@@ -139,8 +139,8 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
-    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message;}
-    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message;}
+    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
+    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
     return message;
 }
 qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
