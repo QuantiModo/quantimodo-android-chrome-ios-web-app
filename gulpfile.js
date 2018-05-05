@@ -1,5 +1,5 @@
 /* eslint-disable no-process-env */
-var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID;
+var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials, versionNumbers;
 var androidX86ReleaseName = 'android-x86-release';
@@ -202,7 +202,7 @@ var qmLog = {
 var majorMinorVersionNumbers = '2.8.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
-qmLog.info("Environmental Variables:", process.env, 5000);
+qmLog.info("Environmental Variables:", process.env, 50000);
 function setVersionNumbers() {
     var date = new Date();
     function getPatchVersionNumber() {
