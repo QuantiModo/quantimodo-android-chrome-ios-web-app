@@ -38,8 +38,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         barcodeScanner: {
+            scanResult: null,
             upcToAttach: null,
+            noVariableResultsHandler: function(){
+                var scanResult = qmService.barcodeScanner.scanResult;
+                qmService.hideLoader();
+                var errorMessage = "I couldn't find anything matching barcode " + scanResult.format + " " + scanResult.text;
+                qmLog.error(errorMessage);
+                var userErrorMessage = errorMessage + ".  Try a manual search and " +
+                    "I'll link the code to your selected variable so scanning should work in the future.";
+                qmService.barcodeScanner.upcToAttach = scanResult.text;
+                return userErrorMessage;
+            },
             scanSuccessHandler: function (scanResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
+                qmService.barcodeScanner.scanResult = scanResult;
                 requestParams = requestParams || {};
                 qmLog.pushDebug("We got a barcode\n" + "Result: " + scanResult.text + "\n" + "Format: " + scanResult.format +
                     "\n" + "Cancelled: " + scanResult.cancelled);
@@ -61,12 +73,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, function (error) {
                     qmLog.error(error);
                     doneSearching = true;
-                    qmService.hideLoader();
-                    var errorMessage = "I couldn't find anything matching barcode " + scanResult.format + " " + scanResult.text;
-                    qmLog.error(errorMessage);
-                    var userErrorMessage = errorMessage + ".  Try a manual search and " +
-                        "I'll link the code to your selected variable so scanning should work in the future.";
-                    qmService.barcodeScanner.upcToAttach = scanResult.text;
+                    var userErrorMessage = qmService.barcodeScanner.noVariableResultsHandler(scanResult);
                     if (variableSearchErrorHandler) {
                         variableSearchErrorHandler(userErrorMessage);
                     } else {
@@ -102,6 +109,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         "ITF";
                 }
                 /** @namespace cordova.plugins.barcodeScanner */
+                var testResult = false;
+                //var testResult = {format: "UPC_A", text: 311917110189};
+                //var testResult = {format: "UPC_A", text: 311917110182349};  // No results
+                if(testResult){
+                    qmService.barcodeScanner.scanSuccessHandler(testResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
+                    return;
+                }
                 cordova.plugins.barcodeScanner.scan(function (result) {
                     qmService.barcodeScanner.scanSuccessHandler(result, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
                 }, function (error) {
@@ -519,29 +533,51 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $scope.variable = qmService.barcodeScanner.addUpcToVariableObject($scope.variable);
                     $mdDialog.hide($scope.variable);
                 };
-                self.scanBarcode = function() {
-                    self.helpText = "Searching for variable by barcode...";
+                self.scanBarcode = function(deferred) {
+                    self.helpText = "One moment please";
+                    self.searchText = "Searching by barcode...";
                     self.title = "Barcode Search";
-                    qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
-                        if (variables && variables.length) {
-                            self.items = convertVariablesToToResultsList(variables);
-                            //self.selectedItemChange(self.items[0]);
-                            self.searchText = variables[0].name;
-                            //qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
-                            $mdDialog.hide(variables[0]);
-                        }
-                    }, function (userErrorMessage) {
+                    self.loading = true;
+                    function noResultsHandler(userErrorMessage){
                         self.helpText = userErrorMessage;
-                        self.title = "No UPC matches found";
+                        self.title = "No matches found";
+                        self.searchText = "";
+                        deferred.reject(self.title);
                         querySearch();
                         qmLog.error(userErrorMessage);
                         showVariableList();
+                    }
+                    qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
+                        if (variables && variables.length) {
+                            self.helpText = "If you don't see what you're looking for, click the x and try a manual search";
+                            self.lastResults = variables;
+                            self.items = convertVariablesToToResultsList(variables);
+                            self.searchText = "Barcode search results";
+                            deferred.resolve(self.items);
+                            showVariableList();
+                            //self.selectedItemChange(self.items[0]);
+                            //self.searchText = variables[0].name;
+                            //qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
+                            //$mdDialog.hide(variables[0]);
+                        } else {
+                            var userErrorMessage = qmService.barcodeScanner.noVariableResultsHandler();
+                            noResultsHandler(userErrorMessage);
+                        }
+                    }, function (userErrorMessage) {
+                        noResultsHandler(userErrorMessage)
                     });
                 };
                 function showVariableList() {
                     $timeout(function(){
                         if(self.items && self.items.length){
+                            self.hidden = false;
+                            qmLog.info("showing list");
+                            console.log(document);
                             document.querySelector('#variable-search-box').focus();
+                            //document.getElementById('variable-search-box').focus();
+                            //document.getElementById('variable-search-box').select();
+                        } else {
+                            qmLog.info("Not showing list because we don't have results yet");
                         }
                     }, 100);
                 }
@@ -551,6 +587,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                     var deferred = $q.defer();
+                    if(query === 'barcode'){
+                        self.scanBarcode(deferred);
+                        return deferred.promise;
+                    }
+                    if(self.searchText && self.searchText.toLowerCase().indexOf('barcode') !== -1){
+                        qmLog.info("Already searching by barcode");
+                        deferred.resolve(self.items || []);
+                        return deferred.promise;
+                    }
                     if(!query || query === ""){
                         if(self.items && self.items.length > 10){
                             deferred.resolve(self.items);
