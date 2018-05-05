@@ -330,7 +330,6 @@ function getCurrentServerContext() {
     if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
     return process.env.HOSTNAME;
 }
-
 function setBranchName(callback) {
     function setBranch(branch, callback) {
         qmGit.branchName = branch;
@@ -341,10 +340,14 @@ function setBranchName(callback) {
         setBranch(process.env.TRAVIS_BRANCH, callback);
         return;
     }
-    git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-        if(err){qmLog.error(err); return;}
-        setBranch(branch, callback);
-    });
+    try {
+        git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+            if(err){qmLog.error(err); return;}
+            setBranch(branch, callback);
+        });
+    } catch (e) {
+        qmLog.info("Could not set branch name because " + e.message);
+    }
 }
 setBranchName();
 function setClientId(callback) {
