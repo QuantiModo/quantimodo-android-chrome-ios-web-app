@@ -1901,6 +1901,7 @@ window.qm = {
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
         },
         isAndroid: function (){
+            if(window.location.href.indexOf('/android_asset/') !== -1){return true;}
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
             }
