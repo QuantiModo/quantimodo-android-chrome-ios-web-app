@@ -88,6 +88,7 @@ var qmGit = {
         return qmGit.branchName.indexOf("feature") !== -1;
     },
     getCurrentGitCommitSha: function () {
+        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
         try {
             return require('child_process').execSync('git rev-parse HEAD').toString().trim()
         } catch (error) {
