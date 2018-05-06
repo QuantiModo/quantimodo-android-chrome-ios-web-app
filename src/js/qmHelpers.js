@@ -90,7 +90,7 @@ window.qm = {
                 {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
             if(response.status === 401){
                 if(!options || !options.doNotSendToLogin){
-                    qmLog.error("Not authenticated!")
+                    qmLog.info("Not authenticated!")
                 }
             } else {
                 qmLog.error(response.error.message, null, {apiResponse: response});
