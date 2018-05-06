@@ -88,7 +88,12 @@ var qmGit = {
         return qmGit.branchName.indexOf("feature") !== -1;
     },
     getCurrentGitCommitSha: function () {
-        return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
+        try {
+            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        } catch (error) {
+            qmLog.info(error);
+        }
     },
     accessToken: process.env.GITHUB_ACCESS_TOKEN
 };
@@ -187,6 +192,7 @@ bugsnag.onBeforeNotify(function (notification) {
 });
 var qmLog = {
     error: function (message, object, maxCharacters) {
+        object = object || {};
         console.error(obfuscateStringify(message, object, maxCharacters));
         object.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
         bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
@@ -281,7 +287,7 @@ var qm = {
                 versionNumber: versionNumbers.ionicApp,
                 versionNumbers: versionNumbers,
                 gitBranch: qmGit.branchName,
-                gitCommitShaHash: require('child_process').execSync('git rev-parse HEAD').toString().trim()
+                gitCommitShaHash: qmGit.getCurrentGitCommitSha()
             };
         },
         getPreviousBuildInfo: function () {

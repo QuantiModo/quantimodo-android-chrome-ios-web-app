@@ -90,7 +90,7 @@ window.qm = {
                 {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
             if(response.status === 401){
                 if(!options || !options.doNotSendToLogin){
-                    qmLog.error("Not authenticated!")
+                    qmLog.info("Not authenticated!")
                 }
             } else {
                 qmLog.error(response.error.message, null, {apiResponse: response});
@@ -1901,6 +1901,7 @@ window.qm = {
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
         },
         isAndroid: function (){
+            if(window.location.href.indexOf('/android_asset/') !== -1){return true;}
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
             }
