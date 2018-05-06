@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
-    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : platform.isWeb == true } "><br>
+    <ion-content  ng-class="{ isBrowserView : platform.isWeb == true } "><br>
         <md-card ng-if="platform.isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
             <md-card-title>
                 <md-card-title-media> <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Upgrade Image"></div> </md-card-title-media>
@@ -12,12 +12,20 @@
                 <md-card-title-text> <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span> </md-card-title-text>
             </md-card-title>
         </md-card>
-        <div class="card" style="text-align: center;" >
-            <div class="list">
-                <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}"><br>
-                    <p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>
-                    <p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>
+        <md-card style="text-align: center;" >
+            <md-toolbar>
+                <div class="md-toolbar-tools" style="height: 40px;">
+                    <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">{{appSettings.appDisplayName}} Plus</h1>
                 </div>
+                <div class="md-toolbar-tools" style="height: 40px;">
+                    <p style="font-size: 16px; margin: auto; "> {{planFeaturesCard.subtitle}} </p>
+                </div>
+            </md-toolbar>
+            <div class="list">
+                <!--<div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}"><br>-->
+                    <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
+                    <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>-->
+                <!--</div>-->
                 <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
                     <img ng-if="feature.image" ng-src="{{feature.image}}">
                     <h2 style="line-height: normal">{{feature.title}} &nbsp; <i style="color: darkgrey; text-align: right" ng-if="feature.moreInfo" class="icon ion-help-circled"> </i> </h2>
@@ -26,13 +34,13 @@
                 <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
             </div>
             <span ng-if="!platform.isWebOrChrome"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
-            <div ng-cloak name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;">
-                <div class="md-dialog-content">
+            <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
+                <div id="plans" class="md-dialog-content">
                     <md-radio-group ng-model="productId">
-                        <md-radio-button value="monthly7">Monthly at $6.99/mo</md-radio-button>
-                        <md-radio-button value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                        <md-radio-button id="monthly-radio" value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                        <md-radio-button id="yearly-radio" value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
                     </md-radio-group>
-                    <md-input-container class="md-block">
+                    <md-input-container id="coupon-code-input" class="md-block">
                         <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
                         <input ng-model="state.coupon" placeholder="Coupon Code (optional)" ng-required="false">
                     </md-input-container>
@@ -47,7 +55,7 @@
                             <div id="card-errors" role="alert"></div>
                         </div>
                         <br>
-                        <button class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+                        <button id="upgrade-button" class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
                         <!--<button>Submit Payment</button>-->
                     </form>
                 </div>
@@ -55,9 +63,9 @@
             <span ng-if="!platform.isWebOrChrome" >
                 <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
             </span>
-            <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br><br>
+            <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br>
             <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
-        </div>
+        </md-card>
         <div class="card" style="text-align: center" ng-if="platform.isIOS">
             <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
             <div class="item item-text-wrap">
@@ -79,11 +87,11 @@
             </div>
         </div>
         <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
-            <div class="item item-divider"> {{signUpQuestion.question}} </div>
+            <div class="item item-divider" style="background-color: rgb(63,81,181); color: white;"> {{signUpQuestion.question}} </div>
             <div class="item item-text-wrap"> {{signUpQuestion.answer}} </div>
         </div>
         <div class="card" style="text-align: center">
-            <div class="item item-divider"> Your Privacy </div>
+            <div class="item item-divider" style="background-color: rgb(63,81,181); color: white;"> Your Privacy </div>
             <div class="item item-text-wrap">
                 Your privacy is very important to us. You can delete your data at any time, all of it, or just some
                 of it.  See our <span style="color: blue; cursor: pointer; font-size: 16px;" ng-click="openUrl('https://quantimo.do/privacy-policy/')">privacy policy</span>
