@@ -88,7 +88,11 @@ var qmGit = {
         return qmGit.branchName.indexOf("feature") !== -1;
     },
     getCurrentGitCommitSha: function () {
-        return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        try {
+            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        } catch (error) {
+            qmLog.info(error);
+        }
     },
     accessToken: process.env.GITHUB_ACCESS_TOKEN
 };

@@ -379,7 +379,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             drawOverAppsPopup: function(path, force){
                 qmLog.pushDebug('Called qmService.notifications.drawOverAppsPopup...');
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){
-                    qmLog.error("Cannot show popup because it has been disabled");
+                    qmLog.pushDebug("Cannot show popup because it has been disabled");
                     return false;
                 }
                 if(typeof window.overApps === "undefined"){
