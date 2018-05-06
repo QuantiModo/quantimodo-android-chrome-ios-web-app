@@ -25,7 +25,7 @@ window.qmLog = {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
             if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                bugsnagClient.notify("Could not decouple object to obfuscate secrets: " + error ,
                     "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
             }
             //window.qmLog.error(error, object); // Avoid infinite recursion
@@ -139,8 +139,8 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
-    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message;}
-    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message;}
+    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
+    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
     return message;
 }
 qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
@@ -160,26 +160,11 @@ qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
     }
     return metaData;
 };
-window.qmLog.getEnv = function(){
-    var env = "production";
-    if(window.location.origin.indexOf('local') !== -1){env = "development";}
-    if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
-    if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qm.getUser()){
-        if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
-    }
-    if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
-    return env;
-};
-qmLog.envIsTesting = function(){
-    return qmLog.getEnv() === 'testing';
-};
 qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
-    if(qmLog.envIsTesting()){
+    if(qm.appMode.isTesting()){
         qmLog.info(name, message, metaData, stackTrace);
     } else {
         qmLog.error(name, message, metaData, stackTrace);
@@ -264,20 +249,20 @@ window.qmLog.setupBugsnag = function(){
     if (typeof bugsnag !== "undefined") {
         var options = {
             apiKey: "ae7bc49d1285848342342bb5c321a2cf",
-            releaseStage: qmLog.getEnv(),
+            releaseStage: qm.appMode.getAppMode(),
             //notifyReleaseStages: [ 'staging', 'production' ],
             metaData: qmLog.addGlobalMetaData(null, null, {}, null, null),
-            user: { id: '123', name: 'B. Nag', email: 'bugs.nag@bugsnag.com' },
+            user: qm.userHelper.getUserFromLocalStorage(),
             beforeSend: function (report) {}
         };
         if(qm.getUser()){options.user = qmLog.obfuscateSecrets(qm.getUser());}
         if(qm.getAppSettings()){
-            options.appVersion = qm.getAppSettings().versionNumber;
+            options.appVersion = qm.getAppSettings().androidVersionCode;
             options.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
         window.bugsnagClient = bugsnag(options);
     } else {
-        qmLog.error('Bugsnag is not defined');
+        if(qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
     }
 };
 //window.qmLog.setupBugsnag();
@@ -312,8 +297,15 @@ window.qmLog.setupIntercom = function() {
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
-    if(typeof bugsnagClient === "undefined"){ console.error('bugsnagClient not defined', metaData); return; }
+    if(typeof bugsnagClient === "undefined") {
+        if (!qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', metaData);}
+        return;
+    }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
+    if(!name){name = "No error name provided";}
+    if(!message){message = "No error message provided";}
+    if(typeof name !== "string"){name = JSON.stringify(name);}
+    if(typeof message !== "string"){message = JSON.stringify(message);}
     bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: metaData});
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {

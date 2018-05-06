@@ -319,44 +319,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(qmService.explanations[settingName].title, qmService.explanations[settingName].explanation, ev);
     };
     $scope.goBack = function (providedStateParams) {
-        function skipSearchPages() {
-            if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
-                $ionicHistory.removeBackView();
-                backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
-                stateId = backView.stateName;
-                //$ionicHistory.goBack(-2);
-                //qmService.goToDefaultState(stateParams);
-                //return;
-            }
-        }
-
-        function addProvidedStateParamsToBackViewStateParams() {
-            for (var key in providedStateParams) {
-                if (providedStateParams.hasOwnProperty(key)) {
-                    if (providedStateParams[key] && providedStateParams[key] !== "") {
-                        if (!backView.stateParams) {backView.stateParams = {};}
-                        backView.stateParams[key] = providedStateParams[key];
-                        stateId += "_" + key + "=" + providedStateParams[key];
-                    }
-                }
-            }
-            //backView.stateId = stateId;  // TODO: What is this for?
-        }
-
-        if($ionicHistory.viewHistory().backView){
-            var backView = $ionicHistory.backView();
-            qmLog.info("backView.stateName is " + backView.stateName);
-            var stateId = backView.stateName;
-            skipSearchPages();
-            if(providedStateParams){
-                addProvidedStateParamsToBackViewStateParams();
-            }
-            qmLog.info('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
-            $ionicHistory.goBack();
-        } else {
-            qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
-            qmService.goToDefaultState(providedStateParams);
-        }
+        qmService.stateHelper.goBack(providedStateParams);
     };
     $scope.trackLocationWithMeasurementsChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}

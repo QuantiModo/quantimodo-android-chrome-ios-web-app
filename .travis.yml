@@ -71,7 +71,12 @@ env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
 notifications:
-  webhooks: https://www.travisbuddy.com/
+    webhooks: https://www.travisbuddy.com/
+    email:
+        recipients:
+            - mike@quantimo.do
+        on_success: never # default: change
+        on_failure: always # default: always
 #deploy:
 #  provider: releases
 #  api_key:
