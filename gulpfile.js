@@ -191,6 +191,7 @@ bugsnag.onBeforeNotify(function (notification) {
 });
 var qmLog = {
     error: function (message, object, maxCharacters) {
+        object = object || {};
         console.error(obfuscateStringify(message, object, maxCharacters));
         object.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
         bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
