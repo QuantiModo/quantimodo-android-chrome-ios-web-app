@@ -2077,7 +2077,8 @@ window.qm = {
                 qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
                 return;
             }
-            qmLog.info("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
+            qmLog.debug("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
+            qmLog.info("Saving " + notifications.length + " notifications to local storage");
             qm.notifications.setLastNotificationsRefreshTime();
             window.qm.chrome.updateChromeBadge(notifications.length);
             qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
@@ -2197,7 +2198,7 @@ window.qm = {
             if(key === "userVariables" && typeof value === "string"){
                 qmLog.error("userVariables should not be a string!");
             }
-            qmLog.info("Setting " + key + " in globals");
+            qmLog.debug("Setting " + key + " in globals");
             qm.globals[key] = value;
         },
         setLastRequestTime: function(type, route){
@@ -2284,7 +2285,7 @@ window.qm = {
                 return null;
             }
             if (item && typeof item === "string"){
-                qmLog.info("Parsing " + key + " and setting in globals");
+                qmLog.debug("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
                 window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
@@ -3079,7 +3080,10 @@ window.qm = {
                         .then(function(currentToken) {
                             if (currentToken) {
                                 console.log("FB token: "+ currentToken);
-                                qm.webNotifications.postWebPushSubscriptionToServer(currentToken);
+                                var deviceTokenOnServer = qm.storage.getItem(qm.items.deviceTokenOnServer);
+                                if(!deviceTokenOnServer || deviceTokenOnServer !== currentToken){
+                                    qm.webNotifications.postWebPushSubscriptionToServer(currentToken);
+                                }
                                 //updateUIForPushEnabled(currentToken);
                             } else {
                                 // Show permission request.
@@ -3090,9 +3094,9 @@ window.qm = {
                             }
                         })
                         .catch(function(err) {
-                            console.log('An error occurred while retrieving token. ', err);
+                            qmLog.error('An error occurred while retrieving token. ', null, err);
                             //showToken('Error retrieving Instance ID token. ', err);
-                            qm.webNotifications.postWebPushSubscriptionToServer(false);
+                            //qm.webNotifications.postWebPushSubscriptionToServer(false);
                         });
                 })
                 .catch(function(err) {
@@ -3105,6 +3109,9 @@ window.qm = {
                 qm.api.configureClient();
                 var apiInstance = new Quantimodo.NotificationsApi();
                 function callback(error, data, response) {
+                    if(!error){
+                        qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
+                    }
                     qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
                 }
                 var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: deviceTokenString});
