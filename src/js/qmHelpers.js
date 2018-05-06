@@ -1049,7 +1049,7 @@ window.qm = {
         },
         getConnectorsFromLocalStorage: function(){
             var connectors = qm.storage.getItem(qm.items.connectors);
-            if(connectors.connectors){
+            if(connectors && connectors.connectors){
                 qm.storage.setItem(qm.items.connectors, connectors.connectors);
                 return connectors.connectors;
             }
