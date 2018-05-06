@@ -46,20 +46,38 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
     };
     var updateCharts = function(){
-        $scope.state.primaryOutcomeMeasurements = qm.storage.getItem('primaryOutcomeVariableMeasurements');
-        var measurementsQueue = qm.storage.getItem('measurementsQueue');
-        if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
-        if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
-        if( $scope.state.primaryOutcomeMeasurements) {
-            $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
-            $timeout(function() {
-                $scope.state.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                $scope.state.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                $scope.state.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                $scope.state.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                updateAveragePrimaryOutcomeRatingView();
-            }, 1);
-        }
+        qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, function(measurements){
+            if(measurements){
+                qmLog.info("Got " + measurements.length + " measurements from localforage");
+            } else {
+                qmLog.info("Got 0 measurements from localforage");
+            }
+            $scope.state.primaryOutcomeMeasurements = measurements;
+            var measurementsQueue = qm.storage.getItem('measurementsQueue');
+            if(measurementsQueue){
+                qmLog.info("Got " + measurementsQueue.length + " measurements from measurementsQueue");
+            } else {
+                qmLog.info("Got 0 measurements from measurementsQueue");
+            }
+            if(!$scope.state.primaryOutcomeMeasurements){$scope.state.primaryOutcomeMeasurements = [];}
+            if(measurementsQueue){$scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);}
+            if( $scope.state.primaryOutcomeMeasurements) {
+                $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
+                $timeout(function() {
+                    if($scope.state.primaryOutcomeMeasurements){
+                        qmLog.info("Updating charts with " + $scope.state.primaryOutcomeMeasurements.length + " measurements");
+                    } else {
+                        qmLog.info("Updating charts with 0 measurements");
+                    }
+                    $scope.state.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                    $scope.state.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                    $scope.state.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                    $scope.state.distributionChartConfig = qmService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
+                    updateAveragePrimaryOutcomeRatingView();
+                }, 1);
+            }
+        });
+
     };
     $scope.$on('updateCharts', function(){
         qmLogService.debug('updateCharts broadcast received..');

@@ -24,7 +24,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
-        if($rootScope.platform.isChromeExtension){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
+        if(qm.platform.isChromeExtension()){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = qmService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -91,6 +91,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     }
     function stripeSetup() {
         var stripe = Stripe('pk_live_jwzyvmlPu1cU7ZQ5LbanoELX');  // Create a Stripe client.
+        if(qm.appMode.isTesting()){stripe = Stripe('pk_test_D1XwEhLXgG04dfp8cLr36SbP');}
         var elements = stripe.elements();  // Create an instance of Elements.
         // Custom styling can be passed to options when creating an Element.
         var style = {
