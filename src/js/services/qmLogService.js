@@ -47,11 +47,5 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
         message = addStateNameToMessage(message);
         window.qmLog.error(name, message, metaData, stackTrace);
     };
-    qmLogService.exception = function(exception, name, metaData){
-        qmLogService.error('ERROR: ' + exception.message);
-        qmLogService.setupBugsnag().then(function () {
-            qmLog.errorException(exception, name, metaData);
-        }, function (error) {qmLogService.error(error);});
-    };
     return qmLogService;
 }]);
