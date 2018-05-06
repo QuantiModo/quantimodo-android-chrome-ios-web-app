@@ -281,7 +281,7 @@ var qm = {
                 versionNumber: versionNumbers.ionicApp,
                 versionNumbers: versionNumbers,
                 gitBranch: qmGit.branchName,
-                gitCommitShaHash: require('child_process').execSync('git rev-parse HEAD').toString().trim()
+                gitCommitShaHash: qmGit.getCurrentGitCommitSha()
             };
         },
         getPreviousBuildInfo: function () {
