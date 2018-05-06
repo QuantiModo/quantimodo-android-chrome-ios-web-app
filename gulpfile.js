@@ -188,6 +188,7 @@ bugsnag.onBeforeNotify(function (notification) {
 var qmLog = {
     error: function (message, object, maxCharacters) {
         console.error(obfuscateStringify(message, object, maxCharacters));
+        object.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
         bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
     },
     info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
@@ -293,6 +294,7 @@ var qm = {
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
             if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+            if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
         }
     },
 };
