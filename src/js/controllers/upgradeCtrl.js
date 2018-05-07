@@ -3,7 +3,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     WebUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.state = {
-        coupon: null
+        coupon: null,
+        hideFeatures: false
     };
     $scope.signUpQuestions = [
         {
