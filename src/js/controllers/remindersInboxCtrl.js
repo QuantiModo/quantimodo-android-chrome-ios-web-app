@@ -225,6 +225,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 	};
 	var notificationAction = function(trackingReminderNotification){
+	    qmLog.info("Clicked "+ $scope.lastAction + " for " + trackingReminderNotification.variableName);
 		trackingReminderNotification.hide = true;
         qmService.numberOfPendingNotifications--;
         $scope.state.numberOfDisplayedNotifications--;
