@@ -98,6 +98,10 @@ window.qmLog.isDebugMode = function() {
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;
+    if(!stackTrace){
+        console.log("Could not get stack trace");
+        return null;
+    }
     stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.debug')).replace('window.qmLog.debug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.info')).replace('window.qmLog.info', '');
