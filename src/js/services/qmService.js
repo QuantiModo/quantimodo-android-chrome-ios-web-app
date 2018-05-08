@@ -441,8 +441,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return false;
             },
-            showAndroidPopupForMostRecentNotification: function(){
+            showAndroidPopupForMostRecentNotification: function(doNotShowInInbox){
                 if(!qm.platform.isAndroid()){qmLog.pushDebug('Can only show popups on Android'); return;}
+                if(doNotShowInInbox && $state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                    qmLog.pushDebug("Not showing drawOverAppsPopup because we're in the inbox already");
+                    return;
+                }
                 qmLog.pushDebug('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
                 window.qm.notifications.refreshIfEmpty(function () {
                     // Need to use unique rating notifications because we need to setup initial popup via url params
@@ -3201,7 +3205,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.platform.isAndroid){
+                        qmService.notifications.showAndroidPopupForMostRecentNotification(true);
+                    }
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -5007,7 +5013,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                             qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
                             qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
-                            qmService.notifications.showAndroidPopupForMostRecentNotification();
+                            qmService.notifications.showAndroidPopupForMostRecentNotification(true);
                             qmLog.pushDebug("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
                             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                                 qmLog.pushDebug('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
