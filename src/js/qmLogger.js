@@ -98,6 +98,10 @@ window.qmLog.isDebugMode = function() {
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;
+    if(!stackTrace){
+        console.log("Could not get stack trace");
+        return null;
+    }
     stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.debug')).replace('window.qmLog.debug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.info')).replace('window.qmLog.info', '');
@@ -139,6 +143,7 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
+    if(message === "undefined"){message = "";}
     if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
     if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
     return message;
@@ -335,7 +340,7 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
         //console.debug("Not logging debug message: " + name);
         return;
     }
-    message = addCallerFunctionToMessage(message);
+    message = addCallerFunctionToMessage(message || "");
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
@@ -343,7 +348,7 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     metaData = metaData || null;
     //console.info(name + ": " + message);
     if(!qmLog.shouldWeLog("info")){return;}
-    message = addCallerFunctionToMessage(message);
+    message = addCallerFunctionToMessage(message || "");
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
     //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
@@ -352,7 +357,7 @@ window.qmLog.warn = function (name, message, metaData, stackTrace) {
     name = name || message;
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("warn")){return;}
-    message = addCallerFunctionToMessage(message);
+    message = addCallerFunctionToMessage(message || "");
     console.warn("WARN: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
