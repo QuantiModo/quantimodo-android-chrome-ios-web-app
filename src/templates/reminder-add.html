@@ -11,7 +11,7 @@
                     ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
             </select>
         </label>-->
-        <div ng-if="state.showAddVariableCard">
+        <div ng-if="state.showAddVariableCard || state.showMoreOptions">
             <div class="md-subhead" layout-margin>What type of variable is this?</div>
             <div layout="row" layout-margin>
                 <md-input-container id="categorySelectorBlock" class="md-block" flex-gt-sm>
