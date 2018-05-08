@@ -7,7 +7,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
         units: qm.unitHelper.getProgressivelyMoreUnits(),
-        showAddVariableCard : false,
+        showVariableCategorySelector : false,
         showUnits: false,
         selectedFrequencyName : 'Daily',
         selectedReminder : false,
@@ -86,7 +86,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             //$scope.save();
         }
         if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
-            $scope.state.showAddVariableCard = true;
+            $scope.state.showVariableCategorySelector = true;
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){
@@ -94,7 +94,16 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmService.hideLoader();
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
         setHideDefaultValueField();
+        showVariableCategorySelectorIfWeirdCategory();
     });
+    function showVariableCategorySelectorIfWeirdCategory(){
+        if(!$scope.state.trackingReminder){return;}
+        if(!$scope.state.variableCategories){return;}
+        var commonCategory = $scope.state.variableCategories.find(function (category) {
+            return $scope.state.trackingReminder.variableCategoryName = category.name;
+        });
+        if(!commonCategory){$scope.state.showVariableCategorySelector = true;}
+    }
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
         $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
@@ -173,7 +182,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupByVariableObject = function(selectedVariable){
         qmLogService.info('remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
-        if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
+        if (!selectedVariable.variableCategoryName) { $scope.state.showVariableCategorySelector = true; }
         $scope.state.variableObject=selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
         if (selectedVariable.unitAbbreviatedName) {

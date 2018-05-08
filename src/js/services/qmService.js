@@ -3344,7 +3344,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
-                    qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
+                    qmLogService.debug('postTrackingRemindersToApi response: ' + JSON.stringify(response));
+                    qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response).substring(0, 140));
                     if(response && response.data){
                         if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
                         if(!response.data.trackingReminders){
