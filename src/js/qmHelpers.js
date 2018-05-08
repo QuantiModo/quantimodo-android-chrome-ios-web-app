@@ -2843,6 +2843,7 @@ window.qm = {
         },
         getFromApi: function(params, successHandler, errorHandler){
             if(!params){params = {};}
+            params = JSON.parse(JSON.stringify(params)); // Decouple API search params so we don't mess up original local search params
             if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){params.sort = '-latestMeasurementTime';}
             if(!params.limit){params.limit = 50;}
             params = qm.api.addGlobalParams(params);
