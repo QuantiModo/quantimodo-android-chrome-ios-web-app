@@ -43,7 +43,7 @@
                     <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">Get Started</h1>
                 </div>
             </md-toolbar>
-            <span ng-if="!platform.isWebOrChrome"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
+            <span ng-if="!platform.isWebOrChrome && !platform.isIOS"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
             <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
                 <div id="plans" class="md-dialog-content">
                     <md-radio-group ng-model="productId">
