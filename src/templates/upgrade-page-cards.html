@@ -12,10 +12,13 @@
                 <md-card-title-text> <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span> </md-card-title-text>
             </md-card-title>
         </md-card>
-        <md-card style="text-align: center;" >
+        <md-card id="features-card" style="text-align: center;" ng-hide="state.hideFeatures" >
             <md-toolbar>
                 <div class="md-toolbar-tools" style="height: 40px;">
                     <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">{{appSettings.appDisplayName}} Plus</h1>
+                    <md-button class="hide-features" ng-click="state.hideFeatures = true" style="position: absolute; right: 0;">
+                        <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                    </md-button>
                 </div>
                 <div class="md-toolbar-tools" style="height: 40px;">
                     <p style="font-size: 16px; margin: auto; "> {{planFeaturesCard.subtitle}} </p>
@@ -23,8 +26,8 @@
             </md-toolbar>
             <div class="list">
                 <!--<div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}"><br>-->
-                    <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
-                    <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>-->
+                <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
+                <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>-->
                 <!--</div>-->
                 <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
                     <img ng-if="feature.image" ng-src="{{feature.image}}">
@@ -33,6 +36,13 @@
                 </a>
                 <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
             </div>
+        </md-card>
+        <md-card id="checkout-card" style="text-align: center;" >
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">Get Started</h1>
+                </div>
+            </md-toolbar>
             <span ng-if="!platform.isWebOrChrome"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
             <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
                 <div id="plans" class="md-dialog-content">
@@ -64,7 +74,7 @@
                 <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
             </span>
             <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br>
-            <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
+            <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br>
         </md-card>
         <div class="card" style="text-align: center" ng-if="platform.isIOS">
             <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
