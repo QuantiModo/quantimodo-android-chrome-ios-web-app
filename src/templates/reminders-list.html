@@ -10,14 +10,8 @@
 			<div class="item item-body">{{state.noRemindersText}} Press the plus button to add one now.</div>
 		</div>
 		<div class="list" id="remindersList" ng-cloak>
-            <div class="item-input-inset" ng-if="(state.trackingReminders && state.trackingReminders.length > 10) ||
-                (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) ||
-                (state.favorites && state.favorites.length > 10)" >
-                <label class="item-input-wrapper">
-                    <i class="icon ion-ios7-search placeholder-icon"></i>
-                    <input id="filter-box" type="search" placeholder="Filter by name or category" ng-model="state.searchText" style="width: 100%">
-                </label>
-            </div>
+            <div ng-include="'templates/input/filter-search-field.html'" ng-if="(state.trackingReminders && state.trackingReminders.length > 10) ||
+                (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) || (state.favorites && state.favorites.length > 10)" ></div>
 			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
 			<div id="favoriteItem" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites  | filter:state.searchText track by $index"
 				 on-hold="showFavoriteActionSheet(favorite, $index)">
