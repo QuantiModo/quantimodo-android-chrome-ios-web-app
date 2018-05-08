@@ -3561,6 +3561,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getUserCorrelationsFromApi(params, function(response){
+            if(!response){
+                qmLog.error("No response from getUserCorrelationsFromApi");
+                deferred.reject("No response from getUserCorrelationsFromApi");
+                return;
+            }
             try {
                 response.data.correlations = useLocalImages(response.data.correlations);
             } catch (error) {
