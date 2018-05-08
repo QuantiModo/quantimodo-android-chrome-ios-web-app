@@ -647,16 +647,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
-                        if(!variable.name && variable.variableName){
-                            variable.name = variable.variableName;
-                        }
-                        if(!variable.name){
+                        var variableName = variable.displayName || variable.variableName || variable.name;
+                        if(!variableName){
                             qmLog.error("No variable name!");
                             return;
                         }
                         return {
                             value: variable.name.toLowerCase(),
-                            name: variable.name,
+                            name: variableName,
                             variable: variable,
                             ionIcon: variable.ionIcon,
                             subtitle: variable.subtitle
@@ -861,6 +859,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("Getting action sheet for variable " + variableName);
             return function() {
                 qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+                variableName = variableObject.displayName || variableObject.variableName || variableObject.name;
                 var buttons = [
                     qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: qmService.getTruncatedVariableName(variableName)}, 'variableName'),
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
@@ -2191,7 +2190,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
+    qmService.getTruncatedVariableName = function(variableName, maxCharacters) {
+        if(!maxCharacters){maxCharacters = (qm.platform.isMobile()) ? 18: 30;}
+        if(variableName.length > maxCharacters){return variableName.substring(0, maxCharacters) + '...';} else { return variableName;}
+    };
     qmService.attachVariableCategoryIcons = function(dataArray){
         if(!dataArray){ return;}
         var variableCategoryInfo;
