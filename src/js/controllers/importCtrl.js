@@ -4,7 +4,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.state = {
 	    connectors: null,
-        searchText: null
+        searchText: ''
     };
     function userCanConnect() {
         if(!$rootScope.user){

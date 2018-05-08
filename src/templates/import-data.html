@@ -29,12 +29,7 @@
             <div class="item" > <div class="row"><ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Loading services...</p></div> </div>
         </div>
         <div ng-if="state.connectors" class="list">
-            <div class="item-input-inset">
-                <label class="item-input-wrapper">
-                    <i class="icon ion-ios7-search placeholder-icon"></i>
-                    <input id="filter-box" type="search" placeholder="Filter by name or type" ng-model="state.searchText" style="width: 100%">
-                </label>
-            </div>
+            <div ng-include="'templates/input/filter-search-field.html'"></div>
             <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
         </div>
 <!--        <div id="import-iframe" ng-if="!platform.isMobile">
