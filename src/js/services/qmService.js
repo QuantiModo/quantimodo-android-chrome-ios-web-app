@@ -379,7 +379,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             drawOverAppsPopup: function(path, force){
                 qmLog.pushDebug('Called qmService.notifications.drawOverAppsPopup...');
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){
-                    qmLog.error("Cannot show popup because it has been disabled");
+                    qmLog.pushDebug("Cannot show popup because it has been disabled");
                     return false;
                 }
                 if(typeof window.overApps === "undefined"){
@@ -647,16 +647,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
-                        if(!variable.name && variable.variableName){
-                            variable.name = variable.variableName;
-                        }
-                        if(!variable.name){
+                        var variableName = variable.displayName || variable.variableName || variable.name;
+                        if(!variableName){
                             qmLog.error("No variable name!");
                             return;
                         }
                         return {
                             value: variable.name.toLowerCase(),
-                            name: variable.name,
+                            name: variableName,
                             variable: variable,
                             ionIcon: variable.ionIcon,
                             subtitle: variable.subtitle
@@ -755,6 +753,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.goToDefaultState(providedStateParams);
                 }
             }
+        },
+        subscriptions: {
+            setUpgradeDisabledIfOnAndroidWithoutKey: function(appSettings){
+                if(!qm.platform.isAndroid()){return appSettings;}
+                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
+                    qmLog.error("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
+                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+                }
+                return appSettings;
+            }
         }
     };
     qmService.actionSheets = {
@@ -851,6 +859,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("Getting action sheet for variable " + variableName);
             return function() {
                 qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+                variableName = variableObject.displayName || variableObject.variableName || variableObject.name;
                 var buttons = [
                     qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: qmService.getTruncatedVariableName(variableName)}, 'variableName'),
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
@@ -2181,7 +2190,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
+    qmService.getTruncatedVariableName = function(variableName, maxCharacters) {
+        if(!maxCharacters){maxCharacters = (qm.platform.isMobile()) ? 18: 30;}
+        if(variableName.length > maxCharacters){return variableName.substring(0, maxCharacters) + '...';} else { return variableName;}
+    };
     qmService.attachVariableCategoryIcons = function(dataArray){
         if(!dataArray){ return;}
         var variableCategoryInfo;
@@ -6813,13 +6825,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
-            qmLog.info("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
-            appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
-        }
+        appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
         qmService.deploy.setVersionInfo();
         //qmService.deploy.fetchUpdate();
     };
+
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
             function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
@@ -7012,7 +7022,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 push.on('error', function(e) {
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "error", e.message);
-                    qmLogService.exception(e, e.message, pushConfig);
+                    qmLogService.error("Push error", e.message, pushConfig);
                 });
                 var finishPush = function (data) {
                     $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
