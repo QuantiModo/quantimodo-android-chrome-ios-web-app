@@ -260,10 +260,10 @@ window.qm = {
                 var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
                     getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
                 if(blockRequests){
-                    window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
+                    qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
                     return false;
                 } else {
-                    window.qmLog.error(name, message, options);
+                    qmLog.info(name, message, options);
                 }
             }
             window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
