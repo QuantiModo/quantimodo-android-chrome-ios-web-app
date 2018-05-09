@@ -2573,6 +2573,8 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
 });
 gulp.task('buildAllIosApps', function (callback) {
     runSequence(
+        'setMoodiModoEnvs',
+        'build-ios-app',
         'setMediModoEnvs',
         'build-ios-app',
         'setQuantiModoEnvs',
