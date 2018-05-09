@@ -185,7 +185,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
         if(qm.getUser()){
-            url +=  "?userEmail=" + encodeURIComponent(qm.getUser().email);
+            url = qm.urlHelper.addUrlQueryParamsToUrl({userEmail: qm.getUser().email}, url);
         }
         return url;
     }
