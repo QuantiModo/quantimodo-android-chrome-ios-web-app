@@ -269,7 +269,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
         var variableObject = {id: favorite.variableId, name: favorite.variableName};
         var actionMenuButtons = [
-            { text: '<i class="icon ion-gear-a"></i>Edit' },
+            { text: '<i class="icon ion-gear-a"></i>Edit Reminder' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             qmService.actionSheets.actionSheetButtons.charts,
             qmService.actionSheets.actionSheetButtons.historyAllVariable,
