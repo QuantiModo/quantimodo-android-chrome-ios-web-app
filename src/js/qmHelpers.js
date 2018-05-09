@@ -260,10 +260,10 @@ window.qm = {
                 var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
                     getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
                 if(blockRequests){
-                    window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
+                    qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
                     return false;
                 } else {
-                    window.qmLog.error(name, message, options);
+                    qmLog.info(name, message, options);
                 }
             }
             window.qm.storage.setItem(getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
@@ -1915,12 +1915,14 @@ window.qm = {
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
         getCurrentPlatform: function(){
+            if(qm.urlHelper.getParam('platform')){return qm.urlHelper.getParam('platform');}
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
             if(qm.platform.isAndroid()){return qm.platform.types.android;}
             if(qm.platform.isIOS()){return qm.platform.types.ios;}
             if(qm.platform.isWeb()){return qm.platform.types.web;}
             if(typeof ionic !== "undefined"){
                 var ionicPlatform = ionic.Platform.platform();
+                if(!ionic.Platform.isIPad() && !ionic.Platform.isIOS() && !ionic.Platform.isAndroid()){return qm.platform.web;}
                 qmLog.error("Could not determine platform so returning " + ionicPlatform);
                 return ionicPlatform;
             } else {

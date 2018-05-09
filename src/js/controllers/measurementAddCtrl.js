@@ -199,7 +199,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     }
     function setupUnit(unitAbbreviatedName, valence){
         if(!unitAbbreviatedName){
-            qmLogService.error("No unitAbbreviatedName provided to setupUnit!");
+            qmLog.info("No unitAbbreviatedName provided to setupUnit! Maybe a new variable?");
             return;
         }
         if(unitAbbreviatedName === 'Show more units'){

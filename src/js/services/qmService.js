@@ -441,8 +441,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return false;
             },
-            showAndroidPopupForMostRecentNotification: function(){
+            showAndroidPopupForMostRecentNotification: function(doNotShowInInbox){
                 if(!qm.platform.isAndroid()){qmLog.pushDebug('Can only show popups on Android'); return;}
+                if(doNotShowInInbox && $state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                    qmLog.pushDebug("Not showing drawOverAppsPopup because we're in the inbox already");
+                    return;
+                }
                 qmLog.pushDebug('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
                 window.qm.notifications.refreshIfEmpty(function () {
                     // Need to use unique rating notifications because we need to setup initial popup via url params
@@ -1519,7 +1523,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
-        qmLogService.info('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
+        qmLogService.debug('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray));
+        qmLogService.info('posting' + trackingRemindersArray.length + " Tracking Reminders To Api");
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
         trackingRemindersArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
@@ -2321,7 +2326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
             if(qm.storage.getItem(localStorageItemName) && window.qm.timeHelper.getUnixTimestampInSeconds() - qm.storage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                qmLog.errorOrInfoIfTesting(errorMessage);
+                qmLog.info(errorMessage);
                 return false;
             }
             qmService.storage.setItem(localStorageItemName, window.qm.timeHelper.getUnixTimestampInSeconds());
@@ -3200,7 +3205,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.platform.isAndroid){
+                        qmService.notifications.showAndroidPopupForMostRecentNotification(true);
+                    }
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -3342,8 +3349,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.checkUrlAndStorageForDebugMode();
         var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
+            qmLogService.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
                 JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
+            qmLog.info("Syncing "+ trackingReminderSyncQueue.length+ " reminders in queue");
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
                     qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
@@ -3559,6 +3567,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getUserCorrelationsFromApi(params, function(response){
+            if(!response){
+                qmLog.error("No response from getUserCorrelationsFromApi");
+                deferred.reject("No response from getUserCorrelationsFromApi");
+                return;
+            }
             try {
                 response.data.correlations = useLocalImages(response.data.correlations);
             } catch (error) {
@@ -5000,7 +5013,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                             qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
                             qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
-                            qmService.notifications.showAndroidPopupForMostRecentNotification();
+                            qmService.notifications.showAndroidPopupForMostRecentNotification(true);
                             qmLog.pushDebug("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
                             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                                 qmLog.pushDebug('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
