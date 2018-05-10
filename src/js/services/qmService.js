@@ -3580,7 +3580,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.storeCachedResponse('correlations', params, response.data);
             deferred.resolve(response.data);
         }, function(error){
-            qmLogService.error(error);
+            qmLog.warn(error);
             deferred.reject(error);
         });
         return deferred.promise;
