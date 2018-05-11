@@ -682,7 +682,7 @@ function postAppStatus() {
 }
 function makeApiRequest(options, successHandler) {
     qmLog.info('Making request to ' + options.uri + ' with clientId: ' + QUANTIMODO_CLIENT_ID);
-    qmLog.debug(options.uri, options);
+    qmLog.debug(options.uri, options, 280);
     //options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
