@@ -161,8 +161,8 @@ platform :ios do
         path: xcodeproj,
         team_id: team_id
     )
-    puts "Disabling automatic_code_signing to fix QuantiModo has conflicting provisioning settings"
-    automatic_code_signing( path: xcodeproj, use_automatic_signing: false )
+    # puts "Disabling automatic_code_signing to fix QuantiModo has conflicting provisioning settings"
+    # automatic_code_signing( path: xcodeproj, use_automatic_signing: false )
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
           app_identifier: app_identifier,
           type: "appstore",
