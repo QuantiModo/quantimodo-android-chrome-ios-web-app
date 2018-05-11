@@ -362,7 +362,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 		}, function (error) {
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
-			qmLogService.error('$scope.refreshTrackingReminderNotifications: ' + error);
+			qmLog.info('$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
 	};
