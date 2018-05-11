@@ -4,13 +4,6 @@ branches:
   - develop
 matrix:
   include:
-  - env: PLATFORM=ios-11.0
-    os: osx
-    osx_image: xcode9.3
-    language: node_js
-    node_js: '4.2'
-    rvm:
-      - 2.2.5
   - env: PLATFORM=android-25
     os: linux
     sudo: false
@@ -39,6 +32,13 @@ matrix:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
     - google-gdk-license-.+
+  - env: PLATFORM=ios-11.0
+    os: osx
+    osx_image: xcode9
+    language: node_js
+    node_js: '4.2'
+    rvm:
+      - 2.2.5
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
