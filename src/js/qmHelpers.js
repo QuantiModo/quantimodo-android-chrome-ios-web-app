@@ -1875,7 +1875,33 @@ window.qm = {
                 }
             }
             return object;
+        },
+        getValueOfPropertyOrSubPropertyWithNameLike: function (wantedKeyNameNeedle, obj) {
+            // This function handles arrays and objects
+            wantedKeyNameNeedle = wantedKeyNameNeedle.toLowerCase();
+            function eachRecursive(obj) {
+                for (var key in obj) {
+                    if (!obj.hasOwnProperty(key)) {
+                        continue;       // skip this property
+                    }
+                    if (typeof obj[key] === "object" && obj[key] !== null) {
+                        var result = eachRecursive(obj[key]);
+                        if(result){
+                            return result;
+                        }
+                    } else {
+                        var lowerCase = key.toLowerCase();
+                        if(lowerCase.indexOf(wantedKeyNameNeedle) !== -1){
+                            return obj[key];
+                        }
+                    }
+                }
+                return null;
+            }
+            var value = eachRecursive(obj);
+            return value;
         }
+
     },
     platform: {
         isChromeExtension: function (){
