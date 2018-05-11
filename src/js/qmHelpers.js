@@ -1897,8 +1897,9 @@ window.qm = {
         },
         isWeb: function (){
             var isWeb = false;
-            if(window.location.href.indexOf("https://") > -1){isWeb = true;}
-            if(window.location.href.indexOf("http://localhost:") > -1){isWeb = true;}
+            if(window.location.href.indexOf("https://") === 0){isWeb = true;}
+            if(window.location.href.indexOf("http://") === 0){isWeb = true;}
+            if(window.location.href.indexOf("http://localhost:") === 0){isWeb = true;}
             return isWeb;
         },
         isWebOrChrome: function () {
