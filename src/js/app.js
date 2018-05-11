@@ -238,7 +238,8 @@ angular.module('starter',
         "upgrade": "app.upgrade",
         "variableList": "app.variableList",
         "variableListCategory": "app.variableListCategory",
-        "variableSettings": "app.variableSettings",
+        variableSettingsVariableName: "app.variableSettingsVariableName",
+        variableSettings: "app.variableSettings",
         "welcome": "app.welcome"
     };
     $stateProvider
@@ -418,6 +419,25 @@ angular.module('starter',
             }
         })
         .state(qmStates.variableSettings, {
+            url: "/variable-settings",
+            cache: false,
+            params: {
+                reminder : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null,
+                variableName : null,
+                variableId : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-settings.html",
+                    controller: 'VariableSettingsCtrl'
+                }
+            }
+        })
+        .state(qmStates.variableSettingsVariableName, {
             url: "/variable-settings/:variableName",
             cache: false,
             params: {

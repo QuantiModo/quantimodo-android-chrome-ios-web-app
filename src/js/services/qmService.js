@@ -756,6 +756,39 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
                     qmService.goToDefaultState(providedStateParams);
                 }
+            },
+            getValueFromScopeStateParamsOrUrl: function (propertyName, $scope, $stateParams) {
+                if($stateParams[propertyName]){return $stateParams[propertyName];}
+                if($scope[propertyName]){return $scope[propertyName];}
+                if($scope.state && $scope.state[propertyName]){return $scope.state[propertyName];}
+                return qm.urlHelper.getParam(propertyName);
+            },
+            getVariableNameFromScopeStateParamsOrUrl: function ($scope, $stateParams) {
+                var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableName', $scope, $stateParams);
+                var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
+                if(variableObject){variableName = variableObject.name;}
+                return variableName;
+            },
+            getVariableIdFromScopeStateParamsOrUrl: function ($scope, $stateParams) {
+                var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableId', $scope, $stateParams);
+                var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
+                if(variableObject){variableName = variableObject.variableId || variableObject.id;}
+                return variableName;
+            },
+            addVariableNameOrIdToRequestParams: function (params, $scope, $stateParams) {
+                params = params || {};
+                var variableName = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                if(variableName){
+                    params.name = variableName;
+                } else {
+                    var variableId = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                    if(!variableId){
+                        qmLog.error("No variable name or id in variable settings page!");
+                        return false;
+                    }
+                    params.variableId = variableId;
+                }
+                return params;
             }
         },
         subscriptions: {
@@ -792,7 +825,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
             settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
             studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
-            variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
+            variableSettingsVariableName: { state: qmStates.variableSettingsVariableName, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
             if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
@@ -1735,10 +1768,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.goToState(getDefaultState(), params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
-        qmService.goToState("app.variableSettings", {variableObject: variableObject});
+        qmService.goToState("app.variableSettingsVariableName", {variableObject: variableObject});
     };
     qmService.goToVariableSettingsByName = function(variableName){
-        qmService.goToState("app.variableSettings", {variableName: variableName});
+        qmService.goToState("app.variableSettingsVariableName", {variableName: variableName});
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
