@@ -141,7 +141,7 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
 var filter = require('gulp-filter');
 var fs = require('fs');
-var ghPages = require('gulp-gh-pages');
+var ghPages = require('gulp-gh-pages-will');
 var git = require('gulp-git');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -2918,5 +2918,6 @@ gulp.task('generate-service-worker', function(callback) {
 });
 gulp.task('deploy-to-github-pages', function() {
     return gulp.src('./www/**/*')
-        .pipe(ghPages({remoteUrl: "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app"}));
+        //.pipe(ghPages({remoteUrl: "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app"}));
+        .pipe(ghPages({}));
 });
