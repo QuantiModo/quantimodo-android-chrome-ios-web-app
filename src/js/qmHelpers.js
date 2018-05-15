@@ -2672,6 +2672,11 @@ window.qm = {
                 }
             }
             return url;
+        },
+        onQMSubdomain: function () {
+            if(window.location.href.indexOf('https://') !== 0){return false;}
+            if(window.location.href.indexOf('.quantimo.do') === -1){return false;}
+            return true;
         }
     },
     user: null,
