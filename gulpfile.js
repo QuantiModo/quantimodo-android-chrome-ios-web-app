@@ -682,7 +682,7 @@ function postAppStatus() {
 }
 function makeApiRequest(options, successHandler) {
     qmLog.info('Making request to ' + options.uri + ' with clientId: ' + QUANTIMODO_CLIENT_ID);
-    qmLog.debug(options.uri, options);
+    qmLog.debug(options.uri, options, 280);
     //options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
@@ -1162,20 +1162,34 @@ gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
         qmLog.error( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
         return;
     }
-    var buildJson = {
-        "android": {
-            "release": {
-                "keystore":"quantimodo.keystore",
-                "storePassword": buildSettings.androidReleaseKeystorePassword,
-                "alias": buildSettings.androidReleaseKeyAlias,
-                "password": buildSettings.androidReleaseKeyPassword,
-                "keystoreType":""
-            }
-        }
-    };
-    writeToFile('build.json', prettyJSONStringify(buildJson));
+    writeBuildJson();
     return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
+function writeBuildJson(){
+    var buildJson = {};
+    if(buildingFor.android()){
+        buildJson.android = {
+            "release": {
+                "keystore":"quantimodo.keystore",
+                    "storePassword": buildSettings.androidReleaseKeystorePassword,
+                    "alias": buildSettings.androidReleaseKeyAlias,
+                    "password": buildSettings.androidReleaseKeyPassword,
+                    "keystoreType":""
+            }
+        };
+    }
+    if(buildingFor.ios()){
+        buildJson.ios = {
+            "debug": {
+                "developmentTeam": "YD2FK7S2S5"
+            },
+            "release": {
+                "developmentTeam": "YD2FK7S2S5"
+            }
+        };
+    }
+    return writeToFile('build.json', prettyJSONStringify(buildJson));
+}
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
@@ -2354,6 +2368,9 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
 });
+gulp.task('write-build-json', [], function () {
+    return writeBuildJson();
+});
 gulp.task('build-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
@@ -2371,6 +2388,7 @@ gulp.task('build-ios-app', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'cordova-hcp-config',
+        'write-build-json',
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
