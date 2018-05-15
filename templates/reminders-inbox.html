@@ -1,0 +1,75 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Inbox">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content scroll="true" overflow-scroll="true">
+    <!--<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true } "> This breaks pull down to refresh in browser-->
+        <ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
+        <div id="aboveAverageWords" ng-if="words"><word-cloud words="words.aboveAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
+        <div id="belowAverageWords" ng-if="words"><word-cloud words="words.belowAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
+        <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" >
+            <div ng-repeat="helpCard in defaultHelpCards | limitTo:1">
+                <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+            </div>
+        </div>
+        <div class="card"  ng-show="loading">
+            <div class="item" >
+                <div class="row">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Refreshing... </i></p>
+                </div>
+            </div>
+        </div>
+        <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
+            <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+                <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
+                    <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
+                </div>
+                <div ng-show="!trackingReminderNotification.hide"
+                     ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
+                    <div class="item" style="padding-bottom:10px;">
+                        <span ng-include="'templates/items/notification-item.html'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="list card" ng-if="favoritesArray && favoritesArray.length" id="Favorites">
+            <div class="item item-divider" style="">{{state.favoritesTitle}}</div>
+            <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+            <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
+        </div>
+        <div id="allCaughtUpCard" class="list card"  ng-if="!loading && state.numberOfDisplayedNotifications === 0 ">
+            <div class="item" style="padding-bottom:10px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;"> <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i> </div>
+                    <div class="col col-75"> <h2 style="white-space: normal; text-align: justify; line-height: normal; "> Maybe you should refresh or add some more reminders? </h2> </div>
+                </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"> <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i> </button> </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-royal" style="font-size: 14px;" ng-click="goToState('app.measurementAddSearch')"> <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i> </button> </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-calm" style="font-size: 14px;" ng-click="goToState('app.historyAll')"> <i class="ion-ios-list-outline"> &nbsp; History &nbsp;</i> </button> </div> </div>
+                <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="refreshTrackingReminderNotifications()"> <i class="ion-refresh"> &nbsp; Refresh &nbsp;</i> </button> </div> </div>
+            </div>
+        </div>
+        <div ng-if="state.correlationObjects && state.correlationObjects.length"  class="list card">
+            <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
+            <div class="button-bar" >
+                <a class="button button-clear button-positive" ng-click="goToState('app.predictorSearch')" style="text-overflow: clip;"><i class="ion-search"> More Discoveries</i></a>
+            </div>
+            <br>
+        </div>
+        <div ng-if="state.variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>
+        <div class="card" ng-if="weekdayChartConfig">
+            <div>
+                <i></i>
+                <highchart id="chart3" config="weekdayChartConfig"></highchart>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+    </ion-content>
+<!--    <div ng-show="showUndoButton && !hideNavigationMenu" ng-click="undoInboxAction()" class="bar bar-footer bar-balanced">
+        <div class="title"> <i class="icon ion-reply"></i> &nbsp Undo {{lastAction}}</div>
+    </div>-->
+    <div ng-hide="hideNavigationMenu" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

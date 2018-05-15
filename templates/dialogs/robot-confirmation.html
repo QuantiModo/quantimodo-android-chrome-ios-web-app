@@ -1,0 +1,37 @@
+<md-dialog aria-label="{{ctrl.title}}" style="overflow: visible;"> <!--Opacity 1 here didn't fix iPhone5 problem-->
+  <form ng-cloak style="overflow: visible">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <img src="img/robots/robot-head.svg" style="
+          width: 75px;
+          height: 75px;
+          position: absolute;
+          top: -110%;
+          left: 50%;
+          margin-left: -37.5px;">
+        <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+          <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+        </md-button>
+        <h2 style="color: rgba(255,255,255,0.75);
+                  text-align: center;
+                  height: inherit;
+                  width: inherit;
+                  line-height: 2.9;">{{ctrl.title}}</h2>
+        <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+            <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <p style="text-align: center">{{ctrl.textContent}}</p>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button id="helpButton" ng-click="answer('help')" ng-if="!platform.isMobile" style="min-width: 40px;">Help</md-button>
+      <md-button id="noButton" ng-click="answer('no')" style="min-width: 40px;">{{ctrl.noText}}</md-button>
+      <md-button id="yesButton" ng-click="answer('yes')" style="min-width: 40px;">Yes</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<!-- Open a dialog over the app's content. Press escape or click outside to close the dialog and send focus back to the triggering button.-->

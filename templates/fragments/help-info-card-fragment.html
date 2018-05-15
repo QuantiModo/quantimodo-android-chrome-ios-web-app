@@ -1,0 +1,59 @@
+<div class="card" ng-if="!helpCard.hide" id="{{helpCard.id}}" style="background-color: #2E294E; border-radius: 15px" >
+    <div id="helpInfoCardHeader" class="item item-avatar item-borderless" style="background-color: #2E294E; padding-left: 0; padding-right: 0">
+    <span style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;">
+        <i ng-if="helpCard.icon" class="icon balanced {{helpCard.icon}}"></i>
+        <img style="max-width: 40px; max-height: 40px;" ng-if="helpCard.image.url" ng-src="{{helpCard.image.url}}">
+    </span>
+        <span style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; font-family: 'Open Sans', sans-serif;">
+            <p ng-if="!platform.isMobile" style="font-size: 24px; color: white; ">{{helpCard.title}}</p>
+            <p ng-if="platform.isMobile" style="font-size: 18px; color: white; ">{{helpCard.title}}</p>
+        </span>
+        <button id="closeButton" class="button button-clear button-assertive" ng-click="hideHelpCard(helpCard)"
+                style="position: absolute; top: 10px; right: 10px; font-size: 25px;" ><i class="ion-close-round"></i>
+        </button>
+    </div>
+    <div class="item item-body item-borderless" style="padding-top: 5px; color: white; text-align: center; background-color: #2E294E; max-width: 500px; margin: 0 auto; font-size: 14px; font-family: 'Open Sans', sans-serif;">{{helpCard.bodyText}}</div>
+    <div ng-repeat="button in helpCard.buttons">
+        <div class="row" >
+            <div class="button-bar">
+                <button class="{{button.buttonClass}}"
+                        style="font-size: 14px;"
+                        id="{{button.id}}"
+                        ng-click="button.clickFunctionCall()">
+                    <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText}} &nbsp;</i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="helpCard.emailButton">
+        <div class="button-bar">
+            <button class="button button-clear button-balanced"
+                    style="font-size: 14px;"
+                    id="emailButton"
+                    ng-click="hideHelpCard(helpCard, helpCard.emailButton.type)">
+                <i class="{{helpCard.emailButton.ionIcon}}"> &nbsp; {{helpCard.emailButton.text}} &nbsp;</i>
+            </button>
+        </div>
+    </div>
+    <div class="row" ng-show="helpCard.goToStateButton">
+        <div class="button-bar">
+            <button class="button button-clear button-balanced"
+                    style="font-size: 14px;"
+                    id="goToStateButton"
+                    ng-click="goToState(helpCard.goToStateButton.goToState)">
+                <i class="{{helpCard.goToStateButton.buttonClass}}"> &nbsp; {{helpCard.goToStateButton.buttonText}} &nbsp;</i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="button-bar">
+            <button class="button button-clear button-assertive"
+                    style="font-size: 14px;"
+                    id="hideHelpInfoCardButton"
+                    ng-click="hideHelpCard(helpCard)">
+                <i class="ion-checkmark"> &nbsp;Got it! &nbsp;</i>
+            </button>
+        </div>
+    </div>
+    <br>
+</div>

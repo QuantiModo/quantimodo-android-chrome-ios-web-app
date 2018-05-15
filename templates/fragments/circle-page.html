@@ -1,0 +1,44 @@
+<div style=" background-color: {{circlePage.color.backgroundColor}}; text-align: center; color: white; padding: 10px; height: 100%" >
+    <div>
+        <div style=" box-shadow: 2px 2px 5px #434343; margin: 0 auto; border-radius: 50%; width: 140px; height: 140px; background-color: {{circlePage.color.circleColor}};">
+            <div style="position: relative; display: block; padding-top: 20px;">
+                <div style="z-index: 8; ">
+                    <img id="circle-page-image" ng-src="{{circlePage.image.url}}" style="width: 100px; height: 100px;">
+                </div>
+            </div>
+            <div ng-if="false && circlePage.overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:167px; left: 50%; margin-left: -12.5px;" >
+            <!--TODO: Figure out how to center vertically-->
+                <div style="position: absolute; display: block;">
+                    <img id="circle-page-icon" ng-src="{{appSettings.iconUrl}}" style="width: 25px; height: 25px; ">
+                </div>
+            </div>
+        </div>
+        <br>
+        <p id="circle-page-title" ng-if="circlePage.title" style="font-size: 30px; line-height: 1;">{{circlePage.title}}</p>
+        <span id="circle-page-body-text" ng-bind-html="circlePage.bodyText" style="font-size: 22px; line-height: 1.5; padding: 5px;"></span>
+        <br>
+    </div>
+</div>
+
+
+<!--
+<div style=" background-color: {{circlePage.color.backgroundColor}}; text-align: center; color: white; padding: 10px; height: 100%" >
+    <div>
+        <div style=" box-shadow: 2px 2px 5px #434343; margin: 0 auto; border-radius: 50%; width: 140px; height: 140px; background-color: {{circlePage.color.circleColor}};">
+            <div style="position: relative; display: block; padding: 10px;">
+                <div style="z-index: 8; ">
+                    <img ng-src="{{circlePage.image.url}}" style="width: {{circlePage.image.width}}px; height: {{circlePage.image.height}}px;">
+                </div>
+            </div>
+            <div ng-if="circlePage.overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:167px; left: 50%; margin-left: -12.5px;" >
+                <div style="position: absolute; display: block;">
+                    <img ng-src="{{appSettings.iconUrl}}" style="width: 25px; height: 25px; ">
+                </div>
+            </div>
+        </div>
+        <br>
+        <p style="font-size: 30px; line-height: 1;">{{circlePage.title}} </p>
+        <span ng-bind-html="circlePage.bodyText" style="font-size: 16px; line-height: 1.5;"></span>
+        <br>
+    </div>
+</div>-->

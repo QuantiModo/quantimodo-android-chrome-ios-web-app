@@ -1,0 +1,78 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content style="background-color: #f2f2f2">
+        <div class="card" >
+            <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}</div>
+            <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input ng-model="state.variableSearchQuery.name"
+                       ng-model-options="{ debounce: 500 }"
+                       ng-change="onVariableSearch()"
+                       id="variableSearchBox"
+                       type="search"
+                       placeholder={{state.variableSearchPlaceholderText}}>
+                <a style="font-size: 35px;" ng-if="state.variableSearchQuery.name == '' && platform.isMobile" on-touch="scanBarcode()">
+                    <i class="icon ion-ios-camera placeholder-icon"></i>
+                    &nbsp
+                </a>
+                <a ng-if="state.variableSearchQuery.name != ''" style="font-size: 30px;"
+                   on-touch="state.variableSearchQuery.name=''">
+                    <i class="icon ion-close-round placeholder-icon"></i>
+                    &nbsp
+                </a>
+            </label>
+            <p></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching || showSearchLoader"> <ion-spinner></ion-spinner> </ion-item>
+            </ion-list>
+            <ion-list ng-show="state.variableSearchResults.length" class>
+                <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
+                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
+                    <div>
+                        <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i> &nbsp; {{item.name}}</p>
+                        <small ng-if="item.subtitle">{{item.subtitle}}</small>
+                        <small ng-if="!item.subtitle && item.latestMeasurementTime">Recorded {{item.latestMeasurementTime | fromNow}} - {{item.numberOfRawMeasurements}} measurements</small>
+                    </div>
+                </ion-item>
+            </ion-list>
+            <ion-list ng-if="state.showAddVariableButton && !state.searching">
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()"> {{state.addNewVariableButtonText}} </ion-item>
+            </ion-list>
+        </div>
+        <div class="list card"  ng-if="state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">
+            <div style="padding-bottom:10px;">
+                <div class="row">
+                    <div class="span6" style="float: none; margin: 0 auto;">
+                       <p style="line-height: normal; font-size: 20px;"> <i style="font-size: 30px;" class="icon positive ion-android-sad"></i> &nbsp {{state.noVariablesFoundCard.title}}</p>
+                    </div>
+                </div>
+                <p style="text-align: center">
+                    {{state.noVariablesFoundCard.body}}
+                </p>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                ng-click="goToStateFromVariableSearch('app.reminderSearch')">
+                            <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-royal" style="font-size: 14px;" ng-click="goToStateFromVariableSearch('app.measurementAddSearch')">
+                            <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-calm" style="font-size: 14px;" ng-click="goToStateFromVariableSearch('app.import')">
+                            <i class="ion-ios-list-outline"> &nbsp; Import Your Data &nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+    <div ng-hide="hideNavigationMenu" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

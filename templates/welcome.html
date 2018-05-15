@@ -1,0 +1,70 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
+	<ion-content style="background-color: #f2f2f2">
+	<div id="login-iframe"></div>
+	<div ng-hide="hidePrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
+		<div class="item item-text-wrap">
+			<h1>Welcome to <span class="positive">{{appSettings.appDisplayName}}</span></h1>
+			<ul>
+				<li>{{welcomeText}}</li>
+				<li>{{primaryOutcomeVariableDetails.trackingQuestion}}</li>
+			</ul>
+		</div>
+	</div>
+	<div ng-hide="hidePrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
+		<div class="item item-text-wrap">
+			<div  class="primary-outcome-variable-rating-buttons">
+				<img ng-repeat="option in positiveRatingOptions"
+					 ng-click="storeRatingLocally(option.numericValue)"
+					 ng-src="{{option.img}}"
+				>
+			</div>
+		</div>
+	</div>
+	<div class="card reporting-interval" ng-show="showIntervalCard">
+		<div class="item item-text-wrap">
+			<h1 class="positive">Reminder Frequency</h1>
+			<ul>
+				<li>
+					A subtle notification ensures you'll never forget to report your <span class="lower-text">{{appSettings.primaryOutcomeVariableName}}</span>.
+				</li>
+			</ul>
+			<ul class="list">
+				<li class="item item-input item-select">
+					<div class="input-label">
+						Ask for a rating
+					</div>
+
+					<div ng-hide="platform.isIOS">
+						<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
+							<option value="never">Never</option>
+							<option value="hourly">Hourly</option>
+							<option value="every three hours">Every three hours</option>
+							<option value="twice a day">Twice daily</option>
+							<option value="daily">Daily</option>
+						</select>
+					</div>
+					<div ng-show="platform.isIOS">
+						<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
+							<option value="never">Never</option>
+							<option value="hour">Hourly</option>
+							<option value="day">Daily</option>
+						</select>
+					</div>
+				</li>
+				<li class="item item-checkbox checkbox-positive">
+					<label class="checkbox">
+						<input ng-model="sendDailyEmailReminder" type="checkbox">
+					</label>
+					Send a daily email reminder if I forget (you can change this later in Settings)
+				</li>
+			</ul>
+			<button id="scheduleButtonWelcome" class="button button-outline button-block button-positive" ng-click="saveIntervalAndGoToLogin(primaryOutcomeRatingFrequencyDescription)">
+				Schedule
+			</button>
+			<button id="skipButtonWelcome" class="button button-outline button-block button-assertive" ng-click="skipInterval()">
+				Skip
+			</button>
+		</div>
+	</div>
+	</ion-content>
+</ion-view>

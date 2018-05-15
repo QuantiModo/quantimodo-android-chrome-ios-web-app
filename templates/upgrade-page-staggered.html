@@ -1,0 +1,142 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
+    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : platform.isWeb == true } ">
+        <div style="background-color: {{upgradePages[0].backgroundColor}};
+                text-align: center;
+                color: white;
+                padding: 20px;
+                height: 100%" >
+            <br>
+            <br>
+            <p style="font-size: 20px; line-height: 1;">
+                {{appSettings.appDisplayName}} Plus
+            </p>
+            <div class="row">
+                <div class="col">
+                    <button class="button button-light button-outline"
+                            id="monthlyButton"
+                            ng-click="monthlySubscription()">
+                        $6.99/mo
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="button button-light button-outline"
+                            id="annualButton"
+                            ng-click="yearlySubscription()">
+                        $59.99/year
+                    </button>
+                </div>
+            </div>
+            <div class="list">
+
+                <a ng-repeat="feature in planFeaturesCards[1].features" class="item item-avatar" >
+                    <img ng-src="{{feature.image}}">
+                    <h2>{{feature.title}}</h2>
+                    <p>{{feature.body}}</p>
+                </a>
+
+            </div>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <div >
+                        <img style="width:100%" ng-src="img/intro/intro_import.png">
+                    </div>
+                </div>
+                <div class="col">
+                    <span style="font-size: 16px; line-height: 1.5;">
+                        Import Your Data
+                    </span>
+                    <br>
+                    Automatically import your data from dozens of apps and devices
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div >
+                        <img style="width:100%" ng-src="img/intro/intro_track_anything.png">
+                    </div>
+                </div>
+                <div class="col">
+                    <span style="font-size: 16px; line-height: 1.5;">
+                        Analytics
+                    </span>
+                    <br>
+                    Personalized studies exploring factors influencing your health and happiness.
+                </div>
+            </div>
+
+            <div style="
+                box-shadow: 2px 2px 5px #434343;
+                margin: 0 auto;
+                border-radius: 50%;
+                width: 130px;
+                height: 130px;
+                background-color: {{upgradePages[0].circleColor}};">
+                <img style="
+                        position: relative;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width:{{upgradePages[0].image.width}}px;
+                        height:{{upgradePages[0].image.height}}px;"
+                     ng-src="{{upgradePages[0].image.url}}">
+            </div>
+
+            <br>
+            <span ng-bind-html="upgradePages[0].bodyText"
+                style="font-size: 16px; line-height: 1.5;">
+            </span>
+            <div ng-repeat="button in upgradePages[0].buttons" >
+                <div class="button-bar">
+                    <button class="button"
+                            ng-hide="{{button.ngHideLogic}}"
+                            style="background-color: {{upgradePages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="{{button.id}}"
+                            ng-click="button.clickFunctionCall()">
+                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div>
+                <div class="button-bar">
+
+                </div>
+            </div>
+            <div>
+                <div class="button-bar">
+
+                </div>
+            </div>
+
+            <div ng-hide="hideLearnMoreButton" >
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{upgradePages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                font-size: 12px;
+                                text-align: center"
+                            id="learnMoreButton"
+                            ng-click="hideUpgradePage()">
+                        &nbsp; LEARN MORE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
+            <div class="item item-divider">
+                {{signUpQuestion.question}}
+            </div>
+            <div class="item item-text-wrap">
+                {{signUpQuestion.answer}}
+            </div>
+        </div>
+    </ion-content>
+
+</ion-view>

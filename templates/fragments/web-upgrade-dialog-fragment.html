@@ -1,0 +1,95 @@
+<md-dialog aria-label="Select My Plan">
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 style="color: white">Select Plan</h2>
+                <span flex></span>
+                <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+                    <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                    <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <form ng-cloak name="upgradeForm">
+                <div class="md-dialog-content">
+                    <md-radio-group ng-model="productId">
+                        <md-radio-button value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                        <md-radio-button value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                    </md-radio-group>
+                    <md-input-container class="md-block">
+                        <md-icon md-svg-src="img/material-icons/ic_credit_card_black_24px.svg"></md-icon>
+                        <input required
+                               name="cardNumber"
+                               ng-model="creditCardInfo.cardNumber"
+                               maxlength="19"
+                               minlength="15"
+                               placeholder="Card Number"
+                                md-no-asterisk >
+                        <div ng-messages="upgradeForm.cardNumber.$error">
+                            <div ng-message="required">Card Number is must 15 to 19 characters</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <md-icon md-svg-src="img/material-icons/ic_security_black_24px.svg"></md-icon>
+                        <input ng-model="creditCardInfo.securityCode"
+                               placeholder="Security Code"
+                               maxlength="4"
+                               minlength="3"
+                               name="securityCode"
+                               required md-no-asterisk
+                               ng-required="true">
+                        <div ng-messages="upgradeForm.securityCode.$error">
+                            <div ng-message="required">Security Code must be 3 to 4 characters long</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
+                        <input ng-model="creditCardInfo.coupon" placeholder="Coupon Code (optional)" ng-required="false">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Month</label>
+                        <md-select name="month"
+                                   ng-model="creditCardInfo.month"
+                                   ng-required="true">
+                            <md-option ng-repeat="month in months" ng-value="$index+1">
+                                {{month}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="upgradeForm.month.$error">
+                            <div ng-message="required">Month is required</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Year</label>
+                        <md-select ng-model="creditCardInfo.year"
+                                   name="year"
+                                   required md-no-asterisk
+                                   ng-required="true">
+                            <md-option><em>Year</em></md-option>
+                            <md-option ng-repeat="year in years" ng-value="year" >
+                                {{year}}
+                            </md-option>
+                        </md-select>
+                        <div ng-messages="upgradeForm.year.$error">
+                            <div ng-message="required">Year is required.</div>
+                        </div>
+                    </md-input-container>
+                </div>
+            </form>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel()">
+                Cancel
+            </md-button>
+            <span flex></span>
+            <md-button ng-click="webSubscribe(productId, coupon, creditCardInfo, $event)">
+                OK
+            </md-button>
+        </md-dialog-actions>
+
+</md-dialog>

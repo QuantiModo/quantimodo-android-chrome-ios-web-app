@@ -1,0 +1,57 @@
+	<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)"
+		 class="row">
+		<div class="col col-20" style="padding-top: 0px;"> <i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.ionIcon}}"></i> </div>
+		<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="col col-70">
+			<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+			<h2 ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)"
+				style="white-space: normal; font-size: 20px; line-height: normal; ">
+				{{trackingReminderNotification.defaultValue}}&nbsp;{{trackingReminderNotification.unitName.toLowerCase()}} {{trackingReminderNotification.variableName}}
+			</h2>
+			<h2 ng-if="inputType === 'value'" style="white-space: normal; line-height: normal;"> {{trackingReminderNotification.variableName}} </h2>
+			<h2 ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{trackingReminderNotification.variableName}} </h2>
+			<p style="white-space: normal;"> {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
+		</div>
+		<div ng-click="showActionSheetForNotification(trackingReminderNotification, event)" class="col col-10">
+			<i style="font-size: 20px;" class="icon positive ion-more"></i>
+		</div>
+	</div>
+	<div class="button-bar">
+		<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event)"> <i class="ion-android-cancel"> &nbsp; Skip</i> </button>
+		<button class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(trackingReminderNotification, $event)">
+			<i class="ion-android-notifications-off"> &nbsp; Snooze</i>
+		</button>
+		<button class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(trackingReminderNotification)">
+			<i class="ion-edit"> &nbsp; Add Note</i>
+		</button>
+		<button class="button button-clear button-calm" ng-click="editReminderSettingsByNotification(trackingReminderNotification)" style="text-overflow: clip; font-size: 12px;"> <i class="ion-settings"> &nbsp; Settings</i> </button>
+	</div>
+	<label ng-if="inputType === 'value'" class="item item-input">
+		<input type="number" ng-model="trackingReminderNotification.total" id="defaultValueField" ng-click="onTextClick($event)" placeholder="Enter value" style="text-align: center; max-width: 125px; padding-right: 10px">
+		<span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label"> {{trackingReminderNotification.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"> </i> </span>
+	</label>
+	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+	<div class="row" ng-if="trackingReminderNotification.showZeroButton" >
+		<div class="button-bar">
+			<button ng-show="trackingReminderNotification.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, 0, $event)">
+				<i class="ion-android-done"> &nbsp; Record 0</i>
+			</button>
+			<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, null, $event)">
+				<i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i>
+			</button>
+		</div>
+	</div>
+	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+	<div class="row" ng-if="(trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null))" >
+		<div class="button-bar">
+			<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(trackingReminderNotification)"> <i class="ion-edit"> &nbsp; Other Value/Time/Note</i> </button>
+		</div>
+	</div>
+	<div class="primary-outcome-variable-reporting" ng-if="trackingReminderNotification.inputType === 'oneToFiveNumbers'">
+		<div class="primary-outcome-variable-rating-buttons" > <img ng-repeat="option in numericRatingOptions" ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}"> </div> <br>
+	</div>
+	<div class="primary-outcome-variable-reporting" ng-if="trackingReminderNotification.inputType === 'happiestFaceIsFive'">
+		<div class="primary-outcome-variable-rating-buttons" > <img ng-repeat="option in positiveRatingOptions" ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}"> <br> </div> <br>
+	</div>
+	<div class="primary-outcome-variable-reporting" ng-if="trackingReminderNotification.inputType === 'saddestFaceIsFive'">
+		<div class="primary-outcome-variable-rating-buttons" > <img ng-repeat="option in negativeRatingOptions" ng-click="track(trackingReminderNotification, option.numericValue, $event)" ng-src="{{option.img}}"> <br> </div> <br>
+	</div>

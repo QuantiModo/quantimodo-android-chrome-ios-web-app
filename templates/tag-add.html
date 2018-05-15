@@ -1,0 +1,48 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Tag">
+    <ion-nav-title>Add Tag</ion-nav-title>
+    <ion-content style="background-color: white" ng-class="{ isBrowserView : platform.isWeb == true }">
+        <div class="card">
+            <div class="item item-body" style="text-align: center">
+                If you tag {{stateParams.userTaggedVariableObject.name.toUpperCase()}} with {{stateParams.userTagVariableObject.name.toUpperCase()}},
+                {{stateParams.userTaggedVariableObject.name.toUpperCase()}} measurements will converted as specified and included in the analysis of
+                {{stateParams.userTagVariableObject.name.toUpperCase()}}.
+            </div>
+        </div>
+        <div class="card" style="overflow: visible" id="tagAddCard" ng-if="stateParams.userTagVariableObject.unitAbbreviatedName !== '/5'">
+            <div class="item item-divider">
+                Tag {{stateParams.userTaggedVariableObject.name}} with {{stateParams.userTagVariableObject.name}}
+            </div>
+            <div class="list">
+                <label class="item item-input">
+                    <input type="number"
+                           style="text-align: right; max-width: 105px; padding-right: 2px"
+                           ng-model="stateParams.tagConversionFactor"
+                           id="tagValueField"
+                           ng-click="onTextClick($event)"
+                           placeholder="Enter amount" >
+                    <span style="text-align: right;"
+                            class="input-label">
+                        {{stateParams.userTagVariableObject.unitName}} of {{stateParams.userTagVariableObject.name.toUpperCase()}}
+                    </span>
+                </label>
+                <label class="item"
+                       style="text-align: center;">
+                    per 1 {{stateParams.userTaggedVariableObject.unitName}} of {{stateParams.userTaggedVariableObject.name.toUpperCase()}}
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-50">
+                <md-button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</md-button>
+            </div>
+            <div class="col col-50">
+                <md-button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">Save</md-button>
+            </div>
+        </div>
+        <div class="row">
+            <md-button id="deleteButton" ng-click="deleteTag()" class="button button-outline icon-left ion-trash-a button-assertive button-block">
+                Delete Tag
+            </md-button>
+        </div>
+    </ion-content>
+</ion-view>

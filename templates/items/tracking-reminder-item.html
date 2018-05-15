@@ -1,0 +1,15 @@
+<div class="row">
+	<div ng-if="!trackingReminder.pngUrl" ng-click="showActionSheet(trackingReminder)" class="col col-20" style="padding-top: 0px;">
+		<i style="font-size: 40px;" class="icon positive {{trackingReminder.ionIcon}}"></i>
+	</div>
+	<div ng-if="trackingReminder.pngUrl" ng-click="showActionSheet(trackingReminder)" class="col col-20" style="padding-top: 0px;">
+		<img style=" width: 40px; height: 40px" ng-src="{{trackingReminder.pngUrl}}" alt="Reminder Image">
+	</div>
+	<div ng-click="showActionSheet(trackingReminder)" class="col col-70">
+		<h2 style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
+		<p style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+	</div>
+	<div ng-click="showActionSheet(trackingReminder)" class="col col-10">
+		<i style="font-size: 20px;" class="icon positive ion-more"></i>
+	</div>
+</div>

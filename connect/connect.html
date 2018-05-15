@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<script src="js/qmHelpers.js"></script>
+		<script>
+			var getAppNameFromUrl = function () {
+			    var sPageURL = document.location.toString().split('?')[1];
+			    if(!sPageURL) return false;
+			    var sURLVariables = sPageURL.split('&');
+			    if(!sURLVariables) return false;
+			    for (var i = 0; i < sURLVariables.length; i++)
+			    {
+			        var sParameterName = sURLVariables[i].split('=');
+			        if (sParameterName[0] == 'app')
+			        {
+			            return sParameterName[1].split('#')[0];
+			        }
+			    }
+			    return false;
+			};
+			var url = qm.appsManager.getAppConfig(getAppNameFromUrl());
+	        var fileref=document.createElement('script');
+	        fileref.setAttribute("type","text/javascript");
+	        fileref.setAttribute("src", '../'+url);
+	        document.getElementsByTagName("head")[0].appendChild(fileref);
+	        var private_fileref=document.createElement('script');
+	        private_fileref.setAttribute("type","text/javascript");
+            private_url = qm.appsManager.getPrivateConfig(getAppNameFromUrl());
+	        private_fileref.setAttribute("src", '../'+private_url);
+	        document.getElementsByTagName("head")[0].appendChild(private_fileref);
+		</script>
+	</head>
+	<body></body>
+
+	<script>
+		var intervalChecker = setInterval(function(){
+		    if(typeof config !== "undefined" && private_keys !== "undefined"){
+
+		    	var fileref=document.createElement('script');
+		    	fileref.setAttribute("type","text/javascript");
+		    	fileref.setAttribute("src", 'https://cdn.rawgit.com/quantimodo/import-data/f0325a518817980502dc2509d4f9d068903eef6c/connect.js');
+
+		    	document.getElementsByTagName("head")[0].appendChild(fileref);
+		        clearInterval(intervalChecker);
+		        var checker = setInterval(function(){
+		        	if(typeof qmSetupOnIonic !== "undefined"){
+		        		clearInterval(checker);
+		        		qmSetupOnIonic();
+		        	}
+		        }, 100);
+
+		    }
+		}, 100);
+	</script>
+</html>

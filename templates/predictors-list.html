@@ -1,0 +1,60 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Predictors">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-header-bar ng-if="showSearchFilterBox" class="bar-subheader item-input-inset">
+        <label class="item-input-wrapper">
+            <i class="icon ion-ios7-search placeholder-icon"></i>
+            <input type="search"
+                   ng-model-options="{ debounce: 500 }"
+                   placeholder="{{searchFilterBoxPlaceholderText}}"
+                   ng-change="filterSearch()"
+                   ng-model="data.search">
+        </label>
+        <button ng-click="toggleFilterBar()" class="button button-positive ">
+            Cancel
+        </button>
+    </ion-header-bar>
+    <ion-content scroll="true" overflow-scroll="true" style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshList()"></ion-refresher>
+        <div ng-show="searching">
+            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+            <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
+            <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
+        </div>
+        <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
+        <div class="list card"  ng-show="state.noCorrelations">
+            <div class="item" style="padding-bottom:0px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                            {{state.correlationsExplanation.description}}
+                        </h2>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                ng-click="goToState('app.reminderSearch')">
+                            <i class="ion-plus-round">
+                                &nbsp; Add a reminder &nbsp;
+                            </i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton && !searching">
+            <a class="button button-clear button-positive" ng-click="loadMore()" style="text-overflow: clip;">
+                <i class="ion-refresh">
+                    Load More
+                </i>
+            </a>
+        </div>
+        <br>
+        <br>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

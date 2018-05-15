@@ -1,0 +1,35 @@
+<div class="card" >
+    <div class="item item-divider"><i class="icon ion-android-notifications-none"></i>&nbsp Notification Preferences</div>
+    <ion-toggle ng-show="!platform.isAndroid" ng-model="user.pushNotificationsEnabled" ng-change="togglePushNotificationsEnabled()">
+        <div ng-if="user.pushNotificationsEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
+        <div ng-if="!user.pushNotificationsEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
+    </ion-toggle>
+    <ion-toggle ng-model="user.combineNotifications" ng-change="combineNotificationChange($event)">Combine Notifications</ion-toggle>
+    <label class="item item-input">
+        <div class="input-label" ><i class="icon ion-ios-sunny-outline"></i>&nbsp Earliest Notification</div>
+        <button class="button button-block up-top" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;" ng-click="openEarliestReminderTimePicker($event)">
+            {{user.earliestReminderTime | fromTwentyFourToTwelveHourFormat}}
+        </button>
+    </label>
+    <label class="item item-input">
+        <div class="input-label" ><i class="icon ion-ios-moon"></i>&nbsp Latest Notification</div>
+        <button class="button button-block up-top" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;" ng-click="openLatestReminderTimePicker($event)">
+            {{user.latestReminderTime | fromTwentyFourToTwelveHourFormat}}
+        </button>
+    </label>
+    <div ng-show="platform.isAndroid" class="card sign-in" >
+        <div class="item item-divider" >Popup Tracking Notifications &nbsp;</div>
+        <ion-toggle ng-model="drawOverAppsPopupEnabled" ng-change="toggleDrawOverAppsPopup()">
+            <div ng-if="drawOverAppsPopupEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
+            <div ng-if="!drawOverAppsPopupEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
+        </ion-toggle>
+    </div>
+    <div ng-show="platform.isAndroid" class="card sign-in" >
+        <div class="item item-divider" >Notifications in Top Drawer &nbsp;</div>
+        <p style="text-align: center; padding: 3px;" ng-if="platform.isAndroid && user.pushNotificationsEnabled">&nbsp Try disabling if the app rudely opens while you're using other apps &nbsp</p>
+        <ion-toggle ng-model="user.pushNotificationsEnabled" ng-change="togglePushNotificationsEnabled()">
+            <div ng-if="user.pushNotificationsEnabled"><i class="icon ion-android-notifications"></i> &nbsp Enabled &nbsp</div>
+            <div ng-if="!user.pushNotificationsEnabled"><i class="icon ion-android-notifications-off"></i> &nbsp Disabled &nbsp</div>
+        </ion-toggle>
+    </div>
+</div>

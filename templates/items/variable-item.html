@@ -1,0 +1,14 @@
+<div class="item item-avatar item-button-right">
+    <img ng-click="showActionSheet(trackingReminder)" ng-src="{{trackingReminder.pngPath}}" style="border-radius: 0">
+    <h2 ng-click="showActionSheet(trackingReminder)"  style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
+    <p ng-click="showActionSheet(trackingReminder)"  style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+    <div class="buttons">
+        <button ng-if="trackingReminder.productUrl" class="button button-assertive hide-xs" ng-click="openUrl(trackingReminder.productUrl, 'yes', '_system')">
+            <md-tooltip ng-if="!platform.isMobile" md-direction="down">Buy Now</md-tooltip> <i class="icon ion-bag"></i>
+        </button>
+        <button ng-if="!platform.isMobile" class="button button-positive hide-xs" ng-click="goToState('app.measurementAdd', {variableObject: trackingReminder})"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp
+        <!--<button ng-if="!platform.isMobile" class="button button-positive" ng-click="trackingReminder.addMeasurement = true"> <md-tooltip md-direction="down">Record a measurement</md-tooltip> <i class="icon ion-compose"></i> </button>&nbsp-->
+        <button ng-if="!platform.isMobile" class="button button-assertive hide-xs" ng-click="edit(trackingReminder)"> <md-tooltip md-direction="down">Edit settings</md-tooltip> <i class="icon ion-android-notifications-none"></i> </button>&nbsp
+        <button ng-if="!platform.isMobile" class="button button-dark" ng-click="showActionSheet(trackingReminder)"> <md-tooltip md-direction="down">More options</md-tooltip> <i class="icon ion-android-arrow-forward"></i> </button>
+    </div>
+</div>

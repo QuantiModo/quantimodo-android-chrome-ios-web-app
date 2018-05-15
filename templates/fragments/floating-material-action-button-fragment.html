@@ -1,0 +1,22 @@
+<nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round" resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu"
+     menu-state="mfbMenuState">
+    <button id="mfb4" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button4.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button4.label}}" ng-click="goToState('button4', null, $event)"></button>
+    <button id="mfb3" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button3.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button3.label}}" ng-click="goToState('button3', null, $event)"></button>
+    <button id="mfb2" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button2.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button2.label}}" ng-click="goToState('button2', null, $event)"></button>
+    <button id="mfb1" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button1.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button1.label}}" ng-click="goToState('button1', null, $event)"></button>
+</nav>
+
+<!--
+href should be faster but I can't get it to work
+<nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round" resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu"
+     menu-state="mfbMenuState">
+    <button id="mfb4" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button4.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button4.label}}"
+            href="{{appSettings.appDesign.floatingActionButton.active.button4.href}}"></button>
+    <button id="mfb3" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button3.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button3.label}}"
+            href="{{appSettings.appDesign.floatingActionButton.active.button3.href}}"></button>
+    <button id="mfb2" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button2.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button2.label}}"
+            href="{{appSettings.appDesign.floatingActionButton.active.button2.href}}"></button>
+    <button id="mfb1" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button1.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button1.label}}"
+            href="{{appSettings.appDesign.floatingActionButton.active.button1.href}}"></button>
+</nav>
+-->

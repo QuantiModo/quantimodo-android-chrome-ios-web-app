@@ -1,0 +1,29 @@
+<md-dialog aria-label="Variable Setting Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 style="color: white">{{ctrl.title}}</h2>
+            <span flex></span>
+            <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+                <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content ng-cloak>
+        <div class="md-dialog-content">
+            <form ng-submit="$event.preventDefault()">
+                <p>{{ctrl.helpText}}</p>
+                <md-input-container class="md-block">
+                    <input ng-model="ctrl.value"
+                           placeholder="{{ctrl.placeholder}}"
+                           name="value">
+                </md-input-container>
+            </form>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions>
+        <md-button aria-label="Finished" ng-click="ctrl.finish($event, item)">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

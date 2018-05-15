@@ -1,0 +1,24 @@
+<div hide-nav-bar="hideNavigationMenu" class="card history-edit-card">
+	<div class="item item-text-wrap">
+	  	<div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history">
+	  		<img ng-repeat="option in positiveRatingOptions"
+                 ng-click="selectPrimaryOutcomeVariableValue($event, option)"
+                 ng-src="{{option.img}}"
+                 class="{{option.numericValue}}"
+            >
+		</div>
+		<br/>
+		<input type="text" placeholder="Add a note here!" ng-model="selectedItem.note">
+		<br/>
+
+		<div class="buttons center">
+			<button class="button button-positive" ng-click="saveValue();">
+				Save
+			</button>
+			<button class="button button-assertive" ng-click="closePopover();">
+				Cancel
+			</button>
+		</div>
+	  	
+	</div>
+</div>

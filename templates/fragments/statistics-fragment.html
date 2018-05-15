@@ -1,0 +1,104 @@
+<div id="statisticsCard" ng-show="state.study.statistics" class="card variable-settings" >
+    <div class="list">
+        <div class="item item-divider ng-binding">Quick Statistics</div>
+        <label ng-show="state.study.statistics.causeVariableName" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Cause Variable Name</span><br>
+            <span class="input-label right-text " id="causeVariableName">{{state.study.statistics.causeVariableName}}</span>
+        </label>
+        <label ng-show="state.study.statistics.effectVariableName" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Effect Variable Name</span><br>
+            <span class="input-label right-text " id="effectVariableName">{{state.study.statistics.effectVariableName}}</span>
+        </label>
+        <label ng-show="state.study.statistics.correlationCoefficient" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Predictive Correlation Coefficient</span><br>
+            <span class="input-label right-text " id="correlationCoefficient">{{state.study.statistics.correlationCoefficient}}</span>
+        </label>
+        <label ng-show="state.study.statistics.averageForwardPearsonCorrelationOverOnsetDelays" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Average Forward Correlation Over Delays</span><br>
+            <span class="input-label right-text " id="averageForwardPearsonCorrelationOverOnsetDelays">
+                {{state.study.statistics.averageForwardPearsonCorrelationOverOnsetDelays}}
+            </span>
+        </label>
+        <label ng-show="state.study.statistics.averageReversePearsonCorrelationOverOnsetDelays" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Average Reverse Correlation Over Delays</span><br>
+            <span class="input-label right-text " id="averageReversePearsonCorrelationOverOnsetDelays">
+                {{state.study.statistics.averageReversePearsonCorrelationOverOnsetDelays}}
+            </span>
+        </label>
+        <label ng-show="state.study.statistics.averagePearsonCorrelationCoefficientOverOnsetDelays" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Average Correlation Over All Onset Delays</span><br>
+            <span class="input-label right-text " id="averagePearsonCorrelationCoefficientOverOnsetDelays">
+                {{state.study.statistics.averagePearsonCorrelationCoefficientOverOnsetDelays}}
+            </span>
+        </label>
+        <label ng-show="state.study.statistics.strongestPearsonCorrelationCoefficient" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Strongest Correlation Over All Onset Delays</span><br>
+            <span class="input-label right-text " id="strongestPearsonCorrelationCoefficient">
+                {{state.study.statistics.strongestPearsonCorrelationCoefficient}}
+            </span>
+        </label>
+<!--        <label ng-show="state.study.statistics.onsetDelayWithStrongestPearsonCorrelation" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Onset Delay With Strongest Correlation</span><br>
+            <span class="input-label right-text " id="onsetDelayWithStrongestPearsonCorrelation">
+                {{state.study.statistics.onsetDelayWithStrongestPearsonCorrelation}} seconds
+            </span>
+        </label>-->
+        <label ng-show="state.study.statistics.qmScore" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">QuantiModo Score</span><br>
+            <span class="input-label right-text " id="qmScore">{{state.study.statistics.qmScore}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;"
+               ng-click="changeVariableSetting(state.study.statistics.causeVariable, 'onsetDelayInHours', $event)">
+            <span class="input-label left-text">Onset Delay</span><br>
+            <span class="input-label right-text " id="onsetDelay">{{state.study.statistics.onsetDelayInHours}} Hours</span>
+        </label>
+        <label ng-show="state.study.statistics.durationOfAction" class="item item-content" style="padding: 6px 10px 5px 16px;"
+               ng-click="changeVariableSetting(state.study.statistics.causeVariable, 'durationOfActionInHours', $event)">
+            <span class="input-label left-text">Duration Of Action</span><br>
+            <span class="right-text" id="durationOfAction" >
+                {{state.study.statistics.durationOfActionInHours}} Hours
+            </span>
+        </label>
+        <label ng-show="state.study.statistics.numberOfPairs" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Number Of Pairs</span><br>
+            <span class="input-label right-text " id="numberOfPairs">{{state.study.statistics.numberOfPairs}}</span>
+        </label>
+        <label ng-show="state.study.statistics.causeChanges" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Predictor Value Changes</span><br>
+            <span class="input-label right-text " id="causeChanges">{{state.study.statistics.causeChanges}}</span>
+        </label>
+        <label ng-show="state.study.statistics.effectChanges" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Outcome Value Changes</span><br>
+            <span class="input-label right-text " id="effectChanges">{{state.study.statistics.effectChanges}}</span>
+        </label>
+        <label ng-show="state.study.statistics.statisticalSignificance" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Statistical Significance</span><br>
+            <span class="input-label right-text " id="statisticalSignificance">{{state.study.statistics.statisticalSignificance}}</span>
+        </label>
+        <label ng-show="state.study.statistics.predictsHighEffectChange" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Typical High Outcome Change from Average</span><br>
+            <span class="input-label right-text " id="predictsHighEffectChange">{{state.study.statistics.predictsHighEffectChange}}%</span>
+        </label>
+        <label ng-show="state.study.statistics.predictsLowEffectChange" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Typical Low Outcome Change from Average</span><br>
+            <span class="input-label right-text " id="predictsLowEffectChange">{{state.study.statistics.predictsLowEffectChange}}%</span>
+        </label>
+        <label ng-show="state.study.statistics.pValue" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">P Value</span><br>
+            <span class="input-label right-text " id="pValue">{{state.study.statistics.pValue}}</span>
+        </label>
+        <label ng-show="state.study.statistics.tValue" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">T Value</span><br>
+            <span class="input-label right-text " id="tValue">{{state.study.statistics.tValue}}</span>
+        </label>
+        <label ng-show="state.study.statistics.criticalTValue" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Critical T Value</span><br>
+            <span class="input-label right-text " id="criticalTValue">{{state.study.statistics.criticalTValue}}</span>
+        </label>
+        <label ng-show="state.study.statistics.confidenceInterval" class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Confidence Interval</span><br>
+            <span class="input-label right-text " id="confidenceInterval">{{state.study.statistics.confidenceInterval}}</span>
+        </label>
+
+    </div>
+</div>

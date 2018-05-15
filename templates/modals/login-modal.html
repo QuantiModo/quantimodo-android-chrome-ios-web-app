@@ -1,0 +1,22 @@
+<md-dialog aria-label="ITS - Portal LogIn">
+    <form ng-cloak name="loginform">
+        <md-toolbar style="color: white;">
+            <div class="md-toolbar-tools">
+                <h2 style="color: white;">Login</h2>
+                <span flex></span>
+                <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+                    <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button" ng-click="close()"> <i class="ion-close"></i> </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content layout="row">
+            <div class="md-dialog-content">
+                <md-input-container class="md-block"> <label>User Name or Email</label> <input type="text" ng-model="credentials.username" autocomplete="off"> </md-input-container>
+                <md-input-container class="md-block"> <label>Password</label> <input type="password" ng-model="credentials.password" autocomplete="nope"> </md-input-container>
+                <md-button ng-click="close()"> Cancel </md-button>
+                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="answer(credentials)"> LogIn </md-button>
+            </div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

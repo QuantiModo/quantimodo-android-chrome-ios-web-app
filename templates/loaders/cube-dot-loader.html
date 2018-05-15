@@ -1,0 +1,397 @@
+<!--DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Animoto - New Features</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="icon" href='//d14f1fnryngsxt.cloudfront.net/images/icons/favicon-246ce4de.ico' type="image/x-icon" />
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body style="margin:0;padding:0;" bgcolor="#f2f2f2" link="#505050">
+<style type="text/css">
+    body {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #171723;
+    }
+
+    .canvas {
+        position: relative;
+        width: 216px;
+        height: 216px;
+        -webkit-perspective: 600px;
+        perspective: 600px;
+    }
+
+    @-webkit-keyframes layer-rotation {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        80%, 100% {
+            -webkit-transform: rotate(-360deg);
+            transform: rotate(-360deg);
+        }
+    }
+
+    @keyframes layer-rotation {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        80%, 100% {
+            -webkit-transform: rotate(-360deg);
+            transform: rotate(-360deg);
+        }
+    }
+    .layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100%;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
+
+    .layer:nth-child(1) {
+        -webkit-animation: layer-rotation 5s 0.2s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 0.2s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(1) .dot {
+        -webkit-transform: translate3d(0, 0, -162px);
+        transform: translate3d(0, 0, -162px);
+    }
+
+    .layer:nth-child(2) {
+        -webkit-animation: layer-rotation 5s 0.4s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 0.4s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(2) .dot {
+        -webkit-transform: translate3d(0, 0, -81px);
+        transform: translate3d(0, 0, -81px);
+    }
+
+    .layer:nth-child(3) {
+        -webkit-animation: layer-rotation 5s 0.6s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 0.6s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(3) .dot {
+        -webkit-transform: translate3d(0, 0, 0px);
+        transform: translate3d(0, 0, 0px);
+    }
+
+    .layer:nth-child(4) {
+        -webkit-animation: layer-rotation 5s 0.8s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 0.8s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(4) .dot {
+        -webkit-transform: translate3d(0, 0, 81px);
+        transform: translate3d(0, 0, 81px);
+    }
+
+    .layer:nth-child(5) {
+        -webkit-animation: layer-rotation 5s 1s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 1s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(5) .dot {
+        -webkit-transform: translate3d(0, 0, 162px);
+        transform: translate3d(0, 0, 162px);
+    }
+
+    .layer:nth-child(6) {
+        -webkit-animation: layer-rotation 5s 1.2s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation: layer-rotation 5s 1.2s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    .layer:nth-child(6) .dot {
+        -webkit-transform: translate3d(0, 0, 243px);
+        transform: translate3d(0, 0, 243px);
+    }
+
+    .dot {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-preferred-size: 36px;
+        flex-basis: 36px;
+        height: 36px;
+    }
+    .dot::before {
+        content: '';
+        display: block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+    }
+
+    .dot--aqua::before {
+        background-color: aqua;
+    }
+
+    .dot--gold::before {
+        background-color: gold;
+    }
+
+    .dot--tomato::before {
+        background-color: tomato;
+    }
+
+</style>
+
+<div class="canvas">
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+    <div class="layer">
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+        <div class="dot dot--aqua"></div>
+        <div class="dot dot--gold"></div>
+        <div class="dot dot--tomato"></div>
+    </div>
+</div>
+</body>
+
+</html>

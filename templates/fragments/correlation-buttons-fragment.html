@@ -1,0 +1,34 @@
+<div class="voteButtons" style="cursor: pointer; text-align: center;">
+    <div ng-click="upVote(correlationObject, $index, $event)" class="show-inline">
+        <div class="tooltip" title="Relationship Seems Plausible">
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0"
+                 src="img/thumbs/thumb_up_white.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === 1" src="img/thumbs/thumb_up_black.png" height="32px" width="32px" />
+        </div>
+    </div> &nbsp;&nbsp;
+    <div ng-click="downVote(correlationObject, $index, $event)" class="show-inline">
+        <div class="tooltip" title="Relationship Seems Impossible">
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1"
+                 src="img/thumbs/thumb_down_white.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === 0" src="img/thumbs/thumb_down_white.png" height="32px" width="32px" />
+        </div>
+    </div>
+    <div ng-hide="state.hideStudyButton" ng-click="goToStudyPage(correlationObject)" class="show-inline" >
+        <div class="tooltip" title="Go to Full Study"> &nbsp &nbsp <i style="font-size: 32px;" class="ion-ios-book-outline"></i> </div>
+    </div> &nbsp; &nbsp;
+    <div ng-click="goToVariableSettingsForCauseVariable(correlationObject || state.study.statistics)" class="show-inline">
+        &nbsp;<div class="tooltip" title="Change Analysis Parameters"> <i style="font-size: 32px;" class="ion-android-options"></i> </div>
+    </div>  &nbsp;  &nbsp;
+    <div ng-click="shareStudy((state && state.study) ? state.study : correlationObject, 'studyLinkFacebook', $event)" class="show-inline">
+        <div class="tooltip" title="Share Study to Facebook"> <i style="font-size: 32px;" class="ion-social-facebook"></i> </div>
+    </div>&nbsp&nbsp;
+    <div ng-click="shareStudy((state && state.study) ? state.study : correlationObject, 'studyLinkTwitter', $event);" class="show-inline">
+        <div class="tooltip" title="Share Study to Twitter"> <i style="font-size: 32px;" class="ion-social-twitter"></i> </div>
+    </div> &nbsp; &nbsp;
+    <div ng-click="shareStudy((state && state.study) ? state.study : correlationObject, 'studyLinkGoogle', $event);" class="show-inline">
+        <div class="tooltip" title="Share Study to Google+"> <i style="font-size: 32px;" class="ion-social-google"></i> </div>
+    </div> &nbsp; &nbsp;
+    <div ng-click="shareStudy((state && state.study) ? state.study : correlationObject, 'studyLinkEmail', $event);" class="show-inline">
+        <div class="tooltip" title="Share Study by Email"> <i style="font-size: 32px;" class="ion-email"></i> </div>
+    </div>
+</div>

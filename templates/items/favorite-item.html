@@ -1,0 +1,86 @@
+<div class="item" style="padding:0" >
+    <div class="row">
+        <div id="favoriteItemIcon" ng-click="showFavoriteActionSheet(trackingReminder)" class="col col-10" style="text-align: left;">
+            <img ng-src="{{trackingReminder.pngPath}}" style="max-width: 20px" ng-if="trackingReminder.unitAbbreviatedName !== '/5'">
+        </div>
+        <div class="col col-80" >
+            <h2 id="favoriteItemTitle" ng-click="showFavoriteActionSheet(trackingReminder)"
+                style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
+                {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
+            </h2>
+            <!--TODO: Remove (trackingReminder.inputType === 'value' && trackingReminder.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+            <button id="recordDefaultValue" ng-if="trackingReminder.inputType === 'defaultValue' || (trackingReminder.inputType === 'value' && trackingReminder.defaultValue !== null)"
+                    class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
+                    ng-click="trackByFavorite(trackingReminder, null, $index)">
+                <i class="ion-android-done"> &nbsp; Record {{trackingReminder.defaultValue}} {{trackingReminder.unitAbbreviatedName}}</i>
+            </button>
+        </div>
+        <div id="favoriteItemSettings" ng-click="showFavoriteActionSheet(trackingReminder)" class="col col-10">
+            <i style="font-size: 20px; padding: 0;" class="icon positive ion-more"></i>
+        </div>
+    </div>
+    <div ng-if="trackingReminder.inputType === 'value'" class="item-input" style="padding-top: 0">
+        <input type="number" ng-model="trackingReminder.modifiedValue" id="favoriteValueField"
+               ng-click="onTextClick($event)"
+               placeholder="Enter value"
+               style="text-align: center">
+        <span on-tap="trackFavoriteByValueField(trackingReminder)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp
+            <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
+        </span>
+    </div>
+    <div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'oneToFiveNumbers'">
+        <div class="primary-outcome-variable-rating-buttons-small" >
+            <img ng-repeat="option in numericRatingOptions"
+                 ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 ng-src="{{option.img}}">
+        </div>
+    </div>
+    <div id="favoritePositiveRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'happiestFaceIsFive'">
+        <div class="primary-outcome-variable-rating-buttons-small" >
+            <img ng-repeat="option in positiveRatingOptions"
+                 ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 ng-src="{{option.img}}">
+        </div>
+    </div>
+    <div id="favoriteNegativeRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'saddestFaceIsFive'">
+        <div class="primary-outcome-variable-rating-buttons-small" >
+            <img ng-repeat="option in negativeRatingOptions"
+                 ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 ng-src="{{option.img}}">
+        </div>
+    </div>
+    <div ng-if="trackingReminder.inputType === 'oneToTen' || trackingReminder.inputType === 'slider'">
+        <div class="row">
+            <div class="button-bar">
+                <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
+                        ng-click="trackByFavorite(trackingReminder, trackingReminder.lastValueInUserUnit)">
+                    <i class="ion-android-done">&nbsp; Record {{trackingReminder.lastValueInUserUnit}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div style="width: 100%" class="range range-positive">
+                {{trackingReminder.minimumAllowedValue}}
+                <input ng-model="trackingReminder.lastValueInUserUnit" type="range" name="valueSlider"
+                       min="{{trackingReminder.minimumAllowedValue}}" max="{{trackingReminder.maximumAllowedValue}}"
+                       value="{{trackingReminder.lastValueInUserUnit}}">
+                {{trackingReminder.maximumAllowedValue}}
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-if="trackingReminder.unitAbbreviatedName.indexOf('yes/no') !== -1 " >
+        <div class="button-bar">
+            <button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;"
+                    on-hold="trackAllWithConfirmation(trackingReminder, 0, $event)"
+                    ng-click="trackByFavorite(trackingReminder, 0)">
+                <i class="ion-android-done"> &nbsp; NO &nbsp</i>
+            </button>
+            <button class="button button-clear button-balanced"
+                    style="text-overflow: clip; font-size: 14px;"
+                    on-hold="trackAllWithConfirmation(trackingReminder, 1, $event)"
+                    ng-click="trackByFavorite(trackingReminder, 1)">
+                <i class="ion-android-done"> &nbsp; YES &nbsp</i>
+            </button>
+        </div>
+    </div>
+</div>

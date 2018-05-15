@@ -1,0 +1,56 @@
+<div ng-show="state.correlationObjects.length" style="padding: 10px;">
+    <div class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;">
+        <i class="icon {{state.correlationsExplanation.ionIcon}}"
+           style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							color: white;
+							border-radius: 4px;"
+        ></i>
+        <p style="font-size: 25px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;">
+            {{state.correlationsExplanation.title}}
+        </p>
+    </div>
+    <div class="item item-body" style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;" >
+        {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
+        <br>
+        <div class="button-bar" style="margin-top: 20px; margin-bottom: 10px;">
+            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)"
+               style="text-overflow: clip;"><div style="background: white ; color: #F48120; border-radius: 30px; width: 230px; margin: 0 auto;"><i class="ion-information-circled" style="font-size: 150%; ">  </i> Improve Predictions </div></a>
+        </div>
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending statistical significance.
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending QM Score which is a combination of effect size and statistical significance.
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
+    </div>
+</div>
+<div ng-show="searching" style="text-align: center"><br><br><br><br><br><ion-spinner icon="android"></ion-spinner><br></div>
+<ion-list>
+    <div id="correlationList" class="list card correlationResultList" style="text-align: center" ng-repeat="correlationObject in state.correlationObjects">
+        <div id="correlationBody" class="item item-body">
+            <div ng-bind-html="trustAsHtml(correlationObject.studyHtml.studyHeaderHtml)" ng-click="goToStudyPage(correlationObject)"></div>
+            <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
+            <div ng-include="'templates/buttons/join-study-button.html'"></div>
+        </div>
+    </div>
+</ion-list>

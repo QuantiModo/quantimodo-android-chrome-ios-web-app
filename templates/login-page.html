@@ -1,0 +1,27 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
+    <div class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
+        <div class="middle">
+            <div class="inner">
+                <div style="text-align: center; color: white; padding: 30px; height: 100%" >
+                    <div>
+                        <div ng-include="'templates/fragments/circle-page.html'" ng-cloak></div>
+                        <div ng-if="circlePage.title === 'Logging in...'" ng-click="retryLogin()" >
+                            <br><br>
+                            Click here to retry if this takes too long
+                        </div>
+                        <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
+                                <md-button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</md-button>
+                                <md-button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</md-button>
+                            <div ng-if="showGoogleLoginButton && !hideGoogleLoginButton">
+                                <md-button id="signInWithGoogle" ng-click="googleLogin()" class="button circle-page-button">Sign In With Google</md-button>
+                            </div>
+                            <div ng-if="showFacebookLoginButton">
+                                <md-button id="signInWithFacebook" ng-click="facebookLogin()" class="button circle-page-button clear">Sign In With Facebook</md-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-view>

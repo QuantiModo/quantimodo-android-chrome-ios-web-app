@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<title>Redirecting</title>
+		<link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.min.css">
+        <style>
+            html, body, ul {
+                padding: 0;
+                margin: 0;
+                height: 100%;
+            }
+
+            body {
+                overflow: hidden;
+                background: #001A1C;
+            }
+
+            ul {
+                list-style: none;
+                position: absolute;
+                width: 600px;
+                height: 600px;
+                left: 50%;
+                top: 50%;
+                margin-left: -300px;
+                margin-top: -300px;
+                overflow: visible;
+                -webkit-perspective: 500px;
+                perspective: 500px;
+            }
+
+            li {
+                width: 600px;
+                height: 600px;
+                position: absolute;
+                border: 20px solid #C84663;
+                border-radius: 50%;
+                left: 50%;
+                top: 50%;
+                margin-left: -300px;
+                margin-top: -300px;
+                animation-duration: 7s;
+                animation-direction: alternate;
+                animation-iteration-count: infinite;
+                animation-timing-function: ease-in-out;
+            }
+
+            #s1 {
+                transform: translateZ(0px);
+                animation-name: s1;
+            }
+
+            #s2 {
+                transform: translateZ(0px);
+                animation-name: s2;
+            }
+
+            #s3 {
+                transform: translateZ(0px);
+                animation-name: s3;
+            }
+
+            #s4 {
+                transform: translateZ(0px);
+                animation-name: s4;
+            }
+
+            #s5 {
+                transform: translateZ(0px);
+                animation-name: s5;
+            }
+
+            #s6 {
+                transform: translateZ(0px);
+                animation-name: s6;
+            }
+
+            #s7 {
+                transform: translateZ(0px);
+                animation-name: s7;
+            }
+
+            #s8 {
+                transform: translateZ(0px);
+                animation-name: s8;
+            }
+
+            @keyframes s1 {
+                from {
+                    transform: translateZ(0px);
+                }
+                to {
+                    transform: translateZ(1000px);
+                }
+            }
+            @keyframes s2 {
+                from {
+                    transform: translateZ(-200px);
+                }
+                to {
+                    transform: translateZ(800px);
+                }
+            }
+            @keyframes s3 {
+                from {
+                    transform: translateZ(-400px);
+                }
+                to {
+                    transform: translateZ(600px);
+                }
+            }
+            @keyframes s4 {
+                from {
+                    transform: translateZ(-600px);
+                }
+                to {
+                    transform: translateZ(400px);
+                }
+            }
+            @keyframes s5 {
+                from {
+                    transform: translateZ(-800px);
+                }
+                to {
+                    transform: translateZ(200px);
+                }
+            }
+            @keyframes s6 {
+                from {
+                    transform: translateZ(-1000px);
+                }
+                to {
+                    transform: translateZ(0px);
+                }
+            }
+            @keyframes s7 {
+                from {
+                    transform: translateZ(-1200px);
+                }
+                to {
+                    transform: translateZ(-200px);
+                }
+            }
+            @keyframes s8 {
+                from {
+                    transform: translateZ(-1400px);
+                }
+                to {
+                    transform: translateZ(-400px);
+                }
+            }
+
+        </style>
+	</head>
+	<body>
+    <ul>
+        <li id="s8"></li>
+        <li id="s7"></li>
+        <li id="s6"></li>
+        <li id="s5"></li>
+        <li id="s4"></li>
+        <li id="s3"></li>
+        <li id="s2"></li>
+        <li id="s1"></li>
+    </ul>
+
+    <section id="browse" class="browse">
+		    <div class="container">
+		        <div class="row">
+		            <div style="text-align:center;margin-top:70%;color:#3369E8;">
+		                <h2>Redirecting...</h2>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+	</body>
+	<script>
+		var receiveMessage = function(event)
+		{
+			event.source.postMessage(window.location.href.toString(),event.origin);
+		};
+		window.addEventListener("message", receiveMessage, false);
+	</script>
+</html>

@@ -1,0 +1,102 @@
+<ion-view ng-controller="StudyCreationCtrl as ctrl" hide-nav-bar="hideNavigationMenu" view-title="Create Study">
+    <div
+         style="
+            background-color: {{state.color.backgroundColor}};
+            text-align: center;
+            color: white;
+            padding: 40px;
+            height: 100%" >
+        <div style="
+             position: relative;
+             top: 50%;
+             transform: translateY(-50%);">
+            <div ng-if="!outcomeVariable || !predictorVariable">
+                <p style="font-size: 30px; line-height: 1;">
+                    Create a Study
+                </p>
+                <p>After selecting a predictor and outcome variable, you'll be given a shareable url that you can use to
+                    recruit participants.  You'll also get a link to the full study which will update in real time as more
+                    participants anonymously share their data.</p>
+            </div>
+            <div ng-if="outcomeVariable && predictorVariable">
+                <p style="font-size: 30px; line-height: 1;">
+                    Recruit Participants
+                </p>
+                <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
+                <br>
+                <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(predictorVariable.name, outcomeVariable.name)" ng-if="platform.isWeb">
+                    <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
+                </div>
+                <br>
+            </div>
+            <div class="row">
+                <div  class="col col-40">
+                    <div id="select-predictor-button" ng-click="selectPredictorVariable($event)"
+                            style="
+                        box-shadow: 2px 2px 5px #434343;
+                        margin: 0 auto;
+                        border-radius: 50%;
+                        width: 130px;
+                        height: 130px;
+                        background-color: {{state.color.circleColor}};">
+                        <div style="
+                                cursor: pointer;
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);"
+                             ng-if="!predictorVariable" >Select<br>Predictor<br>Variable</div>
+                        <img ng-if="predictorVariable" style="
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width:{{state.image.width}}px;
+                                height:{{state.image.height}}px;"
+                             ng-src="{{predictorVariable.pngUrl}}">
+                    </div>
+                </div>
+                <div  class="col col-20"></div>
+                <div  class="col col-40">
+                    <div id="select-outcome-button" ng-click="selectOutcomeVariable($event)"
+                         style="
+                        box-shadow: 2px 2px 5px #434343;
+                        margin: 0 auto;
+                        border-radius: 50%;
+                        width: 130px;
+                        height: 130px;
+                        background-color: {{state.color.circleColor}};">
+                        <div style="
+                                cursor: pointer;
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);"
+                             ng-if="!outcomeVariable" >Select<br>Outcome<br>Variable</div>
+                        <img ng-if="outcomeVariable" style="
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width:{{state.image.width}}px;
+                                height:{{state.image.height}}px;"
+                             ng-src="{{outcomeVariable.pngUrl}}">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-40"> <div ng-if="predictorVariable">{{predictorVariable.name}}</div> </div>
+                <div  class="col col-20"></div>
+                <div class="col col-40"> <div ng-if="outcomeVariable">{{outcomeVariable.name}}</div> </div>
+            </div>
+            <br>
+            <button class="button"
+                    ng-if="outcomeVariable && predictorVariable"
+                    style="background-color: {{state.color.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="goToStudyButton"
+                    ng-click="goToStudyPageWithVariableNames(predictorVariable.name, outcomeVariable.name)">
+                <span> &nbsp; GO TO STUDY &nbsp;</span>
+            </button>
+        </div>
+    </div>
+</ion-view>

@@ -1,0 +1,107 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Manage Reminders">
+	<ion-nav-title>{{stateParams.title}}</ion-nav-title>
+	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
+		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
+
+<!--		<div ng-show="user.combineNotifications" class="list card" ng-click="showMoreNotificationInfoPopup()">
+			<a class="item item-icon-left">
+				<i class="icon ion-android-notifications-off positive"></i>
+				Individual Notifications Disabled
+			</a>
+		</div>-->
+
+		<div ng-show="state.showButtons" class="list card" ng-click="addNewReminderButtonClick()">
+			<a id="addReminderButton" class="item item-icon-left">
+				<i class="icon ion-plus positive"></i>
+				{{stateParams.addButtonText}}
+			</a>
+		</div>
+
+		<div class="card" ng-if="state.showTreatmentInfoCard && !(state.trackingReminders && state.trackingReminders.length)">
+			<div class="item item-avatar">
+				<i class="icon positive ion-ios-medkit-outline"
+				   style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+				></i>
+				<p style="
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+					Medication Reminders
+				</p>
+			</div>
+			<div class="item item-body">
+				Add some medication or treatment reminders.  Then you'll be able to modify or delete them here.
+			</div>
+		</div>
+
+		<div class="card" ng-if="state.showSymptomInfoCard">
+			<div class="item item-avatar">
+				<i class="icon positive ion-sad-outline"
+				   style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+				></i>
+				<p style="
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+					Symptom Ratings
+				</p>
+			</div>
+			<div class="item item-body"
+				 style="text-align: justify"
+			>
+				Add rating reminders for any symptoms you have that vary from day to day.
+				Then you'll be able to quickly record ratings in the Reminder Inbox.
+				<br><br>
+				This data combined with machine learning algorithms can help you and your physician discover
+				hidden factors that might be improving or exacerbating your symptoms.
+			</div>
+		</div>
+
+		<div class="list card" ng-show="state.trackingReminders.length" id="remindersList">
+			<div on-hold="showActionSheet(reminder)"
+				 class="list card"
+				 ng-repeat="reminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
+				 ng-if="!reminder.hide">
+				<div class="item" style="padding-bottom:0;">
+					<div class="row">
+						<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
+							<i style="font-size: 40px;" class="icon positive {{reminder.ionIcon}}"></i>
+						</div>
+						<div ng-click="showActionSheet(reminder)" class="col col-70">
+							<h2 style="white-space: normal; line-height: normal;">{{reminder.variableName}}</h2>
+							<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+						</div>
+						<div ng-click="showActionSheet(reminder)" class="col col-10">
+							<i style="font-size: 20px;" class="icon positive ion-more"></i>
+						</div>
+					</div>
+					<div class="row">
+						<div class="button-bar">
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="deleteReminder(reminder, $index)"> <i class="ion-trash-b"> &nbsp; Delete</i></a>
+					  		<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;"><i class="ion-edit"> &nbsp; Edit</i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ion-content>
+	<div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

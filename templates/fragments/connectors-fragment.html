@@ -1,0 +1,34 @@
+<div ng-if="!connector.hide" class="item" ng-repeat="connector in state.connectors | filter:state.searchText">
+        <div class="row">
+            <div class="col col-20" style="padding-top: 10px;">
+                <img ng-src="{{connector.image}}" alt="Connector Image" style="width: 100%; max-height: 100px; max-width: 100px;">
+            </div>
+            <div class="col col-70">
+                <div class="row">
+                    <h2 class="col col-90" style="white-space: normal; line-height: normal;"> {{connector.displayName}}</h2>
+                    <div id="notification-more" ng-click="showActionSheetForConnector(connector, $event)" class="col col-10">
+                        <i style="font-size: 20px;" class="icon positive ion-more"></i>
+                    </div>
+                </div>
+                <p class="col col-90" style="white-space: normal; line-height: normal;" ng-bind-html="connector.message"></p>
+            </div>
+        </div>
+        <!--<div ng-if="connector.updateError" class="item item-avatar">
+            <img src="img/rating/face_rating_button_256_sad.png">
+            <h2>IMPORT ISSUE</h2>
+            <p ng-bind-html="connector.updateError"></p>
+        </div>-->
+        <div class="buttons" style="text-align: center;" ng-if="connector.spreadsheetUpload">
+            <button ng-repeat="button in connector.buttons" class="button button-balanced"
+                    style="text-overflow: clip; margin: 5px;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
+                <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i> </button>
+        </div>
+        <div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUpload">
+            <button ng-repeat="button in connector.buttons" class="button button-balanced" style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button, $event)">
+                <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
+            </button>
+        </div>
+        <div class="buttons" style="text-align: center;" ng-if="connector.loadingText">
+            <button class="button button-royal" style="text-overflow: clip; margin: 5px;" ng-click=""> <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i> </button>
+        </div>
+</div>

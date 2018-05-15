@@ -1,0 +1,33 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>{{primaryOutcomeVariable.name}}</ion-nav-title>
+    <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
+    	<div class="card primary-outcome-variable-reporting">
+    		<div class="item item-text-wrap">
+                <div ng-show="showRatingFaces" class="primary-outcome-variable-rating-buttons" >
+                    <p class="heading positive" style="padding:14px; text-align: center; line-height: normal;">{{primaryOutcomeVariableDetails.trackingQuestion}}</p>
+                    <img ng-repeat="option in positiveRatingOptions" ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)" ng-src="{{option.img}}">
+                </div>
+                <div ng-show="timeRemaining"><br/>
+                    <ul><li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable.name | lowercase }}!</li></ul>
+                </div>
+    		</div>
+    	</div>
+        <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
+            <div class="item item-text-wrap">
+                <div>
+                    <img ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
+                    <div class="to-right">
+                        <span class="heading">{{primaryOutcomeVariableDetails.averageText}} {{averagePrimaryOutcomeVariableText}}.</span>
+                        <ul class="from-top"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="loadingCharts" style="text-align: center"><br><ion-spinner icon="android"></ion-spinner><br></div>
+        <div class="card" ng-if="state.distributionChartConfig"><highchart id="distributionChart" config="state.distributionChartConfig"></highchart></div>
+        <div class="card" ng-if="state.lineChartConfig"><highchart id="lineChart" config="state.lineChartConfig"></highchart></div>
+        <div class="card" ng-if="state.weekdayChartConfig"><highchart id="weekdayChart" config="state.weekdayChartConfig"></highchart></div>
+        <div class="card" ng-if="state.hourlyChartConfig"><highchart id="hourlyChart" config="state.hourlyChartConfig"></highchart></div>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

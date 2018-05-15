@@ -1,0 +1,864 @@
+{
+	"additionalSettings": {
+		"appIds": {
+			"googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+			"appleId": "1115037060",
+			"appIdentifier": "com.quantimodo.quantimodo",
+			"facebookAppId": 225078261031461,
+			"ionicAppId": ""
+		},
+		"appImages": {
+			"appIcon": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/app_images_appIcon.png",
+			"notificationIcon": "ion-android-happy",
+			"splashScreen": "https://raw.githubusercontent.com/mikepsinn/quantimodo-images/master/splash-screens/mindfulness-splash.png",
+			"textLogo": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/app_images_textLogo.png",
+			"favicon": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/icon_16.png",
+			"instructions": {
+				"appIcon": "<p>Ideally, a 512px by 512px  icon or square logo png image with a transparent background.  <a href=\"http://code.ionicframework.com/resources/icon.psd\">Photoshop Icon Template</a></p><br>",
+				"splashScreen": "Splash screen dimensions vary for each platform, device, and orientation, so a square source image is required to generate each of the various screen sizes. \n            The source image’s minimum dimensions should be 2208×2208 px, and the artwork should be centered within the square, because each generated image will be center cropped into landscape and portrait images.\n            The splash screen’s artwork should roughly fit within a center square (1200×1200 px). <a href=\"http://code.ionicframework.com/resources/splash.psd\">This template</a> provides the recommended size and guidelines about artwork’s safe zone.",
+				"textLogo": "Ideally, a 100px high by 500px wide png with a transparent background containing the name of your app that looks good on a dark background."
+			}
+		},
+		"companyEmail": "info@quantimo.do",
+		"downloadLinks": {
+			"androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.oauth_test_client",
+			"iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
+			"chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+			"webApp": "https://oauth_test_client.quantimo.do",
+			"physicianDashboard": "https://quantimodo.quantimo.do/api/v2/physicians",
+			"integrationGuide": "https://app.quantimo.do/api/v2/apps/quantimodo/integration",
+			"appDesigner": "https://app.quantimo.do/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=quantimodo",
+			"descriptions": {
+				"androidApp": null,
+				"iosApp": null,
+				"chromeExtension": null,
+				"webApp": "Here physicians can import data from other apps and devices, manually record diet, symptoms, treatments and anything else.  Then they can explore their data to find new ways to improve their lives.",
+				"physicianDashboard": "Here physicians can get an authorization url to share with their physicians, allowing them to review and analyze their data.",
+				"integrationGuide": "Integrate our SDK and automatically import your users data from dozens of apps and devices.  Then we can analyze it and help you find actionable insights for your users!",
+				"appDesigner": "Easily design QuantiModo with our drag and drop app designer!  Then we can build it for the web, Android, Chrome, and iOS. No coding required!"
+			},
+			"icons": {
+				"androidApp": null,
+				"iosApp": null,
+				"chromeExtension": null,
+				"webApp": null,
+				"physicianDashboard": "ion-android-share-alt",
+				"integrationGuide": "ion-code",
+				"appDesigner": "ion-wand"
+			},
+			"images": {
+				"androidApp": null,
+				"iosApp": null,
+				"chromeExtension": null,
+				"webApp": "https://github.com/mikepsinn/quantimodo-images/blob/master/monitor-1.png?raw=true",
+				"physicianDashboard": "https://github.com/mikepsinn/quantimodo-images/blob/master/graph-8.png?raw=true",
+				"integrationGuide": "https://github.com/mikepsinn/quantimodo-images/blob/master/050-laptop.png?raw=true",
+				"appDesigner": "https://github.com/mikepsinn/quantimodo-images/blob/master/magician.png?raw=true"
+			},
+			"inboxUrl": "https://oauth_test_client.quantimo.do/ionic/Modo/src/index.html#/app/settings",
+			"settingsUrl": "https://oauth_test_client.quantimo.do/ionic/Modo/src/index.html#/app/settings"
+		},
+		"googleAnalyticsTrackingIds": {
+			"adminPanel": "UA-39222734-29",
+			"endUserApps": "UA-39222734-25",
+			"backEndAPI": "UA-39222734-24",
+			"informationalHomePage": "UA-39222734-2"
+		},
+		"socialLinks": {
+			"facebook": "https://www.facebook.com/Quantimodology",
+			"twitter": "https://twitter.com/quantimodo",
+			"google": "https://plus.google.com/communities/100581500031158281444",
+			"linkedIn": "https://www.linkedin.com/company/quantimodo"
+		},
+		"upgradeDisabled": false,
+		"monetizationSettings": {
+			"subscriptionsEnabled": true,
+			"advertisingEnabled": false,
+			"playPublicLicenseKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsj3LTNlYyR0Mdj4hCu1S0HwYOxrIeub16ONsEPZQQqFgg/63qCa6/jW4PQkMUMGpCV/GX8rLV5DWRXLaHj8KVATc+CCVQR6SLTSRRj0R3bpNU5g00DxD99pNMeZZTRbANKvVWHxDdbvttokygbbr3VidGoL9ly8nmiouLmefLIjiMzjDkJ/xmYJcZ7Pk9BAZb+ZgiX372nEtwUyoL2miTQe9Skgd8SGq1unQebpFRg+R3TsNq4HKxnG630VwNlxycOl+HvWcwNp2p6u+7ogFKTHJ7sEbfr2x5cph07zRKvnJKO5pYgZGk6GRVwKOMc8dNYnQLynwb7hBfAQzFnE8QQIDAQAB",
+			"monetizationSettingsInstructionLinks": {
+				"playPublicLicenseKey": "https://developer.android.com/training/in-app-billing/preparing-iab-app.html#AddToDevConsole"
+			}
+		}
+	},
+	"appDescription": "Better living through data.",
+	"appDesign": {
+		"aliases": {
+			"active": {
+				"physicianAlias": "physician",
+				"patientAlias": "patient"
+			}
+		},
+		"floatingActionButton": {
+			"active": {
+				"button1": {
+					"icon": "ion-android-notifications-none",
+					"label": "Add a Reminder",
+					"stateName": "app.reminderSearch",
+					"stateParameters": {
+						"variableCategoryName": "Anything"
+					}
+				},
+				"button2": {
+					"icon": "ion-compose",
+					"label": "Record a Measurement",
+					"stateName": "app.measurementAddSearch",
+					"stateParameters": {
+						"variableCategoryName": "Anything"
+					}
+				},
+				"button3": {
+					"icon": "ion-ios-cloud-download-outline",
+					"label": "Import Data",
+					"stateName": "app.import",
+					"stateParameters": {
+						"variableCategoryName": "Anything"
+					}
+				},
+				"button4": {
+					"icon": "ion-help",
+					"label": "Get Help",
+					"stateName": "app.help",
+					"stateParameters": {
+						"variableCategoryName": "Anything"
+					}
+				}
+			}
+		},
+		"helpCard": {
+			"active": [
+				{
+					"id": "getStartedHelpCard",
+					"title": "Reminder Inbox",
+					"icon": "ion-archive",
+					"bodyText": "Scroll through the Inbox and press the appropriate button on each reminder notification. Each one only takes a few seconds. You'll be shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
+					"$$hashKey": "object:1319",
+					"$$mdSelectId": 1
+				},
+				{
+					"id": "recordMeasurementInfoCard",
+					"title": "Record Measurements",
+					"icon": "ion-edit",
+					"bodyText": "Want to just record a medication, food or symptom immediately instead of creating a reminder? Just go to the Record Measurement menu item and select the appropriate variable category. Alternatively, you can just press the little red button at the bottom of the screen.",
+					"$$hashKey": "object:1320",
+					"$$mdSelectId": 2
+				},
+				{
+					"id": "chromeExtensionInfoCard",
+					"title": "Track on the Computer",
+					"icon": "ion-social-chrome",
+					"bodyText": "Did you know that you can easily track everything on your laptop and desktop with our Google Chrome browser extension?  Your data is synced between devices so you'll never have to track twice!",
+					"emailButton": {
+						"type": "chrome",
+						"text": "Send Me a Link",
+						"ionIcon": "ion-checkmark"
+					},
+					"$$hashKey": "object:1321",
+					"$$mdSelectId": 3
+				},
+				{
+					"id": "getHelpInfoCard",
+					"title": "Need Help?",
+					"icon": "ion-help-circled",
+					"bodyText": "If you need help or have any suggestions, please click the question mark in the upper right corner.",
+					"goToStateButton": {
+						"id": "locationButton",
+						"buttonText": "Get Help",
+						"buttonClass": "button button-clear button-positive ion-checkmark",
+						"goToState": "app.help"
+					},
+					"$$hashKey": "object:1322",
+					"$$mdSelectId": 4
+				},
+				{
+					"id": "getFitbitHelpInfoCard",
+					"title": "Automated Tracking",
+					"icon": "ion-wand",
+					"bodyText": "Want to automatically record your sleep, exercise, and heart rate?",
+					"emailButton": {
+						"type": "fitbit",
+						"text": "Get Fitbit",
+						"ionIcon": "ion-checkmark"
+					},
+					"$$hashKey": "object:1323",
+					"$$mdSelectId": 5
+				},
+				{
+					"id": "locationTrackingPage",
+					"title": "Location Tracking",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Maps/treasure_map-96.png"
+					},
+					"variableCategoryName": "Location",
+					"premiumFeature": true,
+					"nextPageButtonText": "Maybe Later",
+					"goToStateButton": {
+						"id": "locationButton",
+						"buttonText": "Enable in Settings",
+						"buttonClass": "button button-clear button-positive ion-checkmark",
+						"goToState": "app.settings"
+					},
+					"bodyText": "Would you like to automatically log location to see how time spent at restaurants, the gym, work or doctors offices might be affecting you? ",
+					"$$hashKey": "object:1324",
+					"$$mdSelectId": 6,
+					"iconClass": "icon positive ion-ios-location-outline",
+					"ionIcon": "ion-ios-location-outline",
+					"moreInfo": "By automatically recording your location in the background using GPS, we might be able to figure out how the amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  Another benefit of enabling this option is that allows the app to run in the background and open instantly instead of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations."
+				},
+				{
+					"id": "weatherTrackingPage",
+					"title": "Weather Tracking",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Weather/chance_of_storm-96.png"
+					},
+					"variableCategoryName": "Environment",
+					"premiumFeature": true,
+					"nextPageButtonText": "Maybe Later",
+					"bodyText": "Would you like to automatically record the weather to see how temperature or sunlight exposure might be affecting you? ",
+					"goToStateButton": {
+						"id": "weatherButton",
+						"buttonText": "Import Weather Data",
+						"buttonClass": "button button-clear button-positive ion-checkmark",
+						"goToState": "app.import"
+					},
+					"$$hashKey": "object:1325",
+					"$$mdSelectId": 7,
+					"iconClass": "icon positive ion-ios-partlysunny",
+					"ionIcon": "ion-ios-partlysunny",
+					"moreInfo": "By recording your local weather conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you."
+				},
+				{
+					"id": "importDataPage",
+					"title": "Import Your Data",
+					"color": {
+						"backgroundColor": "#f09402",
+						"circleColor": "#fab952"
+					},
+					"image": {
+						"url": "img/intro/download_2-96.png"
+					},
+					"premiumFeature": true,
+					"bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+					"nextPageButtonText": "Maybe Later",
+					"goToStateButton": {
+						"id": "importButton",
+						"buttonText": "Import Your Data",
+						"buttonClass": "button button-clear button-positive ion-checkmark",
+						"goToState": "app.import"
+					},
+					"$$hashKey": "object:1326",
+					"$$mdSelectId": 8
+				}
+			]
+		},
+		"intro": {
+			"active": [
+				{
+					"title": "Hi! I'm  QuantiModo!",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "img/robots/robot-waving.svg"
+					},
+					"bodyText": "I've been programmed to reduce human suffering with data.",
+					"$$hashKey": "object:1576",
+					"$$mdSelectId": 9
+				},
+				{
+					"title": "Hidden Influences",
+					"color": {
+						"backgroundColor": "#3467d6",
+						"circleColor": "#5b95f9"
+					},
+					"image": {
+						"url": "img/intro/patient-frown-factors.png"
+					},
+					"bodyText": "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, the hundreds of chemicals you consume through your diet, and even the weather!",
+					"$$hashKey": "object:1577",
+					"$$mdSelectId": 10
+				},
+				{
+					"title": "Only Human",
+					"color": {
+						"backgroundColor": "#f09402",
+						"circleColor": "#fab952"
+					},
+					"image": {
+						"url": "img/brains/brain-pink.svg"
+					},
+					"bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. ",
+					"$$hashKey": "object:1578",
+					"$$mdSelectId": 11
+				},
+				{
+					"title": "Treatment Determination",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "img/intro/doctor-frown-factors.png"
+					},
+					"bodyText": "Indeed, your doctor has access to less than 1% of the relevant information when they use intuition to determine the best ways to treat your symptoms!",
+					"$$hashKey": "object:1579",
+					"$$mdSelectId": 12
+				},
+				{
+					"title": "Machine Learning",
+					"color": {
+						"backgroundColor": "#3467d6",
+						"circleColor": "#5b95f9"
+					},
+					"image": {
+						"url": "img/robots/quantimodo-robot-brain.svg"
+					},
+					"bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! ",
+					"$$hashKey": "object:1580",
+					"$$mdSelectId": 13
+				},
+				{
+					"title": "Automated Tracking",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "img/intro/download_2-96.png"
+					},
+					"bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS.",
+					"$$hashKey": "object:1581",
+					"$$mdSelectId": 14
+				},
+				{
+					"title": "Effortless Tracking",
+					"color": {
+						"backgroundColor": "#f09402",
+						"circleColor": "#fab952"
+					},
+					"image": {
+						"url": "img/intro/inbox.svg"
+					},
+					"bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
+					"$$hashKey": "object:1582",
+					"$$mdSelectId": 15
+				},
+				{
+					"title": "Data Security",
+					"color": {
+						"backgroundColor": "#3467d6",
+						"circleColor": "#5b95f9"
+					},
+					"image": {
+						"url": "img/intro/lock.svg"
+					},
+					"bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. ",
+					"$$hashKey": "object:1583",
+					"$$mdSelectId": 16
+				}
+			]
+		},
+		"menu": {
+			"active": [
+				{
+					"title": "Reminder Inbox",
+					"stateName": "app.remindersInbox",
+					"icon": "ion-archive",
+					"href": "#/app/reminders-inbox",
+					"id": "reminders-inbox",
+					"$$hashKey": "object:3210"
+				},
+				{
+					"title": "My Variables",
+					"subMenu": [
+						{
+							"title": "Everything",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Anything"
+							},
+							"icon": "ion-android-globe",
+							"href": "#/app/variable-list-category/Anything",
+							"id": "variable-list-category-anything",
+							"$$hashKey": "object:3242"
+						},
+						{
+							"title": "Treatments",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Treatments"
+							},
+							"icon": "ion-ios-medkit-outline",
+							"href": "#/app/variable-list-category/Treatments",
+							"id": "variable-list-category-treatments",
+							"$$hashKey": "object:3243"
+						},
+						{
+							"title": "Symptoms",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Symptoms"
+							},
+							"icon": "ion-sad-outline",
+							"href": "#/app/variable-list-category/Symptoms",
+							"id": "variable-list-category-symptoms",
+							"$$hashKey": "object:3244"
+						},
+						{
+							"title": "Vital Signs",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Vital Signs"
+							},
+							"icon": "ion-ios-pulse",
+							"href": "#/app/variable-list-category/Vital Signs",
+							"id": "variable-list-category-vital-signs",
+							"$$hashKey": "object:3245"
+						},
+						{
+							"title": "Emotions",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Emotions"
+							},
+							"icon": "ion-happy-outline",
+							"href": "#/app/variable-list-category/Emotions",
+							"id": "variable-list-category-emotions",
+							"$$hashKey": "object:3246"
+						},
+						{
+							"title": "Foods",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Foods"
+							},
+							"icon": "ion-ios-nutrition-outline",
+							"href": "#/app/variable-list-category/Foods",
+							"id": "variable-list-category-foods",
+							"$$hashKey": "object:3247"
+						},
+						{
+							"title": "Physical Activity",
+							"stateName": "app.variableListCategory",
+							"params": {
+								"variableCategoryName": "Physical Activity"
+							},
+							"icon": "ion-ios-body-outline",
+							"href": "#/app/variable-list-category/Physical Activity",
+							"id": "variable-list-category-physical-activity",
+							"$$hashKey": "object:3248"
+						}
+					],
+					"icon": "ion-android-globe",
+					"id": "my-variables",
+					"$$hashKey": "object:3211",
+					"showSubMenu": false
+				},
+				{
+					"title": "History",
+					"subMenu": [
+						{
+							"title": "All Measurements",
+							"stateName": "app.historyAllCategory",
+							"icon": "ion-android-globe",
+							"href": "#/app/history-all-category/Anything",
+							"id": "history-all-category-anything",
+							"$$hashKey": "object:3274",
+							"params": {
+								"variableCategoryName": "Anything"
+							}
+						},
+						{
+							"title": "Emotions",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Emotions"
+							},
+							"icon": "ion-happy-outline",
+							"href": "#/app/history-all-category/Emotions",
+							"id": "history-all-category-emotions",
+							"$$hashKey": "object:3275"
+						},
+						{
+							"title": "Foods",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Foods"
+							},
+							"icon": "ion-ios-nutrition-outline",
+							"href": "#/app/history-all-category/Foods",
+							"id": "history-all-category-foods",
+							"$$hashKey": "object:3276"
+						},
+						{
+							"title": "Symptoms",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Symptoms"
+							},
+							"icon": "ion-sad-outline",
+							"href": "#/app/history-all-category/Symptoms",
+							"id": "history-all-category-symptoms",
+							"$$hashKey": "object:3277"
+						},
+						{
+							"title": "Treatments",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Treatments"
+							},
+							"icon": "ion-ios-medkit-outline",
+							"href": "#/app/history-all-category/Treatments",
+							"id": "history-all-category-treatments",
+							"$$hashKey": "object:3278"
+						},
+						{
+							"title": "Physical Activity",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Physical Activity"
+							},
+							"icon": "ion-ios-body-outline",
+							"href": "#/app/history-all-category/Physical Activity",
+							"id": "history-all-category-physical-activity",
+							"$$hashKey": "object:3279"
+						},
+						{
+							"title": "Vital Signs",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Vital Signs"
+							},
+							"icon": "ion-ios-pulse",
+							"href": "#/app/history-all-category/Vital Signs",
+							"id": "history-all-category-vital-signs",
+							"$$hashKey": "object:3280"
+						},
+						{
+							"title": "Locations",
+							"stateName": "app.historyAllCategory",
+							"params": {
+								"variableCategoryName": "Location"
+							},
+							"icon": "ion-ios-location-outline",
+							"href": "#/app/history-all-category/Location",
+							"id": "history-all-category-location",
+							"$$hashKey": "object:3281"
+						}
+					],
+					"icon": "ion-ios-list-outline",
+					"id": "history",
+					"$$hashKey": "object:3212",
+					"showSubMenu": false
+				},
+				{
+					"title": "Import Data",
+					"stateName": "app.import",
+					"icon": "ion-ios-cloud-download-outline",
+					"href": "#/app/import",
+					"id": "import",
+					"$$hashKey": "object:3213"
+				},
+				{
+					"title": "Discoveries",
+					"subMenu": [
+						{
+							"title": "Predictor Search",
+							"stateName": "app.predictorSearch",
+							"icon": "ion-log-in",
+							"href": "#/app/predictor-search",
+							"id": "predictor-search",
+							"$$hashKey": "object:3314"
+						},
+						{
+							"title": "Outcome Search",
+							"stateName": "app.outcomeSearch",
+							"icon": "ion-log-out",
+							"href": "#/app/outcome-search",
+							"id": "outcome-search",
+							"$$hashKey": "object:3315"
+						},
+						{
+							"title": "Create Study",
+							"stateName": "app.studyCreation",
+							"icon": "ion-erlenmeyer-flask",
+							"href": "#/app/study-creation",
+							"id": "study-creation",
+							"$$hashKey": "object:3316"
+						},
+						{
+							"title": "Discoveries",
+							"stateName": "app.studies",
+							"icon": "ion-wand",
+							"href": "#/app/studies",
+							"id": "studies",
+							"$$hashKey": "object:3317"
+						}
+					],
+					"icon": "ion-ios-analytics",
+					"id": "discoveries",
+					"$$hashKey": "object:3214",
+					"showSubMenu": false
+				},
+				{
+					"title": "Charts",
+					"stateName": "app.chartSearch",
+					"icon": "ion-arrow-graph-up-right",
+					"href": "#/app/chart-search",
+					"id": "chart-search",
+					"$$hashKey": "object:3215"
+				},
+				{
+					"title": "Settings",
+					"stateName": "app.settings",
+					"icon": "ion-ios-gear-outline",
+					"href": "#/app/settings",
+					"id": "settings",
+					"$$hashKey": "object:3216"
+				}
+			]
+		},
+		"onboarding": {
+			"active": [
+				{
+					"id": "addEmotionRemindersCard",
+					"title": null,
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"variableCategoryName": "Emotions",
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png"
+					},
+					"addButtonText": "Yes",
+					"nextPageButtonText": "No",
+					"bodyText": "Do you regularly experience any unpleasant emotions?",
+					"$$hashKey": "object:1835",
+					"$$mdSelectId": 17,
+					"moreInfo": "Do you have any emotions that fluctuate regularly?  If so, add them so I can try to determine which factors are influencing them."
+				},
+				{
+					"id": "addSymptomRemindersCard",
+					"title": null,
+					"color": {
+						"backgroundColor": "#3467d6",
+						"circleColor": "#5b95f9"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Messaging/sad-96.png"
+					},
+					"variableCategoryName": "Symptoms",
+					"addButtonText": "Yes",
+					"nextPageButtonText": "No",
+					"bodyText": "Do you have any recurring symptoms?",
+					"$$hashKey": "object:1836",
+					"$$mdSelectId": 18,
+					"moreInfo": "Symptom severity can be influence by hundreds of factors in daily life. The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! If you regularly record your symptoms, add them so I can use this data to determine which hidden and imperceptible factors might be worsening or improving them."
+				},
+				{
+					"id": "addFoodRemindersCard",
+					"title": null,
+					"color": {
+						"backgroundColor": "#3467d6",
+						"circleColor": "#5b95f9"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Food/vegetarian_food-96.png"
+					},
+					"variableCategoryName": "Foods",
+					"addButtonText": "Yes",
+					"nextPageButtonText": "No",
+					"bodyText": "Are there any foods or drinks that you consume more than a few times a week?",
+					"$$hashKey": "object:1837",
+					"$$mdSelectId": 19,
+					"moreInfo": "Diet can have a significant impact on your health. It's important to enter any foods that you regularly eat to see how they might be affecting you."
+				},
+				{
+					"id": "addTreatmentRemindersCard",
+					"title": null,
+					"color": {
+						"backgroundColor": "#f09402",
+						"circleColor": "#fab952"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Healthcare/pill-96.png"
+					},
+					"variableCategoryName": "Treatments",
+					"addButtonText": "Yes",
+					"nextPageButtonText": "No",
+					"bodyText": "Are you taking any medications, treatments, supplements, or other interventions like meditation or psychotherapy? ",
+					"$$hashKey": "object:1838",
+					"$$mdSelectId": 20,
+					"moreInfo": "Often the effects of medications and treatments aren't intuitively perceptible. That's where I come in!  If you regularly recording your treatments,  I can analyze the data so we can get a better idea which ones are helping you,which one may be harming you, and which ones are merely a waste of money."
+				},
+				{
+					"id": "locationTrackingPage",
+					"title": "Location Tracking",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Maps/treasure_map-96.png"
+					},
+					"variableCategoryName": "Location",
+					"premiumFeature": true,
+					"nextPageButtonText": "Maybe Later",
+					"bodyText": "Would you like to automatically log location to see how time spent at restaurants, the gym, work or doctors offices might be affecting you? ",
+					"$$hashKey": "object:1839",
+					"$$mdSelectId": 21,
+					"moreInfo": "By automatically recording your location in the background using GPS, we might be able to figure out how the amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  Another benefit of enabling this option is that allows the app to run in the background and open instantly instead of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations."
+				},
+				{
+					"id": "weatherTrackingPage",
+					"title": "Weather Tracking",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "https://maxcdn.icons8.com/Color/PNG/96/Weather/chance_of_storm-96.png"
+					},
+					"variableCategoryName": "Environment",
+					"premiumFeature": false,
+					"nextPageButtonText": "Maybe Later",
+					"bodyText": "Would you like to automatically record the weather to see how temperature or sunlight exposure might be affecting you? ",
+					"$$hashKey": "object:1840",
+					"$$mdSelectId": 22,
+					"moreInfo": "By recording your local weather conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you."
+				},
+				{
+					"id": "importDataPage",
+					"title": "Import Your Data",
+					"color": {
+						"backgroundColor": "#f09402",
+						"circleColor": "#fab952"
+					},
+					"image": {
+						"url": "img/intro/download_2-96.png"
+					},
+					"premiumFeature": true,
+					"bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+					"nextPageButtonText": "Maybe Later",
+					"$$hashKey": "object:1841",
+					"$$mdSelectId": 23
+				},
+				{
+					"id": "allDoneCard",
+					"title": "Great job!",
+					"color": {
+						"backgroundColor": "#0f9d58",
+						"circleColor": "#03c466"
+					},
+					"image": {
+						"url": "img/robots/robot-waving.svg"
+					},
+					"bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! ",
+					"$$hashKey": "object:1848",
+					"$$mdSelectId": 30
+				}
+			]
+		},
+		"upgradePleadingCard": null,
+		"ionNavBarClass": "bar-positive",
+		"physicianAlias": "Physician",
+		"patientAlias": "Patient",
+		"welcomeState": "app.welcome",
+		"backgroundColor": "#3467d6",
+		"cordovaLocalNotificationsEnabled": false,
+		"defaultState": "app.remindersInbox",
+		"wordAliases": []
+	},
+	"appDisplayName": "QuantiModo",
+	"appStatus": {
+		"buildStatus": {
+			"androidArmv7Debug": "BUILDING",
+			"androidArmv7Release": "BUILDING",
+			"androidRelease": "READY",
+			"androidDebug": "BUILDING",
+			"androidX86Debug": "BUILDING",
+			"androidX86Release": "BUILDING",
+			"chromeExtension": "READY",
+			"ios": "BUILDING"
+		},
+		"betaDownloadLinks": {
+			"androidArmv7Debug": null,
+			"androidArmv7Release": null,
+			"androidRelease": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/platforms/android/build/outputs/apk/android-release.apk",
+			"androidDebug": null,
+			"androidX86Debug": null,
+			"androidX86Release": null,
+			"chromeExtension": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/build/quantimodo-chrome-extension.zip",
+			"ios": null
+		},
+		"buildEnabled": {
+			"androidArmv7Debug": false,
+			"androidArmv7Release": false,
+			"androidRelease": true,
+			"androidDebug": false,
+			"androidX86Debug": false,
+			"androidX86Release": false,
+			"chromeExtension": true,
+			"ios": true
+		}
+	},
+	"appType": "general",
+	"buildEnabled": false,
+	"clientId": "quantimodo",
+	"clientSecret": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+	"collaborators": null,
+	"createdAt": null,
+	"userId": 230,
+	"users": null,
+	"redirectUri": "https://app.quantimo.do/ionic/Modo/www/callback/",
+	"privateConfig": {
+		"bugsnag_key": "ae7bc49d1285848342342bb5c321a2cf",
+		"client_ids": {
+			"iOS": "quantimodo",
+			"Android": "quantimodo",
+			"Web": "quantimodo",
+			"Chrome": "quantimodo",
+			"Windows": "quantimodo"
+		},
+		"client_secrets": {
+			"iOS": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Android": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Web": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Chrome": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Windows": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38"
+		},
+		"FACEBOOK_APP_ID": "225078261031461",
+		"FACEBOOK_APP_NAME": "QuantiModo",
+		"REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
+		"FOURSQUARE_CLIENT_ID": "JTFGDAKRU5T0WHEUT0K0JFAKYUDJRM22M1IVE3HI04EGMECU",
+		"FOURSQUARE_CLIENT_SECRET": "VUPPYPJYJQO04XYNG5DSDJZR2BQ0XWW5OWCEEYTFOOKOY1PY",
+		"GOOGLE_MAPS_API_KEY": "AIzaSyCKicUHwJwH56bXjaKXkVVh2AqrOFE2Ogk",
+		"GCM_SENDER_ID": "1052648855194",
+		"GITHUB_CLIENT_ID": "f14dadca5a8c3bf301bf",
+		"WITHINGS_CLIENT_ID": "e4d28f45e14b8cc97e8c585127db3f2132e61ef0ed20be490e7b5f7417d",
+		"GOOGLE_CLIENT_ID": "1052648855194.apps.googleusercontent.com",
+		"JAWBONE_CLIENT_ID": "10RfjEgKr8U",
+		"RESCUETIME_CLIENT_ID": "b7961429bf2ca6fab2de92681e347ef6c253bf77c1a4c069d964110e43c1de24",
+		"SLICE_CLIENT_ID": "0d243e17",
+		"FITBIT_CLIENT_ID": "2298DS",
+		"RUNKEEPER_CLIENT_ID": "aa7233e520fa4b34aa5f9c3f27b22803"
+	},
+	"companyName": null,
+	"homepageUrl": "https://quantimo.do",
+	"iconUrl": "oHROiCLu95_gizg3j",
+	"longDescription": "",
+	"splashScreen": "oMg0F5fmyf_sfzgyc",
+	"textLogo": "nm8LguNtZL_chsco6",
+	"versionNumber": "2.8.515",
+	"androidVersionCode": "2018051564",
+	"builtAt": 1526416303
+}

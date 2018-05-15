@@ -1,0 +1,37 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Favorites">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content style="background-color: #f2f2f2" >
+        <ion-refresher on-refresh="refreshFavorites()"></ion-refresher>
+        <div class="list card" ng-click="favoriteAddButtonClick()">
+            <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left ">
+                <i class="icon {{state.addButtonIcon}} positive"></i>
+                {{state.addButtonText}}
+            </a>
+        </div>
+        <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+        <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
+        <div class="list card" id="noFavoritesExplanation" ng-if="!favoritesArray || favoritesArray.length === 0" >
+            <div class="item" style="padding-bottom:0px;">
+                <div class="row">
+                    <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                        <i class="icon positive ion-information-circled"></i>
+                        &nbsp
+                        {{state.helpText}}
+                        <br><br>
+                    </h2>
+
+                </div>
+                <div ng-if="state.moreHelpText" class="row">
+                    <p style="white-space: normal; text-align: center; line-height: normal; ">
+                        {{state.moreHelpText}}
+                        <br><br>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

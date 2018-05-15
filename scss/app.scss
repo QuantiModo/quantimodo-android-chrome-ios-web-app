@@ -1,0 +1,61 @@
+@import '../lib/ionic/scss/ionic';
+@import	'../lib/angular-material/angular-material.scss';
+@import '../lib/angular-material-datetimepicker/css/material-datetimepicker';
+@import '../lib/highcharts-ng/dist/highcharts-ng.css'; // Fixes width issues
+@import 'style';
+@import 'mfb';
+// Partials
+@import 'partials/reminder-add';
+.row+.row {
+	margin-top: 0;
+	padding-top: 5px;
+}
+.align-right {
+	text-align: right;
+}
+// Dirty hack to fix autocomplete dropdown height on study creation page
+.md-virtual-repeat-container.md-not-found {
+	height: 255.5px;
+}
+// Hack to deal with case when side menu is disabled, expose-aside-when="large" still triggers
+// https://github.com/ionic-team/ionic/issues/2210
+ion-side-menu.menu-disabled {
+    width: auto !important;
+    transform: initial !important;
+}
+ion-side-menu-content.menu-disabled {
+    width: auto !important;
+    transform: initial !important;
+}
+.dtp-btn-cancel {
+    width: 33% !important;
+    min-width: unset !important;
+}
+.dtp-btn-ok {
+    width: 33% !important;
+    min-width: unset !important;
+}
+.autocomplete-custom-template li {
+    border-bottom: 1px solid #ccc;
+    height: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    white-space: normal;
+}
+.autocomplete-custom-template li:last-child {
+    border-bottom-width: 0;
+}
+.autocomplete-custom-template .item-title,
+.autocomplete-custom-template .item-metadata {
+    display: block;
+    line-height: 2;
+}
+.autocomplete-custom-template .item-title md-icon {
+    height: 18px;
+    width: 18px;
+}
+// Fixed truncated header bar titles
+.title.title-center.header-item {
+    left: 49px!important;
+    right: 49px!important;
+}

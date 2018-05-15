@@ -1,0 +1,26 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
+        <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
+                   style="background-color: {{circlePage.color.backgroundColor}}; display: flex; flex-direction: column; justify-content: center;">
+            <div ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
+            <div class="button-bar" style="max-height: 80px;" >
+                <md-button id="goButtonIntro" class="button circle-page-button" ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1" ng-click="myIntro.startApp()">
+                    GET STARTED
+                </md-button>
+                <md-button id="skipButtonIntro" class="button circle-page-button" ng-click="myIntro.startApp()"
+                           ng-show="myIntro.slideIndex != appSettings.appDesign.intro.active.length-1 ">
+                    SKIP
+                </md-button>
+                <md-button id="nextButtonIntro" class="button circle-page-button" ng-click="myIntro.next()"
+                           ng-show="myIntro.slideIndex != appSettings.appDesign.intro.active.length-1 && myIntro.slideIndex != appSettings.appDesign.intro.active.length-1">
+                    NEXT
+                </md-button>
+            </div>
+            <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
+                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('intro', circlePage)" ><i class="icon ion-edit"></i></i>
+                &nbsp&nbsp<i ng-click="addAppComponentElement('intro', circlePage)" class="icon ion-ios-copy-outline" ></i>
+                &nbsp&nbsp<i ng-click="deleteAppComponentElement('intro', circlePage)" class="icon ion-trash-a" ></i>
+            </div>
+        </ion-slide>
+    </ion-slide-box>
+</ion-view>

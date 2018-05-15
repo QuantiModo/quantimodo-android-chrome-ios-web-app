@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+	<title>Rate your mood!</title>
+	<style>
+	body{
+		width: 371px;
+		height: 56px;
+		margin: 0px;
+	}
+	#sectionRate{
+		opacity: 1;
+		height: 56px;
+		padding-top: 4px;
+		padding-bottom: 4px;
+		overflow: hidden;
+	}
+	#sectionRate img
+	{
+		height: 100%;
+		display: inline-block;
+		padding-left: 6px;
+		padding-right: 6px;
+		background-color: #FFFFFF;
+		transition: all 200ms linear;
+	}
+	#sectionRate img:hover
+	{
+		-webkit-filter: blur(1px) brightness(110%) saturate(150%);
+	}
+	#sectionRate div
+	{
+		width: 1px;
+		position: relative;
+		display: inline-block;
+		background: lightgray;
+		bottom: 32%;
+	}
+	#sectionSendingMood{
+		display: none;
+		opacity: 0;
+		width: 380px;
+		height: 70px;
+		transition: opacity 400ms linear;
+		font-family: news-gothic-std, sans-serif;
+		font-size: 40px;
+		font-weight: 800;
+		top: 2px;
+		text-align: center;
+		font-style: italic;
+		color: #bc2e1e;
+		text-shadow: 0 1px 0px #378ab4, 1px 0 0px #5dabcd, 1px 2px 1px #378ab4, 2px 1px 1px #5dabcd, 2px 3px 2px #378ab4, 3px 2px 2px #5dabcd, 3px 4px 2px #378ab4, 4px 3px 3px #5dabcd, 4px 5px 3px #378ab4, 5px 4px 2px #5dabcd, 5px 6px 2px #378ab4, 6px 5px 2px #5dabcd, 6px 7px 1px #378ab4, 7px 6px 1px #5dabcd, 7px 8px 0px #378ab4, 8px 7px 0px #5dabcd;
+	}
+	.invisible {
+		-webkit-animation-name: fadeOut;
+		-webkit-animation-duration:0.4s;
+		-webkit-animation-iteration-count: 1;
+		-webkit-animation-timing-function: ease;
+		-webkit-animation-fill-mode: forwards;
+	}
+	@-webkit-keyframes fadeOut {
+		from {
+			-webkit-transform: rotate(0deg) scale(1) skew(0deg);
+			opacity: 1;
+		}
+		to {
+			-webkit-transform: rotate(0deg) scale(0.98) skew(0deg);
+			opacity: 0;
+		}
+	}
+	.visible {
+		-webkit-animation-name: fadeIn;
+		-webkit-animation-duration:0.3s;
+		-webkit-animation-iteration-count: 1;
+		-webkit-animation-timing-function: ease;
+		-webkit-animation-fill-mode: forwards;
+	}
+	@-webkit-keyframes fadeIn {
+		from {
+			-webkit-transform: rotate(0deg) scale(1.02) skew(0deg);
+			opacity: 0;
+		}
+		to {
+			-webkit-transform: rotate(0deg) scale(1) skew(0deg);
+			opacity: 1;
+		}
+	}
+	</style>
+	<section id="sectionRate">
+		<img src="../../img/rating/face_rating_button_256_depressed.png" id="buttonMoodDepressed">
+		</img>
+		<div>&nbsp;</div>
+		<img src="../../img/rating/face_rating_button_256_sad.png" id="buttonMoodSad">
+		</img>
+		<div>&nbsp;</div>
+		<img src="../../img/rating/face_rating_button_256_ok.png" id="buttonMoodOk">
+		</img>
+		<div>&nbsp;</div>
+		<img src="../../img/rating/face_rating_button_256_happy.png" id="buttonMoodHappy">
+		</img>
+		<div>&nbsp;</div>
+		<img src="../../img/rating/face_rating_button_256_ecstatic.png" id="buttonMoodEcstatic">
+		</img>
+	</section>
+	<section id="sectionSendingMood">
+	</section>
+	<!--
+	  - JavaScript and HTML must be in separate files: see our Content Security
+	  - Policy documentation[1] for details and explanation.
+	  -
+	  - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
+	 -->
+	  <script src="../../js/qmHelpers.js"></script>
+	  <script src="../../js/qmChrome.js"></script>
+	  <script src="../../js/popup.js"></script>
+  </head>
+  <body>
+  </body>
+</html>

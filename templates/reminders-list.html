@@ -1,0 +1,39 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Manage Reminders">
+	<ion-nav-title>{{stateParams.title}}</ion-nav-title>
+	<ion-content scroll="true" overflow-scroll="true" style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
+		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
+		<div class="card" ng-if="state.showNoRemindersCard">
+			<div class="item item-avatar">
+				<i class="icon positive {{state.noRemindersIcon}}" style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;" ></i>
+				<p style=" height: 40px; line-height: 40px; white-space: nowrap; color: black; font-size: 18px;"> {{state.noRemindersTitle}} </p>
+			</div>
+			<div class="item item-body">{{state.noRemindersText}} Press the plus button to add one now.</div>
+		</div>
+		<div class="list" id="remindersList" ng-cloak>
+            <div ng-include="'templates/input/filter-search-field.html'" ng-if="(state.trackingReminders && state.trackingReminders.length > 10) ||
+                (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) || (state.favorites && state.favorites.length > 10)" ></div>
+			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
+			<div id="favoriteItem" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites  | filter:state.searchText track by $index"
+				 on-hold="showFavoriteActionSheet(favorite, $index)">
+				<div ng-include="'templates/items/favorite-item.html'"></div>
+			</div>
+			<div class="item item-divider" ng-if="state.trackingReminders && state.trackingReminders.length">Scheduled</div>
+            <div ng-repeat="trackingReminder in state.trackingReminders | filter:state.searchText | orderBy:reminderOrderParameter" ng-if="!trackingReminder.hide" >
+                <div ng-if="!trackingReminder.addMeasurement" ng-include="'templates/items/variable-item.html'"></div>
+                <div ng-if="trackingReminder.addMeasurement" ng-include="'templates/items/favorite-item.html'"></div>
+            </div>
+			<div class="item item-divider" ng-if="state.archivedTrackingReminders && state.archivedTrackingReminders.length">Archived</div>
+			<div ng-if="!trackingReminder.hide" style="opacity: 0.6"
+				 ng-repeat="trackingReminder in state.archivedTrackingReminders | filter:state.searchText | orderBy:reminderOrderParameter track by $index">
+				<div ng-if="!trackingReminder.addMeasurement" ng-include="'templates/items/variable-item.html'"></div>
+				<div ng-if="trackingReminder.addMeasurement" ng-include="'templates/items/favorite-item.html'"></div>
+			</div>
+		</div>
+	</ion-content>
+	<nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round" resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu">
+		<button id="mfb1" mfb-button icon="ion-android-notifications-none" label="{{stateParams.addButtonText}}" ng-click="addNewReminderButtonClick()"></button>
+		<button id="mfb2" mfb-button icon="ion-compose" label="{{stateParams.addMeasurementButtonText}}" ng-click="addNewMeasurementButtonClick()"></button>
+		<button id="mfb3" mfb-button icon="ion-ios-cloud-download-outline" label="Import Data" ng-click="goToState('app.import')"></button>
+		<button id="mfb4" mfb-button icon="ion-help" label="Get Help" ng-click="goToState('app.help')"></button>
+	</nav>
+</ion-view>

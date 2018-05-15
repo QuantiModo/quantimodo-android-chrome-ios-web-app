@@ -1,0 +1,113 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
+    <ion-content  ng-class="{ isBrowserView : platform.isWeb == true } "><br>
+        <md-card ng-if="platform.isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
+            <md-card-title>
+                <md-card-title-media> <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Upgrade Image"></div> </md-card-title-media>
+                <md-card-title-text> <span style="text-align: center; padding-left: 15px" class="md-headline">{{appSettings.appDesign.upgradePleadingCard.web.text}}</span> </md-card-title-text>
+            </md-card-title>
+        </md-card>
+        <md-card ng-if="!platform.isWeb && appSettings.appDesign.upgradePleadingCard">
+            <img ng-src="{{appSettings.appDesign.upgradePleadingCard.mobile.image}}" class="md-card-image" alt="Ivy">
+            <md-card-title>
+                <md-card-title-text> <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span> </md-card-title-text>
+            </md-card-title>
+        </md-card>
+        <md-card id="features-card" style="text-align: center;" ng-hide="state.hideFeatures" >
+            <md-toolbar>
+                <div class="md-toolbar-tools" style="height: 40px;">
+                    <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">{{appSettings.appDisplayName}} Plus</h1>
+                    <md-button class="hide-features" ng-click="state.hideFeatures = true" style="position: absolute; right: 0;">
+                        <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                    </md-button>
+                </div>
+                <div class="md-toolbar-tools" style="height: 40px;">
+                    <p style="font-size: 16px; margin: auto; "> {{planFeaturesCard.subtitle}} </p>
+                </div>
+            </md-toolbar>
+            <div class="list">
+                <!--<div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}"><br>-->
+                <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
+                <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>-->
+                <!--</div>-->
+                <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
+                    <img ng-if="feature.image" ng-src="{{feature.image}}">
+                    <h2 style="line-height: normal">{{feature.title}} &nbsp; <i style="color: darkgrey; text-align: right" ng-if="feature.moreInfo" class="icon ion-help-circled"> </i> </h2>
+                    <p>{{feature.subtitle}}</p>
+                </a>
+                <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
+            </div>
+        </md-card>
+        <md-card id="checkout-card" style="text-align: center;" >
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">Get Started</h1>
+                </div>
+            </md-toolbar>
+            <span ng-if="!platform.isWebOrChrome && !platform.isIOS"><div ng-bind-html="planFeaturesCard.priceHtml" ></div><br><br></span>
+            <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
+                <div id="plans" class="md-dialog-content">
+                    <md-radio-group ng-model="productId">
+                        <md-radio-button id="monthly-radio" value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                        <md-radio-button id="yearly-radio" value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                    </md-radio-group>
+                    <md-input-container id="coupon-code-input" class="md-block">
+                        <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
+                        <input ng-model="state.coupon" placeholder="Coupon Code (optional)" ng-required="false">
+                    </md-input-container>
+                    <form action="/charge" method="post" id="payment-form">
+                        <div class="form-row">
+                            <!--<label for="card-element">Credit or debit card</label>-->
+                            <div id="card-element">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+                        </div>
+                        <br>
+                        <button id="upgrade-button" class="{{planFeaturesCard.buttonClass}}"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+                        <!--<button>Submit Payment</button>-->
+                    </form>
+                </div>
+            </div>
+            <span ng-if="!platform.isWebOrChrome" >
+                <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+            </span>
+            <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br>
+            <div ng-if="platform.isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br>
+        </md-card>
+        <div class="card" style="text-align: center" ng-if="platform.isIOS">
+            <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
+            <div class="item item-text-wrap">
+                By signing up, you get all of the features above for $6.99 USD per month.
+                Payment will be charged to iTunes Account after the 1 week trial period following the confirmation of purchase.
+                Your subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period.
+                Your account will be charged $6.99 for renewal within 24-hours prior to the end of the current period.
+                You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
+            </div>
+        </div>
+        <div class="card" style="text-align: center" ng-if="platform.isIOS">
+            <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Yearly </div>
+            <div class="item item-text-wrap">
+                By signing up, you get all of the features above for $59.99 USD per year.
+                Payment will be charged to iTunes Account after the 1 month trial period following the confirmation of purchase.
+                Your subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period.
+                Your account will be charged $59.99 for renewal within 24-hours prior to the end of the current period.
+                You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
+            </div>
+        </div>
+        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
+            <div class="item item-divider" style="background-color: rgb(63,81,181); color: white;"> {{signUpQuestion.question}} </div>
+            <div class="item item-text-wrap"> {{signUpQuestion.answer}} </div>
+        </div>
+        <div class="card" style="text-align: center">
+            <div class="item item-divider" style="background-color: rgb(63,81,181); color: white;"> Your Privacy </div>
+            <div class="item item-text-wrap">
+                Your privacy is very important to us. You can delete your data at any time, all of it, or just some
+                of it.  See our <span style="color: blue; cursor: pointer; font-size: 16px;" ng-click="openUrl('https://quantimo.do/privacy-policy/')">privacy policy</span>
+                and <span style="color: blue; cursor: pointer; font-size: 16px;" ng-click="openUrl('https://quantimo.do/organization/end-user-terms-of-service')">terms of use</span>
+                for more information.
+            </div>
+        </div><br><br>
+    </ion-content>
+</ion-view>

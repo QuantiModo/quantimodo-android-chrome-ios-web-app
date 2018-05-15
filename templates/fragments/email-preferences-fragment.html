@@ -1,0 +1,15 @@
+<div class="card" >
+    <div class="item item-divider">
+        <i class="icon ion-email"></i>
+        &nbsp
+        Email Preferences
+    </div>
+    <ion-toggle ng-model="user.sendPredictorEmails" ng-if="user"
+                ng-change="sendPredictorEmailsChange()">
+        Weekly Discoveries Email
+    </ion-toggle>
+    <ion-toggle ng-model="user.sendReminderNotificationEmails" ng-if="user"
+                ng-change="sendReminderNotificationEmailsChange()">
+        Daily Email Reminder
+    </ion-toggle>
+</div>

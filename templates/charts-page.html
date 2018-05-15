@@ -1,0 +1,70 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content scroll="{ isBrowserView : platform.isWeb == false }" ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshCharts()"></ion-refresher>
+        <div ng-cloak>
+            <div class="card" ng-show="!state.variableObject.charts" style="border-radius: 15px;">
+                <div class="item" > <div class="row">
+                    <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+                </div> </div>
+            </div>
+            <div ng-if="state.variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>
+            <div ng-if="state.variableObject" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
+            <div class="card list" id="statisticsCard" ng-if="state.variableObject.numberOfRawMeasurements">
+                <label class="item item-content" ng-if="state.variableObject.numberOfRawMeasurements">
+                    <span class="input-label left-text"># of measurements</span>
+                    <span class="input-label right-text">{{state.variableObject.numberOfRawMeasurements}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.numberOfCorrelations">
+                    <span class="input-label left-text"># of correlations</span>
+                    <span class="input-label right-text">{{state.variableObject.numberOfCorrelations}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.numberOfUniqueDailyValues">
+                    <span class="input-label left-text"># of unique daily values</span>
+                    <span class="input-label right-text">{{state.variableObject.numberOfUniqueDailyValues}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.mean">
+                    <span class="input-label left-text">Mean</span>
+                    <span class="input-label right-text">{{state.variableObject.mean}} {{state.variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.median">
+                    <span class="input-label left-text">Median</span>
+                    <span class="input-label right-text">{{state.variableObject.median}} {{state.variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.mostCommonValue">
+                    <span class="input-label left-text">Most common value</span>
+                    <span class="input-label right-text">{{state.variableObject.mostCommonValue}} {{state.variableObject.unit.abbreviatedName}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.standardDeviation">
+                    <span class="input-label left-text">Standard deviation</span>
+                    <span class="input-label right-text">{{state.variableObject.standardDeviation}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.variance">
+                    <span class="input-label left-text">Variance</span>
+                    <span class="input-label right-text">{{state.variableObject.variance}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.skewness">
+                    <span class="input-label left-text">Skewness</span>
+                    <span class="input-label right-text">{{state.variableObject.skewness}}</span>
+                </label>
+                <label class="item item-content" ng-if="state.variableObject.kurtosis">
+                    <span class="input-label left-text">Kurtosis</span>
+                    <span class="input-label right-text">{{state.variableObject.kurtosis}}</span>
+                </label>
+            </div>
+            <div class="list card" ng-click="compareButtonClick()">
+                <a id="compareButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Compare Another Variable </a>
+            </div>
+            <div class="list card" ng-click="recordMeasurementButtonClick()">
+                <a id="recordMeasurementButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Record Measurement </a>
+            </div>
+            <div class="list card" ng-click="addNewReminderButtonClick()">
+                <a id="addReminderButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Add Reminder </a>
+            </div>
+            <div class="list card" ng-click="editSettingsButtonClick()">
+                <a class="item item-icon-left"> <!--Find better icon in blue--> <i class="icon ion-settings positive"></i> Analysis Settings </a>
+            </div>
+        </div>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>
