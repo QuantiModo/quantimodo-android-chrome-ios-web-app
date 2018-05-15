@@ -101,8 +101,6 @@ dist/
 .chcplogin
 
 cordova-hcp.json
-.chcplogin
-
 .chcpenv
 
 src/default.config.json
@@ -117,3 +115,4 @@ chcpbuild\.options
 *.p12
 
 yarn-error\.log
+\.publish
