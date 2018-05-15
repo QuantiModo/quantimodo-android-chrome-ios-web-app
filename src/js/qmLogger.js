@@ -358,7 +358,7 @@ window.qmLog.warn = function (name, message, metaData, stackTrace) {
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("warn")){return;}
     message = addCallerFunctionToMessage(message || "");
-    console.warn("WARN: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
+    console.warn("WARNING: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}

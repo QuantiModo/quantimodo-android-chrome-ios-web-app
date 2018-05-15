@@ -141,6 +141,7 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
 var filter = require('gulp-filter');
 var fs = require('fs');
+var ghPages = require('gulp-gh-pages-will');
 var git = require('gulp-git');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -682,7 +683,7 @@ function postAppStatus() {
 }
 function makeApiRequest(options, successHandler) {
     qmLog.info('Making request to ' + options.uri + ' with clientId: ' + QUANTIMODO_CLIENT_ID);
-    qmLog.debug(options.uri, options);
+    qmLog.debug(options.uri, options, 280);
     //options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
@@ -1162,20 +1163,34 @@ gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
         qmLog.error( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
         return;
     }
-    var buildJson = {
-        "android": {
-            "release": {
-                "keystore":"quantimodo.keystore",
-                "storePassword": buildSettings.androidReleaseKeystorePassword,
-                "alias": buildSettings.androidReleaseKeyAlias,
-                "password": buildSettings.androidReleaseKeyPassword,
-                "keystoreType":""
-            }
-        }
-    };
-    writeToFile('build.json', prettyJSONStringify(buildJson));
+    writeBuildJson();
     return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
+function writeBuildJson(){
+    var buildJson = {};
+    if(buildingFor.android()){
+        buildJson.android = {
+            "release": {
+                "keystore":"quantimodo.keystore",
+                    "storePassword": buildSettings.androidReleaseKeystorePassword,
+                    "alias": buildSettings.androidReleaseKeyAlias,
+                    "password": buildSettings.androidReleaseKeyPassword,
+                    "keystoreType":""
+            }
+        };
+    }
+    if(buildingFor.ios()){
+        buildJson.ios = {
+            "debug": {
+                "developmentTeam": "YD2FK7S2S5"
+            },
+            "release": {
+                "developmentTeam": "YD2FK7S2S5"
+            }
+        };
+    }
+    return writeToFile('build.json', prettyJSONStringify(buildJson));
+}
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
@@ -1629,6 +1644,15 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
+var serviceWorkerAndLibraries = [
+    paths.src.serviceWorker,
+    'src/lib/firebase/firebase-app.js',
+    'src/lib/firebase/firebase-messaging.js',
+    'src/lib/localforage/dist/localforage.js',
+    'src/js/qmLogger.js',
+    'src/js/qmHelpers.js',
+    'src/js/qmChrome.js',
+];
 gulp.task('upload-source-maps', [], function(callback) {
     fs.readdir('www/scripts', function (err, files) {
         if(!files){
@@ -2281,26 +2305,8 @@ gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
 });
 gulp.task('copyServiceWorkerAndLibraries', [], function () {
-    try {
-        copyFiles('src/lib/firebase/firebase-messaging.js', 'www/lib/firebase');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        copyFiles('src/lib/firebase/firebase-app.js', 'www/lib/firebase');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        copyFiles(paths.src.serviceWorker, 'www/');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        return copyFiles(paths.src.js, paths.www.js);
-    } catch (error) {
-        qmLog.error(error);
-    }
+    return gulp.src( serviceWorkerAndLibraries, { base: './src' } )
+        .pipe( gulp.dest( './www' ));
 });
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
@@ -2354,6 +2360,9 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
 });
+gulp.task('write-build-json', [], function () {
+    return writeBuildJson();
+});
 gulp.task('build-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
@@ -2371,6 +2380,7 @@ gulp.task('build-ios-app', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'cordova-hcp-config',
+        'write-build-json',
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2573,6 +2583,8 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
 });
 gulp.task('buildAllIosApps', function (callback) {
     runSequence(
+        'setMoodiModoEnvs',
+        'build-ios-app',
         'setMediModoEnvs',
         'build-ios-app',
         'setQuantiModoEnvs',
@@ -2895,4 +2907,17 @@ gulp.task('cordova-hcp-dev-config-and-deploy-medimodo', [], function (callback) 
         'cordova-hcp-build',
         'cordova-hcp-deploy',
         callback);
+});
+gulp.task('generate-service-worker', function(callback) {
+    var swPreCache = require('sw-precache');
+    var rootDir = 'www';
+    swPreCache.write('www/service-worker.js', {
+        staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif,svg,eot,ttf,woff}'],
+        stripPrefix: rootDir
+    }, callback);
+});
+gulp.task('deploy-to-github-pages', function() {
+    return gulp.src('./www/**/*')
+        //.pipe(ghPages({remoteUrl: "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app"}));
+        .pipe(ghPages({}));
 });

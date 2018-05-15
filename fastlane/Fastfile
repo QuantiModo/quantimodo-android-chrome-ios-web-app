@@ -48,8 +48,8 @@ platform :ios do
   end
   puts "Fastfile match_keychain_name is set to #{match_keychain_name}"
 
-  xcodeproj = "./platforms/ios/#{app_display_name}.xcodeproj"
-  puts "Fastfile xcodeproj is set to #{xcodeproj}"
+  xcode_project_path = "./platforms/ios/#{app_display_name}.xcodeproj"
+  puts "Fastfile xcode_project_path is set to #{xcode_project_path}"
 
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
@@ -135,11 +135,11 @@ platform :ios do
     end
 
     puts "recreate_schemes for some reason..."
-    recreate_schemes(project: xcodeproj)
+    recreate_schemes(project: xcode_project_path)
 
     puts "Building app with gym..."
     gym(scheme: app_display_name,
-        project: xcodeproj) # Build your app - more options available # Build your app - more options available
+        project: xcode_project_path) # Build your app - more options available # Build your app - more options available
 
     puts "Uploading build to iTunes Connect with pilot..."
     pilot(
@@ -158,11 +158,11 @@ platform :ios do
   lane :deploy do
     puts "upgrade_super_old_xcode_project to fix Seems to be a very old project file format - please open your project file in a more recent version of Xcode"
     upgrade_super_old_xcode_project(
-        path: xcodeproj,
+        path: xcode_project_path,
         team_id: team_id
     )
     puts "Disabling automatic_code_signing to fix QuantiModo has conflicting provisioning settings"
-    automatic_code_signing( path: xcodeproj, use_automatic_signing: false )
+    automatic_code_signing( path: xcode_project_path, use_automatic_signing: false )
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
           app_identifier: app_identifier,
           type: "appstore",
@@ -172,7 +172,7 @@ platform :ios do
           team_id: team_id
     )
     update_project_provisioning(
-        xcodeproj: xcodeproj,
+        xcodeproj: xcode_project_path,
         profile: ENV["sigh_#{app_identifier}_appstore_profile-path"],
         build_configuration: "Release"
     )
