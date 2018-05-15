@@ -1643,6 +1643,15 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
+var serviceWorkerAndLibraries = [
+    paths.src.serviceWorker,
+    'src/lib/firebase/firebase-app.js',
+    'src/lib/firebase/firebase-messaging.js',
+    'src/lib/localforage/dist/localforage.js',
+    'src/js/qmLogger.js',
+    'src/js/qmHelpers.js',
+    'src/js/qmChrome.js',
+];
 gulp.task('upload-source-maps', [], function(callback) {
     fs.readdir('www/scripts', function (err, files) {
         if(!files){
@@ -2295,26 +2304,8 @@ gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
 });
 gulp.task('copyServiceWorkerAndLibraries', [], function () {
-    try {
-        copyFiles('src/lib/firebase/firebase-messaging.js', 'www/lib/firebase');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        copyFiles('src/lib/firebase/firebase-app.js', 'www/lib/firebase');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        copyFiles(paths.src.serviceWorker, 'www/');
-    } catch (error) {
-        qmLog.error(error);
-    }
-    try {
-        return copyFiles(paths.src.js, paths.www.js);
-    } catch (error) {
-        qmLog.error(error);
-    }
+    return gulp.src( serviceWorkerAndLibraries, { base: './src' } )
+        .pipe( gulp.dest( './www' ));
 });
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
@@ -2915,4 +2906,12 @@ gulp.task('cordova-hcp-dev-config-and-deploy-medimodo', [], function (callback) 
         'cordova-hcp-build',
         'cordova-hcp-deploy',
         callback);
+});
+gulp.task('generate-service-worker', function(callback) {
+    var swPreCache = require('sw-precache');
+    var rootDir = 'www';
+    swPreCache.write('www/service-worker.js', {
+        staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif,svg,eot,ttf,woff}'],
+        stripPrefix: rootDir
+    }, callback);
 });
