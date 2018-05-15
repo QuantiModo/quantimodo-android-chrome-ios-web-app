@@ -70,6 +70,7 @@
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
     "superagent": "^3.8.2",
+    "sw-precache": "^5.2.1",
     "taco-team-build": "^0.2.2",
     "vinyl-source-stream": "^1.1.0",
     "xcode": "0.8.9",
