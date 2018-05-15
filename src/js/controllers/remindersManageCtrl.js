@@ -179,7 +179,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 	$scope.showActionSheet = function(trackingReminder) {
 		var variableObject = qmService.convertTrackingReminderToVariableObject(trackingReminder);
         var buttons = [
-            { text: '<i class="icon ion-android-notifications-none"></i>Edit'},
+            { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             qmService.actionSheets.actionSheetButtons.measurementAdd,
             qmService.actionSheets.actionSheetButtons.charts,
             qmService.actionSheets.actionSheetButtons.historyAllVariable,

@@ -637,13 +637,13 @@ window.qm = {
             if(!matchingElements){return null;}
             if(matchingElements.length){
                 if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist for ' + localStorageItemName);
+                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist');
                 }
                 if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist for ' + localStorageItemName);
+                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist');
                 }
                 if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist for ' + localStorageItemName);
+                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist');
                 }
             }
             if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
@@ -800,9 +800,9 @@ window.qm = {
             var a = array.concat();
             for(var i = 0; i < a.length; i++) {
                 for(var j = i + 1; j < a.length; j++) {
-                    if(!a[i]){qmLogService.error('a[i] not defined!');}
+                    if(!a[i]){qmLog.error('a[i] not defined!');}
                     if(!a[j]){
-                        qmLogService.error('a[j] not defined!');
+                        qmLog.error('a[j] not defined!');
                         return a;
                     }
                     if(a[i].id === a[j].id) {
@@ -1085,18 +1085,22 @@ window.qm = {
     },
     geoLocation: {
         getFoursqureClientId: function () {
-            if(qm.privateConfig.FOURSQUARE_CLIENT_ID){return qm.privateConfig.FOURSQUARE_CLIENT_ID;}
+            if(qm.privateConfig.FOURSQUARE_CLIENT_ID){/** @namespace qm.privateConfig.FOURSQUARE_CLIENT_ID */
+                return qm.privateConfig.FOURSQUARE_CLIENT_ID;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID;}
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
             if(connector){return connector.connectorClientId;}
         },
         getFoursquareClientSecret: function () {
+            /** @namespace qm.privateConfig.FOURSQUARE_CLIENT_SECRET */
             if(qm.privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.privateConfig.FOURSQUARE_CLIENT_SECRET;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET;}
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
-            if(connector){return connector.connectorClientSecret;}
+            if(connector){/** @namespace connector.connectorClientSecret */
+                return connector.connectorClientSecret;}
         },
         getGoogleMapsApiKey: function () {
+            /** @namespace qm.privateConfig.GOOGLE_MAPS_API_KEY */
             if(qm.privateConfig.GOOGLE_MAPS_API_KEY){return qm.privateConfig.GOOGLE_MAPS_API_KEY;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY){return qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY;}
         }
@@ -1871,7 +1875,33 @@ window.qm = {
                 }
             }
             return object;
+        },
+        getValueOfPropertyOrSubPropertyWithNameLike: function (wantedKeyNameNeedle, obj) {
+            // This function handles arrays and objects
+            wantedKeyNameNeedle = wantedKeyNameNeedle.toLowerCase();
+            function eachRecursive(obj) {
+                for (var key in obj) {
+                    if (!obj.hasOwnProperty(key)) {
+                        continue;       // skip this property
+                    }
+                    if (typeof obj[key] === "object" && obj[key] !== null) {
+                        var result = eachRecursive(obj[key]);
+                        if(result){
+                            return result;
+                        }
+                    } else {
+                        var lowerCase = key.toLowerCase();
+                        if(lowerCase.indexOf(wantedKeyNameNeedle) !== -1){
+                            return obj[key];
+                        }
+                    }
+                }
+                return null;
+            }
+            var value = eachRecursive(obj);
+            return value;
         }
+
     },
     platform: {
         isChromeExtension: function (){
@@ -1893,8 +1923,9 @@ window.qm = {
         },
         isWeb: function (){
             var isWeb = false;
-            if(window.location.href.indexOf("https://") > -1){isWeb = true;}
-            if(window.location.href.indexOf("http://localhost:") > -1){isWeb = true;}
+            if(window.location.href.indexOf("https://") === 0){isWeb = true;}
+            if(window.location.href.indexOf("http://") === 0){isWeb = true;}
+            if(window.location.href.indexOf("http://localhost:") === 0){isWeb = true;}
             return isWeb;
         },
         isWebOrChrome: function () {
@@ -2641,6 +2672,15 @@ window.qm = {
                 }
             }
             return url;
+        },
+        onQMSubDomain: function () {
+            if(window.location.href.indexOf('https://') !== 0){return false;}
+            return window.location.href.indexOf('.quantimo.do') !== -1;
+        },
+        redirectToHttpsIfNecessary: function (){
+            if(window.location.href.indexOf("http://") === 0 && window.location.href.indexOf("http://localhost") === -1){
+                location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+            }
         }
     },
     user: null,
@@ -3197,3 +3237,4 @@ function getSizeInKiloBytes(string) {
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
+qm.urlHelper.redirectToHttpsIfNecessary();

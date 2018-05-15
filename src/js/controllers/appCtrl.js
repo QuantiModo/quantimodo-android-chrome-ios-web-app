@@ -134,11 +134,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.openSharingUrl(sharingUrl);
         }
     }
-    $scope.shareStudy = function(correlationObject, sharingUrl, ev){
+    $scope.shareStudy = function(correlationObject, shareType, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
             return;
         }
+        var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, correlationObject);
         if(!sharingUrl){qmLogService.error("No sharing url for this correlation: ", {correlation: correlationObject});}
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
@@ -269,7 +270,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
         var variableObject = {id: favorite.variableId, name: favorite.variableName};
         var actionMenuButtons = [
-            { text: '<i class="icon ion-gear-a"></i>Edit' },
+            { text: '<i class="icon ion-gear-a"></i>Edit Reminder' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             qmService.actionSheets.actionSheetButtons.charts,
             qmService.actionSheets.actionSheetButtons.historyAllVariable,

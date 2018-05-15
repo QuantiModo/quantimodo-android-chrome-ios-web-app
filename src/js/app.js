@@ -34,7 +34,7 @@ angular.module('starter',
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
-    qm.appsManager.loadPrivateConfigFromJsonFile();
+    if(!qm.urlHelper.onQMSubDomain()){qm.appsManager.loadPrivateConfigFromJsonFile();}
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
     qmService.setPlatformVariables();
