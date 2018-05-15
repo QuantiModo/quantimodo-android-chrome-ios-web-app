@@ -2673,10 +2673,14 @@ window.qm = {
             }
             return url;
         },
-        onQMSubdomain: function () {
+        onQMSubDomain: function () {
             if(window.location.href.indexOf('https://') !== 0){return false;}
-            if(window.location.href.indexOf('.quantimo.do') === -1){return false;}
-            return true;
+            return window.location.href.indexOf('.quantimo.do') !== -1;
+        },
+        redirectToHttpsIfNecessary: function (){
+            if(window.location.href.indexOf("http://") === 0 && window.location.href.indexOf("http://localhost") === -1){
+                location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+            }
         }
     },
     user: null,
@@ -3233,3 +3237,4 @@ function getSizeInKiloBytes(string) {
 function getLocalStorageNameForRequest(type, route) {
     return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
 }
+qm.urlHelper.redirectToHttpsIfNecessary();
