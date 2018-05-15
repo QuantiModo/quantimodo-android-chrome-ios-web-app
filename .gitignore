@@ -50,7 +50,7 @@ scripts/certs/dist.p12
 supply_json_key_for_google_play.json
 src/configuration-index.html
 src/configuration/
-*.css
+src/**/*.css
 src/data/*.json
 src/img/CS6.zip
 src/img/icons/*
