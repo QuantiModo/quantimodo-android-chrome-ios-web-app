@@ -59,12 +59,10 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		qmService.sendBugReport();
 	};
 	$scope.contactUs = function() {
-		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
-		else {window.location = '#app/feedback';}
+		window.location = '#app/feedback';
 	};
 	$scope.postIdea = function() {
-		if ($rootScope.platform.isChromeApp) {window.location = 'mailto:help@quantimo.do';
-		} else {window.open('https://help.quantimo.do/forums/211661-general', '_blank');}
+		window.open('https://help.quantimo.do/forums/211661-general', '_blank');
 	};
 	$scope.combineNotificationChange = function(ev) {
 		qmService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});

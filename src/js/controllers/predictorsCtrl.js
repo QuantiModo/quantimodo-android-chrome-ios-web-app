@@ -136,7 +136,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 if(data){$scope.state.correlationsExplanation = data.explanation;}
                 if(data.correlations.length) {
                     qmLogService.info('Got ' + data.correlations.length + ' correlations with params ' + JSON.stringify(params));
-                    qmLogService.info('First correlation is ' + JSON.stringify(data.correlations[0]));
+                    qmLogService.info('First correlation is ' + data.correlations[0].causeVariableName + " vs " + data.correlations[0].effectVariableName);
                     if($scope.state.requestParams.offset){
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
                     } else {

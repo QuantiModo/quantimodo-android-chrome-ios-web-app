@@ -162,7 +162,6 @@
         <li id="s2"></li>
         <li id="s1"></li>
     </ul>
-
     <section id="browse" class="browse">
 		    <div class="container">
 		        <div class="row">
@@ -174,10 +173,11 @@
 		</section>
 	</body>
 	<script>
-		var receiveMessage = function(event)
-		{
-			event.source.postMessage(window.location.href.toString(),event.origin);
-		};
-		window.addEventListener("message", receiveMessage, false);
+        if(window.location.href.indexOf("/ionic/Modo/www") !== -1){
+            location.href = window.location.href.replace("/ionic/Modo/www", "");
+        }
+        if(window.location.href.indexOf("/ionic/Modo/src") !== -1){
+            location.href = window.location.href.replace("/ionic/Modo/src", "");
+        }
 	</script>
 </html>

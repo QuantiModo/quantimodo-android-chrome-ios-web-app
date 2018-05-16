@@ -25,7 +25,7 @@ window.qmLog = {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
             if(typeof Bugsnag !== "undefined"){
-                Bugsnag.notify("Could not decouple object to obfuscate secrets: " + error ,
+                bugsnagClient.notify("Could not decouple object to obfuscate secrets: " + error ,
                     "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
             }
             //window.qmLog.error(error, object); // Avoid infinite recursion
@@ -43,7 +43,8 @@ window.qmLog = {
         }
         return object;
     },
-    metaData : {}
+    metaData : {},
+    context: null
 };
 if(typeof bugsnag !== "undefined"){
     window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
@@ -67,14 +68,9 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 window.qmLog.getLogLevelName = function() {
-    return "info";
-    if(window.location.href.indexOf('utopia.quantimo.do') > -1){
-        return "debug";
-    }
+    if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
     if(qmLog.debugMode){return "debug";}
-    if(qmLog.logLevel){
-        return qmLog.logLevel;
-    }
+    if(qmLog.logLevel){return qmLog.logLevel;}
     if(qm.urlHelper.getParam('logLevel')){
         qmLog.logLevel = qm.urlHelper.getParam('logLevel');
         return qmLog.logLevel;
@@ -102,6 +98,10 @@ window.qmLog.isDebugMode = function() {
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;
+    if(!stackTrace){
+        console.log("Could not get stack trace");
+        return null;
+    }
     stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.debug')).replace('window.qmLog.debug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.info')).replace('window.qmLog.info', '');
@@ -143,8 +143,9 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
-    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message;}
-    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message;}
+    if(message === "undefined"){message = "";}
+    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
+    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
     return message;
 }
 qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
@@ -164,26 +165,11 @@ qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
     }
     return metaData;
 };
-window.qmLog.getEnv = function(){
-    var env = "production";
-    if(window.location.origin.indexOf('local') !== -1){env = "development";}
-    if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
-    if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if(qm.getUser()){
-        if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
-    }
-    if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
-    return env;
-};
-qmLog.envIsTesting = function(){
-    return qmLog.getEnv() === 'testing';
-};
 qmLog.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
-    if(qmLog.envIsTesting()){
+    if(qm.appMode.isTesting()){
         qmLog.info(name, message, metaData, stackTrace);
     } else {
         qmLog.error(name, message, metaData, stackTrace);
@@ -199,7 +185,7 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
         if(qm.getUser()){
-            url +=  "?userEmail=" + encodeURIComponent(qm.getUser().email);
+            url = qm.urlHelper.addUrlQueryParamsToUrl({userEmail: qm.getUser().email}, url);
         }
         return url;
     }
@@ -268,20 +254,20 @@ window.qmLog.setupBugsnag = function(){
     if (typeof bugsnag !== "undefined") {
         var options = {
             apiKey: "ae7bc49d1285848342342bb5c321a2cf",
-            releaseStage: qmLog.getEnv(),
+            releaseStage: qm.appMode.getAppMode(),
             //notifyReleaseStages: [ 'staging', 'production' ],
             metaData: qmLog.addGlobalMetaData(null, null, {}, null, null),
-            user: { id: '123', name: 'B. Nag', email: 'bugs.nag@bugsnag.com' },
+            user: qm.userHelper.getUserFromLocalStorage(),
             beforeSend: function (report) {}
         };
         if(qm.getUser()){options.user = qmLog.obfuscateSecrets(qm.getUser());}
         if(qm.getAppSettings()){
-            options.appVersion = qm.getAppSettings().versionNumber;
+            options.appVersion = qm.getAppSettings().androidVersionCode;
             options.metaData.appDisplayName = qm.getAppSettings().appDisplayName;
         }
         window.bugsnagClient = bugsnag(options);
     } else {
-        qmLog.error('Bugsnag is not defined');
+        if(qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
     }
 };
 //window.qmLog.setupBugsnag();
@@ -316,8 +302,15 @@ window.qmLog.setupIntercom = function() {
     };
 };
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
-    if(typeof bugsnagClient === "undefined"){ console.error('bugsnagClient not defined', metaData); return; }
+    if(typeof bugsnagClient === "undefined") {
+        if (!qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', metaData);}
+        return;
+    }
     metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
+    if(!name){name = "No error name provided";}
+    if(!message){message = "No error message provided";}
+    if(typeof name !== "string"){name = JSON.stringify(name);}
+    if(typeof message !== "string"){message = JSON.stringify(message);}
     bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: metaData});
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
@@ -347,7 +340,7 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
         //console.debug("Not logging debug message: " + name);
         return;
     }
-    message = addCallerFunctionToMessage(message);
+    message = addCallerFunctionToMessage(message || "");
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
@@ -355,7 +348,7 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     metaData = metaData || null;
     //console.info(name + ": " + message);
     if(!qmLog.shouldWeLog("info")){return;}
-    message = addCallerFunctionToMessage(message);
+    message = addCallerFunctionToMessage(message || "");
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
     //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
@@ -364,8 +357,8 @@ window.qmLog.warn = function (name, message, metaData, stackTrace) {
     name = name || message;
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("warn")){return;}
-    message = addCallerFunctionToMessage(message);
-    console.warn("WARN: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
+    message = addCallerFunctionToMessage(message || "");
+    console.warn("WARNING: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}

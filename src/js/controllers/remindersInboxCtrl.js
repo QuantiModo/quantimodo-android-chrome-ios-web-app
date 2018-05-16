@@ -117,11 +117,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		$rootScope.hideBackButton = false;
 	});
 	var setPageTitle = function(){
-	    if(!qmService.previouslyLoaded){
-            qmService.previouslyLoaded = true;
-            qmLog.info("Not setting title because it gets cut off initially");
-            return;
-        }
 		if($stateParams.today) {
 			if(getVariableCategoryName() === 'Treatments') {
 				$scope.state.title = "Today's Scheduled Meds";
@@ -230,6 +225,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		}
 	};
 	var notificationAction = function(trackingReminderNotification){
+	    qmLog.info("Clicked "+ $scope.lastAction + " for " + trackingReminderNotification.variableName);
 		trackingReminderNotification.hide = true;
         qmService.numberOfPendingNotifications--;
         $scope.state.numberOfDisplayedNotifications--;
@@ -366,7 +362,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
 		}, function (error) {
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
-			qmLogService.error('$scope.refreshTrackingReminderNotifications: ' + error);
+			qmLog.info('$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
 	};
@@ -392,6 +388,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	function skipAllForVariable(trackingReminderNotification) {
         trackingReminderNotification.hide = true;
         qmLogService.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
+        qmService.showInfoToast("Skipping all past notifications for " + trackingReminderNotification.variableName);
         var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
         //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
         qmService.skipAllTrackingReminderNotificationsDeferred(params)
@@ -471,21 +468,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				});
 		}
     }
-    var undoToastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
-    var getUndoToastPosition = function() {return Object.keys(undoToastPosition).filter(function(pos) { return undoToastPosition[pos]; }).join(' ');};
-    var undoInboxAction = function(){
-        qm.notifications.undo();
-        getTrackingReminderNotifications();
-    };
     $scope.showUndoToast = function(lastAction) {
-        var toast = $mdToast.simple()
-            .textContent(lastAction)
-            .action('UNDO')
-            .highlightAction(true)
-            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
-            .hideDelay(10000)
-            .position(getUndoToastPosition());
-        $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
+        qmService.showToastWithButton(lastAction, 'UNDO', function(){
+            qm.notifications.undo();
+            getTrackingReminderNotifications();
+        });
     };
     function getVariableCategoryName() {
         if($stateParams.variableCategoryName){return $stateParams.variableCategoryName;}

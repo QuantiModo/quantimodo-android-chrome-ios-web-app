@@ -38,8 +38,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         barcodeScanner: {
+            scanResult: null,
             upcToAttach: null,
+            noVariableResultsHandler: function(){
+                var scanResult = qmService.barcodeScanner.scanResult;
+                qmService.hideLoader();
+                var errorMessage = "I couldn't find anything matching barcode " + scanResult.format + " " + scanResult.text;
+                qmLog.error(errorMessage);
+                var userErrorMessage = errorMessage + ".  Try a manual search and " +
+                    "I'll link the code to your selected variable so scanning should work in the future.";
+                qmService.barcodeScanner.upcToAttach = scanResult.text;
+                return userErrorMessage;
+            },
             scanSuccessHandler: function (scanResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler) {
+                qmService.barcodeScanner.scanResult = scanResult;
                 requestParams = requestParams || {};
                 qmLog.pushDebug("We got a barcode\n" + "Result: " + scanResult.text + "\n" + "Format: " + scanResult.format +
                     "\n" + "Cancelled: " + scanResult.cancelled);
@@ -61,12 +73,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, function (error) {
                     qmLog.error(error);
                     doneSearching = true;
-                    qmService.hideLoader();
-                    var errorMessage = "I couldn't find anything matching barcode " + scanResult.format + " " + scanResult.text;
-                    qmLog.error(errorMessage);
-                    var userErrorMessage = errorMessage + ".  Try a manual search and " +
-                        "I'll link the code to your selected variable so scanning should work in the future.";
-                    qmService.barcodeScanner.upcToAttach = scanResult.text;
+                    var userErrorMessage = qmService.barcodeScanner.noVariableResultsHandler(scanResult);
                     if (variableSearchErrorHandler) {
                         variableSearchErrorHandler(userErrorMessage);
                     } else {
@@ -102,6 +109,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         "ITF";
                 }
                 /** @namespace cordova.plugins.barcodeScanner */
+                var testResult = false;
+                //var testResult = {format: "UPC_A", text: 311917110189};
+                //var testResult = {format: "UPC_A", text: 311917110182349};  // No results
+                if(testResult){
+                    qmService.barcodeScanner.scanSuccessHandler(testResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
+                    return;
+                }
                 cordova.plugins.barcodeScanner.scan(function (result) {
                     qmService.barcodeScanner.scanSuccessHandler(result, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
                 }, function (error) {
@@ -134,7 +148,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 chcp.installUpdate(function(error) {
                     qmService.deploy.setVersionInfo();
                     if (error) {
-                        qmService.deploy.versionInfo.error = error;
+                        qmService.deploy.chcpInfo.error = error;
                         qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
                         qmService.showMaterialAlert('Update error ' + error.code)
                     } else {
@@ -168,19 +182,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             setVersionInfo: function () {
                 if(!qmService.deploy.chcpIsDefined()){return false;}
-                chcp.getVersionInfo(function(error, data){
-                    if (error) {
-                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(error));
-                    } else {
-                        qmLog.info('CHCP VERSION: ' + JSON.stringify(data));
-                    }
-                    qmService.deploy.versionInfo = {
-                        data: data,
-                        error: error
-                    }
+                chcp.getVersionInfo(function(error, versionInfo){
+                    qm.api.getViaXhrOrFetch('chcp.json', function(chcpConfig){
+                        if(!chcpConfig){qmLog.error("No chcp.json config!");}
+                        qmService.deploy.chcpInfo = {data: versionInfo, error: error, chcpConfig: chcpConfig};
+                        if (error) {qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmService.deploy.chcpInfo));}
+                        qmLog.info('CHCP VERSION DATA: ' + JSON.stringify(qmService.deploy.chcpInfo));
+                    }, function (error) {
+                        if(errorHandler){errorHandler(error);}
+                    });
                 });
             },
-            versionInfo: null
+            chcpInfo: null
         },
         email: {
             updateEmailAndExecuteCallback: function (callback){
@@ -366,7 +379,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             drawOverAppsPopup: function(path, force){
                 qmLog.pushDebug('Called qmService.notifications.drawOverAppsPopup...');
                 if(qmService.notifications.drawOverAppsPopupAreDisabled()){
-                    qmLog.error("Cannot show popup because it has been disabled");
+                    qmLog.pushDebug("Cannot show popup because it has been disabled");
                     return false;
                 }
                 if(typeof window.overApps === "undefined"){
@@ -428,8 +441,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return false;
             },
-            showAndroidPopupForMostRecentNotification: function(){
+            showAndroidPopupForMostRecentNotification: function(doNotShowInInbox){
                 if(!qm.platform.isAndroid()){qmLog.pushDebug('Can only show popups on Android'); return;}
+                if(doNotShowInInbox && $state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                    qmLog.pushDebug("Not showing drawOverAppsPopup because we're in the inbox already");
+                    return;
+                }
                 qmLog.pushDebug('Called drawOverAppsPopup showAndroidPopupForMostRecentNotification...');
                 window.qm.notifications.refreshIfEmpty(function () {
                     // Need to use unique rating notifications because we need to setup initial popup via url params
@@ -479,9 +496,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         showVariableSearchDialog: function(dialogParameters, successHandler, errorHandler, ev){
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                          qmLogService, $q, $log, dialogParameters) {
+                                                          qmLogService, $q, $log, dialogParameters, $timeout) {
                 var self = this;
-                // list of `state` value/display objects
+                if(!dialogParameters.placeholder){dialogParameters.placeholder = "Enter a variable";}
+                if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
+                    var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParameters.requestParams.variableCategoryName);
+                    if(variableCategory){
+                        dialogParameters.title = 'Select '+ variableCategory.variableCategoryNameSingular.toLowerCase();
+                        dialogParameters.placeholder = dialogParameters.placeholder.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                        dialogParameters.helpText = dialogParameters.helpText.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                    }
+                }
+                if(qm.platform.isMobile()){
+                    dialogParameters.placeholder += ' or press camera to scan';
+                    dialogParameters.helpText += '. Press the camera button to scan a barcode.';
+                }
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
                 self.selectedItemChange = selectedItemChange;
@@ -508,26 +537,53 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $scope.variable = qmService.barcodeScanner.addUpcToVariableObject($scope.variable);
                     $mdDialog.hide($scope.variable);
                 };
-                self.scanBarcode = function() {
-                    self.helpText = "Searching for variable by barcode...";
+                self.scanBarcode = function(deferred) {
+                    self.helpText = "One moment please";
+                    self.searchText = "Searching by barcode...";
                     self.title = "Barcode Search";
-                    qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
-                        if (variables && variables.length) {
-                            self.items = convertVariablesToToResultsList(variables);
-                            //self.selectedItemChange(self.items[0]);
-                            self.searchText = variables[0].name
-                            //$mdDialog.hide(variables[0]);
-                        }
-                    }, function (userErrorMessage) {
+                    self.loading = true;
+                    function noResultsHandler(userErrorMessage){
                         self.helpText = userErrorMessage;
-                        self.title = "No UPC matches found";
+                        self.title = "No matches found";
+                        self.searchText = "";
+                        deferred.reject(self.title);
                         querySearch();
                         qmLog.error(userErrorMessage);
                         showVariableList();
+                    }
+                    qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
+                        if (variables && variables.length) {
+                            self.helpText = "If you don't see what you're looking for, click the x and try a manual search";
+                            self.lastResults = variables;
+                            self.items = convertVariablesToToResultsList(variables);
+                            self.searchText = "Barcode search results";
+                            deferred.resolve(self.items);
+                            showVariableList();
+                            //self.selectedItemChange(self.items[0]);
+                            //self.searchText = variables[0].name;
+                            //qmService.actionSheets.showVariableObjectActionSheet(variables[0].name, variables[0])
+                            //$mdDialog.hide(variables[0]);
+                        } else {
+                            var userErrorMessage = qmService.barcodeScanner.noVariableResultsHandler();
+                            noResultsHandler(userErrorMessage);
+                        }
+                    }, function (userErrorMessage) {
+                        noResultsHandler(userErrorMessage)
                     });
                 };
                 function showVariableList() {
-                    setTimeout(function(){document.querySelector('#variable-search-box').focus();}, 0);
+                    $timeout(function(){
+                        if(self.items && self.items.length){
+                            self.hidden = false;
+                            qmLog.info("showing list");
+                            console.log(document);
+                            document.querySelector('#variable-search-box').focus();
+                            //document.getElementById('variable-search-box').focus();
+                            //document.getElementById('variable-search-box').select();
+                        } else {
+                            qmLog.info("Not showing list because we don't have results yet");
+                        }
+                    }, 100);
                 }
                 function createNewVariable(variableName) {
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
@@ -535,6 +591,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 function querySearch (query, variableSearchSuccessHandler, variableSearchErrorHandler) {
                     var deferred = $q.defer();
+                    if(query === 'barcode'){
+                        self.scanBarcode(deferred);
+                        return deferred.promise;
+                    }
+                    if(self.searchText && self.searchText.toLowerCase().indexOf('barcode') !== -1){
+                        qmLog.info("Already searching by barcode");
+                        deferred.resolve(self.items || []);
+                        return deferred.promise;
+                    }
                     if(!query || query === ""){
                         if(self.items && self.items.length > 10){
                             deferred.resolve(self.items);
@@ -555,6 +620,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        showVariableList();
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         if(variables && variables.length){
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(variables);}
@@ -574,6 +640,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         item.variable.barcodeFormat = self.barcodeFormat;
                     }
                     $scope.variable = item.variable;
+                    item.variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();
                     qm.userVariables.saveToLocalStorage(item.variable);
                     qmLogService.debug('Item changed to ' + item.variable.name);
                     self.finish();
@@ -584,9 +651,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
+                        var variableName = variable.displayName || variable.variableName || variable.name;
+                        if(!variableName){
+                            qmLog.error("No variable name!");
+                            return;
+                        }
                         return {
                             value: variable.name.toLowerCase(),
-                            name: variable.name,
+                            name: variableName,
                             variable: variable,
                             ionIcon: variable.ionIcon,
                             subtitle: variable.subtitle
@@ -596,7 +668,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 querySearch();
             };
             SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-                "qmService", "qmLogService", "$q", "$log", "dialogParameters"];
+                "qmService", "qmLogService", "$q", "$log", "dialogParameters", "$timeout"];
             $mdDialog.show({
                 controller: SelectVariableDialogController,
                 controllerAs: 'ctrl',
@@ -614,6 +686,88 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         },
         storage: {},
+        search: {
+            getTitle: function(variableCategoryName){
+                var title = 'Enter a variable';
+                if(variableCategoryName){
+                    var variableCategory = qm.variableCategoryHelper.getVariableCategory(variableCategoryName);
+                    if(variableCategory){title =  "Enter a " + variableCategory.variableCategoryNameSingular;}
+                }
+                return title;
+            },
+            reminderSearch: function(successHandler, ev, variableCategoryName){
+                qmService.showVariableSearchDialog({
+                    title: qmService.search.getTitle(variableCategoryName),
+                    helpText: "Pick a variable you'd like to discover the effects or causes of. You'll be able to track this regularly in your inbox.",
+                    requestParams: {variableCategoryName : variableCategoryName, includePublic: true},
+                    skipReminderSettingsIfPossible: true
+                }, function (variableObject) {
+                    if(successHandler){successHandler(variableObject);}
+                    qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
+                }, null, ev);
+            },
+            measurementAddSearch: function(successHandler, ev, variableCategoryName){
+                qmService.showVariableSearchDialog({
+                    title: qmService.search.getTitle(variableCategoryName),
+                    helpText: "Pick a variable you'd like to record a measurement for.",
+                    requestParams: {variableCategoryName : variableCategoryName, includePublic: true}
+                }, function (variableObject) {
+                    if(successHandler){successHandler(variableObject);}
+                    $rootScope.goToState(qmStates.measurementAdd, {variableObject: variableObject, doneState: "false"}); // false must have quotes
+                }, null, ev);
+            }
+        },
+        stateHelper: {
+            goBack: function(providedStateParams){
+                qmLog.info("Called goBack with state params: "+JSON.stringify(providedStateParams));
+                function skipSearchPages() {
+                    if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
+                        $ionicHistory.removeBackView();
+                        backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
+                        stateId = backView.stateName;
+                        //$ionicHistory.goBack(-2);
+                        //qmService.goToDefaultState(stateParams);
+                        //return;
+                    }
+                }
+                function addProvidedStateParamsToBackViewStateParams() {
+                    for (var key in providedStateParams) {
+                        if (providedStateParams.hasOwnProperty(key)) {
+                            if (providedStateParams[key] && providedStateParams[key] !== "") {
+                                if (!backView.stateParams) {backView.stateParams = {};}
+                                backView.stateParams[key] = providedStateParams[key];
+                                stateId += "_" + key + "=" + providedStateParams[key];
+                            }
+                        }
+                    }
+                    //backView.stateId = stateId;  // TODO: What is this for?
+                }
+                if($ionicHistory.viewHistory().backView){
+                    var backView = $ionicHistory.backView();
+                    qmLog.info("backView.stateName is " + backView.stateName);
+                    var stateId = backView.stateName;
+                    skipSearchPages();
+                    if(providedStateParams){
+                        addProvidedStateParamsToBackViewStateParams();
+                    }
+                    qmLog.info('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
+                    $ionicHistory.goBack();
+                } else {
+                    qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
+                    qmService.goToDefaultState(providedStateParams);
+                }
+            }
+        },
+        subscriptions: {
+            setUpgradeDisabledIfOnAndroidWithoutKey: function(appSettings){
+                if(!qm.platform.isAndroid()){return appSettings;}
+                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
+                    qmLog.error("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
+                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+                }
+                return appSettings;
+            }
+        }
     };
     qmService.actionSheets = {
         actionSheetButtons: {
@@ -641,11 +795,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
-            if(!actionSheetButton.id && id){actionSheetButton.id = id;}
+            if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
+            if(!actionSheetButton.id){
+                if (id) {
+                    actionSheetButton.id = id;
+                } else if (actionSheetButton.ionIcon){
+                    actionSheetButton.id = actionSheetButton.ionIcon;
+                }
+            }
             if(actionSheetButton.text && actionSheetButton.text.indexOf('<span ') === -1){
                 actionSheetButton.text = '<span id="' + id + '"><i class="icon ' + actionSheetButton.icon + '"></i>' + actionSheetButton.text + '</span>';
             }
             return actionSheetButton;
+        },
+        addHtmlToActionSheetButtonArray: function(buttons) {
+            buttons = JSON.parse(JSON.stringify(buttons));
+            buttons = buttons.map(function(button){
+                button = qmService.actionSheets.addHtmlToActionSheetButton(button, button.action);
+                return button;
+            });
+            return buttons;
         },
         addHtmlToAllActionSheetButtons: function(){
             for (var propertyName in qmService.actionSheets.actionSheetButtons) {
@@ -655,6 +824,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
+        handleActionSheetButtonClick: function(button, variableObject) {
+            var stateParams = {};
+            if(button.stateParams){stateParams = button.stateParams;}
+            if(variableObject){
+                stateParams.variableObject = variableObject;
+                stateParams.variableName = variableObject.name || variableObject.variableName;
+            }
+            if(button.state){
+                if(button.state === qmStates.reminderAdd && variableObject){
+                    qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
+                } else {
+                    qmService.goToState(button.state, stateParams);
+                }
+                return true;
+            }
+            if(button.action && button.action.modifiedValue){
+                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
+                qmService.goToStudyCreationForVariable(variableObject);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
+                qmService.goToCorrelationsListForVariable(variableObject);
+            }
+            if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
+                qmService.goToCorrelationsListForVariable(variableObject);
+            }
+            return false; // Don't close if clicking top variable name
+        },
         getVariableObjectActionSheet: function(variableName, variableObject){
             if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
             if(!variableObject){
@@ -663,41 +861,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(!variableName){variableName = variableObject.name;}
             qmLog.info("Getting action sheet for variable " + variableName);
-            function handleActionSheetButtonClick(button) {
-                var stateParams = {};
-                if(button.stateParams){stateParams = button.stateParams;}
-                stateParams.variableName = variableName;
-                if(variableObject){stateParams.variableObject = variableObject;}
-                if(button.state){
-                    if(button.state === qmStates.reminderAdd && variableObject){
-                        qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
-                    } else {
-                        qmService.goToState(button.state, stateParams);
-                    }
-                    return true;
-                }
-                if(button.action){
-                    qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
-                    qmService.goToStudyCreationForVariable(variableObject);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
-                }
-                if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
-                }
-                return false; // Don't close if clicking top variable name
-            }
             return function() {
                 qmLogService.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
+                variableName = variableObject.displayName || variableObject.variableName || variableObject.name;
                 var buttons = [
-                    qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: variableName}, 'variableName'),
+                    qmService.actionSheets.addHtmlToActionSheetButton({ icon: variableObject.ionIcon, text: qmService.getTruncatedVariableName(variableName)}, 'variableName'),
                     qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                     qmService.actionSheets.actionSheetButtons.reminderAdd
                 ];
-                if(variableObject.userId){
+                if(variableObject.userId && variableObject.numberOfRawMeasurements){
                     buttons.push(qmService.actionSheets.actionSheetButtons.charts);
                     buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
                     buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
@@ -732,7 +904,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED'); return true;},
                     buttonClicked: function(index, button) {
-                        return handleActionSheetButtonClick(button);
+                        return qmService.actionSheets.handleActionSheetButtonClick(button, variableObject);
                     }
                 };
                 if(variableObject.userId){
@@ -763,7 +935,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return buttons;
         },
     };
-    qmService.actionSheets.addHtmlToAllActionSheetButtons();
+    qmService.actionSheets.addHtmlToAllActionSheetButtons(qmService.actionSheets.actionSheetButtons);
     qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, functionName) {
         if(!response){
@@ -1057,6 +1229,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var pathWithoutQuery = getPathWithoutQuery(request);
         var doNotShowOfflineError = false;
         if (options && options.doNotShowOfflineError) {doNotShowOfflineError = true;}
+        /** @namespace $rootScope.offlineConnectionErrorShowing */
         if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
             qmLogService.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
                 {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
@@ -1377,7 +1550,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
-        qmLogService.info('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
+        qmLogService.debug('postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray));
+        qmLogService.info('posting' + trackingRemindersArray.length + " Tracking Reminders To Api");
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
         trackingRemindersArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
@@ -1574,7 +1748,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return qm.auth.accessTokenFromUrl;
     };
     qmService.goToState = function(to, params, options){
-        qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        //qmLogService.info('Called goToState: ' + to, null, qmLog.getStackTrace());
+        qmLogService.info('Going to state ' + to);
         if(to !== "false"){$state.go(to, params, options);}
     };
     function getDefaultState() {
@@ -1602,7 +1777,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
             var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
             if(accessTokenFromLocalStorage && qm.auth.accessTokenFromUrl !== accessTokenFromLocalStorage){
-                qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
             var user = qm.storage.getItem(qm.items.user);
@@ -1616,7 +1791,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(user && qm.auth.accessTokenFromUrl !== user.accessToken){
                 qmService.rootScope.setUser(null);
-                qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
             }
             if(!qm.urlHelper.getParam('doNotRemember')){
@@ -2009,7 +2184,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setUser(null);
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
-        qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+        qm.storage.clearStorageExceptForUnitsAndCommonVariables();
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
@@ -2047,7 +2222,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
+    qmService.getTruncatedVariableName = function(variableName, maxCharacters) {
+        if(!maxCharacters){maxCharacters = (qm.platform.isMobile()) ? 18: 30;}
+        if(variableName.length > maxCharacters){return variableName.substring(0, maxCharacters) + '...';} else { return variableName;}
+    };
     qmService.attachVariableCategoryIcons = function(dataArray){
         if(!dataArray){ return;}
         var variableCategoryInfo;
@@ -2115,30 +2293,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.getLocalPrimaryOutcomeMeasurements = function(){
-        var primaryOutcomeVariableMeasurements = qm.storage.getItem('primaryOutcomeVariableMeasurements');
-        if(!primaryOutcomeVariableMeasurements) {primaryOutcomeVariableMeasurements = [];}
-        var measurementsQueue = getPrimaryOutcomeMeasurementsFromQueue();
-        if(measurementsQueue){primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);}
-        primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.sort(function(a,b){
-            if(a.startTimeEpoch < b.startTimeEpoch){return 1;}
-            if(a.startTimeEpoch> b.startTimeEpoch){return -1;}
-            return 0;
-        });
-        return qmService.addInfoAndImagesToMeasurements(primaryOutcomeVariableMeasurements);
-    };
-    function getPrimaryOutcomeMeasurementsFromQueue() {
-        var measurementsQueue = qm.storage.getItem('measurementsQueue');
-        var primaryOutcomeMeasurements = [];
-        if(measurementsQueue){
-            for(var i = 0; i < measurementsQueue.length; i++){
-                if(measurementsQueue[i].variableName === qm.getPrimaryOutcomeVariable().name){
-                    primaryOutcomeMeasurements.push(measurementsQueue[i]);
-                }
-            }
-        }
-        return primaryOutcomeMeasurements;
-    }
     qmService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
@@ -2151,7 +2305,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
         qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
-                qmService.storage.setItem('primaryOutcomeVariableMeasurements', primaryOutcomeMeasurementsFromApi);
+                qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
             }
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
@@ -2199,7 +2353,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
             if(qm.storage.getItem(localStorageItemName) && window.qm.timeHelper.getUnixTimestampInSeconds() - qm.storage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                qmLog.errorOrInfoIfTesting(errorMessage);
+                qmLog.info(errorMessage);
                 return false;
             }
             qmService.storage.setItem(localStorageItemName, window.qm.timeHelper.getUnixTimestampInSeconds());
@@ -2322,7 +2476,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
             updateMeasurementInQueue(measurementInfo);
         } else if(measurementInfo.id) {
-            qmService.storage.deleteById('primaryOutcomeVariableMeasurements', measurementInfo.id);
+            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurementInfo.id);
             qmService.addToMeasurementsQueue(measurementInfo);
         } else {
             qmService.addToMeasurementsQueue(measurementInfo);
@@ -2371,8 +2525,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.deleteMeasurementFromServer = function(measurement){
         var deferred = $q.defer();
-        qmService.storage.deleteById('primaryOutcomeVariableMeasurements', measurement.id);
+        qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurement.id);
         qmService.storage.deleteByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
+        qmService.showInfoToast("Deleted " + measurement.variableName + " measurement");
         qmService.deleteV1Measurements(measurement, function(response){
             deferred.resolve(response);
             qmLogService.debug('deleteMeasurementFromServer success ' + JSON.stringify(response), null);
@@ -2505,7 +2660,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
-        var connectors = qm.storage.getItem(qm.items.connectors);
+        var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
         if(connectors){
             //connectors = hideUnavailableConnectors(connectors);
             deferred.resolve(connectors);
@@ -2917,6 +3072,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
+        qmLog.info("Called postTrackingReminderNotificationsDeferred...");
         var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
@@ -2930,6 +3086,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(successHandler){successHandler(response);}
             deferred.resolve(response);
         }, function(error){
+            qmLog.info("Called postTrackingReminderNotificationsToApi...");
             var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(newNotificationsSyncQueue){
                 trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
@@ -3075,7 +3232,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification();}
+                    if($rootScope.platform.isAndroid){
+                        qmService.notifications.showAndroidPopupForMostRecentNotification(true);
+                    }
                     qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
@@ -3153,6 +3312,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.deleteTrackingReminderDeferred = function(reminderToDelete){
         var deferred = $q.defer();
         qmService.storage.deleteTrackingReminder(reminderToDelete);
+        qmService.showInfoToast("Deleted " + reminderToDelete.variableName);
         if(!reminderToDelete.id){
             deferred.resolve();
             return deferred.promise;
@@ -3216,8 +3376,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.checkUrlAndStorageForDebugMode();
         var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
+            qmLogService.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
                 JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
+            qmLog.info("Syncing "+ trackingReminderSyncQueue.length+ " reminders in queue");
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
                     qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
@@ -3433,6 +3594,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         qmService.getUserCorrelationsFromApi(params, function(response){
+            if(!response){
+                qmLog.error("No response from getUserCorrelationsFromApi");
+                deferred.reject("No response from getUserCorrelationsFromApi");
+                return;
+            }
             try {
                 response.data.correlations = useLocalImages(response.data.correlations);
             } catch (error) {
@@ -3441,7 +3607,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.storeCachedResponse('correlations', params, response.data);
             deferred.resolve(response.data);
         }, function(error){
-            qmLogService.error(error);
+            qmLog.warn(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -3651,9 +3817,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getWeekdayChartConfigForPrimaryOutcome = function () {
         var deferred = $q.defer();
-        deferred.resolve(qmService.processDataAndConfigureWeekdayChart(
-            qm.storage.getItem('primaryOutcomeVariableMeasurements'),
-            qm.getPrimaryOutcomeVariable()));
+        qm.localForage.getItem(qm.items.primaryOutcomeMeasurements, function(measurements){
+            deferred.resolve(qmService.processDataAndConfigureWeekdayChart(measurements, qm.getPrimaryOutcomeVariable()));
+        });
         return deferred.promise;
     };
     qmService.generateDistributionArray = function(allMeasurements){
@@ -4874,7 +5040,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                             qmLogService.info('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
                             qmLogService.info('cordova.plugins.notification.local callback. data: ' + JSON.stringify(data));
-                            qmService.notifications.showAndroidPopupForMostRecentNotification();
+                            qmService.notifications.showAndroidPopupForMostRecentNotification(true);
                             qmLog.pushDebug("Setting pop-up on local notification trigger but IT ONLY WORKS WHEN THE APP IS RUNNING so we set it for push notifications as well as local ones!");
                             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                                 qmLog.pushDebug('onTrigger: just triggered this notification: ' + JSON.stringify(currentNotification));
@@ -5024,37 +5190,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.storage.setItem = function(key, value){
         var deferred = $q.defer();
-        if ($rootScope.platform.isChromeApp) {
-            if(typeof value !== "string"){value = JSON.stringify(value);}
-            // Code running in a Chrome extension (content script, background page, etc.)
-            var obj = {};
-            obj[key] = value;
-            chrome.storage.local.set(obj);
-            deferred.resolve();
-        } else {
-            window.qm.storage.setItem(key, value);
-            deferred.resolve();
-        }
+        window.qm.storage.setItem(key, value);
+        deferred.resolve();
         return deferred.promise;
     };
     qmService.storage.getAsStringWithCallback = function(key, callback){
-        if ($rootScope.platform.isChromeApp) {
-            // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(key,function(val){
-                callback(val[key]);
-            });
-        } else {
-            var val = qm.storage.getItem(key);
-            callback(val);
-        }
-    };
-    qmService.storage.clearStorageExceptForUnitsAndCommonVariables = function(){
-        qmLogService.info('Clearing local storage!');
-        var commonVariables = qm.storage.getItem(qm.items.commonVariables);
-        var units = qm.storage.getItem(qm.items.units);
-        qm.storage.clear();
-        qm.storage.setItem(qm.items.commonVariables, commonVariables);
-        qm.storage.setItem(qm.items.units, units);
+        var val = qm.storage.getItem(key);
+        callback(val);
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
@@ -5538,39 +5680,46 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.recordUpgradeProductPurchase(body.productId, null, 1);
         qmService.showBlackRingLoader();
-        qmService.postCreditCard(body, function(response){
-            qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
-            qmLogService.error(null, 'Got successful upgrade response from API');
-            qmService.hideLoader();
-            qmLogService.debug(JSON.stringify(response), null);
-            $mdDialog.show(
-                $mdDialog.alert()
-                    .parent(angular.element(document.querySelector('#popupContainer')))
-                    .clickOutsideToClose(true)
-                    .title('Thank you!')
-                    .textContent("Let's get started!")
-                    .ariaLabel('OK!')
-                    .ok('Get Started')
-            ).finally(function() {
-                $scope.goBack();
-                /** @namespace response.data.purchaseId */
-                qmService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
-            });
-            deferred.resolve(response);
-        }, function(response){
-            qmLogService.error(null, response);
-            var message = '';
-            if(response.error){ message = response.error; }
+        function upgradeErrorHandler(response){
+            qmLog.error("Upgrade failed", null, response);
+            var message = 'Please try again or contact mike@quantimo.do for help.';
+            if(response.error){ message = response.error + '  ' + message; }
             qmService.hideLoader();
             $mdDialog.show(
                 $mdDialog.alert()
                     .parent(angular.element(document.querySelector('#popupContainer')))
                     .clickOutsideToClose(true)
                     .title('Could not upgrade')
-                    .textContent(message + '  Please try again or contact mike@quantimo.do for help.')
+                    .textContent(message)
                     .ariaLabel('Error')
                     .ok('OK')
             );
+        }
+        qmService.postCreditCard(body, function(response){
+            qmService.hideLoader();
+            qmLogService.debug(JSON.stringify(response));
+            if(!response || !response.user){
+                upgradeErrorHandler(response);
+                return;
+            }
+            qmLogService.error('Successful upgrade response from API');
+            qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Thank you!')
+                    .textContent("I'm eternally grateful for your generous support!")
+                    .ariaLabel('OK!')
+                    .ok('Get Started')
+            ).finally(function() {
+                qmService.stateHelper.goBack();
+                /** @namespace response.data.purchaseId */
+                qmService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
+            });
+            deferred.resolve(response);
+        }, function(response){
+            upgradeErrorHandler(response);
             deferred.reject(response);
         });
         return deferred.promise;
@@ -5815,8 +5964,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
         var doneState = getDefaultState();
         if(options.doneState){doneState = options.doneState;}
-        var trackingReminder = JSON.parse(JSON.stringify(variableObject));
+        var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
         trackingReminder.variableId = variableObject.id;
+        delete trackingReminder.id;
         trackingReminder.variableName = variableObject.name;
         trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
         trackingReminder.valence = variableObject.valence;
@@ -5833,6 +5983,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
         qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
+        if(successHandler){successHandler(trackingReminder);}
+        qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+           qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
+        });
         qmService.syncTrackingReminders();
     };
     qmService.getDefaultReminders = function(){
@@ -6169,10 +6323,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var deleteAllMeasurementsForVariable = function(variableName) {
         qmService.showBlackRingLoader();
         // Delete all measurements for a variable
+        qmService.showInfoToast("Deleted all " + variableName + " measurements");
         qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
             if (variableName === qm.getPrimaryOutcomeVariable().name) {
-                qmService.storage.setItem('primaryOutcomeVariableMeasurements',[]);
+                qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements,[]);
                 qmService.storage.setItem('measurementsQueue',[]);
                 qmService.storage.setItem('averagePrimaryOutcomeVariableValue',0);
                 qmService.storage.setItem('lastMeasurementSyncTime', 0);
@@ -6426,7 +6581,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         qmLogService.debug('getUserFromLocalStorageOrRefreshIfNecessary', null);
         if(qm.urlHelper.getParam('refreshUser')){
-            qmService.storage.clearStorageExceptForUnitsAndCommonVariables();
+            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.storage.setItem('onboarded', true);
             qmService.storage.setItem('introSeen', true);
             qmService.rootScope.setUser(null);
@@ -6656,7 +6811,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
     var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
-    qmService.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
+    qmService.showInfoToast = function(text) {
+        $mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));
+    };
+    qmService.showToastWithButton = function(textContent, buttonText, buttonFunction) {
+        var toast = $mdToast.simple()
+            .textContent(textContent)
+            .action(buttonText)
+            .highlightAction(true)
+            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
+            .hideDelay(10000)
+            .position(getToastPosition());
+        $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { buttonFunction(); } });
+    };
     qmService.configureAppSettings = function(appSettings){
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
@@ -6689,8 +6856,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
-        //putCommonVariablesInLocalStorageUsingJsonFile();
-        if(!qm.storage.getItem(qm.items.commonVariables)){qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();}
+        qm.commonVariablesHelper.refreshIfNecessary();
+        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
         qmService.backgroundGeolocationStartIfEnabled();
         qmLogService.setupBugsnag();
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
@@ -6698,13 +6865,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
-            qmLog.info("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
-            appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
-        }
+        appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
         qmService.deploy.setVersionInfo();
         //qmService.deploy.fetchUpdate();
     };
+
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
             function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
@@ -6795,7 +6960,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.versionInfo) + '\r\n';
+            template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.chcpInfo) + '\r\n';
             template = addSnapShotList(template);
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
@@ -6897,7 +7062,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
                 push.on('error', function(e) {
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "error", e.message);
-                    qmLogService.exception(e, e.message, pushConfig);
+                    qmLogService.error("Push error", e.message, pushConfig);
                 });
                 var finishPush = function (data) {
                     $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
@@ -6957,7 +7122,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 };
                 window.trackFiveRatingAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                    qmLog.pushDebug('trackDefaultValueAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                    qmLog.pushDebug('trackFiveRatingAction', ' push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
                     qm.notifications.postTrackingReminderNotifications(body);
                     finishPush(data);
                 };
@@ -6992,29 +7157,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     finishPush(data);
                 };
             }
-            window.notification_callback = function(reportedVariable, reportingTime){
-                var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-                var val = false;
-                if(reportedVariable === "repeat_rating"){
-                    val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
-                } else {
-                    val = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
-                }
-                if(val){
-                    localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
-                    var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime};
-                    if(localStorage['primaryOutcomeVariableMeasurements']){
-                        var allMeasurements = JSON.parse(localStorage['primaryOutcomeVariableMeasurements']);
-                        allMeasurements.push(allMeasurementsObject);
-                        localStorage['primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
-                    }
-                    if(localStorage['measurementsQueue']){
-                        var measurementsQueue = JSON.parse(localStorage['measurementsQueue']);
-                        measurementsQueue.push(allMeasurementsObject);
-                        localStorage['measurementsQueue'] = JSON.stringify(measurementsQueue);
-                    }
-                }
-            };
             qmService.registerDeviceToken();
         });
     };

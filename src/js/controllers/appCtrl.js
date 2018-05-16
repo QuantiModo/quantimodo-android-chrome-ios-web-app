@@ -61,16 +61,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(correlationObject.effectVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
         } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
     };
-    $scope.openUrl = function(url, location, target){
-        location = location || "no";
-        target = target || '_blank';
+    $scope.openUrl = function (url, showLocationBar, windowTarget) {
+        showLocationBar = showLocationBar || "no";
+        windowTarget = windowTarget || '_blank';
         if(typeof cordova !== "undefined"){
-            cordova.InAppBrowser.open(url,target, 'location='+location+',toolbar=yes,clearcache=no,clearsessioncache=no');
+            cordova.InAppBrowser.open(url,windowTarget, 'location='+showLocationBar+',toolbar=yes,clearcache=no,clearsessioncache=no');
         } else {
             if($rootScope.platform.isWeb){
-                window.open(url, target);  // Otherwise it opens weird popup instead of new tab
+                window.open(url, windowTarget);  // Otherwise it opens weird popup instead of new tab
             } else {
-                window.open(url, target, 'location='+location+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                window.open(url, windowTarget, 'location='+showLocationBar+',toolbar=yes,clearcache=yes,clearsessioncache=yes');
             }
         }
     };
@@ -134,11 +134,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.openSharingUrl(sharingUrl);
         }
     }
-    $scope.shareStudy = function(correlationObject, sharingUrl, ev){
+    $scope.shareStudy = function(correlationObject, shareType, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
             return;
         }
+        var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, correlationObject);
         if(!sharingUrl){qmLogService.error("No sharing url for this correlation: ", {correlation: correlationObject});}
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
@@ -269,7 +270,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
         var variableObject = {id: favorite.variableId, name: favorite.variableName};
         var actionMenuButtons = [
-            { text: '<i class="icon ion-gear-a"></i>Edit' },
+            { text: '<i class="icon ion-gear-a"></i>Edit Reminder' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             qmService.actionSheets.actionSheetButtons.charts,
             qmService.actionSheets.actionSheetButtons.historyAllVariable,
@@ -319,44 +320,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(qmService.explanations[settingName].title, qmService.explanations[settingName].explanation, ev);
     };
     $scope.goBack = function (providedStateParams) {
-        function skipSearchPages() {
-            if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
-                $ionicHistory.removeBackView();
-                backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
-                stateId = backView.stateName;
-                //$ionicHistory.goBack(-2);
-                //qmService.goToDefaultState(stateParams);
-                //return;
-            }
-        }
-
-        function addProvidedStateParamsToBackViewStateParams() {
-            for (var key in providedStateParams) {
-                if (providedStateParams.hasOwnProperty(key)) {
-                    if (providedStateParams[key] && providedStateParams[key] !== "") {
-                        if (!backView.stateParams) {backView.stateParams = {};}
-                        backView.stateParams[key] = providedStateParams[key];
-                        stateId += "_" + key + "=" + providedStateParams[key];
-                    }
-                }
-            }
-            //backView.stateId = stateId;  // TODO: What is this for?
-        }
-
-        if($ionicHistory.viewHistory().backView){
-            var backView = $ionicHistory.backView();
-            qmLog.info("backView.stateName is " + backView.stateName);
-            var stateId = backView.stateName;
-            skipSearchPages();
-            if(providedStateParams){
-                addProvidedStateParamsToBackViewStateParams();
-            }
-            qmLog.info('Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
-            $ionicHistory.goBack();
-        } else {
-            qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
-            qmService.goToDefaultState(providedStateParams);
-        }
+        qmService.stateHelper.goBack(providedStateParams);
     };
     $scope.trackLocationWithMeasurementsChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
@@ -410,7 +374,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var dialogParameters = {
             title: 'Select Variable',
             helpText: "Search for a variable to add a measurement, reminder, view history, or see relationships",
-            placeholder: "Search for a variable...",
+            placeholder: "Search for a variable", // Don't use ellipses because we append to this sometimes
             buttonText: "Select Variable",
             requestParams: {includePublic: true}
         };
