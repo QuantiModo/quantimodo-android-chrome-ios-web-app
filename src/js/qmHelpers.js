@@ -2432,6 +2432,12 @@ window.qm = {
             } else {
                 return string;
             }
+        },
+        replaceAll: function(str, find, replace){
+            function escapeRegExp(str) {
+                return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            }
+            return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
         }
     },
     studyHelper: {
