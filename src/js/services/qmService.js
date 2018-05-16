@@ -6818,6 +6818,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!qm.getAppSettings().appDesign.ionNavBarClass){ qm.getAppSettings().appDesign.ionNavBarClass = "bar-positive"; }
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
+        if(typeof qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled !== 'object'){ // TODO: Remove after all clients are updated
+            qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled =
+                {value: qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled};
+        }
         $rootScope.appSettings = qm.getAppSettings();
         qmLogService.debug('appSettings.clientId is ' + qm.getAppSettings().clientId);
         qmLogService.debug('$rootScope.appSettings: ', null, qm.getAppSettings());
