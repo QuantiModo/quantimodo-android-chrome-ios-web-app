@@ -367,7 +367,7 @@ function setClientId(callback) {
     }
     if(QUANTIMODO_CLIENT_ID){
         qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
-        if (callback) {callback(QUANTIMODO_CLIENT_ID);}
+        if (callback) {callback();}
         return;
     }
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
@@ -396,10 +396,10 @@ function setClientId(callback) {
                     QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
-            if (callback) {callback(QUANTIMODO_CLIENT_ID);}
+            if (callback) {callback();}
         });
     } else {
-        if (callback) {callback(QUANTIMODO_CLIENT_ID);}
+        if (callback) {callback();}
     }
 }
 setClientId();
@@ -2776,7 +2776,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "s3prefix": appSettings.clientId + "/"+getCHCPContentPath()+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
-        "update": "resume",
+        "update": "start",
         "content_url": getCHCPContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
@@ -2931,8 +2931,8 @@ gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
     return gulp.src('./www/**/*').pipe(ghPages({}));
 });
 gulp.task('add-client-remote', function(callback) {
-    setClientId(function (clientId) {
-        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + clientId + ".git";
+    setClientId(function () {
+        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + QUANTIMODO_CLIENT_ID + ".git";
         qmLog.info("Deploying to "+ remoteUrl);
         changeOriginRemote(remoteUrl, callback)
     });
