@@ -195,7 +195,15 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.platform.isIOS){ return $rootScope.appSettings.clientId + '_' + baseProductId; }
+        if($rootScope.platform.isIOS){
+            if (baseProductId.toLowerCase().indexOf('month') !== -1) {
+                return qm.getAppSettings().additionalSettings.monetizationSettings.iosMonthlySubscriptionCode.value;
+            } else if (baseProductId.toLowerCase().indexOf('year') !== -1) {
+                return qm.getAppSettings().additionalSettings.monetizationSettings.iosYearlySubscriptionCode.value;
+            } else {
+                qmLog.error("Could not determine subscription code for baseProductId "+baseProductId);
+            }
+        }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {
