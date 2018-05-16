@@ -761,9 +761,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         subscriptions: {
             setUpgradeDisabledIfOnAndroidWithoutKey: function(appSettings){
                 if(!qm.platform.isAndroid()){return appSettings;}
-                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
+                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value) {
                     qmLog.error("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
-                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value = false;
                 }
                 return appSettings;
             }
