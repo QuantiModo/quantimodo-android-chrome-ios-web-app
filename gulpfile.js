@@ -1061,7 +1061,7 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         qmLog.error("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
         return;
     }
-    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey};
+    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value};
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
@@ -2808,11 +2808,11 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     buildingFor.platform = qmPlatform.android;
     /** @namespace appSettings.additionalSettings.monetizationSettings */
-    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
-    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
+    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value */
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value){
         qmLog.error("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
         qmLog.error("No playPublicLicenseKey so disabling subscriptions on Android build");
-        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value = false;
         //generateDefaultConfigJson(appSettings);
     }
     /** @namespace appSettings.appStatus.buildEnabled */
