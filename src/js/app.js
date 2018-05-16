@@ -28,8 +28,9 @@ angular.module('starter',
         'angular-d3-word-cloud',
         'ngFileUpload',
         //'ngOpbeat',
-        'angular-web-notification'
-        //'ui-iconpicker'
+        'angular-web-notification',
+        //'ui-iconpicker',
+        'ngFitText'
     ]
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
