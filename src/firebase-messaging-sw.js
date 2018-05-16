@@ -129,7 +129,7 @@ self.addEventListener('notificationclick', function(event) {
     var basePath = '/ionic/Modo/www/index.html#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
     if(event.action && event.action.indexOf("https://") !== -1){
-        event.action = event.action.replace('/src/', '/www/');
+        event.action = qm.stringHelper.replaceAll(event.action, '/src/', '/www/');
         var route = qm.stringHelper.getStringAfter(event.action, basePath);
         urlPathToOpen = basePath + route;
     }
