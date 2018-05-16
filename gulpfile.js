@@ -367,7 +367,7 @@ function setClientId(callback) {
     }
     if(QUANTIMODO_CLIENT_ID){
         qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
-        if (callback) {callback();}
+        if (callback) {callback(QUANTIMODO_CLIENT_ID);}
         return;
     }
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
@@ -396,10 +396,10 @@ function setClientId(callback) {
                     QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
-            if (callback) {callback();}
+            if (callback) {callback(QUANTIMODO_CLIENT_ID);}
         });
     } else {
-        if (callback) {callback();}
+        if (callback) {callback(QUANTIMODO_CLIENT_ID);}
     }
 }
 setClientId();
@@ -673,6 +673,7 @@ function obfuscateStringify(message, object, maxCharacters) {
     if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
     if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
+    if(qmGit.accessToken){message = message.replace(qmGit.accessToken, 'HIDDEN');}
     return message;
 }
 function postAppStatus() {
@@ -2916,8 +2917,23 @@ gulp.task('generate-service-worker', function(callback) {
         stripPrefix: rootDir
     }, callback);
 });
-gulp.task('deploy-to-github-pages', function() {
-    return gulp.src('./www/**/*')
-        //.pipe(ghPages({remoteUrl: "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app"}));
-        .pipe(ghPages({}));
+function changeOriginRemote(remoteUrl, callback){
+    git.removeRemote('origin', function (err) {
+        if (err) {qmLog.info(err);}
+        git.addRemote('origin', remoteUrl, function (err) {
+            if (err) {qmLog.info(err);}
+            callback();
+        });
+    });
+}
+gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
+    writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    return gulp.src('./www/**/*').pipe(ghPages({}));
+});
+gulp.task('add-client-remote', function(callback) {
+    setClientId(function (clientId) {
+        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + clientId + ".git";
+        qmLog.info("Deploying to "+ remoteUrl);
+        changeOriginRemote(remoteUrl, callback)
+    });
 });
