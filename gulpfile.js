@@ -673,6 +673,7 @@ function obfuscateStringify(message, object, maxCharacters) {
     if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
     if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
+    if(qmGit.accessToken){message = message.replace(qmGit.accessToken, 'HIDDEN');}
     return message;
 }
 function postAppStatus() {
@@ -1060,7 +1061,7 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         qmLog.error("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
         return;
     }
-    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey};
+    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value};
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
@@ -2775,7 +2776,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "s3prefix": appSettings.clientId + "/"+getCHCPContentPath()+"/",
         "ios_identifier": appSettings.additionalSettings.appIds.appleId,
         "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
-        "update": "resume",
+        "update": "start",
         "content_url": getCHCPContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
@@ -2807,11 +2808,11 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     buildingFor.platform = qmPlatform.android;
     /** @namespace appSettings.additionalSettings.monetizationSettings */
-    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
-    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
+    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value */
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value){
         qmLog.error("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
         qmLog.error("No playPublicLicenseKey so disabling subscriptions on Android build");
-        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value = false;
         //generateDefaultConfigJson(appSettings);
     }
     /** @namespace appSettings.appStatus.buildEnabled */
@@ -2916,8 +2917,23 @@ gulp.task('generate-service-worker', function(callback) {
         stripPrefix: rootDir
     }, callback);
 });
-gulp.task('deploy-to-github-pages', function() {
-    return gulp.src('./www/**/*')
-        //.pipe(ghPages({remoteUrl: "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app"}));
-        .pipe(ghPages({}));
+function changeOriginRemote(remoteUrl, callback){
+    git.removeRemote('origin', function (err) {
+        if (err) {qmLog.info(err);}
+        git.addRemote('origin', remoteUrl, function (err) {
+            if (err) {qmLog.info(err);}
+            callback();
+        });
+    });
+}
+gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
+    writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    return gulp.src('./www/**/*').pipe(ghPages({}));
+});
+gulp.task('add-client-remote', function(callback) {
+    setClientId(function () {
+        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + QUANTIMODO_CLIENT_ID + ".git";
+        qmLog.info("Deploying to "+ remoteUrl);
+        changeOriginRemote(remoteUrl, callback)
+    });
 });
