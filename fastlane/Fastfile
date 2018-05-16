@@ -49,7 +49,7 @@ platform :ios do
   puts "Fastfile match_keychain_name is set to #{match_keychain_name}"
 
   xcode_project_path = "./platforms/ios/#{app_display_name}.xcodeproj"
-  puts "Fastfile xcodeproj is set to #{xcode_project_path}"
+  puts "Fastfile xcode_project_path is set to #{xcode_project_path}"
 
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
@@ -134,22 +134,8 @@ platform :ios do
       pem(app_identifier: app_identifier)
     end
 
-
-    # Update Code Signing
-      update_project_codesigning(path: xcode_project_path, use_automatic_signing: false, team_id: team_id)
-
-    # Patch Project Settings
-      proj = Xcodeproj::Project.open("../" + xcode_project_path)
-
-      proj.build_configurations.each do |item|
-          item.build_settings['DEVELOPMENT_TEAM'] = team_id
-          item.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = "iPhone Developer"
-          item.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = "match AppStore " + app_identifier
-      end
-
-      proj.recreate_user_schemes
-      proj.save
-    # End of Patching Project Settings
+    puts "recreate_schemes for some reason..."
+    recreate_schemes(project: xcode_project_path)
 
     puts "Building app with gym..."
     gym(scheme: app_display_name,
@@ -175,7 +161,8 @@ platform :ios do
         path: xcode_project_path,
         team_id: team_id
     )
-
+    puts "Disabling automatic_code_signing to fix QuantiModo has conflicting provisioning settings"
+    automatic_code_signing( path: xcode_project_path, use_automatic_signing: false )
     match(git_url: "https://github.com/mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
           app_identifier: app_identifier,
           type: "appstore",
@@ -185,7 +172,7 @@ platform :ios do
           team_id: team_id
     )
     update_project_provisioning(
-        xcodeproj: xcodeproj,
+        xcodeproj: xcode_project_path,
         profile: ENV["sigh_#{app_identifier}_appstore_profile-path"],
         build_configuration: "Release"
     )

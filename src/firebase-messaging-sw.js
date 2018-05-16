@@ -8,7 +8,7 @@ var locationObj = self.location;
 var window = self;
 var document = {};
 var libUrl = getIonicAppBaseUrl()+'lib/';
-console.log("Service worker importing libararies from " + libUrl);
+console.log("Service worker importing libraries from " + libUrl);
 importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
 importScripts(libUrl+'localforage/dist/localforage.js');
