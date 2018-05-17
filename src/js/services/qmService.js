@@ -1768,10 +1768,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.goToState(getDefaultState(), params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
-        qmService.goToState("app.variableSettingsVariableName", {variableObject: variableObject});
+        qmService.goToState(qmStates.variableSettingsVariableName, {variableObject: variableObject});
     };
     qmService.goToVariableSettingsByName = function(variableName){
-        qmService.goToState("app.variableSettingsVariableName", {variableName: variableName});
+        qmService.goToState(qmStates.variableSettingsVariableName, {variableName: variableName});
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
