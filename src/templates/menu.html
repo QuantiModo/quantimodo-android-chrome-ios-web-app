@@ -45,7 +45,7 @@
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-header-bar class="bar-positive">
             <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')"
-                 ng-if="!physicianUser && user && user.displayName && (user.stripeActive || !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)">
+                 ng-if="!physicianUser && user && user.displayName && (user.stripeActive || !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value)">
                 <a ng-if="user && user.avatar" class="button button-clear" >
                     <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a>
                 <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
@@ -58,7 +58,7 @@
                 <button id="switch-button" class="button button-icon ion-arrow-swap"></button>
             </div>
             <div id="menu-upgrade" style="cursor:pointer;"
-                 ng-if="!physicianUser && user && user.displayName && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled"
+                 ng-if="!physicianUser && user && user.displayName && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
                  ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
             </div>
