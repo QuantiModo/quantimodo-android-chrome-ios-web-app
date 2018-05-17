@@ -928,7 +928,7 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/src/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
+var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
     'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
@@ -2194,7 +2194,7 @@ gulp.task('setMediModoEnvs', [], function (callback) {
         callback);
 });
 gulp.task('setMoodiModoEnvs', [], function (callback) {
-    QUANTIMODO_CLIENT_ID = 'moodimodo';
+    QUANTIMODO_CLIENT_ID = 'moodimodoapp';
     runSequence(
         'getAppConfigs',
         callback);
