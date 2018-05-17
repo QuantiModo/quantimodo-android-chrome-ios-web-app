@@ -26,6 +26,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function setVariableObject(variableObject) {
         $scope.state.variableObject = $scope.state.variableObject = variableObject;
+        if(!$scope.variableName){$scope.variableName = variableObject.name;}
         setShowActionSheetMenu(variableObject);
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
