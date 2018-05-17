@@ -756,14 +756,47 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
                     qmService.goToDefaultState(providedStateParams);
                 }
+            },
+            getValueFromScopeStateParamsOrUrl: function (propertyName, $scope, $stateParams) {
+                if($stateParams[propertyName]){return $stateParams[propertyName];}
+                if($scope[propertyName]){return $scope[propertyName];}
+                if($scope.state && $scope.state[propertyName]){return $scope.state[propertyName];}
+                return qm.urlHelper.getParam(propertyName);
+            },
+            getVariableNameFromScopeStateParamsOrUrl: function ($scope, $stateParams) {
+                var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableName', $scope, $stateParams);
+                var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
+                if(variableObject){variableName = variableObject.name;}
+                return variableName;
+            },
+            getVariableIdFromScopeStateParamsOrUrl: function ($scope, $stateParams) {
+                var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableId', $scope, $stateParams);
+                var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
+                if(variableObject){variableName = variableObject.variableId || variableObject.id;}
+                return variableName;
+            },
+            addVariableNameOrIdToRequestParams: function (params, $scope, $stateParams) {
+                params = params || {};
+                var variableName = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                if(variableName){
+                    params.name = variableName;
+                } else {
+                    var variableId = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                    if(!variableId){
+                        qmLog.error("No variable name or id in variable settings page!");
+                        return false;
+                    }
+                    params.variableId = variableId;
+                }
+                return params;
             }
         },
         subscriptions: {
             setUpgradeDisabledIfOnAndroidWithoutKey: function(appSettings){
                 if(!qm.platform.isAndroid()){return appSettings;}
-                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled) {
+                if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value) {
                     qmLog.error("To enable android subscriptions add your playPublicLicenseKey at https://app.quantimo.do/builder");
-                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+                    appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value = false;
                 }
                 return appSettings;
             }
@@ -792,7 +825,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
             settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
             studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
-            variableSettings: { state: qmStates.variableSettings, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
+            variableSettings: { state: qmStates.variableSettingsVariableName, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
             if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
@@ -1735,10 +1768,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.goToState(getDefaultState(), params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
-        qmService.goToState("app.variableSettings", {variableObject: variableObject});
+        qmService.goToState(qmStates.variableSettingsVariableName, {variableObject: variableObject});
     };
     qmService.goToVariableSettingsByName = function(variableName){
-        qmService.goToState("app.variableSettings", {variableName: variableName});
+        qmService.goToState(qmStates.variableSettingsVariableName, {variableName: variableName});
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
@@ -3769,7 +3802,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-            measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
+            if(measurements[index].variableName.toLowerCase().indexOf(measurements[index].unitAbbreviatedName.toLowerCase()) !== -1){
+                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].variableName;
+            } else {
+                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' +
+                    measurements[index].variableName;
+            }
             measurements[index].valueUnitVariableName = qmService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
             //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
@@ -3782,7 +3820,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
             }
             if(measurements[index].image){ measurements[index].pngPath = measurements[index].image; }
-            if (measurements[index].variableCategoryName){
+            measurements[index].icon = measurements[index].icon || measurements[index].ionIcon;
+            if (measurements[index].variableCategoryName && !measurements[index].icon){
                 measurements[index].icon = qmService.getVariableCategoryIcon(measurements[index].variableCategoryName);
             }
         }
@@ -6818,6 +6857,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!qm.getAppSettings().appDesign.ionNavBarClass){ qm.getAppSettings().appDesign.ionNavBarClass = "bar-positive"; }
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
+        if(typeof qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled !== 'object'){ // TODO: Remove after all clients are updated
+            qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled =
+                {value: qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled};
+        }
         $rootScope.appSettings = qm.getAppSettings();
         qmLogService.debug('appSettings.clientId is ' + qm.getAppSettings().clientId);
         qmLogService.debug('$rootScope.appSettings: ', null, qm.getAppSettings());
