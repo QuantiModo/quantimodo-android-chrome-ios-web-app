@@ -5,16 +5,19 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.controller_name = "VariableSettingsCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
-    function getVariableName() {
-        if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}
-        if($stateParams.variableObject){$scope.variableName = $stateParams.variableObject.name;}
-        if($scope.variableName){return $scope.variableName;}
-        qmLog.error("No variable name in variable settings page!");
-        $scope.goBack();
+    function getVariableParams() {
+        var params = {includeTags: true};
+        params = qmService.stateHelper.addVariableNameOrIdToRequestParams(params, $scope, $stateParams);
+        return params;
     }
     function getUserVariableWithTags() {
         if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        qm.userVariables.getFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+        var params = getVariableParams();
+        if(!params){
+            $scope.goBack();
+            return;
+        }
+        qm.userVariables.getFromApi(params, function(userVariables){
             qmService.hideLoader();
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);
@@ -23,6 +26,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function setVariableObject(variableObject) {
         $scope.state.variableObject = $scope.state.variableObject = variableObject;
+        if(!$scope.variableName){$scope.variableName = variableObject.name;}
         setShowActionSheetMenu(variableObject);
     }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);

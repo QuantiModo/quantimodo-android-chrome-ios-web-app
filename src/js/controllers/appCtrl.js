@@ -51,15 +51,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
         /** @namespace correlationObject.causeVariable */
         if(correlationObject.causeVariable){
-            qmService.goToState('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
+            qmService.goToState('app.variableSettingsVariableName', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
         } else {
-            qmService.goToState('app.variableSettings', {variableName: correlationObject.causeVariableName});
+            qmService.goToState('app.variableSettingsVariableName', {variableName: correlationObject.causeVariableName});
         }
     };
     $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
         /** @namespace correlationObject.effectVariable */
-        if(correlationObject.effectVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
-        } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
+        if(correlationObject.effectVariable){ qmService.goToState('app.variableSettingsVariableName', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
+        } else { qmService.goToState('app.variableSettingsVariableName', {variableName: correlationObject.effectVariableName}); }
     };
     $scope.openUrl = function (url, showLocationBar, windowTarget) {
         showLocationBar = showLocationBar || "no";
