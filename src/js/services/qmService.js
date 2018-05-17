@@ -825,7 +825,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
             settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
             studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
-            variableSettingsVariableName: { state: qmStates.variableSettingsVariableName, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
+            variableSettings: { state: qmStates.variableSettingsVariableName, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
             if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
