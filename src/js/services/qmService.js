@@ -3769,7 +3769,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-            measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
+            if(measurements[index].variableName.toLowerCase().indexOf(measurements[index].unitAbbreviatedName.toLowerCase()) !== -1){
+                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].variableName;
+            } else {
+                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' +
+                    measurements[index].variableName;
+            }
             measurements[index].valueUnitVariableName = qmService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
             //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
@@ -3782,7 +3787,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
             }
             if(measurements[index].image){ measurements[index].pngPath = measurements[index].image; }
-            if (measurements[index].variableCategoryName){
+            measurements[index].icon = measurements[index].icon || measurements[index].ionIcon;
+            if (measurements[index].variableCategoryName && !measurements[index].icon){
                 measurements[index].icon = qmService.getVariableCategoryIcon(measurements[index].variableCategoryName);
             }
         }
