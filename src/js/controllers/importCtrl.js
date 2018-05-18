@@ -371,6 +371,36 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 connectWithParams(params, connector.name);
             });
         }
+        if(connector.name === 'mint') {
+            $scope.data = {};
+            myPopup = $ionicPopup.show({
+                template: '<label class="item item-input">' +
+                '<i class="icon ion-person placeholder-icon"></i>' +
+                '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+                '<br> <label class="item item-input">' +
+                '<i class="icon ion-locked placeholder-icon"></i>' +
+                '<input type="password" placeholder="Password" ng-model="data.password"></label>',
+                title: connector.displayName,
+                subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.data.username || !$scope.data.password) {
+                                e.preventDefault();
+                            } else {return $scope.data;}
+                        }
+                    }
+                ]
+            });
+            myPopup.then(function(res) {
+                var params = { username: $scope.data.username, password: $scope.data.password };
+                connectWithParams(params, connector.name);
+            });
+        }
         if(connector.name === 'mynetdiary') {
             $scope.data = {};
             myPopup = $ionicPopup.show({
@@ -536,6 +566,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
+                $scope.state.text = '';
             }, function(response){
                 qmLogService.error(response);
                 $scope.$broadcast('scroll.refreshComplete');
@@ -553,6 +584,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         qmLogService.debug('Opened ' + url);
     };
     function connectWithParams(params, lowercaseConnectorName) {
+        $scope.state.text = '';
         qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
             .then(function(result){
                 qmLogService.debug(JSON.stringify(result), null);
