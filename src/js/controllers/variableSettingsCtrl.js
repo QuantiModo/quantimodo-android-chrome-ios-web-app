@@ -32,7 +32,13 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.sendToLoginIfNecessaryAndComeBack();
         qmService.navBar.showNavigationMenu();
-        if($stateParams.variableObject){
+        if(qmService.variableIdToGetOnReturnToSettings){
+            getUserVariableWithTags(qmService.variableIdToGetOnReturnToSettings);
+            qm.userVariables.getFromLocalStorageOrApi({id: qmLogService.variableIdToGetOnReturnToSettings}, function (variables) {
+                setVariableObject(variables[0])
+            });
+            delete qmService.variableIdToGetOnReturnToSettings;
+        } else if ($stateParams.variableObject){
             setVariableObject($stateParams.variableObject);
             getUserVariableWithTags();
         } else {
@@ -73,9 +79,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         function selectVariable(selectedVariable) {
             var userTagData;
             if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
-                qmService.goToState('app.tagAdd', {
+                goToAddTagState({
                     userTaggedVariableObject: $scope.state.variableObject,
-                    fromState: $state.current.name,
                     fromStateParams: {variableObject: $scope.state.variableObject},
                     userTagVariableObject: selectedVariable
                 });
@@ -102,13 +107,17 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
         qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
     };
+    function goToAddTagState(stateParams){
+        stateParams.fromState = $state.current.name;
+        qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.id;
+        qmService.goToState(qmStates.tagAdd, stateParams);
+    }
     $scope.openTageeVariableSearchDialog = function($event) {
         function selectVariable(selectedVariable) {
             var userTagData;
             if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
-                qmService.goToState('app.tagAdd', {
+                goToAddTagState(qmStates.tagAdd, {
                     userTagVariableObject: $scope.state.variableObject,
-                    fromState: $state.current.name,
                     fromStateParams: {variableObject: $scope.state.variableObject},
                     userTaggedVariableObject: selectedVariable
                 });
@@ -206,7 +215,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }).catch(function (error) {qmLogService.error(null, error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { qmLogService.debug('Text changed to ' + text, null); }
+        function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $scope.state.variableObject.wikipediaPage = item.page;
             $scope.state.variableObject.wikipediaExtract = item.page.extract;
@@ -319,18 +328,16 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
     };
     $scope.editTag = function(userTagVariable){
-        qmService.goToState('app.tagAdd', {
+        goToAddTagState({
             tagConversionFactor: userTagVariable.tagConversionFactor,
             userTaggedVariableObject: $scope.state.variableObject,
-            fromState: $state.current.name,
             userTagVariableObject: userTagVariable
         });
     };
     $scope.editTagged = function(userTaggedVariable){
-        qmService.goToState('app.tagAdd', {
+        goToAddTagState({
             tagConversionFactor: userTaggedVariable.tagConversionFactor,
             userTaggedVariableObject: userTaggedVariable,
-            fromState: $state.current.name,
             userTagVariableObject: $scope.state.variableObject
         });
     };
