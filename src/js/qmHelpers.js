@@ -3078,7 +3078,7 @@ window.qm = {
         },
         updateSubtitles: function (variables, requestParams){
             if(requestParams && requestParams.sort) {
-                var sort = dialogParameters.requestParams.sort;
+                var sort = requestParams.sort;
                 sort = sort.replace("-", "");
                 for (var i = 0; i < variables.length; i++) {
                     if (sort.toLowerCase().indexOf("correlation")) {
