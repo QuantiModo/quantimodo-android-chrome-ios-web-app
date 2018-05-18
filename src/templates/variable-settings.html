@@ -70,6 +70,19 @@
                     </md-button>
                 </div>
             </div>
+            <div class="card variable-settings" >
+                <div class="item item-divider ng-binding">{{state.variableObject.name}} Parent Categories</div>
+                <md-chips ng-model="state.variableObject.parentUserTagVariables" name="tagVariable" ng-click="openTagVariableSearchDialog()"
+                          ng-show="state.variableObject.parentUserTagVariables && state.variableObject.parentUserTagVariables.length"
+                          md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
+                    <md-chip-template>
+                        <em>{{$chip.tagDisplayText}}</em>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTagVariableSearchDialog()">
+                    Add a Parent Category
+                </md-button>
+            </div>
             <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
                 <div class="card variable-settings" >
                     <div class="item item-divider ng-binding">{{state.variableObject.name}} Ingredients</div>
