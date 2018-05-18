@@ -2997,13 +2997,14 @@ window.qm = {
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 2){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 3;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
-            function sortAndReturnVariables(variables) {
+            function sortUpdateSubtitlesAndReturnVariables(variables) {
                 if(!requestParams.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
                 if(successHandler){successHandler(variables);}
             }
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
-                    sortAndReturnVariables(variables);
+                    sortUpdateSubtitlesAndReturnVariables(variables);
                 }, function (error) {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
@@ -3015,7 +3016,7 @@ window.qm = {
             }
             qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                    sortAndReturnVariables(variables);
+                    sortUpdateSubtitlesAndReturnVariables(variables);
                     return;
                 }
                 // Using reminders in variable searches creates duplicates and lots of problems
@@ -3075,6 +3076,21 @@ window.qm = {
                 });
             });
         },
+        updateSubtitles: function (variables, requestParams){
+            if(requestParams && requestParams.sort) {
+                var sort = requestParams.sort;
+                sort = sort.replace("-", "");
+                for (var i = 0; i < variables.length; i++) {
+                    if (sort.toLowerCase().indexOf("correlation")) {
+                        if (variables[i][sort]) {
+                            var number = variables[i][sort];
+                            variables[i].subtitle = number + " studies";
+                        }
+                    }
+                }
+            }
+            return variables;
+        }
     },
     webNotifications: {
         initializeFirebase: function(){
