@@ -29,6 +29,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^3.0.0",
     "gulp-download-stream": "0.0.13",
+    "gulp-download": "^0.0.1",
     "gulp-filter": "^5.0.0",
     "gulp-gh-pages-will": "^0.5.4",
     "gulp-git": "2.2.0",
