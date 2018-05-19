@@ -38,8 +38,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     $scope.selectOutcomeVariable = function (ev) {
         qm.help.getExplanation('outcomeSearch', null, function (explanation) {
             var dialogParameters = {
-                title: explanation.outcomeSearch.title,
-                helpText: explanation.outcomeSearch.textContent,
+                title: explanation.title,
+                helpText: explanation.textContent,
                 placeholder: "Search for an outcome...",
                 buttonText: "Select Variable",
                 requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
@@ -48,10 +48,10 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         });
     };
     $scope.selectPredictorVariable = function (ev) {
-        qm.help.getExplanation('outcomeSearch', null, function (explanation) {
+        qm.help.getExplanation('predictorSearch', null, function (explanation) {
             var dialogParameters = {
-                title: explanation.predictorSearch.title,
-                helpText: explanation.predictorSearch.textContent,
+                title: explanation.title,
+                helpText: explanation.textContent,
                 placeholder: "Search for a predictor...",
                 buttonText: "Select Variable",
                 requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
