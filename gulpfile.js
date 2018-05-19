@@ -135,7 +135,8 @@ var cordovaBuild = require('taco-team-build');
 var csso = require('gulp-csso');
 var concat = require('gulp-concat');
 var defaultRequestOptions = {strictSSL: false};
-var download = require('gulp-download-stream');
+var downloadStream = require('gulp-download-stream');
+var download = require('gulp-download');
 var es = require('event-stream');
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
@@ -1035,15 +1036,21 @@ gulp.task('validateDevCredentials', ['setClientId'], function () {
 gulp.task('saveDevCredentials', ['setClientId'], function () {
     return writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
 });
+gulp.task('downloadSwaggerJson', [], function () {
+    var url = 'https://raw.githubusercontent.com/QuantiModo/docs/develop/swagger/swagger.json';
+    qmLog.info("Downloading "+url);
+    return download(url)
+        .pipe(gulp.dest("src/data/"));
+});
 function downloadFile(url, filename, destinationFolder) {
     qmLog.info("Downloading  " + url + " to " + destinationFolder + "/" + filename);
-    return download(url)
+    return downloadStream(url)
         .pipe(rename(filename))
         .pipe(gulp.dest(destinationFolder));
 }
 function downloadAndUnzipFile(url, destinationFolder) {
     qmLog.info("Downloading  " + url + " and uzipping to " + destinationFolder);
-    return download(url)
+    return downloadStream(url)
         .pipe(unzip())
         .pipe(gulp.dest(destinationFolder));
 }

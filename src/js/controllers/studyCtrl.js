@@ -226,7 +226,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 }
             }
         }).then(function(variable) {
-            qmService.showInfoToast("Re-analyzing data using updated " + qmService.explanations[propertyToUpdate].title);
+            qmService.showInfoToast("Re-analyzing data using updated " + qm.stringHelper.camelToTitleCase(propertyToUpdate));
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             qmService.postUserVariableDeferred(postData).then(function (response) {
@@ -236,12 +236,13 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     };
     function VariableSettingsController(qmService, qmLogService, dialogParameters) {
         var self = this;
-        self.title = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        self.helpText = qmService.explanations[dialogParameters.propertyToUpdate].explanation;
-        self.placeholder = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        if(qmService.explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dialogParameters.propertyToUpdate].unitName;}
+        var explanations = qm.help.getExplanations();
+        self.title = explanations[dialogParameters.propertyToUpdate].title;
+        self.helpText = explanations[dialogParameters.propertyToUpdate].explanation;
+        self.placeholder = explanations[dialogParameters.propertyToUpdate].title;
+        if(explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + explanations[dialogParameters.propertyToUpdate].unitName;}
         self.value = dialogParameters.variable[dialogParameters.propertyToUpdate];
-        self.unitName = qmService.explanations[dialogParameters.propertyToUpdate].unitName;
+        self.unitName = explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);
