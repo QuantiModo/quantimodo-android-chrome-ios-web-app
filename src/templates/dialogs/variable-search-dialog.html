@@ -19,7 +19,7 @@
             <form ng-submit="$event.preventDefault()">
                 <p id="variable-search-help-text" ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
                 <md-autocomplete id="variable-search-box"
-                        md-no-cache="false"
+                        md-no-cache="true"
                         md-selected-item="ctrl.selectedItem"
                         md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
                         md-search-text="ctrl.searchText"
@@ -30,7 +30,8 @@
                         md-min-length="0"
                         placeholder="{{ctrl.placeholder}}"
                         md-menu-class="autocomplete-custom-template"
-                        md-autofocus="true">
+ 
+                        lazy-load-data="ctrl.querySearchAPI(ctrl.searchText)">
                     <md-item-template id="variable-item">
                         <span class="item-title" id="variable-item-title">
                             <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
