@@ -511,6 +511,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     dialogParameters.placeholder += ' or press camera to scan';
                     dialogParameters.helpText += '. Press the camera button to scan a barcode.';
                 }
+                self.minLength = dialogParameters.minLength || 0;
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
                 self.selectedItemChange = selectedItemChange;
