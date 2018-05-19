@@ -131,7 +131,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }
         }
         var dialogParameters = {
-            title: 'Add a variable containing ' + selectVariable.name,
+            title: 'Add a variable containing ' + selectedVariable.name,
             helpText: "Search for a variable " +
             " for which " + $scope.state.variableObject.name.toUpperCase() + " is an ingredient or category.  Then " +
             "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
