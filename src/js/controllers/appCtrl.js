@@ -96,7 +96,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function noCallback() {correlationObject.shareUserMeasurements = false;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    var showUnshareStudyConfirmation = function(correlationObject, ev) {
+    var showUnShareStudyConfirmation = function(correlationObject, ev) {
         var title = 'Share Study';
         var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
             ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
@@ -110,7 +110,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     $scope.toggleStudyShare = function (correlationObject, ev) {
-        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
+        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnShareStudyConfirmation(correlationObject, ev);}
     };
     function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
         if ($rootScope.platform.isMobile){
@@ -169,9 +169,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.storage.setItem(flagName, true);
     };
     $scope.showHelpInfoPopup = function (explanationId, ev) {
-        qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
+        qmService.help.showExplanationsPopup(explanationId, ev);
     };
-
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
@@ -316,8 +315,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qmLogService.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
             });
     };
-    $scope.showExplanationsPopup = function(settingName, ev) {
-        qmService.showMaterialAlert(qmService.explanations[settingName].title, qmService.explanations[settingName].explanation, ev);
+    $scope.showExplanationsPopup = function(parameterOrPropertyName, ev, modelName, title) {
+        qmService.help.showExplanationsPopup(parameterOrPropertyName, ev, modelName, title);
     };
     $scope.goBack = function (providedStateParams) {
         qmService.stateHelper.goBack(providedStateParams);

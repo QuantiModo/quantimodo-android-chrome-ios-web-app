@@ -252,6 +252,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail); }
             },
         },
+        help: {
+            showExplanationsPopup: function(parameterOrPropertyName, ev, modelName, title) {
+                qm.help.getExplanation(parameterOrPropertyName, modelName, function (explanation) {
+                    if(title){explanation.title = title;}
+                    qmService.showMaterialAlert(explanation.title, explanation.textContent, ev);
+                });
+            }
+        },
         ionIcons: {
             history: 'ion-ios-list-outline',
             reminder: 'ion-android-notifications-none',
@@ -2599,7 +2607,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $rootScope.variableCategoryNames.push(variableCategory.name);
                 qmService.variableCategories[variableCategory.name] = variableCategory;
             });
-            setupExplanations();
             deferred.resolve(variableCategories);
         });
         return deferred.promise;
@@ -6156,76 +6163,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return object;
     };
-    function setupExplanations(){
-        qmService.explanations = {
-            predictorSearch: {
-                title: "Select Predictor",
-                textContent: "Search for a predictor like a food or treatment that you want to know the effects of..."
-            },
-            outcomeSearch: {
-                title: "Select Outcome",
-                textContent: "Select an outcome variable to be optimized like overall mood or sleep quality..."
-            },
-            locationAndWeatherTracking: {
-                title: "Location and Weather Tracking",
-                textContent: qmService.variableCategories.Location.moreInfo
-            },
-            minimumAllowedValue: {
-                title: "Minimum Allowed Value",
-                explanation: "The minimum allowed value for measurements. While you can record a value below this minimum, it will be excluded from the correlation analysis.",
-            },
-            maximumAllowedValue: {
-                title: "Maximum Allowed Value",
-                explanation: "The maximum allowed value for measurements.  While you can record a value above this maximum, it will be excluded from the correlation analysis.",
-            },
-            onsetDelayInHours: {
-                title: "Onset Delay",
-                unitName: "Hours",
-                explanation: "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
-            },
-            onsetDelay: {
-                title: "Onset Delay",
-                unitName: "Seconds",
-                explanation: "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
-            },
-            durationOfActionInHours: {
-                title: "Duration of Action",
-                unitName: "Hours",
-                explanation: "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
-            },
-            durationOfAction: {
-                title: "Duration of Action",
-                unitName: "Seconds",
-                explanation: "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
-            },
-            fillingValue: {
-                title: "Filling Value",
-                explanation: "When it comes to analysis to determine the effects of this variable, knowing when it did not occur is as important as knowing when it did occur. For example, if you are tracking a medication, it is important to know when you did not take it, but you do not have to log zero values for all the days when you haven't taken it. Hence, you can specify a filling value (typically 0) to insert whenever data is missing.",
-            },
-            combinationOperation: {
-                title: "Combination Method",
-                explanation: "How multiple measurements are combined over time.  We use the average (or mean) for things like your weight.  Summing is used for things like number of apples eaten.",
-            },
-            defaultValue: {
-                title: "Default Value",
-                explanation: "If specified, there will be a button that allows you to quickly record this value.",
-            },
-            experimentStartTime: {
-                title: "Analysis Start Date",
-                explanation: "Data prior to this date will not be used in analysis.",
-            },
-            experimentEndTime: {
-                title: "Analysis End Date",
-                explanation: "Data after this date will not be used in analysis.",
-            },
-            thumbs: {
-                title: "Help Me Learn",
-                explanation: "I'm really good at finding correlations and even compensating for various onset delays and durations of action. " +
-                "However, you're much better than me at knowing if there's a way that a given factor could plausibly influence an outcome. " +
-                "You can help me learn and get better at my predictions by pressing the thumbs down button for relationships that you don't think could possibly be causal.",
-            }
-        };
-    }
+
     qmService.showMaterialAlert = function(title, textContent, ev){
         AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
         function AlertDialogController($scope, $mdDialog, dialogParameters) {
