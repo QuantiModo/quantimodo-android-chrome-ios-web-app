@@ -70,9 +70,9 @@
                     </md-button>
                 </div>
             </div>
-            <div class="card variable-settings" >
+            <div class="card variable-settings" id="parentUserTagVariables-card">
                 <div class="item item-divider ng-binding">{{state.variableObject.name}} Parent Categories</div>
-                <md-chips ng-model="state.variableObject.parentUserTagVariables" name="tagVariable" ng-click="openTagVariableSearchDialog()"
+                <md-chips ng-model="state.variableObject.parentUserTagVariables" name="parentUserTagVariables" ng-click="openTagVariableSearchDialog()"
                           ng-show="state.variableObject.parentUserTagVariables && state.variableObject.parentUserTagVariables.length"
                           md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                     <md-chip-template>
@@ -81,6 +81,19 @@
                 </md-chips>
                 <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTagVariableSearchDialog()">
                     Add a Parent Category
+                </md-button>
+            </div>
+            <div class="card variable-settings" id="childUserTagVariables-card">
+                <div class="item item-divider ng-binding">{{state.variableObject.name}} Child Sub-Types</div>
+                <md-chips ng-model="state.variableObject.childUserTagVariables" name="childUserTagVariables" ng-click="openTageeVariableSearchDialog()"
+                          ng-show="state.variableObject.childUserTagVariables && state.variableObject.childUserTagVariables.length"
+                          md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
+                    <md-chip-template>
+                        <em>{{$chip.tagDisplayText}}</em>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTageeVariableSearchDialog()">
+                    Add a Child Sub-Type
                 </md-button>
             </div>
             <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
