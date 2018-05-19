@@ -19,7 +19,7 @@
             <form ng-submit="$event.preventDefault()">
                 <p id="variable-search-help-text" ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
                 <md-autocomplete id="variable-search-box"
-                        md-no-cache="false"
+                        md-no-cache="true"
                         md-selected-item="ctrl.selectedItem"
                         md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
                         md-search-text="ctrl.searchText"
