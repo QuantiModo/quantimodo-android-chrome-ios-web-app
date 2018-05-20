@@ -85,7 +85,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
-        getStudy();
+        getStudy(true);
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
@@ -154,7 +154,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
-    function getStudy() {
+    function getStudy(recalculate) {
         if(!getCauseVariableName() || !getEffectVariableName()){
             qmLogService.error('Cannot get study. Missing cause or effect variable name.');
             qmService.goToDefaultState();
@@ -162,6 +162,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }
         getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
+        if(recalculate){$scope.state.requestParams.recalculate = true;}
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
@@ -230,7 +231,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             qmService.postUserVariableDeferred(postData).then(function (response) {
-                getStudy();
+                $scope.refreshStudy();
             });
         }, function() {qmLogService.debug('User cancelled selection', null);});
     };
