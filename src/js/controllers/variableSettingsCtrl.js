@@ -5,30 +5,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.controller_name = "VariableSettingsCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
-    function getVariableParams() {
-        var params = {includeTags: true};
-        params = qmService.stateHelper.addVariableNameOrIdToRequestParams(params, $scope, $stateParams);
-        return params;
-    }
-    function getUserVariableWithTags() {
-        if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        var params = getVariableParams();
-        if(!params){
-            $scope.goBack();
-            return;
-        }
-        qm.userVariables.getFromApi(params, function(userVariables){
-            qmService.hideLoader();
-            if(userVariables && userVariables[0]){
-                setVariableObject(userVariables[0]);
-            }
-        })
-    }
-    function setVariableObject(variableObject) {
-        $scope.state.variableObject = $scope.state.variableObject = variableObject;
-        if(!$scope.variableName){$scope.variableName = variableObject.name;}
-        setShowActionSheetMenu(variableObject);
-    }
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.sendToLoginIfNecessaryAndComeBack();
         qmService.navBar.showNavigationMenu();
@@ -45,6 +21,35 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             getUserVariableWithTags();
         }
     });
+    $scope.$on("$ionicView.afterEnter", function() {
+            qm.loaders.robots();
+        });
+    function getVariableParams() {
+        var params = {includeTags: true};
+        params = qmService.stateHelper.addVariableNameOrIdToRequestParams(params, $scope, $stateParams);
+        return params;
+    }
+    function getUserVariableWithTags() {
+        if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
+        var params = getVariableParams();
+        if(!params){
+            $scope.goBack();
+            return;
+        }
+        $scope.state.loading = true;
+        qm.userVariables.getFromApi(params, function(userVariables){
+            qmService.hideLoader();
+            $scope.state.loading = false;
+            if(userVariables && userVariables[0]){
+                setVariableObject(userVariables[0]);
+            }
+        })
+    }
+    function setVariableObject(variableObject) {
+        $scope.state.variableObject = $scope.state.variableObject = variableObject;
+        if(!$scope.variableName){$scope.variableName = variableObject.name;}
+        setShowActionSheetMenu(variableObject);
+    }
     function setShowActionSheetMenu(variableObject) {
         qmService.rootScope.setShowActionSheetMenu(function() {
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
