@@ -2578,6 +2578,16 @@ gulp.task('downloadQmAmazonJs', function (callback) {
         callback();
     });
 });
+gulp.task('clone-ios-build-repo', function (callback) {
+    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-ios-build', function (err) {
+        if (err) {qmLog.info(err);}
+        callback();
+    });
+});
+gulp.task('copy-ios-build-repo', function () {
+    return gulp.src(['qm-ios-build/**', '!.git/**'])
+        .pipe(gulp.dest('./'));
+});
 gulp.task('downloadAllChromeExtensions', function (callback) {
     runSequence(
         'cleanBuildFolder',
