@@ -87,7 +87,7 @@
                             </span>
                     </div>
                     <md-chips ng-model="state.variableObject.joinedCommonTagVariables" name="joinedCommonTagVariables" readonly="true">
-                        <md-chip-template><em>{{$chip.tagDisplayText}}</em></md-chip-template>
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
                     </md-chips>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                           ng-show="state.variableObject.parentUserTagVariables && state.variableObject.parentUserTagVariables.length"
                           md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                     <md-chip-template>
-                        <em>{{$chip.tagDisplayText}}</em>
+                        <em>{{$chip.name}}</em>
                     </md-chip-template>
                 </md-chips>
                 <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
@@ -116,7 +116,7 @@
                         </span>
                     </div>
                     <md-chips ng-model="state.variableObject.parentCommonTagVariables" name="parentCommonTagVariables" readonly="true">
-                        <md-chip-template><em>{{$chip.tagDisplayText}}</em></md-chip-template>
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
                     </md-chips>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                           ng-show="state.variableObject.childUserTagVariables && state.variableObject.childUserTagVariables.length"
                           md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
                     <md-chip-template>
-                        <em>{{$chip.tagDisplayText}}</em>
+                        <em>{{$chip.name}}</em>
                     </md-chip-template>
                 </md-chips>
                 <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
@@ -145,7 +145,7 @@
                         </span>
                     </div>
                     <md-chips ng-model="state.variableObject.childCommonTagVariables" name="childCommonTagVariables" readonly="true">
-                        <md-chip-template><em>{{$chip.tagDisplayText}}</em></md-chip-template>
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
                     </md-chips>
                 </div>
             </div>
@@ -155,14 +155,14 @@
                         Ingredients &nbsp; <i class="icon ion-help-circled"></i>
                     </span>
                 </div>
-                <md-chips ng-model="state.variableObject.ingredientUserTagVariables" name="ingredientUserTagVariables" ng-click="openTagVariableSearchDialog()"
+                <md-chips ng-model="state.variableObject.ingredientUserTagVariables" name="ingredientUserTagVariables" ng-click="openIngredientVariableSearchDialog()"
                           ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
                           md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                     <md-chip-template>
                         <em>{{$chip.tagDisplayText}}</em>
                     </md-chip-template>
                 </md-chips>
-                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTagVariableSearchDialog()">
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openIngredientVariableSearchDialog()">
                     Add an Ingredient
                 </md-button>
                 <div ng-if="state.variableObject.ingredientCommonTagVariables && state.variableObject.ingredientCommonTagVariables.length">
@@ -182,7 +182,7 @@
                         Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
                     </span>
                 </div>
-                <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="openTageeVariableSearchDialog()"
+                <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="openIngredientOfVariableSearchDialog()"
                           ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
                           md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
                     <md-chip-template>
@@ -190,7 +190,7 @@
                     </md-chip-template>
                 </md-chips>
                 <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
-                           ng-click="openTageeVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
+                           ng-click="openIngredientOfVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
                 </md-button>
                 <div ng-if="state.variableObject.ingredientOfCommonTagVariables && state.variableObject.ingredientOfCommonTagVariables.length">
                     <div class="item item-divider ng-binding">
