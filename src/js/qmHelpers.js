@@ -1189,6 +1189,7 @@ window.qm = {
     getPrimaryOutcomeVariableByNumber: function(num){
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
     },
+    getSourceName: function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();},
     getUser: function(successHandler, errorHandler){
         if(!successHandler){
             return qm.userHelper.getUserFromLocalStorage();
@@ -3210,6 +3211,67 @@ window.qm = {
             return variables;
         }
     },
+    variableCategoryHelper: {
+        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
+            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
+                if(!variableCategories){
+                    qmLog.error("No variable categories from json file!");
+                } else {
+                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                }
+                successHandler(variableCategories);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
+            qmLog.info("Getting variable categories from API...");
+            function globalSuccessHandler(variableCategories){
+                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+                if(successHandler){successHandler(variableCategories);}
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            }
+            apiInstance.getVariableCategories(callback);
+        },
+        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
+            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
+                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
+            } else {
+                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
+                    if(!variableCategories){
+                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                            successHandler(variableCategories);
+                        }, errorHandler)
+                    } else {
+                        successHandler(variableCategories);
+                    }
+                }, errorHandler)
+            }
+        },
+        getVariableCategoriesFromGlobals: function(){
+            return qm.globalHelper.getItem(qm.items.variableCategories);
+        },
+        getVariableCategory: function(variableCategoryName, successHandler){
+            if(!successHandler){
+                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+                if(variableCategories){
+                    return variableCategories.find(function(variableCategory){
+                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
+                    });
+                }
+            }
+            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
+               var match = variableCategories.find(function (category) {
+                    category.name = variableCategoryName;
+               });
+                successHandler(match);
+            });
+        }
+    },
     webNotifications: {
         initializeFirebase: function(){
             if(qm.firebase){
@@ -3302,68 +3364,12 @@ window.qm = {
             }
         }
     },
-    variableCategoryHelper: {
-        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
-            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
-                if(!variableCategories){
-                    qmLog.error("No variable categories from json file!");
-                } else {
-                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
-                }
-                successHandler(variableCategories);
-            }, function (error) {
-                if(errorHandler){errorHandler(error);}
-            });
-        },
-        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
-            qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){successHandler(variableCategories);}
-            }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.VariablesApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
-            }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
-                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
-            } else {
-                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
-                    if(!variableCategories){
-                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                            successHandler(variableCategories);
-                        }, errorHandler)
-                    } else {
-                        successHandler(variableCategories);
-                    }
-                }, errorHandler)
-            }
-        },
-        getVariableCategoriesFromGlobals: function(){
-            return qm.globalHelper.getItem(qm.items.variableCategories);
-        },
-        getVariableCategory: function(variableCategoryName, successHandler){
-            if(!successHandler){
-                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-                if(variableCategories){
-                    return variableCategories.find(function(variableCategory){
-                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
-                    });
-                }
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
-               var match = variableCategories.find(function (category) {
-                    category.name = variableCategoryName;
-               });
-                successHandler(match);
-            });
+    windowHelper: {
+        scrollToTop: function(){
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            return false;
         }
-    },
-    getSourceName: function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();}
+    }
 };
 // returns bool | string
 // if search param is found: returns its value

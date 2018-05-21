@@ -1558,6 +1558,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if(!configureQmApiClient('getStudy', errorHandler)){return false;}
         var apiInstance = new Quantimodo.AnalyticsApi();
+        apiInstance.apiClient.timeout = 120 * 1000;
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getStudy');
         }
