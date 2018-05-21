@@ -86,6 +86,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
         getStudy(true);
+        qm.windowHelper.scrollToTop();
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
