@@ -129,6 +129,15 @@
         <div style="text-align: center;">
             <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog($event)">Delete Account</md-button>
         </div>
+        <div ng-show="user" class="card sign-in" >
+            <div class="item item-divider" ng-click="showHelpInfoPopup('shareAllData', $event, 'User')">
+                Data Sharing &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <ion-toggle ng-model="user.shareAllData" ng-change="shareAllDataChange($event)">
+                <div ng-if="user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Shared &nbsp</div>
+                <div ng-if="!user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Private &nbsp</div>
+            </ion-toggle>
+        </div>
         <br>
     </ion-content>
 </ion-view>

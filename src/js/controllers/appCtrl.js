@@ -168,8 +168,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope[flagName] = true;
         qmService.storage.setItem(flagName, true);
     };
-    $scope.showHelpInfoPopup = function (explanationId, ev) {
-        qmService.help.showExplanationsPopup(explanationId, ev);
+    $scope.showHelpInfoPopup = function (explanationId, ev, modelName) {
+        qmService.help.showExplanationsPopup(explanationId, ev, modelName);
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;
