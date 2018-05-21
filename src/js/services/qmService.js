@@ -3074,8 +3074,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.qm.timeHelper.getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
-        qmLog.info("Broadcasting qm.storage.getTrackingReminderNotifications");
-        $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');
+        qmLog.info("Broadcasting broadcastGetTrackingReminderNotifications");
+        $rootScope.$broadcast('broadcastGetTrackingReminderNotifications');
         qmService.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
     };
@@ -3384,6 +3384,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.addToTrackingReminderSyncQueue = function(trackingReminder) {
         qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
+        qmLog.info("Broadcasting broadcastGetTrackingReminders so manage reminders page is updated");
+        $rootScope.$broadcast('broadcastGetTrackingReminders');
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
@@ -3406,6 +3408,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
                             qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
                             qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
+                            qmLog.info("Broadcasting broadcastGetTrackingReminders so manage reminders page is updated");
+                            $rootScope.$broadcast('broadcastGetTrackingReminders');
                         }
                         if(!response.data.trackingReminderNotifications){
                             qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
@@ -6001,13 +6005,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
         trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
-        // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-        qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
-        if(successHandler){successHandler(trackingReminder);}
-        qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
-           qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
-        });
-        qmService.syncTrackingReminders();
+        qmService.showBasicLoader();
+        $timeout(function () { // Allow loader to show
+            // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+            qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
+            if(successHandler){successHandler(trackingReminder);}
+            qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+                qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
+            });
+            qmService.syncTrackingReminders();
+        }, 1);
     };
     qmService.getDefaultReminders = function(){
         if(qm.getAppSettings().defaultReminders){return qm.getAppSettings().defaultReminders;}
@@ -7020,7 +7027,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error("Push error", e.message, pushConfig);
                 });
                 var finishPush = function (data) {
-                    $rootScope.$broadcast('qm.storage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
+                    $rootScope.$broadcast('broadcastGetTrackingReminderNotifications');  // Refresh Reminders Inbox
                     if(!finishPushes){
                         qmLogService.error('Not doing push.finish', 'Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, data);
                         return;
