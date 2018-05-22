@@ -2,7 +2,8 @@
     <div class="list">
         <div class="item item-divider ng-binding">Analysis Settings</div>
         <label class="item item-input item-select">
-            <div class="input-label" style="white-space:normal; width: 60%" ng-click="showExplanationsPopup('combinationOperation', $event)">Combination Method</div>
+            <div class="input-label left-span" style="white-space:normal; width: 60%"
+                 ng-click="showExplanationsPopup('combinationOperation', $event)">Combination Method</div>
             <select ng-model="state.variableObject.combinationOperation">
                 <option value="SUM" name="group">Sum</option>
                 <option value="MEAN" name="group">Average</option>

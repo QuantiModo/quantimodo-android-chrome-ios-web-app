@@ -96,6 +96,12 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
         $scope.stateParams = $stateParams;
+        var debug = false;
+        if(debug && qm.appMode.isDevelopment()){setDebugVariables();}
+        qmLogService.debug($state.current.name + ': beforeEnter', null);
+    });
+
+    function setDebugVariables() {
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
             qm.userVariables.getByName('Anxiety', {}, null, function (variable) {
@@ -110,6 +116,5 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                 qmService.hideLoader();
             });
         }
-        qmLogService.debug($state.current.name + ': beforeEnter', null);
-    });
+    }
 }]);

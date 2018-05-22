@@ -339,7 +339,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				qmLogService.error(null, 'failed to get reminder notifications!');
 			});
 	};
-	$scope.$on('qm.storage.getTrackingReminderNotifications', function(){
+	$rootScope.$on('broadcastGetTrackingReminderNotifications', function() {
 		qmLogService.info('qm.storage.getTrackingReminderNotifications broadcast received..');
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});

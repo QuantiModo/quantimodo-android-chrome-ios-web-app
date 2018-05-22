@@ -285,6 +285,11 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
         if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
     };
+    $scope.shareAllDataChange = function(){
+        qmService.updateUserSettingsDeferred({shareAllData: $rootScope.user.shareAllData});
+        if($rootScope.user.shareAllData){qmService.showInfoToast('Measurements are now shared');}
+        if(!$rootScope.user.shareAllData) {qmService.showInfoToast('Measurements are now private');}
+    };
     $scope.toggleDebugMode = function(){
         $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
     };
