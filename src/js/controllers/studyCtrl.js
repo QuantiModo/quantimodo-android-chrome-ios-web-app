@@ -85,7 +85,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
-        getStudy();
+        getStudy(true);
+        qm.windowHelper.scrollToTop();
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
@@ -154,7 +155,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
-    function getStudy() {
+    function getStudy(recalculate) {
         if(!getCauseVariableName() || !getEffectVariableName()){
             qmLogService.error('Cannot get study. Missing cause or effect variable name.');
             qmService.goToDefaultState();
@@ -162,6 +163,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }
         getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
+        if(recalculate){$scope.state.requestParams.recalculate = true;}
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
@@ -226,22 +228,23 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 }
             }
         }).then(function(variable) {
-            qmService.showInfoToast("Re-analyzing data using updated " + qmService.explanations[propertyToUpdate].title);
+            qmService.showInfoToast("Re-analyzing data using updated " + qm.stringHelper.camelToTitleCase(propertyToUpdate));
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             qmService.postUserVariableDeferred(postData).then(function (response) {
-                getStudy();
+                $scope.refreshStudy();
             });
         }, function() {qmLogService.debug('User cancelled selection', null);});
     };
     function VariableSettingsController(qmService, qmLogService, dialogParameters) {
         var self = this;
-        self.title = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        self.helpText = qmService.explanations[dialogParameters.propertyToUpdate].explanation;
-        self.placeholder = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        if(qmService.explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dialogParameters.propertyToUpdate].unitName;}
+        var explanations = qm.help.getExplanations();
+        self.title = explanations[dialogParameters.propertyToUpdate].title;
+        self.helpText = explanations[dialogParameters.propertyToUpdate].explanation;
+        self.placeholder = explanations[dialogParameters.propertyToUpdate].title;
+        if(explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + explanations[dialogParameters.propertyToUpdate].unitName;}
         self.value = dialogParameters.variable[dialogParameters.propertyToUpdate];
-        self.unitName = qmService.explanations[dialogParameters.propertyToUpdate].unitName;
+        self.unitName = explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);

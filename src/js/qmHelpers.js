@@ -565,7 +565,36 @@ window.qm = {
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         }
     },
-    apiHelper: {},
+    apiHelper: {
+        getApiDocs: function (callback){
+            if(qm.apiHelper.docs){callback(qm.apiHelper.docs);}
+            var path = 'data/swagger.json';
+            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath(path), function (parsedResponse) {  // Can't use QM SDK in service worker
+                if(parsedResponse){
+                    qmLog.debug('Got '+path, null, parsedResponse);
+                    qm.apiHelper.docs = parsedResponse;
+                }
+                callback(parsedResponse);
+            }, function () {
+                qmLog.error("Could not get "+path);
+            });
+        },
+        docs: null,
+        getParameterDescription: function (parameterName, callback) {
+            qm.apiHelper.getApiDocs(function (apiDocs) {
+                var explanation = {title: qm.stringHelper.camelToTitleCase(parameterName)};
+                explanation.textContent = apiDocs.parameters[parameterName].description;
+                callback(explanation);
+            });
+        },
+        getPropertyDescription: function (modelName, propertyName, callback){
+            qm.apiHelper.getApiDocs(function (apiDocs) {
+                var explanation = {title: qm.stringHelper.camelToTitleCase(propertyName)};
+                explanation.textContent = apiDocs.definitions[modelName].properties[propertyName].description;
+                callback(explanation);
+            });
+        }
+    },
     arrayHelper: {
 
         arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
@@ -1160,6 +1189,7 @@ window.qm = {
     getPrimaryOutcomeVariableByNumber: function(num){
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
     },
+    getSourceName: function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();},
     getUser: function(successHandler, errorHandler){
         if(!successHandler){
             return qm.userHelper.getUserFromLocalStorage();
@@ -1185,6 +1215,90 @@ window.qm = {
         }
     },
     globals: {},
+    help: {
+        getExplanations: function(){
+            var explanations = {
+                predictorSearch: {
+                    title: "Select Predictor",
+                    textContent: "Search for a predictor like a food or treatment that you want to know the effects of..."
+                },
+                outcomeSearch: {
+                    title: "Select Outcome",
+                    textContent: "Select an outcome variable to be optimized like overall mood or sleep quality..."
+                },
+                locationAndWeatherTracking: {
+                    title: "Location and Weather Tracking",
+                    textContent: qm.variableCategoryHelper.getVariableCategory('Location').moreInfo
+                },
+                minimumAllowedValue: {
+                    title: "Minimum Allowed Value",
+                    textContent:"The minimum allowed value for measurements. While you can record a value below this minimum, it will be excluded from the correlation analysis.",
+                },
+                maximumAllowedValue: {
+                    title: "Maximum Allowed Value",
+                    textContent:"The maximum allowed value for measurements.  While you can record a value above this maximum, it will be excluded from the correlation analysis.",
+                },
+                onsetDelayInHours: {
+                    title: "Onset Delay",
+                    unitName: "Hours",
+                    textContent:"An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
+                },
+                onsetDelay: {
+                    title: "Onset Delay",
+                    unitName: "Seconds",
+                    textContent:"An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
+                },
+                durationOfActionInHours: {
+                    title: "Duration of Action",
+                    unitName: "Hours",
+                    textContent:"The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
+                },
+                durationOfAction: {
+                    title: "Duration of Action",
+                    unitName: "Seconds",
+                    textContent:"The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
+                },
+                fillingValue: {
+                    title: "Filling Value",
+                    textContent:"When it comes to analysis to determine the effects of this variable, knowing when it did not occur is as important as knowing when it did occur. For example, if you are tracking a medication, it is important to know when you did not take it, but you do not have to log zero values for all the days when you haven't taken it. Hence, you can specify a filling value (typically 0) to insert whenever data is missing.",
+                },
+                combinationOperation: {
+                    title: "Combination Method",
+                    textContent:"How multiple measurements are combined over time.  We use the average (or mean) for things like your weight.  Summing is used for things like number of apples eaten.",
+                },
+                defaultValue: {
+                    title: "Default Value",
+                    textContent:"If specified, there will be a button that allows you to quickly record this value.",
+                },
+                experimentStartTime: {
+                    title: "Analysis Start Date",
+                    textContent:"Data prior to this date will not be used in analysis.",
+                },
+                experimentEndTime: {
+                    title: "Analysis End Date",
+                    textContent:"Data after this date will not be used in analysis.",
+                },
+                thumbs: {
+                    title: "Help Me Learn",
+                    textContent:"I'm really good at finding correlations and even compensating for various onset delays and durations of action. " +
+                    "However, you're much better than me at knowing if there's a way that a given factor could plausibly influence an outcome. " +
+                    "You can help me learn and get better at my predictions by pressing the thumbs down button for relationships that you don't think could possibly be causal.",
+                }
+            };
+            return explanations;
+        },
+        getExplanation : function(parameterOrPropertyName, modelName, callback) {
+            var explanations = qm.help.getExplanations();
+            if(explanations[parameterOrPropertyName]){
+                return callback(explanations[parameterOrPropertyName]);
+            }
+            if(modelName){
+                qm.apiHelper.getPropertyDescription(modelName, parameterOrPropertyName, callback)
+            } else {
+                qm.apiHelper.getParameterDescription(parameterOrPropertyName, callback)
+            }
+        }
+    },
     integration: {
         getIntegrationJsWithoutClientId: function(clientId, callback){
             qm.api.configureClient();
@@ -2438,6 +2552,11 @@ window.qm = {
                 return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
             }
             return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+        },
+        camelToTitleCase: function(text){
+            var result = text.replace( /([A-Z])/g, " $1" );
+            var finalResult = result.charAt(0).toUpperCase() + result.slice(1); // capitalize the first letter - as an example.
+            return finalResult;
         }
     },
     studyHelper: {
@@ -2997,13 +3116,14 @@ window.qm = {
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 2){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 3;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
-            function sortAndReturnVariables(variables) {
+            function sortUpdateSubtitlesAndReturnVariables(variables) {
                 if(!requestParams.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
                 if(successHandler){successHandler(variables);}
             }
             function getFromApi() {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
-                    sortAndReturnVariables(variables);
+                    sortUpdateSubtitlesAndReturnVariables(variables);
                 }, function (error) {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
@@ -3015,7 +3135,7 @@ window.qm = {
             }
             qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(variables){
                 if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                    sortAndReturnVariables(variables);
+                    sortUpdateSubtitlesAndReturnVariables(variables);
                     return;
                 }
                 // Using reminders in variable searches creates duplicates and lots of problems
@@ -3075,6 +3195,82 @@ window.qm = {
                 });
             });
         },
+        updateSubtitles: function (variables, requestParams){
+            if(requestParams && requestParams.sort) {
+                var sort = requestParams.sort;
+                sort = sort.replace("-", "");
+                for (var i = 0; i < variables.length; i++) {
+                    if (sort.toLowerCase().indexOf("correlation")) {
+                        if (variables[i][sort]) {
+                            var number = variables[i][sort];
+                            variables[i].subtitle = number + " studies";
+                        }
+                    }
+                }
+            }
+            return variables;
+        }
+    },
+    variableCategoryHelper: {
+        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
+            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
+                if(!variableCategories){
+                    qmLog.error("No variable categories from json file!");
+                } else {
+                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
+                }
+                successHandler(variableCategories);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
+            qmLog.info("Getting variable categories from API...");
+            function globalSuccessHandler(variableCategories){
+                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
+                if(successHandler){successHandler(variableCategories);}
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.VariablesApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            }
+            apiInstance.getVariableCategories(callback);
+        },
+        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
+            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
+                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
+            } else {
+                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
+                    if(!variableCategories){
+                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                            successHandler(variableCategories);
+                        }, errorHandler)
+                    } else {
+                        successHandler(variableCategories);
+                    }
+                }, errorHandler)
+            }
+        },
+        getVariableCategoriesFromGlobals: function(){
+            return qm.globalHelper.getItem(qm.items.variableCategories);
+        },
+        getVariableCategory: function(variableCategoryName, successHandler){
+            if(!successHandler){
+                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+                if(variableCategories){
+                    return variableCategories.find(function(variableCategory){
+                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
+                    });
+                }
+            }
+            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
+               var match = variableCategories.find(function (category) {
+                    category.name = variableCategoryName;
+               });
+                successHandler(match);
+            });
+        }
     },
     webNotifications: {
         initializeFirebase: function(){
@@ -3168,68 +3364,12 @@ window.qm = {
             }
         }
     },
-    variableCategoryHelper: {
-        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
-            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
-                if(!variableCategories){
-                    qmLog.error("No variable categories from json file!");
-                } else {
-                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
-                }
-                successHandler(variableCategories);
-            }, function (error) {
-                if(errorHandler){errorHandler(error);}
-            });
-        },
-        getVariableCategoriesFromApi: function (successHandler, errorHandler) {
-            qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){successHandler(variableCategories);}
-            }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.VariablesApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
-            }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
-                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
-            } else {
-                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
-                    if(!variableCategories){
-                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                            successHandler(variableCategories);
-                        }, errorHandler)
-                    } else {
-                        successHandler(variableCategories);
-                    }
-                }, errorHandler)
-            }
-        },
-        getVariableCategoriesFromGlobals: function(){
-            return qm.globalHelper.getItem(qm.items.variableCategories);
-        },
-        getVariableCategory: function(variableCategoryName, successHandler){
-            if(!successHandler){
-                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-                if(variableCategories){
-                    return variableCategories.find(function(variableCategory){
-                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
-                    });
-                }
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
-               var match = variableCategories.find(function (category) {
-                    category.name = variableCategoryName;
-               });
-                successHandler(match);
-            });
+    windowHelper: {
+        scrollToTop: function(){
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            return false;
         }
-    },
-    getSourceName: function(){return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();}
+    }
 };
 // returns bool | string
 // if search param is found: returns its value
