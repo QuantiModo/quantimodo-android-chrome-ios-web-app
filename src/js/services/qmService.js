@@ -555,6 +555,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         self.helpText = userErrorMessage;
                         self.title = "No matches found";
                         self.searchText = "";
+                        delete dialogParameters.requestParams.upc;
+                        delete dialogParameters.requestParams.barcodeFormat;
                         deferred.reject(self.title);
                         querySearch();
                         qmLog.error(userErrorMessage);
