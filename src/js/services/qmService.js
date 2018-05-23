@@ -555,6 +555,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         self.helpText = userErrorMessage;
                         self.title = "No matches found";
                         self.searchText = "";
+                        delete dialogParameters.requestParams.upc;
+                        delete dialogParameters.requestParams.barcodeFormat;
                         deferred.reject(self.title);
                         querySearch();
                         qmLog.error(userErrorMessage);
@@ -727,8 +729,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         stateHelper: {
-            goBack: function(providedStateParams){
+            previousUrl: null,
+            goBack: function (providedStateParams){
                 qmLog.info("Called goBack with state params: "+JSON.stringify(providedStateParams));
+                if(qmService.stateHelper.previousUrl){
+                    qmLog.info("Going to qmService.stateHelper.previousUrl: "+qmService.stateHelper.previousUrl);
+                    window.location.href = qmService.stateHelper.previousUrl;
+                    qmService.stateHelper.previousUrl = null;
+                    return;
+                }
                 function skipSearchPages() {
                     if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
                         $ionicHistory.removeBackView();
@@ -3815,13 +3824,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-            if(measurements[index].variableName.toLowerCase().indexOf(measurements[index].unitAbbreviatedName.toLowerCase()) !== -1){
-                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].variableName;
-            } else {
-                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' +
-                    measurements[index].variableName;
-            }
-            measurements[index].valueUnitVariableName = qmService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
+            measurements[index].valueUnitVariableName = measurements[index].displayValueAndUnitString + " " + measurements[index].variableName;
+            //measurements[index].valueUnitVariableName = qmService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
             //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
@@ -4965,6 +4969,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.userVariable){userVariable = response.userVariable;}
             qm.userVariables.saveToLocalStorage(userVariable);
             qm.studyHelper.deleteLastStudy();
+            if(qmService.stateHelper.previousUrl){
+                qmService.stateHelper.previousUrl = qm.urlHelper.addUrlQueryParamsToUrl({recalculate: true}, qmService.stateHelper.previousUrl);
+            }
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ' + JSON.stringify(userVariable), null);
             deferred.resolve(userVariable);
