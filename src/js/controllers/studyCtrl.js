@@ -27,6 +27,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
+        if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
+            qmService.stateHelper.previousUrl = window.location.href;
+        }
     });
     function setAllStateProperties(studyOrCorrelation) {
         if(!studyOrCorrelation){return;}
@@ -44,7 +47,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if(studyOrCorrelation.charts){
             studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
         } else {
-            qmLog.info("No charts on: " + JSON.stringify(studyOrCorrelation));
+            qmLog.info("No charts on: " + JSON.stringify(studyOrCorrelation).substring(0, 140));
         }
         $scope.state.study = studyOrCorrelation;
     }
@@ -66,7 +69,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getScopedStudyIfMatchesVariableNames() {
         if(matchesVariableNames($stateParams.correlationObject)){return $stateParams.correlationObject;}
         if($scope.state && matchesVariableNames($scope.state.study)){return $scope.state.study;}
-        if(matchesVariableNames(qm.studyHelper.getLastStudy())){return qm.studyHelper.getLastStudy();}
+        if(matchesVariableNames(qm.studyHelper.getLastStudyFromGlobals())){return qm.studyHelper.getLastStudy();}
     }
     function getStatistics() {
         if($scope.state.study && $scope.state.study.statistics){return $scope.state.study.statistics;}
@@ -163,7 +166,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }
         getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
-        if(recalculate){$scope.state.requestParams.recalculate = true;}
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
@@ -176,6 +178,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
+            if(recalculate || qm.urlHelper.getParam('recalculate')){$scope.state.requestParams.recalculate = true;}
         });
     }
     function getCauseVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariableName');}
