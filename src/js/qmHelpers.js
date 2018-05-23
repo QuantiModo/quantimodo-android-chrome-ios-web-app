@@ -2560,20 +2560,29 @@ window.qm = {
         }
     },
     studyHelper: {
-        getLastStudy: function(){
-            return qm.storage.getItem(qm.items.lastStudy);
+        getLastStudy: function(callback){
+            qm.localForage.getItem(qm.items.lastStudy, callback);
         },
-        getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName) {
-            var lastStudy = qm.studyHelper.getLastStudy();
-            if(lastStudy.causeVariableName === causeVariableName && lastStudy.effectVariableName === effectVariableName){
-                return lastStudy;
-            }
+        getLastStudyFromGlobals: function(){
+            return qm.globalHelper.getItem(qm.items.lastStudy);
+        },
+        getLastStudyIfMatchesVariableNames: function(causeVariableName, effectVariableName, callback) {
+            qm.studyHelper.getLastStudy(function (lastStudy) {
+                if(lastStudy.causeVariableName === causeVariableName && lastStudy.effectVariableName === effectVariableName){
+                    callback(lastStudy);
+                }
+            });
         },
         saveLastStudy: function(study){
-            qm.storage.setItem(qm.items.lastStudy, study);
+            if(!study){
+                qmLog.error("No study provided to saveLastStudy");
+                return;
+            }
+            qm.localForage.setItem(qm.items.lastStudy, study);
         },
         deleteLastStudy: function(){
-            qm.storage.removeItem(qm.items.lastStudy);
+            qmLog.info("deleteLastStudy");
+            qm.localForage.removeItem(qm.items.lastStudy);
         }
     },
     timeHelper: {
