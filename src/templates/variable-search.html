@@ -29,7 +29,7 @@
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
                 <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
                     <div>
-                        <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i> &nbsp; {{item.name}}</p>
+                        <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i> &nbsp; {{item.displayName}}</p>
                         <small ng-if="item.subtitle">{{item.subtitle}}</small>
                         <small ng-if="!item.subtitle && item.latestMeasurementTime">Recorded {{item.latestMeasurementTime | fromNow}} - {{item.numberOfRawMeasurements}} measurements</small>
                     </div>
