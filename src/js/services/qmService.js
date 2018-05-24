@@ -628,6 +628,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         dialogParameters.requestParams.searchPhrase = query;
                         self.lastApiQuery = query;
                     }
+                    if(query === "" && dialogParameters.requestParams.searchPhrase){delete dialogParameters.requestParams.searchPhrase;} // This happens after clicking x clear button
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
                         qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
@@ -3407,7 +3408,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("Syncing "+ trackingReminderSyncQueue.length+ " reminders in queue");
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
-                    qmLogService.info('postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
+                    qmLogService.debug('postTrackingRemindersToApi response: ' + JSON.stringify(response).substring(0, 140));
                     if(response && response.data){
                         if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
                         if(!response.data.trackingReminders){
@@ -6018,9 +6019,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
             qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
             if(successHandler){successHandler(trackingReminder);}
-            qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
-                qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
-            });
+            $timeout(function () {
+                qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+                    qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
+                });
+            }, 1);
             qmService.syncTrackingReminders();
         }, 1);
     };
