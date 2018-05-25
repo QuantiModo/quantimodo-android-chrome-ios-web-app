@@ -1415,7 +1415,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getMeasurementById = function(measurementId){
         var deferred = $q.defer();
         var params = {id : measurementId};
-        qmService.getMeasurementsFromApi(params, function(response){
+        qm.measurements.getMeasurementsFromApi(params, function(response){
             var measurementArray = response;
             if(!measurementArray[0]){
                 qmLogService.debug('Could not get measurement with id: ' + measurementId, null);
@@ -2332,7 +2332,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
-        qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
+        qm.measurements.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
                 qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
