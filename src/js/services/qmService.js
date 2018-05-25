@@ -810,6 +810,90 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return params;
             }
         },
+        studyHelper: {
+            studyOrCorrelation: null,
+            getCauseVariableName: function(){
+                if(qmService.studyHelper.studyOrCorrelation.causeVariableName){return qmService.studyHelper.studyOrCorrelation.causeVariableName;}
+                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.variableName;}
+                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.name;}
+            },
+            getEffectVariableName: function(){
+                if(qmService.studyHelper.studyOrCorrelation.effectVariableName){return qmService.studyHelper.studyOrCorrelation.effectVariableName;}
+                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.variableName;}
+                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.name;}
+            },
+            getCauseVariableId: function(){
+                if(qmService.studyHelper.studyOrCorrelation.causeVariableId){return qmService.studyHelper.studyOrCorrelation.causeVariableId;}
+                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.variableId;}
+                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.id;}
+            },
+            getEffectVariableId: function(){
+                if(qmService.studyHelper.studyOrCorrelation.effectVariableId){return qmService.studyHelper.studyOrCorrelation.effectVariableId;}
+                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.variableId;}
+                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.id;}
+            },
+            showShareStudyConfirmation: function (correlationObject, sharingUrl, ev){
+                qmService.studyHelper.studyOrCorrelation = correlationObject;
+                var title = 'Share Study';
+                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
+                    ' and ' + qmService.studyHelper.getEffectVariableName() +
+                    ' measurements publicly visible? You can make them private again at any time on this study page.';
+                function yesCallback() {
+                    correlationObject.shareUserMeasurements = true;
+                    qm.studyHelper.saveLastStudy(correlationObject);
+                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
+                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
+                    qmService.showBlackRingLoader();
+                    qmService.postStudyDeferred(body).then(function () {
+                        qmService.hideLoader();
+                        if(sharingUrl){
+                            qmService.studyHelper.shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
+                        }
+                    }, function (error) {
+                        qmService.hideLoader();
+                        qmLogService.error(error);
+                    });
+                }
+                function noCallback() {correlationObject.shareUserMeasurements = false;}
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            },
+            shareStudyNativelyOrViaWeb: function (correlationObject, sharingUrl) {
+                if ($rootScope.platform.isMobile){
+                    // this is the complete list of currently supported params you can pass to the plugin (all optional)
+                    var options = {
+                        //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
+                        //subject: correlationObject.sharingTitle, // fi. for email
+                        //files: ['', ''], // an array of filenames either locally or remotely
+                        url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
+                        chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+                    };
+                    var onSuccess = function(result) {
+                        //qmLog.error("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                        qmLog.error("Share to " + result.app + ' completed: ' + result.completed); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+                    };
+                    var onError = function(msg) {
+                        qmLog.error("Sharing failed with message: " + msg);
+                    };
+                    window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+                } else {
+                    qmService.openSharingUrl(sharingUrl);
+                }
+            },
+            showUnShareStudyConfirmation: function(correlationObject, ev) {
+                var title = 'Share Study';
+                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
+                    ' and ' + qmService.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
+                    'previously shared with these variables will no longer work.';
+                function yesCallback() {
+                    correlationObject.shareUserMeasurements = false;
+                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
+                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: false};
+                    qmService.postStudyDeferred(body);
+                }
+                function noCallback() {correlationObject.shareUserMeasurements = true;}
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            },
+        },
         subscriptions: {
             setUpgradeDisabledIfOnAndroidWithoutKey: function(appSettings){
                 if(!qm.platform.isAndroid()){return appSettings;}
