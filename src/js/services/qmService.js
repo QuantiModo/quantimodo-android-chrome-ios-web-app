@@ -800,7 +800,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(variableName){
                     params.name = variableName;
                 } else {
-                    var variableId = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                    var variableId = qmService.stateHelper.getVariableIdFromScopeStateParamsOrUrl($scope, $stateParams);
                     if(!variableId){
                         qmLog.error("No variable name or id in variable settings page!");
                         return false;
