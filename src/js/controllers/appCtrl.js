@@ -74,66 +74,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
         }
     };
-    var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
-        function yesCallback() {
-            correlationObject.shareUserMeasurements = true;
-            qm.studyHelper.saveLastStudy(correlationObject);
-            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
-            qmService.showBlackRingLoader();
-            qmService.postStudyDeferred(body).then(function () {
-                qmService.hideLoader();
-                if(sharingUrl){
-                    shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
-                }
-            }, function (error) {
-                qmService.hideLoader();
-                qmLogService.error(error);
-            });
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = false;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    var showUnShareStudyConfirmation = function(correlationObject, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
-            'previously shared with these variables will no longer work.';
-        function yesCallback() {
-            correlationObject.shareUserMeasurements = false;
-            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
-            qmService.postStudyDeferred(body);
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = true;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
     $scope.toggleStudyShare = function (correlationObject, ev) {
-        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnShareStudyConfirmation(correlationObject, ev);}
-    };
-    function shareStudyNativelyOrViaWeb(correlationObject, sharingUrl) {
-        if ($rootScope.platform.isMobile){
-            // this is the complete list of currently supported params you can pass to the plugin (all optional)
-            var options = {
-                //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
-                //subject: correlationObject.sharingTitle, // fi. for email
-                //files: ['', ''], // an array of filenames either locally or remotely
-                url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
-                chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
-            };
-            var onSuccess = function(result) {
-                //qmLog.error("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-                qmLog.error("Share to " + result.app + ' completed: ' + result.completed); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-            };
-            var onError = function(msg) {
-                qmLog.error("Sharing failed with message: " + msg);
-            };
-            window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+        if(correlationObject.shareUserMeasurements){
+            qmService.studyHelper.showShareStudyConfirmation(correlationObject, ev);
         } else {
-            qmService.openSharingUrl(sharingUrl);
+            qmService.studyHelper.showUnShareStudyConfirmation(correlationObject, ev);
         }
-    }
+    };
     $scope.shareStudy = function(correlationObject, shareType, ev){
         if(!correlationObject){
             qmLogService.error("No correlationObject provided to shareStudy!");
@@ -142,10 +89,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, correlationObject);
         if(!sharingUrl){qmLogService.error("No sharing url for this correlation: ", {correlation: correlationObject});}
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
-            showShareStudyConfirmation(correlationObject, sharingUrl, ev);
+            qmService.studyHelper.showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
         }
-        shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
+        qmService.studyHelper.shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
     };
     $scope.openSharingUrl = function(sharingUrl){ qmService.openSharingUrl(sharingUrl); };
     $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
