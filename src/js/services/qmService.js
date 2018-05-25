@@ -331,7 +331,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.rootScope.setProperty('hideNavigationMenu', true);
             },
             showNavigationMenu: function () {
-                qmLog.info("Showing navigation menu");
+                qmLog.debug("Showing navigation menu");
                 qmService.rootScope.setProperty('hideNavigationMenu', false);
             }
         },
@@ -811,38 +811,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         studyHelper: {
-            studyOrCorrelation: null,
-            getCauseVariableName: function(){
-                if(qmService.studyHelper.studyOrCorrelation.causeVariableName){return qmService.studyHelper.studyOrCorrelation.causeVariableName;}
-                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.variableName;}
-                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.name;}
-            },
-            getEffectVariableName: function(){
-                if(qmService.studyHelper.studyOrCorrelation.effectVariableName){return qmService.studyHelper.studyOrCorrelation.effectVariableName;}
-                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.variableName;}
-                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.name;}
-            },
-            getCauseVariableId: function(){
-                if(qmService.studyHelper.studyOrCorrelation.causeVariableId){return qmService.studyHelper.studyOrCorrelation.causeVariableId;}
-                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.variableId;}
-                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.id;}
-            },
-            getEffectVariableId: function(){
-                if(qmService.studyHelper.studyOrCorrelation.effectVariableId){return qmService.studyHelper.studyOrCorrelation.effectVariableId;}
-                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.variableId;}
-                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.id;}
-            },
             showShareStudyConfirmation: function (correlationObject, sharingUrl, ev){
-                qmService.studyHelper.studyOrCorrelation = correlationObject;
+                qm.studyHelper.lastStudyOrCorrelation = correlationObject;
                 var title = 'Share Study';
-                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
-                    ' and ' + qmService.studyHelper.getEffectVariableName() +
+                var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
+                    ' and ' + qm.studyHelper.getEffectVariableName() +
                     ' measurements publicly visible? You can make them private again at any time on this study page.';
                 function yesCallback() {
                     correlationObject.shareUserMeasurements = true;
                     qm.studyHelper.saveLastStudy(correlationObject);
-                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
-                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
+                    var body = {causeVariableId: qm.studyHelper.getCauseVariableId(),
+                        effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
                     qmService.showBlackRingLoader();
                     qmService.postStudyDeferred(body).then(function () {
                         qmService.hideLoader();
@@ -881,13 +860,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showUnShareStudyConfirmation: function(correlationObject, ev) {
                 var title = 'Share Study';
-                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
-                    ' and ' + qmService.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
+                var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
+                    ' and ' + qm.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
                     'previously shared with these variables will no longer work.';
                 function yesCallback() {
                     correlationObject.shareUserMeasurements = false;
-                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
-                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: false};
+                    var body = {causeVariableId: qm.studyHelper.getCauseVariableId(),
+                        effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: false};
                     qmService.postStudyDeferred(body);
                 }
                 function noCallback() {correlationObject.shareUserMeasurements = true;}
@@ -3670,12 +3649,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getAggregatedCorrelationsDeferred = function(params){
         var deferred = $q.defer();
-        var cachedCorrelations = qmService.getCachedResponse('aggregatedCorrelations', params);
-        if(cachedCorrelations){
-            deferred.resolve(cachedCorrelations);
-            return deferred.promise;
-        }
-        qmService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
+        qm.correlations.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
             try {
                 correlationObjects = useLocalImages(correlationObjects);
             } catch (error) {
