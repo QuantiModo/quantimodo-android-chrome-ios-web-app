@@ -112,7 +112,9 @@ deployment:
     branch: develop
     commands:
       - gulp _build-all-chrome # Build Chrome first in case Android upload fails
+      - [ -f "./build/quantimodo-chrome-extension.zip" ] || { echo "Chromme build failed" 1>&2 ; exit 1; }
       - gulp buildAllAndroidAppsWithCleaning
+      - [[ -f ./platforms/android/build/outputs/apk/android-release.apk ]] || { echo "Android build failed" 1>&2 ; exit 1; }
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
