@@ -2813,7 +2813,7 @@ function getCHCPContentPath(){
     return path;
 }
 function getCHCPContentUrl(){
-    return "https://us-east-1.amazonaws.com/" + appSettings.clientId + "/" + getCHCPContentPath();
+    return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + appSettings.clientId + "/" + getCHCPContentPath();
 }
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     if(false && buildingFor.web()){
