@@ -24,7 +24,7 @@
     "event-stream": "^3.3.2",
     "express": "^4.16.3",
     "gulp": "3.9.1",
-    "gulp-angular-templatecache": "1.9.1",
+    "gulp-angular-templatecache": "2.2.0",
     "gulp-change": "^1.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^3.0.0",
