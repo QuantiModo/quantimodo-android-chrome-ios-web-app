@@ -2371,6 +2371,30 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
 gulp.task('write-build-json', [], function () {
     return writeBuildJson();
 });
+gulp.task('build-ios-app-without-cleaning', function (callback) {
+    platformCurrentlyBuildingFor = 'ios';
+    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
+    runSequence(
+        'ionicInfo',
+        'uncommentCordovaJsInIndexHtml',
+        'configureApp',
+        //'copyAppResources',
+        'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
+        'removeTransparentPng',
+        'removeTransparentPsd',
+        'useWhiteIcon',
+        'ionicResourcesIos',
+        'copyIconsToWwwImg',
+        'cordova-hcp-config',
+        'write-build-json',
+        'ionicInfo',
+        'ios-sim-fix',
+        'ionic-build-ios',
+        'cordova-hcp-deploy',
+        'delete-chcp-login',
+        'fastlaneBetaIos',
+        callback);
+});
 gulp.task('build-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
@@ -2597,6 +2621,18 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
         'downloadChromeExtension',
         'setQuantiModoEnvs',
         'downloadChromeExtension',
+        callback);
+});
+gulp.task('buildAllIosAppsWithBuildRepo', function (callback) {
+    runSequence(
+        'clone-ios-build-repo',
+        'copy-ios-build-repo',
+        'setMoodiModoEnvs',
+        'build-ios-app-without-cleaning',
+        'setMediModoEnvs',
+        'build-ios-app-without-cleaning',
+        'setQuantiModoEnvs',
+        'build-ios-app-without-cleaning',
         callback);
 });
 gulp.task('buildAllIosApps', function (callback) {
