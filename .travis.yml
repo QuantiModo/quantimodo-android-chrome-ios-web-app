@@ -63,8 +63,9 @@ before_install:
 #before_script:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosAppsWithBuildRepo; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosAppsWithoutCleaning; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" == "master" ]]; then gulp _build-all-chrome; fi
 env:
