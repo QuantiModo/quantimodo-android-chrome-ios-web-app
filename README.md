@@ -1,5 +1,7 @@
 # QuantiModo Ionic App
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/QuantiModo/quantimodo-android-chrome-ios-web-app.svg)](https://greenkeeper.io/)
+
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 -------
 
