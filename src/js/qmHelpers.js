@@ -55,6 +55,7 @@ window.qm = {
             qm.api.cache[functionName][key] = data;
         },
         cacheGet: function(params, functionName){
+            if(params && params.refresh){return null;}
             if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
             var key = qm.api.getCacheName(params);
             if(!qm.api.cache[functionName][key]){return null;}
@@ -1108,15 +1109,29 @@ window.qm = {
         getAggregatedCorrelationsFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             params.commonOnly = true;
-            var cachedData = qm.api.cacheGet(params, 'getAggregatedCorrelationsFromApi');
+            var cachedData = qm.api.cacheGet(params, qm.items.aggregatedCorrelations);
             if(cachedData && successHandler){
                 successHandler(cachedData);
                 return;
             }
-            if(!qm.api.configureClient('getAggregatedCorrelationsFromApi', errorHandler)){return false;}
+            qm.api.configureClient();
             var apiInstance = new Quantimodo.AnalyticsApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAggregatedCorrelationsFromApi');
+            }
+            apiInstance.getCorrelations(params, callback);
+        },
+        getUserCorrelationsFromApi: function (params, successHandler, errorHandler) {
+            params = qm.api.addGlobalParams(params);
+            var cachedData = qm.api.cacheGet(params, qm.items.userCorrelations);
+            if(cachedData && successHandler){
+                successHandler(cachedData);
+                return;
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.AnalyticsApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, qm.items.userCorrelations);
             }
             apiInstance.getCorrelations(params, callback);
         }
@@ -1339,6 +1354,7 @@ window.qm = {
     },
     items: {
         accessToken: 'accessToken',
+        aggregatedCorrelations: 'aggregatedCorrelations',
         apiUrl: 'apiUrl',
         appSettings: 'appSettings',
         appSettingsRevisions: 'appSettingsRevisions',
@@ -1385,6 +1401,7 @@ window.qm = {
         units: 'units',
         user: 'user',
         useSmallInbox: 'useSmallInbox',
+        userCorrelations: 'userCorrelations',
         userVariables: 'userVariables',
         variableCategories: 'variableCategories'
     },
@@ -1554,6 +1571,22 @@ window.qm = {
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){successHandler(elementsToKeep);}
             });
+        }
+    },
+    measurements: {
+        getMeasurementsFromApi: function(params, successHandler, errorHandler){
+            params = qm.api.addGlobalParams(params);
+            var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
+            if(cachedData && successHandler){
+                //successHandler(cachedData);
+                //return;
+            }
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.MeasurementsApi();
+            function callback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
+            }
+            apiInstance.getMeasurements(params, callback);
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -2141,7 +2174,7 @@ window.qm = {
             });
         },
         getTrackingRemindersFromApi: function(params, successHandler, errorHandler){
-            if(!qm.api.configureClient('getTrackingRemindersFromApi', errorHandler)){return false;}
+            qm.api.configureClient();
             var apiInstance = new Quantimodo.RemindersApi();
             function callback(error, data, response) {
                 if (data) { qm.reminderHelper.saveToLocalStorage(data); }
