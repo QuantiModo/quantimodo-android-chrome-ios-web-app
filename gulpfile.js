@@ -2627,6 +2627,11 @@ gulp.task('buildAllIosAppsWithBuildRepo', function (callback) {
     runSequence(
         'clone-ios-build-repo',
         'copy-ios-build-repo',
+        'buildAllIosAppsWithoutCleaning',
+        callback);
+});
+gulp.task('buildAllIosAppsWithoutCleaning', function (callback) {
+    runSequence(
         'setMoodiModoEnvs',
         'build-ios-app-without-cleaning',
         'setMediModoEnvs',
