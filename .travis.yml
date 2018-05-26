@@ -2,6 +2,7 @@ branches:
   only:
   - master
   - develop
+  - /^greenkeeper/.*$/
 matrix:
   include:
   - env: PLATFORM=android-25
