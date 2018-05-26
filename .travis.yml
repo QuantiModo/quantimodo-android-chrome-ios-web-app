@@ -64,7 +64,7 @@ before_install:
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosAppsWithBuildRepo; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" == "master" ]]; then gulp _build-all-chrome; fi
 env:
