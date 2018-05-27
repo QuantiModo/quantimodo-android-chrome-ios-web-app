@@ -139,6 +139,7 @@ platform :ios do
 
     puts "Building app with gym..."
     gym(scheme: app_display_name,
+        include_symbols: true, include_bitcode: false,  # Code signing is required for product type 'Application' in SDK 'iOS 10.3' https://github.com/fastlane/fastlane/issues/8841
         project: xcode_project_path) # Build your app - more options available # Build your app - more options available
 
     puts "Uploading build to iTunes Connect with pilot..."
@@ -177,7 +178,15 @@ platform :ios do
         build_configuration: "Release"
     )
     cordova(platform: 'ios', team_id: team_id)
-    appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
+    #appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
+    puts "Uploading build to iTunes Connect with pilot..."
+    pilot(
+        username: fastlane_user,
+        skip_submission: true,
+        distribute_external: false,
+        skip_waiting_for_build_processing: true,
+        ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH']
+    )
   end
 
   # You can define as many lanes as you want
