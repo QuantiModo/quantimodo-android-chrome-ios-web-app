@@ -178,7 +178,14 @@ platform :ios do
         build_configuration: "Release"
     )
     cordova(platform: 'ios', team_id: team_id)
-    appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
+    #appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
+    puts "Uploading build to iTunes Connect with pilot..."
+    pilot(
+        username: fastlane_user,
+        skip_submission: true,
+        distribute_external: false,
+        skip_waiting_for_build_processing: true
+    )
   end
 
   # You can define as many lanes as you want
