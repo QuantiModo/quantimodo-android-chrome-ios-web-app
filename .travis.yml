@@ -2,8 +2,16 @@ branches:
   only:
   - master
   - develop
+   - /^renovate.*$/
 matrix:
   include:
+#  - env: PLATFORM=ios-11.0
+#    os: osx
+#    osx_image: xcode8.3
+#    language: node_js
+#    node_js: '4.2'
+#    rvm:
+#      - 2.2.5
   - env: PLATFORM=android-25
     os: linux
     sudo: false
@@ -32,13 +40,6 @@ matrix:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
     - google-gdk-license-.+
-  - env: PLATFORM=ios-11.0
-    os: osx
-    osx_image: xcode7.3
-    language: node_js
-    node_js: '4.2'
-    rvm:
-      - 2.2.5
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
@@ -60,13 +61,12 @@ before_install:
 - nvm install 8
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
 - yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
-#before_script:
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis/addkeys.sh ; fi
 script:
+#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
 - yarn install
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi
+#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" == "master" ]]; then gulp _build-all-chrome; fi
+#- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
@@ -75,8 +75,8 @@ notifications:
     email:
         recipients:
             - mike@quantimo.do
-        on_success: never # default: change
-        on_failure: always # default: always
+        on_success: never
+        on_failure: always
 #deploy:
 #  provider: releases
 #  api_key:
