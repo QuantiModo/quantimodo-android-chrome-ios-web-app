@@ -1,8 +1,10 @@
 branches:
-  only:
-  - master
-  - develop
-   - /^renovate.*$/
+  #only:
+   #- master
+   #- develop
+   #- /^renovate.*$/
+  except:
+    - /^feature.*$/
 matrix:
   include:
 #  - env: PLATFORM=ios-11.0
