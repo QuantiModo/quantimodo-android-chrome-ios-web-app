@@ -2390,8 +2390,8 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
-        'cordova-hcp-deploy',
-        'delete-chcp-login',
+        //'cordova-hcp-deploy', // Let's only do this on Android builds
+        //'delete-chcp-login',
         'fastlaneBetaIos',
         callback);
 });
@@ -2417,8 +2417,8 @@ gulp.task('build-ios-app', function (callback) {
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
-        'cordova-hcp-deploy',
-        'delete-chcp-login',
+        //'cordova-hcp-deploy',  // Let's only do this on Android builds
+        //'delete-chcp-login',
         'fastlaneBetaIos',
         callback);
 });
@@ -2927,7 +2927,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicInfo',
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
-        'cordova-hcp-deploy',
+        'cordova-hcp-deploy', // This should cover iOS as well
         'delete-chcp-login',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
