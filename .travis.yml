@@ -2,6 +2,7 @@ branches:
   only:
   - master
   - develop
+   - /^renovate.*$/
 matrix:
   include:
 #  - env: PLATFORM=ios-11.0
