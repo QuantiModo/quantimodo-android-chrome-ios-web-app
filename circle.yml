@@ -101,17 +101,18 @@ deployment:
       - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
       - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
-  branch: /renovate\/.*/
-  commands:
-  # Chrome & Android on CircleCI broken so doing this on travis
-    - echo "Running renovate deploy section because BRANCH_NAME is $CIRCLE_BRANCH"
-    - gulp _build-all-chrome
-    - "[ -f ./build/quantimodo-chrome-extension.zip ] || exit 1;"
-    - gulp buildAllAndroidAppsWithCleaning
-    - "[[ -f ./platforms/android/build/outputs/apk/android-release.apk ]] || exit 1; "
-    - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
-    - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
-    - php ghostinspector_parser.php
+  renovate:
+    branch: /renovate\/.*/
+    commands:
+        # Chrome & Android on CircleCI broken so doing this on travis
+        - echo "Running renovate deploy section because BRANCH_NAME is $CIRCLE_BRANCH"
+        - gulp _build-all-chrome
+        - "[ -f ./build/quantimodo-chrome-extension.zip ] || exit 1;"
+        - gulp buildAllAndroidAppsWithCleaning
+        - "[[ -f ./platforms/android/build/outputs/apk/android-release.apk ]] || exit 1; "
+        - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
+        - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+        - php ghostinspector_parser.php
   staging:
     branch: develop
     commands:
