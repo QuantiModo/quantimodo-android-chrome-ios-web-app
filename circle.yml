@@ -87,6 +87,7 @@ deployment:
   feature:
     branch: /feature\/.*/
     commands:
+      - echo "Running feature deploy section because BRANCH_NAME is $CIRCLE_BRANCH"
       #- chmod +x do-exclusively
       #- ./do-exclusively git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
       - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
@@ -103,6 +104,7 @@ deployment:
   branch: /renovate\/.*/
   commands:
   # Chrome & Android on CircleCI broken so doing this on travis
+    - echo "Running renovate deploy section because BRANCH_NAME is $CIRCLE_BRANCH"
     - gulp _build-all-chrome
     - "[ -f ./build/quantimodo-chrome-extension.zip ] || exit 1;"
     - gulp buildAllAndroidAppsWithCleaning
