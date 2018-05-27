@@ -77,7 +77,7 @@ var appIds = {
     'medimodo': true
 };
 var qmGit = {
-    branchName: null,
+    branchName: process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH,
     isMaster: function () {
         return qmGit.branchName === "master"
     },
@@ -344,12 +344,12 @@ function getCurrentServerContext() {
 }
 function setBranchName(callback) {
     function setBranch(branch, callback) {
-        qmGit.branchName = branch;
+        qmGit.branchName = branch.replace('origin/', '');
         qmLog.info('current git branch: ' + qmGit.branchName);
         if (callback) {callback(qmGit.branchName);}
     }
-    if (process.env.TRAVIS_BRANCH){
-        setBranch(process.env.TRAVIS_BRANCH, callback);
+    if (qmGit.branchName){
+        setBranch(qmGit.branchName, callback);
         return;
     }
     try {
@@ -1724,6 +1724,11 @@ gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
+    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+        qmLog.info("Not doing fastlaneSupplyBeta because not on develop or master");
+        callback();
+        return;
+    }
     if(buildDebug){
         qmLog.info("Not uploading DEBUG build");
         callback();
@@ -1736,6 +1741,11 @@ gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function 
     }
 });
 gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
+    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+        qmLog.info("Not doing fastlaneSupplyProduction because not on develop or master");
+        callback();
+        return;
+    }
     try {
         fastlaneSupply('production', callback, true);
     } catch (error) {
@@ -2718,6 +2728,11 @@ gulp.task('buildAndReleaseIosApp', function (callback) {
         callback);
 });
 gulp.task('fastlaneBetaIos', function (callback) {
+    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+        qmLog.info("Not doing fastlaneBetaIos because not on develop or master");
+        callback();
+        return;
+    }
     var lane = 'deploy'; // Only works on Mac-Mini for some reason
     if(process.env.TRAVIS){lane = 'beta';} // Only works on Travis for some reason
     // export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8 && export APP_DISPLAY_NAME=MediModo && export APP_IDENTIFIER=com.quantimodo.medimodo && bundle exec fastlane beta
@@ -2974,6 +2989,11 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
+    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+        qmLog.info("Not doing cordova-hcp-deploy because not on develop or master");
+        callback();
+        return;
+    }
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('cordova-hcp-login', [], function (callback) {
