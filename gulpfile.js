@@ -1180,10 +1180,10 @@ function writeBuildJson(){
         buildJson.android = {
             "release": {
                 "keystore":"quantimodo.keystore",
-                    "storePassword": buildSettings.androidReleaseKeystorePassword,
-                    "alias": buildSettings.androidReleaseKeyAlias,
-                    "password": buildSettings.androidReleaseKeyPassword,
-                    "keystoreType":""
+                "storePassword": buildSettings.androidReleaseKeystorePassword,
+                "alias": buildSettings.androidReleaseKeyAlias,
+                "password": buildSettings.androidReleaseKeyPassword,
+                "keystoreType":""
             }
         };
     }
@@ -2426,6 +2426,7 @@ gulp.task('prepare-ios-app', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
+        'platform-remove-ios',
         'ionicInfo',
         'uncommentCordovaJsInIndexHtml',
         'configureApp',
@@ -2437,6 +2438,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'write-build-json',
+        'platform-add-ios',
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
@@ -2964,10 +2966,10 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
         //execute(runCommand, function () {
-            execute("cordova-hcp server", function () {
-                qmLog.info("Execute command "+ runCommand + " in new terminal now");
-                //callback();
-            }, false, false);
+        execute("cordova-hcp server", function () {
+            qmLog.info("Execute command "+ runCommand + " in new terminal now");
+            //callback();
+        }, false, false);
         //}, false, false);
     }, false, false);
 });
