@@ -1238,14 +1238,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
             qmLogService.debug('GET ' + request.url, null, options.stackTrace);
             $http(request)
-                .success(function (data, status, headers) {
-                    qmLogService.debug('Got ' + route + ' ' + status + ' response: ' + ': ' + JSON.stringify(data).substring(0, 140) + '...', null, options.stackTrace);
+                .then(function (response) {
+                    var data = response.data;
+                    var status = response.status;
+                    var headers = qmService.api.headersGetter(response.headers);
+                    var config = response.config;
+                    var statusText = response.statusText;
+                    qmLogService.debug('Got ' + route + ' ' + status + ' response: ' + ': ' + JSON.stringify(data).substring(0, 140) + '...', null, config.stackTrace);
                     if(!data) {
                         var groupingHash = 'No data returned from this request';
                         qmLog.error(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                     } else {
                         if (data.error) {
-                            generalApiErrorHandler(data, status, headers, request, options);
+                            generalApiErrorHandler(response);
                             if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
                         }
                         qmService.navBar.setOfflineConnectionErrorShowing(false);
@@ -1253,10 +1258,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         successHandler(data);
                     }
                 })
-                .error(function (data, status, headers) {
-                    generalApiErrorHandler(data, status, headers, request, options);
-                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
-                }, onRequestFailed);
+                .catch(function (response) {
+                    generalApiErrorHandler(response);
+                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(response.data);}
+                });
         });
     };
     qmService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
@@ -1289,7 +1294,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             //console.log("Log level is " + qmLog.getLogLevelName());
             var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
-            var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
+            var request = {method : 'POST', url: url,
+                //responseType: 'json',
+                headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
                 qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
@@ -1305,11 +1312,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.info('Response from POST ' + route + ': ' + responseString);
                 if(successHandler){successHandler(response);}
             }
-            $http(request).success(generalSuccessHandler).error(function(data, status, headers){
-                generalApiErrorHandler(data, status, headers, request, options);
-                if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
-            });
-        }, requestSpecificErrorHandler);
+            $http(request)
+                .then(function(response){
+                    function isSuccess(status) {
+                        var iStatus = Math.max(status, 0);
+                        return 200 <= iStatus && iStatus < 300;
+                    }
+
+                   if (isSuccess(response.status)) {
+                       generalSuccessHandler(response)
+                   } else {
+                       generalApiErrorHandler(response);
+                       if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                   }
+                })
+                .catch(function(response) {
+                    generalApiErrorHandler(response);
+                    if(requestSpecificErrorHandler){requestSpecificErrorHandler(response.data);}
+                });
+        });
     };
     function setAfterLoginGoToUrlAndSendToLogin(){
         if($state.current.name.indexOf('login') !== -1){
@@ -1342,18 +1363,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
     }
-    function logApiError(status, request, data, options) {
-        var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
+    function logApiError(data, status, headers, config, statusText) {
+        var errorName = status + ' from ' + config.method + ' ' + getPathWithoutQuery(config);
         if (data && data.error && typeof data.error === "string") {errorName = data.error;}
+        if (typeof data === "string") {errorName = data;}
         var metaData = {
-            debugApiUrl: getDebugApiUrlFromRequest(request),
+            debugApiUrl: getDebugApiUrlFromRequest(config),
             appUrl: window.location.href,
             groupingHash: errorName,
             requestData: data,
             status: status,
-            request: request,
-            requestOptions: options,
-            requestParams: qm.urlHelper.getAllQueryParamsFromUrlString(request.url)
+            requestParams: qm.urlHelper.getAllQueryParamsFromUrlString(config.url),
+            config: config,
+            statusText: statusText
         };
         if (data.error) {
             metaData.groupingHash = JSON.stringify(data.error);
@@ -1361,7 +1383,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 metaData.groupingHash = JSON.stringify(data.error.message);
             }
         }
-        qmLogService.error(errorName, metaData, options.stackTrace);
+        qmLogService.error(errorName, metaData, config.stackTrace);
     }
     function handle401Response(request, options, headers) {
         if(options && options.doNotSendToLogin){return;}
@@ -1375,7 +1397,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         return pathWithQuery.split("?")[0];
     }
-    function generalApiErrorHandler(data, status, headers, request, options){
+    function generalApiErrorHandler(response){
+        var data = response.data;
+        var status = response.status;
+        var headers = qmService.api.headersGetter(response.headers);
+        var config = response.config;
+        var statusText = response.statusText;
         if(status === 302){return qmLogService.debug('Got 302 response from ' + JSON.stringify(request), null, options.stackTrace);}
         if(status === 401){
             qmLog.info('Got 401 response with headers: ' + JSON.stringify(headers), null, options.stackTrace);
@@ -1383,10 +1410,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return handle401Response(request, options, headers);
         }
         if(!data){
-            showOfflineError(options, request);
+            showOfflineError(options, config);
             return;
         }
-        logApiError(status, request, data, options);
+        logApiError(data, status, headers, config, statusText);
     }
     function getDebugApiUrlFromRequest(request){
         var debugUrl = request.method + " " + request.url;
