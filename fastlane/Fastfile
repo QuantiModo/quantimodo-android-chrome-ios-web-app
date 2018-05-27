@@ -139,6 +139,7 @@ platform :ios do
 
     puts "Building app with gym..."
     gym(scheme: app_display_name,
+        include_symbols: true, include_bitcode: false,  # Code signing is required for product type 'Application' in SDK 'iOS 10.3' https://github.com/fastlane/fastlane/issues/8841
         project: xcode_project_path) # Build your app - more options available # Build your app - more options available
 
     puts "Uploading build to iTunes Connect with pilot..."
