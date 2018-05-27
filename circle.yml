@@ -5,7 +5,7 @@ machine:
   java:
     version: oraclejdk8
   node:
-    version: 6.1.0
+    version: 8.2.1
   environment:
     _JAVA_OPTIONS: "-Xms512m -Xmx1024m" # Appears to solve "Your build has exceeded the memory limit of 4G on 1 container"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'  # Did not solve "Your build has exceeded the memory limit of 4G on 1 container"
@@ -41,10 +41,11 @@ dependencies:
 
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then yarn install; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi  # Done in gulpBuildAllAndroidApps
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gem install fastlane; fi # Don't use sudo or it uses old ruby version
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then bundle install; fi # Don't use sudo or it uses old ruby version
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then bundle update; fi # Don't use sudo or it uses old ruby version
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
@@ -101,6 +102,7 @@ deployment:
       - php ghostinspector_parser.php
   branch: /renovate\/.*/
   commands:
+  # Chrome & Android on CircleCI broken so doing this on travis
     - gulp _build-all-chrome
     - "[ -f ./build/quantimodo-chrome-extension.zip ] || exit 1;"
     - gulp buildAllAndroidAppsWithCleaning
@@ -111,16 +113,18 @@ deployment:
   staging:
     branch: develop
     commands:
+     # Chrome & Android on CircleCI broken so doing this on travis
       - gulp _build-all-chrome # Build Chrome first in case Android upload fails
       - "[ -f ./build/quantimodo-chrome-extension.zip ] || exit 1;"
       - gulp buildAllAndroidAppsWithCleaning
       - "[[ -f ./platforms/android/build/outputs/apk/android-release.apk ]] || exit 1; "
-      - gulp mergeToMasterAndTriggerRebuildsForAllApps
+      #- gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
     commands:
+    # Chrome & Android on CircleCI broken so doing this on travis
       - gulp buildChromeExtension
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
-      #- gulp fastlaneSupplyProduction
+      - gulp fastlaneSupplyProduction
       #- cp platforms/android/build/outputs/apk/* $CIRCLE_ARTIFACTS
