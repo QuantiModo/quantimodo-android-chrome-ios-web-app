@@ -84,14 +84,12 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         return false;
     }
     function getEffectVariableName() {
-        if(qm.urlHelper.getParam('effectVariableName')){ return qm.urlHelper.getParam('effectVariableName', window.location.href, true); }
-        if($stateParams.effectVariableName){return $stateParams.effectVariableName;}
+        if(qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope)){
+            return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);
+        }
         if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){return qm.getPrimaryOutcomeVariable().name;}
     }
-    function getCauseVariableName() {
-        if(qm.urlHelper.getParam('causeVariableName')){ return qm.urlHelper.getParam('causeVariableName', window.location.href, true); }
-        if($stateParams.causeVariableName){return $stateParams.causeVariableName;}
-    }
+    function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
         qmLogService.debug($scope.data.search, null);

@@ -36,23 +36,27 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmLogService.debug('Selected predictor ' + variable.name);
     }
     $scope.selectOutcomeVariable = function (ev) {
-        var dialogParameters = {
-            title: qmService.explanations.outcomeSearch.title,
-                helpText: qmService.explanations.outcomeSearch.textContent,
+        qm.help.getExplanation('outcomeSearch', null, function (explanation) {
+            var dialogParameters = {
+                title: explanation.title,
+                helpText: explanation.textContent,
                 placeholder: "Search for an outcome...",
                 buttonText: "Select Variable",
                 requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
-        };
-        qmService.showVariableSearchDialog(dialogParameters, setOutcomeVariable, null, ev);
+            };
+            qmService.showVariableSearchDialog(dialogParameters, setOutcomeVariable, null, ev);
+        });
     };
     $scope.selectPredictorVariable = function (ev) {
-        var dialogParameters = {
-            title: qmService.explanations.predictorSearch.title,
-            helpText: qmService.explanations.predictorSearch.textContent,
-            placeholder: "Search for a predictor...",
-            buttonText: "Select Variable",
-            requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
-        };
-        qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
+        qm.help.getExplanation('predictorSearch', null, function (explanation) {
+            var dialogParameters = {
+                title: explanation.title,
+                helpText: explanation.textContent,
+                placeholder: "Search for a predictor...",
+                buttonText: "Select Variable",
+                requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
+            };
+            qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
+        });
     };
 }]);

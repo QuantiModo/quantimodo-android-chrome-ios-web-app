@@ -8,7 +8,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     var goBack = function () {
         qmService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
-            qmService.goToState($stateParams.fromState, {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});
+            qmService.goToState($stateParams.fromState, {});
         } else {
             $scope.goBack();
         }
@@ -40,42 +40,49 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             goBack();
         });
     };
-    $scope.done = function(){
-        if(!$scope.stateParams.tagConversionFactor){
-            $scope.stateParams.tagConversionFactor = 1;
+
+    function addTaggedToTagVariable() {
+        $scope.stateParams.userTaggedVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
+        $scope.stateParams.userTaggedVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
+            ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
+            $scope.stateParams.userTagVariableObject.name + ' per ' +
+            $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
+            $scope.stateParams.userTaggedVariableObject.name;
+        if (!$scope.stateParams.userTagVariableObject.userTaggedVariables) {
+            $scope.stateParams.userTagVariableObject.userTaggedVariables = [];
         }
+        var userTaggedVariableObject = JSON.parse(JSON.stringify($scope.stateParams.userTaggedVariableObject));  // Avoid TypeError: Converting circular structure to JSON
+        $scope.stateParams.userTagVariableObject.userTaggedVariables.push(userTaggedVariableObject);
+        qm.userVariables.saveToLocalStorage($scope.stateParams.userTagVariableObject);
+    }
+
+    function addTagToTaggedVariable() {
+        $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
+        $scope.stateParams.userTagVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
+            ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
+            $scope.stateParams.userTagVariableObject.name + ' per ' +
+            $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
+            $scope.stateParams.userTaggedVariableObject.name;
+        if (!$scope.stateParams.userTaggedVariableObject.userTagVariables) {
+            $scope.stateParams.userTaggedVariableObject.userTagVariables = [];
+        }
+        var userTagVariableObject = JSON.parse(JSON.stringify($scope.stateParams.userTagVariableObject));  // Avoid TypeError: Converting circular structure to JSON
+        $scope.stateParams.userTaggedVariableObject.userTagVariables.push(userTagVariableObject);
+        qm.userVariables.saveToLocalStorage($scope.stateParams.userTaggedVariableObject);
+    }
+
+    $scope.done = function(){
+        if(!$scope.stateParams.tagConversionFactor){$scope.stateParams.tagConversionFactor = 1;}
         var userTagData = {
             userTagVariableId: $scope.stateParams.userTagVariableObject.id,
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id,
             conversionFactor: $scope.stateParams.tagConversionFactor
         };
-        if($rootScope.variableObject.id === $scope.stateParams.userTagVariableObject.id){
-            $scope.stateParams.userTaggedVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
-            $scope.stateParams.userTaggedVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
-                ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
-                $scope.stateParams.userTagVariableObject.name + ' per ' +
-                $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
-                $scope.stateParams.userTaggedVariableObject.name;
-            if(!$rootScope.variableObject.userTaggedVariables){
-                $rootScope.variableObject.userTaggedVariables = [];
-            }
-            $rootScope.variableObject.userTaggedVariables.push($scope.stateParams.userTaggedVariableObject);
-        }
-        if($rootScope.variableObject.id === $scope.stateParams.userTaggedVariableObject.id){
-            $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
-            $scope.stateParams.userTagVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
-                ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
-                $scope.stateParams.userTagVariableObject.name + ' per ' +
-                $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
-                $scope.stateParams.userTaggedVariableObject.name;
-            if(!$rootScope.variableObject.userTagVariables){
-                $rootScope.variableObject.userTagVariables = [];
-            }
-            $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
-        }
+        addTaggedToTagVariable();
+        addTagToTaggedVariable();
         qmService.showBlackRingLoader();
-        qm.userVariables.saveToLocalStorage($rootScope.variableObject);
         qmService.postUserTagDeferred(userTagData).then(function (response) {
+            qmLog.info(response);
             goBack();
         }, function (error) {
             qmLogService.error(error);
@@ -89,6 +96,12 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
         $scope.stateParams = $stateParams;
+        var debug = false;
+        if(debug && qm.appMode.isDevelopment()){setDebugVariables();}
+        qmLogService.debug($state.current.name + ': beforeEnter', null);
+    });
+
+    function setDebugVariables() {
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
             qm.userVariables.getByName('Anxiety', {}, null, function (variable) {
@@ -103,6 +116,5 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                 qmService.hideLoader();
             });
         }
-        qmLogService.debug($state.current.name + ': beforeEnter', null);
-    });
+    }
 }]);

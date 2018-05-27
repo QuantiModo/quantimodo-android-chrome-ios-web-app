@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Settings">
     <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
-        <div ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled" class="list card" ng-click="goToState('app.upgrade')">
+        <div ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value" class="list card" ng-click="goToState('app.upgrade')">
             <a class="item"><i class="icon ion-ios-color-wand"></i> &nbsp; {{appSettings.appDisplayName}} Plus</a>
         </div>
         <div class="list card">
@@ -128,6 +128,15 @@
         </div>
         <div style="text-align: center;">
             <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog($event)">Delete Account</md-button>
+        </div>
+        <div ng-show="user" class="card sign-in" >
+            <div class="item item-divider" ng-click="showHelpInfoPopup('shareAllData', $event, 'User')">
+                Data Sharing &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <ion-toggle ng-model="user.shareAllData" ng-change="shareAllDataChange($event)">
+                <div ng-if="user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Shared &nbsp</div>
+                <div ng-if="!user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Private &nbsp</div>
+            </ion-toggle>
         </div>
         <br>
     </ion-content>

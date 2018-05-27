@@ -307,7 +307,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
-		qmLogService.info('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
+		qmLogService.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 		$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 		//if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}  // TODO: Why was did we only do this if we had notifications?  It loads forever if category inbox has no notifications
         hideInboxLoader();
@@ -315,7 +315,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			$scope.trackingReminderNotifications = trackingReminderNotifications;
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-			qmLogService.info('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
+			qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
             if(!$scope.state.numberOfDisplayedNotifications){getFallbackInboxContent();}  // TODO: Why was this commented?
 		}
 	};
@@ -339,7 +339,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				qmLogService.error(null, 'failed to get reminder notifications!');
 			});
 	};
-	$scope.$on('qm.storage.getTrackingReminderNotifications', function(){
+	$rootScope.$on('broadcastGetTrackingReminderNotifications', function() {
 		qmLogService.info('qm.storage.getTrackingReminderNotifications broadcast received..');
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});

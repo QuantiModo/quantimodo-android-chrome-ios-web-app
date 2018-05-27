@@ -5,17 +5,41 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     $scope.controller_name = "VariableSettingsCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
-    function getVariableName() {
-        if($stateParams.variableName){$scope.variableName = $stateParams.variableName;}
-        if($stateParams.variableObject){$scope.variableName = $stateParams.variableObject.name;}
-        if($scope.variableName){return $scope.variableName;}
-        qmLog.error("No variable name in variable settings page!");
-        $scope.goBack();
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
+        qmService.sendToLoginIfNecessaryAndComeBack();
+        qmService.navBar.showNavigationMenu();
+        if(qmService.variableIdToGetOnReturnToSettings){
+            getUserVariableWithTags(qmService.variableIdToGetOnReturnToSettings);
+            qm.userVariables.getFromLocalStorageOrApi({id: qmLogService.variableIdToGetOnReturnToSettings}, function (variables) {
+                setVariableObject(variables[0])
+            });
+            delete qmService.variableIdToGetOnReturnToSettings;
+        } else if ($stateParams.variableObject){
+            setVariableObject($stateParams.variableObject);
+            getUserVariableWithTags();
+        } else {
+            getUserVariableWithTags();
+        }
+    });
+    $scope.$on("$ionicView.afterEnter", function() {
+            qm.loaders.robots();
+        });
+    function getVariableParams() {
+        var params = {includeTags: true};
+        params = qmService.stateHelper.addVariableNameOrIdToRequestParams(params, $scope, $stateParams);
+        return params;
     }
     function getUserVariableWithTags() {
         if(!$scope.state.variableObject){qmService.showBlackRingLoader();}
-        qm.userVariables.getFromApi({name: getVariableName(), includeTags: true}, function(userVariables){
+        var params = getVariableParams();
+        if(!params){
+            $scope.goBack();
+            return;
+        }
+        $scope.state.loading = true;
+        qm.userVariables.getFromApi(params, function(userVariables){
             qmService.hideLoader();
+            $scope.state.loading = false;
             if(userVariables && userVariables[0]){
                 setVariableObject(userVariables[0]);
             }
@@ -23,18 +47,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     }
     function setVariableObject(variableObject) {
         $scope.state.variableObject = $scope.state.variableObject = variableObject;
+        if(!$scope.variableName){$scope.variableName = variableObject.name;}
         setShowActionSheetMenu(variableObject);
     }
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
-        qmService.sendToLoginIfNecessaryAndComeBack();
-        qmService.navBar.showNavigationMenu();
-        if($stateParams.variableObject){
-            setVariableObject($stateParams.variableObject);
-            getUserVariableWithTags();
-        } else {
-            getUserVariableWithTags();
-        }
-    });
     function setShowActionSheetMenu(variableObject) {
         qmService.rootScope.setShowActionSheetMenu(function() {
             qmLogService.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
@@ -65,18 +80,29 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             $timeout(function() { hideSheet(); }, 20000);
         });
     }
-    $scope.openTagVariableSearchDialog = function($event) {
+    var dialogParameters = {
+        buttonText: "Select Variable",
+        excludeLocal: true, // Necessary because API does complex filtering
+        minLength: 2
+    };
+    function getConversionFactor(conversionFactor){
+        if($scope.state.variableObject.unit.abbreviatedName === "/5"){
+            return 1;
+        }
+        return conversionFactor;
+    }
+    function openTagVariableSearchDialog($event, requestParams, dialogParameters) {
+        requestParams.includePublic = true;
         function selectVariable(selectedVariable) {
             var userTagData;
-            if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
-                qmService.goToState('app.tagAdd', {
+            if(!getConversionFactor(dialogParameters.conversionFactor)){
+                goToAddTagState({
                     userTaggedVariableObject: $scope.state.variableObject,
-                    fromState: $state.current.name,
-                    fromStateParams: {variableObject: $scope.state.variableObject},
                     userTagVariableObject: selectedVariable
                 });
             } else {
-                userTagData = {userTagVariableId: selectedVariable.id, userTaggedVariableId: $scope.state.variableObject.id, conversionFactor: 1};
+                userTagData = {userTagVariableId: selectedVariable.id, userTaggedVariableId: $scope.state.variableObject.id,
+                    conversionFactor: getConversionFactor(dialogParameters.conversionFactor)};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function (response) {
                     $scope.state.variableObject = response.data.userTaggedVariable;
@@ -84,32 +110,69 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 });
             }
         }
-        var dialogParameters = {
-            title: 'Add an ingredient',
-            helpText: "Search for a variable like an ingredient or category " +
-            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
-            "when your tag variable is analyzed, measurements from " +
-            $scope.state.variableObject.name.toUpperCase() + " will be included.",
-            placeholder: "Search for a tag...",
-            buttonText: "Select Variable",
-            requestParams: {includePublic: true, taggedVariableId: $scope.state.variableObject.id},
-            excludeLocal: true, // Necessary because API does complex filtering,
-            doNotCreateNewVariables: true
-        };
+        dialogParameters.requestParams = requestParams;
         qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
+    }
+    function goToAddTagState(stateParams){
+        stateParams.fromState = $state.current.name;
+        stateParams.fromStateParams = {variableObject: $scope.state.variableObject};
+        qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.id;
+        qmService.goToState(qmStates.tagAdd, stateParams);
+    }
+    $scope.state.openParentVariableSearchDialog = function(e){
+        dialogParameters.conversionFactor = 1;
+        dialogParameters.title = 'Add a parent category';
+        dialogParameters.helpText = "Search for a parent category " +
+            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
+            "when your parent category variable is analyzed, measurements from " +
+            $scope.state.variableObject.name.toUpperCase() + " will be included.";
+        dialogParameters.placeholder = "Search for a parent category...";
+        var requestParams =  {childUserTagVariableId: $scope.state.variableObject.id};
+        openTagVariableSearchDialog(e, requestParams, dialogParameters);
     };
-    $scope.openTageeVariableSearchDialog = function($event) {
+    $scope.state.openIngredientVariableSearchDialog = function(e){
+        dialogParameters.conversionFactor = 1;
+        dialogParameters.title = 'Add an ingredient';
+        dialogParameters.helpText = "Search for an ingredient " +
+            "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
+            "when your ingredient variable is analyzed, converted measurements from " +
+            $scope.state.variableObject.name.toUpperCase() + " will be included.";
+        dialogParameters.placeholder = "Search for an ingredient...";
+        var requestParams =  {ingredientOfUserTagVariableId: $scope.state.variableObject.id};
+        openTagVariableSearchDialog(e, requestParams, dialogParameters);
+    };
+    $scope.state.openChildVariableSearchDialog = function(e){
+        dialogParameters.title = 'Add a child sub-type';
+        dialogParameters.helpText = "Search for a child sub-class of " +
+            $scope.state.variableObject.name.toUpperCase() + ".  Then " +
+            "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
+            "your child sub-type variable will also be included.";
+        dialogParameters.placeholder = "Search for a variable to tag...";
+        var requestParams = {parentUserTagVariableId: $scope.state.variableObject.id};
+        openTageeVariableSearchDialog(e, requestParams, dialogParameters);
+    };
+    $scope.state.openIngredientOfVariableSearchDialog = function(e){
+        dialogParameters.title = 'Add a parent';
+        dialogParameters.helpText = "Search for a variable that contains " +
+            $scope.state.variableObject.name.toUpperCase() + ".  Then " +
+            "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, converted measurements from " +
+            "your selected variable will also be included.";
+        dialogParameters.placeholder = "Search for variable containing "+ $scope.state.variableObject.name;
+        var requestParams = {ingredientUserTagVariableId: $scope.state.variableObject.id};
+        openTageeVariableSearchDialog(e, requestParams, dialogParameters);
+    };
+    function openTageeVariableSearchDialog($event, requestParams, dialogParameters) {
+        requestParams.includePublic = true;
         function selectVariable(selectedVariable) {
             var userTagData;
-            if($scope.state.variableObject.unit.abbreviatedName !== '/5'){
-                qmService.goToState('app.tagAdd', {
+            if(!getConversionFactor(dialogParameters.conversionFactor)){
+                goToAddTagState({
                     userTagVariableObject: $scope.state.variableObject,
-                    fromState: $state.current.name,
-                    fromStateParams: {variableObject: $scope.state.variableObject},
                     userTaggedVariableObject: selectedVariable
                 });
             } else {
-                userTagData = {userTaggedVariableId: selectedVariable.id, userTagVariableId: $scope.state.variableObject.id, conversionFactor: 1};
+                userTagData = {userTaggedVariableId: selectedVariable.id, userTagVariableId: $scope.state.variableObject.id,
+                    conversionFactor: getConversionFactor(dialogParameters.conversionFactor)};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function (response) {
                     $scope.state.variableObject = response.data.userTagVariable;
@@ -117,20 +180,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 });
             }
         }
-        var dialogParameters = {
-            title: 'Add a variable containing ' + selectVariable.name,
-            helpText: "Search for a variable " +
-            " for which " + $scope.state.variableObject.name.toUpperCase() + " is an ingredient or category.  Then " +
-            "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
-            "your tagged variable will also be included.",
-            placeholder: "Search for a variable to tag...",
-            buttonText: "Select Variable",
-            requestParams: {includePublic: true, tagVariableId: $scope.state.variableObject.id},
-            excludeLocal: true // Necessary because API does complex filtering
-        };
+        dialogParameters.requestParams = requestParams;
         qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
     };
-    $scope.openJoinVariableSearchDialog = function($event) {
+    $scope.openJoinVariableSearchDialog = function($event, requestParams) {
+        requestParams = requestParams || {joinVariableId: $scope.state.variableObject.id};
+        requestParams.includePublic = true;
         function selectVariable(selectedVariable) {
             var variableData = {
                 parentVariableId: $scope.state.variableObject.id,
@@ -154,7 +209,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 $scope.state.variableObject.unit.abbreviatedName + ".",
             placeholder: "What variable would you like to join?",
             buttonText: "Select Variable",
-            requestParams: {includePublic: true, joinVariableId: $scope.state.variableObject.id},
+            requestParams: requestParams,
             excludeLocal: true, // Necessary because API does complex filtering
             doNotCreateNewVariables: true
         };
@@ -202,7 +257,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }).catch(function (error) {qmLogService.error(null, error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { qmLogService.debug('Text changed to ' + text, null); }
+        function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $scope.state.variableObject.wikipediaPage = item.page;
             $scope.state.variableObject.wikipediaExtract = item.page.extract;
@@ -315,18 +370,16 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
     };
     $scope.editTag = function(userTagVariable){
-        qmService.goToState('app.tagAdd', {
+        goToAddTagState({
             tagConversionFactor: userTagVariable.tagConversionFactor,
             userTaggedVariableObject: $scope.state.variableObject,
-            fromState: $state.current.name,
             userTagVariableObject: userTagVariable
         });
     };
     $scope.editTagged = function(userTaggedVariable){
-        qmService.goToState('app.tagAdd', {
+        goToAddTagState({
             tagConversionFactor: userTaggedVariable.tagConversionFactor,
             userTaggedVariableObject: userTaggedVariable,
-            fromState: $state.current.name,
             userTagVariableObject: $scope.state.variableObject
         });
     };
