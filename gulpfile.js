@@ -12,7 +12,7 @@ var androidX86ReleaseApkName = 'android-x86-release';
 var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 /** @namespace process.env.DO_NOT_MINIFY */
 var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
-var buildPath = 'build';
+var buildPath = './build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var platformCurrentlyBuildingFor;
@@ -2255,6 +2255,7 @@ gulp.task('cleanCombinedFiles', [], function () {
     return cleanFiles(['www/css/combined*', 'www/scripts/combined*', 'www/scripts/*combined-*']);
 });
 gulp.task('cleanBuildFolder', [], function () {
+    qmLog.info("Cleaning build folder...");
     return cleanFolder(buildPath);
 });
 gulp.task('cleanWwwFolder', [], function () {
