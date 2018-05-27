@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 #printenv
+BRANCH_NAME=${BRANCH_NAME:-${TRAVIS_BRANCH}}
+BRANCH_NAME=${BRANCH_NAME:-${BUDDYBUILD_BRANCH}}
+BRANCH_NAME=${BRANCH_NAME:-${CIRCLE_BRANCH}}
+BRANCH_NAME=${BRANCH_NAME:-${GIT_BRANCH}}
+echo "BRANCH_NAME is ${BRANCH_NAME}"
 set -x
 bundle install
 bundle update
@@ -12,16 +17,16 @@ gulp prepareMediModoIos
 export APP_IDENTIFIER=com.quantimodo.medimodo
 export APP_DISPLAY_NAME=MediModo
 export QUANTIMODO_CLIENT_ID=medimodo
-fastlane deploy
+if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then fastlane deploy; else gulp build-ios-app; fi
 
 gulp prepareMoodiModoIos
 export APP_IDENTIFIER=com.quantimodo.moodimodoapp
 export APP_DISPLAY_NAME=MoodiModo
 export QUANTIMODO_CLIENT_ID=moodimodoapp
-fastlane deploy
+if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then fastlane deploy; else gulp build-ios-app; fi
 
 gulp prepareQuantiModoIos
 export APP_IDENTIFIER=com.quantimodo.quantimodo
 export APP_DISPLAY_NAME=QuantiModo
 export QUANTIMODO_CLIENT_ID=quantimodo
-fastlane deploy
+if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then fastlane deploy; else gulp build-ios-app; fi
