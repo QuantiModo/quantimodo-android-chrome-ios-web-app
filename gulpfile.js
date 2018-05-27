@@ -2422,6 +2422,23 @@ gulp.task('build-ios-app', function (callback) {
         'fastlaneBetaIos',
         callback);
 });
+gulp.task('prepare-ios-app', function (callback) {
+    platformCurrentlyBuildingFor = 'ios';
+    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
+    runSequence(
+        'ionicInfo',
+        'uncommentCordovaJsInIndexHtml',
+        'configureApp',
+        //'copyAppResources',
+        'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
+        'removeTransparentPng',
+        'removeTransparentPsd',
+        'useWhiteIcon',
+        'ionicResourcesIos',
+        'copyIconsToWwwImg',
+        'write-build-json',
+        callback);
+});
 gulp.task('zipChromeExtension', [], function () {
     return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
 });
@@ -2532,7 +2549,14 @@ gulp.task('prepareMoodiModoIos', function (callback) {
     buildingFor.platform = 'ios';
     runSequence(
         'setMoodiModoEnvs',
-        'build-ios-app',
+        'prepare-ios-app',
+        callback);
+});
+gulp.task('prepareMediModoIos', function (callback) {
+    buildingFor.platform = 'ios';
+    runSequence(
+        'setMediModoEnvs',
+        'prepare-ios-app',
         callback);
 });
 gulp.task('buildQuantiModo', function (callback) {
@@ -2737,7 +2761,7 @@ gulp.task('cordovaBuildAndroid', function (callback) {
 gulp.task('prepareQuantiModoIos', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
-        'build-ios-app',
+        'prepare-ios-app',
         callback);
 });
 gulp.task('_copy-src-and-emulate-android', function (callback) {
