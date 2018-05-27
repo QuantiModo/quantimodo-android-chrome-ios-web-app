@@ -184,7 +184,8 @@ platform :ios do
         username: fastlane_user,
         skip_submission: true,
         distribute_external: false,
-        skip_waiting_for_build_processing: true
+        skip_waiting_for_build_processing: true,
+        ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH']
     )
   end
 
