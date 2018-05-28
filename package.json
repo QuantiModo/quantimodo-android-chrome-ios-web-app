@@ -67,7 +67,7 @@
     "pump": "^3.0.0",
     "q": "^1.5.1",
     "quantimodo": "5.9.52423",
-    "request": "^2.64.0",
+    "request": "^2.87.0",
     "request-promise": "^4.2.1",
     "run-sequence": "^1.1.4",
     "shelljs": "^0.8.0",
