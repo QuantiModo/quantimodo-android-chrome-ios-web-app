@@ -2143,6 +2143,38 @@ window.qm = {
         },
         isDesignMode: function () {
             return qm.getAppSettings().designMode;
+        },
+        browser: {
+            get: function(){
+                if(qm.platform.browser.isChrome()){return "chrome";}
+                if(qm.platform.browser.isFirefox()){return "firefox";}
+                if(qm.platform.browser.isEdge()){return "edge";}
+                if(qm.platform.browser.isIE()){return "ie";}
+                if(qm.platform.browser.isSafari()){return "safari";}
+                if(qm.platform.browser.isOpera()){return "opera";}
+                if(qm.platform.browser.isBlink()){return "blink";}
+            },
+            isFirefox: function(){
+                return typeof InstallTrigger !== 'undefined';
+            },
+            isChrome: function () {
+                return !!window.chrome && !!window.chrome.webstore;
+            },
+            isEdge: function () {
+                return !isIE && !!window.StyleMedia;
+            },
+            isIE: function () {
+                return /*@cc_on!@*/false || !!document.documentMode;
+            },
+            isSafari: function () {
+                return /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+            },
+            isOpera: function () {
+                return (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+            },
+            isBlink: function () {
+                return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
+            }
         }
     },
     push: {
@@ -3502,7 +3534,7 @@ window.qm = {
                     }
                     qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
                 }
-                var params = qm.api.addGlobalParams({'platform': 'web', deviceToken: deviceTokenString});
+                var params = qm.api.addGlobalParams({'platform': qm.platform.browser.get(), deviceToken: deviceTokenString});
                 apiInstance.postDeviceToken(params, callback);
             }
         }
