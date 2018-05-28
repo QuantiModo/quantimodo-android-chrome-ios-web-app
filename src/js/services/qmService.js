@@ -331,7 +331,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.rootScope.setProperty('hideNavigationMenu', true);
             },
             showNavigationMenu: function () {
-                qmLog.info("Showing navigation menu");
+                qmLog.debug("Showing navigation menu");
                 qmService.rootScope.setProperty('hideNavigationMenu', false);
             }
         },
@@ -800,7 +800,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(variableName){
                     params.name = variableName;
                 } else {
-                    var variableId = qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+                    var variableId = qmService.stateHelper.getVariableIdFromScopeStateParamsOrUrl($scope, $stateParams);
                     if(!variableId){
                         qmLog.error("No variable name or id in variable settings page!");
                         return false;
@@ -811,38 +811,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         studyHelper: {
-            studyOrCorrelation: null,
-            getCauseVariableName: function(){
-                if(qmService.studyHelper.studyOrCorrelation.causeVariableName){return qmService.studyHelper.studyOrCorrelation.causeVariableName;}
-                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.variableName;}
-                if(qmService.studyHelper.causeVariable.variableName){return qmService.studyHelper.causeVariable.name;}
-            },
-            getEffectVariableName: function(){
-                if(qmService.studyHelper.studyOrCorrelation.effectVariableName){return qmService.studyHelper.studyOrCorrelation.effectVariableName;}
-                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.variableName;}
-                if(qmService.studyHelper.effectVariable.variableName){return qmService.studyHelper.effectVariable.name;}
-            },
-            getCauseVariableId: function(){
-                if(qmService.studyHelper.studyOrCorrelation.causeVariableId){return qmService.studyHelper.studyOrCorrelation.causeVariableId;}
-                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.variableId;}
-                if(qmService.studyHelper.causeVariable.variableId){return qmService.studyHelper.causeVariable.id;}
-            },
-            getEffectVariableId: function(){
-                if(qmService.studyHelper.studyOrCorrelation.effectVariableId){return qmService.studyHelper.studyOrCorrelation.effectVariableId;}
-                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.variableId;}
-                if(qmService.studyHelper.effectVariable.variableId){return qmService.studyHelper.effectVariable.id;}
-            },
             showShareStudyConfirmation: function (correlationObject, sharingUrl, ev){
-                qmService.studyHelper.studyOrCorrelation = correlationObject;
+                qm.studyHelper.lastStudyOrCorrelation = correlationObject;
                 var title = 'Share Study';
-                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
-                    ' and ' + qmService.studyHelper.getEffectVariableName() +
+                var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
+                    ' and ' + qm.studyHelper.getEffectVariableName() +
                     ' measurements publicly visible? You can make them private again at any time on this study page.';
                 function yesCallback() {
                     correlationObject.shareUserMeasurements = true;
                     qm.studyHelper.saveLastStudy(correlationObject);
-                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
-                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
+                    var body = {causeVariableId: qm.studyHelper.getCauseVariableId(),
+                        effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
                     qmService.showBlackRingLoader();
                     qmService.postStudyDeferred(body).then(function () {
                         qmService.hideLoader();
@@ -881,13 +860,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showUnShareStudyConfirmation: function(correlationObject, ev) {
                 var title = 'Share Study';
-                var textContent = 'Are you absolutely sure you want to make your ' + qmService.studyHelper.getCauseVariableName() +
-                    ' and ' + qmService.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
+                var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
+                    ' and ' + qm.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
                     'previously shared with these variables will no longer work.';
                 function yesCallback() {
                     correlationObject.shareUserMeasurements = false;
-                    var body = {causeVariableId: qmService.studyHelper.getCauseVariableId(),
-                        effectVariableId: qmService.studyHelper.getEffectVariableId(), shareUserMeasurements: false};
+                    var body = {causeVariableId: qm.studyHelper.getCauseVariableId(),
+                        effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: false};
                     qmService.postStudyDeferred(body);
                 }
                 function noCallback() {correlationObject.shareUserMeasurements = true;}
@@ -1422,36 +1401,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var onRequestFailed = function(error){
         qmLogService.error("Request error : " + error);
     };
-    qmService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
-        params = addGlobalUrlParamsToObject(params);
-        var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
-        if(cachedData && successHandler){
-            //successHandler(cachedData);
-            //return;
-        }
-        if(!configureQmApiClient('getMeasurementsFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.MeasurementsApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
-        }
-        apiInstance.getMeasurements(params, callback);
-        //qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
-    };
     qmService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
-        if(!refresh){
-            var cachedMeasurements = qmService.getCachedResponse('getV1Measurements', params);
-            if(cachedMeasurements){
-                deferred.resolve(cachedMeasurements);
-                return deferred.promise;
-            }
-        }
-        if(refresh){
-            //deleteCache(getCurrentFunctionName());
-        }
-        //params.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.getMeasurementsFromApi(params, function(response){
-            qmService.storeCachedResponse('getMeasurementsFromApi', params, response);
+        params.refresh = refresh;
+        qm.measurements.getMeasurementsFromApi(params, function(response){
             deferred.resolve(qmService.addInfoAndImagesToMeasurements(response));
         }, function(error){
             qmLogService.error(error);
@@ -1462,7 +1415,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getMeasurementById = function(measurementId){
         var deferred = $q.defer();
         var params = {id : measurementId};
-        qmService.getMeasurementsFromApi(params, function(response){
+        qm.measurements.getMeasurementsFromApi(params, function(response){
             var measurementArray = response;
             if(!measurementArray[0]){
                 qmLogService.debug('Could not get measurement with id: ' + measurementId, null);
@@ -1511,43 +1464,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug('Logging out of api does not work yet.  Fix it!', null);
         qmService.get('api/v2/auth/logout', [], {}, successHandler, errorHandler);
     };
-    qmService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
-        params = addGlobalUrlParamsToObject(params);
-        params.commonOnly = true;
-        var cachedData = qm.api.cacheGet(params, 'getAggregatedCorrelationsFromApi');
-        if(cachedData && successHandler){
-            successHandler(cachedData);
-            return;
-        }
-        if(!configureQmApiClient('getAggregatedCorrelationsFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.AnalyticsApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAggregatedCorrelationsFromApi');
-        }
-        apiInstance.getCorrelations(params, callback);
-        var options = {};
-        //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
-    };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
         var options = {};
         qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
-    };
-    qmService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
-        params = addGlobalUrlParamsToObject(params);
-        var cachedData = qm.api.cacheGet(params, 'getUserCorrelationsFromApi');
-        if(cachedData && successHandler){
-            successHandler(cachedData);
-            return;
-        }
-        if(!configureQmApiClient('getUserCorrelationsFromApi', errorHandler)){return false;}
-        var apiInstance = new Quantimodo.AnalyticsApi();
-        function callback(error, data, response) {
-            qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserCorrelationsFromApi');
-        }
-        apiInstance.getCorrelations(params, callback);
-        //var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        //qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
     };
     qmService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
         qmService.post('api/v3/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
@@ -2413,7 +2332,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         }
         var params = {variableName : qm.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
-        qmService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
+        qm.measurements.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
                 qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
                 $rootScope.$broadcast('updateCharts');
@@ -3665,23 +3584,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return correlationObjects;
     };
     qmService.clearCorrelationCache = function(){
-        qmService.deleteCachedResponse('aggregatedCorrelations');
-        qmService.deleteCachedResponse('correlations');
+        qm.api.cacheRemove(qm.items.agggre);
+        qm.api.cacheRemove(qm.items.corr);
     };
     qmService.getAggregatedCorrelationsDeferred = function(params){
         var deferred = $q.defer();
-        var cachedCorrelations = qmService.getCachedResponse('aggregatedCorrelations', params);
-        if(cachedCorrelations){
-            deferred.resolve(cachedCorrelations);
-            return deferred.promise;
-        }
-        qmService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
+        qm.correlations.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
             try {
                 correlationObjects = useLocalImages(correlationObjects);
             } catch (error) {
                 qmLog.error(error);
             }
-            qmService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
             deferred.resolve(correlationObjects);
         }, function(error){
             qmLogService.error(error);
@@ -3701,12 +3614,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getCorrelationsDeferred = function (params) {
         var deferred = $q.defer();
-        var cachedCorrelationsResponseData = qmService.getCachedResponse('correlations', params);
-        if(cachedCorrelationsResponseData){
-            deferred.resolve(cachedCorrelationsResponseData);
-            return deferred.promise;
-        }
-        qmService.getUserCorrelationsFromApi(params, function(response){
+        qm.correlations.getUserCorrelationsFromApi(params, function(response){
             if(!response){
                 qmLog.error("No response from getUserCorrelationsFromApi");
                 deferred.reject("No response from getUserCorrelationsFromApi");
@@ -3717,7 +3625,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             } catch (error) {
                 qmLog.error(error);
             }
-            qmService.storeCachedResponse('correlations', params, response.data);
             deferred.resolve(response.data);
         }, function(error){
             qmLog.warn(error);
@@ -5315,28 +5222,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var val = qm.storage.getItem(key);
         callback(val);
     };
-    qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
-        if(!params){
-            qmLogService.error('No params provided to getCachedResponse');
-            return false;
-        }
-        var cachedResponse = qm.storage.getItem(requestName);
-        if(!cachedResponse || !cachedResponse.expirationTimeMilliseconds){return false;}
-        var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
-        if(!paramsMatch){return false;}
-        var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
-        if(ignoreExpiration){cacheNotExpired = true;}
-        if(!cacheNotExpired){return false;}
-        //if(!cachedResponse.response.length){return false;} // Doesn't work if response is an object instead of array
-        return cachedResponse.response;
-    };
-    qmService.storeCachedResponse = function(requestName, params, response){
-        params = JSON.parse(JSON.stringify(params));
-        response = JSON.parse(JSON.stringify(response));
-        var cachedResponse = {requestParams: params, response: response, expirationTimeMilliseconds: Date.now() + 86400 * 1000};
-        qmService.storage.setItem(requestName, cachedResponse);
-    };
-    qmService.deleteCachedResponse = function(requestName){qm.storage.removeItem(requestName);};
     // LOGIN SERVICES
     qmService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         qmService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
