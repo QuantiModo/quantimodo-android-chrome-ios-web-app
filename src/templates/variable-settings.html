@@ -2,6 +2,15 @@
     <ion-nav-title>Variable Settings</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }" ng-cloak>
         <ion-refresher on-refresh="refreshUserVariable()"></ion-refresher>
+        <div ng-show="state.loading" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
+            <div>
+                <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
+                <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
+            </div>
+            <div ng-show="loadingCharts" style="text-align: center"> <br>
+                <ion-spinner icon="android"></ion-spinner> <br> <br> <br>
+            </div>
+        </div>
         <div ng-show="state.variableObject">
             <div id="variablePropertiesCard" class="card variable-settings" >
                 <div class="list">
@@ -55,81 +64,143 @@
                 </md-card-content>
             </md-card>
             <div ng-include="'templates/fragments/variable-analysis-settings-fragment.html'"></div>
-            <div>
-                <div class="card variable-settings" >
-                    <div class="item item-divider ng-binding">Joined Duplicates</div>
-                    <md-chips ng-model="state.variableObject.joinedUserTagVariables" name="joinedVariable" ng-click="openJoinVariableSearchDialog()"
-                              ng-show="state.variableObject.joinedUserTagVariables && state.variableObject.joinedUserTagVariables.length"
-                              md-on-remove="deleteJoinedVariable($chip)"  md-on-select="deleteJoined($chip)">
-                        <md-chip-template>
-                            <strong>{{$chip.name}} &nbsp;</strong>
-                        </md-chip-template>
+            <div class="card variable-settings" id="duplicates-card">
+                <div class="item item-divider ng-binding">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('joinedUserTagVariables', $event, 'Variable', 'Joined Duplicates')">
+                        Joined Duplicates &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+                </div>
+                <md-chips ng-model="state.variableObject.joinedUserTagVariables" name="joinedVariable" ng-click="openJoinVariableSearchDialog()"
+                          ng-show="state.variableObject.joinedUserTagVariables && state.variableObject.joinedUserTagVariables.length"
+                          md-on-remove="deleteJoinedVariable($chip)"  md-on-select="deleteJoined($chip)">
+                    <md-chip-template>
+                        <strong>{{$chip.name}} &nbsp;</strong>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-link button-positive" ng-click="openJoinVariableSearchDialog()">
+                    Join a Duplicate Variable
+                </md-button>
+                <div ng-if="state.variableObject.joinedCommonTagVariables && state.variableObject.joinedCommonTagVariables.length">
+                    <div class="item item-divider ng-binding">
+                            <span class="input-label left-span" ng-click="showExplanationsPopup('joinedCommonTagVariables', $event, 'Variable', 'Common Joined Duplicates')">
+                                Common Joined Duplicates &nbsp; <i class="icon ion-help-circled"></i>
+                            </span>
+                    </div>
+                    <md-chips ng-model="state.variableObject.joinedCommonTagVariables" name="joinedCommonTagVariables" readonly="true">
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
                     </md-chips>
-                    <md-button class="button button-outline button-block icon-left ion-link button-positive" ng-click="openJoinVariableSearchDialog()">
-                        Join a Duplicate Variable
-                    </md-button>
                 </div>
             </div>
-            <div class="card variable-settings" >
-                <div class="item item-divider ng-binding">{{state.variableObject.name}} Parent Categories</div>
-                <md-chips ng-model="state.variableObject.parentUserTagVariables" name="tagVariable" ng-click="openTagVariableSearchDialog()"
+            <div class="card variable-settings" id="parentUserTagVariables-card">
+                <div class="item item-divider ng-binding">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('parentUserTagVariables', $event, 'Variable', 'Parent Categories')">
+                        Parent Categories &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+                </div>
+                <md-chips ng-model="state.variableObject.parentUserTagVariables" name="parentUserTagVariables"
+                          ng-click="state.openParentVariableSearchDialog($event)"
                           ng-show="state.variableObject.parentUserTagVariables && state.variableObject.parentUserTagVariables.length"
+                          md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
+                    <md-chip-template>
+                        <em>{{$chip.name}}</em>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                           ng-click="state.openParentVariableSearchDialog($event)">
+                    Add a Parent Category
+                </md-button>
+                <div ng-if="state.variableObject.parentCommonTagVariables && state.variableObject.parentCommonTagVariables.length">
+                    <div class="item item-divider ng-binding">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('parentCommonTagVariables', $event, 'Variable', 'Common Parent Categories')">
+                            Common Parent Categories &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+                    </div>
+                    <md-chips ng-model="state.variableObject.parentCommonTagVariables" name="parentCommonTagVariables" readonly="true">
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                    </md-chips>
+                </div>
+            </div>
+            <div class="card variable-settings" id="childUserTagVariables-card">
+                <div class="item item-divider ng-binding">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('childUserTagVariables', $event, 'Variable', 'Child Sub-Types')">
+                        Child Sub-Types &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+                </div>
+                <md-chips ng-model="state.variableObject.childUserTagVariables" name="childUserTagVariables"
+                          ng-click="state.openChildVariableSearchDialog($event)"
+                          ng-show="state.variableObject.childUserTagVariables && state.variableObject.childUserTagVariables.length"
+                          md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
+                    <md-chip-template>
+                        <em>{{$chip.name}}</em>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                           ng-click="state.openChildVariableSearchDialog($event)">
+                    Add a Child Sub-Type
+                </md-button>
+                <div ng-if="state.variableObject.childCommonTagVariables && state.variableObject.childCommonTagVariables.length">
+                    <div class="item item-divider ng-binding">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('childCommonTagVariables', $event, 'Variable', 'Common Child Sub-Types')">
+                            Common Child Sub-Types &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+                    </div>
+                    <md-chips ng-model="state.variableObject.childCommonTagVariables" name="childCommonTagVariables" readonly="true">
+                        <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                    </md-chips>
+                </div>
+            </div>
+            <div ng-show="state.variableObject.unitCategoryName !== 'Rating'" id="ingredients-card" class="card variable-settings" >
+                <div class="item item-divider ng-binding">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('ingredientUserTagVariables', $event, 'Variable', 'Ingredients')">
+                        Ingredients &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+                </div>
+                <md-chips ng-model="state.variableObject.ingredientUserTagVariables" name="ingredientUserTagVariables" ng-click="openIngredientVariableSearchDialog()"
+                          ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
                           md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                     <md-chip-template>
                         <em>{{$chip.tagDisplayText}}</em>
                     </md-chip-template>
                 </md-chips>
-                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTagVariableSearchDialog()">
-                    Add a Parent Category
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openIngredientVariableSearchDialog()">
+                    Add an Ingredient
                 </md-button>
-            </div>
-            <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
-                <div class="card variable-settings" >
-                    <div class="item item-divider ng-binding">{{state.variableObject.name}} Ingredients</div>
-                    <md-chips ng-model="state.variableObject.ingredientUserTagVariables" name="tagVariable" ng-click="openTagVariableSearchDialog()"
-                              ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
-                              md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
-                        <md-chip-template>
-                            <em>{{$chip.tagDisplayText}}</em>
-                        </md-chip-template>
+                <div ng-if="state.variableObject.ingredientCommonTagVariables && state.variableObject.ingredientCommonTagVariables.length">
+                    <div class="item item-divider ng-binding">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('ingredientCommonTagVariables', $event, 'Variable', 'Common Ingredients')">
+                            Common Ingredients &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+                    </div>
+                    <md-chips ng-model="state.variableObject.ingredientCommonTagVariables" name="ingredientCommonTagVariables" readonly="true">
+                        <md-chip-template><em>{{$chip.tagDisplayText}}</em></md-chip-template>
                     </md-chips>
-                    <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openTagVariableSearchDialog()">
-                        Add an Ingredient
-                    </md-button>
-                    <div ng-show="state.variableObject.commonTagVariables && state.variableObject.commonTagVariables.length" class="item item-divider ng-binding">Common Tags</div>
-                    <ion-list ng-show="state.variableObject.commonTagVariables && state.variableObject.commonTagVariables.length">
-                        <ion-item ng-click="editTag(item)"
-                                  class="item item-text-wrap"
-                                  ng-repeat="item in state.variableObject.commonTagVariables">
-                            <p>{{item.tagDisplayText}}</p>
-                        </ion-item>
-                    </ion-list>
                 </div>
             </div>
-            <div ng-show="state.variableObject.unitCategoryName !== 'Rating'">
-                <div class="card variable-settings" >
+            <div class="card variable-settings" id="ingredient-of-card" ng-show="state.variableObject.unitCategoryName !== 'Rating'">
+                <div class="item item-divider ng-binding">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('ingredientOfUserTagVariables', $event, 'Variable', 'Ingredient Of')">
+                        Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+                </div>
+                <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="openIngredientOfVariableSearchDialog()"
+                          ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
+                          md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
+                    <md-chip-template>
+                        <em>{{$chip.tagDisplayText}}</em>
+                    </md-chip-template>
+                </md-chips>
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                           ng-click="openIngredientOfVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
+                </md-button>
+                <div ng-if="state.variableObject.ingredientOfCommonTagVariables && state.variableObject.ingredientOfCommonTagVariables.length">
                     <div class="item item-divider ng-binding">
-                        {{state.variableObject.name}} is Ingredient Of
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('ingredientOfCommonTagVariables', $event, 'Variable', 'Common Ingredient Of')">
+                            Common Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
                     </div>
-                    <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="openTageeVariableSearchDialog()"
-                              ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
-                              md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">
-                        <md-chip-template>
-                            <em>{{$chip.tagDisplayText}}</em>
-                        </md-chip-template>
+                    <md-chips ng-model="state.variableObject.ingredientOfCommonTagVariables" name="ingredientOfCommonTagVariables" readonly="true">
+                        <md-chip-template><em>{{$chip.tagDisplayText}}</em></md-chip-template>
                     </md-chips>
-                    <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
-                               ng-click="openTageeVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
-                    </md-button>
-                    <div ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length"
-                         class="item item-divider ng-binding">Common Tagged Variables</div>
-                    <ion-list ng-show="state.variableObject.commonTaggedVariables && state.variableObject.commonTaggedVariables.length">
-                        <ion-item ng-click="editTagged(item)"
-                                  class="item item-text-wrap"
-                                  ng-repeat="item in state.variableObject.commonTaggedVariables">
-                            <p >{{item.tagDisplayText}}</p>
-                        </ion-item>
-                    </ion-list>
                 </div>
             </div>
             <div class="row">

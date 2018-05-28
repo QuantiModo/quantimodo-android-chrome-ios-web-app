@@ -27,31 +27,34 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
+        if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
+            qmService.stateHelper.previousUrl = window.location.href;
+        }
     });
-    function setAllStateProperties(studyOrCorrelation) {
-        if(!studyOrCorrelation){return;}
-        if(!studyOrCorrelation.statistics && studyOrCorrelation.correlationCoefficient){
-            studyOrCorrelation.statistics = JSON.parse(JSON.stringify(studyOrCorrelation));
+    function setAllStateProperties(lastStudyOrCorrelation) {
+        if(!lastStudyOrCorrelation){return;}
+        if(!lastStudyOrCorrelation.statistics && lastStudyOrCorrelation.correlationCoefficient){
+            lastStudyOrCorrelation.statistics = JSON.parse(JSON.stringify(lastStudyOrCorrelation));
         }
-        if(studyOrCorrelation.statistics){
-            delete studyOrCorrelation.statistics.studyText;
-            delete studyOrCorrelation.statistics.charts;
-            delete studyOrCorrelation.statistics.highcharts;
-            $scope.correlationObject = studyOrCorrelation.statistics;
+        if(lastStudyOrCorrelation.statistics){
+            delete lastStudyOrCorrelation.statistics.studyText;
+            delete lastStudyOrCorrelation.statistics.charts;
+            delete lastStudyOrCorrelation.statistics.highcharts;
+            $scope.correlationObject = lastStudyOrCorrelation.statistics;
         } else {
-            $scope.correlationObject = studyOrCorrelation;
+            $scope.correlationObject = lastStudyOrCorrelation;
         }
-        if(studyOrCorrelation.charts){
-            studyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(studyOrCorrelation.charts);
+        if(lastStudyOrCorrelation.charts){
+            lastStudyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(lastStudyOrCorrelation.charts);
         } else {
-            qmLog.info("No charts on: " + JSON.stringify(studyOrCorrelation));
+            qmLog.info("No charts on: " + JSON.stringify(lastStudyOrCorrelation).substring(0, 140));
         }
-        $scope.state.study = studyOrCorrelation;
+        $scope.state.study = lastStudyOrCorrelation;
     }
-    function setAllStatePropertiesAndSaveToLocalStorage(studyOrCorrelation) {
-        if(!studyOrCorrelation){return;}
-        setAllStateProperties(studyOrCorrelation);
-        qm.studyHelper.saveLastStudy(studyOrCorrelation);
+    function setAllStatePropertiesAndSaveToLocalStorage(lastStudyOrCorrelation) {
+        if(!lastStudyOrCorrelation){return;}
+        setAllStateProperties(lastStudyOrCorrelation);
+        qm.studyHelper.saveLastStudy(lastStudyOrCorrelation);
     }
     function matchesVariableNames(study) {
         if(!study){return false;}
@@ -66,7 +69,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getScopedStudyIfMatchesVariableNames() {
         if(matchesVariableNames($stateParams.correlationObject)){return $stateParams.correlationObject;}
         if($scope.state && matchesVariableNames($scope.state.study)){return $scope.state.study;}
-        if(matchesVariableNames(qm.studyHelper.getLastStudy())){return qm.studyHelper.getLastStudy();}
+        if(matchesVariableNames(qm.studyHelper.lastStudyOrCorrelation)){return qm.studyHelper.lastStudyOrCorrelation;}
     }
     function getStatistics() {
         if($scope.state.study && $scope.state.study.statistics){return $scope.state.study.statistics;}
@@ -79,13 +82,14 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         return null;
     }
     function setupRequestParams() {
-        $scope.state.requestParams.causeVariableName = getStateOrUrlOrRootScopeCorrelationOrRequestParam("causeVariableName");
-        $scope.state.requestParams.effectVariableName = getStateOrUrlOrRootScopeCorrelationOrRequestParam("effectVariableName");
+        $scope.state.requestParams.causeVariableName = getCauseVariableName();
+        $scope.state.requestParams.effectVariableName = getEffectVariableName();
         $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
-        getStudy();
+        getStudy(true);
+        qm.windowHelper.scrollToTop();
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
@@ -154,7 +158,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
-    function getStudy() {
+    function getStudy(recalculate) {
         if(!getCauseVariableName() || !getEffectVariableName()){
             qmLogService.error('Cannot get study. Missing cause or effect variable name.');
             qmService.goToDefaultState();
@@ -174,12 +178,13 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
+            if(recalculate || qm.urlHelper.getParam('recalculate')){$scope.state.requestParams.recalculate = true;}
         });
     }
-    function getCauseVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariableName');}
-    function getEffectVariableName() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariableName');}
-    function getCauseVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('causeVariable');}
-    function getEffectVariable() {return getStateOrUrlOrRootScopeCorrelationOrRequestParam('effectVariable');}
+    function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
+    function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
+    function getCauseVariable() {return qm.studyHelper.getCauseVariable($stateParams, $scope, $rootScope);}
+    function getEffectVariable() {return qm.studyHelper.getEffectVariable($stateParams, $scope, $rootScope);}
     function setActionSheetMenu(){
          var showActionSheetMenu = function() {
             var hideSheet = $ionicActionSheet.show({
@@ -226,22 +231,23 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 }
             }
         }).then(function(variable) {
-            qmService.showInfoToast("Re-analyzing data using updated " + qmService.explanations[propertyToUpdate].title);
+            qmService.showInfoToast("Re-analyzing data using updated " + qm.stringHelper.camelToTitleCase(propertyToUpdate));
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             qmService.postUserVariableDeferred(postData).then(function (response) {
-                getStudy();
+                $scope.refreshStudy();
             });
         }, function() {qmLogService.debug('User cancelled selection', null);});
     };
     function VariableSettingsController(qmService, qmLogService, dialogParameters) {
         var self = this;
-        self.title = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        self.helpText = qmService.explanations[dialogParameters.propertyToUpdate].explanation;
-        self.placeholder = qmService.explanations[dialogParameters.propertyToUpdate].title;
-        if(qmService.explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + qmService.explanations[dialogParameters.propertyToUpdate].unitName;}
+        var explanations = qm.help.getExplanations();
+        self.title = explanations[dialogParameters.propertyToUpdate].title;
+        self.helpText = explanations[dialogParameters.propertyToUpdate].explanation;
+        self.placeholder = explanations[dialogParameters.propertyToUpdate].title;
+        if(explanations[dialogParameters.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + explanations[dialogParameters.propertyToUpdate].unitName;}
         self.value = dialogParameters.variable[dialogParameters.propertyToUpdate];
-        self.unitName = qmService.explanations[dialogParameters.propertyToUpdate].unitName;
+        self.unitName = explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
             qmService.goToState(window.qmStates.help);

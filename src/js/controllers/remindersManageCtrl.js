@@ -175,7 +175,6 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			qmLogService.error('Failed to Delete Reminder: ' + error);
 		});
 	};
-
 	$scope.showActionSheet = function(trackingReminder) {
 		var variableObject = qmService.convertTrackingReminderToVariableObject(trackingReminder);
         var buttons = [
@@ -218,4 +217,8 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 		});
 		$timeout(function() {hideSheet();}, 20000);
 	};
+    $rootScope.$on('broadcastGetTrackingReminders', function() {
+        qmLogService.info('broadcastGetTrackingReminders broadcast received..');
+        getTrackingReminders();
+    });
 }]);
