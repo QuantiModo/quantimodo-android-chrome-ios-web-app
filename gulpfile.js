@@ -2412,7 +2412,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'ionic-build-ios',
         //'cordova-hcp-deploy', // Let's only do this on Android builds
         //'delete-chcp-login',
-        'fastlaneBetaIos',
+        //'fastlaneBetaIos',
         callback);
 });
 gulp.task('build-ios-app', function (callback) {
@@ -2459,6 +2459,23 @@ gulp.task('prepare-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'write-build-json',
         'platform-add-ios',
+        callback);
+});
+gulp.task('prepare-ios-app-without-cleaning', function (callback) {
+    platformCurrentlyBuildingFor = 'ios';
+    console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
+    runSequence(
+        'ionicInfo',
+        'uncommentCordovaJsInIndexHtml',
+        'configureApp',
+        //'copyAppResources',
+        'generateConfigXmlFromTemplate', // Needs to happen before resource genbuild-ios-apperation so icon paths are not overwritten
+        'removeTransparentPng',
+        'removeTransparentPsd',
+        'useWhiteIcon',
+        'ionicResourcesIos',
+        'copyIconsToWwwImg',
+        'write-build-json',
         callback);
 });
 gulp.task('zipChromeExtension', [], function () {
