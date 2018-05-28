@@ -15,7 +15,7 @@
     "karma-spec-reporter": "0.0.32"
   },
   "dependencies": {
-    "async": "^2.0.1",
+    "async": "^2.6.1",
     "body-parser": "^1.18.2",
     "bower": "~1.8.0",
     "bugsnag": "^1.11.0",
