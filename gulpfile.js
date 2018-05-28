@@ -95,7 +95,41 @@ var qmGit = {
             qmLog.info(error);
         }
     },
-    accessToken: process.env.GITHUB_ACCESS_TOKEN
+    accessToken: process.env.GITHUB_ACCESS_TOKEN,
+    getCommitMessage(callback){
+        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+        execute(commandForGit, function (error, output) {
+            var commitMessage = output.trim();
+            qmLog.info("Commit: "+ commitMessage);
+            if(callback) {callback(commitMessage);}
+        });
+    },
+    outputCommitMessageAndBranch: function () {
+        qmGit.getCommitMessage(function (commitMessage) {
+            qmGit.setBranchName(function (branchName) {
+                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+            })
+        })
+    },
+    setBranchName: function(callback) {
+        function setBranch(branch, callback) {
+            qmGit.branchName = branch.replace('origin/', '');
+            qmLog.info('current git branch: ' + qmGit.branchName);
+            if (callback) {callback(qmGit.branchName);}
+        }
+        if (qmGit.branchName){
+            setBranch(qmGit.branchName, callback);
+            return;
+        }
+        try {
+            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+                if(err){qmLog.error(err); return;}
+                setBranch(branch, callback);
+            });
+        } catch (e) {
+            qmLog.info("Could not set branch name because " + e.message);
+        }
+    }
 };
 var paths = {
     apk: {
@@ -342,26 +376,7 @@ function getCurrentServerContext() {
     if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
     return process.env.HOSTNAME;
 }
-function setBranchName(callback) {
-    function setBranch(branch, callback) {
-        qmGit.branchName = branch.replace('origin/', '');
-        qmLog.info('current git branch: ' + qmGit.branchName);
-        if (callback) {callback(qmGit.branchName);}
-    }
-    if (qmGit.branchName){
-        setBranch(qmGit.branchName, callback);
-        return;
-    }
-    try {
-        git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-            if(err){qmLog.error(err); return;}
-            setBranch(branch, callback);
-        });
-    } catch (e) {
-        qmLog.info("Could not set branch name because " + e.message);
-    }
-}
-setBranchName();
+qmGit.outputCommitMessageAndBranch();
 function setClientId(callback) {
     if (process.env.BUDDYBUILD_SCHEME) {
         QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
@@ -370,13 +385,6 @@ function setClientId(callback) {
         qmLog.info('Client id already set to ' + QUANTIMODO_CLIENT_ID);
         if (callback) {callback();}
         return;
-    }
-    if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
-        QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH.replace('apps/', '');
-    }
-    if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
-        QUANTIMODO_CLIENT_ID = process.env.CIRCLE_BRANCH.replace('apps/', '');
-        qmLog.info("Using CIRCLE_BRANCH as client id: " + process.env.CIRCLE_BRANCH);
     }
     if(argv.clientId){
         QUANTIMODO_CLIENT_ID = argv.clientId;
@@ -387,7 +395,8 @@ function setClientId(callback) {
         qmLog.info('Stripped apps/ and now client id is ' + QUANTIMODO_CLIENT_ID);
     }
     if (!QUANTIMODO_CLIENT_ID) {
-        setBranchName(function (branch) {
+        qmGit.setBranchName(function (branch) {
+            branch = branch.replace('apps/', '');
             if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
                     qmLog.info('Setting QUANTIMODO_CLIENT_ID using branch name ' + branch);
