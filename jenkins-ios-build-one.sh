@@ -25,5 +25,4 @@ fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
 fastlane add_plugin ionic
 
-gulp prepare-ios-app
-if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then fastlane deploy; else gulp build-ios-app; fi
+if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then gulp prepare-ios-app-without-cleaning; fastlane deploy; else gulp build-ios-app-without-cleaning; fi
