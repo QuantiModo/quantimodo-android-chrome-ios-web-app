@@ -77,7 +77,7 @@
     "vinyl-source-stream": "^2.0.0",
     "xcode": "0.8.9",
     "xml2js": "^0.4.15",
-    "yargs": "10.0.3"
+    "yargs": "10.1.2"
   },
   "eslintConfig": {
     "env": {
