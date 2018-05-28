@@ -3094,8 +3094,10 @@ gulp.task('reset-remote', function(callback) {
 });
 gulp.task('_update-remote-and-deploy-to-github-pages', ['add-client-remote'], function() {
     runSequence(
+        'createSuccessFile',
         'add-client-remote',
         'deploy-to-github-pages',
         'reset-remote',
+        'deleteSuccessFile',
         callback);
 });
