@@ -2408,6 +2408,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'write-build-json',
+        'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
