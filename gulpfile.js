@@ -3085,3 +3085,17 @@ gulp.task('add-client-remote', function(callback) {
         changeOriginRemote(remoteUrl, callback)
     });
 });
+gulp.task('reset-remote', function(callback) {
+    setClientId(function () {
+        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
+        qmLog.info("Resetting remote to "+ remoteUrl);
+        changeOriginRemote(remoteUrl, callback)
+    });
+});
+gulp.task('_update-remote-and-deploy-to-github-pages', ['add-client-remote'], function() {
+    runSequence(
+        'add-client-remote',
+        'deploy-to-github-pages',
+        'reset-remote',
+        callback);
+});
