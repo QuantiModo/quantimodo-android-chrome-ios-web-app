@@ -129,4 +129,21 @@ angular.module('starter')
             });
         }
     };
+})
+.directive('lazyLoadData', function($compile) {
+    return {
+        link: function(scope, el, attrs) {
+            var now = new Date().getTime();
+            var rep = angular.element(document.getElementsByClassName("md-virtual-repeat-scroller"));
+            rep.on('scroll', function(evt){
+                if (rep[0].scrollTop + rep[0].offsetHeight >= rep[0].scrollHeight)
+                    if (new Date().getTime() - now > 1000) {
+                        now = new Date().getTime();
+                        scope.$apply(function() {
+                            scope.$eval(attrs.lazyLoadData);
+                        });
+                    }
+            });
+        }
+    };
 });
