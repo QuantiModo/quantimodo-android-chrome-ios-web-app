@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/driftyco/ionic-hooks#readme",
   "dependencies": {
-    "xcode": "^0.8.2"
+    "xcode": "^1.0.0"
   }
 }
