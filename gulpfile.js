@@ -78,7 +78,7 @@ var appIds = {
     'medimodo': true
 };
 var qmGit = {
-    branchName: process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH,
+    branchName: null,
     isMaster: function () {
         return qmGit.branchName === "master"
     },
@@ -112,14 +112,14 @@ var qmGit = {
             })
         })
     },
-    setBranchName: function(callback) {
+    setBranchName: function (callback) {
         function setBranch(branch, callback) {
             qmGit.branchName = branch.replace('origin/', '');
             qmLog.info('current git branch: ' + qmGit.branchName);
             if (callback) {callback(qmGit.branchName);}
         }
-        if (qmGit.branchName){
-            setBranch(qmGit.branchName, callback);
+        if (qmGit.getBranchEnv()){
+            setBranch(qmGit.getBranchEnv(), callback);
             return;
         }
         try {
@@ -130,8 +130,19 @@ var qmGit = {
         } catch (e) {
             qmLog.info("Could not set branch name because " + e.message);
         }
+    },
+    getBranchEnv: function () {
+        function getNameIfNotHead(envName) {
+            if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
+            return false;
+        }
+        if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
+        if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
+        if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
+        if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
     }
 };
+qmGit.setBranchName();
 var paths = {
     apk: {
         combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
