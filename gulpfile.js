@@ -3071,7 +3071,11 @@ function changeOriginRemote(remoteUrl, callback){
     });
 }
 gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
-    writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    if(process.env.USE_QM_DOMAIN_ON_GITHUB){
+        writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    } else {
+        cleanFiles(['www/CNAME']);
+    }
     return gulp.src('./www/**/*').pipe(ghPages({}));
 });
 gulp.task('add-client-remote', function(callback) {
