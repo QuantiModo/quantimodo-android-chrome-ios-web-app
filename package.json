@@ -75,7 +75,7 @@
     "sw-precache": "^5.2.1",
     "taco-team-build": "^0.2.2",
     "vinyl-source-stream": "^1.1.0",
-    "xcode": "0.8.9",
+    "xcode": "1.0.0",
     "xml2js": "^0.4.15",
     "yargs": "10.1.2"
   },
