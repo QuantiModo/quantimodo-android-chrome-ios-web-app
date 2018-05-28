@@ -69,7 +69,7 @@
     "quantimodo": "5.9.52423",
     "request": "^2.64.0",
     "request-promise": "^4.2.1",
-    "run-sequence": "^1.1.4",
+    "run-sequence": "^2.0.0",
     "shelljs": "^0.5.3",
     "superagent": "^3.8.2",
     "sw-precache": "^5.2.1",
