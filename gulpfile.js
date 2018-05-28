@@ -12,7 +12,8 @@ var androidX86ReleaseApkName = 'android-x86-release';
 var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 /** @namespace process.env.DO_NOT_MINIFY */
 var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
-var buildPath = './build';
+//var buildPath = './build';  Can't use . because => Updated .......  app_uploads/quantimodo/./build/quantimodo-chrome-extension.zip
+var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var platformCurrentlyBuildingFor;
