@@ -187,6 +187,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 });
             }
         }
+        if(connector.name === 'quantimodo') {
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+        }
         if(connector.name === 'slack') {
             if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                 webConnect(connector);
@@ -196,8 +204,12 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'netatmo') {
-            webConnect(connector);
-            return;
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.netatmo({clientId: connector.connectorClientId, clientSecret: connector.connectorClientSecret, appScope: connector.scopes})
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'foursquare') {
             if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
