@@ -132,6 +132,62 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableObject;
             }
         },
+        connectors: {
+            connectorErrorHandler: function (error){
+                qmLog.error(error);
+            },
+            connectWithToken: function (response, successHandler, errorHandler) {
+                qmLogService.debug('Response Object -> ' + JSON.stringify(response));
+                var body = { connectorCredentials: {token: response}, connector: connector };
+                qmService.connectConnectorWithTokenDeferred(body).then(function(result){
+                    qmLog.debug(JSON.stringify(result));
+                    if(successHandler){successHandler(result);}
+                }, function (error) {
+                    qmService.connectors.connectorErrorHandler(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            },
+            connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
+                qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
+                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+                    if(successHandler){successHandler(result);}
+                }, function() {
+                    qmLogService.error("error on connectWithAuthCode for " + connector.name);
+                    if(errorHandler){errorHandler(error);}
+                });
+            },
+            webConnect: function (connector) {
+                /** @namespace connector.connectInstructions */
+                var url = connector.connectInstructions.url;
+                qmLogService.debug('targetUrl is ' + url);
+                var ref = window.open(url,'', "width=600,height=800");
+                qmLogService.debug('Opened ' + url);
+            },
+            oAuthConnect: function (connector, mobileConnect){
+                if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                    qmService.connectors.webConnect(connector);
+                    return;
+                }
+                mobileConnect();
+            },
+            quantimodo: {
+                connect: function (successHandler, errorHandler) {
+                    qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
+                        qmService.connectors.oAuthConnect(connector, function () {
+                            $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                                .then(function(result) {
+                                    qmService.connectors.connectWithToken(result, successHandler, errorHandler);
+                                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                                }, function(error) {
+                                    if(errorHandler){errorHandler(error);}
+                                    qmService.connectors.connectorErrorHandler(error);
+                                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                                });
+                        })
+                    });
+                }
+            }
+        },
         deploy: {
             fetchUpdate: function() {
                 if(!qmService.deploy.chcpIsDefined()){return false;}
