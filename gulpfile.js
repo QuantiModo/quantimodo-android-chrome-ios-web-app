@@ -3092,7 +3092,7 @@ gulp.task('reset-remote', function(callback) {
         changeOriginRemote(remoteUrl, callback)
     });
 });
-gulp.task('_update-remote-and-deploy-to-github-pages', ['add-client-remote'], function() {
+gulp.task('_update-remote-and-deploy-to-github-pages', [], function(callback) {
     runSequence(
         'createSuccessFile',
         'add-client-remote',
