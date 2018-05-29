@@ -272,7 +272,8 @@ window.qm = {
         },
         responseHandler: function(error, data, response, successHandler, errorHandler) {
             if(!response){
-                qmLog.error("No response provided to qm.api.responseHandler");
+                var message = "No response provided to qm.api.responseHandler";
+                if($rootScope.user){qmLog.error(message);} else {qmLog.info(message);}
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url, null);
