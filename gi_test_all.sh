@@ -7,10 +7,23 @@ if [ -z "$START_URL" ]
 else
     echo "Using START_URL $START_URL"
 fi
+if [ -z "$CLIENT_ID" ]
+  then
+    CLIENT_ID=oauth_test_client
+    echo "No CLIENT_ID specified so falling back to $CLIENT_ID"
+else
+    echo "Using CLIENT_ID $CLIENT_ID"
+fi
+echo "===== BRANCH: ${GIT_BRANCH} ====="
+COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "===== COMMIT: $COMMIT_MESSAGE ====="
+set -x
 GI_API_KEY=f5b531ccd55da08abf35fadabd7b7b04f3d64312
 SUITE_ID=56f5b92519d90d942760ea96  # Ionic
-URL="https://api.ghostinspector.com/v1/suites/${SUITE_ID}/execute/?startUrl=${START_URL}&clientId=oauth_test_client&apiKey=${GI_API_KEY}&commit="$(git rev-parse HEAD)
+URL="https://api.ghostinspector.com/v1/suites/${SUITE_ID}/execute/?startUrl=${START_URL}&clientId=${CLIENT_ID}&apiKey=${GI_API_KEY}&commit="$(git rev-parse HEAD)
 echo "curl ${URL} > ghostinspector.json"
 curl "${URL}" > ghostinspector.json
+echo "=== Check progress at https://app.ghostinspector.com/suites/56f5b92519d90d942760ea96 ==="
 php ghostinspector_parser.php
+echo "===== BRANCH: ${GIT_BRANCH} ====="
+echo "===== COMMIT: $COMMIT_MESSAGE ====="
 # curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://utopia.quantimo.do:4470/ionic/Modo/src/#/&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit=eaf513d9b35aaa0e16133a79eb71fcdd0456702e" > ghostinspector.json
