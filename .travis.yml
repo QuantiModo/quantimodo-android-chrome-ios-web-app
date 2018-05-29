@@ -4,7 +4,7 @@ branches:
    #- develop
    #- /^renovate.*$/
   except:
-    #- /^feature.*$/
+    - /^feature.*$/
 matrix:
   include:
 #  - env: PLATFORM=ios-11.0
