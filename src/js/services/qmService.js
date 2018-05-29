@@ -6902,11 +6902,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            template = template + "Cordova Hot Code Push: " + JSON.stringify(qmService.deploy.chcpInfo) + '\r\n';
+            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmService.deploy.chcpInfo) + '\r\n';
             template = addSnapShotList(template);
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
-                    template = template + "localNotifications: " + JSON.stringify(localNotifications) + '\r\n';
+                    template = template + "localNotifications: " + qm.stringHelper.prettyJsonStringify(localNotifications) + '\r\n';
                     callback(template);
                 })
             } else {

@@ -15,6 +15,9 @@ window.qmLog = {
     logLevel: "info",
     setAuthDebug: function (value) {
         qmLog.authDebugEnabled = value;
+        if(qmLog.authDebugEnabled && window.localStorage){
+            localStorage.setItem('authDebugEnabled', value);
+        }
     },
     setMobileDebug: function (value) {
         qmLog.mobileDebug = value;
@@ -44,7 +47,7 @@ window.qmLog = {
         return object;
     },
     metaData : {},
-    context: null
+    context: null,
 };
 if(typeof bugsnag !== "undefined"){
     window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
@@ -371,16 +374,12 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     //if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
 window.qmLog.authDebug = function(message) {
-    //qmLog.authDebugEnabled = true;
-    if(!qmLog.authDebugEnabled){
-        qmLog.authDebugEnabled = window.location.href.indexOf("authDebug") !== -1;
-        if(qmLog.authDebugEnabled && window.localStorage){
-            localStorage.setItem('authDebugEnabled', "true");
-        }
+    if(message.indexOf("cloudtestlabaccounts") !== -1){ // Keeps spamming bugsnag
+        qmLog.setAuthDebug(false);
+        return;
     }
-    if(!qmLog.authDebugEnabled && window.localStorage){
-        qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
-    }
+    if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){qmLog.setAuthDebug(true)}
+    if(!qmLog.authDebugEnabled && window.localStorage){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
     if(qmLog.authDebugEnabled || qmLog.debugMode){
         if(qm.platform.isMobile()){
             qmLog.error(message, message, null);

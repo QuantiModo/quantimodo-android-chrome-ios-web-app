@@ -9,8 +9,8 @@ else
 fi
 if [[ "$START_URL" = *"medimodo.herokuapp.com"* ]]; then
     echo "=== Check build progress at https://dashboard.heroku.com/apps/medimodo/activity ==="
-    git push git@heroku.com:medimodo.git master -ff || true;
-    git push heroku master -f || true;
+    git push git@heroku.com:medimodo.git master -ff || true;  # Doesn't work on Jenkins for some reason
+    git push heroku master -f || true;  # Doesn't work on Jenkins for some reason
 fi
 if [ -z "$CLIENT_ID" ]
   then
