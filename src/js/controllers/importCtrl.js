@@ -20,7 +20,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         }
-        if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
+        //if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
         if(!userCanConnect()){
             qmService.refreshUser(); // Check if user upgrade via web since last user refresh
@@ -213,6 +213,22 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+        }
+        if(connector.name === 'linkedin') {
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
+        }
+        if(connector.name === 'twitter') {
+            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                webConnect(connector);
+                return;
+            }
+            $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
         if(connector.name === 'strava') {
