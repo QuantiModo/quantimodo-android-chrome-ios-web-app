@@ -4,10 +4,12 @@ if [ -z "$START_URL" ]
   then
     START_URL=https://medimodo.herokuapp.com/
     echo "No START_URL specified so falling back to $START_URL"
-    git push git@heroku.com:medimodo.git master -ff
-    echo "=== Check build progress at https://dashboard.heroku.com/apps/medimodo/activity ==="
 else
     echo "Using START_URL $START_URL"
+fi
+if [[ "$START_URL" = *"medimodo.herokuapp.com"* ]]; then
+    echo "=== Check build progress at https://dashboard.heroku.com/apps/medimodo/activity ==="
+    git push git@heroku.com:medimodo.git master -ff;
 fi
 if [ -z "$CLIENT_ID" ]
   then
