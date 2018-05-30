@@ -3274,6 +3274,10 @@ window.qm = {
             });
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
+            if(!qm.getUser()){
+                qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                return;
+            }
             qm.reminderHelper.getNumberOfReminders(function (number) {
                 if(number){
                     qm.userVariables.getFromLocalStorage({}, function (userVariables) {
