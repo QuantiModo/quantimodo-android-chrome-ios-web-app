@@ -149,7 +149,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
         connector.loadingText = null;
         connector.connecting = true;
-        button.text = "Import Scheduled";
+        if(!qm.appMode.isDebug()){button.text = "Import Scheduled";}
         connector.message = 'You should begin seeing any new data within an hour or so.';
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {

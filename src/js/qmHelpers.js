@@ -30,6 +30,9 @@ window.qm = {
         isBuilder: function(){
             return window.location.href.indexOf('configuration-index.html') !== -1;
         },
+        isDebug: function(){
+            return qmLog.isDebugMode();
+        },
         getAppMode: function(){
             var env = "production";
             if(qm.appMode.isStaging()){env = "staging";}
