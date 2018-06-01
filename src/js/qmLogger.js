@@ -11,25 +11,25 @@
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {
     mobileDebug: null,
-    logLevel: "info",
+    logLevel: null,
     setLogLevelName: function(value){
+        if(qmLog.logLevel === value){return;}
         qmLog.logLevel = value;
-        qm.storage.setItem('logLevel', value);
+        if(typeof localStorage !== "undefined"){
+            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+        }
     },
     getLogLevelName: function() {
         if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
-        if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){
-            qmLog.setLogLevelName("debug");
-            return qm.logLevel;
+        if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
+        if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
+        if(qmLog.logLevel){return qmLog.logLevel;}
+        if(typeof localStorage !== "undefined"){
+            qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
         }
-        if(qm.urlHelper.getParam('logLevel')){
-            qmLog.setLogLevelName(qm.urlHelper.getParam('logLevel'));
-            return qmLog.logLevel;
-        }
-        qmLog.logLevel = qm.storage.getItem('logLevel');  // This stores in globals as well so don't worry about localStorage costs
-        if(qm.logLevel){return qm.logLevel;}
-        qm.setLogLevelName("error");
-        return qm.logLevel;
+        if(qmLog.logLevel){return qmLog.logLevel;}
+        qmLog.setLogLevelName("error");
+        return qmLog.logLevel;
     },
     setAuthDebug: function (value) {
         qmLog.authDebugEnabled = value;
