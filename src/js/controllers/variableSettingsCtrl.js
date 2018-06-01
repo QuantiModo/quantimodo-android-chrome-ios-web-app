@@ -328,7 +328,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 qmLogService.error(null, 'Could not convert experimentEndTimeString to ISO format', {experimentEndTimeString: variableObject.experimentEndTimeString, errorMessage: error});
             }
         }
-        console.log("debugMode is " + window.debugMode);
+        console.log("debugMode is " + qmLog.getDebugMode());
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,
