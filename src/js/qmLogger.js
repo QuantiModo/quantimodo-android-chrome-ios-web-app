@@ -10,14 +10,46 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {
-    debugMode:false,
-    mobileDebug: false,
-    logLevel: "info",
+    mobileDebug: null,
+    logLevel: null,
+    setLogLevelName: function(value){
+        if(qmLog.logLevel === value){return;}
+        qmLog.logLevel = value;
+        if(typeof localStorage !== "undefined"){
+            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+        }
+    },
+    getLogLevelName: function() {
+        if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
+        if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
+        if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
+        if(qmLog.logLevel){return qmLog.logLevel;}
+        if(typeof localStorage !== "undefined"){
+            qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+        }
+        if(qmLog.logLevel){return qmLog.logLevel;}
+        qmLog.setLogLevelName("error");
+        return qmLog.logLevel;
+    },
     setAuthDebug: function (value) {
         qmLog.authDebugEnabled = value;
         if(qmLog.authDebugEnabled && window.localStorage){
-            localStorage.setItem('authDebugEnabled', value);
+            qm.storage.setItem('authDebugEnabled', value);
         }
+    },
+    setDebugMode: function (value) {
+        if (value) {
+            qmLog.setLogLevelName("debug");
+        } else {
+            qmLog.setLogLevelName("info");
+        }
+        return value;
+    },
+    isDebugMode: function() {
+        return qmLog.getLogLevelName() === "debug";
+    },
+    getDebugMode(){
+        return qmLog.isDebugMode();
     },
     setMobileDebug: function (value) {
         qmLog.mobileDebug = value;
@@ -70,34 +102,7 @@ window.stringifyIfNecessary = function(variable){
         return "Could not stringify";
     }
 };
-window.qmLog.getLogLevelName = function() {
-    if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
-    if(qmLog.debugMode){return "debug";}
-    if(qmLog.logLevel){return qmLog.logLevel;}
-    if(qm.urlHelper.getParam('logLevel')){
-        qmLog.logLevel = qm.urlHelper.getParam('logLevel');
-        return qmLog.logLevel;
-    }
-    return "error";
-};
-window.qmLog.checkUrlAndStorageForDebugMode = function () {
-    if(qm.storage.getItem(qm.items.debugMode)){
-        console.log("Got debugMode from local storage");
-        return true;
-    }
-    if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){
-        qmLog.logLevel = "debug";
-        qmLog.debugMode = true;
-        qm.storage.setItem(qm.items.debugMode, true);
-        console.log("Set debugMode in local storage");
-        return true;
-    }
-    //console.debug("No debug url param!");
-    return false;
-};
-window.qmLog.isDebugMode = function() {
-    return qmLog.getLogLevelName() === "debug";
-};
+
 window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;
@@ -114,11 +119,6 @@ window.qmLog.getStackTrace = function() {
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.qmLog.error')).replace('window.qmLog.error', '');
     return stackTrace;
 };
-function addStackTraceToMessage(message, stackTrace) {
-    if(message.toLowerCase().indexOf('stacktrace') !== -1){return message;}
-    if(!stackTrace){stackTrace = qmLog.getStackTrace();}
-    return message + ".  StackTrace: " + stackTrace;
-}
 function getCalleeFunction() {
     return arguments.callee.caller.caller.caller.caller;
 }
@@ -380,7 +380,7 @@ window.qmLog.authDebug = function(message) {
     }
     if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){qmLog.setAuthDebug(true)}
     if(!qmLog.authDebugEnabled && window.localStorage){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
-    if(qmLog.authDebugEnabled || qmLog.debugMode){
+    if(qmLog.authDebugEnabled || qmLog.isDebugMode()){
         if(qm.platform.isMobile()){
             qmLog.error(message, message, null);
         } else {
@@ -400,7 +400,7 @@ window.qmLog.pushDebug = function(name, message, metaData, stackTrace) {
         }
     }
     if(!qmLog.pushDebugEnabled && window.localStorage){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
-    if(qmLog.pushDebugEnabled || qmLog.debugMode){
+    if(qmLog.pushDebugEnabled || qmLog.isDebugMode()){
         qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
     } else {
         qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);
