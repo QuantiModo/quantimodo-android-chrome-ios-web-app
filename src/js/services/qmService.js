@@ -157,11 +157,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             webConnect: function (connector) {
+                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
                 qmLogService.debug('targetUrl is ' + url);
                 var ref = window.open(url,'', "width=600,height=800");
                 qmLogService.debug('Opened ' + url);
+                return true;
             },
             oAuthConnect: function (connector, mobileConnect){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
@@ -185,6 +187,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 });
                         })
                     });
+                }
+            },
+            google: {
+                connect: function (connector) {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    document.addEventListener('deviceready', deviceReady, false);
+                    function deviceReady() {
+                        window.plugins.googleplus.login({
+                            'scopes': connector.scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                            'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                            'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                        }, function (response) {
+                            qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                            qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
+                        }, function (errorMessage) {
+                            qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        });
+                    }
                 }
             }
         },
