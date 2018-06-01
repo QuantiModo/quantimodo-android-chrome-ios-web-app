@@ -35,6 +35,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.rootScope.setUser(null);
                     qmService.auth.deleteAllAccessTokens();
                 }
+            },
+            socialLogin: function (provider) {
+                qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                    return qmService.connectors[provider].connect(connector);
+                });
+            },
+            getSessionTokenFromEventUrl: function(event) {
+                qmLogService.debug('extracting sessionToken from event: ' + JSON.stringify(event));
+                var finishUrl = event.url;
+                if(!finishUrl) {finishUrl = event.data;}
+                if(!isQuantiMoDoDomain(finishUrl)){return;}
+                var sessionToken = qm.urlHelper.getParam('sessionToken', finishUrl);
+                if(sessionToken){qmLogService.debug('got sessionToken from ' + finishUrl);}
+                return sessionToken;
             }
         },
         barcodeScanner: {
@@ -141,8 +155,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var body = { connectorCredentials: {token: response}, connector: connector };
                 qmService.connectConnectorWithTokenDeferred(body).then(function(result){
                     qmLog.debug(JSON.stringify(result));
+                    $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(result);}
                 }, function (error) {
+                    $rootScope.$broadcast('broadcastRefreshConnectors');
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 });
@@ -150,9 +166,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
                 qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
                 qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+                    $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(result);}
                 }, function() {
                     qmLogService.error("error on connectWithAuthCode for " + connector.name);
+                    $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(errorHandler){errorHandler(error);}
                 });
             },
@@ -179,7 +197,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                                 .then(function(result) {
                                     qmService.connectors.connectWithToken(result, successHandler, errorHandler);
-                                    $rootScope.$broadcast('broadcastRefreshConnectors');
                                 }, function(error) {
                                     if(errorHandler){errorHandler(error);}
                                     qmService.connectors.connectorErrorHandler(error);
@@ -205,6 +222,41 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                         });
                     }
+                }
+            },
+            googleplus: {
+                connect: function () {
+                    qm.connectorHelper.getConnectorByName('googleplus', function (connector) {
+                        qmService.connectors.google.connect(connector);
+                    });
+                }
+            },
+            linkedin: {
+                connect: function () {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                }
+            },
+            github: {
+                connect: function (connector) {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                }
+            },
+            twitter: {
+                connect: function (connector) {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
+                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                }
+            },
+            facebook: {
+                connect: function (connector) {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
+                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             }
         },
