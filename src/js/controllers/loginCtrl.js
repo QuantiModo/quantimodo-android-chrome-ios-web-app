@@ -2,7 +2,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
-    $scope.state = { loading: false, alreadyRetried: false};
+    $scope.state = { loading: false, alreadyRetried: false, socialLogin: qmService.auth.socialLogin};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = qm.getAppSettings().headline;
     qmService.navBar.setFilterBarSearchIcon(false);
@@ -203,11 +203,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                 var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
                 qmLog.authDebug('nativeSocialLogin: listen to event at ' + url + ' when the page changes.', null);
                 ref.addEventListener('loadstart', function(event) {
-                    qmLog.authDebug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event), null);
-                    qmLog.authDebug('nativeSocialLogin: check if changed url is the same as redirection url.', null);
+                    qmLog.authDebug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
+                    qmLog.authDebug('nativeSocialLogin: check if changed url is the same as redirection url.');
                     if(qmService.getAuthorizationCodeFromEventUrl(event)) {
                         var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
-                        qmLog.authDebug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.', null);
+                        qmLog.authDebug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                         ref.close();
                         var withJWT = true;
                         qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
