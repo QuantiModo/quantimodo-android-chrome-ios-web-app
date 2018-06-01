@@ -276,7 +276,7 @@ window.qm = {
         responseHandler: function(error, data, response, successHandler, errorHandler) {
             if(!response){
                 var message = "No response provided to qm.api.responseHandler";
-                if($rootScope.user){qmLog.error(message);} else {qmLog.info(message);}
+                if(qm.getUser()){qmLog.error(message);} else {qmLog.info(message);}
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url, null);
@@ -288,7 +288,6 @@ window.qm = {
             }
         },
         getBaseUrl: function () {
-            //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
