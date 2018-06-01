@@ -5101,16 +5101,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.pushDebug('We HAVE TO reschedule whenever app opens or it loses binding to its trigger events!');
         function getLocalNotificationSettings() {
             if (!activeTrackingReminders) {activeTrackingReminders = qm.reminderHelper.getActive();}
-            var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+            //var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
             var mostFrequentIntervalInMinutes = qm.notifications.getMostFrequentReminderIntervalInMinutes();
             if (activeTrackingReminders) {
                 for (var i = 0; i < activeTrackingReminders.length; i++) {
                     if (activeTrackingReminders[i].reminderFrequency === mostFrequentIntervalInMinutes * 60) {
-                        at.setUTCSeconds(activeTrackingReminders[i].nextReminderTimeEpochSeconds);
+                        //at.setUTCSeconds(activeTrackingReminders[i].nextReminderTimeEpochSeconds);
                     }
                 }
             }
-            var notificationSettings = {every: mostFrequentIntervalInMinutes, at: at};
+            var notificationSettings = {
+                every: mostFrequentIntervalInMinutes,
+                //at: at  // Setting at property calls first notification way in the future for some reason.  I think it defaults to now
+            };
             notificationSettings.id = qm.getPrimaryOutcomeVariable().id;
             notificationSettings.title = "How are you?";
             notificationSettings.text = "Open reminder inbox";
