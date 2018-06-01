@@ -1346,7 +1346,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         qmService.navBar.setOfflineConnectionErrorShowing(false);
         var bodyString = JSON.stringify(body);
-        if(!window.qmLog.isDebugMode()){bodyString = bodyString.substring(0, 140);}
+        if(!qmLog.isDebugMode()){bodyString = bodyString.substring(0, 140);}
         qmLogService.info('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, null, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             if(!accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
@@ -3479,7 +3479,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
-        qmLog.checkUrlAndStorageForDebugMode();
         var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
             qmLogService.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' +
@@ -6870,7 +6869,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.initializeApplication = function(appSettings){
         if(window.config){return;}
-        qmLog.checkUrlAndStorageForDebugMode();
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();

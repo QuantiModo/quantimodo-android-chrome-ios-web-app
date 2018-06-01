@@ -9,7 +9,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.userEmail = qm.urlHelper.getParam('userEmail');
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
-        $scope.debugMode = qmLog.debugMode;
+        $scope.debugMode = qmLog.getDebugMode();
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
         $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
@@ -291,7 +291,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         if(!$rootScope.user.shareAllData) {qmService.showInfoToast('Measurements are now private');}
     };
     $scope.toggleDebugMode = function(){
-        $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
+        $scope.debugMode = !$scope.debugMode;
+        qmLog.setDebugMode($scope.debugMode);
     };
     $scope.upgradeToggle = function(){
         qmService.premiumModeDisabledForTesting = !$rootScope.user.stripeActive;

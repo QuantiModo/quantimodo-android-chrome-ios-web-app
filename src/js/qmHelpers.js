@@ -973,7 +973,6 @@ window.qm = {
                     return qm.storage.getItem(qm.items.accessToken);
                 }
             }
-            qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
             return null;
         },
@@ -1365,7 +1364,6 @@ window.qm = {
         clientId: 'clientId',
         commonVariables: 'commonVariables',
         connectors: 'connectors',
-        debugMode: 'debugMode',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
         deviceTokenToSync: 'deviceTokenToSync',
@@ -1387,6 +1385,7 @@ window.qm = {
         lastStudyOrCorrelation: 'lastStudyOrCorrelation',
         lastPopupNotificationUnixTimeSeconds: 'lastPopupNotificationUnixTimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
+        logLevel: 'logLevel',
         measurementsQueue: 'measurementsQueue',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         notificationInterval: 'notificationInterval',
