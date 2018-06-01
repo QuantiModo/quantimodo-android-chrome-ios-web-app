@@ -270,7 +270,7 @@ window.qmLog.setupBugsnag = function(){
         }
         window.bugsnagClient = bugsnag(options);
     } else {
-        if(qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
+        if(!qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
     }
 };
 //window.qmLog.setupBugsnag();
