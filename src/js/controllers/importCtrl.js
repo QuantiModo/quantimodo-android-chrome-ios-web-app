@@ -166,171 +166,83 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 $scope.refreshConnectors();
             });
         };
-        function connectGoogle(connector, scopes) {
-            document.addEventListener('deviceready', deviceReady, false);
-            function deviceReady() {
-                window.plugins.googleplus.login({
-                    'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-                    'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-                    'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-                }, function (response) {
-                    qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response), null);
-                    connectWithAuthCode(response.serverAuthCode, connector);
-                }, function (errorMessage) {
-                    qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
-                });
-            }
-        }
-        if(connector.name === 'quantimodo') {
-            qmService.connectors.quantimodo.connect();
-        }
+        if(connector.name === 'quantimodo') {qmService.connectors.quantimodo.connect();}
         if(connector.name === 'slack') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.slack(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'netatmo') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.netatmo({clientId: connector.connectorClientId, clientSecret: connector.connectorClientSecret, appScope: connector.scopes})
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'foursquare') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.foursquare(connector.connectorClientId)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'github') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'linkedin') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'twitter') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'strava') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.strava(connector.connectorClientId, connector.connectorClientSecret, connector.scopes).then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'withings') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.withings(connector.connectorClientId, connector.connectorClientSecret)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'fitbit') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'runkeeper') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'rescuetime') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.rescuetime(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'slice') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.slice(connector.connectorClientId, connector.scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'facebook') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
-        if(connector.name === 'googlefit') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
-            connectGoogle(connector, connector.scopes);
-        }
-        if(connector.name === 'googlecalendar') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
-            connectGoogle(connector, connector.scopes);
-        }
-        if(connector.name === 'gmail') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
-            connectGoogle(connector, connector.scopes);
-        }
-        if(connector.name === 'sleepcloud') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
-            connectGoogle(connector, connector.scopes);
-        }
+        if(connector.mobileConnectMethod === 'google') {qmService.connectors.google.connect(connector);}
         if(connector.name === 'up') {
-            if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                qmService.connectors.webConnect(connector);
-                return;
-            }
+            if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.jawbone(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                 .then(function(result) { connectWithToken(result);
                 }, function(error) { qmService.connectors.connectorErrorHandler(error); });
         }
-        if(connector.name === 'worldweatheronline') {
-            connectWithParams({}, 'worldweatheronline');
-        }
+        if(connector.name === 'worldweatheronline') {connectWithParams({}, 'worldweatheronline');}
         if(connector.name === 'whatpulse') {
             $scope.data = {};
             myPopup = $ionicPopup.show({
