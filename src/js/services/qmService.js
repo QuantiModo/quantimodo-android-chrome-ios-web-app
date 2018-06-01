@@ -132,6 +132,82 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableObject;
             }
         },
+        connectors: {
+            connectorErrorHandler: function (error){
+                qmLog.error(error);
+            },
+            connectWithToken: function (response, successHandler, errorHandler) {
+                qmLogService.debug('Response Object -> ' + JSON.stringify(response));
+                var body = { connectorCredentials: {token: response}, connector: connector };
+                qmService.connectConnectorWithTokenDeferred(body).then(function(result){
+                    qmLog.debug(JSON.stringify(result));
+                    if(successHandler){successHandler(result);}
+                }, function (error) {
+                    qmService.connectors.connectorErrorHandler(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            },
+            connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
+                qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
+                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+                    if(successHandler){successHandler(result);}
+                }, function() {
+                    qmLogService.error("error on connectWithAuthCode for " + connector.name);
+                    if(errorHandler){errorHandler(error);}
+                });
+            },
+            webConnect: function (connector) {
+                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
+                /** @namespace connector.connectInstructions */
+                var url = connector.connectInstructions.url;
+                qmLogService.debug('targetUrl is ' + url);
+                var ref = window.open(url,'', "width=600,height=800");
+                qmLogService.debug('Opened ' + url);
+                return true;
+            },
+            oAuthConnect: function (connector, mobileConnect){
+                if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
+                    qmService.connectors.webConnect(connector);
+                    return;
+                }
+                mobileConnect();
+            },
+            quantimodo: {
+                connect: function (successHandler, errorHandler) {
+                    qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
+                        qmService.connectors.oAuthConnect(connector, function () {
+                            $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
+                                .then(function(result) {
+                                    qmService.connectors.connectWithToken(result, successHandler, errorHandler);
+                                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                                }, function(error) {
+                                    if(errorHandler){errorHandler(error);}
+                                    qmService.connectors.connectorErrorHandler(error);
+                                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                                });
+                        })
+                    });
+                }
+            },
+            google: {
+                connect: function (connector) {
+                    if(qmService.connectors.webConnect(connector)){return;}
+                    document.addEventListener('deviceready', deviceReady, false);
+                    function deviceReady() {
+                        window.plugins.googleplus.login({
+                            'scopes': connector.scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                            'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                            'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                        }, function (response) {
+                            qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                            qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
+                        }, function (errorMessage) {
+                            qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        });
+                    }
+                }
+            }
+        },
         deploy: {
             fetchUpdate: function() {
                 if(!qmService.deploy.chcpIsDefined()){return false;}
