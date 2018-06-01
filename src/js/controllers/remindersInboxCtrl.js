@@ -340,7 +340,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			});
 	};
 	$rootScope.$on('broadcastGetTrackingReminderNotifications', function() {
-		qmLogService.info('qm.storage.getTrackingReminderNotifications broadcast received..');
+		qmLogService.info('getTrackingReminderNotifications broadcast received..');
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});
 	var getTrackingReminderNotifications = function () {

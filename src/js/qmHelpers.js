@@ -30,6 +30,9 @@ window.qm = {
         isBuilder: function(){
             return window.location.href.indexOf('configuration-index.html') !== -1;
         },
+        isDebug: function(){
+            return qmLog.isDebugMode();
+        },
         getAppMode: function(){
             var env = "production";
             if(qm.appMode.isStaging()){env = "staging";}
@@ -273,7 +276,7 @@ window.qm = {
         responseHandler: function(error, data, response, successHandler, errorHandler) {
             if(!response){
                 var message = "No response provided to qm.api.responseHandler";
-                if($rootScope.user){qmLog.error(message);} else {qmLog.info(message);}
+                if(qm.getUser()){qmLog.error(message);} else {qmLog.info(message);}
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url, null);
@@ -285,7 +288,6 @@ window.qm = {
             }
         },
         getBaseUrl: function () {
-            //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
@@ -3274,6 +3276,10 @@ window.qm = {
             });
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
+            if(!qm.getUser()){
+                qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                return;
+            }
             qm.reminderHelper.getNumberOfReminders(function (number) {
                 if(number){
                     qm.userVariables.getFromLocalStorage({}, function (userVariables) {
