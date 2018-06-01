@@ -48,7 +48,7 @@ window.qmLog = {
     isDebugMode: function() {
         return qmLog.getLogLevelName() === "debug";
     },
-    getDebugMode(){
+    getDebugMode: function () {
         return qmLog.isDebugMode();
     },
     setMobileDebug: function (value) {
