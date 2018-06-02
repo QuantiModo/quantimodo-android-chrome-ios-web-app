@@ -2983,6 +2983,67 @@ window.qm = {
             if(window.location.href.indexOf("http://") === 0 && window.location.href.indexOf("http://localhost") === -1){
                 location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
             }
+        },
+        getParameterFromEventUrl: function (event, parameterName) {
+            qmLog.debug('extracting a'+parameterName+' from event: ' + JSON.stringify(event));
+            var url = event.url;
+            if(!url) {url = event.data;}
+            if(!qm.urlHelper.isQuantiMoDoDomain(url)){return;}
+            var authorizationCode = qm.urlHelper.getParam('code', url);
+            if(value){qmLog.debug('got authorization code from ' + url);}
+            return authorizationCode;
+        },
+        isQuantiMoDoDomain: function (urlToCheck) {
+            var isHttps = urlToCheck.indexOf("https://") === 0;
+            var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
+            var result = isHttps && matchesQuantiModo;
+            if(!result){
+                qmLog.debug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is not a QuantiModo domain', null);
+            } else {
+                qmLog.debug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is a QuantiModo domain', null);
+            }
+            return isHttps && matchesQuantiModo;
+        },
+        getRootDomain: function(url){
+            var parts = url.split('.');
+            var rootDomainWithPath = parts[1] + '.' + parts[2];
+            var rootDomainWithPathParts = rootDomainWithPath.split('/');
+            return rootDomainWithPathParts[0];
+        },
+        getAuthorizationCodeFromEventUrl: function(event) {
+            return qm.urlHelper.getParameterFromEventUrl(event, 'code');
+        },
+        checkLoadStartEventUrlForErrors: function (ref, event){
+            var error = qm.urlHelper.getParam('error', event.url);
+            if(error) {
+                qmLog.error(error);
+                ref.close();
+            }
+        },
+        addEventListenerAndGetParameterFromRedirectedUrl: function(windowRef, parameterName, successHandler){
+            windowRef.addEventListener('loadstart', function(event) {
+                var value = qm.urlHelper.getParameterFromEventUrl(event, parameterName);
+                if(value) {
+                    windowRef.close();
+                    windowRef = undefined;
+                    successHandler(value);
+                }
+                qm.urlHelper.checkLoadStartEventUrlForErrors(windowRef, event);
+            });
+            windowRef.addEventListener('loaderror', loadErrorCallBack);
+            function loadErrorCallBack(params) {
+                $('#status-message').text("");
+                var scriptErrorMessage = "alert('Sorry we cannot open that page. Message from the server is : " + params.message + "');";
+                qmLog.error(scriptErrorMessage);
+                windowRef.executeScript({ code: scriptErrorMessage }, executeScriptCallBack);
+                windowRef.close();
+                windowRef = undefined;
+            }
+            function executeScriptCallBack(params) {
+                if (params[0] == null) {
+                    $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
+                }
+            }
         }
     },
     user: null,
