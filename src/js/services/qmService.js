@@ -45,10 +45,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.debug('extracting sessionToken from event: ' + JSON.stringify(event));
                 var finishUrl = event.url;
                 if(!finishUrl) {finishUrl = event.data;}
-                if(!isQuantiMoDoDomain(finishUrl)){return;}
+                if(!qm.urlHelper.isQuantiMoDoDomain(finishUrl)){return;}
                 var sessionToken = qm.urlHelper.getParam('sessionToken', finishUrl);
                 if(sessionToken){qmLogService.debug('got sessionToken from ' + finishUrl);}
                 return sessionToken;
+            },
+            saveAccessTokenResponseAndGetUser: function (response) {
+                qmLog.authDebug('Access token received', null, response);
+                qm.auth.saveAccessTokenResponse(response);
+                qmLog.authDebug('get user details from server and going to defaultState...');
+                qmService.showBlackRingLoader();
+                qmService.refreshUser().then(function(user){
+                    qmService.hideLoader();
+                    qmService.syncAllUserData();
+                    qmLog.authDebug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
+                }, function(error){
+                    qmService.hideLoader();
+                    qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
+                });
             }
         },
         barcodeScanner: {
@@ -181,6 +195,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.debug('targetUrl is ' + url);
                 var ref = window.open(url,'', "width=600,height=800");
                 qmLogService.debug('Opened ' + url);
+                qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
+                    qmService.saveAccessTokenResponseAndGetUser(sessionToken);
+                });
                 return true;
             },
             oAuthConnect: function (connector, mobileConnect){
@@ -2081,18 +2098,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.debug('generateV2OAuthUrl: ' + url, null);
         return url;
     };
-    qmService.getAuthorizationCodeFromEventUrl = function(event) {
-        qmLogService.debug('extracting authorization code from event: ' + JSON.stringify(event), null);
-        var authorizationUrl = event.url;
-        if(!authorizationUrl) {authorizationUrl = event.data;}
-        if(!isQuantiMoDoDomain(authorizationUrl)){return;}
-        var authorizationCode = qm.urlHelper.getParam('code', authorizationUrl);
-        if(authorizationCode){qmLogService.debug('got authorization code from ' + authorizationUrl, null);}
-        //if(!authorizationCode) {authorizationCode = qm.urlHelper.getParam('token', authorizationUrl);}
-        return authorizationCode;
-    };
     qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
-        qmLogService.debug('Authorization code is ' + authorizationCode, null);
+        qmLogService.debug('Authorization code is ' + authorizationCode);
         var deferred = $q.defer();
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         var request = {
@@ -2159,11 +2166,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             headers: {'Content-Type': 'application/json'}
         }).then(function (response) {
             if (response.data.success && response.data.data && response.data.data.token) {
-                // This didn't solve the token_invalid issue
-                // $timeout(function () {
-                //     qmLogService.debug('10 second delay to try to solve token_invalid issue');
-                //  deferred.resolve(response.data.data.token);
-                // }, 10000);
                 deferred.resolve(response.data.data);
             } else {deferred.reject(response);}
         }, function (error) {
@@ -5354,6 +5356,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     // LOGIN SERVICES
     qmService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
+        qmLog.authDebug('Going to get an access token using authorization code');
         qmService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
             .then(function(response) {
                 qmService.hideLoader();
@@ -5362,48 +5365,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error("Error generating access token");
                     qmService.storage.setItem('user', null);
                 } else {
-                    qmLog.authDebug('Access token received', null, response);
-                    qm.auth.saveAccessTokenResponse(response);
-                    qmLog.authDebug('get user details from server and going to defaultState...');
-                    qmService.showBlackRingLoader();
-                    qmService.refreshUser().then(function(user){
-                        qmService.hideLoader();
-                        qmService.syncAllUserData();
-                        qmLog.authDebug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user), null);
-                    }, function(error){
-                        qmService.hideLoader();
-                        qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
-                    });
+                    qmService.auth.saveAccessTokenResponseAndGetUser(response);
                 }
             }).catch(function(exception){
                 qmLog.error(exception);
                 qmService.hideLoader();
                 qmService.storage.setItem('user', null);
             });
-    };
-    function getRootDomain(url){
-        var parts = url.split('.');
-        var rootDomainWithPath = parts[1] + '.' + parts[2];
-        var rootDomainWithPathParts = rootDomainWithPath.split('/');
-        return rootDomainWithPathParts[0];
-    }
-    function isQuantiMoDoDomain(urlToCheck) {
-        var isHttps = urlToCheck.indexOf("https://") === 0;
-        var matchesQuantiModo = getRootDomain(urlToCheck) === 'quantimo.do';
-        var result = isHttps && matchesQuantiModo;
-        if(!result){
-            qmLogService.debug('Domain ' + getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is not a QuantiModo domain', null);
-        } else {
-            qmLogService.debug('Domain ' + getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is a QuantiModo domain', null);
-        }
-        return isHttps && matchesQuantiModo;
-    }
-    qmService.checkLoadStartEventUrlForErrors = function(ref, event){
-        if(qm.urlHelper.getParam('error', event.url)) {
-            var errorMessage = "nonNativeMobileLogin: error occurred:" + qm.urlHelper.getParam('error', event.url);
-            qmLogService.error(errorMessage);
-            ref.close();
-        }
     };
     qmService.nonNativeMobileLogin = function(register) {
         qmLog.authDebug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
@@ -5417,47 +5385,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("Opening " + url);
             window.open = cordova.InAppBrowser.open;
             qmService.inAppBrowserRef = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
-            // Commented because I think it's causing "$apply already in progress" error
-            // $timeout(function () {
-            //     qmLogService.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
-            //     ref.close();
-            // }, 60000);
-            qmLog.authDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
-            qmService.inAppBrowserRef.addEventListener('loadstart', function(event) {
-                qmLog.authDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url +
-                    ' is the same as redirection url ' + qmService.getRedirectUri(), null);
-                if(qmService.getAuthorizationCodeFromEventUrl(event)) {
-                    var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
-                    qmService.inAppBrowserRef.close();
-                    qmService.inAppBrowserRef = undefined;
-                    qmLog.authDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code');
-                    qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                    // Called twice!  Let's do this later after the user understands the point of popups
-                    //qmService.notifications.showEnablePopupsConfirmation();  // This is strangely disabled sometimes
-                }
-                qmService.checkLoadStartEventUrlForErrors(qmService.inAppBrowserRef, event);
+            qmLog.authDebug('listen to its event when the page changes');
+            qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(qmService.inAppBrowserRef, 'code', function (authorizationCode) {
+                qmService.fetchAccessTokenAndUserDetails(authorizationCode);
             });
-            qmService.inAppBrowserRef.addEventListener('loaderror', loadErrorCallBack);
-            function loadErrorCallBack(params) {
-                $('#status-message').text("");
-                var scriptErrorMessage = "alert('Sorry we cannot open that page. Message from the server is : " + params.message + "');";
-                qmLog.error(scriptErrorMessage);
-                qmService.inAppBrowserRef.executeScript({ code: scriptErrorMessage }, executeScriptCallBack);
-                qmService.inAppBrowserRef.close();
-                qmService.inAppBrowserRef = undefined;
-            }
-            function executeScriptCallBack(params) {
-                if (params[0] == null) {
-                    $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
-                }
-            }
         }
     };
     qmService.chromeAppLogin = function(register){
         qmLog.authDebug('login: Use Chrome app (content script, background page, etc.');
         var url = qmService.generateV1OAuthUrl(register);
         chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true}, function() {
-            var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
+            var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
             qmService.getAccessTokenFromAuthorizationCode(authorizationCode);
         });
     };
