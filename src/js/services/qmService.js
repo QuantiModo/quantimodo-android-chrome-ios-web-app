@@ -2837,7 +2837,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace);}
         var deferred = $q.defer();
         qm.connectorHelper.getConnectorsFromApi({}, function(response){
-            var connectors = hideUnavailableConnectors(response.connectors);
+            var connectors = response.connectors || response;
+            connectors = hideUnavailableConnectors(connectors);
             qm.storage.setItem(qm.items.connectors, connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
