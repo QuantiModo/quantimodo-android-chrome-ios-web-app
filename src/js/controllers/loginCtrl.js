@@ -15,10 +15,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
         if (!disableFacebookLogin && $rootScope.platform.isIOS && $rootScope.appSettings.appDisplayName === "MoodiModo") {
-            qmLog.authDebug('Injecting $cordovaFacebook', null);
+            qmLog.authDebug('Injecting $cordovaFacebook');
             $cordovaFacebook = $injector.get('$cordovaFacebook');
             $scope.showFacebookLoginButton = true;
-        } else { qmLog.authDebug('Could not inject $cordovaFacebook', null); }
+        } else { qmLog.authDebug('Could not inject $cordovaFacebook'); }
     }
     $scope.circlePage = {
         title: null,
@@ -50,7 +50,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmLog.authDebug('Setting login timeout...');
         $timeout(function () {$scope.state.showRetry = true;}, 3000);
         return $timeout(function () {
-            qmLog.authDebug('Finished login timeout', null);
+            qmLog.authDebug('Finished login timeout');
             if(!$rootScope.user){
                 $scope.circlePage.title = 'Please try logging in again';
                 qmLogService.error('Login failure');
@@ -72,25 +72,25 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         });
     }
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmLog.authDebug('beforeEnter in state ' + $state.current.name, null);
+        qmLog.authDebug('beforeEnter in state ' + $state.current.name);
         leaveIfLoggedIn();
         if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
         if(qm.urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
             loginTimeout();
         } else {
-            qmLog.authDebug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token', null);
+            qmLog.authDebug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token');
             tryToGetUser();
         }
     });
     $scope.$on('$ionicView.enter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
-        qmLog.authDebug($state.current.name + ' enter...', null);
+        qmLog.authDebug($state.current.name + ' enter...');
         qmService.navBar.hideNavigationMenu();
     });
     $scope.$on('$ionicView.afterEnter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
         if(navigator && navigator.splashscreen) {
-            qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready', null);
+            qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
         qmService.hideLoader(0.5);
@@ -109,7 +109,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmLogService.error('You must first unblock popups, and and refresh the page for this to work!');
             alert("You must first unblock popups, and and refresh the page for this to work!");
         } else {
-            qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs', null);
+            qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
             var interval = setInterval(function () {ref.postMessage('isLoggedIn?', qmService.getRedirectUri());}, 1000);
             window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
                 qmLog.authDebug('message received from sibling tab', null, event.url);
@@ -129,7 +129,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     };
     var browserLogin = function(register) {
-        qmLog.authDebug('Browser Login', null);
+        qmLog.authDebug('Browser Login');
         if (qmService.weShouldUseOAuthLogin()) {
             if($scope.$root.$$phase) {$timeout(function() {oAuthBrowserLogin(register);},0,false);} else {oAuthBrowserLogin(register);} // Avoid Error: [$rootScope:inprog]
         } else {
@@ -152,7 +152,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         if (qm.platform.isChromeExtension()) {
             qmService.chromeExtensionLogin(register);
         } else if ($rootScope.platform.isAndroid || $rootScope.platform.isIOS || $rootScope.platform.isWindows) {
-            qmLog.authDebug('$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using qmService.nonNativeMobileLogin', null);
+            qmLog.authDebug('$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using qmService.nonNativeMobileLogin');
             loginTimeout();
             qmService.nonNativeMobileLogin(register);
         } else {
