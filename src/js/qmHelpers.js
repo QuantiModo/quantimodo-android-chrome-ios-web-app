@@ -437,7 +437,10 @@ window.qm = {
             if(!apiUrl){apiUrl = "https://app.quantimo.do";}
             if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
             apiUrl = apiUrl.replace("https://https", "https");
-            if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
+            // Why are we adding a port to the API url?  It breaks localhost:8100
+            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
+                apiUrl += ":" + window.location.port;
+            }
             return apiUrl;
         },
         getClientSecret: function(){
