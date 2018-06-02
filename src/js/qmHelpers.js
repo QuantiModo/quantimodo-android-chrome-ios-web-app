@@ -1063,7 +1063,8 @@ window.qm = {
     connectorHelper: {
         getConnectorsFromApi: function(params, successCallback, errorHandler){
             qmLog.info("Getting connectors from API...");
-            function successHandler(connectors){
+            function successHandler(response){
+                var connectors = response.connectors || response;
                 if (connectors) {
                     qmLog.info("Got connectors from API...");
                     if(successCallback){successCallback(connectors);}
