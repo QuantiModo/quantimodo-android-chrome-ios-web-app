@@ -2985,24 +2985,26 @@ window.qm = {
             }
         },
         getParameterFromEventUrl: function (event, parameterName) {
-            qmLog.debug('extracting a'+parameterName+' from event: ' + JSON.stringify(event));
+            qmLog.authDebug('extracting ' + parameterName + ' from event: ' + JSON.stringify(event));
             var url = event.url;
             if(!url) {url = event.data;}
             if(!qm.urlHelper.isQuantiMoDoDomain(url)){return;}
-            var authorizationCode = qm.urlHelper.getParam('code', url);
-            if(value){qmLog.debug('got authorization code from ' + url);}
-            return authorizationCode;
+            var value = qm.urlHelper.getParam(parameterName, url);
+            if(value){qmLog.authDebug('got ' + parameterName + ' from ' + url +": " + value);}
+            return value;
         },
         isQuantiMoDoDomain: function (urlToCheck) {
             var isHttps = urlToCheck.indexOf("https://") === 0;
             var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
             var result = isHttps && matchesQuantiModo;
             if(!result){
-                qmLog.debug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is not a QuantiModo domain', null);
+                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                    urlToCheck + ' is NOT an https QuantiModo domain');
             } else {
-                qmLog.debug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' + urlToCheck + ' is a QuantiModo domain', null);
+                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                    urlToCheck + ' IS a QuantiModo domain');
             }
-            return isHttps && matchesQuantiModo;
+            return result;
         },
         getRootDomain: function(url){
             var parts = url.split('.');
