@@ -192,13 +192,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
-                qmLogService.debug('targetUrl is ' + url);
                 var ref = window.open(url,'', "width=600,height=800");
+                qmLog.info('Going to open connectInstructions.url ' + url);
                 if(!ref){
                     qmService.showMaterialAlert("Login Popup Blocked", "Please unblock popups by clicking the icon on the right of the address bar to login.", ev);
                     qmLog.error("Login Popup Blocked");
                 } else {
-                    qmLog.authDebug('Opened ' + url);
+                    qmLog.info('Opened connectInstructions.url ' + url);
                     qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
                         qmService.saveAccessTokenResponseAndGetUser(sessionToken);
                     });

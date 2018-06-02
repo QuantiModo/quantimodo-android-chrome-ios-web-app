@@ -1610,68 +1610,68 @@ window.qm = {
         actions: {
             trackYesAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackYesAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackYesAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackNoAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackNoAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackNoAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackZeroAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackZeroAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackZeroAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackOneRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackOneRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackOneRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackTwoRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
-                console.log('trackTwoRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackTwoRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThreeRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
-                console.log('trackThreeRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThreeRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFourRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
-                console.log('trackFourRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackFourRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFiveRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackDefaultValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             snoozeAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('snoozeAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 body.action = 'snooze';
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
-                qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackSecondToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
-                console.log('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackSecondToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThirdToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
-                console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             }
         },
@@ -2599,8 +2599,15 @@ window.qm = {
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
         },
-        prettyJsonStringify: function (jsonObject) {
-            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
+        prettyJsonStringify: function (jsonObject, maxLength) {
+            if(!JSON){
+                console.error('your browser does not support JSON so cant pretty print');
+            }
+            var string = JSON.stringify(jsonObject, null, '  ');
+            if(maxLength){
+                return string.subString(0, maxLength) + '...';
+            }
+            return string;
         },
         parseBoolean: function(value){
             if(value === "false"){return false;}
