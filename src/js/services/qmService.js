@@ -36,7 +36,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             },
-            socialLogin: function (provider) {
+            socialLogin: function (provider, ev) {
                 qm.connectorHelper.getConnectorByName(provider, function (connector) {
                     return qmService.connectors[provider].connect(connector);
                 });
@@ -188,21 +188,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(errorHandler){errorHandler(error);}
                 });
             },
-            webConnect: function (connector) {
+            webConnect: function (connector, ev) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
                 qmLogService.debug('targetUrl is ' + url);
                 var ref = window.open(url,'', "width=600,height=800");
-                qmLogService.debug('Opened ' + url);
-                qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
-                    qmService.saveAccessTokenResponseAndGetUser(sessionToken);
-                });
+                if(!ref){
+                    qmService.showMaterialAlert("Login Popup Blocked", "Please unblock popups by clicking the icon on the right of the address bar to login.", ev);
+                    qmLog.error("Login Popup Blocked");
+                } else {
+                    qmLog.authDebug('Opened ' + url);
+                    qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
+                        qmService.saveAccessTokenResponseAndGetUser(sessionToken);
+                    });
+                }
                 return true;
             },
-            oAuthConnect: function (connector, mobileConnect){
+            oAuthConnect: function (connector, mobileConnect, ev){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                    qmService.connectors.webConnect(connector);
+                    qmService.connectors.webConnect(connector, ev);
                     return;
                 }
                 mobileConnect();
@@ -224,8 +229,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             google: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     document.addEventListener('deviceready', deviceReady, false);
                     function deviceReady() {
                         window.plugins.googleplus.login({
@@ -233,7 +238,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                             'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                         }, function (response) {
-                            qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                            qmLog.authDebug('window.plugins.googleplus.login response:' + JSON.stringify(response));
                             qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
                         }, function (errorMessage) {
                             qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -249,29 +254,29 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             linkedin: {
-                connect: function () {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             github: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             twitter: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             facebook: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }

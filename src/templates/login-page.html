@@ -18,6 +18,20 @@
                             <div ng-if="showFacebookLoginButton">
                                 <md-button id="signInWithFacebook" ng-click="facebookLogin()" class="button circle-page-button clear">Sign In With Facebook</md-button>
                             </div>
+                            <div id="material-login-buttons" ng-if="false">
+                                <md-button class="md-raised md-primary icon icon-left ion-social-github" style="background: #2d2d2d;" ng-click="state.socialLogin('github', $event)">
+                                    &nbsp Github Login &nbsp
+                                </md-button>
+                                <md-button class="md-raised md-primary icon icon-left ion-social-google" style="background: #d34836;" ng-click="state.socialLogin('googleplus', $event)">
+                                    &nbsp Google Login &nbsp
+                                </md-button>
+                                <md-button class="md-raised md-primary icon icon-left ion-social-facebook" style="background: #3B5998;" ng-click="state.socialLogin('facebook', $event)">
+                                    &nbsp Facebook Login &nbsp
+                                </md-button>
+                                <md-button class="md-raised md-primary icon icon-left ion-email" style="background: #2d2d2d;" ng-click="state.socialLogin('quantimodo', $event)">
+                                    &nbsp Email Login &nbsp
+                                </md-button>
+                            </div>
                         </div>
                     </div>
                 </div>
