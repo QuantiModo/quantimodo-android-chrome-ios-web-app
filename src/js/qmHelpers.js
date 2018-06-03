@@ -222,7 +222,7 @@ window.qm = {
             return clientId;
         },
         getClientIdFromSubDomain: function(){
-            if(window.location.href.indexOf('.quantimo.do') === -1){return null;}
+            if(window.location.hostname.indexOf('.quantimo.do') === -1){return null;}
             if(qm.appMode.isBuilder()){return null;}
             function getSubDomain(){
                 var full = window.location.host;
@@ -437,7 +437,10 @@ window.qm = {
             if(!apiUrl){apiUrl = "https://app.quantimo.do";}
             if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
             apiUrl = apiUrl.replace("https://https", "https");
-            if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
+            // Why are we adding a port to the API url?  It breaks localhost:8100
+            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
+                apiUrl += ":" + window.location.port;
+            }
             return apiUrl;
         },
         getClientSecret: function(){
@@ -1063,7 +1066,8 @@ window.qm = {
     connectorHelper: {
         getConnectorsFromApi: function(params, successCallback, errorHandler){
             qmLog.info("Getting connectors from API...");
-            function successHandler(connectors){
+            function successHandler(response){
+                var connectors = response.connectors || response;
                 if (connectors) {
                     qmLog.info("Got connectors from API...");
                     if(successCallback){successCallback(connectors);}
@@ -1606,68 +1610,68 @@ window.qm = {
         actions: {
             trackYesAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackYesAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackYesAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackNoAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackNoAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackNoAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackZeroAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackZeroAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackZeroAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackOneRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackOneRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackOneRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackTwoRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
-                console.log('trackTwoRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackTwoRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThreeRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
-                console.log('trackThreeRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThreeRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFourRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
-                console.log('trackFourRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackFourRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFiveRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackDefaultValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             snoozeAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('snoozeAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 body.action = 'snooze';
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
-                qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackSecondToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
-                console.log('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackSecondToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThirdToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
-                console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             }
         },
@@ -2595,8 +2599,15 @@ window.qm = {
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
         },
-        prettyJsonStringify: function (jsonObject) {
-            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
+        prettyJsonStringify: function (jsonObject, maxLength) {
+            if(!JSON){
+                console.error('your browser does not support JSON so cant pretty print');
+            }
+            var string = JSON.stringify(jsonObject, null, '  ');
+            if(maxLength){
+                return string.substring(0, maxLength) + '...';
+            }
+            return string;
         },
         parseBoolean: function(value){
             if(value === "false"){return false;}

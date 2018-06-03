@@ -36,18 +36,53 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             },
-            socialLogin: function (provider) {
-                qm.connectorHelper.getConnectorByName(provider, function (connector) {
-                    return qmService.connectors[provider].connect(connector);
-                });
+            socialLogin: function (provider, ev) {
+                qm.auth.hello.login(provider);
+                // qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                //     return qmService.connectors[provider].connect(connector, ev);
+                // });
+            },
+            hello: {
+                initialized: false,
+                initialize: function (provider, successHandler) {
+                    qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                        var helloConfig = {
+                            //redirect_uri: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
+                            redirect_uri: 'callback/index.html',
+                            scope: connector.scopes.join(", ")
+                        };
+                        var clientIds = {};
+                        clientIds[connector.name] = connector.connectorClientId;
+                        hello.init(clientIds, helloConfig);
+                        hello.on("auth.failed", function(error){qmLog.error(error);});
+                        hello.on('auth.login', function(auth) {
+                            qmLog.info(provider + " auth response:", auth);
+                            qmService.connectors.connectWithParams(auth, auth.network);
+                            hello(auth.network).api('me').then(function(profile) { // Call user information, for the given network
+                                qmLog.info(provider + " profile response:", profile);
+                            });
+                        });
+                        successHandler();
+                        qmService.auth.hello.initialized = true;
+                    });
+                },
+                login: function (provider, ev) {
+                    qmService.auth.hello.initialize(provider, function () {
+                        hello(provider).login().then(function(e) {
+                            alert('You are signed in to Facebook');
+                        }, function(e) {
+                            alert('Signin error: ' + e.error.message);
+                        });
+                    });
+                }
             },
             getSessionTokenFromEventUrl: function(event) {
-                qmLogService.debug('extracting sessionToken from event: ' + JSON.stringify(event));
+                qmLog.authDebug('extracting sessionToken from event: ' + JSON.stringify(event));
                 var finishUrl = event.url;
                 if(!finishUrl) {finishUrl = event.data;}
                 if(!qm.urlHelper.isQuantiMoDoDomain(finishUrl)){return;}
                 var sessionToken = qm.urlHelper.getParam('sessionToken', finishUrl);
-                if(sessionToken){qmLogService.debug('got sessionToken from ' + finishUrl);}
+                if(sessionToken){qmLog.authDebug('got sessionToken from ' + finishUrl);}
                 return sessionToken;
             },
             saveAccessTokenResponseAndGetUser: function (response) {
@@ -188,21 +223,62 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(errorHandler){errorHandler(error);}
                 });
             },
-            webConnect: function (connector) {
+            connectWithParams: function(params, lowercaseConnectorName) {
+                qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+                    .then(function(result){
+                        qmLog.authDebug(JSON.stringify(result));
+                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                    }, function (error) {
+                        qmService.connectors.connectorErrorHandler(error);
+                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                    });
+            },
+            webConnect: function (connector, ev) {
+                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
+                qmService.auth.hello.login(connector.name, ev);
+                return true;
+                /** @namespace connector.connectInstructions */
+                var url = connector.connectInstructions.url;
+                var ref = window.open(url,'', "width=600,height=800");
+                qmLog.info('Going to open connectInstructions.url ' + url);
+                if(!ref){
+                    qmService.showMaterialAlert("Login Popup Blocked", "Please unblock popups by clicking the icon on the right of the address bar to login.", ev);
+                    qmLog.error("Login Popup Blocked");
+                } else {
+                    qmLog.info('Opened connectInstructions.url ' + url);
+                    qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
+                        qmService.saveAccessTokenResponseAndGetUser(sessionToken);
+                    });
+                }
+                return true;
+            },
+            webConnect2: function (connector, ev) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
-                qmLogService.debug('targetUrl is ' + url);
-                var ref = window.open(url,'', "width=600,height=800");
-                qmLogService.debug('Opened ' + url);
-                qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
-                    qmService.saveAccessTokenResponseAndGetUser(sessionToken);
-                });
+                var request = new XMLHttpRequest();
+                request.open('GET', url, true);
+                request.onload = function () {
+                    var data;
+                    if (request.status >= 200 && request.status < 400) {data = JSON.parse(request.responseText);}
+                    if(data && data.sessionTokenObject) {
+                        qmService.saveAccessTokenResponseAndGetUser(data.sessionTokenObject);
+                    } else {
+                        var response = JSON.parse(request.responseText);
+                        if(response.error && response.error.message){
+                            qmLog.error(response.error.message);
+                        } else {
+                            qmLog.error(JSON.stringify(response), response);
+                        }
+                    }
+                };
+                request.onerror = qmLog.error;
+                request.send();
                 return true;
             },
-            oAuthConnect: function (connector, mobileConnect){
+            oAuthConnect: function (connector, mobileConnect, ev){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                    qmService.connectors.webConnect(connector);
+                    qmService.connectors.webConnect(connector, ev);
                     return;
                 }
                 mobileConnect();
@@ -224,8 +300,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             google: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     document.addEventListener('deviceready', deviceReady, false);
                     function deviceReady() {
                         window.plugins.googleplus.login({
@@ -233,7 +309,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                             'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                         }, function (response) {
-                            qmLogService.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                            qmLog.authDebug('window.plugins.googleplus.login response:' + JSON.stringify(response));
                             qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
                         }, function (errorMessage) {
                             qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -249,29 +325,29 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             linkedin: {
-                connect: function () {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             github: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             twitter: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             facebook: {
-                connect: function (connector) {
-                    if(qmService.connectors.webConnect(connector)){return;}
+                connect: function (connector, ev) {
+                    if(qmService.connectors.webConnect(connector, ev)){return;}
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
@@ -2832,7 +2908,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace);}
         var deferred = $q.defer();
         qm.connectorHelper.getConnectorsFromApi({}, function(response){
-            var connectors = hideUnavailableConnectors(response.connectors);
+            var connectors = response.connectors || response;
+            connectors = hideUnavailableConnectors(connectors);
             qm.storage.setItem(qm.items.connectors, connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
