@@ -1079,12 +1079,12 @@ window.qm = {
             qmLog.debug('generateV1OAuthUrl: ' + url);
             return url;
         },
-        openBrowserWindowsAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler) {
+        openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler) {
             qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
             var ref = window.open(url, '_blank');
             if (!ref) {
                 qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
-                alert("You must first unblock popups, and and refresh the page for this to work!");
+                alert("In order to log in, please unblock popups by clicking the icon on the right of the address bar. Then refresh the page.");
             } else {
                 qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
                 var interval = setInterval(function () {ref.postMessage('isLoggedIn?', redirectUrl);}, 1000);
@@ -1108,7 +1108,7 @@ window.qm = {
         oAuthBrowserLogin: function (register, successHandler) {
             var url = qm.auth.generateV1OAuthUrl(register);
             var redirectUrl = qm.auth.getRedirectUri();
-            qm.auth.openBrowserWindowsAndGetParameterFromRedirect(url, redirectUrl, 'code', successHandler);
+            qm.auth.openBrowserWindowAndGetParameterFromRedirect(url, redirectUrl, 'code', successHandler);
         },
         getRedirectUri: function () {
             if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
