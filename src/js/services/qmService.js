@@ -37,17 +37,52 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             socialLogin: function (provider, ev) {
-                qm.connectorHelper.getConnectorByName(provider, function (connector) {
-                    return qmService.connectors[provider].connect(connector);
-                });
+                qm.auth.hello.login(provider);
+                // qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                //     return qmService.connectors[provider].connect(connector, ev);
+                // });
+            },
+            hello: {
+                initialized: false,
+                initialize: function (provider, successHandler) {
+                    qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                        var helloConfig = {
+                            //redirect_uri: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
+                            redirect_uri: 'callback/index.html',
+                            scope: connector.scopes.join(", ")
+                        };
+                        var clientIds = {};
+                        clientIds[connector.name] = connector.connectorClientId;
+                        hello.init(clientIds, helloConfig);
+                        hello.on("auth.failed", function(error){qmLog.error(error);});
+                        hello.on('auth.login', function(auth) {
+                            qmLog.info(provider + " auth response:", auth);
+                            qmService.connectors.connectWithParams(auth, auth.network);
+                            hello(auth.network).api('me').then(function(profile) { // Call user information, for the given network
+                                qmLog.info(provider + " profile response:", profile);
+                            });
+                        });
+                        successHandler();
+                        qmService.auth.hello.initialized = true;
+                    });
+                },
+                login: function (provider, ev) {
+                    qmService.auth.hello.initialize(provider, function () {
+                        hello(provider).login().then(function(e) {
+                            alert('You are signed in to Facebook');
+                        }, function(e) {
+                            alert('Signin error: ' + e.error.message);
+                        });
+                    });
+                }
             },
             getSessionTokenFromEventUrl: function(event) {
-                qmLogService.debug('extracting sessionToken from event: ' + JSON.stringify(event));
+                qmLog.authDebug('extracting sessionToken from event: ' + JSON.stringify(event));
                 var finishUrl = event.url;
                 if(!finishUrl) {finishUrl = event.data;}
                 if(!qm.urlHelper.isQuantiMoDoDomain(finishUrl)){return;}
                 var sessionToken = qm.urlHelper.getParam('sessionToken', finishUrl);
-                if(sessionToken){qmLogService.debug('got sessionToken from ' + finishUrl);}
+                if(sessionToken){qmLog.authDebug('got sessionToken from ' + finishUrl);}
                 return sessionToken;
             },
             saveAccessTokenResponseAndGetUser: function (response) {
@@ -188,8 +223,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(errorHandler){errorHandler(error);}
                 });
             },
+            connectWithParams: function(params, lowercaseConnectorName) {
+                qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+                    .then(function(result){
+                        qmLog.authDebug(JSON.stringify(result));
+                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                    }, function (error) {
+                        qmService.connectors.connectorErrorHandler(error);
+                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                    });
+            },
             webConnect: function (connector, ev) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
+                qmService.auth.hello.login(connector.name, ev);
+                return true;
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
                 var ref = window.open(url,'', "width=600,height=800");
@@ -203,6 +250,30 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.saveAccessTokenResponseAndGetUser(sessionToken);
                     });
                 }
+                return true;
+            },
+            webConnect2: function (connector, ev) {
+                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
+                /** @namespace connector.connectInstructions */
+                var url = connector.connectInstructions.url;
+                var request = new XMLHttpRequest();
+                request.open('GET', url, true);
+                request.onload = function () {
+                    var data;
+                    if (request.status >= 200 && request.status < 400) {data = JSON.parse(request.responseText);}
+                    if(data && data.sessionTokenObject) {
+                        qmService.saveAccessTokenResponseAndGetUser(data.sessionTokenObject);
+                    } else {
+                        var response = JSON.parse(request.responseText);
+                        if(response.error && response.error.message){
+                            qmLog.error(response.error.message);
+                        } else {
+                            qmLog.error(JSON.stringify(response), response);
+                        }
+                    }
+                };
+                request.onerror = qmLog.error;
+                request.send();
                 return true;
             },
             oAuthConnect: function (connector, mobileConnect, ev){

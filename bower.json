@@ -43,7 +43,8 @@
     "angular-material-icons": "^0.7.1",
     "angular-web-notification": "^1.2.26",
     "firebase": "^4.9.0",
-    "ngFitText": "^4.2.3"
+    "ngFitText": "^4.2.3",
+    "hello": "^1.16.1"
   },
   "resolutions": {
     "angular": "1.6.1",
