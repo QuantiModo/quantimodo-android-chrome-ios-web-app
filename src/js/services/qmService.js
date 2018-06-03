@@ -102,7 +102,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             oAuthBrowserLogin: function (register) {
                 qmService.showBlackRingLoader();
-                qm.auth.oAuthBrowserLogin(register);
+                qm.auth.oAuthBrowserLogin(register, function (authorizationCode) {
+                    qmService.fetchAccessTokenAndUserDetails(authorizationCode);
+                });
             }
         },
         barcodeScanner: {
@@ -240,7 +242,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             webConnect: function (connector, ev) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-
                 //qmService.auth.hello.login(connector.name, ev);
                 //return true;
                 /** @namespace connector.connectInstructions */
@@ -6274,7 +6275,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return object;
     };
-
     qmService.showMaterialAlert = function(title, textContent, ev){
         AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
         function AlertDialogController($scope, $mdDialog, dialogParameters) {
@@ -6934,7 +6934,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deploy.setVersionInfo();
         //qmService.deploy.fetchUpdate();
     };
-
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
             function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){

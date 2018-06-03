@@ -1079,8 +1079,7 @@ window.qm = {
             qmLog.debug('generateV1OAuthUrl: ' + url);
             return url;
         },
-        oAuthBrowserLogin: function (register) {
-            var url = qm.auth.generateV1OAuthUrl(register);
+        openBrowserWindowsAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler) {
             qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
             var ref = window.open(url, '_blank');
             if (!ref) {
@@ -1088,15 +1087,15 @@ window.qm = {
                 alert("You must first unblock popups, and and refresh the page for this to work!");
             } else {
                 qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
-                var interval = setInterval(function () {ref.postMessage('isLoggedIn?', qm.auth.getRedirectUri());}, 1000);
+                var interval = setInterval(function () {ref.postMessage('isLoggedIn?', redirectUrl);}, 1000);
                 window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
                     qmLog.authDebug('message received from sibling tab', null, event.url);
                     if(interval !== false){
                         clearInterval(interval);  // Don't ask login question anymore
                         interval = false;
-                        var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
-                        if (authorizationCode) {
-                            qmService.fetchAccessTokenAndUserDetails(authorizationCode);
+                        var value = qm.urlHelper.getParameterFromEventUrl(event, parameterName);
+                        if (value) {
+                            successHandler(value);
                             ref.close();
                         }
                         qm.urlHelper.checkLoadStartEventUrlForErrors(ref, event);
@@ -1105,6 +1104,11 @@ window.qm = {
                 // listen to broadcast messages from other tabs within browser
                 window.addEventListener("message", window.onMessageReceived, false);
             }
+        },
+        oAuthBrowserLogin: function (register, successHandler) {
+            var url = qm.auth.generateV1OAuthUrl(register);
+            var redirectUrl = qm.auth.getRedirectUri();
+            qm.auth.openBrowserWindowsAndGetParameterFromRedirect(url, redirectUrl, 'code', successHandler);
         },
         getRedirectUri: function () {
             if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
