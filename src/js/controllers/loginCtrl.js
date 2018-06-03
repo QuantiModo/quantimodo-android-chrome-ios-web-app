@@ -100,38 +100,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         var register = true;
         $scope.login(register);
     };
-    var oAuthBrowserLogin = function (register) {
-        var url = qmService.generateV1OAuthUrl(register);
-        qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
-        qmService.showBlackRingLoader();
-        var ref = window.open(url, '_blank');
-        if (!ref) {
-            qmLogService.error('You must first unblock popups, and and refresh the page for this to work!');
-            alert("You must first unblock popups, and and refresh the page for this to work!");
-        } else {
-            qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
-            var interval = setInterval(function () {ref.postMessage('isLoggedIn?', qmService.getRedirectUri());}, 1000);
-            window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
-                qmLog.authDebug('message received from sibling tab', null, event.url);
-                if(interval !== false){
-                    clearInterval(interval);  // Don't ask login question anymore
-                    interval = false;
-                    var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
-                    if (authorizationCode) {
-                        qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                        ref.close();
-                    }
-                    qm.urlHelper.checkLoadStartEventUrlForErrors(ref, event);
-                }
-            };
-            // listen to broadcast messages from other tabs within browser
-            window.addEventListener("message", window.onMessageReceived, false);
-        }
-    };
     var browserLogin = function(register) {
         qmLog.authDebug('Browser Login');
         if (qmService.weShouldUseOAuthLogin()) {
-            if($scope.$root.$$phase) {$timeout(function() {oAuthBrowserLogin(register);},0,false);} else {oAuthBrowserLogin(register);} // Avoid Error: [$rootScope:inprog]
+            if($scope.$root.$$phase) {$timeout(function() {qmService.auth.oAuthBrowserLogin(register);},0,false);} else {qmService.auth.oAuthBrowserLogin(register);} // Avoid Error: [$rootScope:inprog]
         } else {
             qmService.sendToNonOAuthBrowserLoginUrl(register);
         }

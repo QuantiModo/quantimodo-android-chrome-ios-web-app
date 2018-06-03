@@ -49,7 +49,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         var helloConfig = {
                             //redirect_uri: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
                             redirect_uri: 'callback/index.html',
-                            scope: connector.scopes.join(", ")
+                            scope: connector.scopes.join(", "),
+                            oauth_proxy: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
                         };
                         var clientIds = {};
                         clientIds[connector.name] = connector.connectorClientId;
@@ -98,6 +99,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.hideLoader();
                     qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                 });
+            },
+            oAuthBrowserLogin: function (register) {
+                qmService.showBlackRingLoader();
+                qm.auth.oAuthBrowserLogin(register);
             }
         },
         barcodeScanner: {
@@ -235,8 +240,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             webConnect: function (connector, ev) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                qmService.auth.hello.login(connector.name, ev);
-                return true;
+
+                //qmService.auth.hello.login(connector.name, ev);
+                //return true;
                 /** @namespace connector.connectInstructions */
                 var url = connector.connectInstructions.url;
                 var ref = window.open(url,'', "width=600,height=800");
@@ -1454,7 +1460,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             urlParams = addGlobalUrlParamsToArray(urlParams);
-            var request = {method: 'GET', url: (qmService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
+            var request = {method: 'GET', url: (qm.api.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
             qmLogService.debug('GET ' + request.url, null, options.stackTrace);
@@ -1509,7 +1515,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             //console.log("Log level is " + qmLog.getLogLevelName());
-            var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
+            var url = qm.api.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
                 qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
@@ -2096,8 +2102,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshAccessToken = function(refreshToken, deferred) {
         qmLog.authDebug('Refresh token will be used to fetch access token from ' +
-            qmService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qm.api.getClientId());
-        var url = qmService.getQuantiModoUrl("api/oauth2/token");
+            qm.api.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qm.api.getClientId());
+        var url = qm.api.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
             client_id: qm.api.getClientId(),
             //client_secret: qm.appsManager.getClientSecret(),
@@ -2149,25 +2155,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);
         }
     }
-    qmService.generateV1OAuthUrl = function(register) {
-        var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
-        // add params
-        url += "response_type=code";
-        url += "&client_id=" + qm.api.getClientId();
-        //url += "&client_secret=" + qm.appsManager.getClientSecret();
-        url += "&scope=" + qmService.getPermissionString();
-        url += "&state=testabcd";
-        if(register === true){url += "&register=true";}
-        //url += "&redirect_uri=" + qmService.getRedirectUri();
-        qmLogService.debug('generateV1OAuthUrl: ' + url, null);
-        return url;
-    };
     qmService.generateV2OAuthUrl= function(JWTToken) {
-        var url = qmService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
+        var url = qm.api.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
         url += "response_type=code";
         url += "&client_id=" + qm.api.getClientId();
         //url += "&client_secret=" + qm.appsManager.getClientSecret();
-        url += "&scope=" + qmService.getPermissionString();
+        url += "&scope=" + qm.auth.getPermissionString();
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
         //url += "&redirect_uri=" + qmService.getRedirectUri();
@@ -2175,9 +2168,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return url;
     };
     qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
-        qmLogService.debug('Authorization code is ' + authorizationCode);
+        qmLog.authDebug('Authorization code is ' + authorizationCode);
         var deferred = $q.defer();
-        var url = qmService.getQuantiModoUrl("api/oauth2/token");
+        var url = qm.api.getQuantiModoUrl("api/oauth2/token");
         var request = {
             method: 'POST',
             url: url,
@@ -2190,7 +2183,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 client_secret: qm.appsManager.getClientSecret(),
                 grant_type: 'authorization_code',
                 code: authorizationCode,
-                redirect_uri: qmService.getRedirectUri()
+                redirect_uri: qm.auth.getRedirectUri()
             }
         };
         qmLog.authDebug('getAccessTokenFromAuthorizationCode url:' + url + ' request is ', null, request);
@@ -2203,13 +2196,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                 deferred.reject(response);
             } else {
-                qmLogService.debug('getAccessTokenFromAuthorizationCode: Successful response is ', null, response);
-                qmLogService.debug(JSON.stringify(response), null);
+                qmLog.authDebug('getAccessTokenFromAuthorizationCode: Successful response is ', null, response);
+                qmLog.authDebug(JSON.stringify(response));
                 deferred.resolve(response);
             }
         }).error(function (response) {
-            qmLogService.debug('getAccessTokenFromAuthorizationCode: Error response is ', null, response);
-            qmLogService.debug(JSON.stringify(response), null);
+            qmLog.authDebug('getAccessTokenFromAuthorizationCode: Error response is ', null, response);
+            qmLog.authDebug(JSON.stringify(response));
             deferred.reject(response);
         });
         return deferred.promise;
@@ -2231,7 +2224,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
         }
-        var url = qmService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
+        var url = qm.api.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
         url += "provider=" + encodeURIComponent(provider);
         url += "&accessToken=" + encodeURIComponent(accessToken);
         url += "&client_id=" + encodeURIComponent(qm.api.getClientId());
@@ -2396,8 +2389,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.sendToNonOAuthBrowserLoginUrl = function(register) {
-        var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
-        if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
+        var loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/login");
+        if (register === true) {loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/register");}
         qmLogService.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', null, loginUrl);
         var apiUrlMatchesHostName = qm.api.getBaseUrl().indexOf(window.location.hostname);
         if(apiUrlMatchesHostName === -1 || !$rootScope.platform.isChromeExtension) {
@@ -2862,26 +2855,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(platform.isMobile){qmService.actionSheets.actionSheetButtons.compare.text = "Compare Another";}
         qmLog.info("Platform: " + JSON.stringify(platform));
     };
-    qmService.getPermissionString = function(){
-        var str = "";
-        var permissions = ['readmeasurements', 'writemeasurements'];
-        for(var i=0; i < permissions.length; i++) {str += permissions[i] + "%20";}
-        return str.replace(/%20([^%20]*)$/,'$1');
-    };
-    qmService.getRedirectUri = function () {
-        if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
-        return qm.api.getBaseUrl() +  '/ionic/Modo/www/callback/';
-    };
     qmService.getProtocol = function () {
         if (typeof ionic !== "undefined") {
             var currentPlatform = ionic.Platform.platform();
             if(currentPlatform.indexOf('win') > -1){return 'ms-appx-web';}
         }
         return 'https';
-    };
-    qmService.getQuantiModoUrl = function (path) {
-        if(typeof path === "undefined") {path = "";}
-        return qm.api.getBaseUrl() + "/" + path;
     };
     // returns bool
     // if a string starts with substring
@@ -5458,7 +5437,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
         document.addEventListener("deviceready", onDeviceReady, false);
         function onDeviceReady() {
-            var url = qmService.generateV1OAuthUrl(register);
+            var url = qm.auth.generateV1OAuthUrl(register);
             qmLog.authDebug("Opening " + url);
             window.open = cordova.InAppBrowser.open;
             qmService.inAppBrowserRef = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
@@ -5470,7 +5449,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.chromeAppLogin = function(register){
         qmLog.authDebug('login: Use Chrome app (content script, background page, etc.');
-        var url = qmService.generateV1OAuthUrl(register);
+        var url = qm.auth.generateV1OAuthUrl(register);
         chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true}, function() {
             var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
             qmService.getAccessTokenFromAuthorizationCode(authorizationCode);
@@ -5482,8 +5461,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return encodeURIComponent("https://" + $rootScope.appSettings.clientId + ".quantimo.do");
         }
         function getLoginUrl() {
-            var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
-            if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
+            var loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/login");
+            if (register === true) {loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/register");}
             loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
             qmLog.authDebug('chromeExtensionLogin loginUrl is ' + loginUrl);
             return loginUrl;
@@ -7476,13 +7455,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     }
     function logOutOfWebsite() {
-        //var afterLogoutGoToUrl = qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+        //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
         var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
         if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
         if(window.location.href.indexOf('.quantimo.do/') === -1){
             afterLogoutGoToUrl = window.location.href;
         }
-        var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
+        var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
         qmLog.info("Sending to " + logoutUrl);
         //qmService.get(logoutUrl);
         var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};

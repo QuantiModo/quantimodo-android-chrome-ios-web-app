@@ -424,6 +424,10 @@ window.qm = {
                 qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
+        },
+        getQuantiModoUrl: function (path) {
+            if(typeof path === "undefined") {path = "";}
+            return qm.api.getBaseUrl() + "/" + path;
         }
     },
     appsManager: { // jshint ignore:line
@@ -1055,6 +1059,56 @@ window.qm = {
                 var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
                 document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
             }
+        },
+        getPermissionString: function(){
+            var str = "";
+            var permissions = ['readmeasurements', 'writemeasurements'];
+            for(var i=0; i < permissions.length; i++) {str += permissions[i] + "%20";}
+            return str.replace(/%20([^%20]*)$/,'$1');
+        },
+        generateV1OAuthUrl: function(register) {
+            var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
+            // add params
+            url += "response_type=code";
+            url += "&client_id=" + qm.api.getClientId();
+            //url += "&client_secret=" + qm.appsManager.getClientSecret();
+            url += "&scope=" + qm.auth.getPermissionString();
+            url += "&state=testabcd";
+            if(register === true){url += "&register=true";}
+            url += "&redirect_uri=" + qm.auth.getRedirectUri();
+            qmLog.debug('generateV1OAuthUrl: ' + url);
+            return url;
+        },
+        oAuthBrowserLogin: function (register) {
+            var url = qm.auth.generateV1OAuthUrl(register);
+            qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
+            var ref = window.open(url, '_blank');
+            if (!ref) {
+                qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
+                alert("You must first unblock popups, and and refresh the page for this to work!");
+            } else {
+                qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+                var interval = setInterval(function () {ref.postMessage('isLoggedIn?', qm.auth.getRedirectUri());}, 1000);
+                window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
+                    qmLog.authDebug('message received from sibling tab', null, event.url);
+                    if(interval !== false){
+                        clearInterval(interval);  // Don't ask login question anymore
+                        interval = false;
+                        var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
+                        if (authorizationCode) {
+                            qmService.fetchAccessTokenAndUserDetails(authorizationCode);
+                            ref.close();
+                        }
+                        qm.urlHelper.checkLoadStartEventUrlForErrors(ref, event);
+                    }
+                };
+                // listen to broadcast messages from other tabs within browser
+                window.addEventListener("message", window.onMessageReceived, false);
+            }
+        },
+        getRedirectUri: function () {
+            if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
+            return qm.api.getBaseUrl() +  '/ionic/Modo/www/callback/';
         }
     },
     buildInfo: {},
