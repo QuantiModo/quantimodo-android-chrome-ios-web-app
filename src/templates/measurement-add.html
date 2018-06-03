@@ -58,11 +58,11 @@
                         <!--</div>-->
                     <!--</div>-->
                 <!--</div>-->
-                <div ng-if="state.measurement.inputType === 'yesOrNo'" class="item" >
+                <div id="yes-no-input" ng-if="state.measurement.inputType === 'yesOrNo'" class="item" >
                     Value
                     <md-radio-group ng-model="state.measurement.value" layout="row" ng-init="state.measurement.value = 1" style="float: right">
-                        <md-radio-button value="1" class="md-primary">Yes</md-radio-button>
-                        <md-radio-button value="0"> No </md-radio-button>
+                        <md-radio-button value="Yes" class="md-primary">Yes</md-radio-button>
+                        <md-radio-button value="No"> No </md-radio-button>
                     </md-radio-group>
                 </div>
                 <label ng-if="!bloodPressure.show" class="item item-input item-select">
@@ -71,7 +71,7 @@
                             ng-options="unit.abbreviatedName as unit.name for unit in state.units" ng-change="unitSelected()">
                     </select>
                 </label>
-                <label class="item item-input">
+                <label id="date-input" class="item item-input">
                     <div class="input-label"> Date </div>
                     <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
                                placeholder="Date"
@@ -80,7 +80,7 @@
                                ng-model="state.selectedDate"
                                class="md-input text-right">
                 </label>
-                <label class="item item-input">
+                <label id="time-input" class="item item-input">
                     <div class="input-label"> Time </div>
                     <input style="cursor: pointer; background-color: white;"
                                mdc-datetime-picker=""
@@ -109,8 +109,9 @@
                     <md-button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">
                         Record
                         <span ng-if="state.measurement.unitAbbreviatedName !== 'yes/no' && state.measurement.value">{{state.measurement.value}}</span>
-                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value">Yes</span>
-                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && !state.measurement.value">No</span>
+                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value === 1">Yes</span>
+                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value === 0">No</span>
+                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value !== 1 && state.measurement.value !== 0">{{state.measurement.value}}</span>
                     </md-button>
                 </div>
             </div>
