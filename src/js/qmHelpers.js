@@ -902,6 +902,10 @@ window.qm = {
             return results;
         },
         getUnique: function(array, propertyName) {
+            if(!propertyName){
+                function onlyUnique(value, index, self) {return self.indexOf(value) === index;}
+                return array.filter( onlyUnique );
+            }
             var flags = [], output = [], l = array.length, i;
             for( i=0; i<l; i++) {
                 if(flags[array[i][propertyName]]) {continue;}
