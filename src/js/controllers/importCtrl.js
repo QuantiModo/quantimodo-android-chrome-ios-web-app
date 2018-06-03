@@ -212,7 +212,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 .then(function(result) { qmService.connectors.connectWithToken(result);
                 }, function(error) { qmService.connectors.connectorErrorHandler(error); });
         }
-        if(connector.name === 'worldweatheronline') {connectWithParams({}, 'worldweatheronline');}
+        if(connector.name === 'worldweatheronline') {qmService.connectors.connectWithParams({}, 'worldweatheronline');}
         if(connector.name === 'whatpulse') {
             $scope.data = {};
             myPopup = $ionicPopup.show({
@@ -237,7 +237,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
         if(connector.name === 'myfitnesspal') {
@@ -267,7 +267,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username, password: $scope.data.password };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
         if(connector.name === 'mint') {
@@ -297,7 +297,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username, password: $scope.data.password };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
         if(connector.name === 'mynetdiary') {
@@ -327,7 +327,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username, password: $scope.data.password };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
         if(connector.name === 'moodpanda') {
@@ -354,7 +354,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { email: $scope.data.email };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
         if(connector.name === 'moodscope') {
@@ -384,7 +384,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username, password: $scope.data.password };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             });
         }
     };
@@ -399,7 +399,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             $scope.importPurchases = isTruthy(importPurchases.defaultValue);
             $scope.onToggle = function(){
                 var params = { importPurchases: $scope.importPurchases || false, addAffiliateTag: $scope.addAffiliateTag || false };
-                connectWithParams(params, connector.name);
+                qmService.connectors.connectWithParams(params, connector.name);
             };
             var self = this;
             self.title = "Amazon Settings";
@@ -476,15 +476,4 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 qmService.hideLoader();
             });
     };
-    function connectWithParams(params, lowercaseConnectorName) {
-        $scope.state.text = '';
-        qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
-            .then(function(result){
-                qmLogService.debug(JSON.stringify(result), null);
-                $scope.refreshConnectors();
-            }, function (error) {
-                qmService.connectors.connectorErrorHandler(error);
-                $scope.refreshConnectors();
-            });
-    }
 }]);

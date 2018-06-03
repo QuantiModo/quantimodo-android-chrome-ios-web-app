@@ -336,6 +336,10 @@ function getConsoleLogString(name, message, metaData, stackTrace){
     return logString;
 }
 window.qmLog.debug = function (name, message, metaData, stackTrace) {
+    if(typeof message === 'object'){
+        metaData = message;
+        message = null;
+    }
     message = message || name;
     name = name || message;
     metaData = metaData || null;
@@ -347,6 +351,10 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace), metaData);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
+    if(typeof message === 'object'){
+        metaData = message;
+        message = null;
+    }
     name = name || message;
     metaData = metaData || null;
     //console.info(name + ": " + message);
@@ -357,6 +365,10 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
 };
 window.qmLog.warn = function (name, message, metaData, stackTrace) {
+    if(typeof message === 'object'){
+        metaData = message;
+        message = null;
+    }
     name = name || message;
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("warn")){return;}
@@ -365,6 +377,10 @@ window.qmLog.warn = function (name, message, metaData, stackTrace) {
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}
+    if(typeof message === 'object'){
+        metaData = message;
+        message = null;
+    }
     message = message || name;
     name = name || message;
     if(message && message.message){message = message.message;}

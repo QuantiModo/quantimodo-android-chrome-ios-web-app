@@ -2605,7 +2605,7 @@ window.qm = {
             }
             var string = JSON.stringify(jsonObject, null, '  ');
             if(maxLength){
-                return string.subString(0, maxLength) + '...';
+                return string.substring(0, maxLength) + '...';
             }
             return string;
         },
