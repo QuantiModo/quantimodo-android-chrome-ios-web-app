@@ -174,9 +174,8 @@
 		</section>
 	</body>
 	<script>
-		var receiveMessage = function(event)
-		{
-			event.source.postMessage(window.location.href.toString(),event.origin);
+		var receiveMessage = function(event) {
+			event.source.postMessage(window.location.href.toString(), event.origin);
 		};
 		window.addEventListener("message", receiveMessage, false);
 	</script>
