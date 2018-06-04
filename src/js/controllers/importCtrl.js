@@ -30,36 +30,6 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 		$scope.showImportHelpCard = false;
         window.qm.storage.setItem(qm.items.hideImportHelpCard, true);
 	};
-	var goToWebImportDataPage = function() {
-		qmLogService.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource', null);
-		qmService.goToDefaultState();
-		qmService.getAccessTokenFromAnySource().then(function(accessToken){
-			qmService.hideLoader();
-			if(ionic.Platform.platforms[0] === "browser"){
-				qmLogService.debug('Browser Detected', null);
-				var url = qm.api.getQuantiModoUrl("api/v2/account/connectors", true);
-				if(accessToken){ url += "access_token=" + accessToken; }
-				var newTab = window.open(url,'_blank');
-				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
-                qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-				//noinspection JSCheckFunctionSignatures
-				qmService.goToDefaultState();
-			} else {
-				var targetUrl = qm.api.getQuantiModoUrl("api/v1/connect/mobile", true);
-				if(accessToken){ targetUrl += "access_token=" + accessToken; }
-				var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
-				ref.addEventListener('exit', function(){
-                    qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-					//noinspection JSCheckFunctionSignatures
-					qmService.goToDefaultState();
-				});
-			}
-		}, function(){
-			qmService.hideLoader();
-			qmLogService.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...', null);
-            qmService.sendToLoginIfNecessaryAndComeBack();
-		});
-	};
 	var loadNativeConnectorPage = function(){
 		$scope.showImportHelpCard = !qm.storage.getItem(qm.items.hideImportHelpCard);
 		qmService.showBlackRingLoader();

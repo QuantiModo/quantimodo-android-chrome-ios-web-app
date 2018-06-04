@@ -1079,9 +1079,10 @@ window.qm = {
             qmLog.debug('generateV1OAuthUrl: ' + url);
             return url;
         },
-        openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler) {
+        openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler, ref) {
+            redirectUrl = redirectUrl || qm.auth.getRedirectUri();
             qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
-            var ref = window.open(url, '_blank');
+            ref = ref || window.open(url, '_blank');
             if (!ref) {
                 qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
                 alert("In order to log in, please unblock popups by clicking the icon on the right of the address bar. Then refresh the page.");
