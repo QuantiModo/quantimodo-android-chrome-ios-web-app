@@ -37,13 +37,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             socialLogin: function (provider, ev) {
-                qm.auth.hello.login(provider);
-                // qm.connectorHelper.getConnectorByName(provider, function (connector) {
-                //     return qmService.connectors[provider].connect(connector, ev);
-                // });
+                qmService.showBasicLoader();
+                if(qmService.auth.hello.enabled){
+                    qm.auth.hello.login(provider);
+                    return;
+                }
+                qm.connectorHelper.getConnectorByName(provider, function (connector) {
+                    return qmService.connectors[provider].connect(connector, ev);
+                });
             },
             hello: {
-                initialized: false,
+                enabled: false,
                 initialize: function (provider, successHandler) {
                     qm.connectorHelper.getConnectorByName(provider, function (connector) {
                         var helloConfig = {
@@ -64,7 +68,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             });
                         });
                         successHandler();
-                        qmService.auth.hello.initialized = true;
                     });
                 },
                 login: function (provider, ev) {
@@ -242,13 +245,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             webConnect: function (connector, ev, usePopup) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                //qmService.auth.hello.login(connector.name, ev);
-                //return true;
+                if(qmService.auth.hello.enabled){
+                    qmService.auth.hello.login(connector.name, ev);
+                    return true;
+                }
                 var url;
-                if(!usePopup || !$rootScope.use){  // Can't use popup if logging in because it's hard to get the access token from a separate window
-                    qmLog.info('Going to ' + url);
+                if(!usePopup || !qm.getUser()){  // Can't use popup if logging in because it's hard to get the access token from a separate window
                     url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
                     url = qm.urlHelper.addUrlQueryParamsToUrl({final_callback_url: window.location.href}, url);
+                    qmLog.info('Going to ' + url);
                     window.location.href = url;
                     return true;
                 }
