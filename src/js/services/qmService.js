@@ -240,18 +240,29 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         $rootScope.$broadcast('broadcastRefreshConnectors');
                     });
             },
-            webConnect: function (connector, ev) {
+            webConnect: function (connector, ev, usePopup) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 //qmService.auth.hello.login(connector.name, ev);
                 //return true;
+                var url;
+                if(!usePopup || !$rootScope.use){  // Can't use popup if logging in because it's hard to get the access token from a separate window
+                    qmLog.info('Going to ' + url);
+                    url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
+                    url = qm.urlHelper.addUrlQueryParamsToUrl({final_callback_url: window.location.href}, url);
+                    window.location.href = url;
+                    return true;
+                }
                 /** @namespace connector.connectInstructions */
-                var url = connector.connectInstructions.url;
-                var ref = window.open(url,'', "width=600,height=800");
+                url = connector.connectInstructions.url;  // TODO: Should we just send to the /connect endpoint aboove and let API redirect?
                 qmLog.info('Going to open connectInstructions.url ' + url);
+                var ref = window.open(url,'', "width=600,height=800");
                 if(!ref){
                     qmService.showMaterialAlert("Login Popup Blocked", "Please unblock popups by clicking the icon on the right of the address bar to login.", ev);
                     qmLog.error("Login Popup Blocked");
                 } else {
+                    qm.auth.openBrowserWindowAndGetParameterFromRedirect(url, qm.auth.getRedirectUri(), 'accessToken', function (accessToken) {
+                        qmService.saveAccessTokenResponseAndGetUser(accessToken);
+                    }, ref);
                     qmLog.info('Opened connectInstructions.url ' + url);
                     qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(ref, 'sessionToken', function(sessionToken){
                         qmService.saveAccessTokenResponseAndGetUser(sessionToken);
@@ -259,31 +270,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return true;
             },
-            webConnect2: function (connector, ev) {
-                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                /** @namespace connector.connectInstructions */
-                var url = connector.connectInstructions.url;
-                var request = new XMLHttpRequest();
-                request.open('GET', url, true);
-                request.onload = function () {
-                    var data;
-                    if (request.status >= 200 && request.status < 400) {data = JSON.parse(request.responseText);}
-                    if(data && data.sessionTokenObject) {
-                        qmService.saveAccessTokenResponseAndGetUser(data.sessionTokenObject);
-                    } else {
-                        var response = JSON.parse(request.responseText);
-                        if(response.error && response.error.message){
-                            qmLog.error(response.error.message);
-                        } else {
-                            qmLog.error(JSON.stringify(response), response);
-                        }
-                    }
-                };
-                request.onerror = qmLog.error;
-                request.send();
-                return true;
-            },
-            oAuthConnect: function (connector, mobileConnect, ev){
+            oAuthMobileConnect: function (connector, mobileConnect, ev){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                     qmService.connectors.webConnect(connector, ev);
                     return;
@@ -293,7 +280,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             quantimodo: {
                 connect: function (successHandler, errorHandler) {
                     qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
-                        qmService.connectors.oAuthConnect(connector, function () {
+                        qmService.connectors.oAuthMobileConnect(connector, function () {
                             $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                                 .then(function(result) {
                                     qmService.connectors.connectWithToken(result, successHandler, errorHandler);
