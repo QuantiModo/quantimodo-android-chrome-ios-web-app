@@ -1136,7 +1136,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         addBuildInfoToAppSettings();
         writeDefaultConfigJson('src');
         writeDefaultConfigJson('www');
-        if(buildingFor.mobile()){writePrivateConfigs('www');}
+        writePrivateConfigs('www'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
+        writePrivateConfigs('src'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         qmLog.info("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
