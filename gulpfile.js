@@ -1745,7 +1745,7 @@ gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+    if(!qmGit.isMaster()){
         qmLog.info("Not doing fastlaneSupplyBeta because not on develop or master");
         callback();
         return;
@@ -2807,7 +2807,7 @@ function buildAndroidRelease(callback){
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
-    if(buildDebug){
+    if(buildDebug || !qmGit.isMaster()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
     } else {
