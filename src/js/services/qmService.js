@@ -7455,9 +7455,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
         var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
         if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
-        if(window.location.href.indexOf('.quantimo.do/') === -1){
-            afterLogoutGoToUrl = window.location.href;
-        }
+        if(window.location.href.indexOf('.quantimo.do/') === -1){afterLogoutGoToUrl = window.location.href;}
+        afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
         var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
         qmLog.info("Sending to " + logoutUrl);
         //qmService.get(logoutUrl);
@@ -7471,7 +7470,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.completelyResetAppState();
         logOutOfWebsite();
         saveDeviceTokenToSyncWhenWeLogInAgain();
-        qmService.goToState(qmStates.intro);
+        //qmService.goToState(qmStates.intro);
         if(qm.platform.isMobile()){
             qmLog.info("Restarting app to enable opening login window again");
             document.location.href = 'index.html';
