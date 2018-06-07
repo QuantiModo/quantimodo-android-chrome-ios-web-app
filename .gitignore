@@ -116,3 +116,4 @@ chcpbuild\.options
 
 yarn-error\.log
 \.publish
+*.private_config.json
