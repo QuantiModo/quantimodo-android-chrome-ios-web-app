@@ -184,6 +184,11 @@ window.qm = {
             if(qm.clientId){successHandler(qm.clientId);}
             qm.api.getClientIdWithCallback(successHandler);
         },
+        getClientSecret: function(successHandler){
+            var clientSecret = qm.appsManager.getClientSecret();
+            if(successHandler){successHandler(clientSecret);}
+            return clientSecret;
+        },
         getClientIdWithCallback: function(successHandler){
             if(qm.api.getClientId()){
                 successHandler(qm.api.getClientId());
