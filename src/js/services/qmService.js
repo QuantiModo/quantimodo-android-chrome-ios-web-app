@@ -6328,7 +6328,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }).then(function(answer) {
             if(answer === "help"){qmService.goToState('app.help');}
             if(answer === 'yes'){yesCallbackFunction(ev);}
-            if(answer === 'no' && noCallbackFunction){noCallbackFunction(ev);}
+            if(answer === 'no' && noCallbackFunction){
+                noCallbackFunction(ev);
+                $mdDialog.cancel();
+            }
         //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
         });
     };
@@ -7470,6 +7473,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.info("Restarting app to enable opening login window again");
             document.location.href = 'index.html';
         }
+        qmService.showBlackRingLoader();
     };
     qmService.afterLogoutDoNotDeleteMeasurements = function(){
         qmService.showBlackRingLoader();
