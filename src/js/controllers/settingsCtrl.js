@@ -178,7 +178,9 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             var title = 'Log Out';
             var textContent = "Are you sure you want to log out? I'll miss you dearly!";
             function yesCallback(){qmService.completelyResetAppStateAndLogout();}
-            function noCallback(){qmService.afterLogoutDoNotDeleteMeasurements();}
+            function noCallback(){
+                //qmService.afterLogoutDoNotDeleteMeasurements();
+            }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		qmLogService.debug('Logging out...');
