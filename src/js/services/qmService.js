@@ -36,14 +36,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             },
-            socialLogin: function (provider, ev) {
+            socialLogin: function (provider, ev, additionalParams) {
                 qmService.showBasicLoader();
                 if(qmService.auth.hello.enabled){
-                    qm.auth.hello.login(provider);
+                    qm.auth.hello.login(provider, additionalParams);
                     return;
                 }
                 qm.connectorHelper.getConnectorByName(provider, function (connector) {
-                    return qmService.connectors[provider].connect(connector, ev);
+                    return qmService.connectors[provider].connect(connector, ev, additionalParams);
                 });
             },
             hello: {
@@ -243,7 +243,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         $rootScope.$broadcast('broadcastRefreshConnectors');
                     });
             },
-            webConnect: function (connector, ev, usePopup) {
+            webConnect: function (connector, ev, usePopup, additionalParams) {
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
                 if(qmService.auth.hello.enabled){
                     qmService.auth.hello.login(connector.name, ev);
@@ -252,7 +252,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var url;
                 if(!usePopup || !qm.getUser()){  // Can't use popup if logging in because it's hard to get the access token from a separate window
                     url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
-                    url = qm.urlHelper.addUrlQueryParamsToUrl({final_callback_url: window.location.href}, url);
+                    url = qm.urlHelper.addUrlQueryParamsToUrl({
+                        final_callback_url: window.location.href,
+                        clientId: qm.api.getClientId(),
+                        clientSecret: qm.api.getClientSecret()}, url);
+                    if(additionalParams){url = qm.urlHelper.addUrlQueryParamsToUrl(additionalParams, url);}
                     qmLog.info('Going to ' + url);
                     window.location.href = url;
                     return true;
@@ -275,15 +279,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return true;
             },
-            oAuthMobileConnect: function (connector, mobileConnect, ev){
+            oAuthMobileConnect: function (connector, mobileConnect, ev, additionalParams){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
-                    qmService.connectors.webConnect(connector, ev);
+                    qmService.connectors.webConnect(connector, ev, additionalParams);
                     return;
                 }
                 mobileConnect();
             },
             quantimodo: {
-                connect: function (successHandler, errorHandler) {
+                connect: function (successHandler, errorHandler, additionalParams) {
                     qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
                         qmService.connectors.oAuthMobileConnect(connector, function () {
                             $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
@@ -293,14 +297,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                     if(errorHandler){errorHandler(error);}
                                     qmService.connectors.connectorErrorHandler(error);
                                     $rootScope.$broadcast('broadcastRefreshConnectors');
-                                });
+                                }, additionalParams);
                         })
                     });
                 }
             },
             google: {
-                connect: function (connector, ev) {
-                    if(qmService.connectors.webConnect(connector, ev)){return;}
+                connect: function (connector, ev, additionalParams) {
+                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     document.addEventListener('deviceready', deviceReady, false);
                     function deviceReady() {
                         window.plugins.googleplus.login({
@@ -317,36 +321,36 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             googleplus: {
-                connect: function () {
+                connect: function (ev, additionalParams) {
                     qm.connectorHelper.getConnectorByName('googleplus', function (connector) {
-                        qmService.connectors.google.connect(connector);
+                        qmService.connectors.google.connect(connector, ev, additionalParams);
                     });
                 }
             },
             linkedin: {
-                connect: function (ev) {
-                    if(qmService.connectors.webConnect(connector, ev)){return;}
+                connect: function (ev, additionalParams) {
+                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             github: {
-                connect: function (connector, ev) {
-                    if(qmService.connectors.webConnect(connector, ev)){return;}
+                connect: function (connector, ev, additionalParams) {
+                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             twitter: {
-                connect: function (connector, ev) {
-                    if(qmService.connectors.webConnect(connector, ev)){return;}
+                connect: function (connector, ev, additionalParams) {
+                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             facebook: {
-                connect: function (connector, ev) {
-                    if(qmService.connectors.webConnect(connector, ev)){return;}
+                connect: function (connector, ev, additionalParams) {
+                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
