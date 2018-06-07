@@ -84,6 +84,7 @@ var paths = {
         arm7Release: "platforms/android/build/outputs/apk/android-arm7-release.apk",
         x86Release: "platforms/android/build/outputs/apk/android-x86-release.apk",
         outputFolder: "platforms/android/build/outputs/apk",
+        builtApk: null
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
@@ -1475,7 +1476,7 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.combinedRelease);
+        return uploadBuildToS3(paths.apk.builtApk);
     }
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
@@ -2797,6 +2798,7 @@ function buildAndroidDebug(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidDebug = "BUILDING";
     postAppStatus();
+    paths.apk.builtApk = paths.apk.combinedDebug;
     execute(getCordovaBuildCommand('debug', 'android'), callback);
 }
 function buildAndroidRelease(callback){
@@ -2804,6 +2806,7 @@ function buildAndroidRelease(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidRelease = "BUILDING";
     postAppStatus();
+    paths.apk.builtApk = paths.apk.combinedRelease;
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
