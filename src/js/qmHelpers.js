@@ -1133,6 +1133,7 @@ window.qm = {
                 var connectors = response.connectors || response;
                 if (connectors) {
                     qmLog.info("Got connectors from API...");
+                    qm.storage.setItem(qm.items.connectors, connectors);
                     if(successCallback){successCallback(connectors);}
                 } else {
                     qmLog.error("Could not get connectors from API...");
@@ -1156,7 +1157,10 @@ window.qm = {
         },
         getConnectorsFromLocalStorageOrApi: function(successHandler, errorHandler){
             var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
-            if(connectors){successHandler(connectors); return;}
+            if(connectors){
+                if(successHandler){successHandler(connectors);}
+                return;
+            }
             qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
         },
         getConnectorByName: function (connectorName, successHandler) {
