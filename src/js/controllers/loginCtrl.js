@@ -118,8 +118,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
         if(window.location.href.indexOf('localhost') !== -1){
             qmLog.authDebug("$scope.login: on localhost");
-            showLoginModal(event);
-            return;
+            //showLoginModal(event);
+            //return;
         }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
         if (qm.platform.isChromeExtension()) {
