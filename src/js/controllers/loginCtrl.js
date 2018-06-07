@@ -88,6 +88,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmService.navBar.hideNavigationMenu();
     });
     $scope.$on('$ionicView.afterEnter', function(){
+        qm.connectorHelper.getConnectorsFromLocalStorageOrApi();  // Pre-load to speed up login
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
         if(navigator && navigator.splashscreen) {
             qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
