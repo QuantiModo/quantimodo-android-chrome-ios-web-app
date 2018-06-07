@@ -252,7 +252,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var url;
                 if(!usePopup || !qm.getUser()){  // Can't use popup if logging in because it's hard to get the access token from a separate window
                     url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
-                    url = qm.urlHelper.addUrlQueryParamsToUrl({final_callback_url: window.location.href}, url);
+                    url = qm.urlHelper.addUrlQueryParamsToUrl({
+                        redirect_uri: window.location.href,
+                        clientId: qm.api.getClientId(),
+                        clientSecret: qm.api.getClientSecret()}, url);
                     qmLog.info('Going to ' + url);
                     window.location.href = url;
                     return true;
