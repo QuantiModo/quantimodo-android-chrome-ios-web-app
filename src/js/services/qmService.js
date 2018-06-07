@@ -288,7 +288,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 mobileConnectFunction();
             },
             quantimodo: {
-                connect: function (successHandler, errorHandler, additionalParams, ev) {
+                connectConnector: function (successHandler, errorHandler, additionalParams, ev) {
                     qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
                         qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, function () {
                             $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
@@ -304,7 +304,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             google: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     document.addEventListener('deviceready', deviceReady, false);
                     function deviceReady() {
@@ -322,35 +322,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             googleplus: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     qm.connectorHelper.getConnectorByName('googleplus', function (connector) {
                         qmService.connectors.google.connect(connector, ev, additionalParams);
                     });
                 }
             },
             linkedin: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             github: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             twitter: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             facebook: {
-                connect: function (connector, ev, additionalParams) {
+                connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
