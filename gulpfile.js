@@ -2511,7 +2511,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     }
     runSequence(
         'configureApp',
-        'deleteWwwPrivateConfig',
+        //'deleteWwwPrivateConfig',  // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         callback);
 
 });
@@ -2590,7 +2590,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
         'chromeDefaultConfigJson',
-        //'deleteWwwPrivateConfig',
+        //'deleteWwwPrivateConfig', // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
