@@ -601,9 +601,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qm.storage.removeItem(qm.items.afterLoginGoToState);
                 }, 10000);
             },
-            deleteAfterLoginStateIfItMatchesCurrentState: function(){
-                if(qm.login.getAfterLoginState() === $state.current.name){qm.login.deleteAfterLoginState();}
-            },
             afterLoginGoToUrlOrState: function () {
                 qmLog.info("Called afterLoginGoToUrlOrState in "+$state.current.name + "("+window.location.href+")");
                 function sendToDefaultStateIfNecessary() {
@@ -615,7 +612,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
                 function sendToAfterLoginStateIfNecessary() {
-                    var afterLoginGoToState = qm.login.getAfterLoginState();
+                    var afterLoginGoToState = qmService.login.getAfterLoginState();
                     qmLogService.debug('afterLoginGoToState from localstorage is  ' + afterLoginGoToState);
                     if(afterLoginGoToState){
                         qmService.goToState(afterLoginGoToState);
