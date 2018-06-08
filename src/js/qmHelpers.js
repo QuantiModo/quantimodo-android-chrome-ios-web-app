@@ -1432,6 +1432,8 @@ window.qm = {
     },
     items: {
         accessToken: 'accessToken',
+        afterLoginGoToUrl: 'afterLoginGoToUrl',
+        afterLoginGoToState: 'afterLoginGoToState',
         aggregatedCorrelations: 'aggregatedCorrelations',
         apiUrl: 'apiUrl',
         appSettings: 'appSettings',

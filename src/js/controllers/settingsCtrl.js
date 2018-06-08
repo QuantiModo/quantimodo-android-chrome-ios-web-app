@@ -29,11 +29,11 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			return;
 		}
 		if(!$rootScope.user){
-            qmService.sendToLoginIfNecessaryAndComeBack();
+            qmService.login.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
-    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.login.completelyResetAppStateAndSendToLogin();};
 	qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.platform.isIOS){
