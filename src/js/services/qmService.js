@@ -633,7 +633,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var afterLoginGoToUrl = qm.storage.getItem(qm.items.afterLoginGoToUrl);
                     if(afterLoginGoToUrl) {
                         qmLogService.info('Going to afterLoginGoToUrl from local storage  ' + afterLoginGoToUrl);
-                        qm.storage.removeItem(qm.items.afterLoginGoToUrl);
+                        $timeout(function () {qm.storage.removeItem(qm.items.afterLoginGoToUrl);}, 10000);
                         window.location.replace(afterLoginGoToUrl);
                         return true;
                     } else {
