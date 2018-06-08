@@ -2115,46 +2115,34 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
-        if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
-            qmLog.authDebug("$rootScope.user token matches the one in url");
-            return;
+        if(!$rootScope.user){$rootScope.user = qm.getUser();}
+        var currentUser = $rootScope.user;
+        var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
+        var tokenFromUrl = qmService.getAccessTokenFromUrlAndSetLocalStorageFlags();
+        if(tokenFromUrl && accessTokenFromLocalStorage && tokenFromUrl !== accessTokenFromLocalStorage){
+            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
+            qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
         }
-        if(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
-            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Got access token from url");
-            var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
-            if(accessTokenFromLocalStorage && qm.auth.accessTokenFromUrl !== accessTokenFromLocalStorage){
-                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
-                qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
-            }
-            var user = qm.storage.getItem(qm.items.user);
-            if(!user){
-                user = $rootScope.user;
-                qmLog.authDebug("No user from local storage");
-            }
-            if(!user && $rootScope.user){
-                user = $rootScope.user;
-                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No user from local storage but we do have a $rootScope user");
-            }
-            if(user && qm.auth.accessTokenFromUrl !== user.accessToken){
-                qmService.rootScope.setUser(null);
-                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
-                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
-            }
-            if(!qm.urlHelper.getParam('doNotRemember')){
-                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-                qmService.storage.setItem(qm.items.accessToken, qm.auth.accessTokenFromUrl);
-            }
-            if(!$rootScope.user){
-                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
-                qmService.refreshUser();
-            }
+        if(tokenFromUrl && currentUser && currentUser.accessToken !== tokenFromUrl){
+            qmService.rootScope.setUser(null);
+            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
+            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
+        }
+        if(tokenFromUrl && !qm.urlHelper.getParam('doNotRemember')){
+            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
+            qmService.storage.setItem(qm.items.accessToken, tokenFromUrl);
+        }
+        if(tokenFromUrl && (!currentUser || currentUser.accessToken !== tokenFromUrl)){
+            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
+            qmService.refreshUser();
         }
     };
     qmService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        if(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
+        var tokenFromUrl = qmService.getAccessTokenFromUrlAndSetLocalStorageFlags();
+        if(tokenFromUrl){
             qmLog.authDebug("getAccessTokenFromAnySource: Got AccessTokenFromUrl");
-            deferred.resolve(qmService.getAccessTokenFromUrlAndSetLocalStorageFlags());
+            deferred.resolve(tokenFromUrl);
             return deferred.promise;
         }
         var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
@@ -6649,13 +6637,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.storage.setItem('introSeen', true);
             qmService.rootScope.setUser(null);
         }
-        if(!$rootScope.user){
-            qmService.rootScope.setUser(window.qmUser);
+        if(!$rootScope.user && qm.getUser()){
+            qmService.rootScope.setUser(qm.getUser());
             if($rootScope.user){qmLogService.debug('Got $rootScope.user', null, $rootScope.user);}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
-            qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
+            //qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
             //qmSetupInPopup();
