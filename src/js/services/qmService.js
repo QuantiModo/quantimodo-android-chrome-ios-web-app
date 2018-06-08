@@ -2410,10 +2410,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
         }
-        qmService.afterLoginGoToUrlOrState();
+        qmService.login.afterLoginGoToUrlOrState();
     };
     qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState = function () {
-        if(!qmService.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
+        if(!qmService.login.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
     };
     qmService.syncAllUserData = function(){
         qmService.syncTrackingReminders();
