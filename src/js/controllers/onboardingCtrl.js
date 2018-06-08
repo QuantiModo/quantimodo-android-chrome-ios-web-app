@@ -8,7 +8,7 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();

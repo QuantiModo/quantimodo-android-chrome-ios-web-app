@@ -20,7 +20,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         }
-        //if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
+        //if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
         if(!userCanConnect()){
             qmService.refreshUser(); // Check if user upgrade via web since last user refresh
