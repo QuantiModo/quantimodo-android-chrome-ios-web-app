@@ -2119,23 +2119,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var currentUser = $rootScope.user;
         var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
         var tokenFromUrl = qmService.getAccessTokenFromUrlAndSetLocalStorageFlags();
-        if(tokenFromUrl && accessTokenFromLocalStorage && tokenFromUrl !== accessTokenFromLocalStorage){
-            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
-            qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
+        function clearStorageIfTokenFromStorageDoesNotMatchTokenFromUrl() {
+            if (tokenFromUrl && accessTokenFromLocalStorage && tokenFromUrl !== accessTokenFromLocalStorage) {
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
+            }
         }
-        if(tokenFromUrl && currentUser && currentUser.accessToken !== tokenFromUrl){
-            qmService.rootScope.setUser(null);
-            qm.storage.clearStorageExceptForUnitsAndCommonVariables();
-            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
+        function unsetUserIfTokenDoesNotMatchOneFromUrl() {
+            if (tokenFromUrl && currentUser && currentUser.accessToken !== tokenFromUrl) {
+                qmService.rootScope.setUser(null);
+                qm.storage.clearStorageExceptForUnitsAndCommonVariables();
+                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match qm.auth.accessTokenFromUrl");
+            }
         }
-        if(tokenFromUrl && !qm.urlHelper.getParam('doNotRemember')){
-            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-            qmService.storage.setItem(qm.items.accessToken, tokenFromUrl);
+        function storeTokenFromUrlIfDoNotRememberNotSet() {
+            if (tokenFromUrl && !qm.urlHelper.getParam('doNotRemember')) {
+                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
+                qmService.storage.setItem(qm.items.accessToken, tokenFromUrl);
+            }
         }
-        if(tokenFromUrl && (!currentUser || currentUser.accessToken !== tokenFromUrl)){
-            qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
-            qmService.refreshUser();
+        function refreshUserDoesNotExistOrIfTokenFromUrlDoesNotMatch() {
+            if (tokenFromUrl && (!currentUser || currentUser.accessToken !== tokenFromUrl)) {
+                qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
+                qmService.refreshUser();
+            }
         }
+        clearStorageIfTokenFromStorageDoesNotMatchTokenFromUrl();
+        unsetUserIfTokenDoesNotMatchOneFromUrl();
+        storeTokenFromUrlIfDoNotRememberNotSet();
+        refreshUserDoesNotExistOrIfTokenFromUrlDoesNotMatch();
     };
     qmService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
