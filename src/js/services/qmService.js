@@ -592,7 +592,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ', null);
                 qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
             },
+            getAfterLoginState: function(){
+                var afterLoginGoToState = qm.storage.getItem(qm.items.afterLoginGoToState);
+                return afterLoginGoToState;
+            },
+            deleteAfterLoginState: function(){
+                $timeout(function () {  // Wait 10 seconds in case it's called again too quick and sends to default state
+                    qm.storage.removeItem(qm.items.afterLoginGoToState);
+                }, 10000);
+            },
             afterLoginGoToUrlOrState: function () {
+                qmLog.info("Called afterLoginGoToUrlOrState in "+$state.current.name + "("+window.location.href+")");
                 function sendToDefaultStateIfNecessary() {
                     if($state.current.name === 'app.login'){
                         /** @namespace qm.getAppSettings().appDesign.defaultState */
@@ -602,11 +612,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
                 function sendToAfterLoginStateIfNecessary() {
-                    var afterLoginGoToState = qm.storage.getItem(qm.items.afterLoginGoToState);
+                    var afterLoginGoToState = qmService.login.getAfterLoginState();
                     qmLogService.debug('afterLoginGoToState from localstorage is  ' + afterLoginGoToState);
                     if(afterLoginGoToState){
-                        qm.storage.removeItem(qm.items.afterLoginGoToState);
                         qmService.goToState(afterLoginGoToState);
+                        qmService.login.deleteAfterLoginState();
                         return true;
                     }
                 }
@@ -2411,9 +2421,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.sendReminderNotificationEmails = null;
         }
         qmService.login.afterLoginGoToUrlOrState();
-    };
-    qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState = function () {
-        if(!qmService.login.afterLoginGoToUrlOrState()){qmService.goToDefaultState();}
     };
     qmService.syncAllUserData = function(){
         qmService.syncTrackingReminders();
