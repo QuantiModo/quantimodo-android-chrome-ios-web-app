@@ -6,13 +6,17 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	    connectors: null,
         searchText: ''
     };
-    function userCanConnect() {
+    function userCanConnect(connector) {
         if(!$rootScope.user){
             qmService.refreshUser();
             return true;
         }
         if(qmService.premiumModeDisabledForTesting){return false;}
         if($rootScope.user.stripeActive){return true;}
+        if(qm.platform.isChromeExtension()){return true;}
+        if(connector && !connector.premium){return true;}
+        //if(qm.platform.isAndroid()){return true;}
+        //if(qm.platform.isWeb()){return true;}
         return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
@@ -71,7 +75,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         });
     };
     $scope.uploadSpreadsheet = function(file, errFiles, connector, button) {
-        if(!userCanConnect()){
+        if(!userCanConnect(connector)){
             qmService.goToState('app.upgrade');
             return;
         }
@@ -110,7 +114,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
     };
     var connectConnector = function(connector, button, ev){
         qmService.connector = connector;
-        if(!userCanConnect()){
+        if(!userCanConnect(connector)){
             qmService.goToState('app.upgrade');
             return;
         }
