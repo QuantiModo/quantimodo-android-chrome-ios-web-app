@@ -41,7 +41,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     var leaveIfLoggedIn = function () {
         if($rootScope.user && $rootScope.user.accessToken){
             qmLog.authDebug('Already logged in on login page.  goToDefaultStateIfNoAfterLoginGoToUrlOrState...');
-            qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
+            qmService.login.afterLoginGoToUrlOrState();
         }
     };
     var loginTimeout = function () {
@@ -56,7 +56,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                 qmLogService.error('Login failure');
             }
             if($rootScope.user && $state.current.name.indexOf('login') !== -1){
-                qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
+                qmService.login.afterLoginGoToUrlOrState();
             }
         }, 40000);
     };
@@ -137,7 +137,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         if($rootScope.user){
             qmService.createDefaultReminders();
             qmLog.authDebug($scope.controller_name + '.login: Got user and going to default state');
-            qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
+            qmService.login.afterLoginGoToUrlOrState();
         }
     };
     $scope.retryLogin = function(){
@@ -269,7 +269,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmService.showBasicLoader();
             qmService.refreshUser().then(function () {
                 $mdDialog.hide();
-                qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
+                qmService.login.afterLoginGoToUrlOrState();
             });
         };
     }

@@ -286,6 +286,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.navBar.setOfflineConnectionErrorShowing(false);
         qmLog.context = $state.current.name;
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+        //qmService.login.deleteAfterLoginStateIfItMatchesCurrentState();
         $scope.closeMenu();
     });
     $scope.showMaterialAlert = function(title, textContent, ev) {
