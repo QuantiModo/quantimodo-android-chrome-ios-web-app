@@ -566,10 +566,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             setAfterLoginGoToUrl: function (afterLoginGoToUrl){
                 if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
-                if(afterLoginGoToUrl.indexOf('login') !== -1){
-                    qmLogService.info('setAfterLoginGoToUrl: Why are we sending to login from login state?');
-                    return;
-                }
+                if(!qmService.login.weShouldSetAfterLoginStateOrUrl(afterLoginGoToUrl)){return false;}
                 qmLogService.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.', null);
                 qmService.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
             },
@@ -584,12 +581,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug('Sending to app.login', null);
                 qmService.goToState("app.login");
             },
-            setAfterLoginGoToState: function(afterLoginGoToState){
-                if(afterLoginGoToState.indexOf('login') !== -1){
-                    qmLogService.info('setAfterLoginGoToState: Why are we sending to login from login state?');
-                    return;
+            weShouldSetAfterLoginStateOrUrl: function(afterLoginGoToStateOrUrl){
+                if(qm.storage.getItem(qm.items.afterLoginGoToUrl)){
+                    qmLogService.info('afterLoginGoToUrl already set to '+ qm.storage.getItem(qm.items.afterLoginGoToUrl));
+                    return false;
                 }
-                qmLogService.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ', null);
+                if(qm.storage.getItem(qm.items.afterLoginGoToState)){
+                    qmLogService.info('afterLoginGoToState already set to '+ qm.storage.getItem(qm.items.afterLoginGoToState));
+                    return false;
+                }
+                if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
+                    qmLogService.info('setAfterLoginGoToState: Why are we sending to login from login state?');
+                    return false;
+                }
+                return true;
+            },
+            setAfterLoginGoToState: function(afterLoginGoToState){
+                if(!qmService.login.weShouldSetAfterLoginStateOrUrl(afterLoginGoToState)){return false;}
+                qmLogService.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
                 qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
             },
             getAfterLoginState: function(){
