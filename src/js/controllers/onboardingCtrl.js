@@ -72,6 +72,7 @@ angular.module('starter').controller('OnboardingCtrl',
         $scope.hideOnboardingPage();
     };
     function initializeAddRemindersPageIfNecessary() {
+        if(!$scope.circlePage){return;}
         if ($scope.circlePage.variableCategoryName && $scope.circlePage.addButtonText) {
             qm.variablesHelper.getFromLocalStorageOrApi({
                 variableCategoryName: $scope.circlePage.variableCategoryName,

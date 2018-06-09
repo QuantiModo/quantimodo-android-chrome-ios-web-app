@@ -2529,6 +2529,7 @@ gulp.task('configureApp', [], function (callback) {
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
+        'getConnectors',
         'getUnits',
         'getVariableCategories',
         'getAppConfigs',
