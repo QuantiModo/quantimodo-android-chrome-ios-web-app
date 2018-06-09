@@ -1158,7 +1158,7 @@ window.qm = {
                     window.qmLog.debug('Got connectors from connectors.json', null, connectors);
                     qm.storage.setItem(qm.items.connectors, connectors);
                 }
-                callback(connectors);
+                successHandler(connectors);
             }, function (error) {
                 qmLog.error("Could not get connectors from connectors.json: "+error);
                 if(errorHandler){errorHandler("Could not get connectors from connectors.json: "+error);}
