@@ -5,10 +5,10 @@
 /* global chcp $ionicDeploy qmStates chcp qmStates */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
-    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
+    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "$cordovaOauth",
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
-             $ionicActionSheet) {
+             $ionicActionSheet, $cordovaOauth) {
     var qmService = {
         api: {
              headersGetter: function(headers) {
