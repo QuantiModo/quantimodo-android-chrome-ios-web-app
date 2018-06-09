@@ -130,29 +130,29 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(connector.name === 'slack') {
             if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.slack(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'netatmo') {
             if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.netatmo({clientId: connector.connectorClientId, clientSecret: connector.connectorClientSecret, appScope: connector.scopes})
-                .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'foursquare') {
             if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.foursquare(connector.connectorClientId)
-                .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'github') {qmService.connectors.github.connectConnector(connector, ev);}
         if(connector.name === 'linkedin') {qmService.connectors.linkedin.connectConnector(connector, ev);}
         if(connector.name === 'twitter') {qmService.connectors.twitter.connectConnector(connector, ev);}
         if(connector.name === 'strava') {
             if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.strava(connector.connectorClientId, connector.connectorClientSecret, connector.scopes).then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+            $cordovaOauth.strava(connector.connectorClientId, connector.connectorClientSecret, connector.scopes).then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'withings') {
             if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.withings(connector.connectorClientId, connector.connectorClientSecret)
-                .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
         }
         if(connector.name === 'fitbit') {
             if(qmService.connectors.webConnect(connector)){return;}
@@ -183,7 +183,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(connector.name === 'up') {
             if(qmService.connectors.webConnect(connector)){return;}
             $cordovaOauth.jawbone(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                .then(function(result) { qmService.connectors.connectWithToken(result);
+                .then(function(result) { qmService.connectors.connectWithToken(result, connector);
                 }, function(error) { qmService.connectors.connectorErrorHandler(error); });
         }
         if(connector.name === 'worldweatheronline') {qmService.connectors.connectWithParams({}, 'worldweatheronline');}
