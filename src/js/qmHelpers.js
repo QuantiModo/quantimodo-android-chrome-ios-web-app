@@ -475,7 +475,11 @@ window.qm = {
                     // return;
                 }
                 if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(successHandler);
+                    qm.appsManager.getAppSettingsFromApi(successHandler, function () {
+                        qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
+                            if(appSettings){qm.appsManager.setAppSettings(appSettings, successHandler);}
+                        })
+                    });
                     return;
                 }
                 qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
@@ -493,10 +497,11 @@ window.qm = {
             }
             return false;
         },
-        getAppSettingsFromApi: function (successHandler) {
+        getAppSettingsFromApi: function (successHandler, errorHandler) {
             qm.api.getAppSettingsUrl(function(appSettingsUrl){
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
                     if(!response){
+                        if(errorHandler){errorHandler("No response from " + appSettingsUrl);}
                         qmLog.error("No response from " + appSettingsUrl);
                         return;
                     }
@@ -506,10 +511,11 @@ window.qm = {
                     }
                     if(!response.appSettings){
                         qmLog.error("No appSettings response from "+ appSettingsUrl);
+                        if(errorHandler){errorHandler("No appSettings response from "+ appSettingsUrl);}
                         return false;
                     }
                     qm.appsManager.setAppSettings(response.appSettings, successHandler);
-                })
+                }, errorHandler)
             });
         },
         getAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
