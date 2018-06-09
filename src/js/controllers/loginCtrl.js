@@ -67,7 +67,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             leaveIfLoggedIn();
         }, function (error) {
             //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
-            qmService.hideLoader();
+            //qmService.hideLoader();  // Hides login loader too early
             leaveIfLoggedIn();
         });
     }
