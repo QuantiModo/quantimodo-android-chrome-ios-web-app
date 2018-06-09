@@ -210,7 +210,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             connectorErrorHandler: function (error){
                 qmLog.error(error);
             },
-            connectWithToken: function (response, successHandler, errorHandler) {
+            connectWithToken: function (response, connector, successHandler, errorHandler) {
                 qmLogService.debug('Response Object -> ' + JSON.stringify(response));
                 var body = { connectorCredentials: {token: response}, connector: connector };
                 qmService.connectConnectorWithTokenDeferred(body).then(function(result){
@@ -294,7 +294,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, function () {
                             $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
                                 .then(function(result) {
-                                    qmService.connectors.connectWithToken(result, successHandler, errorHandler);
+                                    qmService.connectors.connectWithToken(result, connector, successHandler, errorHandler);
                                 }, function(error) {
                                     if(errorHandler){errorHandler(error);}
                                     qmService.connectors.connectorErrorHandler(error);
@@ -333,28 +333,28 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             github: {
                 connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             twitter: {
                 connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
-                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             },
             facebook: {
                 connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
             }
         },

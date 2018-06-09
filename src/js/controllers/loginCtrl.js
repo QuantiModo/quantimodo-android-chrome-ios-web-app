@@ -2,7 +2,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
     LoginModalController.$inject = ["$scope", "$mdDialog", "qmService", "qmLogService"];
-    $scope.state = { loading: false, alreadyRetried: false, socialLogin: qmService.auth.socialLogin, showRetry: false};
+    $scope.state = { loading: false, alreadyRetried: false, showRetry: false};
+    $scope.state.socialLogin = function(connectorName, ev, additionalParams) {
+        loginTimeout();
+        qmService.auth.socialLogin(connectorName, ev, additionalParams);
+    };
     $scope.controller_name = "LoginCtrl";
     $scope.headline = qm.getAppSettings().headline;
     qmService.navBar.setFilterBarSearchIcon(false);
