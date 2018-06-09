@@ -1347,6 +1347,7 @@ window.qm = {
             qm.storage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
         },
         setItem: function(key, value){
+            if(!qm.storage.valueIsValid(value)){return false;}
             qm.storage.setGlobal(key, value);
         },
         getItem: function(key){
@@ -1630,6 +1631,7 @@ window.qm = {
             })
         },
         setItem: function(key, value, successHandler, errorHandler){
+            if(!qm.storage.valueIsValid(value)){return false;}
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
             qm.globalHelper.setItem(key, value);
             if(typeof localforage === "undefined"){
@@ -1638,6 +1640,7 @@ window.qm = {
                 if(errorHandler){errorHandler(errorMessage)};
                 return;
             }
+            if(!qm.storage.valueIsValid(value)){return false;}
             localforage.setItem(key, value, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -2409,6 +2412,17 @@ window.qm = {
     },
     serviceWorker: false,
     storage: {
+        valueIsValid: function(value){
+            if(typeof value === "undefined"){
+                qmLog.error("value provided to qm.storage.setItem is undefined!");
+                return false;
+            }
+            if(value === "null"){
+                qmLog.error("null string provided to qm.storage.setItem!");
+                return false;
+            }
+            return true;
+        },
         getUserVariableByName: function (variableName, updateLatestMeasurementTime, lastValue) {
             var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
             if(!userVariables || !userVariables.length){return null;}
@@ -2558,14 +2572,7 @@ window.qm = {
             return window.qm.storage.getItem(getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(typeof value === "undefined"){
-                qmLog.error("value provided to qm.storage.setItem is undefined!");
-                return;
-            }
-            if(value === "null"){
-                qmLog.error("null string provided to qm.storage.setItem!");
-                return;
-            }
+            if(!qm.storage.valueIsValid(value)){return false;}
             if(value === qm.storage.getGlobal(key)){
                 var valueString = JSON.stringify(value);
                 qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
