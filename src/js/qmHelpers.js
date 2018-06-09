@@ -1161,10 +1161,13 @@ window.qm = {
         getConnectorsFromJson: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
             qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('data/connectors.json'), function (connectors) {  // Can't use QM SDK in service worker
                 if(connectors){
-                    window.qmLog.debug('Got connectors from connectors.json', null, connectors);
+                    qmLog.debug('Got connectors from connectors.json', null, connectors);
                     qm.storage.setItem(qm.items.connectors, connectors);
+                    if(successHandler){successHandler(connectors);}
+                } else {
+                    qmLog.error("No connectors from getConnectorsFromJson");
+                    if(errorHandler){errorHandler("Could not get connectors from connectors.json");}
                 }
-                if(successHandler){successHandler(connectors)};
             }, function (error) {
                 qmLog.error("Could not get connectors from connectors.json: "+error);
                 if(errorHandler){errorHandler("Could not get connectors from connectors.json: "+error);}
@@ -1193,7 +1196,7 @@ window.qm = {
                 });
             }
         },
-        getConnectorByName: function (connectorName, successHandler) {
+        getConnectorByName: function (connectorName, successHandler, errorHandler) {
             if(!successHandler){
                 var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
                 return connectors.find(function(connector){
@@ -1201,11 +1204,16 @@ window.qm = {
                 });
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function (connectors) {
+                if(!connectors){
+                    qmLog.error("No getConnectorsFromLocalStorageOrApi!");
+                    if(errorHandler){errorHandler("No getConnectorsFromLocalStorageOrApi!");}
+                    return;
+                }
                 var match = connectors.find(function(connector){
                     return connector.name === connectorName.toLowerCase();
                 });
                 successHandler(match);
-            })
+            }, errorHandler)
         }
     },
     correlations: {
