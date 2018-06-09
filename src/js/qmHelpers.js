@@ -235,7 +235,8 @@ window.qm = {
                 return parts[0].toLowerCase();
             }
             var subDomain = getSubDomain();
-            var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[getSubDomain()];
+            subDomain = subDomain.replace('qm-', '');
+            var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
                 window.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
                     ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
