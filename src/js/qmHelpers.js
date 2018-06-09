@@ -1166,7 +1166,7 @@ window.qm = {
                     if(successHandler){successHandler(connectors);}
                 } else {
                     qmLog.error("No connectors from getConnectorsFromJson");
-                    if(errorHandler){errorHandler("Could not get connectors from connectors.json: "+error);}
+                    if(errorHandler){errorHandler("Could not get connectors from connectors.json");}
                 }
             }, function (error) {
                 qmLog.error("Could not get connectors from connectors.json: "+error);
@@ -1213,7 +1213,7 @@ window.qm = {
                     return connector.name === connectorName.toLowerCase();
                 });
                 successHandler(match);
-            })
+            }, errorHandler)
         }
     },
     correlations: {
