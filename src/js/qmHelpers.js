@@ -1193,7 +1193,7 @@ window.qm = {
                 });
             }
         },
-        getConnectorByName: function (connectorName, successHandler) {
+        getConnectorByName: function (connectorName, successHandler, errorHandler) {
             if(!successHandler){
                 var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
                 return connectors.find(function(connector){
@@ -1201,6 +1201,11 @@ window.qm = {
                 });
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function (connectors) {
+                if(!connectors){
+                    qmLog.error("No getConnectorsFromLocalStorageOrApi!");
+                    if(errorHandler){errorHandler("No getConnectorsFromLocalStorageOrApi!");}
+                    return;
+                }
                 var match = connectors.find(function(connector){
                     return connector.name === connectorName.toLowerCase();
                 });
