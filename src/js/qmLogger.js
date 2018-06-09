@@ -272,6 +272,10 @@ window.qmLog = {
             delete metaData.apiResponse;
         }
         metaData.local_notifications = qm.storage.getItem(qm.items.scheduledLocalNotifications);
+        if(typeof ionic !== "undefined"){
+            metaData.platform = ionic.Platform.platform();
+            metaData.platformVersion = ionic.Platform.version();
+        }
         //metaData.appSettings = qm.getAppSettings();  // Request Entity Too Large
         //if(metaData){metaData.additionalInfo = metaData;}
         metaData = qmLog.obfuscateSecrets(metaData);
@@ -388,7 +392,7 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 function getCalleeFunction() {
-    return arguments.callee.caller.caller.caller.caller;
+    return arguments.callee.caller.caller.caller.caller.caller;
 }
 function getCalleeFunctionName() {
     if(getCalleeFunction() && getCalleeFunction().name && getCalleeFunction().name !== ""){
