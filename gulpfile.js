@@ -1273,7 +1273,7 @@ gulp.task('getCommonVariables', function () {
         'public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
 });
 gulp.task('getConnectors', function () {
-    return getConstantsFromApiAndWriteToJson('connectors', 'api/v1/connectors/list');
+    return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
 });
 gulp.task('getUnits', function () {
     return getConstantsFromApiAndWriteToJson('units');
