@@ -190,7 +190,7 @@ window.qmLog = {
         }
     },
     getConsoleLogString: function (){
-        var logString = name;
+        var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
         logString = addCallerFunctionToMessage(logString);
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
