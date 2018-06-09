@@ -51,6 +51,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     var loginTimeout = function () {
         qmService.showBlackRingLoader();
         $scope.circlePage.title = 'Logging in...';
+        $scope.circlePage.bodyText = 'Thank you for your patience. Your call is very important to us!';
         qmLog.authDebug('Setting login timeout...');
         $timeout(function () {$scope.state.showRetry = true;}, 3000);
         return $timeout(function () {
