@@ -9,7 +9,6 @@ var androidArm7ReleaseApkName = 'android-armv7-release';
 var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.DEBUG_BUILD */
 /** @namespace process.env.BUILD_DEBUG */
-var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 /** @namespace process.env.DO_NOT_MINIFY */
 var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 //var buildPath = './build';  Can't use . because => Updated .......  app_uploads/quantimodo/./build/quantimodo-chrome-extension.zip
@@ -182,7 +181,9 @@ var qmLog = {
     },
     info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
-        if(buildDebug){qmLog.info("BUILD DEBUG: " + message, object, maxCharacters);}
+        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
+            qmLog.info("DEBUG: " + message, object, maxCharacters);
+        }
     },
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
@@ -310,6 +311,10 @@ var qm = {
         },
         setDoNotMinify(value){
             doNotMinify = value;
+        },
+        buildDebug: function () {
+            if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            return !qmGit.isMaster();
         }
     },
     buildInfoHelper: {
@@ -799,7 +804,7 @@ function unzipFile(pathToZipFile, pathToOutputFolder) {
 }
 function getCordovaBuildCommand(releaseStage, platform) {
     var command = 'cordova build --' + releaseStage + ' ' + platform;
-    //if(buildDebug){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
+    //if(qm.buildSettings.buildDebug()){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
     return command;
 }
 function outputVersionCodeForApk(pathToApk) {
@@ -1485,7 +1490,7 @@ gulp.task("upload-combined-release-apk-to-s3", function() {
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        if(buildDebug){
+        if(qm.buildSettings.buildDebug()){
             return uploadBuildToS3(paths.apk.combinedDebug);
         } else {
             return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
@@ -1667,13 +1672,13 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         ;
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(doNotMinify || buildDebug){
+    if(doNotMinify || qm.buildSettings.buildDebug()){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if(doNotMinify || buildDebug){
+    if(doNotMinify || qm.buildSettings.buildDebug()){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
@@ -1755,7 +1760,7 @@ gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function 
         callback();
         return;
     }
-    if(buildDebug){
+    if(qm.buildSettings.buildDebug()){
         qmLog.info("Not uploading DEBUG build");
         callback();
         return;
@@ -2815,7 +2820,7 @@ function buildAndroidRelease(callback){
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
-    if(buildDebug || !qmGit.isMaster()){
+    if(qm.buildSettings.buildDebug()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
     } else {
@@ -2903,7 +2908,7 @@ function getCHCPContentPath(){
     var path = "dev";
     if(qmGit.isMaster()){path = "production";}
     if(qmGit.isDevelop()){path = "qa";}
-    if(buildDebug){path = "dev";}
+    if(qm.buildSettings.buildDebug()){path = "dev";}
     return path;
 }
 function getCHCPContentUrl(){
