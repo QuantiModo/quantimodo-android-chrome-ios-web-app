@@ -96,7 +96,7 @@ window.qmLog = {
                     "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
             }
             //window.qmLog.error(error, object); // Avoid infinite recursion
-            return object;
+            return {};
         }
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
@@ -124,7 +124,7 @@ window.qmLog = {
             metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
             if(!name){name = "No error name provided";}
             if(!message){message = "No error message provided";}
-            if(typeof name !== "string"){name = JSON.stringify(name);}
+            if(typeof name !== "string"){name = message;}
             if(typeof message !== "string"){message = JSON.stringify(message);}
             bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: metaData});
         }
