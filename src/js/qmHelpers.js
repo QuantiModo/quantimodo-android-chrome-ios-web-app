@@ -1215,6 +1215,20 @@ window.qm = {
                 });
                 successHandler(match);
             }, errorHandler)
+        },
+        storeConnectorResponse: function(response){
+            function hideUnavailableConnectors(connectors){
+                for(var i = 0; i < connectors.length; i++){
+                    //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide = true;}
+                    if(connectors[i].spreadsheetUpload && qm.platform.isMobile()) {connectors[i].hide = true;}
+                }
+                return response;
+            }
+            if(response.user){qm.userHelper.setUser(response.user);}
+            var connectors = response.connectors || response;
+            connectors = hideUnavailableConnectors(connectors);
+            qm.storage.setItem(qm.items.connectors, connectors);
+            return connectors;
         }
     },
     correlations: {
