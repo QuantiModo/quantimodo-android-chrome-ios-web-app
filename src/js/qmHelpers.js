@@ -3240,13 +3240,13 @@ window.qm = {
             }
             return true;
         },
-        getUserFromApi: function(successCallback, errorHandler){
+        getUserFromApi: function(successHandler, errorHandler){
             qmLog.info("Getting user from API...");
-            function successHandler(userFromApi){
+            function userSuccessHandler(userFromApi){
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
                     qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
-                    if(successCallback){successCallback(userFromApi);}
+                    if(successHandler){successHandler(userFromApi);}
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
@@ -3256,13 +3256,22 @@ window.qm = {
                     }
                 }
             }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.UserApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+            if(typeof Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
+                qm.api.getRequestUrl('api/v1/user', function(url){
+                    qm.api.getViaXhrOrFetch(url, function (user) {
+                        userSuccessHandler(user);
+                    }, errorHandler)
+                });
+            } else {   // Can't use QM SDK in service worker because it uses XHR instead of fetch
+                qm.api.configureClient();
+                var apiInstance = new Quantimodo.UserApi();
+                function userSdkCallback(error, data, response) {
+                    qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+                    userSuccessHandler(data);
+                }
+                var params = qm.api.addGlobalParams({});
+                apiInstance.getUser(params, userSdkCallback);
             }
-            var params = qm.api.addGlobalParams({});
-            apiInstance.getUser(params, callback);
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             qm.userHelper.getUserFromLocalStorage(function(user) {
