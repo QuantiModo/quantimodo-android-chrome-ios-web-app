@@ -356,6 +356,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
                         .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
                 }
+            },
+            storeConnectorResponse: function(response){
+                if(response.user){qmService.setUser(response.user)}
+                return qm.connectorHelper.storeConnectorResponse(response);
             }
         },
         deploy: {
@@ -1633,7 +1637,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
             } else {
-                if(route.indexOf('googleIdToken') === -1){
+                if(route.indexOf('googleIdToken') === -1 && route.indexOf('connect') === -1){
                     qmLog.error('No access token for POST ' + route + ". $rootScope.user is " + JSON.stringify($rootScope.user), options.stackTrace);
                     qmLog.error('No access token for POST ' + route + ". qm.getUser() returns " + JSON.stringify(qm.getUser()), options.stackTrace);
                 }
@@ -2949,9 +2953,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.qmLog.isDebugMode()){qmLogService.debug('Called refresh connectors: ' + stackTrace);}
         var deferred = $q.defer();
         qm.connectorHelper.getConnectorsFromApi({}, function(response){
-            var connectors = response.connectors || response;
-            connectors = hideUnavailableConnectors(connectors);
-            qm.storage.setItem(qm.items.connectors, connectors);
+            var connectors = qmService.connectors.storeConnectorResponse(response);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -2978,21 +2980,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.connectConnectorWithTokenDeferred = function(body){
         var deferred = $q.defer();
-        qmService.connectConnectorWithTokenToApi(body, function(){qmService.refreshConnectors();}, function(error){deferred.reject(error);});
+        qmService.connectConnectorWithTokenToApi(body, function(response){
+            var connectors = qmService.connectors.storeConnectorResponse(response);
+            deferred.resolve(connectors);
+        }, function(error){
+            deferred.reject(error);
+        });
         return deferred.promise;
     };
     qmService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
         var deferred = $q.defer();
-        qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){qmService.refreshConnectors();}, function(error){deferred.reject(error);});
+        qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(response){
+            var connectors = qmService.connectors.storeConnectorResponse(response);
+            deferred.resolve(connectors);
+        }, function(error){
+            deferred.reject(error);
+        });
         return deferred.promise;
     };
-    function hideUnavailableConnectors(connectors){
-        for(var i = 0; i < connectors.length; i++){
-            //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide = true;}
-            if(connectors[i].spreadsheetUpload && $rootScope.platform.isMobile) {connectors[i].hide = true;}
-        }
-        return connectors;
-    }
     var geoLocationDebug = false;
     qmService.getLocationInfoFromFoursquareOrGoogleMaps = function (latitude, longitude) {
         if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){qmLogService.error('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + longitude + ' and latitude,' + latitude);}
