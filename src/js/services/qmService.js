@@ -281,6 +281,37 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return true;
             },
+            mobileConnectIdeal: function(connector, ev, options){  // This would be ideal because it's universal but I'm getting too many redirects errors.  Maybe try again after releasing fixes to production API
+                var deferred = $q.defer();
+                if(window.cordova) {
+                    if(window.cordova.InAppBrowser) {
+                        //var redirect_uri = "http://localhost/callback";
+                        var redirect_uri = "http://localhost/callback";
+                        if(options !== undefined) {if(options.hasOwnProperty("redirect_uri")) {redirect_uri = options.redirect_uri;}}
+                        var browserRef = window.cordova.InAppBrowser.open('https://app.quantimo.do/api/v1/connectors/'+connector.name+'/connect?client_id=' +
+                            qm.api.getClientId() + '&final_callback_url=' + redirect_uri + '&client_secret='+qm.api.getClientSecret(),
+                            '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
+                        browserRef.addEventListener('loadstart', function(event) {
+                            if((event.url).indexOf(redirect_uri) === 0) {
+                                var accessToken = (event.url).split("accessToken=")[1];
+                                qm.auth.saveAccessToken(accessToken);
+                                qmService.refreshConnectors();
+                                if(!qm.getUser()){qmService.refreshUser();}
+                            }
+                        });
+                        browserRef.addEventListener('exit', function(event) {
+                            deferred.reject("The sign in flow was canceled");
+                        });
+                    } else {
+                        qmLog.error("Could not find InAppBrowser plugin");
+                        deferred.reject("Could not find InAppBrowser plugin");
+                    }
+                } else {
+                    qmLog.error("Cannot authenticate via a web browser");
+                    deferred.reject("Cannot authenticate via a web browser");
+                }
+                return deferred.promise;
+            },
             oAuthMobileConnect: function (connector, ev, additionalParams, mobileConnectFunction){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                     qmService.connectors.webConnect(connector, ev, additionalParams);
@@ -353,8 +384,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             facebook: {
                 connectConnector: function (connector, ev, additionalParams) {
                     if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    $cordovaOauth.facebook(connector.connectorClientId, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
+                    //qmService.connectors.mobileConnect(connector);
+                    function fbSuccessHandler(result){
+                        qmService.connectors.connectWithToken(result, connector);
+                    }
+                    function fbErrorHandler(error){
+                        qmService.connectors.connectorErrorHandler(error);
+                    }
+                    if(typeof facebookConnectPlugin !== "undefined"){
+                        facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
+                    } else {
+                        cordovaOauth.facebook(connector.connectorClientId, connector.scopes).then(function(result) {fbSuccessHandler(result);}, fbErrorHandler);
+                    }
                 }
             },
             storeConnectorResponse: function(response){
@@ -1848,7 +1889,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var allowedParams = ['location', 'username', 'password', 'email'];
         qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
-    qmService.connectConnectorWithTokenToApi = function(body, lowercaseConnectorName, successHandler, errorHandler){
+    qmService.connectConnectorWithTokenToApi = function(body, successHandler, errorHandler){
         var requiredProperties = ['connector', 'connectorCredentials'];
         qmService.post('api/v3/connectors/connect', requiredProperties, body, successHandler, errorHandler);
     };
