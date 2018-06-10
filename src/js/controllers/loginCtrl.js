@@ -58,6 +58,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmLog.authDebug('Finished login timeout');
             if(!$rootScope.user){
                 $scope.circlePage.title = 'Please try logging in again';
+                $scope.state.showRetry = false;
                 qmLogService.error('Login failure');
             }
             if($rootScope.user && $state.current.name.indexOf('login') !== -1){
