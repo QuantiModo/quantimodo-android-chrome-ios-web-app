@@ -38,7 +38,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
                 if(!qm.getUser()){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
-                if(window && window.plugins && window.plugins.googleplus){qmService.auth.googleLogout();}
+                //if(window && window.plugins && window.plugins.googleplus){qmService.auth.googleLogout();}
                 qmService.showBasicLoader();
                 qm.connectorHelper.getConnectorByName(connectorName, function (connector) {
                     return qmService.connectors.oAuthConnect(connector, ev, additionalParams, successHandler, errorHandler);
@@ -205,6 +205,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
             },
             qmApiMobileConnect: function(connector, ev, options, successHandler, errorHandler) {
+                qmLog.info("qmService.connectors.qmApiMobileConnect for "+JSON.stringify(connector), null, connector);
                 var deferred = $q.defer();
                 if(window.cordova) {
                     if(window.cordova.InAppBrowser) {
@@ -316,6 +317,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             oAuthConnect: function (connector, ev, additionalParams, successHandler, errorHandler){
+                qmLog.info("qmService.connectors.oAuthConnect for "+JSON.stringify(connector), null, connector);
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                     qmService.connectors.webConnect(connector, ev, additionalParams);
                     return;
@@ -323,6 +325,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, successHandler, errorHandler);
             },
             googleMobileConnect: function (connector, ev, additionalParams, successHandler, errorHandler) {
+                qmLog.info("qmService.connectors.googleMobileConnect for "+JSON.stringify(connector), null, connector);
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
                     var scopes = connector.scopes.join(" ");
@@ -345,6 +348,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
+                qmLog.info("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector), null, connector);
                 function fbSuccessHandler(result){
                     qmService.connectors.connectWithToken(result, connector);
                     if(successHandler){successHandler(result);}
