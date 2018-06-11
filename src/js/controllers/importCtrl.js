@@ -150,65 +150,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(!qm.appMode.isDebug()){button.text = "Import Scheduled";}
         connector.message = 'You should begin seeing any new data within an hour or so.';
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
-        if(connector.name === 'quantimodo') {qmService.connectors.quantimodo.connectConnector(connector, ev);}
-        if(connector.name === 'slack') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.slack(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'netatmo') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.netatmo({clientId: connector.connectorClientId, clientSecret: connector.connectorClientSecret, appScope: connector.scopes})
-                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'foursquare') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.foursquare(connector.connectorClientId)
-                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'github') {qmService.connectors.github.connectConnector(connector, ev);}
-        if(connector.name === 'linkedin') {qmService.connectors.linkedin.connectConnector(connector, ev);}
-        if(connector.name === 'twitter') {qmService.connectors.twitter.connectConnector(connector, ev);}
-        if(connector.name === 'strava') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.strava(connector.connectorClientId, connector.connectorClientSecret, connector.scopes).then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'withings') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.withings(connector.connectorClientId, connector.connectorClientSecret)
-                .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'fitbit') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
-                .then(function(authorizationCode) {qmService.connectors.connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'runkeeper') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.fitbit(connector.connectorClientId, connector.scopes, options)
-                .then(function(authorizationCode) {qmService.connectors.connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'rescuetime') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.rescuetime(connector.connectorClientId, connector.scopes, options)
-                .then(function(authorizationCode) {qmService.connectors.connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'slice') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            options = {redirect_uri: qm.api.getBaseUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.slice(connector.connectorClientId, connector.scopes, options)
-                .then(function(authorizationCode) {qmService.connectors.connectWithAuthCode(authorizationCode, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-        }
-        if(connector.name === 'facebook') {qmService.connectors.facebook.connectConnector(connector, ev);}
-        if(connector.mobileConnectMethod === 'google') {qmService.connectors.google.connectConnector(connector, ev);}
-        if(connector.name === 'up') {
-            if(qmService.connectors.webConnect(connector)){return;}
-            $cordovaOauth.jawbone(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                .then(function(result) { qmService.connectors.connectWithToken(result, connector);
-                }, function(error) { qmService.connectors.connectorErrorHandler(error); });
+        if(connector.mobileConnectMethod === 'oauth') {
+            qmService.connectors.oAuthConnect(connector, ev, {});
+            return;
         }
         if(connector.name === 'worldweatheronline') {qmService.connectors.connectWithParams({}, 'worldweatheronline');}
         if(connector.name === 'whatpulse') {
