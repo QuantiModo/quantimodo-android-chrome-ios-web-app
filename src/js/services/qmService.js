@@ -331,14 +331,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     };
-                    qmLog.authDebug("googleplus.login with params: "+JSON.stringify(params));
+                    qmLog.authDebug("plugins.googleplus.login with params: "+JSON.stringify(params), null, params);
                     window.plugins.googleplus.login(params, function (response) {
-                        qmLog.authDebug('googleplus.login response:' + JSON.stringify(response));
+                        qmLog.authDebug('plugins.googleplus.login response:' + JSON.stringify(response), null, response);
                         qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
                         if(successHandler){successHandler(response);}
                     }, function (errorMessage) {
                         if(errorHandler){errorHandler(errorMessage);}
-                        qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        qmService.showMaterialAlert("Google Login Issue", JSON.stringify(errorMessage));
+                        qmLogService.error("plugins.googleplus.login could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
+                            JSON.stringify(errorMessage), null, errorMessage);
                     });
                 }
             },
@@ -370,7 +372,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 // var options = {'config-file': 'https://s3.amazonaws.com/qm-cordova-hot-code-push/chcp.json'};
                 // qmLog.info("Checking for CHCP updates at " + options['config-file']);
                 // noinspection Annotator
-                chcp.fetchUpdate(qmService.deploy.updateCallback, options);
+                chcp.fetchUpdate(qmService.deploy.updateCallback, null);
             },
             installUpdate: function(){
                 qmLog.info('CHCP installUpdate...');
