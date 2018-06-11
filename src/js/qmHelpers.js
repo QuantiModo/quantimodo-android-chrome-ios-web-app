@@ -392,7 +392,7 @@ window.qm = {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
         },
         getRequestUrl: function(path, successHandler) {
-            qm.userHelper.getUserFromLocalStorageOrApi(function(user){
+            qm.userHelper.getUserFromLocalStorage(function(user){
                 function addGlobalQueryParameters(url) {
                     function addQueryParameter(url, name, value){
                         if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
