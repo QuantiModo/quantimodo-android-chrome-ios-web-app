@@ -20,8 +20,6 @@
   </feature>
   <hook src="hooks/uncomment_cordova_js.js" type="before_build" />
   <hook src="hooks/uncomment_cordova_js.js" type="before_deploy" />
-    <hook src="hooks/cordovaHotCodePushDevAfterPrepareHookOverride.js" type="before_build" />
-    <hook src="hooks/cordovaHotCodePushDevAfterPrepareHookOverride.js" type="before_deploy" />
   <platform name="android">
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
