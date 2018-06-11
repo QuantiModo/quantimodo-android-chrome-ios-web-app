@@ -182,10 +182,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
-                qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode), null);
-                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+                qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode));
+                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (response){
                     $rootScope.$broadcast('broadcastRefreshConnectors');
-                    if(successHandler){successHandler(result);}
+                    if(successHandler){successHandler(response);}
                 }, function() {
                     qmLogService.error("error on connectWithAuthCode for " + connector.name);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
@@ -335,15 +335,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     };
                     qmLog.authDebug("plugins.googleplus.login with params: "+JSON.stringify(params), null, params);
+                    qmService.showBasicLoader();
                     window.plugins.googleplus.login(params, function (response) {
                         qmLog.authDebug('plugins.googleplus.login response:' + JSON.stringify(response), null, response);
-                        qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
-                        if(successHandler){successHandler(response);}
+                        qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector, function (response) {
+                            qmLog.info("plugins.googleplus.login hiding loader because we got response from connectWithAuthCode:"+JSON.stringify(response), null, response);
+                            qmService.hideLoader();
+                            if(successHandler){successHandler(response);}
+                        }, function (error) {
+                            qmService.hideLoader();
+                            qmLog.error("plugins.googleplus.login error: "+error, null, params);
+                            if(errorHandler){errorHandler(error);}
+                        });
                     }, function (errorMessage) {
+                        qmService.hideLoader();
                         if(errorHandler){errorHandler(errorMessage);}
                         qmService.showMaterialAlert("Google Login Issue", JSON.stringify(errorMessage));
-                        qmLogService.error("plugins.googleplus.login could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
-                            JSON.stringify(errorMessage), null, errorMessage);
+                        qmLogService.error("plugins.googleplus.login could not get userData from Google!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
+                            JSON.stringify(errorMessage), null, params);
                     });
                 }
             },
@@ -2934,7 +2943,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(response){
             var connectors = qmService.connectors.storeConnectorResponse(response);
-            deferred.resolve(connectors);
+            deferred.resolve(response);
         }, function(error){
             deferred.reject(error);
         });
