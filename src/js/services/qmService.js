@@ -5,10 +5,10 @@
 /* global chcp $ionicDeploy qmStates chcp qmStates */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
-    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "$cordovaOauth",
+    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
-             $ionicActionSheet, $cordovaOauth) {
+             $ionicActionSheet) {
     var qmService = {
         api: {
              headersGetter: function(headers) {
@@ -36,59 +36,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.auth.deleteAllAccessTokens();
                 }
             },
-            socialLogin: function (connectorName, ev, additionalParams) {
+            socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
                 if(!qm.getUser()){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
+                if(window && window.plugins && window.plugins.googleplus){qmService.auth.googleLogout();}
                 qmService.showBasicLoader();
-                if(qmService.auth.hello.enabled){
-                    qm.auth.hello.login(connectorName, additionalParams);
-                    return;
-                }
                 qm.connectorHelper.getConnectorByName(connectorName, function (connector) {
-                    return qmService.connectors[connectorName].connectConnector(connector, ev, additionalParams);
+                    return qmService.connectors.oAuthConnect(connector, ev, additionalParams, successHandler, errorHandler);
                 });
-            },
-            hello: {
-                enabled: false,
-                initialize: function (provider, successHandler) {
-                    qm.connectorHelper.getConnectorByName(provider, function (connector) {
-                        var helloConfig = {
-                            //redirect_uri: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
-                            redirect_uri: 'callback/index.html',
-                            scope: connector.scopes.join(", "),
-                            oauth_proxy: qm.appsManager.getQuantiModoApiUrl()+'/api/v1/connectors/'+connector.name+'/connect'
-                        };
-                        var clientIds = {};
-                        clientIds[connector.name] = connector.connectorClientId;
-                        hello.init(clientIds, helloConfig);
-                        hello.on("auth.failed", function(error){qmLog.error(error);});
-                        hello.on('auth.login', function(auth) {
-                            qmLog.info(provider + " auth response:", auth);
-                            qmService.connectors.connectWithParams(auth, auth.network);
-                            hello(auth.network).api('me').then(function(profile) { // Call user information, for the given network
-                                qmLog.info(provider + " profile response:", profile);
-                            });
-                        });
-                        successHandler();
-                    });
-                },
-                login: function (provider, ev) {
-                    qmService.auth.hello.initialize(provider, function () {
-                        hello(provider).login().then(function(e) {
-                            alert('You are signed in to Facebook');
-                        }, function(e) {
-                            alert('Signin error: ' + e.error.message);
-                        });
-                    });
-                }
-            },
-            getSessionTokenFromEventUrl: function(event) {
-                qmLog.authDebug('extracting sessionToken from event: ' + JSON.stringify(event));
-                var finishUrl = event.url;
-                if(!finishUrl) {finishUrl = event.data;}
-                if(!qm.urlHelper.isQuantiMoDoDomain(finishUrl)){return;}
-                var sessionToken = qm.urlHelper.getParam('sessionToken', finishUrl);
-                if(sessionToken){qmLog.authDebug('got sessionToken from ' + finishUrl);}
-                return sessionToken;
             },
             saveAccessTokenResponseAndGetUser: function (response) {
                 qmLog.authDebug('Access token received', null, response);
@@ -104,11 +58,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                 });
             },
-            oAuthBrowserLogin: function (register) {
-                qmService.showBlackRingLoader();
-                qm.auth.oAuthBrowserLogin(register, function (authorizationCode) {
-                    qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                });
+            googleLogout: function(){
+                qmLog.authDebug('googleLogout');
+                document.addEventListener('deviceready', deviceReady, false);
+                function deviceReady() {
+                    /** @namespace window.plugins.googleplus */
+                    window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('logged out of google!');},
+                        function (fail) {qmLog.authDebug('failed to logout', null, fail);});
+                    window.plugins.googleplus.disconnect(function (msg) {qmLog.authDebug('disconnect google!');});
+                }
             }
         },
         barcodeScanner: {
@@ -234,38 +192,96 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(errorHandler){errorHandler(error);}
                 });
             },
-            connectWithParams: function(params, lowercaseConnectorName) {
+            connectWithParams: function(params, lowercaseConnectorName, successHandler, errorHandler) {
                 qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
                     .then(function(result){
                         qmLog.authDebug(JSON.stringify(result));
                         $rootScope.$broadcast('broadcastRefreshConnectors');
+                        if(successHandler){successHandler(result);}
                     }, function (error) {
                         qmService.connectors.connectorErrorHandler(error);
                         $rootScope.$broadcast('broadcastRefreshConnectors');
+                        if(errorHandler){errorHandler(error);}
                     });
             },
-            webConnect: function (connector, ev, additionalParams) {
-                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                if(qmService.auth.hello.enabled){
-                    qmService.auth.hello.login(connector.name, ev);
-                    return true;
+            qmApiMobileConnect: function(connector, ev, options, successHandler, errorHandler) {
+                var deferred = $q.defer();
+                if(window.cordova) {
+                    if(window.cordova.InAppBrowser) {
+                        //var redirect_uri = "http://localhost/callback";
+                        var final_callback_url = qm.api.getQuantiModoUrl('api/v1/window/close');
+                        qmLog.info("Setting final_callback_url to "+final_callback_url);
+                        if(options !== undefined) {if(options.hasOwnProperty("redirect_uri")) {final_callback_url = options.redirect_uri;}}
+                        var url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect?client_id=' +
+                            qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url) + '&client_secret='+qm.api.getClientSecret());
+                        if(options){url = qm.urlHelper.addUrlQueryParamsToUrl(options, url)}
+                        var browserRef = window.cordova.InAppBrowser.open(url, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
+                        browserRef.addEventListener('loadstart', function(event) {
+                            if((event.url).indexOf(final_callback_url) === 0) {
+                                var accessToken = qm.urlHelper.getParameterFromEventUrl(event, 'sessionToken');
+                                if(!accessToken) {accessToken = qm.urlHelper.getParameterFromEventUrl(event, 'accessToken');}
+                                qm.auth.saveAccessToken(accessToken);
+                                qmService.refreshConnectors();
+                                if(!qm.getUser()){
+                                    if(!successHandler){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
+                                    qmService.refreshUser();
+                                }
+                                if(successHandler){successHandler(accessToken);}
+                                browserRef.close();
+                                deferred.resolve(accessToken);
+                            }
+                        });
+                        browserRef.addEventListener('exit', function(event) {
+                            if(errorHandler){errorHandler(event);}
+                            deferred.reject("The sign in flow was canceled");
+                        });
+                    } else {
+                        qmLog.error("Could not find InAppBrowser plugin");
+                        if(errorHandler){errorHandler("Could not find InAppBrowser plugin");}
+                        deferred.reject("Could not find InAppBrowser plugin");
+                    }
+                } else {
+                    qmLog.error("Cannot authenticate via a web browser");
+                    if(errorHandler){errorHandler("Cannot authenticate via a web browser");}
+                    deferred.reject("Cannot authenticate via a web browser");
                 }
-                var url;
-                additionalParams = additionalParams || {};
-                if(!additionalParams.popup || !qm.getUser()){  // Can't use popup if logging in because it's hard to get the access token from a separate window
-                    url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
-                    url = qm.urlHelper.addUrlQueryParamsToUrl({
-                        final_callback_url: window.location.href,
-                        clientId: qm.api.getClientId(),
-                        clientSecret: qm.api.getClientSecret()}, url);
-                    url = qm.urlHelper.addUrlQueryParamsToUrl(additionalParams, url);
-                    qmLog.info('Going to ' + url);
-                    window.location.href = url;
-                    return true;
+                return deferred.promise;
+            },
+            getConnectUrl: function(connector, additionalParams){
+                var url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect');
+                var final_callback_url = window.location.href;
+                if(qm.platform.isChromeExtension()){
+                    final_callback_url = chrome.identity.getRedirectURL();
                 }
+                url = qm.urlHelper.addUrlQueryParamsToUrl({
+                    final_callback_url: final_callback_url,
+                    clientId: qm.api.getClientId(),
+                    clientSecret: qm.api.getClientSecret()}, url);
+                if(qm.auth.getAccessTokenFromUrlUserOrStorage()){
+                    additionalParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+                }
+                url = qm.urlHelper.addUrlQueryParamsToUrl(additionalParams, url);
+                console.info('Going to ' + url);
+                return url;
+            },
+            webConnectViaRedirect: function (connector, ev, additionalParams) {
+                var url = qmService.connectors.getConnectUrl(connector, additionalParams);
+                window.location.href = url;
+            },
+            webConnectViaPopup: function (connector, ev, additionalParams) {
                 /** @namespace connector.connectInstructions */
-                url = connector.connectInstructions.url;  // TODO: Should we just send to the /connect endpoint aboove and let API redirect?
-                qmLog.info('Going to open connectInstructions.url ' + url);
+                var url = qmService.connectors.getConnectUrl(connector, additionalParams);
+                if(qm.platform.isChromeExtension()){
+                    chrome.identity.launchWebAuthFlow({url: url, interactive : true}, function (responseUrl) {
+                        console.info('chrome.identity.launchWebAuthFlow responseUrl '+responseUrl);
+                        var value = qm.urlHelper.getParam( 'accessToken', responseUrl);
+                        if(!value){value = qm.urlHelper.getParam( 'sessionToken', responseUrl);}
+                        qmService.auth.saveAccessTokenResponseAndGetUser(value);
+                        qmService.refreshConnectors();
+                    });
+                    return;
+                }
+                //url = connector.connectInstructions.url;  // TODO: Should we just send to the /connect endpoint above and let API redirect?
                 var ref = window.open(url,'', "width=600,height=800");
                 if(!ref){
                     qmService.showMaterialAlert("Login Popup Blocked", "Please unblock popups by clicking the icon on the right of the address bar to login.", ev);
@@ -279,123 +295,63 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.saveAccessTokenResponseAndGetUser(sessionToken);
                     });
                 }
+            },
+            webConnect: function (connector, ev, additionalParams) {
+                additionalParams = additionalParams || {};
+                if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
+                if(qm.platform.isChromeExtension() || additionalParams.popup){
+                    qmService.connectors.webConnectViaPopup(connector, ev, additionalParams);
+                } else {  // Can't use popup if logging in because it's hard to get the access token from a separate window
+                    qmService.connectors.webConnectViaRedirect(connector, ev, additionalParams);
+                }
                 return true;
             },
-            mobileConnectIdeal: function(connector, ev, options){  // This would be ideal because it's universal but I'm getting too many redirects errors.  Maybe try again after releasing fixes to production API
-                var deferred = $q.defer();
-                if(window.cordova) {
-                    if(window.cordova.InAppBrowser) {
-                        //var redirect_uri = "http://localhost/callback";
-                        var redirect_uri = "http://localhost/callback";
-                        if(options !== undefined) {if(options.hasOwnProperty("redirect_uri")) {redirect_uri = options.redirect_uri;}}
-                        var browserRef = window.cordova.InAppBrowser.open('https://app.quantimo.do/api/v1/connectors/'+connector.name+'/connect?client_id=' +
-                            qm.api.getClientId() + '&final_callback_url=' + redirect_uri + '&client_secret='+qm.api.getClientSecret(),
-                            '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
-                        browserRef.addEventListener('loadstart', function(event) {
-                            if((event.url).indexOf(redirect_uri) === 0) {
-                                var accessToken = (event.url).split("accessToken=")[1];
-                                qm.auth.saveAccessToken(accessToken);
-                                qmService.refreshConnectors();
-                                if(!qm.getUser()){qmService.refreshUser();}
-                            }
-                        });
-                        browserRef.addEventListener('exit', function(event) {
-                            deferred.reject("The sign in flow was canceled");
-                        });
-                    } else {
-                        qmLog.error("Could not find InAppBrowser plugin");
-                        deferred.reject("Could not find InAppBrowser plugin");
-                    }
+            oAuthMobileConnect: function(connector, ev, options, successHandler, errorHandler){  // This would be ideal because it's universal but I'm getting too many redirects errors.  Maybe try again after releasing fixes to production API
+                if(connector.mobileConnectMethod === 'google'){
+                    qmService.connectors.googleMobileConnect(connector, ev, options, successHandler, errorHandler);
+                } else if (connector.mobileConnectMethod === 'facebook') {
+                    qmService.connectors.facebookMobileConnect(connector, ev, options, successHandler, errorHandler);
                 } else {
-                    qmLog.error("Cannot authenticate via a web browser");
-                    deferred.reject("Cannot authenticate via a web browser");
+                    qmService.connectors.qmApiMobileConnect(connector, ev, options, successHandler, errorHandler);
                 }
-                return deferred.promise;
             },
-            oAuthMobileConnect: function (connector, ev, additionalParams, mobileConnectFunction){
+            oAuthConnect: function (connector, ev, additionalParams, successHandler, errorHandler){
                 if($rootScope.platform.isWeb || $rootScope.platform.isChromeExtension){
                     qmService.connectors.webConnect(connector, ev, additionalParams);
                     return;
                 }
-                mobileConnectFunction();
+                qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, successHandler, errorHandler);
             },
-            quantimodo: {
-                connectConnector: function (successHandler, errorHandler, additionalParams, ev) {
-                    qm.connectorHelper.getConnectorByName('quantimodo', function (connector) {
-                        qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, function () {
-                            $cordovaOauth.quantimodo(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                                .then(function(result) {
-                                    qmService.connectors.connectWithToken(result, connector, successHandler, errorHandler);
-                                }, function(error) {
-                                    if(errorHandler){errorHandler(error);}
-                                    qmService.connectors.connectorErrorHandler(error);
-                                    $rootScope.$broadcast('broadcastRefreshConnectors');
-                                }, additionalParams);
-                        })
+            googleMobileConnect: function (connector, ev, additionalParams, successHandler, errorHandler) {
+                document.addEventListener('deviceready', deviceReady, false);
+                function deviceReady() {
+                    window.plugins.googleplus.login({
+                        'scopes': connector.scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                        'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                        'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                    }, function (response) {
+                        qmLog.authDebug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                        qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
+                        if(successHandler){successHandler(response);}
+                    }, function (errorMessage) {
+                        if(errorHandler){errorHandler(errorMessage);}
+                        qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                     });
                 }
             },
-            google: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    document.addEventListener('deviceready', deviceReady, false);
-                    function deviceReady() {
-                        window.plugins.googleplus.login({
-                            'scopes': connector.scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-                            'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-                            'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-                        }, function (response) {
-                            qmLog.authDebug('window.plugins.googleplus.login response:' + JSON.stringify(response));
-                            qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector);
-                        }, function (errorMessage) {
-                            qmLogService.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
-                        });
-                    }
+            facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
+                function fbSuccessHandler(result){
+                    qmService.connectors.connectWithToken(result, connector);
+                    if(successHandler){successHandler(result);}
                 }
-            },
-            googleplus: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    qm.connectorHelper.getConnectorByName('googleplus', function (connector) {
-                        qmService.connectors.google.connect(connector, ev, additionalParams);
-                    });
+                function fbErrorHandler(error){
+                    qmService.connectors.connectorErrorHandler(error);
+                    if(errorHandler){errorHandler(error);}
                 }
-            },
-            linkedin: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    $cordovaOauth.linkedin(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-                }
-            },
-            github: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    $cordovaOauth.github(connector.connectorClientId, connector.connectorClientSecret, connector.scopes)
-                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-                }
-            },
-            twitter: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    $cordovaOauth.twitter(connector.connectorClientId, connector.connectorClientSecret)
-                        .then(function(result) {qmService.connectors.connectWithToken(result, connector);}, function(error) {qmService.connectors.connectorErrorHandler(error);});
-                }
-            },
-            facebook: {
-                connectConnector: function (connector, ev, additionalParams) {
-                    if(qmService.connectors.webConnect(connector, ev, additionalParams)){return;}
-                    //qmService.connectors.mobileConnect(connector);
-                    function fbSuccessHandler(result){
-                        qmService.connectors.connectWithToken(result, connector);
-                    }
-                    function fbErrorHandler(error){
-                        qmService.connectors.connectorErrorHandler(error);
-                    }
-                    if(typeof facebookConnectPlugin !== "undefined"){
-                        facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
-                    } else {
-                        cordovaOauth.facebook(connector.connectorClientId, connector.scopes).then(function(result) {fbSuccessHandler(result);}, fbErrorHandler);
-                    }
+                if(typeof facebookConnectPlugin !== "undefined"){
+                    facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
+                } else {
+                    qmService.connectors.oAuthConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
                 }
             },
             storeConnectorResponse: function(response){
@@ -1886,6 +1842,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
     };
     qmService.connectConnectorWithParamsToApi = function(params, lowercaseConnectorName, successHandler, errorHandler){
+        if(qm.arrayHelper.variableIsArray(params)){
+            var arrayParams = params;
+            params = {};
+            for (var i = 0; i < arrayParams.length; i++) {
+                params[arrayParams[i].key] = arrayParams[i].value;
+            }
+        }
         var allowedParams = ['location', 'username', 'password', 'email'];
         qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
@@ -2299,69 +2262,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);
         }
     }
-    qmService.generateV2OAuthUrl= function(JWTToken) {
-        var url = qm.api.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
-        url += "response_type=code";
-        url += "&client_id=" + qm.api.getClientId();
-        //url += "&client_secret=" + qm.appsManager.getClientSecret();
-        url += "&scope=" + qm.auth.getPermissionString();
-        url += "&state=testabcd";
-        if(JWTToken){url += "&token=" + JWTToken;}
-        //url += "&redirect_uri=" + qmService.getRedirectUri();
-        qmLogService.debug('generateV2OAuthUrl: ' + url, null);
-        return url;
-    };
-    qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
-        qmLog.authDebug('Authorization code is ' + authorizationCode);
-        var deferred = $q.defer();
-        var url = qm.api.getQuantiModoUrl("api/oauth2/token");
-        var request = {
-            method: 'POST',
-            url: url,
-            responseType: 'json',
-            headers: {
-                'Content-Type': "application/json"
-            },
-            data: {
-                client_id: qm.api.getClientId(),
-                client_secret: qm.appsManager.getClientSecret(),
-                grant_type: 'authorization_code',
-                code: authorizationCode,
-                redirect_uri: qm.auth.getRedirectUri()
-            }
-        };
-        qmLog.authDebug('getAccessTokenFromAuthorizationCode url:' + url + ' request is ', null, request);
-        qmLog.authDebug(JSON.stringify(request));
-        // post
-        $http(request).success(function (response) {
-            if(response.error){
-                qmLogService.error(response);
-                /** @namespace response.error_description */
-                alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
-                deferred.reject(response);
-            } else {
-                qmLog.authDebug('getAccessTokenFromAuthorizationCode: Successful response is ', null, response);
-                qmLog.authDebug(JSON.stringify(response));
-                deferred.resolve(response);
-            }
-        }).error(function (response) {
-            qmLog.authDebug('getAccessTokenFromAuthorizationCode: Error response is ', null, response);
-            qmLog.authDebug(JSON.stringify(response));
-            deferred.reject(response);
-        });
-        return deferred.promise;
-    };
-    qmService.getTokensAndUserViaNativeGoogleLogin = function (body) {
-        var deferred = $q.defer();
-        var path = 'api/v3/googleIdToken';
-        qmService.post(path, [], body, function (response) {
-            deferred.resolve(response);
-        }, function (error) {
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
         var deferred = $q.defer();
         if(!accessToken || accessToken === "null"){
@@ -2494,19 +2394,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve(user);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
-    };
-    qmService.sendToNonOAuthBrowserLoginUrl = function(register) {
-        var loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/login");
-        if (register === true) {loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/register");}
-        qmLogService.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', null, loginUrl);
-        var apiUrlMatchesHostName = qm.api.getBaseUrl().indexOf(window.location.hostname);
-        if(apiUrlMatchesHostName === -1 || !$rootScope.platform.isChromeExtension) {
-            console.warn("sendToNonOAuthBrowserLoginUrl: API url doesn't match auth base url");
-        }
-        qmService.showBlackRingLoader();
-        loginUrl += "?redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
-        // Have to come back to login page and wait for user request to complete
-        window.location.replace(loginUrl);
     };
     qmService.refreshUserEmailPreferencesDeferred = function(params, successHandler, errorHandler){
         qmService.getUserEmailPreferences(params, function(user){
@@ -3015,7 +2902,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.connectConnectorWithParamsToApi({location: data.ip}, lowercaseConnectorName, function(){qmService.refreshConnectors();}, function(error){deferred.reject(error);});
             });
         } else {
-            qmService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(){qmService.refreshConnectors();}, function(error){deferred.reject(error);});
+            qmService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(response) {
+                qmService.refreshConnectors();
+                deferred.resolve(response);
+            }, function(error){
+                deferred.reject(error);
+            });
         }
         return deferred.promise;
     };
@@ -5518,71 +5410,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var val = qm.storage.getItem(key);
         callback(val);
     };
-    // LOGIN SERVICES
-    qmService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
-        qmLog.authDebug('Going to get an access token using authorization code');
-        qmService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
-            .then(function(response) {
-                qmService.hideLoader();
-                if(response.error){
-                    qmLogService.error(response.error);
-                    qmLogService.error("Error generating access token");
-                    qmService.storage.setItem('user', null);
-                } else {
-                    qmService.auth.saveAccessTokenResponseAndGetUser(response);
-                }
-            }).catch(function(exception){
-                qmLog.error(exception);
-                qmService.hideLoader();
-                qmService.storage.setItem('user', null);
-            });
-    };
-    qmService.nonNativeMobileLogin = function(register) {
-        qmLog.authDebug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
-        // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-        //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
-        // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
-        // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
-        document.addEventListener("deviceready", onDeviceReady, false);
-        function onDeviceReady() {
-            var url = qm.auth.generateV1OAuthUrl(register);
-            qmLog.authDebug("Opening " + url);
-            window.open = cordova.InAppBrowser.open;
-            qmService.inAppBrowserRef = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
-            qmLog.authDebug('listen to its event when the page changes');
-            qm.urlHelper.addEventListenerAndGetParameterFromRedirectedUrl(qmService.inAppBrowserRef, 'code', function (authorizationCode) {
-                qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-            });
-        }
-    };
-    qmService.chromeAppLogin = function(register){
-        qmLog.authDebug('login: Use Chrome app (content script, background page, etc.');
-        var url = qm.auth.generateV1OAuthUrl(register);
-        chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true}, function() {
-            var authorizationCode = qm.urlHelper.getAuthorizationCodeFromEventUrl(event);
-            qmService.getAccessTokenFromAuthorizationCode(authorizationCode);
-        });
-    };
-    qmService.chromeExtensionLogin = function(register) {
-        qmLog.authDebug('chromeExtensionLogin');
-        function getAfterLoginRedirectUrl() {
-            return encodeURIComponent("https://" + $rootScope.appSettings.clientId + ".quantimo.do");
-        }
-        function getLoginUrl() {
-            var loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/login");
-            if (register === true) {loginUrl = qm.api.getQuantiModoUrl("api/v2/auth/register");}
-            loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
-            qmLog.authDebug('chromeExtensionLogin loginUrl is ' + loginUrl);
-            return loginUrl;
-        }
-        function createLoginTabAndClose() {
-            qmLog.authDebug('chrome.tabs.create ' + getLoginUrl());
-            chrome.tabs.create({ url: getLoginUrl() });
-            window.close();
-        }
-        createLoginTabAndClose(); // Try this if window.location.replace has problems
-        // window.location.replace(getLoginUrl());  Doesn't work!
-    };
     function createWeatherIconMeasurementSet(data) {
         return {
             variableCategoryName: "Environment",
@@ -7515,6 +7342,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
         if(window.location.href.indexOf('.quantimo.do/') === -1){afterLogoutGoToUrl = window.location.href;}
         afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
+        if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
         var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
         qmLog.info("Sending to " + logoutUrl);
         //qmService.get(logoutUrl);
@@ -7529,7 +7357,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         logOutOfWebsite();
         saveDeviceTokenToSyncWhenWeLogInAgain();
         //qmService.goToState(qmStates.intro);
-        if(qm.platform.isMobile()){
+        if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
             qmLog.info("Restarting app to enable opening login window again");
             document.location.href = 'index.html';
         }
