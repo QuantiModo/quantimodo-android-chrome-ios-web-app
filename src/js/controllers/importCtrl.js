@@ -4,7 +4,22 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.state = {
 	    connectors: null,
-        searchText: ''
+        searchText: '',
+        connectorName: null,
+        connectWithParams: function (connector) {
+	        var params = connector.connectInstructions.parameters;
+	        qmService.showBasicLoader();
+            qmService.connectors.connectWithParams(params, connector.name, function () {
+                var redirectUrl = qm.urlHelper.getParam('final_callback_url');
+                if(!redirectUrl){redirectUrl = qm.urlHelper.getParam('redirect_uri')}
+                if(redirectUrl){window.location.href = redirectUrl;}
+                $scope.state.connector = null;
+                qmService.hideLoader();
+            }, function (error) {
+                qmService.showMaterialAlert(error);
+                qmService.hideLoader();
+            });
+        }
     };
     function userCanConnect(connector) {
         if(!$rootScope.user){
@@ -23,6 +38,15 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 		qmLogService.debug('ImportCtrl beforeEnter', null);
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
+        }
+        $scope.state.connectorName = qm.urlHelper.getParam('connectorName');
+        if($scope.state.connectorName){
+            qm.connectorHelper.getConnectorByName($scope.state.connectorName, function (connector) {
+                $scope.state.connector = connector;
+                if(connector){
+                    qmService.navBar.hideNavigationMenu();
+                }
+            });
         }
         //if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
