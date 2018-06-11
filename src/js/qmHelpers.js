@@ -3116,6 +3116,7 @@ window.qm = {
             url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('chrome_default_popup_iframe.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
             url = qm.stringHelper.getStringBeforeSubstring('_generated_background_page.html', url);
             return url;
@@ -3292,9 +3293,7 @@ window.qm = {
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
-                        qm.api.getRequestUrl("v2/auth/login", function(url){
-                            chrome.tabs.create({"url": url, "selected": true});
-                        });
+                        qm.chrome.openLoginWindow();
                     }
                 }
             }
