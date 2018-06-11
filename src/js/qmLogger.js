@@ -63,11 +63,12 @@ window.qmLog = {
         qmLog.setLogLevelName("error");
         return qmLog.logLevel;
     },
-    setAuthDebug: function (value) {
+    setAuthDebugEnabled: function (value) {
         qmLog.authDebugEnabled = value;
         if(qmLog.authDebugEnabled && window.localStorage){
             qm.storage.setItem('authDebugEnabled', value);
         }
+        return qmLog.authDebugEnabled;
     },
     setDebugMode: function (value) {
         if (value) {
@@ -146,18 +147,27 @@ window.qmLog = {
             qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);
         }
     },
-    authDebug: function(message) {
+    getAuthDebugEnabled: function(message){
         if(message.indexOf("cloudtestlabaccounts") !== -1){ // Keeps spamming bugsnag
-            qmLog.setAuthDebug(false);
-            return;
+            return qmLog.setAuthDebugEnabled(false);
         }
-        if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){qmLog.setAuthDebug(true)}
-        if(!qmLog.authDebugEnabled && window.localStorage){qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');}
-        if(qmLog.authDebugEnabled || qmLog.isDebugMode()){
+        if(qmLog.isDebugMode()){
+            return true;
+        }
+        if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){
+            return qmLog.setAuthDebugEnabled(true)
+        }
+        if(qmLog.authDebugEnabled === null && window.localStorage){
+            qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
+        }
+        return qmLog.authDebugEnabled;
+    },
+    authDebug: function(name, message, metaData) {
+        if(qmLog.getAuthDebugEnabled(name)){
             if(qm.platform.isMobile()){
-                qmLog.error(message, message, null);
+                qmLog.error(name, message, metaData);
             } else {
-                qmLog.info(message, message, null);
+                qmLog.info(name, message, metaData);
             }
         } else {
             //console.log("Log level is " + qmLog.getLogLevelName());
