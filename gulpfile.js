@@ -2359,6 +2359,10 @@ gulp.task('copyServiceWorkerAndLibraries', [], function () {
     return gulp.src( serviceWorkerAndLibraries, { base: './src' } )
         .pipe( gulp.dest( './www' ));
 });
+gulp.task('copyOverrideFiles', [], function () {
+    return gulp.src( ['overrides/**/*'], { base: './overrides' } )
+        .pipe( gulp.dest( '.' ));
+});
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
@@ -3034,12 +3038,12 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
     cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
-        //execute(runCommand, function () {
-        execute("cordova-hcp server", function () {
-            qmLog.info("Execute command "+ runCommand + " in new terminal now");
-            //callback();
+        execute("gulp copyOverrideFiles", function () {
+            execute("cordova-hcp server", function () {
+                qmLog.info("Execute command "+ runCommand + " in new terminal now");
+                //callback();
+            }, false, false);
         }, false, false);
-        //}, false, false);
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
