@@ -768,9 +768,9 @@ window.qm = {
             }
             searchTerm = searchTerm.toLowerCase();
             return array.filter(function(item){
-               var name = item.name || item.variableName;
-               name = name.toLowerCase();
-               return name.indexOf(searchTerm) !== -1;
+                var name = item.name || item.variableName;
+                name = name.toLowerCase();
+                return name.indexOf(searchTerm) !== -1;
             });
         },
         getWithNameContainingEveryWord: function(searchTerm, array){
@@ -2065,7 +2065,6 @@ window.qm = {
                     }
                 })
             });
-
         },
         refreshAndShowPopupIfNecessary: function(notificationParams) {
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
@@ -2224,7 +2223,6 @@ window.qm = {
             var value = eachRecursive(obj);
             return value;
         }
-
     },
     parameterHelper: {
         getStateOrUrlOrRootScopeCorrelationOrRequestParam: function(paramName, $stateParams, $scope, $rootScope){
