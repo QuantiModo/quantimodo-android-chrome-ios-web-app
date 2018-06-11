@@ -195,7 +195,7 @@ window.qmLog = {
         logString = addCallerFunctionToMessage(logString);
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
         try {
-            if(qmLog.metaData){logString = logString + ". metaData: " + JSON.stringify(qmLog.metaData);}
+            if(qmLog.metaData){logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(qmLog.metaData);}
         } catch (error) {
             console.error("Could not stringify log meta data", error);
         }
