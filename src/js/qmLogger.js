@@ -147,7 +147,7 @@ window.qmLog = {
             qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);
         }
     },
-    getAuthDebugEnabled: function(){
+    getAuthDebugEnabled: function(message){
         if(message.indexOf("cloudtestlabaccounts") !== -1){ // Keeps spamming bugsnag
             return qmLog.setAuthDebugEnabled(false);
         }
@@ -163,7 +163,7 @@ window.qmLog = {
         return qmLog.authDebugEnabled;
     },
     authDebug: function(name, message, metaData) {
-        if(qmLog.getAuthDebugEnabled()){
+        if(qmLog.getAuthDebugEnabled(name)){
             if(qm.platform.isMobile()){
                 qmLog.error(name, message, metaData);
             } else {
