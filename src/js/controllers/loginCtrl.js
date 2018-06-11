@@ -93,7 +93,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmService.hideLoader(0.5);
     });
     $scope.retryLogin = function(){
-        qmLog.setAuthDebug(true);
+        qmLog.setAuthDebugEnabled(true);
         qmLog.error("Clicked retry login!");
         $scope.state.alreadyRetried = true;
         $scope.circlePage.title = 'Please try logging in again';
