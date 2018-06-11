@@ -957,7 +957,7 @@ gulp.task('scripts', function () {
     }
 });
 var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
-    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'];
+    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'lib/underscore/underscore-min.js'];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
