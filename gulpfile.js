@@ -313,6 +313,7 @@ var qm = {
             doNotMinify = value;
         },
         buildDebug: function () {
+            if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
             if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
             return !qmGit.isMaster();
         }
