@@ -59,13 +59,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             console.info("Got user");
             qmService.hideLoader();
             leaveIfLoggedIn();
-            openChromeLoginWindowIfNecessary();
         }, function (error) {
             console.info("Could not get user!");
             //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
             //qmService.hideLoader();  // Hides login loader too early
             leaveIfLoggedIn();
-            openChromeLoginWindowIfNecessary();
         });
     }
     $scope.$on('$ionicView.beforeEnter', function(e) {

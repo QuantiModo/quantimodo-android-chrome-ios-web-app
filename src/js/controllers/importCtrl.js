@@ -137,8 +137,10 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         }
     };
     var connectConnector = function(connector, button, ev){
+        qmLog.info("connectConnector: "+JSON.stringify(connector), null, connector);
         qmService.connector = connector;
         if(!userCanConnect(connector)){
+            qmLog.info("connectConnector user cannot connect: "+JSON.stringify(connector), null, connector);
             qmService.goToState('app.upgrade');
             return;
         }
@@ -150,10 +152,13 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(!qm.appMode.isDebug()){button.text = "Import Scheduled";}
         connector.message = 'You should begin seeing any new data within an hour or so.';
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
-        if(connector.mobileConnectMethod === 'oauth') {
+        if(qm.arrayHelper.inArray(connector.mobileConnectMethod, ['oauth', 'facebook', 'google'])) {
+            qmLog.info("connectConnector is inArray('oauth', 'facebook', 'google'): "+JSON.stringify(connector), null, connector);
             qmService.connectors.oAuthConnect(connector, ev, {});
+            button.text = "Connecting...";
             return;
         }
+        qmLog.info("connectConnector is not inArray('oauth', 'facebook', 'google') no not using qmService.connectors.oAuthConnect: "+JSON.stringify(connector), null, connector);
         if(connector.name === 'worldweatheronline') {qmService.connectors.connectWithParams({}, 'worldweatheronline');}
         if(connector.name === 'whatpulse') {
             $scope.data = {};
@@ -331,6 +336,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         }
     };
     function amazonSettings(connector, button, ev) {
+        qmLog.info("amazonSettings connector "+JSON.stringify(connector), null, connector);
         qmService.connector = connector;
         function DialogController($scope, $mdDialog, qmService) {
             var connector = qmService.connector;
@@ -369,6 +375,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
     }
     var disconnectConnector = function (connector, button){
+        qmLog.info("disconnectConnector connector "+JSON.stringify(connector), null, connector);
         button.text = 'Reconnect';
         qmService.showInfoToast("Disconnected " + connector.displayName);
         qmService.disconnectConnectorDeferred(connector.name).then(function (){
@@ -378,15 +385,19 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         });
     };
     var updateConnector = function (connector, button){
+        qmLog.info("updateConnector connector "+JSON.stringify(connector), null, connector);
         button.text = 'Update Scheduled';
         connector.message = "If you have new data, you should begin to see it in a hour or so.";
         qmService.updateConnector(connector.name);
         $scope.safeApply();
     };
     var getItHere = function (connector){
+        qmLog.info("getItHere connector "+JSON.stringify(connector), null, connector);
         $scope.openUrl(connector.getItUrl, 'yes', '_system');
     };
     $scope.connectorAction = function(connector, button, ev){
+        qmLog.info("connectorAction button "+JSON.stringify(button), null, button);
+        qmLog.info("connectorAction connector "+JSON.stringify(connector), null, connector);
         connector.message = null;
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
             disconnectConnector(connector, button);
