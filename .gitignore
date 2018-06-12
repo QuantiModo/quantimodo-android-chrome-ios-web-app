@@ -117,3 +117,5 @@ chcpbuild\.options
 yarn-error\.log
 \.publish
 *.private_config.json
+GoogleService-Info.plist
+google-services.json

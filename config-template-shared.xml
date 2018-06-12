@@ -28,6 +28,7 @@
       <hook src="hooks/build-extras-hook.js" type="before_build" />
   </platform>
   <platform name="ios">
+    <resource-file src="GoogleService-Info.plist" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
     <preference name="KeychainAccessibility" value="WhenUnlocked"/>
