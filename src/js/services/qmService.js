@@ -357,18 +357,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
-                qmLog.info("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector), null, connector);
+                qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector), null, connector);
                 function fbSuccessHandler(result){
+                    qmLog.authDebug("qmService.connectors.facebookMobileConnect success resutl: "+JSON.stringify(result), null, result);
                     qmService.connectors.connectWithToken(result, connector);
                     if(successHandler){successHandler(result);}
                 }
                 function fbErrorHandler(error){
+                    qmLog.error("qmService.connectors.facebookMobileConnect for "+JSON.stringify(error), null, error);
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 }
                 if(typeof facebookConnectPlugin !== "undefined"){
+                    qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector.scopes), null, connector);
                     facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
                 } else {
+                    qmLog.authDebug("qmService.connectors.facebookMobileConnect no facebookConnectPlugin so falling back to qmService.connectors.oAuthConnect", null, connector);
                     qmService.connectors.oAuthConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
                 }
             },
