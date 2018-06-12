@@ -3406,5 +3406,5 @@ gulp.task('google-services-json', [], function() {
         '  ],\n' +
         '  "configuration_version": "1"\n' +
         '}';
-    return writeToFile('google-services-json', string);
+    return writeToFile('google-services.json', string);
 });
