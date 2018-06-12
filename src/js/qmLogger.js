@@ -406,7 +406,14 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 function getCalleeFunction() {
-    return arguments.callee.caller.caller.caller.caller.caller;
+    var callee = arguments.callee.caller;
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    return callee;
 }
 function getCalleeFunctionName() {
     if(getCalleeFunction() && getCalleeFunction().name && getCalleeFunction().name !== ""){
