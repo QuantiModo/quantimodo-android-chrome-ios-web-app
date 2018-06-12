@@ -3115,7 +3115,7 @@ gulp.task('reset-remote', function(callback) {
         changeOriginRemote(remoteUrl, callback)
     });
 });
-gulp.task('_update-remote-and-deploy-to-github-pages', [], function(callback) {
+gulp.task('_update-remote-and-deploy-to-github-pages', ['getAppConfigs'], function(callback) {
     runSequence(
         'createSuccessFile',
         'add-client-remote',
@@ -3124,7 +3124,7 @@ gulp.task('_update-remote-and-deploy-to-github-pages', [], function(callback) {
         'deleteSuccessFile',
         callback);
 });
-gulp.task('googleServicesPList', [], function() {
+gulp.task('googleServicesPList', ['getAppConfigs'], function() {
     var string =
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
@@ -3171,7 +3171,7 @@ gulp.task('googleServicesPList', [], function() {
     writeToFile('GoogleService-Info.plist', string);
     return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string);
 });
-gulp.task('google-services.json', [], function() {
+gulp.task('google-services-json', [], function() {
     var string =
         '{\n' +
         '  "project_info": {\n' +
