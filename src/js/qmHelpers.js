@@ -3337,7 +3337,8 @@ window.qm = {
                     userSuccessHandler(data);
                 }
                 var params = qm.api.addGlobalParams({});
-                qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});
+                //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
+                apiInstance.getUser(params, userSdkCallback);
             }
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {

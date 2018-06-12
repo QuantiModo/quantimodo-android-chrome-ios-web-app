@@ -34,7 +34,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         //     "the NSA waterboards me, I will never divulge share your data without your permission.",
     };
     var leaveIfLoggedIn = function () {
-        if($rootScope.user && $rootScope.user.accessToken){
+        if(qm.getUser() && qm.auth.getAccessTokenFromUrlUserOrStorage()){
             qmLog.authDebug('Already logged in on login page.  goToDefaultStateIfNoAfterLoginGoToUrlOrState...');
             qmService.login.afterLoginGoToUrlOrState();
         }
@@ -60,16 +60,16 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }, 40000);
     };
     function tryToGetUser() {
-        if($rootScope.platform.isChromeExtension){qmService.showBasicLoader();} // Chrome needs to do this because we can't redirect with access token
+        qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
         console.info("Trying to get user");
         qmService.refreshUser().then(function () {
             console.info("Got user");
             qmService.hideLoader();
             leaveIfLoggedIn();
         }, function (error) {
-            console.info("Could not get user!");
+            console.info("Could not get user! error: "+error);
             //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
-            //qmService.hideLoader();  // Hides login loader too early
+            qmService.hideLoader();  // Hides login loader too early
             leaveIfLoggedIn();
         });
     }
@@ -95,7 +95,6 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
-        qmService.hideLoader(0.5);
     });
     $scope.retryLogin = function(){
         qmLog.setAuthDebugEnabled(true);
