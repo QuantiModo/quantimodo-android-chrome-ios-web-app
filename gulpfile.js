@@ -2163,6 +2163,7 @@ gulp.task('makeIosApp', function (callback) {
     runSequence(
         'deleteIOSApp',
         'deleteFacebookPlugin',
+        'googleServicesPList',
         'platform-add-ios',
         'ionicResources',
         'addFacebookPlugin',
@@ -2434,6 +2435,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'write-build-json',
+        'googleServicesPList',
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2461,6 +2463,7 @@ gulp.task('build-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'write-build-json',
+        'googleServicesPList',
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2486,6 +2489,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'write-build-json',
+        'googleServicesPList',
         'platform-add-ios',
         callback);
 });
@@ -2898,6 +2902,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'setAppEnvs',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
+        'google-services-json',
         'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
@@ -3401,5 +3406,5 @@ gulp.task('google-services.json', [], function() {
         '  ],\n' +
         '  "configuration_version": "1"\n' +
         '}';
-    return writeToFile('google-services.json', string);
+    return writeToFile('google-services-json', string);
 });

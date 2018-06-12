@@ -125,6 +125,10 @@
     <variable name="APP_NAME" value="QuantiModo"/>
   </plugin>
     <plugin name="cordova-plugin-appsettings" spec="~1.0.2" />
+    <plugin name="cordova-plugin-firebase-crashlytics" spec="~0.0.6">
+        <variable name="ANDROID_FIREBASE_CORE_VERSION" value="16.0.0" />
+        <variable name="ANDROID_FIREBASE_VERSION" value="11.8.0" />
+    </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="YourWindowsAppIdentifierHere" />
   </vs:platformSpecificValues>
