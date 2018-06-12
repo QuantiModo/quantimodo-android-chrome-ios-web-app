@@ -60,7 +60,7 @@ window.qmLog = {
             qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
         }
         if(qmLog.logLevel){return qmLog.logLevel;}
-        qmLog.setLogLevelName("error");
+        qmLog.setLogLevelName("info");
         return qmLog.logLevel;
     },
     setAuthDebugEnabled: function (value) {
@@ -406,11 +406,21 @@ window.stringifyIfNecessary = function(variable){
     }
 };
 function getCalleeFunction() {
-    return arguments.callee.caller.caller.caller.caller.caller;
+    var callee = arguments.callee.caller;
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    if(callee.caller){callee = callee.caller;}
+    return callee;
 }
 function getCalleeFunctionName() {
-    if(getCalleeFunction() && getCalleeFunction().name && getCalleeFunction().name !== ""){
-        return getCalleeFunction().name;
+    try {
+        if(getCalleeFunction() && getCalleeFunction().name && getCalleeFunction().name !== ""){
+            return getCalleeFunction().name;
+        }
+    } catch (error) {
+        console.debug(error);
     }
     return null;
 }
@@ -426,8 +436,12 @@ function getCallerFunction() {
     return null;
 }
 function getCallerFunctionName() {
-    if(getCallerFunction() && getCallerFunction().name && getCallerFunction().name !== ""){
-        return getCallerFunction().name;
+    try {
+        if(getCallerFunction() && getCallerFunction().name && getCallerFunction().name !== ""){
+            return getCallerFunction().name;
+        }
+    } catch (error) {
+        console.debug(error);
     }
     return null;
 }
