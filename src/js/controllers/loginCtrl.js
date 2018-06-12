@@ -96,6 +96,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             navigator.splashscreen.hide();
         }
     });
+    $scope.state.setAuthDebugEnabled = function(){
+        qmLog.setAuthDebugEnabled(true);
+        qmLog.authDebug("Enabled auth debug with on-hold button");
+    };
     $scope.retryLogin = function(){
         qmLog.setAuthDebugEnabled(true);
         qmLog.error("Called retry login!");
