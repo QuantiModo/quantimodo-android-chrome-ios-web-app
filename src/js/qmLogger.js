@@ -412,7 +412,6 @@ function getCalleeFunction() {
     if(callee.caller){callee = callee.caller;}
     if(callee.caller){callee = callee.caller;}
     if(callee.caller){callee = callee.caller;}
-    if(callee.caller){callee = callee.caller;}
     return callee;
 }
 function getCalleeFunctionName() {
