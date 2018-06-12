@@ -21,6 +21,7 @@
   <hook src="hooks/uncomment_cordova_js.js" type="before_build" />
   <hook src="hooks/uncomment_cordova_js.js" type="before_deploy" />
   <platform name="android">
+    <resource-file src="google-services.json" target="google-services.json" />
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
     <hook type="after_prepare" src="hooks/android_custom_resources.js" />

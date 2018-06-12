@@ -3163,7 +3163,8 @@ gulp.task('googleServicesPList', [], function() {
         '\t<string>https://quantimo-do.firebaseio.com</string>\n' +
         '</dict>\n' +
         '</plist>';
-    return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string)
+    writeToFile('GoogleService-Info.plist', string);
+    return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string);
 });
 gulp.task('google-services.json', [], function() {
     var string =
