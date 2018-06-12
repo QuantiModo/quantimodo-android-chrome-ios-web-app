@@ -3119,3 +3119,286 @@ gulp.task('_update-remote-and-deploy-to-github-pages', [], function(callback) {
         'deleteSuccessFile',
         callback);
 });
+gulp.task('googleServicesPList', [], function() {
+    var string =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+        '<plist version="1.0">\n' +
+        '<dict>\n' +
+        '\t<key>AD_UNIT_ID_FOR_BANNER_TEST</key>\n' +
+        '\t<string>ca-app-pub-3940256099942544/2934735716</string>\n' +
+        '\t<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>\n' +
+        '\t<string>ca-app-pub-3940256099942544/4411468910</string>\n' +
+        '\t<key>CLIENT_ID</key>\n' +
+        '\t<string>1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com</string>\n' +
+        '\t<key>REVERSED_CLIENT_ID</key>\n' +
+        '\t<string>com.googleusercontent.apps.1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an</string>\n' +
+        '\t<key>ANDROID_CLIENT_ID</key>\n' +
+        '\t<string>1052648855194-6ag9aqacrharin4at9pfdh4h01j89iio.apps.googleusercontent.com</string>\n' +
+        '\t<key>API_KEY</key>\n' +
+        '\t<string>'+process.env.FIREBASE_API_KEY+'</string>\n' +
+        '\t<key>GCM_SENDER_ID</key>\n' +
+        '\t<string>1052648855194</string>\n' +
+        '\t<key>PLIST_VERSION</key>\n' +
+        '\t<string>1</string>\n' +
+        '\t<key>BUNDLE_ID</key>\n' +
+        '\t<string>'+appSettings.additionalSettings.appIds.appIdentifier+'</string>\n' +
+        '\t<key>PROJECT_ID</key>\n' +
+        '\t<string>quantimo-do</string>\n' +
+        '\t<key>STORAGE_BUCKET</key>\n' +
+        '\t<string>quantimo-do.appspot.com</string>\n' +
+        '\t<key>IS_ADS_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_ANALYTICS_ENABLED</key>\n' +
+        '\t<false></false>\n' +
+        '\t<key>IS_APPINVITE_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_GCM_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_SIGNIN_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>GOOGLE_APP_ID</key>\n' +
+        '\t<string>1:1052648855194:ios:b40c24a456cfe8f5</string>\n' +
+        '\t<key>DATABASE_URL</key>\n' +
+        '\t<string>https://quantimo-do.firebaseio.com</string>\n' +
+        '</dict>\n' +
+        '</plist>';
+    return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string)
+});
+gulp.task('google-services.json', [], function() {
+    var string =
+        '{\n' +
+        '  "project_info": {\n' +
+        '    "project_number": "1052648855194",\n' +
+        '    "firebase_url": "https://quantimo-do.firebaseio.com",\n' +
+        '    "project_id": "quantimo-do",\n' +
+        '    "storage_bucket": "quantimo-do.appspot.com"\n' +
+        '  },\n' +
+        '  "client": [\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:b40c24a456cfe8f5",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-qdidrqml70rfpiv15ita3on7g7oc20st.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "aff84d452d36ade90ce1a96c6d11c1ef038837ae"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-bd9puomjjr1k0pq2gv6iv8uc4rbgb1d9.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 1\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:0b7c6fd1ab60b28d",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "com.quantimodo.moodimodoapp"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-ua30i6hqfk45qa3a9fa9mqpboujsertk.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "com.quantimodo.moodimodoapp",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 2,\n' +
+        '          "analytics_property": {\n' +
+        '            "tracking_id": "UA-39222734-9"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:88b22d1114b98c3d",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-lse0ugfnigiii3v7npmlpa6dfbhsdn15.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "943730f4f7c645691ac6bbd5b893707274b2a0ba"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-en385jlnknb38ma8om296pnej3i4tjad.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "559679b24cec5f864e055fd1ae85320f7ab670dc"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-9shgemkqn8n5h67rugjioi260223sk3c.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 2,\n' +
+        '          "analytics_property": {\n' +
+        '            "tracking_id": "UA-39222734-7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "configuration_version": "1"\n' +
+        '}';
+    return writeToFile('google-services.json', string);
+});
