@@ -4,6 +4,13 @@ android {
     }
 }
 
+allprojects {
+    // Set BUILD_DIR env if you're getting crunching errors https://stackoverflow.com/questions/41267005/failed-to-crunch-file-android-studio-appmergedebugresources
+    if($System.env.BUILD_DIR) {
+        buildDir = "$System.env.BUILD_DIR/${rootProject.name}/${project.name}"
+    }
+}
+
 // Fixes https://github.com/arnesson/cordova-plugin-firebase/issues/610
 configurations.all {
    resolutionStrategy {
