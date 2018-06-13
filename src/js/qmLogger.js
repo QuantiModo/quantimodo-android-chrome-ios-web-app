@@ -25,7 +25,7 @@ window.qmLog = {
         } else {
             qmLog.message = message || name;
         }
-        qmLog.message = addCallerFunctionToMessage(qmLog.message || "");
+        if(qm.platform.isMobile() && qmLog.isDebugMode()){qmLog.message = addCallerFunctionToMessage(qmLog.message || "");}
         return qmLog.message;
     },
     metaData : {},
@@ -202,7 +202,7 @@ window.qmLog = {
     getConsoleLogString: function (){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
-        logString = addCallerFunctionToMessage(logString);
+        if(qm.platform.isMobile() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
         try {
             if(qmLog.metaData){logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(qmLog.metaData);}
@@ -424,18 +424,18 @@ function getCalleeFunctionName() {
     }
     return null;
 }
-function getCallerFunction() {
-    if(getCalleeFunction()){
-        try {
-            return getCalleeFunction().caller;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-    return null;
-}
 function getCallerFunctionName() {
+    function getCallerFunction() {
+        if(getCalleeFunction()){
+            try {
+                return getCalleeFunction().caller;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+        return null;
+    }
     try {
         if(getCallerFunction() && getCallerFunction().name && getCallerFunction().name !== ""){
             return getCallerFunction().name;
