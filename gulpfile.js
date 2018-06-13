@@ -1743,7 +1743,12 @@ gulp.task('deleteGooglePlusPlugin', function (callback) {
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
 gulp.task('platform-add-ios', function (callback) {
-    execute('ionic platform add ios', callback);
+    try {
+        execute('ionic platform add ios', callback);
+    } catch (e) {
+        qmLog.info(JSON.stringify(e));
+        callback();
+    }
 });
 gulp.task('ionic-build-ios', function (callback) {
     execute('ionic build ios', callback, false, true);
