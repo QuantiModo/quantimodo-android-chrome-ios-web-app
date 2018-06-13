@@ -173,7 +173,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	};
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
-
 		var showDataClearPopup = function(ev){
             var title = 'Log Out';
             var textContent = "Are you sure you want to log out? I'll miss you dearly!";
