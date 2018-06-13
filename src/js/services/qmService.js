@@ -169,10 +169,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.error(error);
             },
             connectWithToken: function (response, connector, successHandler, errorHandler) {
-                qmLogService.debug('Response Object -> ' + JSON.stringify(response));
+                qmLog.authDebug('connectWithToken: Connecting with  ' + JSON.stringify(response), null, response);
                 var body = { connectorCredentials: {token: response}, connector: connector };
                 qmService.connectConnectorWithTokenDeferred(body).then(function(result){
-                    qmLog.debug(JSON.stringify(result));
+                    qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(result), null, result);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(result);}
                 }, function (error) {
@@ -2382,6 +2382,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmLogService.debug('Just set up Google Analytics');
     };
     qmService.setUser = function(user){
+        qmLog.authDebug("Setting user to: " + JSON.stringify(user), null, user);
         qmService.rootScope.setUser(user);
         qm.userHelper.setUser(user);
     };
@@ -2944,6 +2945,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var connectors = qmService.connectors.storeConnectorResponse(response);
             deferred.resolve(connectors);
         }, function(error){
+            qmLog.error("connectConnectorWithTokenDeferred error: "+JSON.stringify(error), null, error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2951,7 +2953,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
         var deferred = $q.defer();
         qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(response){
-            var connectors = qmService.connectors.storeConnectorResponse(response);
+            qmService.connectors.storeConnectorResponse(response);
             deferred.resolve(response);
         }, function(error){
             deferred.reject(error);
