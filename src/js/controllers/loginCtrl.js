@@ -6,8 +6,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         // qmService.createDefaultReminders();  TODO:  Do this at appropriate time. Maybe on the back end during user creation?
         loginTimeout();
         qmService.auth.socialLogin(connectorName, ev, additionalParams, function (response) {
-            qmLog.info("Called socialLogin successHandler with response: "+JSON.stringify(response));
-            if(!qm.getUser()){handleLoginError("No user after successful social login!");} else {handleLoginSuccess();}
+            qmLog.authDebug("Called socialLogin successHandler with response: "+JSON.stringify(response), null, response);
+            if(!qm.getUser()){
+                handleLoginError("No user after successful social login!");} else {handleLoginSuccess();
+            }
         }, function (error) {
             handleLoginError("SocialLogin failed! error: " + error);
         });
