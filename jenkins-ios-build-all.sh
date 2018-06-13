@@ -31,3 +31,7 @@ export APP_IDENTIFIER=com.quantimodo.quantimodo
 export APP_DISPLAY_NAME=QuantiModo
 export QUANTIMODO_CLIENT_ID=quantimodo
 if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]]; then fastlane deploy; else gulp build-ios-app; fi
+
+export LAST_BUILD=${WORKSPACE}-last-build
+EXCLUDE="--exclude {.git/,*.git}"
+rsync -am --stats --no-perms --omit-dir-times --delete ${WORKSPACE}/ ${LAST_BUILD} ${EXCLUDE}
