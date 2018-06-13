@@ -90,7 +90,7 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "postinstall": "echo 'Runing npm postinstall commands...' && bower install --allow-root && gulp configureAppAfterNpmInstall"
+    "postinstall": "echo 'Running npm postinstall commands...' && bower install --allow-root && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
