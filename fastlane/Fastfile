@@ -48,10 +48,9 @@ platform :ios do
   end
   puts "Fastfile match_keychain_name is set to #{match_keychain_name}"
 
+    build_configuration = "Release"
     if ENV["BUILD_CONFIGURATION"]
-      build_configuration = ENV["BUILD_CONFIGURATION"]
-    else
-      build_configuration = "Release"
+      # build_configuration = ENV["BUILD_CONFIGURATION"] TODO: This is going to require more work to make Debug build
     end
     puts "Fastfile build_configuration is set to #{build_configuration}"
 
