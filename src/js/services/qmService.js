@@ -6566,8 +6566,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
             //qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
-            if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
+            if(typeof $rootScope.user.trackLocation === "undefined"){ $rootScope.user.trackLocation = false; } // Only update $rootScope.user properties if undefined.  Updating $rootScope is too expensive to do all the time
+            if(typeof $rootScope.user.getPreviewBuilds === "undefined"){ $rootScope.user.getPreviewBuilds = false; }
             //qmSetupInPopup();
             //qmService.humanConnect();
         }
