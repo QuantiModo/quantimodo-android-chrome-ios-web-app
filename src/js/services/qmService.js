@@ -359,9 +359,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
                 qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector), null, connector);
                 function fbSuccessHandler(result){
-                    qmLog.authDebug("qmService.connectors.facebookMobileConnect success resutl: "+JSON.stringify(result), null, result);
-                    qmService.connectors.connectWithToken(result, connector);
-                    if(successHandler){successHandler(result);}
+                    qmLog.authDebug("qmService.connectors.facebookMobileConnect success result: "+JSON.stringify(result), null, result);
+                    qmService.connectors.connectWithToken(result, connector, successHandler, errorHandler);
                 }
                 function fbErrorHandler(error){
                     qmLog.error("qmService.connectors.facebookMobileConnect for "+JSON.stringify(error), null, error);
