@@ -7381,7 +7381,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmService.goToState(qmStates.intro);
         if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
             qmLog.info("Restarting app to enable opening login window again");
-            document.location.href = 'index.html';
+            $timeout(function () { // Give logout time to clear data before restarting or it won't logout all the way
+                document.location.href = 'index.html?logout=true';
+            }, 3000);
         }
         qmService.showBlackRingLoader();
     };
