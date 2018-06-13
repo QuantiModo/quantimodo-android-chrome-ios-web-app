@@ -48,6 +48,13 @@ platform :ios do
   end
   puts "Fastfile match_keychain_name is set to #{match_keychain_name}"
 
+    if ENV["BUILD_CONFIGURATION"]
+      build_configuration = ENV["BUILD_CONFIGURATION"]
+    else
+      build_configuration = "Release"
+    end
+    puts "Fastfile build_configuration is set to #{build_configuration}"
+
   xcode_project_path = "./platforms/ios/#{app_display_name}.xcodeproj"
   puts "Fastfile xcode_project_path is set to #{xcode_project_path}"
 
@@ -175,7 +182,7 @@ platform :ios do
     update_project_provisioning(
         xcodeproj: xcode_project_path,
         profile: ENV["sigh_#{app_identifier}_appstore_profile-path"],
-        build_configuration: "Release"
+        build_configuration: build_configuration
     )
     cordova(platform: 'ios', team_id: team_id)
     #appstore(ipa: ENV['CORDOVA_IOS_RELEASE_BUILD_PATH'], skip_screenshots: true)
