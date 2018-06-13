@@ -509,6 +509,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         },
+        intro: {
+            setIntroSeen: function(value, reason){
+                qmLog.info("Setting intro seen to "+value+" because "+reason);
+                qm.storage.setItem(qm.items.introSeen, value);
+            }
+        },
         ionIcons: {
             history: 'ion-ios-list-outline',
             reminder: 'ion-android-notifications-none',
@@ -2121,7 +2127,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
             qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
             qm.storage.setItem(qm.items.onboarded, true);
-            qm.storage.setItem(qm.items.introSeen, true);
+            qmService.intro.setIntroSeen(true, "access token in url and not in login state");
             qmLog.info('Setting onboarded and introSeen to true');
             qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
             qm.storage.setItem(qm.items.afterLoginGoToState, null);
@@ -6550,7 +6556,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(qm.urlHelper.getParam('refreshUser')){
             qm.storage.clearStorageExceptForUnitsAndCommonVariables();
             qmService.storage.setItem('onboarded', true);
-            qmService.storage.setItem('introSeen', true);
+            qmService.intro.setIntroSeen(true, "url has param refreshUser");
             qmService.rootScope.setUser(null);
         }
         if(!$rootScope.user && qm.getUser()){
@@ -7381,7 +7387,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //qmService.goToState(qmStates.intro);
         if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
             qmLog.info("Restarting app to enable opening login window again");
-            document.location.href = 'index.html';
+            $timeout(function () { // Wait for above functions to complete
+                //document.location.href = 'index.html#/app/intro?logout=true';  // Try this if below doesn't work
+                document.location.href = 'index.html?logout=true';
+            }, 2000);
         }
         qmService.showBlackRingLoader();
     };
@@ -7391,7 +7400,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         saveDeviceTokenToSyncWhenWeLogInAgain();
         window.qm.storage.clearOAuthTokens();
         logOutOfWebsite();
-        window.qm.storage.setItem(qm.items.introSeen, false);
+        qmService.intro.setIntroSeen(false, "afterLogoutDoNotDeleteMeasurements");
         window.qm.storage.setItem(qm.items.onboarded, false);
         qmService.goToState('app.intro');
     };

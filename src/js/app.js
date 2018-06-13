@@ -101,7 +101,7 @@ angular.module('starter',
 
     var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
     if (qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') || qm.urlHelper.getParam('refreshUser') || window.designMode) {
-        qm.storage.setItem(qm.items.introSeen, true);
+        qmService.intro.setIntroSeen(true, "Url parms have existingUser or introSeen or refreshUser or desingMode");
         qm.storage.setItem(qm.items.onboarded, true);
     }
 }])
