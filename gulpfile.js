@@ -361,6 +361,18 @@ var qm = {
     },
 };
 var buildingFor = {
+    setChrome: function(){
+        buildingFor.platform = qmPlatform.chrome;
+    },
+    setAndroid: function(){
+        buildingFor.platform = qmPlatform.android;
+    },
+    setWeb: function(){
+        buildingFor.platform = qmPlatform.web;
+    },
+    setIOS: function(){
+        buildingFor.platform = qmPlatform.ios;
+    },
     platform: null,
     web: function () {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
@@ -2589,6 +2601,7 @@ gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
+    buildingFor.setChrome();
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -2605,6 +2618,7 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
+    buildingFor.setChrome();
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
