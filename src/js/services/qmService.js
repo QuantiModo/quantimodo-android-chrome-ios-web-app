@@ -204,15 +204,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(errorHandler){errorHandler(error);}
                     });
             },
-            qmApiMobileConnect: function(connector, ev, options, successHandler, errorHandler) {
-                qmLog.info("qmService.connectors.qmApiMobileConnect for "+JSON.stringify(connector), null, connector);
+            qmApiMobileConnect: function(connector, ev, options) {
+                qmLog.authDebug("qmService.connectors.qmApiMobileConnect for "+JSON.stringify(connector), null, connector);
                 var deferred = $q.defer();
                 if(window.cordova) {
                     if(window.cordova.InAppBrowser) {
                         //var redirect_uri = "http://localhost/callback";
                         var final_callback_url = qm.api.getQuantiModoUrl('api/v1/window/close');
-                        qmLog.info("Setting final_callback_url to "+final_callback_url);
                         if(options !== undefined) {if(options.hasOwnProperty("redirect_uri")) {final_callback_url = options.redirect_uri;}}
+                        qmLog.authDebug("qmApiMobileConnect login: Setting final_callback_url to "+final_callback_url);
                         var url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect?client_id=' +
                             qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url) + '&client_secret='+qm.api.getClientSecret());
                         if(options){url = qm.urlHelper.addUrlQueryParamsToUrl(options, url)}
@@ -221,15 +221,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             if((event.url).indexOf(final_callback_url) === 0) {
                                 var accessToken = qm.urlHelper.getParameterFromEventUrl(event, 'sessionToken');
                                 if(!accessToken) {accessToken = qm.urlHelper.getParameterFromEventUrl(event, 'accessToken');}
+                                qmLog.authDebug("qmApiMobileConnect login: Got access token "+accessToken + " from url "+event.url);
                                 qm.auth.saveAccessToken(accessToken);
-                                qmService.refreshConnectors();
                                 if(!qm.getUser()){
-                                    if(!successHandler){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
-                                    qmService.refreshUser();
+                                    qmLog.authDebug("qmApiMobileConnect login: Refreshing user");
+                                    qmService.login.setAfterLoginGoToState(qmStates.onboarding);
+                                    qmService.showBasicLoader();
+                                    qmService.refreshUser().then(function(user){
+                                        qmLog.authDebug("Got user: "+JSON.stringify(user));
+                                        deferred.resolve(user);
+                                    }, function(error){deferred.reject(error)});
+                                } else {
+                                    qmLog.authDebug("qmApiMobileConnect login: Getting connectors");
+                                    qmService.refreshConnectors().then(function (connectors) {
+                                        qmLog.authDebug("qmApiMobileConnect login: Got connectors");
+                                        deferred.resolve(connectors);
+                                    }, function(error){deferred.reject(error)});
                                 }
-                                if(successHandler){successHandler(accessToken);}
                                 browserRef.close();
-                                deferred.resolve(accessToken);
                             }
                         });
                         browserRef.addEventListener('exit', function(event) {
@@ -313,7 +322,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 } else if (connector.mobileConnectMethod === 'facebook') {
                     qmService.connectors.facebookMobileConnect(connector, ev, options, successHandler, errorHandler);
                 } else {
-                    qmService.connectors.qmApiMobileConnect(connector, ev, options, successHandler, errorHandler);
+                    qmService.connectors.qmApiMobileConnect(connector, ev, options, successHandler, errorHandler)
+                        .then(function(userOrConnectors){
+                            if(successHandler){successHandler(userOrConnectors);}
+                        }, function(error){
+                            if(errorHandler){errorHandler(error);}
+                        });
                 }
             },
             oAuthConnect: function (connector, ev, additionalParams, successHandler, errorHandler){
@@ -1759,17 +1773,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     var onRequestFailed = function(error){
         qmLogService.error("Request error : " + error);
-    };
-    qmService.getMeasurementsDeferred = function(params, refresh){
-        var deferred = $q.defer();
-        params.refresh = refresh;
-        qm.measurements.getMeasurementsFromApi(params, function(response){
-            deferred.resolve(qmService.addInfoAndImagesToMeasurements(response));
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
     };
     qmService.getMeasurementById = function(measurementId){
         var deferred = $q.defer();
