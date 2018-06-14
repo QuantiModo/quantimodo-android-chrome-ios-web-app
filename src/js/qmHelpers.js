@@ -1074,12 +1074,12 @@ window.qm = {
                 {groupingHash: groupingHash}, "error");
         },
         getAccessTokenFromCurrentUrl: function(){
-            qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
             if(accessTokenFromUrl){
-                qmLog.authDebug("Got access token from url");
+                qmLog.webAuthDebug("Got access token from url");
             } else {
-                qmLog.authDebug("No access token from url");
+                qmLog.webAuthDebug("No access token from url");
             }
             return accessTokenFromUrl;
         },

@@ -2121,7 +2121,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.getAccessTokenFromUrlAndSetLocalStorageFlags = function(){
         if(qm.auth.accessTokenFromUrl){ return qm.auth.accessTokenFromUrl; }
-        qmLog.authDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
+        qmLog.webAuthDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
         qm.auth.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
         if(!qm.auth.accessTokenFromUrl){return null;}
         if($state.current.name !== 'app.login'){
