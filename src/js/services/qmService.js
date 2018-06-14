@@ -49,7 +49,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.auth.saveAccessTokenResponse(response);
                 qmLog.authDebug('get user details from server and going to defaultState...');
                 qmService.showBlackRingLoader();
-                qmService.refreshUser().then(function(user){
+                qmService.refreshUser(true).then(function(user){
                     qmService.hideLoader();
                     qmService.syncAllUserData();
                     qmLog.authDebug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
@@ -204,7 +204,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(errorHandler){errorHandler(error);}
                     });
             },
-            qmApiMobileConnect: function(connector, ev, options) {
+            qmApiMobileConnect: function(connector, ev, options) {  // Uses promises instead of successHandler and errorHandler
                 qmLog.authDebug("qmService.connectors.qmApiMobileConnect for "+JSON.stringify(connector), null, connector);
                 var deferred = $q.defer();
                 if(window.cordova) {
@@ -214,7 +214,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(options !== undefined) {if(options.hasOwnProperty("redirect_uri")) {final_callback_url = options.redirect_uri;}}
                         qmLog.authDebug("qmApiMobileConnect login: Setting final_callback_url to "+final_callback_url);
                         var url = qm.api.getQuantiModoUrl('api/v1/connectors/'+connector.name+'/connect?client_id=' +
-                            qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url) + '&client_secret='+qm.api.getClientSecret());
+                            qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url) +
+                            '&client_secret='+qm.api.getClientSecret());
                         if(options){url = qm.urlHelper.addUrlQueryParamsToUrl(options, url)}
                         var browserRef = window.cordova.InAppBrowser.open(url, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
                         browserRef.addEventListener('loadstart', function(event) {
@@ -227,7 +228,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                     qmLog.authDebug("qmApiMobileConnect login: Refreshing user");
                                     qmService.login.setAfterLoginGoToState(qmStates.onboarding);
                                     qmService.showBasicLoader();
-                                    qmService.refreshUser().then(function(user){
+                                    qmService.refreshUser(true).then(function(user){
                                         qmLog.authDebug("Got user: "+JSON.stringify(user));
                                         deferred.resolve(user);
                                     }, function(error){deferred.reject(error)});
@@ -242,17 +243,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             }
                         });
                         browserRef.addEventListener('exit', function(event) {
-                            if(errorHandler){errorHandler(event);}
+                            qmLog.error("qmApiMobileConnect login: The sign in flow was canceled: "+JSON.stringify(event), null, event);
                             deferred.reject("The sign in flow was canceled");
                         });
                     } else {
-                        qmLog.error("Could not find InAppBrowser plugin");
-                        if(errorHandler){errorHandler("Could not find InAppBrowser plugin");}
+                        qmLog.error("qmApiMobileConnect login: Could not find InAppBrowser plugin");
                         deferred.reject("Could not find InAppBrowser plugin");
                     }
                 } else {
-                    qmLog.error("Cannot authenticate via a web browser");
-                    if(errorHandler){errorHandler("Cannot authenticate via a web browser");}
+                    qmLog.error("qmApiMobileConnect login: Cannot authenticate via a web browser");
                     deferred.reject("Cannot authenticate via a web browser");
                 }
                 return deferred.promise;
@@ -322,7 +321,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 } else if (connector.mobileConnectMethod === 'facebook') {
                     qmService.connectors.facebookMobileConnect(connector, ev, options, successHandler, errorHandler);
                 } else {
-                    qmService.connectors.qmApiMobileConnect(connector, ev, options, successHandler, errorHandler)
+                    qmService.connectors.qmApiMobileConnect(connector, ev, options) // qmApiMobileConnect uses promises instead of successHandler and errorHandler
                         .then(function(userOrConnectors){
                             if(successHandler){successHandler(userOrConnectors);}
                         }, function(error){
@@ -2411,9 +2410,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.syncTrackingReminders();
         qmService.getFromLocalStorageOrApiDeferred();
     };
-    qmService.refreshUser = function(){
+    qmService.refreshUser = function(force){
         var deferred = $q.defer();
-        if(qm.urlHelper.getParam('logout')){
+        if(qm.urlHelper.getParam('logout') && !force){
             qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
@@ -2450,7 +2449,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(qm.userHelper.getUserFromLocalStorage()){params.userId = qm.userHelper.getUserFromLocalStorage().id;}
         qmService.post('api/v3/userSettings', [], params, function(response){
             if(!params.userEmail) {
-                qmService.refreshUser().then(function(user){
+                qmService.refreshUser(true).then(function(user){
                     qmLogService.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user), null);
                 }, function(error){
                     qmLogService.error('qmService.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
