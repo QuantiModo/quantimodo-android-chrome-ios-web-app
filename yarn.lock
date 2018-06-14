@@ -7223,9 +7223,9 @@ qs@~6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
-quantimodo@5.9.60814:
-  version "5.9.60814"
-  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.9.60814.tgz#055f47d62e56ae8fb8e4b045d266ed6a43843c83"
+quantimodo@5.9.61414:
+  version "5.9.61414"
+  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.9.61414.tgz#b5a5f469a626630fb0122752d109e559ae50e70d"
   dependencies:
     superagent "3.5.2"
 
