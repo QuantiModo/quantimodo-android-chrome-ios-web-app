@@ -174,6 +174,9 @@ window.qmLog = {
             qmLog.debug(message, message, null);
         }
     },
+    webAuthDebug: function(name, message, metaData) {
+        if(!qm.platform.isMobile()){qmLog.authDebug(name, message, metaData);}
+    },
     warn: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
