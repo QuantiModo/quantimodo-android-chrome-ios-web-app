@@ -163,6 +163,7 @@ window.qmLog = {
         return qmLog.authDebugEnabled;
     },
     authDebug: function(name, message, metaData) {
+        name = "Auth Debug: " + name;
         if(qmLog.getAuthDebugEnabled(name)){
             if(qm.platform.isMobile()){
                 qmLog.error(name, message, metaData);
