@@ -315,6 +315,7 @@ var qm = {
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
             if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
             return !qmGit.isMaster();
         }
     },
@@ -1672,16 +1673,23 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'))
         ;
 }
-gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(doNotMinify || qm.buildSettings.buildDebug()){
-        return copyFiles('src/**/*', 'www', []);
+function shouldWeMinify(){
+    if (doNotMinify) {
+        qmLog.info("Copying src instead of minifying because doNotMinify is true");
+        return false;
     }
+    if(qm.buildSettings.buildDebug()){
+        qmLog.info("Copying src instead of minifying because qm.buildSettings.buildDebug returns true");
+        return false;
+    }
+    return true;
+}
+gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    if(!shouldWeMinify()){return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if(doNotMinify || qm.buildSettings.buildDebug()){
-        return copyFiles('src/**/*', 'www', []);
-    }
+    if (!shouldWeMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
 var serviceWorkerAndLibraries = [
