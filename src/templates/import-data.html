@@ -1,7 +1,8 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
+<ion-view hide-nav-bar="hideNavigationMenu || state.connector" view-title="Import Data">
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
-        <div class="card" ng-show="showImportHelpCard" id="importHelpCard" >
+        <div ng-if="state.connector" ng-include="'templates/credentials-page.html'"></div>
+        <div class="card" ng-show="showImportHelpCard && !state.connector" id="importHelpCard" >
             <div class="item item-avatar item-borderless">
                 <i class="icon positive ion-ios-cloud-download-outline" style="position: absolute;
 							top: 15px;
@@ -25,10 +26,10 @@
             </div>
             <br>
         </div>
-        <div class="card" ng-show="!state.connectors" style="border-radius: 15px;">
+        <div class="card" ng-show="!state.connectors && !state.connector" style="border-radius: 15px;">
             <div class="item" > <div class="row"><ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Loading services...</p></div> </div>
         </div>
-        <div ng-if="state.connectors" class="list">
+        <div ng-if="state.connectors && !state.connector" class="list">
             <div ng-include="'templates/input/filter-search-field.html'"></div>
             <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
         </div>
@@ -36,8 +37,8 @@
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
-    <div ng-click="goBack()" ng-if="hideNavigationMenu" style="cursor:pointer;" class="bar bar-footer bar-balanced">
-        <div class="title"><i class="icon ion-reply"></i>Done connecting data sources</div>
+    <div ng-click="goBack()" ng-if="hideNavigationMenu && !state.connector" style="cursor:pointer;" class="bar bar-footer bar-balanced">
+        <div class="title"><i class="icon ion-reply"></i> &nbsp; &nbsp; Done connecting data sources</div>
     </div>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

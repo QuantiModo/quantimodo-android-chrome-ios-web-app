@@ -4,19 +4,25 @@
             <div class="inner">
                 <div style="text-align: center; color: white; padding: 30px; height: 100%" >
                     <div>
-                        <div ng-include="'templates/fragments/circle-page.html'" ng-cloak></div>
-                        <div ng-if="circlePage.title === 'Logging in...'" ng-click="retryLogin()" >
-                            <br><br>
-                            Click here to retry if this takes too long
-                        </div>
+                        <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()" ng-cloak></div>
+                        <div ng-if="state.showRetry" ng-click="retryLogin()" ><br><br>Click here to retry if this takes too long</div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
-                                <md-button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</md-button>
-                                <md-button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</md-button>
-                            <div ng-if="showGoogleLoginButton && !hideGoogleLoginButton">
-                                <md-button id="signInWithGoogle" ng-click="googleLogin()" class="button circle-page-button">Sign In With Google</md-button>
-                            </div>
-                            <div ng-if="showFacebookLoginButton">
-                                <md-button id="signInWithFacebook" ng-click="facebookLogin()" class="button circle-page-button clear">Sign In With Facebook</md-button>
+                            <div id="material-login-buttons" ng-if="true">
+                                <!--<md-button class="md-raised md-primary icon icon-left ion-social-github" style="background: #2d2d2d;" ng-click="state.socialLogin('github', $event)">
+                                    &nbsp Github Login &nbsp
+                                </md-button>-->
+                                <md-button id="signInWithGoogle" class="md-raised md-primary icon icon-left ion-social-google" style="background: #d34836;" ng-click="state.socialLogin('googleplus', $event)">
+                                    &nbsp Google Login &nbsp
+                                </md-button>
+                                <md-button id="signInWithFacebook" class="md-raised md-primary icon icon-left ion-social-facebook" style="background: #3B5998;" ng-click="state.socialLogin('facebook', $event)">
+                                    &nbsp Facebook Login &nbsp
+                                </md-button>
+                                <md-button id="signUpButton" class="md-raised md-primary icon icon-left ion-email" style="background: #2d2d2d;" ng-click="state.socialLogin('quantimodo', $event, {register: true})">
+                                    &nbsp Email Sign Up &nbsp
+                                </md-button>
+                                <md-button id="signInButton" class="md-raised md-primary icon icon-left ion-email" style="background: #2d2d2d;" ng-click="state.socialLogin('quantimodo', $event, {register: false})">
+                                    &nbsp Email Login &nbsp
+                                </md-button>
                             </div>
                         </div>
                     </div>

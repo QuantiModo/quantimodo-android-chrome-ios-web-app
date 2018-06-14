@@ -9,7 +9,6 @@ var androidArm7ReleaseApkName = 'android-armv7-release';
 var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.DEBUG_BUILD */
 /** @namespace process.env.BUILD_DEBUG */
-var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 /** @namespace process.env.DO_NOT_MINIFY */
 var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 //var buildPath = './build';  Can't use . because => Updated .......  app_uploads/quantimodo/./build/quantimodo-chrome-extension.zip
@@ -77,61 +76,6 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
-var qmGit = {
-    branchName: process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH,
-    isMaster: function () {
-        return qmGit.branchName === "master"
-    },
-    isDevelop: function () {
-        return qmGit.branchName === "develop"
-    },
-    isFeature: function () {
-        return qmGit.branchName.indexOf("feature") !== -1;
-    },
-    getCurrentGitCommitSha: function () {
-        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
-        try {
-            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
-        } catch (error) {
-            qmLog.info(error);
-        }
-    },
-    accessToken: process.env.GITHUB_ACCESS_TOKEN,
-    getCommitMessage(callback){
-        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-        execute(commandForGit, function (error, output) {
-            var commitMessage = output.trim();
-            qmLog.info("Commit: "+ commitMessage);
-            if(callback) {callback(commitMessage);}
-        });
-    },
-    outputCommitMessageAndBranch: function () {
-        qmGit.getCommitMessage(function (commitMessage) {
-            qmGit.setBranchName(function (branchName) {
-                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
-            })
-        })
-    },
-    setBranchName: function(callback) {
-        function setBranch(branch, callback) {
-            qmGit.branchName = branch.replace('origin/', '');
-            qmLog.info('current git branch: ' + qmGit.branchName);
-            if (callback) {callback(qmGit.branchName);}
-        }
-        if (qmGit.branchName){
-            setBranch(qmGit.branchName, callback);
-            return;
-        }
-        try {
-            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-                if(err){qmLog.error(err); return;}
-                setBranch(branch, callback);
-            });
-        } catch (e) {
-            qmLog.info("Could not set branch name because " + e.message);
-        }
-    }
-};
 var paths = {
     apk: {
         combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
@@ -139,6 +83,7 @@ var paths = {
         arm7Release: "platforms/android/build/outputs/apk/android-arm7-release.apk",
         x86Release: "platforms/android/build/outputs/apk/android-x86-release.apk",
         outputFolder: "platforms/android/build/outputs/apk",
+        builtApk: null
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
@@ -236,13 +181,81 @@ var qmLog = {
     },
     info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
-        if(buildDebug){qmLog.info("BUILD DEBUG: " + message, object, maxCharacters);}
+        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
+            qmLog.info("DEBUG: " + message, object, maxCharacters);
+        }
     },
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
         throw message;
     }
 };
+var qmGit = {
+    branchName: null,
+    isMaster: function () {
+        return qmGit.branchName === "master"
+    },
+    isDevelop: function () {
+        return qmGit.branchName === "develop"
+    },
+    isFeature: function () {
+        return qmGit.branchName.indexOf("feature") !== -1;
+    },
+    getCurrentGitCommitSha: function () {
+        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
+        try {
+            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        } catch (error) {
+            qmLog.info(error);
+        }
+    },
+    accessToken: process.env.GITHUB_ACCESS_TOKEN,
+    getCommitMessage(callback){
+        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+        execute(commandForGit, function (error, output) {
+            var commitMessage = output.trim();
+            qmLog.info("Commit: "+ commitMessage);
+            if(callback) {callback(commitMessage);}
+        });
+    },
+    outputCommitMessageAndBranch: function () {
+        qmGit.getCommitMessage(function (commitMessage) {
+            qmGit.setBranchName(function (branchName) {
+                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+            })
+        })
+    },
+    setBranchName: function (callback) {
+        function setBranch(branch, callback) {
+            qmGit.branchName = branch.replace('origin/', '');
+            qmLog.info('current git branch: ' + qmGit.branchName);
+            if (callback) {callback(qmGit.branchName);}
+        }
+        if (qmGit.getBranchEnv()){
+            setBranch(qmGit.getBranchEnv(), callback);
+            return;
+        }
+        try {
+            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+                if(err){qmLog.error(err); return;}
+                setBranch(branch, callback);
+            });
+        } catch (e) {
+            qmLog.info("Could not set branch name because " + e.message);
+        }
+    },
+    getBranchEnv: function () {
+        function getNameIfNotHead(envName) {
+            if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
+            return false;
+        }
+        if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
+        if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
+        if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
+        if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
+    }
+};
+qmGit.setBranchName();
 var majorMinorVersionNumbers = '2.8.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
@@ -298,6 +311,11 @@ var qm = {
         },
         setDoNotMinify(value){
             doNotMinify = value;
+        },
+        buildDebug: function () {
+            if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
+            if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            return !qmGit.isMaster();
         }
     },
     buildInfoHelper: {
@@ -787,7 +805,7 @@ function unzipFile(pathToZipFile, pathToOutputFolder) {
 }
 function getCordovaBuildCommand(releaseStage, platform) {
     var command = 'cordova build --' + releaseStage + ' ' + platform;
-    //if(buildDebug){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
+    //if(qm.buildSettings.buildDebug()){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
     return command;
 }
 function outputVersionCodeForApk(pathToApk) {
@@ -940,7 +958,7 @@ gulp.task('scripts', function () {
     }
 });
 var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
-    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js'];
+    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'lib/underscore/underscore-min.js'];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
@@ -1124,7 +1142,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         addBuildInfoToAppSettings();
         writeDefaultConfigJson('src');
         writeDefaultConfigJson('www');
-        if(buildingFor.mobile()){writePrivateConfigs('www');}
+        writePrivateConfigs('www'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
+        writePrivateConfigs('src'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         qmLog.info("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
@@ -1258,6 +1277,9 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 gulp.task('getCommonVariables', function () {
     return getConstantsFromApiAndWriteToJson('commonVariables',
         'public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
+});
+gulp.task('getConnectors', function () {
+    return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
 });
 gulp.task('getUnits', function () {
     return getConstantsFromApiAndWriteToJson('units');
@@ -1464,12 +1486,12 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.combinedRelease);
+        return uploadBuildToS3(paths.apk.builtApk);
     }
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
-        if(buildDebug){
+        if(qm.buildSettings.buildDebug()){
             return uploadBuildToS3(paths.apk.combinedDebug);
         } else {
             return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
@@ -1651,13 +1673,13 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         ;
 }
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(doNotMinify || buildDebug){
+    if(doNotMinify || qm.buildSettings.buildDebug()){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if(doNotMinify || buildDebug){
+    if(doNotMinify || qm.buildSettings.buildDebug()){
         return copyFiles('src/**/*', 'www', []);
     }
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
@@ -1721,7 +1743,12 @@ gulp.task('deleteGooglePlusPlugin', function (callback) {
     execute('cordova plugin rm cordova-plugin-googleplus', callback);
 });
 gulp.task('platform-add-ios', function (callback) {
-    execute('ionic platform add ios', callback);
+    try {
+        execute('ionic platform add ios', callback);
+    } catch (e) {
+        qmLog.info(JSON.stringify(e));
+        callback();
+    }
 });
 gulp.task('ionic-build-ios', function (callback) {
     execute('ionic build ios', callback, false, true);
@@ -1734,12 +1761,12 @@ gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+    if(!qmGit.isMaster()){
         qmLog.info("Not doing fastlaneSupplyBeta because not on develop or master");
         callback();
         return;
     }
-    if(buildDebug){
+    if(qm.buildSettings.buildDebug()){
         qmLog.info("Not uploading DEBUG build");
         callback();
         return;
@@ -2141,6 +2168,7 @@ gulp.task('makeIosApp', function (callback) {
     runSequence(
         'deleteIOSApp',
         'deleteFacebookPlugin',
+        'googleServicesPList',
         'platform-add-ios',
         'ionicResources',
         'addFacebookPlugin',
@@ -2337,6 +2365,10 @@ gulp.task('copyServiceWorkerAndLibraries', [], function () {
     return gulp.src( serviceWorkerAndLibraries, { base: './src' } )
         .pipe( gulp.dest( './www' ));
 });
+gulp.task('copyOverrideFiles', [], function () {
+    return gulp.src( ['overrides/**/*'], { base: './overrides' } )
+        .pipe( gulp.dest( '.' ));
+});
 gulp.task('copyIconsToSrcImg', [], function () {
     return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
@@ -2408,6 +2440,8 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'write-build-json',
+        'googleServicesPList',
+        'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2434,6 +2468,7 @@ gulp.task('build-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'cordova-hcp-config',
         'write-build-json',
+        'googleServicesPList',
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2459,6 +2494,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         'write-build-json',
+        'googleServicesPList',
         'platform-add-ios',
         callback);
 });
@@ -2498,7 +2534,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     }
     runSequence(
         'configureApp',
-        'deleteWwwPrivateConfig',
+        //'deleteWwwPrivateConfig',  // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         callback);
 
 });
@@ -2512,6 +2548,7 @@ gulp.task('configureApp', [], function (callback) {
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
         'getCommonVariables',
+        'getConnectors',
         'getUnits',
         'getVariableCategories',
         'getAppConfigs',
@@ -2577,7 +2614,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
         'chromeDefaultConfigJson',
-        //'deleteWwwPrivateConfig',
+        //'deleteWwwPrivateConfig', // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
@@ -2785,6 +2822,7 @@ function buildAndroidDebug(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidDebug = "BUILDING";
     postAppStatus();
+    paths.apk.builtApk = paths.apk.combinedDebug;
     execute(getCordovaBuildCommand('debug', 'android'), callback);
 }
 function buildAndroidRelease(callback){
@@ -2792,10 +2830,11 @@ function buildAndroidRelease(callback){
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus.androidRelease = "BUILDING";
     postAppStatus();
+    paths.apk.builtApk = paths.apk.combinedRelease;
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
-    if(buildDebug){
+    if(qm.buildSettings.buildDebug()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
     } else {
@@ -2868,6 +2907,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'setAppEnvs',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
+        'google-services-json',
         'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
@@ -2883,7 +2923,7 @@ function getCHCPContentPath(){
     var path = "dev";
     if(qmGit.isMaster()){path = "production";}
     if(qmGit.isDevelop()){path = "qa";}
-    if(buildDebug){path = "dev";}
+    if(qm.buildSettings.buildDebug()){path = "dev";}
     return path;
 }
 function getCHCPContentUrl(){
@@ -3008,12 +3048,12 @@ gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
     cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
-        //execute(runCommand, function () {
-        execute("cordova-hcp server", function () {
-            qmLog.info("Execute command "+ runCommand + " in new terminal now");
-            //callback();
+        execute("gulp copyOverrideFiles", function () {
+            execute("cordova-hcp server", function () {
+                qmLog.info("Execute command "+ runCommand + " in new terminal now");
+                //callback();
+            }, false, false);
         }, false, false);
-        //}, false, false);
     }, false, false);
 });
 gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
@@ -3059,7 +3099,11 @@ function changeOriginRemote(remoteUrl, callback){
     });
 }
 gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
-    writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    if(process.env.USE_QM_DOMAIN_ON_GITHUB){
+        writeToFile('www/CNAME', QUANTIMODO_CLIENT_ID+".quantimo.do");
+    } else {
+        cleanFiles(['www/CNAME']);
+    }
     return gulp.src('./www/**/*').pipe(ghPages({}));
 });
 gulp.task('add-client-remote', function(callback) {
@@ -3068,4 +3112,304 @@ gulp.task('add-client-remote', function(callback) {
         qmLog.info("Deploying to "+ remoteUrl);
         changeOriginRemote(remoteUrl, callback)
     });
+});
+gulp.task('reset-remote', function(callback) {
+    setClientId(function () {
+        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
+        qmLog.info("Resetting remote to "+ remoteUrl);
+        changeOriginRemote(remoteUrl, callback)
+    });
+});
+gulp.task('_update-remote-and-deploy-to-github-pages', ['getAppConfigs'], function(callback) {
+    runSequence(
+        'createSuccessFile',
+        'add-client-remote',
+        'deploy-to-github-pages',
+        'reset-remote',
+        'deleteSuccessFile',
+        callback);
+});
+gulp.task('googleServicesPList', ['getAppConfigs'], function() {
+    var string =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+        '<plist version="1.0">\n' +
+        '<dict>\n' +
+        '\t<key>AD_UNIT_ID_FOR_BANNER_TEST</key>\n' +
+        '\t<string>ca-app-pub-3940256099942544/2934735716</string>\n' +
+        '\t<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>\n' +
+        '\t<string>ca-app-pub-3940256099942544/4411468910</string>\n' +
+        '\t<key>CLIENT_ID</key>\n' +
+        '\t<string>1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com</string>\n' +
+        '\t<key>REVERSED_CLIENT_ID</key>\n' +
+        '\t<string>com.googleusercontent.apps.1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an</string>\n' +
+        '\t<key>ANDROID_CLIENT_ID</key>\n' +
+        '\t<string>1052648855194-6ag9aqacrharin4at9pfdh4h01j89iio.apps.googleusercontent.com</string>\n' +
+        '\t<key>API_KEY</key>\n' +
+        '\t<string>'+process.env.FIREBASE_API_KEY+'</string>\n' +
+        '\t<key>GCM_SENDER_ID</key>\n' +
+        '\t<string>1052648855194</string>\n' +
+        '\t<key>PLIST_VERSION</key>\n' +
+        '\t<string>1</string>\n' +
+        '\t<key>BUNDLE_ID</key>\n' +
+        '\t<string>'+appSettings.additionalSettings.appIds.appIdentifier+'</string>\n' +
+        '\t<key>PROJECT_ID</key>\n' +
+        '\t<string>quantimo-do</string>\n' +
+        '\t<key>STORAGE_BUCKET</key>\n' +
+        '\t<string>quantimo-do.appspot.com</string>\n' +
+        '\t<key>IS_ADS_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_ANALYTICS_ENABLED</key>\n' +
+        '\t<false></false>\n' +
+        '\t<key>IS_APPINVITE_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_GCM_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>IS_SIGNIN_ENABLED</key>\n' +
+        '\t<true></true>\n' +
+        '\t<key>GOOGLE_APP_ID</key>\n' +
+        '\t<string>1:1052648855194:ios:b40c24a456cfe8f5</string>\n' +
+        '\t<key>DATABASE_URL</key>\n' +
+        '\t<string>https://quantimo-do.firebaseio.com</string>\n' +
+        '</dict>\n' +
+        '</plist>';
+    return writeToFile('GoogleService-Info.plist', string);
+    //return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string);
+});
+gulp.task('google-services-json', [], function() {
+    var string =
+        '{\n' +
+        '  "project_info": {\n' +
+        '    "project_number": "1052648855194",\n' +
+        '    "firebase_url": "https://quantimo-do.firebaseio.com",\n' +
+        '    "project_id": "quantimo-do",\n' +
+        '    "storage_bucket": "quantimo-do.appspot.com"\n' +
+        '  },\n' +
+        '  "client": [\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:b40c24a456cfe8f5",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-qdidrqml70rfpiv15ita3on7g7oc20st.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "aff84d452d36ade90ce1a96c6d11c1ef038837ae"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-bd9puomjjr1k0pq2gv6iv8uc4rbgb1d9.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 1\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:0b7c6fd1ab60b28d",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "com.quantimodo.moodimodoapp"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-ua30i6hqfk45qa3a9fa9mqpboujsertk.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "com.quantimodo.moodimodoapp",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 2,\n' +
+        '          "analytics_property": {\n' +
+        '            "tracking_id": "UA-39222734-9"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "client_info": {\n' +
+        '        "mobilesdk_app_id": "1:1052648855194:android:88b22d1114b98c3d",\n' +
+        '        "android_client_info": {\n' +
+        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '        }\n' +
+        '      },\n' +
+        '      "oauth_client": [\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-lse0ugfnigiii3v7npmlpa6dfbhsdn15.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "943730f4f7c645691ac6bbd5b893707274b2a0ba"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-en385jlnknb38ma8om296pnej3i4tjad.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "559679b24cec5f864e055fd1ae85320f7ab670dc"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-9shgemkqn8n5h67rugjioi260223sk3c.apps.googleusercontent.com",\n' +
+        '          "client_type": 1,\n' +
+        '          "android_info": {\n' +
+        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194.project.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        },\n' +
+        '        {\n' +
+        '          "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '          "client_type": 3\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "api_key": [\n' +
+        '        {\n' +
+        '          "current_key": "'+process.env.FIREBASE_API_KEY+'"\n' +
+        '        }\n' +
+        '      ],\n' +
+        '      "services": {\n' +
+        '        "analytics_service": {\n' +
+        '          "status": 2,\n' +
+        '          "analytics_property": {\n' +
+        '            "tracking_id": "UA-39222734-7"\n' +
+        '          }\n' +
+        '        },\n' +
+        '        "appinvite_service": {\n' +
+        '          "status": 2,\n' +
+        '          "other_platform_oauth_client": [\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-b02cfhgog3fta60f8p0ehc4ii0ko0g9t.apps.googleusercontent.com",\n' +
+        '              "client_type": 3\n' +
+        '            },\n' +
+        '            {\n' +
+        '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
+        '              "client_type": 2,\n' +
+        '              "ios_info": {\n' +
+        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '              }\n' +
+        '            }\n' +
+        '          ]\n' +
+        '        },\n' +
+        '        "ads_service": {\n' +
+        '          "status": 2\n' +
+        '        }\n' +
+        '      }\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "configuration_version": "1"\n' +
+        '}';
+    return writeToFile('google-services.json', string);
 });

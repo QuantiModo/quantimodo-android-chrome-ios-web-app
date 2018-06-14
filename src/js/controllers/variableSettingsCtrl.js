@@ -6,7 +6,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
-        qmService.sendToLoginIfNecessaryAndComeBack();
+        qmService.login.sendToLoginIfNecessaryAndComeBack();
         qmService.navBar.showNavigationMenu();
         if(qmService.variableIdToGetOnReturnToSettings){
             getUserVariableWithTags(qmService.variableIdToGetOnReturnToSettings);
@@ -328,7 +328,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 qmLogService.error(null, 'Could not convert experimentEndTimeString to ISO format', {experimentEndTimeString: variableObject.experimentEndTimeString, errorMessage: error});
             }
         }
-        console.log("debugMode is " + window.debugMode);
+        console.log("debugMode is " + qmLog.getDebugMode());
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,

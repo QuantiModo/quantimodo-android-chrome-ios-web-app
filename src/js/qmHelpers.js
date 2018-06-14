@@ -18,7 +18,6 @@ window.qm = {
                 if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){return true;}
             }
             return window.location.href.indexOf("medimodo.heroku") !== -1;
-
         },
         isDevelopment: function(){
             if(window.location.origin.indexOf('http://localhost:') !== -1){return true;}
@@ -29,6 +28,9 @@ window.qm = {
         },
         isBuilder: function(){
             return window.location.href.indexOf('configuration-index.html') !== -1;
+        },
+        isDebug: function(){
+            return qmLog.isDebugMode();
         },
         getAppMode: function(){
             var env = "production";
@@ -181,6 +183,11 @@ window.qm = {
             if(qm.clientId){successHandler(qm.clientId);}
             qm.api.getClientIdWithCallback(successHandler);
         },
+        getClientSecret: function(successHandler){
+            var clientSecret = qm.appsManager.getClientSecret();
+            if(successHandler){successHandler(clientSecret);}
+            return clientSecret;
+        },
         getClientIdWithCallback: function(successHandler){
             if(qm.api.getClientId()){
                 successHandler(qm.api.getClientId());
@@ -219,7 +226,7 @@ window.qm = {
             return clientId;
         },
         getClientIdFromSubDomain: function(){
-            if(window.location.href.indexOf('.quantimo.do') === -1){return null;}
+            if(window.location.hostname.indexOf('.quantimo.do') === -1){return null;}
             if(qm.appMode.isBuilder()){return null;}
             function getSubDomain(){
                 var full = window.location.host;
@@ -227,7 +234,8 @@ window.qm = {
                 return parts[0].toLowerCase();
             }
             var subDomain = getSubDomain();
-            var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[getSubDomain()];
+            subDomain = subDomain.replace('qm-', '');
+            var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
                 window.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
                     ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
@@ -272,7 +280,8 @@ window.qm = {
         },
         responseHandler: function(error, data, response, successHandler, errorHandler) {
             if(!response){
-                qmLog.error("No response provided to qm.api.responseHandler");
+                var message = "No response provided to qm.api.responseHandler";
+                if(qm.getUser()){qmLog.error(message);} else {qmLog.info(message);}
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url, null);
@@ -284,7 +293,6 @@ window.qm = {
             }
         },
         getBaseUrl: function () {
-            //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
@@ -384,7 +392,7 @@ window.qm = {
             qm.api.postToQuantiModo(measurements,"v1/measurements", onDoneListener);
         },
         getRequestUrl: function(path, successHandler) {
-            qm.userHelper.getUserFromLocalStorageOrApi(function(user){
+            qm.userHelper.getUserFromLocalStorage(function(user){
                 function addGlobalQueryParameters(url) {
                     function addQueryParameter(url, name, value){
                         if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
@@ -421,6 +429,40 @@ window.qm = {
                 qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
+        },
+        getQuantiModoUrl: function (path) {
+            if(typeof path === "undefined") {path = "";}
+            return qm.api.getBaseUrl() + "/" + path;
+        },
+        rateLimit: function(func, rate, async) {
+            var queue = [];
+            var timeOutRef = false;
+            var currentlyEmptyingQueue = false;
+            var emptyQueue = function() {
+                if (queue.length) {
+                    currentlyEmptyingQueue = true;
+                    _.delay(function() {
+                        if (async) {
+                            _.defer(function() { queue.shift().call(); });
+                        } else {
+                            queue.shift().call();
+                        }
+                        emptyQueue();
+                    }, rate);
+                } else {
+                    currentlyEmptyingQueue = false;
+                }
+            };
+            return function() {
+                var args = _.map(arguments, function(e) { return e; }); // get arguments into an array
+                queue.push( _.bind.apply(this, [func, this].concat(args)) ); // call apply so that we can pass in arguments as parameters as opposed to an array
+                if (!currentlyEmptyingQueue) { emptyQueue(); }
+            };
+        },
+        executeWithRateLimit: function (functionToLimit, milliseconds) {
+            milliseconds = milliseconds || 15000;
+            var rateLimited = qm.api.rateLimit(functionToLimit, milliseconds);
+            rateLimited();
         }
     },
     appsManager: { // jshint ignore:line
@@ -434,7 +476,10 @@ window.qm = {
             if(!apiUrl){apiUrl = "https://app.quantimo.do";}
             if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
             apiUrl = apiUrl.replace("https://https", "https");
-            if(window.location.port && window.location.port !== "443"){apiUrl += ":" + window.location.port;}
+            // Why are we adding a port to the API url?  It breaks localhost:8100
+            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
+                apiUrl += ":" + window.location.port;
+            }
             return apiUrl;
         },
         getClientSecret: function(){
@@ -460,7 +505,11 @@ window.qm = {
                     // return;
                 }
                 if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(successHandler);
+                    qm.appsManager.getAppSettingsFromApi(successHandler, function () {
+                        qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
+                            if(appSettings){qm.appsManager.setAppSettings(appSettings, successHandler);}
+                        })
+                    });
                     return;
                 }
                 qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
@@ -478,10 +527,11 @@ window.qm = {
             }
             return false;
         },
-        getAppSettingsFromApi: function (successHandler) {
+        getAppSettingsFromApi: function (successHandler, errorHandler) {
             qm.api.getAppSettingsUrl(function(appSettingsUrl){
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
                     if(!response){
+                        if(errorHandler){errorHandler("No response from " + appSettingsUrl);}
                         qmLog.error("No response from " + appSettingsUrl);
                         return;
                     }
@@ -491,10 +541,11 @@ window.qm = {
                     }
                     if(!response.appSettings){
                         qmLog.error("No appSettings response from "+ appSettingsUrl);
+                        if(errorHandler){errorHandler("No appSettings response from "+ appSettingsUrl);}
                         return false;
                     }
                     qm.appsManager.setAppSettings(response.appSettings, successHandler);
-                })
+                }, errorHandler)
             });
         },
         getAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
@@ -597,7 +648,6 @@ window.qm = {
         }
     },
     arrayHelper: {
-
         arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
             if(!array){
                 qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
@@ -718,9 +768,9 @@ window.qm = {
             }
             searchTerm = searchTerm.toLowerCase();
             return array.filter(function(item){
-               var name = item.name || item.variableName;
-               name = name.toLowerCase();
-               return name.indexOf(searchTerm) !== -1;
+                var name = item.name || item.variableName;
+                name = name.toLowerCase();
+                return name.indexOf(searchTerm) !== -1;
             });
         },
         getWithNameContainingEveryWord: function(searchTerm, array){
@@ -896,6 +946,10 @@ window.qm = {
             return results;
         },
         getUnique: function(array, propertyName) {
+            if(!propertyName){
+                function onlyUnique(value, index, self) {return self.indexOf(value) === index;}
+                return array.filter( onlyUnique );
+            }
             var flags = [], output = [], l = array.length, i;
             for( i=0; i<l; i++) {
                 if(flags[array[i][propertyName]]) {continue;}
@@ -970,7 +1024,6 @@ window.qm = {
                     return qm.storage.getItem(qm.items.accessToken);
                 }
             }
-            qmLog.checkUrlAndStorageForDebugMode();
             qmLog.info("No access token or user!");
             return null;
         },
@@ -1046,6 +1099,61 @@ window.qm = {
                 var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
                 document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
             }
+        },
+        getPermissionString: function(){
+            var str = "";
+            var permissions = ['readmeasurements', 'writemeasurements'];
+            for(var i=0; i < permissions.length; i++) {str += permissions[i] + "%20";}
+            return str.replace(/%20([^%20]*)$/,'$1');
+        },
+        generateV1OAuthUrl: function(register) {
+            var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
+            // add params
+            url += "response_type=code";
+            url += "&client_id=" + qm.api.getClientId();
+            //url += "&client_secret=" + qm.appsManager.getClientSecret();
+            url += "&scope=" + qm.auth.getPermissionString();
+            url += "&state=testabcd";
+            if(register === true){url += "&register=true";}
+            url += "&redirect_uri=" + qm.auth.getRedirectUri();
+            qmLog.debug('generateV1OAuthUrl: ' + url);
+            return url;
+        },
+        openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler, ref) {
+            redirectUrl = redirectUrl || qm.auth.getRedirectUri();
+            qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
+            ref = ref || window.open(url, '_blank');
+            if (!ref) {
+                qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
+                alert("In order to log in, please unblock popups by clicking the icon on the right of the address bar. Then refresh the page.");
+            } else {
+                qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+                var interval = setInterval(function () {ref.postMessage('isLoggedIn?', redirectUrl);}, 1000);
+                window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
+                    qmLog.authDebug('message received from sibling tab', null, event.url);
+                    if(interval !== false){
+                        clearInterval(interval);  // Don't ask login question anymore
+                        interval = false;
+                        var value = qm.urlHelper.getParameterFromEventUrl(event, parameterName);
+                        if (value) {
+                            successHandler(value);
+                            ref.close();
+                        }
+                        qm.urlHelper.checkLoadStartEventUrlForErrors(ref, event);
+                    }
+                };
+                // listen to broadcast messages from other tabs within browser
+                window.addEventListener("message", window.onMessageReceived, false);
+            }
+        },
+        oAuthBrowserLogin: function (register, successHandler) {
+            var url = qm.auth.generateV1OAuthUrl(register);
+            var redirectUrl = qm.auth.getRedirectUri();
+            qm.auth.openBrowserWindowAndGetParameterFromRedirect(url, redirectUrl, 'code', successHandler);
+        },
+        getRedirectUri: function () {
+            if(qm.getAppSettings().redirectUri){return qm.getAppSettings().redirectUri;}
+            return qm.api.getBaseUrl() +  '/ionic/Modo/www/callback/';
         }
     },
     buildInfo: {},
@@ -1061,9 +1169,11 @@ window.qm = {
     connectorHelper: {
         getConnectorsFromApi: function(params, successCallback, errorHandler){
             qmLog.info("Getting connectors from API...");
-            function successHandler(connectors){
+            function successHandler(response){
+                var connectors = response.connectors || response;
                 if (connectors) {
                     qmLog.info("Got connectors from API...");
+                    qm.storage.setItem(qm.items.connectors, connectors);
                     if(successCallback){successCallback(connectors);}
                 } else {
                     qmLog.error("Could not get connectors from API...");
@@ -1077,6 +1187,21 @@ window.qm = {
             params = qm.api.addGlobalParams(params);
             apiInstance.getConnectors(params, callback);
         },
+        getConnectorsFromJson: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
+            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('data/connectors.json'), function (connectors) {  // Can't use QM SDK in service worker
+                if(connectors){
+                    qmLog.debug('Got connectors from connectors.json', null, connectors);
+                    qm.storage.setItem(qm.items.connectors, connectors);
+                    if(successHandler){successHandler(connectors);}
+                } else {
+                    qmLog.error("No connectors from getConnectorsFromJson");
+                    if(errorHandler){errorHandler("Could not get connectors from connectors.json");}
+                }
+            }, function (error) {
+                qmLog.error("Could not get connectors from connectors.json: "+error);
+                if(errorHandler){errorHandler("Could not get connectors from connectors.json: "+error);}
+            });
+        },
         getConnectorsFromLocalStorage: function(){
             var connectors = qm.storage.getItem(qm.items.connectors);
             if(connectors && connectors.connectors){
@@ -1087,10 +1212,20 @@ window.qm = {
         },
         getConnectorsFromLocalStorageOrApi: function(successHandler, errorHandler){
             var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
-            if(connectors){successHandler(connectors); return;}
-            qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
+            if(connectors){
+                if(successHandler){successHandler(connectors);}
+                return;
+            }
+            if(qm.getUser()){
+                qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
+            } else {
+                qm.connectorHelper.getConnectorsFromJson(successHandler, function (error) {
+                    qmLog.error("Could not get connectors from connectors.json", error);
+                    qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
+                });
+            }
         },
-        getConnectorByName: function (connectorName, successHandler) {
+        getConnectorByName: function (connectorName, successHandler, errorHandler) {
             if(!successHandler){
                 var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
                 return connectors.find(function(connector){
@@ -1098,11 +1233,30 @@ window.qm = {
                 });
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function (connectors) {
+                if(!connectors){
+                    qmLog.error("No getConnectorsFromLocalStorageOrApi!");
+                    if(errorHandler){errorHandler("No getConnectorsFromLocalStorageOrApi!");}
+                    return;
+                }
                 var match = connectors.find(function(connector){
                     return connector.name === connectorName.toLowerCase();
                 });
                 successHandler(match);
-            })
+            }, errorHandler)
+        },
+        storeConnectorResponse: function(response){
+            function hideUnavailableConnectors(connectors){
+                for(var i = 0; i < connectors.length; i++){
+                    //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide = true;}
+                    if(connectors[i].spreadsheetUpload && qm.platform.isMobile()) {connectors[i].hide = true;}
+                }
+                return response;
+            }
+            if(response.user){qm.userHelper.setUser(response.user);}
+            var connectors = response.connectors || response;
+            connectors = hideUnavailableConnectors(connectors);
+            qm.storage.setItem(qm.items.connectors, connectors);
+            return connectors;
         }
     },
     correlations: {
@@ -1236,6 +1390,7 @@ window.qm = {
             qm.storage.getGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName));
         },
         setItem: function(key, value){
+            if(!qm.storage.valueIsValid(value)){return false;}
             qm.storage.setGlobal(key, value);
         },
         getItem: function(key){
@@ -1354,6 +1509,8 @@ window.qm = {
     },
     items: {
         accessToken: 'accessToken',
+        afterLoginGoToUrl: 'afterLoginGoToUrl',
+        afterLoginGoToState: 'afterLoginGoToState',
         aggregatedCorrelations: 'aggregatedCorrelations',
         apiUrl: 'apiUrl',
         appSettings: 'appSettings',
@@ -1362,7 +1519,6 @@ window.qm = {
         clientId: 'clientId',
         commonVariables: 'commonVariables',
         connectors: 'connectors',
-        debugMode: 'debugMode',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
         deviceTokenToSync: 'deviceTokenToSync',
@@ -1384,6 +1540,7 @@ window.qm = {
         lastStudyOrCorrelation: 'lastStudyOrCorrelation',
         lastPopupNotificationUnixTimeSeconds: 'lastPopupNotificationUnixTimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
+        logLevel: 'logLevel',
         measurementsQueue: 'measurementsQueue',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         notificationInterval: 'notificationInterval',
@@ -1517,6 +1674,7 @@ window.qm = {
             })
         },
         setItem: function(key, value, successHandler, errorHandler){
+            if(!qm.storage.valueIsValid(value)){return false;}
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
             qm.globalHelper.setItem(key, value);
             if(typeof localforage === "undefined"){
@@ -1525,6 +1683,7 @@ window.qm = {
                 if(errorHandler){errorHandler(errorMessage)};
                 return;
             }
+            if(!qm.storage.valueIsValid(value)){return false;}
             localforage.setItem(key, value, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -1604,68 +1763,68 @@ window.qm = {
         actions: {
             trackYesAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackYesAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackYesAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackNoAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackNoAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackNoAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackZeroAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                console.log('trackZeroAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackZeroAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackOneRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                console.log('trackOneRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackOneRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackTwoRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
-                console.log('trackTwoRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackTwoRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThreeRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
-                console.log('trackThreeRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThreeRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFourRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
-                console.log('trackFourRatingAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackFourRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFiveRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackDefaultValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('trackDefaultValueAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             snoozeAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                console.log('snoozeAction push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('snoozeAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 body.action = 'snooze';
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
-                qmLog.pushDebug('trackLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackSecondToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
-                console.log('trackSecondToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackSecondToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThirdToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
-                console.log('trackThirdToLastValueAction', ' Push data: ' + JSON.stringify(data), {pushData: data, notificationsPostBody: body});
+                qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             }
         },
@@ -1906,7 +2065,6 @@ window.qm = {
                     }
                 })
             });
-
         },
         refreshAndShowPopupIfNecessary: function(notificationParams) {
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
@@ -2065,7 +2223,6 @@ window.qm = {
             var value = eachRecursive(obj);
             return value;
         }
-
     },
     parameterHelper: {
         getStateOrUrlOrRootScopeCorrelationOrRequestParam: function(paramName, $stateParams, $scope, $rootScope){
@@ -2296,6 +2453,17 @@ window.qm = {
     },
     serviceWorker: false,
     storage: {
+        valueIsValid: function(value){
+            if(typeof value === "undefined"){
+                qmLog.error("value provided to qm.storage.setItem is undefined!");
+                return false;
+            }
+            if(value === "null"){
+                qmLog.error("null string provided to qm.storage.setItem!");
+                return false;
+            }
+            return true;
+        },
         getUserVariableByName: function (variableName, updateLatestMeasurementTime, lastValue) {
             var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
             if(!userVariables || !userVariables.length){return null;}
@@ -2445,14 +2613,7 @@ window.qm = {
             return window.qm.storage.getItem(getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(typeof value === "undefined"){
-                qmLog.error("value provided to qm.storage.setItem is undefined!");
-                return;
-            }
-            if(value === "null"){
-                qmLog.error("null string provided to qm.storage.setItem!");
-                return;
-            }
+            if(!qm.storage.valueIsValid(value)){return false;}
             if(value === qm.storage.getGlobal(key)){
                 var valueString = JSON.stringify(value);
                 qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
@@ -2593,8 +2754,15 @@ window.qm = {
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
         },
-        prettyJsonStringify: function (jsonObject) {
-            return JSON ? JSON.stringify(jsonObject, null, '  ') : 'your browser does not support JSON so cant pretty print';
+        prettyJsonStringify: function (jsonObject, maxLength) {
+            if(!JSON){
+                console.error('your browser does not support JSON so cant pretty print');
+            }
+            var string = JSON.stringify(jsonObject, null, '  ');
+            if(maxLength){
+                return string.substring(0, maxLength) + '...';
+            }
+            return string;
         },
         parseBoolean: function(value){
             if(value === "false"){return false;}
@@ -2647,6 +2815,34 @@ window.qm = {
             var result = text.replace( /([A-Z])/g, " $1" );
             var finalResult = result.charAt(0).toUpperCase() + result.slice(1); // capitalize the first letter - as an example.
             return finalResult;
+        },
+        stringifyCircularObject: function (obj, replacer, indent) {
+            var printedObjects = [];
+            var printedObjectKeys = [];
+            function printOnceReplacer(key, value){
+                if ( printedObjects.length > 2000){ // browsers will not print more than 20K, I don't see the point to allow 2K.. algorithm will not be fast anyway if we have too many objects
+                    return 'object too long';
+                }
+                var printedObjIndex = false;
+                printedObjects.forEach(function(obj, index){if(obj===value){printedObjIndex = index;}});
+                if ( key == ''){ //root element
+                    printedObjects.push(obj);
+                    printedObjectKeys.push("root");
+                    return value;
+                } else if(printedObjIndex+"" != "false" && typeof(value)=="object"){
+                    if ( printedObjectKeys[printedObjIndex] == "root"){
+                        return "(pointer to root)";
+                    }else{
+                        return "(see " + ((!!value && !!value.constructor) ? value.constructor.name.toLowerCase()  : typeof(value)) + " with key " + printedObjectKeys[printedObjIndex] + ")";
+                    }
+                }else{
+                    var qualifiedKey = key || "(empty key)";
+                    printedObjects.push(value);
+                    printedObjectKeys.push(qualifiedKey);
+                    if(replacer){return replacer(key, value);}else{return value;}
+                }
+            }
+            return JSON.stringify(obj, printOnceReplacer, indent);
         }
     },
     studyHelper: {
@@ -2946,6 +3142,7 @@ window.qm = {
             url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
+            url = qm.stringHelper.getStringBeforeSubstring('chrome_default_popup_iframe.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
             url = qm.stringHelper.getStringBeforeSubstring('_generated_background_page.html', url);
             return url;
@@ -2980,6 +3177,69 @@ window.qm = {
         redirectToHttpsIfNecessary: function (){
             if(window.location.href.indexOf("http://") === 0 && window.location.href.indexOf("http://localhost") === -1){
                 location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+            }
+        },
+        getParameterFromEventUrl: function (event, parameterName) {
+            qmLog.authDebug('extracting ' + parameterName + ' from event: ' + JSON.stringify(event));
+            var url = event.url;
+            if(!url) {url = event.data;}
+            if(!qm.urlHelper.isQuantiMoDoDomain(url)){return;}
+            var value = qm.urlHelper.getParam(parameterName, url);
+            if(value){qmLog.authDebug('got ' + parameterName + ' from ' + url +": " + value);}
+            return value;
+        },
+        isQuantiMoDoDomain: function (urlToCheck) {
+            var isHttps = urlToCheck.indexOf("https://") === 0;
+            var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
+            var result = isHttps && matchesQuantiModo;
+            if(!result){
+                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                    urlToCheck + ' is NOT an https QuantiModo domain');
+            } else {
+                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                    urlToCheck + ' IS a QuantiModo domain');
+            }
+            return result;
+        },
+        getRootDomain: function(url){
+            var parts = url.split('.');
+            var rootDomainWithPath = parts[1] + '.' + parts[2];
+            var rootDomainWithPathParts = rootDomainWithPath.split('/');
+            return rootDomainWithPathParts[0];
+        },
+        getAuthorizationCodeFromEventUrl: function(event) {
+            return qm.urlHelper.getParameterFromEventUrl(event, 'code');
+        },
+        checkLoadStartEventUrlForErrors: function (ref, event){
+            var error = qm.urlHelper.getParam('error', event.url);
+            if(error) {
+                qmLog.error(error);
+                ref.close();
+            }
+        },
+        addEventListenerAndGetParameterFromRedirectedUrl: function(windowRef, parameterName, successHandler){
+            windowRef.addEventListener('loadstart', function(event) {
+                var value = qm.urlHelper.getParameterFromEventUrl(event, parameterName);
+                if(value) {
+                    windowRef.close();
+                    windowRef = undefined;
+                    successHandler(value);
+                }
+                qm.urlHelper.checkLoadStartEventUrlForErrors(windowRef, event);
+            });
+            windowRef.addEventListener('loaderror', loadErrorCallBack);
+            function loadErrorCallBack(params) {
+                $('#status-message').text("");
+                var scriptErrorMessage = "alert('Sorry we cannot open that page. Message from the server is : " + params.message + "');";
+                qmLog.error(scriptErrorMessage);
+                windowRef.executeScript({ code: scriptErrorMessage }, executeScriptCallBack);
+                windowRef.close();
+                windowRef = undefined;
+            }
+            function executeScriptCallBack(params) {
+                if (params[0] == null) {
+                    $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
+                }
             }
         }
     },
@@ -3049,29 +3309,37 @@ window.qm = {
             }
             return true;
         },
-        getUserFromApi: function(successCallback, errorHandler){
+        getUserFromApi: function(successHandler, errorHandler){
             qmLog.info("Getting user from API...");
-            function successHandler(userFromApi){
+            function userSuccessHandler(userFromApi){
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
                     qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
-                    if(successCallback){successCallback(userFromApi);}
+                    if(successHandler){successHandler(userFromApi);}
                 } else {
                     qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
-                        qm.api.getRequestUrl("v2/auth/login", function(url){
-                            chrome.tabs.create({"url": url, "selected": true});
-                        });
+                        qm.chrome.openLoginWindow();
                     }
                 }
             }
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.UserApi();
-            function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+            if(typeof Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
+                qm.api.getRequestUrl('api/v1/user', function(url){
+                    qm.api.getViaXhrOrFetch(url, function (user) {
+                        userSuccessHandler(user);
+                    }, errorHandler)
+                });
+            } else {   // Can't use QM SDK in service worker because it uses XHR instead of fetch
+                qm.api.configureClient();
+                var apiInstance = new Quantimodo.UserApi();
+                function userSdkCallback(error, data, response) {
+                    qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+                    userSuccessHandler(data);
+                }
+                var params = qm.api.addGlobalParams({});
+                //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
+                apiInstance.getUser(params, userSdkCallback);
             }
-            var params = qm.api.addGlobalParams({});
-            apiInstance.getUser(params, callback);
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
             qm.userHelper.getUserFromLocalStorage(function(user) {
@@ -3273,6 +3541,10 @@ window.qm = {
             });
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
+            if(!qm.getUser()){
+                qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                return;
+            }
             qm.reminderHelper.getNumberOfReminders(function (number) {
                 if(number){
                     qm.userVariables.getFromLocalStorage({}, function (userVariables) {

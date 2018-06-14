@@ -10,7 +10,9 @@
     <div id="notification-more" class="col col-10"><i style="font-size: 20px;" class="icon positive ion-more"></i></div>
 </div>
 <div class="button-bar">
-    <button id="notification-skip" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event)">
+    <button id="notification-skip" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;"
+            on-hold="skipAllForVariable(trackingReminderNotification, $event)"
+            ng-click="skip(trackingReminderNotification, $event)">
         <i class="ion-android-cancel"> &nbsp; Skip</i>
     </button>
     <button id="notification-snooze" class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'" style="text-overflow: clip; font-size: 12px;"

@@ -16,14 +16,6 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
         qmLog.context = $state.current.name;
         return message;
     }
-    qmLogService.setupBugsnag = function(){
-        var deferred = $q.defer();
-        qmLog.setupBugsnag();
-        qmLog.metaData.platform = ionic.Platform.platform();
-        qmLog.metaData.platformVersion = ionic.Platform.version();
-        deferred.resolve();
-        return deferred.promise;
-    };
     qmLogService.debug = function (name, message, metaData, stackTrace) {
         message = message || name;
         name = name || message;

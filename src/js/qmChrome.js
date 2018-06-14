@@ -205,9 +205,10 @@ window.qm.chrome = {
         console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
     },
     openLoginWindow: function(){
-        var windowParams = qm.chrome.windowParams.loginWindowParams;
+        var windowParams = { type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
+        windowParams.url = "https://" + qm.getClientId() + '.quantimo.do/ionic/Modo/www/index.html#/app/login';
         windowParams.focused = true;
-        qm.chrome.openOrFocusChromePopupWindow(qm.chrome.windowParams.loginWindowParams);
+        qm.chrome.openOrFocusChromePopupWindow(windowParams);
     },
     openMeasurementAddWindow: function (focusWindow, notificationId) {
         var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
@@ -329,7 +330,6 @@ if(typeof screen !== "undefined"){
     qm.chrome.windowParams = {
         introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
         facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
-        loginWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
         fullInboxWindowParams: { url: "index.html#/app/reminders-inbox", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
         compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
         inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
