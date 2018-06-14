@@ -163,6 +163,7 @@ window.qmLog = {
         return qmLog.authDebugEnabled;
     },
     authDebug: function(name, message, metaData) {
+        name = "Auth Debug: " + name;
         if(qmLog.getAuthDebugEnabled(name)){
             if(qm.platform.isMobile()){
                 qmLog.error(name, message, metaData);
@@ -173,6 +174,9 @@ window.qmLog = {
             //console.log("Log level is " + qmLog.getLogLevelName());
             qmLog.debug(message, message, null);
         }
+    },
+    webAuthDebug: function(name, message, metaData) {
+        if(!qm.platform.isMobile()){qmLog.authDebug(name, message, metaData);}
     },
     warn: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
