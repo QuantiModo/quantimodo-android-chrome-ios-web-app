@@ -42,7 +42,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     };
     function handleLoginError(error) {
-        $scope.retryLogin();
+        $scope.retryLogin(error);
         qmLogService.error('Login failure: '+error);
     }
     function handleLoginSuccess() {
@@ -55,11 +55,11 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         $scope.circlePage.title = 'Logging in...';
         $scope.circlePage.bodyText = 'Thank you for your patience. Your call is very important to us!';
         qmLog.authDebug('Setting login timeout...');
-        $timeout(function () {$scope.state.showRetry = true;}, 5000);
+        $timeout(function () {$scope.state.showRetry = true;}, 15000);
         return $timeout(function () {
             qmLog.authDebug('Finished login timeout');
             if(!qm.getUser()){handleLoginError("timed out");} else {handleLoginSuccess();}
-        }, 40000);
+        }, 60000);
     };
     function tryToGetUser() {
         qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
@@ -102,11 +102,12 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmLog.setAuthDebugEnabled(true);
         qmLog.authDebug("Enabled auth debug with on-hold button");
     };
-    $scope.retryLogin = function(){
+    $scope.retryLogin = function(error){
         qmLog.setAuthDebugEnabled(true);
-        qmLog.error("Called retry login!");
         $scope.state.alreadyRetried = true;
         $scope.state.showRetry = false;
-        $scope.circlePage.title = 'Please try logging in again';
+        //$scope.circlePage.title = 'Please try logging in again';
+        $scope.circlePage.title = null;
+        qmLog.error("Called retry login because: " + error);
     };
 }]);
