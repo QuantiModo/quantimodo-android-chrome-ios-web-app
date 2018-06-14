@@ -51,7 +51,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     }
     var loginTimeout = function () {
-        qmService.showBlackRingLoader();
+        var duration = 60000;
+        qmService.showBlackRingLoader(duration);
         $scope.circlePage.title = 'Logging in...';
         $scope.circlePage.bodyText = 'Thank you for your patience. Your call is very important to us!';
         qmLog.authDebug('Setting login timeout...');
@@ -59,7 +60,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         return $timeout(function () {
             qmLog.authDebug('Finished login timeout');
             if(!qm.getUser()){handleLoginError("timed out");} else {handleLoginSuccess();}
-        }, 60000);
+        }, duration);
     };
     function tryToGetUser() {
         qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
