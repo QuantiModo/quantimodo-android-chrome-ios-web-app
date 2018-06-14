@@ -1,7 +1,7 @@
 angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse) {
 
-    if(window.debugMode){qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name, null);}
+    qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
     qmService.initializeApplication(appSettingsResponse);
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.myIntro = {
@@ -10,9 +10,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         textColor : 'black',
         slideIndex : 0,
         startApp : function() {
+            qmService.intro.setIntroSeen(true, "User clicked startApp in intro");
             if($state.current.name.indexOf('intro') !== -1){
                 // Called to navigate to the main app
-                if(qmService.sendToLogin()){ return; }
+                if(qmService.login.sendToLogin()){ return; }
                 if(qm.platform.isDesignMode()){
                     qmService.goToState(qmStates.configuration);
                 } else {
@@ -23,6 +24,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         },
         next : function(index) {
+            qmService.intro.setIntroSeen(true, "User clicked next in intro");
             if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
         },
         previous : function() { $ionicSlideBoxDelegate.previous(); },
@@ -45,7 +47,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             //qmLogService.debug($state.current.name + ' initializing...');
             $scope.myIntro.ready = true;
         }
-        qmService.storage.setItem('introSeen', true);
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();

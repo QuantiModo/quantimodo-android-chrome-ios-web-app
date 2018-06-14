@@ -167,17 +167,17 @@
 		    <div class="container">
 		        <div class="row">
 		            <div style="text-align:center;margin-top:70%;color:#3369E8;">
-		                <h2>Redirecting...</h2>
+		                <!--<h2>Redirecting...</h2>-->
 		            </div>
 		        </div>
 		    </div>
 		</section>
 	</body>
 	<script>
-		var receiveMessage = function(event)
-		{
-			event.source.postMessage(window.location.href.toString(),event.origin);
+		var receiveMessage = function(event) {
+			event.source.postMessage(window.location.href.toString(), event.origin);
 		};
 		window.addEventListener("message", receiveMessage, false);
 	</script>
+    <script src="../lib/hello/dist/hello.all.js"></script>;
 </html>

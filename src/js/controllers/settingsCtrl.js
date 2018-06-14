@@ -9,7 +9,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	$scope.userEmail = qm.urlHelper.getParam('userEmail');
 	qmService.navBar.setFilterBarSearchIcon(false);
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('beforeEnter state ' + $state.current.name, null);
-        $scope.debugMode = qmLog.debugMode;
+        $scope.debugMode = qmLog.getDebugMode();
         if($rootScope.user){$scope.timeZone = $rootScope.user.timeZoneOffset/60 * -1;}
         $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
         $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
@@ -29,11 +29,11 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			return;
 		}
 		if(!$rootScope.user){
-            qmService.sendToLoginIfNecessaryAndComeBack();
+            qmService.login.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
-    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.login.completelyResetAppStateAndSendToLogin();};
 	qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.platform.isIOS){
@@ -50,7 +50,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
 			encodeURIComponent(qm.api.getBaseUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
-		var fallbackUrl = qmService.getQuantiModoUrl("api/v2/account/applications", true);
+		var fallbackUrl = qm.api.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
 		if($rootScope.platform.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
@@ -173,12 +173,13 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	};
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
-
 		var showDataClearPopup = function(ev){
             var title = 'Log Out';
             var textContent = "Are you sure you want to log out? I'll miss you dearly!";
             function yesCallback(){qmService.completelyResetAppStateAndLogout();}
-            function noCallback(){qmService.afterLogoutDoNotDeleteMeasurements();}
+            function noCallback(){
+                //qmService.afterLogoutDoNotDeleteMeasurements();
+            }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		qmLogService.debug('Logging out...');
@@ -291,7 +292,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         if(!$rootScope.user.shareAllData) {qmService.showInfoToast('Measurements are now private');}
     };
     $scope.toggleDebugMode = function(){
-        $scope.debugMode = qmLog.debugMode = !$scope.debugMode;
+        $scope.debugMode = !$scope.debugMode;
+        qmLog.setDebugMode($scope.debugMode);
     };
     $scope.upgradeToggle = function(){
         qmService.premiumModeDisabledForTesting = !$rootScope.user.stripeActive;

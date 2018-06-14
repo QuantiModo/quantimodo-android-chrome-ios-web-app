@@ -21,6 +21,7 @@
   <hook src="hooks/uncomment_cordova_js.js" type="before_build" />
   <hook src="hooks/uncomment_cordova_js.js" type="before_deploy" />
   <platform name="android">
+    <resource-file src="google-services.json" target="google-services.json" />
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
     <hook type="after_prepare" src="hooks/android_custom_resources.js" />
@@ -28,6 +29,7 @@
       <hook src="hooks/build-extras-hook.js" type="before_build" />
   </platform>
   <platform name="ios">
+    <resource-file src="GoogleService-Info.plist" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
     <preference name="KeychainAccessibility" value="WhenUnlocked"/>
@@ -61,6 +63,10 @@
     <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
       <string>Easily track your diet using your phone's camera as a barcode scanner</string>
     </edit-config>
+    <plugin name="cordova-plugin-firebase-crashlytics" spec="0.0.5">
+      <variable name="ANDROID_FIREBASE_CORE_VERSION" value="16.0.0" />
+      <variable name="ANDROID_FIREBASE_VERSION" value="11.8.0" />
+    </plugin>
   </platform>
     <preference name="QuantiModoClientId" value="QuantiModoClientId_PLACEHOLDER" />
     <preference name="QuantiModoClientSecret" value="QuantiModoClientSecret_PLACEHOLDER" />

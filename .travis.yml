@@ -68,6 +68,7 @@ script:
 - yarn install
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
 #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:

@@ -8,7 +8,7 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
@@ -72,6 +72,7 @@ angular.module('starter').controller('OnboardingCtrl',
         $scope.hideOnboardingPage();
     };
     function initializeAddRemindersPageIfNecessary() {
+        if(!$scope.circlePage){return;}
         if ($scope.circlePage.variableCategoryName && $scope.circlePage.addButtonText) {
             qm.variablesHelper.getFromLocalStorageOrApi({
                 variableCategoryName: $scope.circlePage.variableCategoryName,
