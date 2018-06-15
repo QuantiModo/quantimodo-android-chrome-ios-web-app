@@ -8,7 +8,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         qmService.auth.socialLogin(connectorName, ev, additionalParams, function (response) {
             qmLog.authDebug("Called socialLogin successHandler with response: "+JSON.stringify(response), null, response);
             if(!qm.getUser()){
-                handleLoginError("No user after successful social login!");} else {handleLoginSuccess();
+                handleLoginError("No user after successful social login!", {response: response});} else {handleLoginSuccess();
             }
         }, function (error) {
             handleLoginError("SocialLogin failed! error: ", error);
@@ -41,9 +41,9 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmService.login.afterLoginGoToUrlOrState();
         }
     };
-    function handleLoginError(error) {
+    function handleLoginError(error, metaData) {
         $scope.retryLogin(error);
-        qmLogService.error('Login failure: '+error);
+        qmLogService.error('Login failure: '+error, metaData, metaData);
     }
     function handleLoginSuccess() {
         if(qm.getUser() && $state.current.name.indexOf('login') !== -1){
