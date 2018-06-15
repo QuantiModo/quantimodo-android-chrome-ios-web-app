@@ -122,8 +122,6 @@ window.qm = {
             if(window.devCredentials){
                 if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
                 if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
-            } else {
-                qmLog.debug('No dev credentials', null);
             }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
