@@ -171,11 +171,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             connectWithToken: function (response, connector, successHandler, errorHandler) {
                 qmLog.authDebug('connectWithToken: Connecting with  ' + JSON.stringify(response), null, response);
                 var body = { connectorCredentials: {token: response}, connector: connector };
-                qmService.connectConnectorWithTokenDeferred(body).then(function(result){
-                    qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(result), null, result);
+                qmService.post('api/v3/connectors/connect', ['connector', 'connectorCredentials'], body, function(response){
+                    var connectors = qmService.connectors.storeConnectorResponse(response);
+                    qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(response), response, response);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
-                    if(successHandler){successHandler(result);}
-                }, function (error) {
+                    if(successHandler){successHandler(response);}
+                }, function(error){
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
@@ -1890,10 +1891,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var allowedParams = ['location', 'username', 'password', 'email'];
         qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
-    qmService.connectConnectorWithTokenToApi = function(body, successHandler, errorHandler){
-        var requiredProperties = ['connector', 'connectorCredentials'];
-        qmService.post('api/v3/connectors/connect', requiredProperties, body, successHandler, errorHandler);
-    };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
@@ -2942,17 +2939,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject(error);
             });
         }
-        return deferred.promise;
-    };
-    qmService.connectConnectorWithTokenDeferred = function(body){
-        var deferred = $q.defer();
-        qmService.connectConnectorWithTokenToApi(body, function(response){
-            var connectors = qmService.connectors.storeConnectorResponse(response);
-            deferred.resolve(connectors);
-        }, function(error){
-            qmLog.error("connectConnectorWithTokenDeferred error: "+JSON.stringify(error), null, error);
-            deferred.reject(error);
-        });
         return deferred.promise;
     };
     var geoLocationDebug = false;
