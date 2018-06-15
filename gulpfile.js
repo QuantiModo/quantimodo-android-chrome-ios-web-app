@@ -315,6 +315,7 @@ var qm = {
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
             if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
             return !qmGit.isMaster();
         }
     },
@@ -360,6 +361,18 @@ var qm = {
     },
 };
 var buildingFor = {
+    setChrome: function(){
+        buildingFor.platform = qmPlatform.chrome;
+    },
+    setAndroid: function(){
+        buildingFor.platform = qmPlatform.android;
+    },
+    setWeb: function(){
+        buildingFor.platform = qmPlatform.web;
+    },
+    setIOS: function(){
+        buildingFor.platform = qmPlatform.ios;
+    },
     platform: null,
     web: function () {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
@@ -1672,16 +1685,23 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'))
         ;
 }
-gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(doNotMinify || qm.buildSettings.buildDebug()){
-        return copyFiles('src/**/*', 'www', []);
+function shouldWeMinify(){
+    if (doNotMinify) {
+        qmLog.info("Copying src instead of minifying because doNotMinify is true");
+        return false;
     }
+    if(qm.buildSettings.buildDebug()){
+        qmLog.info("Copying src instead of minifying because qm.buildSettings.buildDebug returns true");
+        return false;
+    }
+    return true;
+}
+gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    if(!shouldWeMinify()){return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if(doNotMinify || qm.buildSettings.buildDebug()){
-        return copyFiles('src/**/*', 'www', []);
-    }
+    if (!shouldWeMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
 var serviceWorkerAndLibraries = [
@@ -2581,6 +2601,7 @@ gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
+    buildingFor.setChrome();
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -2597,6 +2618,7 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
+    buildingFor.setChrome();
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
             appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
