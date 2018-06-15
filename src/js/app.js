@@ -42,9 +42,10 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
-            window.onerror = function (errorMsg, url, lineNumber) {
-                errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                qmLogService.error(null, errorMsg);
+            window.onerror = function (error, url, lineNumber) {
+                var name = error.name || error.message || error;
+                var message = ' Script: ' + url + ' Line: ' + lineNumber;
+                qmLog.error(name, message, error);
             };
         }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
