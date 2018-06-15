@@ -184,16 +184,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
                 qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode));
-                var allowedParams = ['code', 'noRedirect'];
                 var params = {noRedirect: true, code: authorizationCode};
-                qmService.get('api/v3/connectors/' + connector.name + '/connect', allowedParams, params, function(response){
+                function localSuccessHandler(response){
                     qmService.connectors.storeConnectorResponse(response);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(response);}
+                }
+                qmService.get('api/v3/connectors/' + connector.name + '/connect', ['code', 'noRedirect'], params, function(response){
+                    localSuccessHandler(response);
                 }, function(error){
+                    if(error.error){qmLog.error("connectWithAuthCode error.error: "+error.error, error, error);}
                     if(error.user){
                         qmLog.error("connectWithAuthCode: Called error handler even though we got a user! Response: ", error, {response: error});
-                        if(successHandler){successHandler(error);}
+                        localSuccessHandler(response);
                         return;
                     }
                     qmLogService.error("error on connectWithAuthCode for " + connector.name + " is: ", error, error);
@@ -1474,8 +1477,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
-        } else {
-            qmLog.authDebug("No dev credentials");
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -1495,8 +1496,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
             if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
-        } else {
-            qmLogService.debug('No dev credentials', null);
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -1598,11 +1597,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             params.cache = null;
         }
         if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
-            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler("Too soon to make request");}
             return;
         }
         if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
-            qmLogService.debug('Not making request to ' + route + ' user because we are in the intro state', null, options.stackTrace);
+            var message = 'Not making request to ' + route + ' user because we are in the intro state';
+            qmLogService.debug(message, null, options.stackTrace);
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler(message);}
             return;
         }
         delete params.force;
