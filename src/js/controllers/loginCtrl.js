@@ -11,7 +11,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                 handleLoginError("No user after successful social login!");} else {handleLoginSuccess();
             }
         }, function (error) {
-            handleLoginError("SocialLogin failed! error: " + error);
+            handleLoginError("SocialLogin failed! error: ", error);
         });
     };
     $scope.controller_name = "LoginCtrl";
@@ -109,6 +109,6 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         $scope.state.showRetry = false;
         //$scope.circlePage.title = 'Please try logging in again';
         $scope.circlePage.title = null;
-        qmLog.error("Called retry login because: " + error);
+        qmLog.error("Called retry login because: ", error);
     };
 }]);

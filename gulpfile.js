@@ -359,8 +359,34 @@ var qm = {
             if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
         }
     },
+    releaseService: {
+        getReleaseStage: function () {
+            if(!process.env.RELEASE_STAGE){
+                qmLog.error("No RELEASE_STAGE set!  Assuming development");
+                return 'development';
+            }
+            return process.env.RELEASE_STAGE;
+        },
+        isDevelopment: function () {
+            return qm.releaseService.getReleaseStage() === 'development';
+        },
+        isStaging: function () {
+            return qm.releaseService.getReleaseStage() === 'staging';
+        },
+        isProduction: function () {
+            return qm.releaseService.getReleaseStage() === 'production';
+        }
+    }
 };
 var buildingFor = {
+    getPlatformBuildingFor: function(){
+        if(buildingFor.android()){return 'android';}
+        if(buildingFor.ios()){return 'ios';}
+        if(buildingFor.chrome()){return 'chrome';}
+        if(buildingFor.web()){return 'web';}
+        qmLog.error("What platform are we building for?");
+        return null;
+    },
     setChrome: function(){
         buildingFor.platform = qmPlatform.chrome;
     },
@@ -378,14 +404,14 @@ var buildingFor = {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
     },
     android: function () {
-        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
         if (buildingFor.platform === 'android'){ return true; }
+        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
         return process.env.BUILD_ANDROID;
     },
     ios: function () {
-        if (process.env.BUDDYBUILD_SCHEME) {return true;}
         if (buildingFor.platform === qmPlatform.ios){ return true; }
+        if (process.env.BUDDYBUILD_SCHEME) {return true;}
         if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
     },
@@ -2210,6 +2236,19 @@ gulp.task('makeIosAppSimplified', function (callback) {
         'addDeploymentTarget',
         callback);
 });
+gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
+    if(!buildingFor.web()){
+        qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
+        return;
+    }
+    if(!qm.releaseService.isProduction() && !qm.releaseService.isStaging()){
+        qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qm.releaseService.getReleaseStage());
+        return;
+    }
+    var url = 'https://qm-'+qm.releaseService.getReleaseStage()+'.quantimo.do/ionic/Modo/www/';
+    replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
+    return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
+});
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
@@ -2587,6 +2626,7 @@ gulp.task('configureApp', [], function (callback) {
         'setVersionNumberInFiles',
         'createSuccessFile',
         'verifyExistenceOfBuildInfo',
+        'replaceRelativePathsWithAbsolutePaths',
         callback);
 });
 gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
