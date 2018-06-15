@@ -183,10 +183,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
                 qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode));
-                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (response){
+                var allowedParams = ['code', 'noRedirect'];
+                var params = {noRedirect: true, code: authorizationCode};
+                qmService.get('api/v3/connectors/' + connector.name + '/connect', allowedParams, params, function(response){
+                    qmService.connectors.storeConnectorResponse(response);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(response);}
-                }, function(error) {
+                }, function(error){
+                    if(error.user){
+                        qmLog.error("connectWithAuthCode: Called error handler even though we got a user! Response: ", error, {response: error});
+                        if(successHandler){successHandler(error);}
+                        return;
+                    }
                     qmLogService.error("error on connectWithAuthCode for " + connector.name + " is: ", error, error);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(errorHandler){errorHandler(error);}
@@ -1886,11 +1894,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var requiredProperties = ['connector', 'connectorCredentials'];
         qmService.post('api/v3/connectors/connect', requiredProperties, body, successHandler, errorHandler);
     };
-    qmService.connectWithAuthCodeToApi = function(code, connectorLowercaseName, successHandler, errorHandler){
-        var allowedParams = ['code', 'noRedirect'];
-        var params = {noRedirect: true, code: code};
-        qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
-    };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
@@ -2948,17 +2951,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve(connectors);
         }, function(error){
             qmLog.error("connectConnectorWithTokenDeferred error: "+JSON.stringify(error), null, error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-    qmService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
-        var deferred = $q.defer();
-        qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(response){
-            qmService.connectors.storeConnectorResponse(response);
-            deferred.resolve(response);
-        }, function(error){
-            qmLog.error("auth debug: connectWithAuthCodeToApi error: ", error, error);
             deferred.reject(error);
         });
         return deferred.promise;
