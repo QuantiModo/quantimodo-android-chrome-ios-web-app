@@ -206,7 +206,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             .then(function () {
                 qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
             }, function(error) {
-                qmLogService.error('Failed to track favorite! error: ' + error, null, trackingReminder);
+                qmLogService.error('Failed to track favorite! error: ', error, trackingReminder);
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){

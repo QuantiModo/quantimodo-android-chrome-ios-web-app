@@ -136,7 +136,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             hideLoader();
         }
         function errorHandler(error) {
-			qmLogService.error("History update error: " + error);
+			qmLogService.error("History update error: ", error);
             $scope.state.noHistory = true;
             hideLoader();
         }
