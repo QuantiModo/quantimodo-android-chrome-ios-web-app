@@ -151,7 +151,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cordova.plugins.barcodeScanner.scan(function (result) {
                     qmService.barcodeScanner.scanSuccessHandler(result, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
                 }, function (error) {
-                    qmLog.error("Barcode scan failure! error: " + error);
+                    qmLog.error("Barcode scan failure! error: ", error);
                     qmService.showMaterialAlert("Barcode scan failed!", "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
                 }, scannerConfig);
             },
@@ -357,7 +357,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             if(successHandler){successHandler(response);}
                         }, function (error) {
                             qmService.hideLoader();
-                            qmLog.error("plugins.googleplus.login error: "+error, null, params);
+                            qmLog.error("plugins.googleplus.login error: ", error, {errorResponse: error, params: params});
                             if(errorHandler){errorHandler(error);}
                         });
                     }, function (errorMessage) {
@@ -1772,7 +1772,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return debugUrl;
     }
     var onRequestFailed = function(error){
-        qmLogService.error("Request error : " + error);
+        qmLogService.error("Request error : ", error);
     };
     qmService.getMeasurementById = function(measurementId){
         var deferred = $q.defer();
@@ -2540,9 +2540,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.globalHelper.setStudy(study);
             deferred.resolve(study);
         }, function (error) {
-            qmLogService.error("qmService.getStudy error: " + error);
+            qmLogService.error("qmService.getStudy error: ", error);
             deferred.reject(error);
-            qmLogService.error(error);
         });
         return deferred.promise;
     };
@@ -5575,9 +5574,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qm.userVariables.saveToLocalStorage(response.data.userVariables);
                 }
                 qmService.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
-            }, function (error) {qmLogService.error('could not post weather measurements: ' + error);});
+            }, function (error) {qmLogService.error('could not post weather measurements: ', error);});
         }).error(function (error) {
-            qmLog.error(null, 'forecast.io request failed!  error: ' + error, {error_response: error, request_url: url});
+            qmLog.error(null, 'forecast.io request failed!  error: ', error, {error_response: error, request_url: url});
         });
     };
     qmService.setupHelpCards = function () {
@@ -7013,7 +7012,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                         }, function (error) {
-                            qmLog.error('push.on.notification: ' + error);
+                            qmLog.error('push.on.notification: ', error);
                         });
                     }
                     // data.message,

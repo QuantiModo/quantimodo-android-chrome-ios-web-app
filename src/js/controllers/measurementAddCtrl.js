@@ -126,7 +126,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.skipTrackingReminderNotification(params, function(){
                 qmLogService.debug($state.current.name + ': skipTrackingReminderNotification', null);
             }, function(error){
-                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error" + error);
+                qmLogService.error($state.current.name + ": skipTrackingReminderNotification error", error);
             });
         }
         $scope.state.selectedDate = moment($scope.state.selectedDate);
@@ -297,7 +297,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 deferred.resolve();
             }, function(error) {
                 qmService.hideLoader();
-                qmLogService.error($state.current.name + ": " + "Error response: " + error);
+                qmLogService.error($state.current.name + ": " + "Error response: ", error);
                 deferred.reject(error);
             }
         );
