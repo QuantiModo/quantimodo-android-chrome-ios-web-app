@@ -186,8 +186,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (response){
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(response);}
-                }, function() {
-                    qmLogService.error("error on connectWithAuthCode for " + connector.name);
+                }, function(error) {
+                    qmLogService.error("error on connectWithAuthCode for " + connector.name + " is: ", error, error);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(errorHandler){errorHandler(error);}
                 });
@@ -2959,6 +2959,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.connectors.storeConnectorResponse(response);
             deferred.resolve(response);
         }, function(error){
+            qmLog.error("auth debug: connectWithAuthCodeToApi error: ", error, error);
             deferred.reject(error);
         });
         return deferred.promise;
