@@ -196,6 +196,9 @@ var qmGit = {
         return qmGit.branchName === "master"
     },
     isDevelop: function () {
+        if(!qmGit.branchName){
+            throw "Branch name not set!"
+        }
         return qmGit.branchName === "develop"
     },
     isFeature: function () {
@@ -314,9 +317,16 @@ var qm = {
         },
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
-            if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            if(isTruthy(process.env.BUILD_DEBUG) || isTruthy(process.env.DEBUG_BUILD)){
+                qmLog.info("BUILD_DEBUG or DEBUG_BUILD is true");
+                return true;
+            }
             if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
-            return !qmGit.isMaster();
+            if(!qmGit.isMaster() && !qmGit.isDevelop()){
+                qmLog.info("Not on develop or master so buildDebug is true");
+                return true;
+            }
+            return false;
         }
     },
     buildInfoHelper: {
@@ -1694,6 +1704,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(ifElse(renameForCacheBusting, rev))                // Rename the concatenated files for cache busting (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(ifElse(renameForCacheBusting, revReplace))         // Substitute in new filenames for cache busting
+        //.pipe(replace('="scripts', '="https://quantimodo.quantimo.do/ionic/Modo/www/scripts'))  // TODO: Replace relative with absolute paths to github hosting
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         //.pipe(rev.manifest('rev-manifest.json'))
         // .pipe(through.obj(function (file, enc, cb) {
