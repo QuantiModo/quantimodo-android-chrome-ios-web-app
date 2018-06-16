@@ -210,6 +210,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             connectWithParams: function(params, lowercaseConnectorName, successHandler, errorHandler) {
+                if(typeof lowercaseConnectorName !== "string"){lowercaseConnectorName = lowercaseConnectorName.name;}
                 qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
                     .then(function(result){
                         qmLog.authDebug(JSON.stringify(result));
@@ -358,13 +359,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.info("qmService.connectors.googleMobileConnect for "+JSON.stringify(connector), null, connector);
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
+                    qmLog.authDebug("plugins.googleplus.login deviceReady: ", connector, connector);
                     var scopes = connector.scopes.join(" ");
                     var params = {
                         'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                         'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     };
-                    qmLog.authDebug("plugins.googleplus.login with params: "+JSON.stringify(params), null, params);
+                    qmLog.authDebug("plugins.googleplus.login with params: ", params, params);
                     qmService.showBasicLoader();
                     function googleLogin(){
                         window.plugins.googleplus.login(params, function (response) {
