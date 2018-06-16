@@ -1906,6 +1906,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 params[arrayParams[i].key] = arrayParams[i].value;
             }
         }
+        qmLog.authDebug("connectConnectorWithParamsToApi:", params, params);
         var allowedParams = ['location', 'username', 'password', 'email'];
         qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
