@@ -59,13 +59,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             googleLogout: function(){
-                qmLog.authDebug('googleLogout');
+                qmLog.authDebug('googleLogout so we care able to get serverAuthCode again if logging in a second time');
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
                     /** @namespace window.plugins.googleplus */
-                    window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('logged out of google!');},
-                        function (fail) {qmLog.authDebug('failed to logout', null, fail);});
-                    window.plugins.googleplus.disconnect(function (msg) {qmLog.authDebug('disconnect google!');});
+                    window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('plugins.googleplus.logout: logged out of google!', msg, msg);},
+                        function (error) {qmLog.authDebug('plugins.googleplus.logout: failed to logout', error, error);});
+                    window.plugins.googleplus.disconnect(function (msg) {qmLog.authDebug('plugins.googleplus.logout: disconnected google!');});
                 }
             }
         },
@@ -183,6 +183,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
+                if(authorizationCode === "" || !authorizationCode){
+                    qmLog.error("No auth code provided to connectWithAuthCode");
+                    if(errorHandler){errorHandler(error);}
+                    return;
+                }
                 qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode));
                 var params = {noRedirect: true, code: authorizationCode};
                 function localSuccessHandler(response){
@@ -361,23 +366,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                     qmLog.authDebug("plugins.googleplus.login with params: "+JSON.stringify(params), null, params);
                     qmService.showBasicLoader();
-                    window.plugins.googleplus.login(params, function (response) {
-                        qmLog.authDebug('plugins.googleplus.login response:' + JSON.stringify(response), null, response);
-                        qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector, function (response) {
-                            qmLog.info("plugins.googleplus.login hiding loader because we got response from connectWithAuthCode:"+JSON.stringify(response), null, response);
+                    function googleLogin(){
+                        window.plugins.googleplus.login(params, function (response) {
+                            qmLog.authDebug('plugins.googleplus.login response:' + JSON.stringify(response), null, response);
+                            qmService.connectors.connectWithParams(response, connector, function (response) {
+                                qmLog.info("plugins.googleplus.login hiding loader because we got response from connectWithAuthCode:"+JSON.stringify(response), null, response);
+                                qmService.hideLoader();
+                                if(successHandler){successHandler(response);}
+                            }, function (error) {
+                                qmService.hideLoader();
+                                qmLog.error("plugins.googleplus.login error: ", error, {errorResponse: error, params: params});
+                                if(errorHandler){errorHandler(error);}
+                            });
+                        }, function (errorMessage) {
                             qmService.hideLoader();
-                            if(successHandler){successHandler(response);}
-                        }, function (error) {
-                            qmService.hideLoader();
-                            qmLog.error("plugins.googleplus.login error: ", error, {errorResponse: error, params: params});
-                            if(errorHandler){errorHandler(error);}
+                            if(errorHandler){errorHandler(errorMessage);}
+                            qmService.showMaterialAlert("Google Login Issue", JSON.stringify(errorMessage));
+                            qmLogService.error("plugins.googleplus.login could not get userData from Google!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
+                                JSON.stringify(errorMessage), null, params);
                         });
-                    }, function (errorMessage) {
-                        qmService.hideLoader();
-                        if(errorHandler){errorHandler(errorMessage);}
-                        qmService.showMaterialAlert("Google Login Issue", JSON.stringify(errorMessage));
-                        qmLogService.error("plugins.googleplus.login could not get userData from Google!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
-                            JSON.stringify(errorMessage), null, params);
+                    }
+                    qmLog.authDebug('googleplus.logout: Logging out of google so we can get a serverAuthCode to use for offline access', msg, msg);
+                    window.plugins.googleplus.logout(function (msg) {
+                        qmLog.authDebug('plugins.googleplus.logout: logged out of google so we should get a serverAuthCode now', msg, msg);
+                        googleLogin();
+                    }, function (error) {
+                        qmLog.error('plugins.googleplus.logout: failed to logout but going to try logging in anyway', error, error);
+                        googleLogin();
                     });
                 }
             },
