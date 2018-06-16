@@ -3115,7 +3115,7 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('cordova-hcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
-gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
+gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
