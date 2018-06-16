@@ -386,7 +386,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 JSON.stringify(errorMessage), null, params);
                         });
                     }
-                    qmLog.authDebug('googleplus.logout: Logging out of google so we can get a serverAuthCode to use for offline access', msg, msg);
+                    qmLog.authDebug('googleplus.logout: Logging out of google so we can get a serverAuthCode to use for offline access', params, params);
                     window.plugins.googleplus.logout(function (msg) {
                         qmLog.authDebug('plugins.googleplus.logout: logged out of google so we should get a serverAuthCode now', msg, msg);
                         googleLogin();
