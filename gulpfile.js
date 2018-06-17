@@ -196,6 +196,9 @@ var qmGit = {
         return qmGit.branchName === "master"
     },
     isDevelop: function () {
+        if(!qmGit.branchName){
+            throw "Branch name not set!"
+        }
         return qmGit.branchName === "develop"
     },
     isFeature: function () {
@@ -314,9 +317,16 @@ var qm = {
         },
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
-            if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){return true;}
+            if(isTruthy(process.env.BUILD_DEBUG) || isTruthy(process.env.DEBUG_BUILD)){
+                qmLog.info("BUILD_DEBUG or DEBUG_BUILD is true");
+                return true;
+            }
             if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
-            return !qmGit.isMaster();
+            if(!qmGit.isMaster() && !qmGit.isDevelop()){
+                qmLog.info("Not on develop or master so buildDebug is true");
+                return true;
+            }
+            return false;
         }
     },
     buildInfoHelper: {
@@ -359,8 +369,34 @@ var qm = {
             if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
         }
     },
+    releaseService: {
+        getReleaseStage: function () {
+            if(!process.env.RELEASE_STAGE){
+                qmLog.error("No RELEASE_STAGE set!  Assuming development");
+                return 'development';
+            }
+            return process.env.RELEASE_STAGE;
+        },
+        isDevelopment: function () {
+            return qm.releaseService.getReleaseStage() === 'development';
+        },
+        isStaging: function () {
+            return qm.releaseService.getReleaseStage() === 'staging';
+        },
+        isProduction: function () {
+            return qm.releaseService.getReleaseStage() === 'production';
+        }
+    }
 };
 var buildingFor = {
+    getPlatformBuildingFor: function(){
+        if(buildingFor.android()){return 'android';}
+        if(buildingFor.ios()){return 'ios';}
+        if(buildingFor.chrome()){return 'chrome';}
+        if(buildingFor.web()){return 'web';}
+        qmLog.error("What platform are we building for?");
+        return null;
+    },
     setChrome: function(){
         buildingFor.platform = qmPlatform.chrome;
     },
@@ -378,14 +414,14 @@ var buildingFor = {
         return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
     },
     android: function () {
-        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
         if (buildingFor.platform === 'android'){ return true; }
+        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
         if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
         return process.env.BUILD_ANDROID;
     },
     ios: function () {
-        if (process.env.BUDDYBUILD_SCHEME) {return true;}
         if (buildingFor.platform === qmPlatform.ios){ return true; }
+        if (process.env.BUDDYBUILD_SCHEME) {return true;}
         if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
         return process.env.BUILD_IOS;
     },
@@ -1668,6 +1704,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(ifElse(renameForCacheBusting, rev))                // Rename the concatenated files for cache busting (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(ifElse(renameForCacheBusting, revReplace))         // Substitute in new filenames for cache busting
+        //.pipe(replace('="scripts', '="https://quantimodo.quantimo.do/ionic/Modo/www/scripts'))  // TODO: Replace relative with absolute paths to github hosting
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
         //.pipe(rev.manifest('rev-manifest.json'))
         // .pipe(through.obj(function (file, enc, cb) {
@@ -2210,6 +2247,19 @@ gulp.task('makeIosAppSimplified', function (callback) {
         'addDeploymentTarget',
         callback);
 });
+gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
+    if(!buildingFor.web()){
+        qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
+        return;
+    }
+    if(!qm.releaseService.isProduction() && !qm.releaseService.isStaging()){
+        qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qm.releaseService.getReleaseStage());
+        return;
+    }
+    var url = 'https://qm-'+qm.releaseService.getReleaseStage()+'.quantimo.do/ionic/Modo/www/';
+    replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
+    return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
+});
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
@@ -2587,6 +2637,7 @@ gulp.task('configureApp', [], function (callback) {
         'setVersionNumberInFiles',
         'createSuccessFile',
         'verifyExistenceOfBuildInfo',
+        'replaceRelativePathsWithAbsolutePaths',
         callback);
 });
 gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
@@ -3064,7 +3115,7 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('cordova-hcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
-gulp.task('cordova-hcp-install-local-dev-plugin', [], function (callback) {
+gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
