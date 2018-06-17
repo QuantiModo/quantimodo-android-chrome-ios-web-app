@@ -16,7 +16,8 @@ window.qmLog = {
             var body = name.response.body;
             qmLog.name = body.errorMessage || body.message || JSON.stringify(body);
         }
-        return qmLog.name = name || message;
+        qmLog.name = name || message;
+        qmLog.name = "QM: " + name;
     },
     message: null,
     setMessage: function(name, message) {
