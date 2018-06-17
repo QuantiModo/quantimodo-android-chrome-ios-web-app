@@ -454,12 +454,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 }
-                if(typeof facebookConnectPlugin !== "undefined"){
+                function useNativeLogin() {
+                    if(typeof facebookConnectPlugin === "undefined"){return false;}
+                    if(qm.platform.isIOS() && qm.getClientId().indexOf('moodimodo') === -1){
+                        qmLog.authDebug("We can only specify one iOS app in Facebook so using web connect");
+                        return false;
+                    }
+                    return true;
+                }
+                if(useNativeLogin()){
                     qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector.scopes), null, connector);
-                    facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
+                    facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);
                 } else {
                     qmLog.authDebug("qmService.connectors.facebookMobileConnect no facebookConnectPlugin so falling back to qmService.connectors.oAuthConnect", null, connector);
-                    qmService.connectors.oAuthConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
+                    qmService.connectors.qmApiMobileConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
                 }
             },
             storeConnectorResponse: function(response){
