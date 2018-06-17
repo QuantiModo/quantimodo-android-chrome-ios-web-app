@@ -59,13 +59,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             googleLogout: function(){
-                qmLog.authDebug('googleLogout');
+                qmLog.authDebug('googleLogout so we care able to get serverAuthCode again if logging in a second time');
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
                     /** @namespace window.plugins.googleplus */
-                    window.plugins.googleplus.logout(function (msg) {qmLog.authDebug('logged out of google!');},
-                        function (fail) {qmLog.authDebug('failed to logout', null, fail);});
-                    window.plugins.googleplus.disconnect(function (msg) {qmLog.authDebug('disconnect google!');});
+                    window.plugins.googleplus.logout(function (msg) {
+                        qmLog.authDebug('plugins.googleplus.logout: logged out of google!', msg, msg);
+                    }, function (error) {
+                        qmLog.authDebug('plugins.googleplus.logout: failed to logout', error, error);
+                    });
+                    window.plugins.googleplus.disconnect(function (msg) {
+                        qmLog.authDebug('plugins.googleplus.logout: disconnected google!');
+                    });
                 }
             }
         },
@@ -151,7 +156,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cordova.plugins.barcodeScanner.scan(function (result) {
                     qmService.barcodeScanner.scanSuccessHandler(result, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler);
                 }, function (error) {
-                    qmLog.error("Barcode scan failure! error: " + error);
+                    qmLog.error("Barcode scan failure! error: ", error);
                     qmService.showMaterialAlert("Barcode scan failed!", "Couldn't identify your barcode, but I'll look into it.  Please try a manual search in the meantime. ");
                 }, scannerConfig);
             },
@@ -171,28 +176,47 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             connectWithToken: function (response, connector, successHandler, errorHandler) {
                 qmLog.authDebug('connectWithToken: Connecting with  ' + JSON.stringify(response), null, response);
                 var body = { connectorCredentials: {token: response}, connector: connector };
-                qmService.connectConnectorWithTokenDeferred(body).then(function(result){
-                    qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(result), null, result);
+                qmService.post('api/v3/connectors/connect', ['connector', 'connectorCredentials'], body, function(response){
+                    var connectors = qmService.connectors.storeConnectorResponse(response);
+                    qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(response), response, response);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
-                    if(successHandler){successHandler(result);}
-                }, function (error) {
+                    if(successHandler){successHandler(response);}
+                }, function(error){
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 });
             },
             connectWithAuthCode: function (authorizationCode, connector, successHandler, errorHandler) {
+                if(authorizationCode === "" || !authorizationCode){
+                    var errorMessage = "No auth code provided to connectWithAuthCode";
+                    qmLog.error(errorMessage);
+                    if(errorHandler){errorHandler(errorMessage);}
+                    return;
+                }
                 qmLogService.debug(connector.name + ' connect result is ' + JSON.stringify(authorizationCode));
-                qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (response){
+                var params = {noRedirect: true, code: authorizationCode};
+                function localSuccessHandler(response){
+                    qmService.connectors.storeConnectorResponse(response);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(successHandler){successHandler(response);}
-                }, function() {
-                    qmLogService.error("error on connectWithAuthCode for " + connector.name);
+                }
+                qmService.get('api/v3/connectors/' + connector.name + '/connect', ['code', 'noRedirect'], params, function(response){
+                    localSuccessHandler(response);
+                }, function(error){
+                    if(error.error){qmLog.error("connectWithAuthCode error.error: "+error.error, error, error);}
+                    if(error.user){
+                        qmLog.error("connectWithAuthCode: Called error handler even though we got a user! Response: ", error, {response: error});
+                        localSuccessHandler(response);
+                        return;
+                    }
+                    qmLogService.error("error on connectWithAuthCode for " + connector.name + " is: ", error, error);
                     $rootScope.$broadcast('broadcastRefreshConnectors');
                     if(errorHandler){errorHandler(error);}
                 });
             },
             connectWithParams: function(params, lowercaseConnectorName, successHandler, errorHandler) {
+                if(typeof lowercaseConnectorName !== "string"){lowercaseConnectorName = lowercaseConnectorName.name;}
                 qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
                     .then(function(result){
                         qmLog.authDebug(JSON.stringify(result));
@@ -201,6 +225,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, function (error) {
                         qmService.connectors.connectorErrorHandler(error);
                         $rootScope.$broadcast('broadcastRefreshConnectors');
+                        if(errorHandler){errorHandler(error);}
+                    });
+            },
+            postConnectorCredentials: function(connectorName, credentials, successHandler, errorHandler){
+                qmService.post('api/v3/connectors/' + connectorName + '/connect?noRedirect=true', ['connectorCredentials'], {connectorCredentials: credentials},
+                    function (response) {
+                        qmLog.authDebug("postConnectorCredentials got response:", response, response);
+                        qmService.connectors.storeConnectorResponse(response);
+                        if(successHandler){
+                            qmLog.authDebug("postConnectorCredentials calling successHandler with response from postConnectorCredentials:", response, response);
+                            successHandler(response);
+                        } else {
+                            qmLog.authDebug("postConnectorCredentials: No success handler!", response, response);
+                        }
+                    }, function (error) {
+                        qmLog.error("postConnectorCredentials error: ", error, {errorResponse: error, params: params});
                         if(errorHandler){errorHandler(error);}
                     });
             },
@@ -337,29 +377,61 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, successHandler, errorHandler);
             },
+            googleLogout: function(callback){
+                window.plugins.googleplus.logout(function (msg) {
+                    qmLog.authDebug('plugins.googleplus.logout: logged out of google so we should get a serverAuthCode now', msg, msg);
+                    callback();
+                }, function (error) {
+                    qmLog.error('plugins.googleplus.logout: failed to logout but going to try logging in anyway', error, error);
+                    callback();
+                });
+            },
             googleMobileConnect: function (connector, ev, additionalParams, successHandler, errorHandler) {
                 qmLog.info("qmService.connectors.googleMobileConnect for "+JSON.stringify(connector), null, connector);
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
+                    qmLog.authDebug("plugins.googleplus.login deviceReady: ", connector, connector);
                     var scopes = connector.scopes.join(" ");
                     var params = {
                         'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                         'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     };
-                    qmLog.authDebug("plugins.googleplus.login with params: "+JSON.stringify(params), null, params);
+                    qmLog.authDebug("plugins.googleplus.login with params: ", params, params);
                     qmService.showBasicLoader();
-                    window.plugins.googleplus.login(params, function (response) {
-                        qmLog.authDebug('plugins.googleplus.login response:' + JSON.stringify(response), null, response);
-                        qmService.connectors.connectWithAuthCode(response.serverAuthCode, connector, function (response) {
-                            qmLog.info("plugins.googleplus.login hiding loader because we got response from connectWithAuthCode:"+JSON.stringify(response), null, response);
+                    function googleLoginSuccessHandler(googleResponse, connector) {
+                        if(!connector){qmLog.error("No connector in googleLoginSuccessHandler!")}else{qmLog.authDebug("have connector in googleLoginSuccessHandler")}
+                        qmService.connectors.postConnectorCredentials(connector.name, googleResponse, function (qmResponse) {
+                            qmLog.authDebug("plugins.googleplus.login hiding loader because we got response from connectWithAuthCode:", qmResponse, qmResponse);
                             qmService.hideLoader();
-                            if(successHandler){successHandler(response);}
+                            if(successHandler){
+                                qmLog.authDebug("plugins.googleplus.login calling successHandler with response from connectWithAuthCode:", qmResponse, qmResponse);
+                                successHandler(qmResponse);
+                            } else {
+                                qmLog.authDebug("plugins.googleplus.login: No success handler!", qmResponse, qmResponse);
+                            }
                         }, function (error) {
                             qmService.hideLoader();
-                            qmLog.error("plugins.googleplus.login error: "+error, null, params);
+                            qmLog.error("plugins.googleplus.login error: ", error, {errorResponse: error, params: params});
                             if(errorHandler){errorHandler(error);}
                         });
+                    }
+                    window.plugins.googleplus.login(params, function (googleResponse) {
+                        qmLog.authDebug('plugins.googleplus.login response:', googleResponse, googleResponse);
+                        if(!googleResponse.serverAuthCode || googleResponse.serverAuthCode === ""){
+                            qmLog.error("plugins.googleplus.login: no serverAuthCode so logging out of Google and trying again");
+                            qmService.connectors.googleLogout(function(){
+                                window.plugins.googleplus.login(params, function (googleResponse) {
+                                    if(!connector){qmLog.error("No connector after logout and login!")}else{qmLog.authDebug("have connector after logout and login")}
+                                    qmLog.authDebug('plugins.googleplus.login response:', googleResponse, googleResponse);
+                                    googleLoginSuccessHandler(googleResponse, connector);
+                                });
+                            });
+                        } else {
+                            if(!connector){qmLog.error("No connector after login!")}else{qmLog.authDebug("have connector after login")}
+                            qmLog.authDebug("plugins.googleplus.login: got this serverAuthCode "+googleResponse.serverAuthCode, googleResponse, googleResponse);
+                            googleLoginSuccessHandler(googleResponse, connector);
+                        }
                     }, function (errorMessage) {
                         qmService.hideLoader();
                         if(errorHandler){errorHandler(errorMessage);}
@@ -367,6 +439,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLogService.error("plugins.googleplus.login could not get userData from Google!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
                             JSON.stringify(errorMessage), null, params);
                     });
+
                 }
             },
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
@@ -381,12 +454,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 }
-                if(typeof facebookConnectPlugin !== "undefined"){
+                function useNativeLogin() {
+                    if(typeof facebookConnectPlugin === "undefined"){return false;}
+                    if(qm.platform.isIOS() && qm.getClientId().indexOf('moodimodo') === -1){
+                        qmLog.authDebug("We can only specify one iOS app in Facebook so using web connect");
+                        return false;
+                    }
+                    return true;
+                }
+                if(useNativeLogin()){
                     qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector.scopes), null, connector);
-                    facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);  // PBYvRQJ7TlxfB3f8bVVs1HmIfsk=
+                    facebookConnectPlugin.login(connector.scopes, fbSuccessHandler, fbErrorHandler);
                 } else {
                     qmLog.authDebug("qmService.connectors.facebookMobileConnect no facebookConnectPlugin so falling back to qmService.connectors.oAuthConnect", null, connector);
-                    qmService.connectors.oAuthConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
+                    qmService.connectors.qmApiMobileConnect(connector, ev, additionalParams, fbSuccessHandler, fbErrorHandler);
                 }
             },
             storeConnectorResponse: function(response){
@@ -1465,8 +1546,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
-        } else {
-            qmLog.authDebug("No dev credentials");
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -1486,8 +1565,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(window.devCredentials){
             if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
             if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
-        } else {
-            qmLogService.debug('No dev credentials', null);
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -1589,11 +1666,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             params.cache = null;
         }
         if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
-            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler("Too soon to make request");}
             return;
         }
         if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
-            qmLogService.debug('Not making request to ' + route + ' user because we are in the intro state', null, options.stackTrace);
+            var message = 'Not making request to ' + route + ' user because we are in the intro state';
+            qmLogService.debug(message, null, options.stackTrace);
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler(message);}
             return;
         }
         delete params.force;
@@ -1687,6 +1766,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(successHandler){successHandler(response);}
             }
             $http(request).success(generalSuccessHandler).error(function(data, status, headers){
+                if(data && data.user){
+                    var meta = {status: status, headers: headers, data: data};
+                    qmLog.error("Calling error handler even though we got a user in response?", meta, meta);
+                    successHandler(data);
+                    return;
+                }
                 generalApiErrorHandler(data, status, headers, request, options);
                 if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
             });
@@ -1772,7 +1857,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return debugUrl;
     }
     var onRequestFailed = function(error){
-        qmLogService.error("Request error : " + error);
+        qmLogService.error("Request error : ", error);
     };
     qmService.getMeasurementById = function(measurementId){
         var deferred = $q.defer();
@@ -1879,17 +1964,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 params[arrayParams[i].key] = arrayParams[i].value;
             }
         }
+        qmLog.authDebug("connectConnectorWithParamsToApi:", params, params);
         var allowedParams = ['location', 'username', 'password', 'email'];
         qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
-    };
-    qmService.connectConnectorWithTokenToApi = function(body, successHandler, errorHandler){
-        var requiredProperties = ['connector', 'connectorCredentials'];
-        qmService.post('api/v3/connectors/connect', requiredProperties, body, successHandler, errorHandler);
-    };
-    qmService.connectWithAuthCodeToApi = function(code, connectorLowercaseName, successHandler, errorHandler){
-        var allowedParams = ['code', 'noRedirect'];
-        var params = {noRedirect: true, code: code};
-        qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
@@ -2540,9 +2617,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.globalHelper.setStudy(study);
             deferred.resolve(study);
         }, function (error) {
-            qmLogService.error("qmService.getStudy error: " + error);
+            qmLogService.error("qmService.getStudy error: ", error);
             deferred.reject(error);
-            qmLogService.error(error);
         });
         return deferred.promise;
     };
@@ -2940,27 +3016,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject(error);
             });
         }
-        return deferred.promise;
-    };
-    qmService.connectConnectorWithTokenDeferred = function(body){
-        var deferred = $q.defer();
-        qmService.connectConnectorWithTokenToApi(body, function(response){
-            var connectors = qmService.connectors.storeConnectorResponse(response);
-            deferred.resolve(connectors);
-        }, function(error){
-            qmLog.error("connectConnectorWithTokenDeferred error: "+JSON.stringify(error), null, error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-    qmService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
-        var deferred = $q.defer();
-        qmService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(response){
-            qmService.connectors.storeConnectorResponse(response);
-            deferred.resolve(response);
-        }, function(error){
-            deferred.reject(error);
-        });
         return deferred.promise;
     };
     var geoLocationDebug = false;
@@ -5574,9 +5629,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qm.userVariables.saveToLocalStorage(response.data.userVariables);
                 }
                 qmService.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
-            }, function (error) {qmLogService.error('could not post weather measurements: ' + error);});
+            }, function (error) {qmLogService.error('could not post weather measurements: ', error);});
         }).error(function (error) {
-            qmLog.error(null, 'forecast.io request failed!  error: ' + error, {error_response: error, request_url: url});
+            qmLog.error(null, 'forecast.io request failed!  error: ', error, {error_response: error, request_url: url});
         });
     };
     qmService.setupHelpCards = function () {
@@ -7012,7 +7067,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                         }, function (error) {
-                            qmLog.error('push.on.notification: ' + error);
+                            qmLog.error('push.on.notification: ', error);
                         });
                     }
                     // data.message,
