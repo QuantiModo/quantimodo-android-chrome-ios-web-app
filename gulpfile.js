@@ -385,6 +385,10 @@ var qm = {
         },
         isProduction: function () {
             return qm.releaseService.getReleaseStage() === 'production';
+        },
+        getReleaseStageSubDomain: function(){
+            if(qm.releaseService.isStaging()){return "qm-staging";}
+            return "quantimodo";
         }
     }
 };
@@ -2256,7 +2260,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qm.releaseService.getReleaseStage());
         return;
     }
-    var url = 'https://qm-'+qm.releaseService.getReleaseStage()+'.quantimo.do/ionic/Modo/www/';
+    var url = 'https://'+qm.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
     replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
 });
