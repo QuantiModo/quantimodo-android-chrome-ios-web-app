@@ -128,9 +128,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + causeSearchTerm;
-                qmLogService.error(null, error);
+                qmLogService.error(error);
             }
-        }).catch(function (error) { qmLogService.error(null, error); });
+        }).catch(function (error) { qmLogService.error(error); });
         var effectSearchTerm = getStatistics().effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
         wikipediaFactory.searchArticlesByTitle({
@@ -144,9 +144,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + effectSearchTerm;
-                qmLogService.error(null, error);
+                qmLogService.error(error);
             }
-        }).catch(function (error) { qmLogService.error(null, error); });
+        }).catch(function (error) { qmLogService.error(error); });
     }
     $scope.weightedPeriod = 5;
     function getCorrelationObjectIfNecessary(){
@@ -173,7 +173,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.loadingCharts = false;
             setActionSheetMenu();
         }, function (error) {
-            qmLogService.error(null, error);
+            qmLogService.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;

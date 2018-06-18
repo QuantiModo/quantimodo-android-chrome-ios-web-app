@@ -256,8 +256,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     var checkNameExists = function (item) {
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-            qmLogService.error(null, message);
-            qmLogService.error(null, message);
+            qmLogService.error(message);
+            qmLogService.error(message);
             return false;
         }
         return true;
