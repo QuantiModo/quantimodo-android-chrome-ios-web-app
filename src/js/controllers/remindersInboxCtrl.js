@@ -81,7 +81,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 						.then(function(){
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
-							qmLogService.error(null, error);
+							qmLogService.error(error);
 							qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
@@ -140,7 +140,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			return true;
 		} else {
 		    if(!$event){
-		        qmLogService.error(null, 'No event provided to isGhostClick!');
+		        qmLogService.error('No event provided to isGhostClick!');
 		        return false;
             }
 			qmLogService.debug('This Track event is not a ghost click so registering.', null, $event);
@@ -334,9 +334,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				hideInboxLoader();
 			}, function(error){
 				getFallbackInboxContent();
-				qmLogService.error(null, error);
+				qmLogService.error(error);
 				hideInboxLoader();
-				qmLogService.error(null, 'failed to get reminder notifications!');
+				qmLogService.error('failed to get reminder notifications!');
 			});
 	};
 	$rootScope.$on('broadcastGetTrackingReminderNotifications', function() {
@@ -401,8 +401,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     $scope.refreshTrackingReminderNotifications();
                 }, function(error){
                     hideInboxLoader();
-                    qmLogService.error(null, error);
-                    qmLogService.error(null, error);
+                    qmLogService.error(error);
+                    qmLogService.error(error);
                     qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
         }
