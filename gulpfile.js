@@ -366,7 +366,7 @@ var qm = {
         },
         writeBuildInfo: function () {
             var buildInfo = qm.buildInfoHelper.currentBuildInfo;
-            writeToFile(paths.www.buildInfo, buildInfo);
+            return writeToFile(paths.www.buildInfo, buildInfo);
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -798,6 +798,7 @@ function getRequestOptions(path) {
     };
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+        qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+'...');
     } else {
         qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
     }
@@ -2300,7 +2301,7 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(gulp.dest('./'));
 });
 gulp.task('buildInfo', ['getAppConfigs'], function () {
-    qm.buildInfoHelper.writeBuildInfo();
+    return qm.buildInfoHelper.writeBuildInfo();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
