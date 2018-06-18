@@ -10,6 +10,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
     var qmService = {
+        ads: {
+            initialize: function(){
+                window.plugins.AdMob.setOptions( {
+                    publisherId: 'ca-app-pub-2427218021515520/1775529603',
+                    interstitialAdId: '',
+                    bannerAtTop: false, // set to true, to put banner at top
+                    overlap: false, // set to true, to allow banner overlap webview
+                    offsetTopBar: false, // set to true to avoid ios7 status bar overlap
+                    isTesting: false, // receiving test ad
+                    autoShow: true // auto show interstitial ad when loaded
+                });
+                // display the banner at startup
+                window.plugins.AdMob.createBannerView();
+            }
+        },
         api: {
              headersGetter: function(headers) {
                 var headersObj = typeof headers === 'object' ? headers : undefined;
@@ -2464,6 +2479,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.setUser = function(user){
         qmLog.authDebug("Setting user to: " + JSON.stringify(user), null, user);
         qmService.rootScope.setUser(user);
+        if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
+            qm.ads.initialize();
+        }
         qm.userHelper.setUser(user);
     };
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
