@@ -988,14 +988,18 @@ window.qm = {
             qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             if(accessTokenFromUrl){
-                if(accessTokenFromUrl.length < 10){
-                    qmLog.error("accessTokenFromUrl is "+ accessTokenFromUrl);
-                    return null;
-                }
+                if(!qm.auth.accessTokenIsValid(accessTokenFromUrl)){return null;}
                 qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
                 qm.auth.saveAccessToken(accessTokenFromUrl);
             }
             return accessTokenFromUrl;
+        },
+        accessTokenIsValid: function(accessToken){
+            if(accessToken.length < 10 && accessToken !== "demo"){
+                qmLog.error("This accessTokenFromUrl is not valid: "+ accessToken);
+                return false;
+            }
+            return true;
         },
         saveAccessToken: function(accessToken){
             if(!qm.urlHelper.getParam('doNotRemember')){
@@ -1008,18 +1012,21 @@ window.qm = {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
                 return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             }
+            var accessToken;
             if(qm.userHelper.getUserFromLocalStorage() && qm.userHelper.getUserFromLocalStorage().accessToken){
-                if(qm.userHelper.getUserFromLocalStorage().accessToken.length < 10){
-                    qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is "+ qm.userHelper.getUserFromLocalStorage().accessToken);
+                accessToken = qm.userHelper.getUserFromLocalStorage().accessToken;
+                if(!qm.auth.accessTokenIsValid(accessToken)){
+                    qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
                 } else {
-                    return qm.userHelper.getUserFromLocalStorage().accessToken;
+                    return accessToken;
                 }
             }
-            if(qm.storage.getItem(qm.items.accessToken)){
-                if(qm.storage.getItem(qm.items.accessToken).length < 10){
-                    qmLog.error("accessTokenFromUrl is "+ qm.storage.getItem(qm.items.accessToken));
+            accessToken = qm.storage.getItem(qm.items.accessToken);
+            if(accessToken){
+                if(!qm.auth.accessTokenIsValid(accessToken)){
+                    qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
                 } else {
-                    return qm.storage.getItem(qm.items.accessToken);
+                    return accessToken;
                 }
             }
             qmLog.info("No access token or user!");
