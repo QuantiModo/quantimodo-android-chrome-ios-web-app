@@ -2633,7 +2633,7 @@ gulp.task('configureApp', [], function (callback) {
         'getVariableCategories',
         'getAppConfigs',
         'uncommentBugsnagInIndexHtml',
-        'uncommentOpbeatInIndexHtml',
+        //'uncommentOpbeatInIndexHtml',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
