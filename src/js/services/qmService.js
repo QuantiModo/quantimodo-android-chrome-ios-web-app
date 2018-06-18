@@ -6439,48 +6439,67 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return window.location.origin + window.location.pathname;
     }
     qmService.getPlanFeatureCards = function () {
-        var planFeatureCards = [
-            {
+        var planFeatureCards = {
+            lite: {
                 title: 'QuantiModo Lite',
                 headerColor: "#f2f9ff",
                 backgroundColor: "#f2f9ff",
                 subtitle: 'Improve your life!',
                 featuresBasicList: [
                     {
-                        title: '3 month data history',
-                    },
+                        title: '3 month data history'
+                    }
                 ],
                 featuresAvatarList: [
                     {
                         title: 'Emotion Tracking',
                         subtitle: 'Turn data into happiness!',
                         moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
-                        image: $rootScope.variableCategories.Emotions.imageUrl,
+                        image: $rootScope.variableCategories.Emotions.imageUrl
                     },
                     {
                         title: 'Track Symptoms',
                         subtitle: 'in just seconds a day',
                         moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
-                        image: $rootScope.variableCategories.Symptoms.imageUrl,
+                        image: $rootScope.variableCategories.Symptoms.imageUrl
                     },
                     {
                         title: 'Track Diet',
                         subtitle: 'Identify dietary triggers',
                         moreInfo: $rootScope.variableCategories.Foods.moreInfo,
-                        image: $rootScope.variableCategories.Foods.imageUrl,
+                        image: $rootScope.variableCategories.Foods.imageUrl
                     },
                     {
                         title: 'Treatment Tracking',
                         subtitle: 'with reminders',
                         moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
-                        image: $rootScope.variableCategories.Treatments.imageUrl,
+                        image: $rootScope.variableCategories.Treatments.imageUrl
                     },
+                    {
+                        title: 'Weather Tracking',
+                        subtitle: 'Automatically log weather',
+                        moreInfo: $rootScope.variableCategories.Environment.moreInfo,
+                        image: $rootScope.variableCategories.Environment.imageUrl
+                    },
+                    {
+                        title: 'Sleep Quality',
+                        subtitle: 'Create a Sleep Quality reminder to record your sleep quality every day',
+                        moreInfo: $rootScope.variableCategories.Sleep.moreInfo,
+                        image: $rootScope.variableCategories.Sleep.imageUrl
+                    },
+                    {
+                        title: 'Visualize Your Data',
+                        subtitle: 'See Top Predictors',
+                        moreInfo: "Idenify hidden",
+                        image: 'img/features/calendar.svg'
+                    }
+
                 ],
                 priceHtml: "Price: Free forever",
                 buttonText: "Sign Up Now",
                 buttonClass: "button button-balanced"
             },
-            {
+            premium: {
                 title: 'QuantiModo Plus',
                 headerColor: "#f0df9a",
                 backgroundColor: "#ffeda5",
@@ -6488,8 +6507,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 featuresAvatarList: [
                     {
                         title: 'Import from Apps',
-                        subtitle: 'Facebook, Google Calendar, Runkeeper, Github, Sleep as Android, MoodiModo, and even ' +
-                        'the weather!',
+                        subtitle: 'Facebook, Google Calendar, Runkeeper, Github, Sleep as Android, MoodiModo, and even ' + 'the weather!',
                         moreInfo: "Automatically import your data from Google Calendar, Facebook, Runkeeper, " +
                         "QuantiModo, Sleep as Android, MoodiModo, Github, and even the weather!",
                         image: 'img/features/smartphone.svg'
@@ -6504,14 +6522,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         title: 'Sync Across Devices',
                         subtitle: 'Web, Chrome, Android, and iOS',
                         moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app " +
-                        "on the web, Chrome, Android, and iOS.",
+                            "on the web, Chrome, Android, and iOS.",
                         image: 'img/features/devices.svg'
                     },
                     {
                         title: 'Unlimited History',
                         subtitle: 'Lite gets 3 months',
-                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only " +
-                        "the most recent three months). This is great for seeing long-term trends in your " +
+                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only "
+                        +
+                        "the most recent three months). This is great for seeing long-term trends in your "
+                        +
                         "productivity or getting totals for the entire year.",
                         image: 'img/features/calendar.svg'
                     },
@@ -6519,32 +6539,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         title: 'Location Tracking',
                         subtitle: 'Automatically log places',
                         moreInfo: $rootScope.variableCategories.Location.moreInfo,
-                        image: $rootScope.variableCategories.Location.imageUrl,
+                        image: $rootScope.variableCategories.Location.imageUrl
                     },
                     {
                         title: 'Purchase Tracking',
                         subtitle: 'Automatically log purchases',
                         moreInfo: $rootScope.variableCategories.Payments.moreInfo,
-                        image: $rootScope.variableCategories.Payments.imageUrl,
-                    },
-                    {
-                        title: 'Weather Tracking',
-                        subtitle: 'Automatically log weather',
-                        moreInfo: $rootScope.variableCategories.Environment.moreInfo,
-                        image: $rootScope.variableCategories.Environment.imageUrl,
+                        image: $rootScope.variableCategories.Payments.imageUrl
                     },
                     {
                         title: 'Productivity Tracking',
                         subtitle: 'Passively track app usage',
                         moreInfo: "You can do this by installing and connecting Rescuetime on the Import Data page.  Rescuetime is a program" +
                         " that runs on your computer & passively tracks of productivity and app usage.",
-                        image: 'img/features/rescuetime.png',
+                        image: 'img/features/rescuetime.png'
                     },
                     {
-                        title: 'Sleep Tracking',
-                        subtitle: 'Automatically track sleep duration and quality',
+                        title: 'Automatic Sleep Tracking',
+                        subtitle: 'Automatically track sleep duration and quality by importing Fitbit data',
                         moreInfo: $rootScope.variableCategories.Sleep.moreInfo,
-                        image: $rootScope.variableCategories.Sleep.imageUrl,
+                        image: $rootScope.variableCategories.Sleep.imageUrl
                     },
                     {
                         title: 'Vital Signs',
@@ -6552,11 +6566,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         moreInfo: "I can get your heart rate data from the Fitbit Charge HR, Fitbit Surge.  " +
                         "Resting heart rate is a good measure of general fitness, and heart rate during " +
                         "workouts show intensity.  I can also talk to Withing's bluetooth blood pressure monitor. ",
-                        image: 'img/features/heart-like.png',
+                        image: 'img/features/heart-like.png'
                     },
                     {
                         title: 'Physique',
-                        subtitle: 'Monitor weight and body fat',
+                        subtitle: 'Monitor weight and body fat with the Withings body analyzer',
                         moreInfo: $rootScope.variableCategories.Physique.moreInfo,
                         image: $rootScope.variableCategories.Physique.imageUrl
                     },
@@ -6573,13 +6587,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
                         "out the full study on any predictor and outcome combination.",
                         image: 'img/features/calendar.svg'
-                    },
+                    }
                 ],
                 priceHtml: "14 day free trial <br> Monthly: $6.99/month <br> Annual: $4.99/month (4 months free!)",
                 buttonText: "Start My 14 Day Free Trial",
                 buttonClass: "button button-large button-assertive"
-            },
-        ];
+            }
+        };
         if($rootScope.platform.isIOS){
             planFeatureCards = JSON.parse(JSON.stringify(planFeatureCards).replace('Android, and iOS', 'any mobile device').replace(', Sleep as Android', ''));
         }
