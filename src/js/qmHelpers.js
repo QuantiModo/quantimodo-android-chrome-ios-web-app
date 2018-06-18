@@ -89,14 +89,15 @@ window.qm = {
             }
         },
         generalErrorHandler: function(error, data, response, options){
+            var errorMessage = error.message || response.error.message || error;
             if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
-                {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
+                {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
             if(response.status === 401){
                 if(!options || !options.doNotSendToLogin){
                     qmLog.info("Not authenticated!")
                 }
             } else {
-                qmLog.error(response.error.message, null, {apiResponse: response});
+                qmLog.error(errorMessage, null, {error: error, apiResponse: response});
             }
         },
         addGlobalParams: function (urlParams) {
