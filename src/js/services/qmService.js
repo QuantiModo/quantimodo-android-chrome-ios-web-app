@@ -5631,7 +5631,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
             }, function (error) {qmLogService.error('could not post weather measurements: ', error);});
         }).error(function (error) {
-            qmLog.error(null, 'forecast.io request failed!  error: ', error, {error_response: error, request_url: url});
+            qmLog.error('forecast.io request failed!  error: ', error, {error_response: error, request_url: url});
         });
     };
     qmService.setupHelpCards = function () {
