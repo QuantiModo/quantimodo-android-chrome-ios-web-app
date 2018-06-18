@@ -26,7 +26,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
         if(qm.platform.isChromeExtension()){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
-        $scope.planFeaturesCard = qmService.getPlanFeatureCards()[1];
+        $scope.state.features = qmService.getPlanFeatureCards();
         $rootScope.upgradeFooterText = null;
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.setupUpgradePages();
