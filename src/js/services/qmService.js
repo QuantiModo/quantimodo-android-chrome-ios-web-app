@@ -11,18 +11,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $ionicActionSheet) {
     var qmService = {
         ads: {
-            initialize: function(){
-                window.plugins.AdMob.setOptions( {
-                    publisherId: 'ca-app-pub-2427218021515520/1775529603',
-                    interstitialAdId: '',
-                    bannerAtTop: false, // set to true, to put banner at top
-                    overlap: false, // set to true, to allow banner overlap webview
-                    offsetTopBar: false, // set to true to avoid ios7 status bar overlap
-                    isTesting: false, // receiving test ad
-                    autoShow: true // auto show interstitial ad when loaded
+            initialize: function(force){
+                qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
+                    if(!OlderThan1Day && !force) {return;}
+                    window.plugins.AdMob.setOptions( {
+                        publisherId: 'ca-app-pub-2427218021515520/1775529603',
+                        interstitialAdId: '',
+                        bannerAtTop: false, // set to true, to put banner at top
+                        overlap: false, // set to true, to allow banner overlap webview
+                        offsetTopBar: false, // set to true to avoid ios7 status bar overlap
+                        isTesting: false, // receiving test ad
+                        autoShow: true // auto show interstitial ad when loaded
+                    });
+                    window.plugins.AdMob.createBannerView(); // display the banner at startup
                 });
-                // display the banner at startup
-                window.plugins.AdMob.createBannerView();
             }
         },
         api: {
