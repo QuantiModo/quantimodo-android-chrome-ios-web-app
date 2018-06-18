@@ -167,17 +167,14 @@ process.on('unhandledRejection', function (err) {
 });
 bugsnag.onBeforeNotify(function (notification) {
     var metaData = notification.events[0].metaData;
-    // modify meta-data
-    metaData.subsystem = { name: getCurrentServerContext() };
-    metaData.client_id = QUANTIMODO_CLIENT_ID;
-    metaData.build_link = qm.buildInfoHelper.getBuildLink();
+    metaData = qmLog.addMetaData(metaData);
 });
 var qmLog = {
-    error: function (message, object, maxCharacters) {
-        object = object || {};
-        console.error(obfuscateStringify(message, object, maxCharacters));
-        object.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
-        bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
+    error: function (message, metaData, maxCharacters) {
+        metaData = qmLog.addMetaData(metaData);
+        console.error(obfuscateStringify(message, metaData, maxCharacters));
+        metaData.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
+        bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(metaData)));
     },
     info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
@@ -188,6 +185,14 @@ var qmLog = {
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
         throw message;
+    },
+    addMetaData: function(metaData){
+        metaData = metaData || {};
+        metaData.environment = process.env;
+        metaData.subsystem = { name: getCurrentServerContext() };
+        metaData.client_id = QUANTIMODO_CLIENT_ID;
+        metaData.build_link = qm.buildInfoHelper.getBuildLink();
+        return metaData;
     }
 };
 var qmGit = {
