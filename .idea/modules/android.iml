@@ -17,6 +17,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../platforms/android">
       <sourceFolder url="file://$MODULE_DIR$/../../platforms/android/gen" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../platforms/android/assets/www" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
