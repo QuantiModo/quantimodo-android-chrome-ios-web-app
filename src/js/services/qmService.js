@@ -762,6 +762,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var afterLoginGoToState = qmService.login.getAfterLoginState();
                     qmLogService.debug('afterLoginGoToState from localstorage is  ' + afterLoginGoToState);
                     if(afterLoginGoToState){
+                        if(qm.appMode.isBuilder()){afterLoginGoToState = qmStates.configuration;}
                         qmService.goToState(afterLoginGoToState);
                         qmService.login.deleteAfterLoginState();
                         return true;
