@@ -32,3 +32,9 @@ export FULL_GI_URL=${GI_BASE_URL}${GI_MIDDLE_URL_FRAGMENT}${GI_URL_QUERY_STRING}
 echo "curl "${FULL_GI_URL}" > ghostinspector.json"
 curl "${FULL_GI_URL}" > ghostinspector.json
 php ghostinspector_parser.php
+if [ -e ghostinspector.json ]
+    then
+        exit 1;
+    else
+        exit 0;
+fi
