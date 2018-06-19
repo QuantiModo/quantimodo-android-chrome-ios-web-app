@@ -12,6 +12,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var qmService = {
         ads: {
             initialize: function(force){
+                if(!qm.platform.isMobile()){return false;}
                 qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
                     if(!OlderThan1Day && !force) {return;}
                     window.plugins.AdMob.setOptions( {
