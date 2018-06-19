@@ -11,18 +11,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $ionicActionSheet) {
     var qmService = {
         ads: {
-            initialize: function(){
-                window.plugins.AdMob.setOptions( {
-                    publisherId: 'ca-app-pub-2427218021515520/1775529603',
-                    interstitialAdId: '',
-                    bannerAtTop: false, // set to true, to put banner at top
-                    overlap: false, // set to true, to allow banner overlap webview
-                    offsetTopBar: false, // set to true to avoid ios7 status bar overlap
-                    isTesting: false, // receiving test ad
-                    autoShow: true // auto show interstitial ad when loaded
+            initialize: function(force){
+                if(!qm.platform.isMobile()){return false;}
+                qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
+                    if(!OlderThan1Day && !force) {return;}
+                    window.plugins.AdMob.setOptions( {
+                        publisherId: 'ca-app-pub-2427218021515520/1775529603',
+                        interstitialAdId: '',
+                        bannerAtTop: false, // set to true, to put banner at top
+                        overlap: false, // set to true, to allow banner overlap webview
+                        offsetTopBar: false, // set to true to avoid ios7 status bar overlap
+                        isTesting: false, // receiving test ad
+                        autoShow: true // auto show interstitial ad when loaded
+                    });
+                    window.plugins.AdMob.createBannerView(); // display the banner at startup
                 });
-                // display the banner at startup
-                window.plugins.AdMob.createBannerView();
             }
         },
         api: {
@@ -6507,6 +6510,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         image: $rootScope.variableCategories.Sleep.imageUrl
                     },
                     {
+                        title: 'Visualize Your Data',
+                        subtitle: 'See Top Predictors',
+                        moreInfo: "Idenify hidden",
+                        image: 'img/features/calendar.svg'
+                    }
+
+                ],
+                priceHtml: "Price: Free forever",
+                buttonText: "Sign Up Now",
+                buttonClass: "button button-balanced"
+            },
+            premium: {
+                title: 'QuantiModo Plus',
+                headerColor: "#f0df9a",
+                backgroundColor: "#ffeda5",
+                subtitle: 'Perfect your life!',
+                featuresAvatarList: [
+                    {
                         title: 'Import from Apps',
                         subtitle: 'Facebook, Google Calendar, Runkeeper, Github, Sleep as Android, MoodiModo, and even ' + 'the weather!',
                         moreInfo: "Automatically import your data from Google Calendar, Facebook, Runkeeper, " +
@@ -6514,17 +6535,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         image: 'img/features/smartphone.svg'
                     },
                     {
+                        title: 'Import from Devices',
+                        subtitle: 'Fitbit, Jawbone Up, Withings...',
+                        moreInfo: "Automatically import your data from Fitbit, Withings, Jawbone.",
+                        image: 'img/features/smartwatch.svg'
+                    },
+                    {
                         title: 'Sync Across Devices',
                         subtitle: 'Web, Chrome, Android, and iOS',
                         moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app " +
-                        "on the web, Chrome, Android, and iOS.",
+                            "on the web, Chrome, Android, and iOS.",
                         image: 'img/features/devices.svg'
                     },
                     {
                         title: 'Unlimited History',
                         subtitle: 'Lite gets 3 months',
-                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only "  +
-                        "the most recent three months). This is great for seeing long-term trends in your " +
+                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only "
+                        +
+                        "the most recent three months). This is great for seeing long-term trends in your "
+                        +
                         "productivity or getting totals for the entire year.",
                         image: 'img/features/calendar.svg'
                     },
@@ -6548,39 +6577,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         image: 'img/features/rescuetime.png'
                     },
                     {
-                        title: 'Automated Physique Tracking',
-                        subtitle: 'Monitor weight and body fat with the Withings body analyzer',
-                        moreInfo: $rootScope.variableCategories.Physique.moreInfo,
-                        image: $rootScope.variableCategories.Physique.imageUrl
+                        title: 'Automatic Sleep Tracking',
+                        subtitle: 'Automatically track sleep duration and quality by importing Fitbit data',
+                        moreInfo: $rootScope.variableCategories.Sleep.moreInfo,
+                        image: $rootScope.variableCategories.Sleep.imageUrl
                     },
                     {
-                        title: 'Advanced Analytics',
-                        subtitle: 'See Top Predictors',
-                        moreInfo: "See a list of the strongest predictors for any outcome.  See the values for each " +
-                        "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
-                        "out the full study on any predictor and outcome combination.",
-                        image: 'img/data/graph.svg'
-                    }
-
-                ],
-                priceHtml: "Price: Free forever",
-                buttonText: "Sign Up Now",
-                buttonClass: "button button-balanced"
-            },
-            premium: {
-                title: 'QuantiModo Plus',
-                headerColor: "#f0df9a",
-                backgroundColor: "#ffeda5",
-                subtitle: 'Perfect your life!',
-                featuresAvatarList: [
-                    {
-                        title: 'Import from Devices',
-                        subtitle: 'Fitbit, Jawbone Up, Withings...',
-                        moreInfo: "Automatically import your data from Fitbit, Withings, Jawbone.",
-                        image: 'img/features/smartwatch.svg'
-                    },
-                    {
-                        title: 'Automated Vital Signs',
+                        title: 'Vital Signs',
                         subtitle: 'Keep your heart healthy',
                         moreInfo: "I can get your heart rate data from the Fitbit Charge HR, Fitbit Surge.  " +
                         "Resting heart rate is a good measure of general fitness, and heart rate during " +
@@ -6588,22 +6591,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         image: 'img/features/heart-like.png'
                     },
                     {
-                        title: 'Automated Fitness Tracking',
+                        title: 'Physique',
+                        subtitle: 'Monitor weight and body fat with the Withings body analyzer',
+                        moreInfo: $rootScope.variableCategories.Physique.moreInfo,
+                        image: $rootScope.variableCategories.Physique.imageUrl
+                    },
+                    {
+                        title: 'Fitness Tracking',
                         subtitle: 'Steps and physical activity',
                         moreInfo: $rootScope.variableCategories['Physical Activity'].moreInfo,
                         image: $rootScope.variableCategories['Physical Activity'].imageUrl
                     },
                     {
-                        title: 'Automatic Sleep Tracking',
-                        subtitle: 'Automatically track sleep duration and quality by importing Fitbit data.',
-                        moreInfo: $rootScope.variableCategories.Sleep.moreInfo,
-                        image: $rootScope.variableCategories.Sleep.imageUrl
-                    },
-                    {
-                        title: 'Ad Free!',
-                        subtitle: 'Help support continued improvements to ' + qm.getAppSettings().appDisplayName + ' and reduce suffering through accelerated scientific discovery!',
-                        moreInfo: "No ads!  What more do you want?",
-                        image: 'img/features/smartphone.svg'
+                        title: 'Advanced Analytics',
+                        subtitle: 'See Top Predictors',
+                        moreInfo: "See a list of the strongest predictors for any outcome.  See the values for each " +
+                        "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
+                        "out the full study on any predictor and outcome combination.",
+                        image: 'img/features/calendar.svg'
                     }
                 ],
                 priceHtml: "14 day free trial <br> Monthly: $6.99/month <br> Annual: $4.99/month (4 months free!)",
