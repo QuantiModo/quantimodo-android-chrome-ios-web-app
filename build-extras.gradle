@@ -1,5 +1,8 @@
 android {
     dexOptions {
+        jumboMode true  // Fixes Dex: Error converting bytecode to dex:
+                        // Cause: com.android.dex.DexIndexOverflowException: Cannot merge new index 69655 into a non-jumbo instruction!
+                        // https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/commit/c995f3aaad989a51cfbd015094f93734c01dfb8c
         javaMaxHeapSize "2560M"
     }
 }
