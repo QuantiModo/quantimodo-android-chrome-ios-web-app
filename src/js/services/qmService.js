@@ -6563,7 +6563,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         moreInfo: "See a list of the strongest predictors for any outcome.  See the values for each " +
                         "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
                         "out the full study on any predictor and outcome combination.",
-                        image: 'img/data/graph.svg'
+                        image: 'img/data/graph.png'
                     }
 
                 ],
