@@ -48,7 +48,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 	});
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
-		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
+		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you."+
+			"%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
 			encodeURIComponent(qm.api.getBaseUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 		var fallbackUrl = qm.api.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
