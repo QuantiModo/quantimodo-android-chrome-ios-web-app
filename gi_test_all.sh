@@ -33,3 +33,9 @@ set -x
 echo "===== BRANCH: ${GIT_BRANCH} ====="
 echo "===== COMMIT: $COMMIT_MESSAGE ====="
 # curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://utopia.quantimo.do:4470/ionic/Modo/src/#/&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit=eaf513d9b35aaa0e16133a79eb71fcdd0456702e" > ghostinspector.json
+if [ -e ghostinspector.json ]
+    then
+        exit 1;
+    else
+        exit 0;
+fi
