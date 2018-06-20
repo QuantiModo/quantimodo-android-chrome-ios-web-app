@@ -1,6 +1,8 @@
 <div ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.advertisingEnabled" style="text-align: center; cursor: pointer;">
     <h4 ng-click="goToState('app.upgrade')" id="removeAds"><i class="ion-star">&nbsp; Remove Ads</i></h4>
     <div ng-if="platform.isWeb">
-        <adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;" ad-format="auto"></adsense>
+        <!--<adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;"
+                ad-format="auto" <- Causes  No slot size for availableWidth=0 error></adsense>-->
+        <adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;"></adsense>
     </div>
 </div>
