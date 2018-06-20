@@ -2480,7 +2480,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("Setting user to: " + JSON.stringify(user), null, user);
         qmService.rootScope.setUser(user);
         if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
-            qm.ads.initialize();
+            qmService.ads.initialize();
         }
         qm.userHelper.setUser(user);
     };
