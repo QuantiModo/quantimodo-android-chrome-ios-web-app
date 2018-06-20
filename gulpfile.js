@@ -2622,6 +2622,7 @@ gulp.task('configureApp', [], function (callback) {
     runSequence(
         //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
+        'rename-adsense',
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
@@ -3495,4 +3496,10 @@ gulp.task('google-services-json', [], function() {
         '  "configuration_version": "1"\n' +
         '}';
     return writeToFile('google-services.json', string);
+});
+gulp.task('rename-adsense', [], function () {
+    qmLog.info("Renaming adsense because of Ad-Block");
+    return gulp.src("./src/lib/angular-google-adsense/dist/angular-google-adsense.min.js")
+        .pipe(rename("custom-lib/aga.js"))
+        .pipe(gulp.dest("./src")); // ./dist/main/text/ciao/goodbye.md
 });
