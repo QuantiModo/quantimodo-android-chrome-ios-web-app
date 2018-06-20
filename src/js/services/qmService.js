@@ -5954,6 +5954,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.openSharingUrl(emailUrl);
     };
     qmService.openSharingUrl = function(sharingUrl){
+        qmLog.info("Opening " + sharingUrl);
         var newTab = window.open(sharingUrl,'_system');
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
     };
