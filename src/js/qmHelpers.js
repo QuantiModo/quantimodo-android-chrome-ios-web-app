@@ -3355,6 +3355,21 @@ window.qm = {
                 }
                 qm.userHelper.getUserFromApi(successHandler, errorHandler);
             });
+        },
+        userIsOlderThan1Day: function(callback){
+            qm.userHelper.userIsOlderThanXSeconds(86400, function(result){
+                callback(result);
+            });
+        },
+        userIsOlderThanXSeconds: function(secondsCutoff, callback){
+            qm.getUser(function(user){
+                if(!user){
+                    callback(false);
+                    return;
+                }
+                var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds - qm.timeHelper.universalConversionToUnixTimeSeconds(user.createdAt);
+                callback(ageInSeconds > secondsCutoff);
+            });
         }
     },
     commonVariablesHelper: {
