@@ -3365,9 +3365,16 @@ window.qm = {
             qm.getUser(function(user){
                 if(!user){
                     callback(false);
+                    qmLog.info("userIsOlderThanXSeconds: No user to check if older than "+secondsCutoff +" seconds");
                     return;
                 }
-                var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds - qm.timeHelper.universalConversionToUnixTimeSeconds(user.createdAt);
+                if(!user.userRegistered){
+                    callback(false);
+                    qmLog.info("userIsOlderThanXSeconds: No userRegistered property to check if older than "+secondsCutoff +" seconds");
+                    return;
+                }
+                var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds - qm.timeHelper.universalConversionToUnixTimeSeconds(user.userRegistered);
+                qmLog.info("userIsOlderThanXSeconds: User is " + ageInSeconds + " seconds old. createdAt: " + user.userRegistered);
                 callback(ageInSeconds > secondsCutoff);
             });
         }
