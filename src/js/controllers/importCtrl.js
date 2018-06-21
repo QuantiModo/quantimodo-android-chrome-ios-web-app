@@ -35,6 +35,13 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
+	    if(!$scope.helpCard || $scope.helpCard.title !== "Import Your Data"){
+            $scope.helpCard = {
+                title: "Import Your Data",
+                bodyText: "Scroll down and press Connect for any apps or device you currently use.  Once you're finished, press the Done bar at the bottom.",
+                icon: "ion-ios-cloud-download"
+            };
+        }
 		qmLogService.debug('ImportCtrl beforeEnter', null);
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
