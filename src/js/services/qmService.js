@@ -14,7 +14,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             initialize: function(force){
                 if(!qm.platform.isMobile()){return false;}
                 qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
-                    if(!OlderThan1Day && !force) {return;}
+                    if(!OlderThan1Day && !force) {
+                        qmLog.info("admob: Not intializing admob because user not older than 1 day");
+                        return;
+                    }
+                    if(typeof window.plugins.AdMob === "undefined"){
+                        qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                    }
+                    qmLog.info("admob: Intializing admob and creating banner...");
                     window.plugins.AdMob.setOptions( {
                         publisherId: 'ca-app-pub-2427218021515520/1775529603',
                         interstitialAdId: '',
@@ -2485,6 +2492,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setUser(user);
         if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
             qmService.ads.initialize();
+        } else {
+            qmLog.info("admob: Not initializing for some reason")
         }
         qm.userHelper.setUser(user);
     };
