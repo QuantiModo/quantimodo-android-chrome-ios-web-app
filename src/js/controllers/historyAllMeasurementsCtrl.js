@@ -23,7 +23,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         }
         if($stateParams.refresh){$scope.state.history = null;}
         $scope.state.moreDataCanBeLoaded = true;
-        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getItem('hideHistoryPageInstructionsCard');
+        $scope.hideHistoryPageInstructionsCard = qm.storage.getItem('hideHistoryPageInstructionsCard');
         updateMeasurementIfNecessary();
     });
     $scope.$on('$ionicView.enter', function(e) {
