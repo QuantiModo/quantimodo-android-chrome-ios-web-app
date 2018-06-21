@@ -93,8 +93,12 @@ window.qm = {
             if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                 {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
             if(response.status === 401){
+                if(errorMessage.toLowerCase().indexOf('expired') !== -1){
+                    qm.auth.deleteAllAccessTokens();
+                    qm.userHelper.setUser(null);
+                }
                 if(!options || !options.doNotSendToLogin){
-                    qmLog.info("Not authenticated!")
+                    qmLog.info("Not authenticated!");
                 }
             } else {
                 qmLog.error(errorMessage, null, {error: error, apiResponse: response});
