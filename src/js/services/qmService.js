@@ -59,7 +59,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         auth: {
             deleteAllAccessTokens: function () {
-                $rootScope.accessToken = null;
                 if($rootScope.user){$rootScope.user.accessToken = null;}
                 qm.auth.deleteAllAccessTokens();
             },
