@@ -18,17 +18,10 @@
          <div ng-show="state.showLocationToggle" class="card sign-in" >
              <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)"> <i class="icon ion-map"></i>&nbspTrack my location </ion-toggle>
           </div>
-         <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
-             <div class="item" >
-                 <p style=" text-align: center; line-height: normal; font-size: 25px;">{{state.helpCardTitle}}</p>
-                 <div class="row">
-                     <div class="col" style="padding-top: 0px;"> <i style="font-size: 60px;" class="icon positive ion-calendar"></i> </div>
-                     <div class="col col-75"> <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit or add notes by tapping on any measurement below. Drag down to refresh and get your most recent measurements.</h2> </div>
-                 </div>
-                 <div class="row" > <div class="button-bar"> <button id="gotItButton" class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button> </div> </div>
-             </div>
-         </div>
-        <ion-list id="historyList">
+         <div id="helpCard"  ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))"
+              ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"
+              ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+         <ion-list id="historyList">
             <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
                 ng-hide="historyItem.hide"
                 data-measurementid="{{historyItem.id}}"
