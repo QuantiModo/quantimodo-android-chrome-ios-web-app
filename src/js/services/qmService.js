@@ -12,16 +12,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var qmService = {
         ads: {
             initialize: function(force){
-                if(!qm.platform.isMobile()){return false;}
+                if(!qm.platform.isMobile()){
+                    qmLog.info("admob: Not Initializing because not on mobile...");
+                    return false;
+                }
+                qmLog.info("admob: Checking if user is older than a day...");
                 qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
                     if(!OlderThan1Day && !force) {
-                        qmLog.info("admob: Not intializing admob because user not older than 1 day");
+                        qmLog.info("admob: Not initializing admob because user not older than 1 day");
                         return;
                     }
                     if(typeof window.plugins.AdMob === "undefined"){
                         qmLog.error("admob: window.plugins.AdMob undefined on mobile");
                     }
-                    qmLog.info("admob: Intializing admob and creating banner...");
+                    if(qm.getUser().loginName === 'bucket_box'){
+                        qmLog.info("admob: Not initializing because it's an Apple test user");
+                        return;
+                    }
+                    qmLog.info("admob: Initializing admob and creating banner...");
                     window.plugins.AdMob.setOptions( {
                         publisherId: 'ca-app-pub-2427218021515520/1775529603',
                         interstitialAdId: '',
