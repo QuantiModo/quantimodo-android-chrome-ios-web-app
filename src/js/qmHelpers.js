@@ -77,8 +77,8 @@ window.qm = {
             }
             qmLog.debug(response.status + ' response from ' + response.req.url);
             if (error) {
-                qm.api.generalErrorHandler(error, data, response);
-                if(errorHandler){errorHandler(error);}
+                var errorMessage = qm.api.generalErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(errorMessage);}
             } else {
                 if(data && params){
                     qm.api.cacheSet(params, data, functionName);
@@ -90,19 +90,24 @@ window.qm = {
         },
         generalErrorHandler: function(error, data, response, options){
             var errorMessage = error.message || response.error.message || error;
+            if(response && response.body){
+                if(response.body.errorMessage){errorMessage += ". " + response.body.errorMessage;}
+                if(response.body.error && response.body.error.message){errorMessage += ". " + response.body.error.message;}
+            }
             if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                 {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
+            if(errorMessage.toLowerCase().indexOf('expired') !== -1){
+                qm.auth.deleteAllAccessTokens();
+                qm.userHelper.setUser(null);
+            }
             if(response.status === 401){
-                if(errorMessage.toLowerCase().indexOf('expired') !== -1){
-                    qm.auth.deleteAllAccessTokens();
-                    qm.userHelper.setUser(null);
-                }
                 if(!options || !options.doNotSendToLogin){
                     qmLog.info("Not authenticated!");
                 }
             } else {
                 qmLog.error(errorMessage, null, {error: error, apiResponse: response});
             }
+            return errorMessage;
         },
         addGlobalParams: function (urlParams) {
             var url;
@@ -289,8 +294,8 @@ window.qm = {
             }
             qmLog.debug(response.status + ' response from ' + response.req.url, null);
             if (error) {
-                qm.api.generalErrorHandler(error, data, response);
-                if(errorHandler){errorHandler(error);}
+                var errorMessage = qm.api.generalErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(errorMessage);}
             } else {
                 if(successHandler){successHandler(data, response);}
             }
@@ -1095,6 +1100,7 @@ window.qm = {
         },
         deleteAllAccessTokens: function(){
             qmLog.info("deleteAllAccessTokens...");
+            qm.storage.removeItem('accessToken');
             if(qm.userHelper.getUserFromLocalStorage()){
                 qm.userHelper.getUserFromLocalStorage().accessToken = null;
             }
