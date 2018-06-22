@@ -6574,8 +6574,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         image: $rootScope.variableCategories.Physique.imageUrl
                     },
                     {
-                        title: 'Advanced Analytics',
-                        subtitle: 'See Top Predictors',
+                        title: 'Find Out What Works',
+                        subtitle: 'Discover hidden factors improving or worsening symptoms and well-being',
                         moreInfo: "See a list of the strongest predictors for any outcome.  See the values for each " +
                         "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
                         "out the full study on any predictor and outcome combination.",
