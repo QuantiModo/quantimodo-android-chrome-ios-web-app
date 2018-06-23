@@ -1198,7 +1198,7 @@ window.qm = {
             qm.api.configureClient();
             var apiInstance = new Quantimodo.ConnectorsApi();
             function callback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getConnectorsFromApi');
             }
             params = qm.api.addGlobalParams(params);
             apiInstance.getConnectors(params, callback);
@@ -3353,6 +3353,7 @@ window.qm = {
                     userSuccessHandler(data);
                 }
                 var params = qm.api.addGlobalParams({});
+                params.includeAuthorizedClients = true;
                 //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
                 apiInstance.getUser(params, userSdkCallback);
             }
