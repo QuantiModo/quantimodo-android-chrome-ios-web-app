@@ -3469,10 +3469,13 @@ window.qm = {
                 return;
             }
             if(!requestParams){requestParams = {};}
+            var commonVariables;
             function getFromLocalForage(fromJson){
-                qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (commonVariables) {
-                    if(fromJson){
-                        commonVariables = commonVariables.concat(fromJson);
+                qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (fromLocalForage) {
+                    if(!fromLocalForage){
+                        commonVariables = fromJson;
+                    } else if(fromJson){
+                        commonVariables = fromLocalForage.concat(fromJson);
                     }
                     if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
                     successHandler(commonVariables);
