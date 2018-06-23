@@ -210,7 +210,9 @@ window.qmLog = {
         if(qm.platform.isMobile() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
         try {
-            if(qmLog.metaData){logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(qmLog.metaData);}
+            if(qmLog.metaData && qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
+                logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(qmLog.metaData);
+            }
         } catch (error) {
             console.error("Could not stringify log meta data", error);
         }
