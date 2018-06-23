@@ -6171,7 +6171,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
         trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
-        qmService.showBasicLoader();
+        if($state.current.name !== qmStates.onboarding){qmService.showBasicLoader();}
         $timeout(function () { // Allow loader to show
             // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
             qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
