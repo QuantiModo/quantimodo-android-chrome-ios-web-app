@@ -61,7 +61,7 @@ window.qmLog = {
             qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
         }
         if(qmLog.logLevel){return qmLog.logLevel;}
-        qmLog.setLogLevelName("info");
+        qmLog.setLogLevelName("error"); // I think info logs might be slowing down iOS app so default to error
         return qmLog.logLevel;
     },
     setAuthDebugEnabled: function (value) {
