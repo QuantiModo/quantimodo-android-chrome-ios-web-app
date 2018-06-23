@@ -3325,6 +3325,17 @@ window.qm = {
             }
             return true;
         },
+        revokeClientAccess: function(clientIdToRevoke, successHandler, errorHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.UserApi();
+            function userSdkCallback(error, data, response) {
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'revokeClientAccess');
+                qmLog.info("Got user from API...");
+                qm.userHelper.setUser(data.user);
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.deleteShare(clientIdToRevoke, params, userSdkCallback);
+        },
         getUserFromApi: function(successHandler, errorHandler){
             qmLog.info("Getting user from API...");
             function userSuccessHandler(userFromApi){
