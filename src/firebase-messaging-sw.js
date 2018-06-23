@@ -134,8 +134,8 @@ self.addEventListener('notificationclick', function(event) {
     var basePath = '/ionic/Modo/www/index.html#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
     if(event.action && event.action.indexOf("https://") !== -1){
-        event.action = qm.stringHelper.replaceAll(event.action, '/src/', '/www/');
-        var route = qm.stringHelper.getStringAfter(event.action, basePath);
+        var providedUrl = event.action.replace('src', 'www');
+        var route = qm.stringHelper.getStringAfter(providedUrl, basePath);
         urlPathToOpen = basePath + route;
     }
     // This looks to see if the current is already open and focuses if it is

@@ -1,10 +1,8 @@
-<div ng-show="platform.isWeb && !state.loading && !loading && showAds">
-    <div ng-cloak ng-click="goToState('app.upgrade')" style="text-align: center; cursor: pointer">
-        Remove These Ads
+<div ng-if="showAdSense" style="text-align: center; cursor: pointer;">
+    <h4 ng-click="goToState('app.upgrade')" id="removeAds"><i class="ion-star">&nbsp; Remove Ads</i></h4>
+    <div ng-if="platform.isWeb">
+        <!--<adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;"
+                ad-format="auto" <- Causes  No slot size for availableWidth=0 error></adsense>-->
+        <adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;" ad-format="auto"></adsense>
     </div>
-    <adsense ad-client="ca-pub-2427218021515520"
-             ad-slot="5093178896"
-             inline-style="display:inline-block;width:100%;height:90px"
-             ad-format="auto">
-    </adsense>
 </div>

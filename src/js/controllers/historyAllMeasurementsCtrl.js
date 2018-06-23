@@ -14,9 +14,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         moreDataCanBeLoaded: true
 	};
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        if(!$scope.helpCard || $scope.helpCard.title !== "Past Measurements"){
+            $scope.helpCard = {
+                title: "Past Measurements",
+                bodyText: "Edit or add notes by tapping on any measurement below. Drag down to refresh and get your most recent measurements.",
+                icon: "ion-calendar"
+            };
+        }
         if($stateParams.refresh){$scope.state.history = null;}
         $scope.state.moreDataCanBeLoaded = true;
-        $rootScope.hideHistoryPageInstructionsCard = qm.storage.getItem('hideHistoryPageInstructionsCard');
+        $scope.hideHistoryPageInstructionsCard = qm.storage.getItem('hideHistoryPageInstructionsCard');
         updateMeasurementIfNecessary();
     });
     $scope.$on('$ionicView.enter', function(e) {
