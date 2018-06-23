@@ -201,7 +201,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableObject;
             }
         },
+        charts: {
+            broadcastUpdateCharts: function(){
+                qmLog.info("Broadcasting updateCharts");
+                $rootScope.$broadcast('updateCharts');
+            }
+        },
         connectors: {
+            broadcastRefreshConnectors: function(){
+                if($state.current.name.toLowerCase().indexOf('import') !== -1){
+                    qmLog.info("Broadcasting broadcastRefreshConnectors so manage reminders page is updated");
+                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                } else {
+                    qmLog.info("NOT broadcasting broadcastRefreshConnectors because state is "+$state.current.name);
+                }
+            },
             connectorErrorHandler: function (error){
                 qmLog.error(error);
             },
@@ -211,10 +225,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.post('api/v3/connectors/connect', ['connector', 'connectorCredentials'], body, function(response){
                     var connectors = qmService.connectors.storeConnectorResponse(response);
                     qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(response), response, response);
-                    $rootScope.$broadcast('broadcastRefreshConnectors');
+
+                    qmService.connectors.broadcastRefreshConnectors();
                     if(successHandler){successHandler(response);}
                 }, function(error){
-                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                    qmService.connectors.broadcastRefreshConnectors();
                     qmService.connectors.connectorErrorHandler(error);
                     if(errorHandler){errorHandler(error);}
                 });
@@ -230,7 +245,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var params = {noRedirect: true, code: authorizationCode};
                 function localSuccessHandler(response){
                     qmService.connectors.storeConnectorResponse(response);
-                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                    qmService.connectors.broadcastRefreshConnectors();
                     if(successHandler){successHandler(response);}
                 }
                 qmService.get('api/v3/connectors/' + connector.name + '/connect', ['code', 'noRedirect'], params, function(response){
@@ -243,7 +258,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return;
                     }
                     qmLogService.error("error on connectWithAuthCode for " + connector.name + " is: ", error, error);
-                    $rootScope.$broadcast('broadcastRefreshConnectors');
+                    qmService.connectors.broadcastRefreshConnectors();
                     if(errorHandler){errorHandler(error);}
                 });
             },
@@ -252,11 +267,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
                     .then(function(result){
                         qmLog.authDebug(JSON.stringify(result));
-                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                        qmService.connectors.broadcastRefreshConnectors();
                         if(successHandler){successHandler(result);}
                     }, function (error) {
                         qmService.connectors.connectorErrorHandler(error);
-                        $rootScope.$broadcast('broadcastRefreshConnectors');
+                        qmService.connectors.broadcastRefreshConnectors();
                         if(errorHandler){errorHandler(error);}
                     });
             },
@@ -802,6 +817,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             }
         },
+        measurements: {
+            broadcastUpdatePrimaryOutcomeHistory: function(){
+                qmLog.info("Broadcasting updatePrimaryOutcomeHistory");
+                $rootScope.$broadcast('updatePrimaryOutcomeHistory');
+            }
+        },
         navBar: {
             setFilterBarSearchIcon: function(value){
                 qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
@@ -831,6 +852,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         notifications: {
+            broadcastGetTrackingReminderNotifications: function(){
+                if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                    qmLog.info("Broadcasting broadcastGetTrackingReminderNotifications so inbox is updated");
+                    $rootScope.$broadcast('broadcastGetTrackingReminderNotifications');  // Refresh Reminders Inbox
+                } else {
+                    qmLog.info("NOT broadcasting broadcastGetTrackingReminderNotifications because state is " + $state.current.name);
+                }
+            },
             enableDrawOverAppsPopups: function () {
                 qm.notifications.setLastPopupTime(null);
                 qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
@@ -971,6 +1000,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.configurePushNotifications();
                 }
             },
+        },
+        reminders: {
+            broadcastGetTrackingReminders: function(){
+                if($state.current.name.toLowerCase().indexOf(qmStates.remindersManage.toLowerCase()) !== -1){
+                    qmLog.info("Broadcasting broadcastGetTrackingReminders so manage reminders page is updated");
+                    $rootScope.$broadcast('broadcastGetTrackingReminders');
+                } else {
+                    qmLog.info("NOT broadcasting broadcastGetTrackingReminders because state is "+$state.current.name);
+                }
+            }
         },
         rootScope: {
             setProperty: function(property, value, callback){  // Avoid Error: [$rootScope:inprog] $apply already in progress
@@ -2335,12 +2374,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.getDevCredentials().then(function(){
                 deferred.resolve();
             });
-        } else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig) {
-            qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-            deferred.resolve();
         } else if (qm.getUser() && qm.getUser().accessToken){
             qmLog.authDebug("got access token from user");
             deferred.resolve(qm.getUser().accessToken);
+        } else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig) {
+            qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+            deferred.resolve();
         } else {
             qmLog.info('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
@@ -2673,7 +2712,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.measurements.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
             if (primaryOutcomeMeasurementsFromApi.length > 0) {
                 qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
-                $rootScope.$broadcast('updateCharts');
+                qmService.charts.broadcastUpdateCharts();
             }
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
         }, function(error){deferred.reject(error);});
@@ -2753,8 +2792,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // if date range changed, update charts
         if (parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)) {
             qmLogService.debug('setDates broadcasting to update charts', null);
-            $rootScope.$broadcast('updateCharts');
-            $rootScope.$broadcast('updatePrimaryOutcomeHistory');
+            qmService.charts.broadcastUpdateCharts();
+            qmService.measurements.broadcastUpdatePrimaryOutcomeHistory();
         }
     };
     // retrieve date to end on
@@ -3399,8 +3438,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.qm.timeHelper.getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
-        qmLog.info("Broadcasting broadcastGetTrackingReminderNotifications");
-        $rootScope.$broadcast('broadcastGetTrackingReminderNotifications');
+        qmService.notifications.broadcastGetTrackingReminderNotifications();
         qmService.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
     };
@@ -3709,8 +3747,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.addToTrackingReminderSyncQueue = function(trackingReminder) {
         qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
-        qmLog.info("Broadcasting broadcastGetTrackingReminders so manage reminders page is updated");
-        $rootScope.$broadcast('broadcastGetTrackingReminders');
+        qmService.reminders.broadcastGetTrackingReminders();
     };
     qmService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
@@ -3732,8 +3769,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
                             qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
                             qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
-                            qmLog.info("Broadcasting broadcastGetTrackingReminders so manage reminders page is updated");
-                            $rootScope.$broadcast('broadcastGetTrackingReminders');
+                            qmService.reminders.broadcastGetTrackingReminders();
                         }
                         if(!response.data.trackingReminderNotifications){
                             qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
@@ -7152,7 +7188,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLogService.error("Push error", e.message, pushConfig);
                 });
                 var finishPush = function (data) {
-                    $rootScope.$broadcast('broadcastGetTrackingReminderNotifications');  // Refresh Reminders Inbox
+                    qmService.notifications.broadcastGetTrackingReminderNotifications();
                     if(!finishPushes){
                         qmLogService.error('Not doing push.finish', 'Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, data);
                         return;
