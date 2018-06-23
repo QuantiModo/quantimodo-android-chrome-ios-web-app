@@ -1105,6 +1105,7 @@ window.qm = {
                 qm.userHelper.getUserFromLocalStorage().accessToken = null;
             }
             qm.auth.deleteAllCookies();
+            qm.api.configureClient();
         },
         deleteAllCookies: function(){
             qmLog.info("Deleting all cookies...");
