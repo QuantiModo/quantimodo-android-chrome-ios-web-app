@@ -48,7 +48,9 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.search.reminderSearch(function (variableObject) {
             if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
                 $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
-                $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
+                if($rootScope.appSettings.appDesign.onboarding.active[0].title){
+                    $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
+                }
                 $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
                 $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
                 $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
