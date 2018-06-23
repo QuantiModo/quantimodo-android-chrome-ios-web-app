@@ -3442,18 +3442,53 @@ window.qm = {
             }
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
+        getCommonVariablesFromJsonFile: function (requestParams, successHandler, errorHandler) {
+            var globalKey = 'CommonVariablesFromJsonFile';
+            var fromGlobals = qm.globalHelper.getItem(globalKey); // Reduce web requests.  Pretty big to keep in localForage
+            var commonVariables;
+            if(fromGlobals){
+                commonVariables = qm.arrayHelper.filterByRequestParams(fromGlobals, requestParams);
+                successHandler(commonVariables);
+            }
+            qm.api.getViaXhrOrFetch('data/commonVariables.json', function(commonVariables){
+                if(!commonVariables){
+                    qmLog.error("No common variables from json file!");
+                    errorHandler("No common variables from json file!");
+                    return;
+                }
+                qm.globalHelper.setItem(globalKey, commonVariables); // Reduce web requests.  Pretty big to keep in localForage
+                commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
+                successHandler(commonVariables);
+            }, function (error) {
+                if(errorHandler){errorHandler(error);}
+            });
+        },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
                 qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
                 return;
             }
             if(!requestParams){requestParams = {};}
-            qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (data) {
-                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
-                successHandler(data);
+            var commonVariables;
+            function getFromLocalForage(fromJson){
+                qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (fromLocalForage) {
+                    if(!fromLocalForage){
+                        commonVariables = fromJson;
+                    } else if(fromJson){
+                        commonVariables = fromLocalForage.concat(fromJson);
+                    }
+                    if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
+                    successHandler(commonVariables);
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            }
+            qm.commonVariablesHelper.getCommonVariablesFromJsonFile(requestParams, function (commonVariables) {
+                getFromLocalForage(commonVariables);
             }, function (error) {
                 qmLog.error(error);
-                if(errorHandler){errorHandler(error);}
+                getFromLocalForage();
             });
         },
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
