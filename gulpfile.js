@@ -167,17 +167,14 @@ process.on('unhandledRejection', function (err) {
 });
 bugsnag.onBeforeNotify(function (notification) {
     var metaData = notification.events[0].metaData;
-    // modify meta-data
-    metaData.subsystem = { name: getCurrentServerContext() };
-    metaData.client_id = QUANTIMODO_CLIENT_ID;
-    metaData.build_link = qm.buildInfoHelper.getBuildLink();
+    metaData = qmLog.addMetaData(metaData);
 });
 var qmLog = {
-    error: function (message, object, maxCharacters) {
-        object = object || {};
-        console.error(obfuscateStringify(message, object, maxCharacters));
-        object.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
-        bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
+    error: function (message, metaData, maxCharacters) {
+        metaData = qmLog.addMetaData(metaData);
+        console.error(obfuscateStringify(message, metaData, maxCharacters));
+        metaData.build_info = qm.buildInfoHelper.getCurrentBuildInfo();
+        bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(metaData)));
     },
     info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
@@ -188,6 +185,14 @@ var qmLog = {
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
         throw message;
+    },
+    addMetaData: function(metaData){
+        metaData = metaData || {};
+        metaData.environment = process.env;
+        metaData.subsystem = { name: getCurrentServerContext() };
+        metaData.client_id = QUANTIMODO_CLIENT_ID;
+        metaData.build_link = qm.buildInfoHelper.getBuildLink();
+        return metaData;
     }
 };
 var qmGit = {
@@ -361,7 +366,7 @@ var qm = {
         },
         writeBuildInfo: function () {
             var buildInfo = qm.buildInfoHelper.currentBuildInfo;
-            writeToFile(paths.www.buildInfo, buildInfo);
+            return writeToFile(paths.www.buildInfo, buildInfo);
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -385,6 +390,10 @@ var qm = {
         },
         isProduction: function () {
             return qm.releaseService.getReleaseStage() === 'production';
+        },
+        getReleaseStageSubDomain: function(){
+            if(qm.releaseService.isStaging()){return "qm-staging";}
+            return "quantimodo";
         }
     }
 };
@@ -789,6 +798,7 @@ function getRequestOptions(path) {
     };
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+        qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+'...');
     } else {
         qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
     }
@@ -1325,7 +1335,7 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     return getConstantsFromApiAndWriteToJson('commonVariables',
-        'public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
+        'public/variables?removeAdvancedProperties=true&limit=1000&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
 });
 gulp.task('getConnectors', function () {
     return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
@@ -2256,7 +2266,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qm.releaseService.getReleaseStage());
         return;
     }
-    var url = 'https://qm-'+qm.releaseService.getReleaseStage()+'.quantimo.do/ionic/Modo/www/';
+    var url = 'https://'+qm.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
     replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
 });
@@ -2291,7 +2301,7 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(gulp.dest('./'));
 });
 gulp.task('buildInfo', ['getAppConfigs'], function () {
-    qm.buildInfoHelper.writeBuildInfo();
+    return qm.buildInfoHelper.writeBuildInfo();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -2612,6 +2622,7 @@ gulp.task('configureApp', [], function (callback) {
     runSequence(
         //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
+        'rename-adsense',
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
@@ -2623,7 +2634,7 @@ gulp.task('configureApp', [], function (callback) {
         'getVariableCategories',
         'getAppConfigs',
         'uncommentBugsnagInIndexHtml',
-        'uncommentOpbeatInIndexHtml',
+        //'uncommentOpbeatInIndexHtml',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
@@ -3485,4 +3496,10 @@ gulp.task('google-services-json', [], function() {
         '  "configuration_version": "1"\n' +
         '}';
     return writeToFile('google-services.json', string);
+});
+gulp.task('rename-adsense', [], function () {
+    qmLog.info("Renaming adsense because of Ad-Block");
+    return gulp.src("./src/lib/angular-google-adsense/dist/angular-google-adsense.min.js")
+        .pipe(rename("custom-lib/aga.js"))
+        .pipe(gulp.dest("./src")); // ./dist/main/text/ciao/goodbye.md
 });

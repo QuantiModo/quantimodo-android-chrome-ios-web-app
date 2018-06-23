@@ -85,6 +85,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.state.requestParams.causeVariableName = getCauseVariableName();
         $scope.state.requestParams.effectVariableName = getEffectVariableName();
         $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
+        $scope.state.requestParams.studyClientId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyClientId");
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
@@ -128,9 +129,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + causeSearchTerm;
-                qmLogService.error(null, error);
+                qmLogService.error(error);
             }
-        }).catch(function (error) { qmLogService.error(null, error); });
+        }).catch(function (error) { qmLogService.error(error); });
         var effectSearchTerm = getStatistics().effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
         wikipediaFactory.searchArticlesByTitle({
@@ -144,9 +145,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + effectSearchTerm;
-                qmLogService.error(null, error);
+                qmLogService.error(error);
             }
-        }).catch(function (error) { qmLogService.error(null, error); });
+        }).catch(function (error) { qmLogService.error(error); });
     }
     $scope.weightedPeriod = 5;
     function getCorrelationObjectIfNecessary(){
@@ -161,7 +162,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getStudy(recalculate) {
         if(!getCauseVariableName() || !getEffectVariableName()){
             qmLogService.error('Cannot get study. Missing cause or effect variable name.');
-            qmService.goToDefaultState();
+            qmService.goToState(qmStates.studyCreation);
             return;
         }
         getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
@@ -173,7 +174,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.loadingCharts = false;
             setActionSheetMenu();
         }, function (error) {
-            qmLogService.error(null, error);
+            qmLogService.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;

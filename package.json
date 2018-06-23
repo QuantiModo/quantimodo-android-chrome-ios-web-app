@@ -9,7 +9,7 @@
   "devDependencies": {
     "angular-mocks": "1.7.2",
     "jasmine-core": "3.1.0",
-    "karma": "2.0.3",
+    "karma": "2.0.4",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.2",
     "karma-spec-reporter": "0.0.32"
@@ -20,7 +20,7 @@
     "bower": "1.8.4",
     "bugsnag": "1.12.2",
     "bugsnag-sourcemaps": "1.0.3",
-    "eslint": "4.19.1",
+    "eslint": "5.0.0",
     "event-stream": "3.3.4",
     "express": "4.16.3",
     "gulp": "3.9.1",
@@ -66,7 +66,7 @@
     "plist": "3.0.1",
     "pump": "3.0.0",
     "q": "1.5.1",
-    "quantimodo": "5.9.61414",
+    "quantimodo": "5.9.62212",
     "request": "2.87.0",
     "request-promise": "4.2.2",
     "run-sequence": "1.2.2",
