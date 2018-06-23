@@ -1335,7 +1335,7 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     return getConstantsFromApiAndWriteToJson('commonVariables',
-        'public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
+        'public/variables?removeAdvancedProperties=true&limit=1000&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
 });
 gulp.task('getConnectors', function () {
     return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
