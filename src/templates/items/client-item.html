@@ -1,0 +1,11 @@
+<img alt="{{ client.appDisplayName }}" ng-src="{{ client.iconUrl }}" class="md-avatar" />
+<div class="md-list-item-text">
+    <h4>{{ client.appDisplayName }}</h4>
+    <p>{{ client.appDescription }}</p>
+</div>
+<md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(client.homepageUrl)" aria-label="preview">
+    <md-icon class="ion-android-open"><md-tooltip md-direction="down">More Details</md-tooltip></md-icon>
+</md-button>
+<md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(client.clientId)" aria-label="delete">
+    <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
+</md-button>

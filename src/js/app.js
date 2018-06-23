@@ -184,6 +184,7 @@ angular.module('starter',
         "configuration": "app.configuration",
         "configurationClientId": "app.configurationClientId",
         "contact": "app.contact",
+        "dataSharing": "app.dataSharing",
         "favoriteAdd": "app.favoriteAdd",
         "favorites": "app.favorites",
         "favoriteSearch": "app.favoriteSearch",
@@ -1328,6 +1329,18 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/upgrade-page-cards.html",
                     controller: 'UpgradeCtrl'
+                }
+            }
+        })
+        .state(qmStates.dataSharing, {
+            url: "/data-sharing",
+            cache: true,
+            params: {
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/data-sharing-page.html",
+                    controller: 'DataSharingCtrl'
                 }
             }
         })
