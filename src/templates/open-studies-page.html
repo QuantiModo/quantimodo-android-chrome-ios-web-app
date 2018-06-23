@@ -1,0 +1,34 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Data Sharing">
+    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshAuthorizedClients()"></ion-refresher>
+        <div id="helpCard" ng-show="state.showHelpCard" ng-click="state.hideHelpCard()" ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+        <div ng-include="'templates/input/filter-search-field.html'"></div>
+        <div ng-cloak>
+            <md-content>
+                <md-list class="md-dense" flex>
+                    <md-list-item ng-repeat="app in user.authorizedClients.apps | orderBy : 'appDisplayName'" class="noright">
+                        <img alt="{{ app.appDisplayName }}" ng-src="{{ (app.iconUrl) ? app.iconUrl : 'https://placehold.it/512x512'  }}" class="md-avatar" />
+                        <div class="md-list-item-text">
+                            <h4>{{ app.appDisplayName }}</h4>
+                            <p>{{ app.appDescription }}</p>
+                        </div>
+                        <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(app.homepageUrl)" aria-label="preview">
+                            <md-icon class="ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></md-icon>
+                        </md-button>
+                        <md-button ng-if="app.appStatus.betaDownloadLinks.chromeExtension" class="md-secondary md-icon-button" style="font-size: 30px;"
+                                   ng-href="{{app.appStatus.betaDownloadLinks.chromeExtension}}" aria-label="edit">
+                            <md-icon class="ion-social-chrome"><md-tooltip md-direction="down">Download Chrome Extension</md-tooltip></md-icon>
+                        </md-button>
+                        <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(app.clientId)" aria-label="delete">
+                            <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
+                        </md-button>
+                    </md-list-item>
+                    <md-list-item class="secondary-button-padding" ng-click="openNewAppModalPopup()">
+                        <p>FIND NEW APPS</p>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </div>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

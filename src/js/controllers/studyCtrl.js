@@ -85,6 +85,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.state.requestParams.causeVariableName = getCauseVariableName();
         $scope.state.requestParams.effectVariableName = getEffectVariableName();
         $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
+        $scope.state.requestParams.studyClientId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyClientId");
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
