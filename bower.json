@@ -44,12 +44,14 @@
     "angular-web-notification": "^1.2.26",
     "firebase": "^4.9.0",
     "ngFitText": "^4.2.3",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "angularMaterialFormBuilder": "angular-material-form-builder#^0.1.1"
   },
   "resolutions": {
-    "angular": "1.6.1",
-    "angular-material": "1.1.5",
+    "angular": "1.7.2",
+    "angular-material": "^1.1.0",
     "jquery": "~2.1.4",
-    "d3": "~4.6.0"
+    "d3": "~4.6.0",
+    "angular-messages": "^1.4.8"
   }
 }
