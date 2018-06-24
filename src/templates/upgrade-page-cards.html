@@ -63,11 +63,12 @@
             </div>
         </md-card>
         <md-card id="checkout-card" style="text-align: center;" >
-            <md-toolbar>
-                <div class="md-toolbar-tools">
-                    <h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">Get Started</h1>
-                </div>
-            </md-toolbar>
+            <!--<md-toolbar>-->
+                <!--<div class="md-toolbar-tools">-->
+                    <!--<h1 style="color: rgba(255,255,255,1); text-align: center; width: inherit;">Get Started</h1>-->
+                <!--</div>-->
+            <!--</md-toolbar>-->
+            <br><br>
             <span ng-if="!platform.isWebOrChrome && !platform.isIOS"><div ng-bind-html="state.features.premium.priceHtml" ></div><br><br></span>
             <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
                 <div id="plans" class="md-dialog-content">
