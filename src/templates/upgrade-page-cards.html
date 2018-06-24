@@ -69,6 +69,8 @@
                 <!--</div>-->
             <!--</md-toolbar>-->
             <br><br>
+            <span ng-if="!platform.isWebOrChrome && !platform.isIOS"><div ng-bind-html="state.features.premium.priceHtml" ></div><br><br></span>
+            <div name="upgradeForm" ng-if="platform.isWebOrChrome" style="padding: 15px;" ng-cloak>
                 <div id="plans" class="md-dialog-content">
                     <md-radio-group ng-model="productId">
                         <md-radio-button id="monthly-radio" value="monthly7">Monthly at $6.99/mo</md-radio-button>
