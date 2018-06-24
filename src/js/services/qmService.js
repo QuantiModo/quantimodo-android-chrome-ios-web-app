@@ -24,6 +24,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     if(typeof window.plugins.AdMob === "undefined"){
                         qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                        return;
                     }
                     if(qm.getUser().loginName === 'bucket_box'){
                         qmLog.info("admob: Not initializing because it's an Apple test user");
