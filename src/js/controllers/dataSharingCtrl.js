@@ -2,7 +2,14 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
     function($scope, $state, qmService) {
         $scope.controller_name = "DataSharingCtrl";
         $scope.state = {
-            authorizedClients: null
+            authorizedClients: null,
+            invitation:{
+                emailAddress: null,
+                name: null,
+                emailSubject: null,
+                emailBody: null,
+                hint: "Enter the email address of a friend, family member, or health-care provider who you would like to be able to access your measurements."
+            }
         };
         $scope.$on("$ionicView.beforeEnter", function() {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -32,5 +39,11 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
         function setAuthorizedClients(response) {
             var authorizedClients = response.authorizedClients || response;
             if(authorizedClients){$scope.state.authorizedClients = authorizedClients;}
+            qmService.hideLoader();
+        }
+        $scope.state.sendSharingInvitation = function(){
+            qmService.shares.sendInvitation($scope.state.invitation, function (authorizedClients) {
+                setAuthorizedClients(authorizedClients);
+            });
         }
 }]);
