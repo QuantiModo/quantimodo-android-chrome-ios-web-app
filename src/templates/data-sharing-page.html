@@ -9,15 +9,14 @@
                 <md-card id="Individuals">
                     <md-toolbar>
                         <div class="md-toolbar-tools">
-                            Individuals
+                            Individuals with Access to Your Data
                             <span flex></span>
-                            <md-button class="icon icon-left ion-plus-round" ng-click="goToState('app.studies')">&nbsp; Share Your Data</md-button>
                         </div>
                     </md-toolbar>
                     <md-content layout-padding>
                         <form name="invitationForm">
                             <md-input-container class="md-block">
-                                <label>Email of Person to Share With</label>
+                                <label>Enter email of person to share with</label>
                                 <input required type="email" name="emailAddress" ng-model="state.invitation.emailAddress"
                                        minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
                                 <div class="hint">Email address of a friend, family member, or health-care provider who you would like to be able to access your measurements</div>
@@ -27,8 +26,7 @@
                                     </div>
                                 </div>
                                 <div style="text-align: center;">
-                                    <md-button ng-if="!state.authorizedClients.individuals || !state.authorizedClients.individuals.length"
-                                               class="icon icon-left ion-plus-round" ng-click="state.sendSharingInvitation()">&nbsp; Send Invitation</md-button>
+                                    <md-button class="icon icon-left ion-plus-round" ng-click="state.sendSharingInvitation()">&nbsp; Send Invitation</md-button>
                                 </div>
                             </md-input-container>
                         </form>
