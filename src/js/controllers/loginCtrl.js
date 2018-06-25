@@ -98,6 +98,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
+        if(!qm.stringHelper.isFalsey(qm.urlHelper.getParam('error'))){
+            qmLog.error(qm.urlHelper.getParam('error'));
+            qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  :D")
+        }
     });
     $scope.state.setAuthDebugEnabled = function(){
         qmLog.setAuthDebugEnabled(true);
