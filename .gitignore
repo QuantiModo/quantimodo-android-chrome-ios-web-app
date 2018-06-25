@@ -119,3 +119,4 @@ yarn-error\.log
 *.private_config.json
 GoogleService-Info.plist
 google-services.json
+src/build-info.json
