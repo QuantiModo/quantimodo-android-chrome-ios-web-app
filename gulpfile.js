@@ -87,6 +87,7 @@ var paths = {
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
+        buildInfo: "src/build-info.json",
         devCredentials: "src/dev-credentials.json",
         defaultConfig: "src/default.config.json",
         defaultPrivateConfig: "src/default.private_config.json",
@@ -365,7 +366,8 @@ var qm = {
             return JSON.parse(fs.readFileSync(paths.www.buildInfo));
         },
         writeBuildInfo: function () {
-            var buildInfo = qm.buildInfoHelper.currentBuildInfo;
+            var buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
+            writeToFile(paths.src.buildInfo, buildInfo);
             return writeToFile(paths.www.buildInfo, buildInfo);
         },
         getBuildLink: function() {

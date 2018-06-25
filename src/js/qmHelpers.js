@@ -648,11 +648,37 @@ window.qm = {
             });
         },
         getPropertyDescription: function (modelName, propertyName, callback){
-            qm.apiHelper.getApiDocs(function (apiDocs) {
-                var explanation = {title: qm.stringHelper.camelToTitleCase(propertyName)};
-                explanation.textContent = apiDocs.definitions[modelName].properties[propertyName].description;
+            qm.apiHelper.getModelDefinition(function (modelDefinition) {
+                var explanation = qm.apiHelper.convetToExplanation(propertyName, modelDefinition);
                 callback(explanation);
             });
+        },
+        convertToExplanation: function(propertyName, modelDefinition){
+            var explanation = {title: qm.stringHelper.camelToTitleCase(propertyName)};
+            explanation.textContent = modelDefinition.properties[propertyName].description;
+            return explanation;
+        },
+        getRequiredProperties: function (modelName, callback){
+            qm.apiHelper.getModelDefinition(function (modelDefinition) {
+                callback(modelDefinition.required);
+            });
+        },
+        getModelDefinition: function (modelName, callback){
+            qm.apiHelper.getApiDocs(function (apiDocs) {
+                callback(apiDocs.definitions[modelName]);
+            });
+        },
+        checkRequiredProperties: function(bodyToCheck, modelName, callback){
+            qm.apiHelper.getModelDefinition(modelName, function(modelDefinition){
+                var explanation = null;
+                for (var i = 0; i < modelDefinition.required.length; i++) {
+                    var requiredPropertyName = modelDefinition.required[i];
+                    if(!bodyToCheck[requiredPropertyName]){
+                        explanation = qm.apiHelper.convertToExplanation(requiredPropertyName, modelDefinition);
+                    }
+                }
+                callback(explanation);
+            })
         }
     },
     arrayHelper: {
@@ -1532,6 +1558,7 @@ window.qm = {
         apiUrl: 'apiUrl',
         appSettings: 'appSettings',
         appSettingsRevisions: 'appSettingsRevisions',
+        authorizedClients: 'authorizedClients',
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
         commonVariables: 'commonVariables',
@@ -1568,6 +1595,8 @@ window.qm = {
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
+        studiesCreated: 'studiesCreated',
+        studiesJoined: 'studiesJoined',
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminders: 'trackingReminders',
@@ -2469,6 +2498,166 @@ window.qm = {
         ]
     },
     serviceWorker: false,
+    shares: {
+        sendInvitation: function(body, successHandler, errorHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.SharesApi();
+            function callback(error, data, response) {
+                var authorizedClients = data.authorizedClients || data;
+                if (authorizedClients) { qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAuthorizedClientsFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.inviteShare(body, params, callback);
+        },
+        getAuthorizedClientsFromApi: function(successHandler, errorHandler){
+            var params = qm.api.addGlobalParams({});
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.SharesApi();
+            function callback(error, data, response) {
+                var authorizedClients = data.authorizedClients || data;
+                if (authorizedClients) { qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAuthorizedClientsFromApi');
+            }
+            apiInstance.getShares(params, callback);
+        },
+        saveAuthorizedClientsToLocalStorage: function(authorizedClients){
+            if(!authorizedClients){
+                qmLog.error("No authorizedClients provided to saveToLocalStorage");
+                return;
+            }
+            qm.localForage.setItem(qm.items.authorizedClients, authorizedClients);
+        },
+        getAuthorizedClientsFromLocalStorage: function(successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to authorizedClients getFromLocalStorage");
+                return;
+            }
+            qm.localForage.getItem(qm.items.authorizedClients, function (authorizedClients) {
+                successHandler(authorizedClients);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getAuthorizedClientsFromLocalStorageOrApi: function(successHandler, errorHandler){
+            qm.shares.getAuthorizedClientsFromLocalStorage(function(authorizedClients){
+                if(authorizedClients){
+                    if(successHandler){successHandler(authorizedClients);}
+                    return;
+                }
+                qm.shares.getAuthorizedClientsFromApi(function (authorizedClients) {
+                    if(successHandler){successHandler(authorizedClients);}
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            });
+        },
+        revokeClientAccess: function(clientIdToRevoke, successHandler, errorHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.SharesApi();
+            function callback(error, data, response) {
+                var authorizedClients = data.authorizedClients || data;
+                if (authorizedClients) { qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAuthorizedClientsFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.deleteShare(clientIdToRevoke, params, callback);
+        }
+    },
+    studiesCreated: {
+        getStudiesCreatedFromApi: function(params, successHandler, errorHandler){
+            params = qm.api.addGlobalParams(params);
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.StudiesApi();
+            function callback(error, data, response) {
+                var studiesCreated = data.studiesCreated || data;
+                if (studiesCreated) { qm.shares.saveStudiesCreatedToLocalStorage(studiesCreated); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getStudiesCreatedFromApi');
+            }
+            apiInstance.getStudiesCreated(params, callback);
+        },
+        saveStudiesCreatedToLocalStorage: function(studiesCreated){
+            if(!studiesCreated){
+                qmLog.error("No studiesCreated provided to saveToLocalStorage");
+                return;
+            }
+            qm.localForage.setItem(qm.items.studiesCreated, studiesCreated);
+        },
+        getStudiesCreatedFromLocalStorage: function(successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to studiesCreated getFromLocalStorage");
+                return;
+            }
+            qm.localForage.getItem(qm.items.studiesCreated, function (studiesCreated) {
+                successHandler(studiesCreated);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getStudiesCreatedFromLocalStorageOrApi: function(successHandler, errorHandler){
+            qm.shares.getStudiesCreatedFromLocalStorage(function(studiesCreated){
+                if(studiesCreated){
+                    if(successHandler){successHandler(studiesCreated);}
+                    return;
+                }
+                qm.shares.getStudiesCreatedFromApi(function (studiesCreated) {
+                    if(successHandler){successHandler(studiesCreated);}
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            });
+        }
+    },
+    studiesJoined: {
+        getStudiesJoinedFromApi: function(params, successHandler, errorHandler){
+            params = qm.api.addGlobalParams(params);
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.StudiesApi();
+            function callback(error, data, response) {
+                var studiesJoined = data.studiesJoined || data;
+                if (studiesJoined) { qm.shares.saveStudiesJoinedToLocalStorage(studiesJoined); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getStudiesJoinedFromApi');
+            }
+            apiInstance.getStudiesJoined(params, callback);
+        },
+        saveStudiesJoinedToLocalStorage: function(studiesJoined){
+            if(!studiesJoined){
+                qmLog.error("No studiesJoined provided to saveToLocalStorage");
+                return;
+            }
+            qm.localForage.setItem(qm.items.studiesJoined, studiesJoined);
+        },
+        getStudiesJoinedFromLocalStorage: function(successHandler, errorHandler){
+            if(!successHandler){
+                qmLog.error("No successHandler provided to studiesJoined getFromLocalStorage");
+                return;
+            }
+            qm.localForage.getItem(qm.items.studiesJoined, function (studiesJoined) {
+                successHandler(studiesJoined);
+            }, function (error) {
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
+        getStudiesJoinedFromLocalStorageOrApi: function(successHandler, errorHandler){
+            qm.shares.getStudiesJoinedFromLocalStorage(function(studiesJoined){
+                if(studiesJoined){
+                    if(successHandler){successHandler(studiesJoined);}
+                    return;
+                }
+                qm.shares.getStudiesJoinedFromApi(function (studiesJoined) {
+                    if(successHandler){successHandler(studiesJoined);}
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                });
+            });
+        }
+    },
     storage: {
         valueIsValid: function(value){
             if(typeof value === "undefined"){
@@ -3326,17 +3515,6 @@ window.qm = {
             }
             return true;
         },
-        revokeClientAccess: function(clientIdToRevoke, successHandler, errorHandler){
-            qm.api.configureClient();
-            var apiInstance = new Quantimodo.UserApi();
-            function userSdkCallback(error, data, response) {
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'revokeClientAccess');
-                qmLog.info("Got user from API...");
-                qm.userHelper.setUser(data.user);
-            }
-            var params = qm.api.addGlobalParams({});
-            apiInstance.deleteShare(clientIdToRevoke, params, userSdkCallback);
-        },
         getUserFromApi: function(successHandler, errorHandler){
             qmLog.info("Getting user from API...");
             function userSuccessHandler(userFromApi){
@@ -3365,7 +3543,7 @@ window.qm = {
                     userSuccessHandler(data);
                 }
                 var params = qm.api.addGlobalParams({});
-                params.includeAuthorizedClients = true;
+                //params.includeAuthorizedClients = true;  // To big for $rootScope!
                 //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
                 apiInstance.getUser(params, userSdkCallback);
             }

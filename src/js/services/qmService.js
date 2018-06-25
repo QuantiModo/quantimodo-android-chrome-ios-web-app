@@ -45,7 +45,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         api: {
-             headersGetter: function(headers) {
+            headersGetter: function(headers) {
                 var headersObj = typeof headers === 'object' ? headers : undefined;
                 return function(name) {
                     if (!headersObj) headersObj =  parseHeaders(headers);
@@ -56,6 +56,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     return headersObj;
                 };
+            },
+            checkRequiredProperties: function(bodyToCheck, modelName, successHandler){
+                qm.apiHelper.checkRequiredProperties(bodyToCheck, modelName, function(requiredExplanation){
+                    if(requiredExplanation){
+                        qmService.showMaterialAlert(requiredExplanation.title, requiredExplanation.textContent);
+                        return;
+                    }
+                    successHandler();
+                });
             }
         },
         auth: {
@@ -1036,6 +1045,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setShowActionSheetMenu: function(actionSheetFunction){
                 qmService.rootScope.setProperty('showActionSheetMenu', actionSheetFunction);
             }
+        },
+        shares: {
+            sendInvitation: function(invitation, successHandler, errorHandler){
+                qmService.api.checkRequiredProperties(invitation, "ShareInvitationBody", function(){
+                    qmService.showInfoToast("Invitation sent!");
+                    qm.shares.sendInvitation(invitation, successHandler, errorHandler);
+                });
+            },
         },
         showVariableSearchDialog: function(dialogParameters, successHandler, errorHandler, ev){
             var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
