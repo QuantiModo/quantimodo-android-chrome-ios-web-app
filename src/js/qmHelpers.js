@@ -3060,6 +3060,12 @@ window.qm = {
                 }
             }
             return JSON.stringify(obj, printOnceReplacer, indent);
+        },
+        isFalsey: function(value){
+            if(!value){return true;}
+            if(value === "0"){return true;}
+            if(value === "false"){return true;}
+            return false;
         }
     },
     studyHelper: {
