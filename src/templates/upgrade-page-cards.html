@@ -24,12 +24,13 @@
                     <p style="font-size: 16px; margin: auto; "> {{state.features.lite.subtitle}} </p>
                 </div>
             </md-toolbar>
-            <div class="list">
+            <div id="features-list" class="list">
                 <!--<div class="item item-divider" style="background-color: {{state.features.premium.headerColor}}"><br>-->
                 <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
                 <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{state.features.premium.subtitle}} </p><br>-->
                 <!--</div>-->
-                <a ng-repeat="feature in state.features.lite.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
+                <a ng-repeat="feature in appSettings.appDesign.featuresList.active" class="item item-avatar" ng-if="!feature.premium"
+                   ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
                     <img ng-if="feature.image" ng-src="{{feature.image}}">
                     <h2 style="line-height: normal">{{feature.title}} &nbsp; <i style="color: darkgrey; text-align: right" ng-if="feature.moreInfo" class="icon ion-help-circled"> </i> </h2>
                     <p>{{feature.subtitle}}</p>
@@ -54,7 +55,9 @@
                 <!--<p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>-->
                 <!--<p style="font-size: 18px; color: black; margin-top: 10px;"> {{state.features.premium.subtitle}} </p><br>-->
                 <!--</div>-->
-                <a ng-repeat="feature in state.features.premium.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
+                <a ng-repeat="feature in appSettings.appDesign.featuresList.active" class="item item-avatar" ng-if="feature.premium"
+
+                   ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
                     <img ng-if="feature.image" ng-src="{{feature.image}}">
                     <h2 style="line-height: normal">{{feature.title}} &nbsp; <i style="color: darkgrey; text-align: right" ng-if="feature.moreInfo" class="icon ion-help-circled"> </i> </h2>
                     <p>{{feature.subtitle}}</p>
