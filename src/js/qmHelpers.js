@@ -648,11 +648,37 @@ window.qm = {
             });
         },
         getPropertyDescription: function (modelName, propertyName, callback){
-            qm.apiHelper.getApiDocs(function (apiDocs) {
-                var explanation = {title: qm.stringHelper.camelToTitleCase(propertyName)};
-                explanation.textContent = apiDocs.definitions[modelName].properties[propertyName].description;
+            qm.apiHelper.getModelDefinition(function (modelDefinition) {
+                var explanation = qm.apiHelper.convetToExplanation(propertyName, modelDefinition);
                 callback(explanation);
             });
+        },
+        convertToExplanation: function(propertyName, modelDefinition){
+            var explanation = {title: qm.stringHelper.camelToTitleCase(propertyName)};
+            explanation.textContent = modelDefinition.properties[propertyName].description;
+            return explanation;
+        },
+        getRequiredProperties: function (modelName, callback){
+            qm.apiHelper.getModelDefinition(function (modelDefinition) {
+                callback(modelDefinition.required);
+            });
+        },
+        getModelDefinition: function (modelName, callback){
+            qm.apiHelper.getApiDocs(function (apiDocs) {
+                callback(apiDocs.definitions[modelName]);
+            });
+        },
+        checkRequiredProperties: function(bodyToCheck, modelName, callback){
+            qm.apiHelper.getModelDefinition(modelName, function(modelDefinition){
+                var explanation = null;
+                for (var i = 0; i < modelDefinition.required.length; i++) {
+                    var requiredPropertyName = modelDefinition.required[i];
+                    if(!bodyToCheck[requiredPropertyName]){
+                        explanation = qm.apiHelper.convertToExplanation(requiredPropertyName, modelDefinition);
+                    }
+                }
+                callback(explanation);
+            })
         }
     },
     arrayHelper: {
@@ -2473,6 +2499,17 @@ window.qm = {
     },
     serviceWorker: false,
     shares: {
+        sendInvitation: function(body, successHandler, errorHandler){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.SharesApi();
+            function callback(error, data, response) {
+                var authorizedClients = data.authorizedClients || data;
+                if (authorizedClients) { qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients); }
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAuthorizedClientsFromApi');
+            }
+            var params = qm.api.addGlobalParams({});
+            apiInstance.inviteShare(body, params, callback);
+        },
         getAuthorizedClientsFromApi: function(successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
             qm.api.configureClient();

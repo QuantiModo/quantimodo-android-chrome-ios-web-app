@@ -109,7 +109,7 @@
         <div ng-if="platform.isChromeExtension" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
             <a class="item"><i class="icon ion-social-chrome"></i>&nbsp;Download Beta Version</a>
         </div>
-        <div class="card sign-in" >
+        <div id="debugMode" class="card sign-in" >
             <div class="item item-divider" >Debug Mode &nbsp;</div>
             <ion-toggle ng-model="debugMode" ng-change="toggleDebugMode()">
                 <div ng-if="debugMode"><i class="icon ion-bug"></i> &nbsp Enabled &nbsp</div>
@@ -137,6 +137,9 @@
                 <div ng-if="user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Shared &nbsp</div>
                 <div ng-if="!user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Private &nbsp</div>
             </ion-toggle>
+        </div>
+        <div id="data-sharing" class="list card" ng-click="goToState('app.dataSharing')">
+            <a class="item"><i class="icon ion-social-android"></i>&nbsp; Manage Data Sharing</a>
         </div>
         <br>
     </ion-content>
