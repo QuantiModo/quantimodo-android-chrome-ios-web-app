@@ -1,9 +1,10 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Settings">
     <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
-        <div ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value" class="list card" ng-click="goToState('app.upgrade')">
+        <div id="upgrade" ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
+             class="list card" ng-click="goToState('app.upgrade')">
             <a class="item"><i class="icon ion-ios-color-wand"></i> &nbsp; {{appSettings.appDisplayName}} Plus</a>
         </div>
-        <div class="list card">
+        <div id="logout" class="list card">
             <a href="" ng-show="!user" ng-click="completelyResetAppStateAndSendToLogin()" class="item ">
               Account <p>Tap to sign in</p>
             </a>
@@ -12,13 +13,21 @@
               <p>Tap to sign out</p>
             </a>
         </div>
-        <div class="list card" ng-show="user && !user.email">
+        <div id="contact-us" class="list card">
+            <a ng-click="contactUs()" class="item ">
+                <i class="icon ion-help-buoy"></i> &nbsp; Help & Feedback
+            </a>
+            <a id="bug-report" class="item" ng-click="sendBugReport()"> <i class="icon ion-bug"></i> &nbsp; Submit Bug Report </a>
+        </div>
+        <div id="add-email-address" class="list card" ng-show="user && !user.email">
             <a ng-click="updateEmailAndExecuteCallback()" class="item ">
                 <i class="icon ion-email"></i> &nbsp Add Your Email Address
                 <p style="white-space: normal">So you'll never lose access to your account</p>
             </a>
         </div>
-        <div ng-show="user" class="card sign-in" >
+        <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
+        <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
+        <div id="location-tracking" ng-show="user" class="card sign-in" >
             <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
                 Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
@@ -36,16 +45,8 @@
                     &nbsp</div>
             </ion-toggle>
         </div>
-        <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
-        <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
-        <div class="list card">
-            <a ng-click="sendSharingInvitation()" class="item ">
-                <i class="icon ion-email"></i> &nbsp Share Your Data
-                <p style="white-space: normal">Invite a physician, caregiver, or loved one</p>
-            </a>
-        </div>
-        <div class="list card">
-            <div class="item item-divider"> <i class="icon ion-ios-download"></i> &nbsp Export Your Data </div>
+        <div id="export-data" class="list card">
+            <div class="item item-divider"> &nbsp Your Data </div>
             <!-- PDF Export doesn't work
             <a href="" ng-click="exportMeasurements('pdf)" class="item ">
               Export as PDF File
@@ -54,13 +55,27 @@
                 Export as XLS File
             </a>
             -->
-            <a href="" ng-click="exportMeasurements('csv')" class="item "> Export as CSV File </a>
-        </div>
-        <div class="list card">
-            <a ng-click="contactUs()" class="item ">
-                <i class="icon ion-help-buoy"></i> &nbsp; Help & Feedback
+            <a id="manage-data-sharing" ng-click="goToState('app.dataSharing')" class="item ">
+                <i class="icon ion-email"></i> &nbsp Manage Data Sharing
+                <p style="white-space: normal">Invite or revoke access for individuals and studies</p>
             </a>
+            <a ng-click="exportMeasurements('csv')" class="item "> <i class="icon ion-ios-download"></i> Export Measurements as CSV File </a>
+            <div id="share-all-data" ng-show="user && user.administrator">
+                <div class="item item-divider" ng-click="showHelpInfoPopup('shareAllData', $event, 'User')">
+                    Make All Data Public &nbsp; <i class="icon ion-information-circled"></i>
+                </div>
+                <ion-toggle ng-model="user.shareAllData" ng-change="shareAllDataChange($event)">
+                    <div ng-if="user.shareAllData"><i class="icon ion-share"></i> &nbsp All Measurements are Public &nbsp</div>
+                    <div ng-if="!user.shareAllData"><i class="icon ion-share"></i> &nbsp Measurements are Private &nbsp</div>
+                </ion-toggle>
+            </div>
+            <div id="clear-local-storage" ng-if="!user"  class="item item-text-wrap">
+                <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout($event)">
+                    Clear all user data
+                </button>
+            </div>
         </div>
+
 <!--  iOS users can't get back to the app and it doesn't work if the avatar is from Google or Facebook
         <div class="card" ng-if="user && user.avatar && user.email">
             <a class="item item-avatar"
@@ -71,13 +86,7 @@
             </a>
         </div>
         -->
-        <div ng-if="!user" class="card sign-in" >
-            <div class="item item-text-wrap">
-                <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout($event)">
-                    Clear all user data
-                </button>
-            </div>
-        </div>
+
 <!--
         <div ng-if="user" class="card sign-in" >
             <div class="item item-text-wrap">
@@ -87,59 +96,44 @@
             </div>
         </div>
 -->
-        <div class="list card" ng-click="sendBugReport()">
-            <a class="item"> <i class="icon ion-bug"></i> &nbsp; Submit Bug Report </a>
-        </div>
-        <div ng-if="platform.isAndroid" class="card" >
+        <div id="preview-builds" ng-if="platform.isAndroid" class="card" >
             <div class="item item-divider"> <i class="icon ion-erlenmeyer-flask"></i> &nbsp Beta Program </div>
             <ion-toggle ng-model="user.getPreviewBuilds" ng-change="getPreviewBuildsChange()"> Request to Join </ion-toggle>
 <!--            <a ng-if="platform.isAndroid" class="item" ng-click="updateApp()">
                 <i class="icon ion-android-download"></i> &nbsp; Update App
             </a>-->
         </div>
-        <div id="downgrade-button" ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
-            <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>
-        </div>
-        <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
-            <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
-        </div>
         <div id="beta-download" ng-if="platform.isAndroid" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease, 'yes', '_system')">
             <a class="item"><i class="icon ion-social-android"></i>&nbsp;Download Beta Version</a>
         </div>
-        <div ng-if="platform.isChromeExtension" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
+        <div id="beta-download-chrome" ng-if="platform.isChromeExtension" class="list card" ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
             <a class="item"><i class="icon ion-social-chrome"></i>&nbsp;Download Beta Version</a>
         </div>
-        <div id="debugMode" class="card sign-in" >
+        <div id="debug-mode" class="card sign-in" >
             <div class="item item-divider" >Debug Mode &nbsp;</div>
             <ion-toggle ng-model="debugMode" ng-change="toggleDebugMode()">
                 <div ng-if="debugMode"><i class="icon ion-bug"></i> &nbsp Enabled &nbsp</div>
                 <div ng-if="!debugMode"><i class="icon ion-bug"></i> &nbsp Disabled &nbsp</div>
             </ion-toggle>
         </div>
-        <div class="card sign-in" ng-if="user.administrator" >
+        <div id="upgrade-toggle" class="card sign-in" ng-if="user.administrator" >
             <div class="item item-divider" >Upgrade &nbsp;</div>
             <ion-toggle ng-model="user.stripeActive" ng-change="upgradeToggle()">
                 <div ng-if="user.stripeActive"><i class="icon ion-cash"></i> &nbsp Premium Mode &nbsp</div>
                 <div ng-if="!user.stripeActive"><i class="icon ion-cash"></i> &nbsp Free Mode &nbsp</div>
             </ion-toggle>
         </div>
-        <div class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
+        <div id="time-zone" class="list card">
             <a class="item"><i class="icon ion-clock"></i>&nbsp; Your Time Zone: &nbsp;UTC {{timeZone}}</a>
         </div>
-        <div style="text-align: center;">
+        <div id="delete-account" style="text-align: center;">
             <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog($event)">Delete Account</md-button>
         </div>
-        <div ng-show="user" class="card sign-in" >
-            <div class="item item-divider" ng-click="showHelpInfoPopup('shareAllData', $event, 'User')">
-                Data Sharing &nbsp; <i class="icon ion-information-circled"></i>
-            </div>
-            <ion-toggle ng-model="user.shareAllData" ng-change="shareAllDataChange($event)">
-                <div ng-if="user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Shared &nbsp</div>
-                <div ng-if="!user.shareAllData"><i class="icon ion-cash"></i> &nbsp Measurements are Private &nbsp</div>
-            </ion-toggle>
+        <div id="downgrade-button" ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
+            <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>
         </div>
-        <div id="data-sharing" class="list card" ng-click="goToState('app.dataSharing')">
-            <a class="item"><i class="icon ion-social-android"></i>&nbsp; Manage Data Sharing</a>
+        <div id="image-credits" class="list card" ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
+            <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
         </div>
         <br>
     </ion-content>
