@@ -705,7 +705,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                         cordova.plugins.notification.local.getAll(function (notifications) {
                             qmLog.pushDebug('All local notifications: ' + JSON.stringify(notifications));
-                            qm.localForage.setItem(qm.items.scheduledLocalNotifications, notifications);
+                            qm.storage.setItem(qm.items.scheduledLocalNotifications, notifications);
                             callback(notifications);
                         });
                     });
@@ -1971,6 +1971,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
         delete body.stackTrace;
         if(!qm.api.canWeMakeRequestYet('POST', route, options)){
+            qmLog.error("Cannot make request to "+route+" yet!");
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
@@ -5540,6 +5541,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
     };
     qmService.scheduleSingleMostFrequentLocalNotification = function(activeTrackingReminders) {
+        if(!qm.platform.isMobile() && !qm.platform.isChromeExtension()){return;}
         if(!qm.getUser()){ qmLog.pushDebug('No user for scheduleSingleMostFrequentLocalNotification'); return;}
         if(!qmService.localNotifications.localNotificationsPluginInstalled()){qmLog.pushDebug('Can only schedule notification on mobile or Chrome extension');return;}
         qmLog.pushDebug('We HAVE TO reschedule whenever app opens or it loses binding to its trigger events!');
