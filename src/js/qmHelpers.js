@@ -159,11 +159,8 @@ window.qm = {
             return urlParams;
         },
         getClientId: function(successHandler){
-            if(qm.appMode.isBuilder()){
-                var builderClientId = qm.stringHelper.getStringAfter(window.location.href, 'configuration/');
-                if(builderClientId){
-                    return qm.clientId = builderClientId;
-                }
+            if(qm.appsManager.getBuilderClientId()){
+                return qm.clientId = qm.appsManager.getBuilderClientId();
             }
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 qm.clientId = qm.api.getClientIdFromQueryParameters();
@@ -488,6 +485,12 @@ window.qm = {
         }
     },
     appsManager: { // jshint ignore:line
+        getBuilderClientId: function(){
+            if(!qm.appMode.isBuilder()){return null;}
+            if(qm.urlHelper.getParam('clientId')){return qm.urlHelper.getParam('clientId');}
+            if(qm.stringHelper.getStringAfter('configuration/')){return qm.stringHelper.getStringAfter('configuration/');}
+            return null;
+        },
         getQuantiModoApiUrl: function () {
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
@@ -515,13 +518,21 @@ window.qm = {
             if (qm.platform.isAndroid) { return qm.privateConfig.client_secrets.Android; }
             if (qm.platform.isChromeExtension) { return qm.privateConfig.client_secrets.Chrome; }
             if (qm.platform.isWindows) { return qm.privateConfig.client_secrets.Windows; }
-            return qm.privateConfig.client_secrets.Web;},
+            return qm.privateConfig.client_secrets.Web;
+        },
         getAppSettingsLocallyOrFromApi: function (successHandler) {
             if(qm.appSettings && qm.appSettings.clientId){
                 successHandler(qm.appSettings);
                 return;
             }
-            qm.localForage.getItem(qm.items.appSettings, function(appSettings){
+            var localStorageKey = qm.items.appSettings;
+            var builderClientId = qm.appsManager.getBuilderClientId();
+            if(builderClientId){localStorageKey = qm.items.appSettingsRevisions;}
+            qm.localForage.getItem(localStorageKey, function(appSettings){
+                if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
+                    qm.appsManager.setAppSettings(appSettings[0], successHandler);
+                    return;
+                }
                 if(appSettings){
                     // qm.appsManager.setAppSettings(appSettings, successHandler);
                     // return;
