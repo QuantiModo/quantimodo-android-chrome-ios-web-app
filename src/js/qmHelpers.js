@@ -4023,6 +4023,10 @@ window.qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(qm.platform.browser.isFirefox() && window.location.href.indexOf("herokuapp") !== -1){
+                qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
+                return false;
+            }
             if(qm.serviceWorker){
                 qmLog.debug("serviceWorker already registered");
                 return false;
@@ -4031,21 +4035,31 @@ window.qm = {
                 qmLog.debug("Not registering service worker because not on Web");
                 return false;
             }
-            qm.webNotifications.initializeFirebase();
+            try {
+                qm.webNotifications.initializeFirebase();
+            } catch (e){
+                qmLog.error(e.message, e, e);
+                return false;
+            }
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qmLog.error("navigator.serviceWorker is not defined!");
                 return false;
             }
-            navigator.serviceWorker.register(serviceWorkerUrl)
-                .then(function(registration) {
-                    var messaging = firebase.messaging();
-                    messaging.useServiceWorker(registration);
-                    qm.webNotifications.subscribeUser(messaging);
-                });
-            qm.serviceWorker = navigator.serviceWorker;
-            return qm.serviceWorker;
+            try {
+                navigator.serviceWorker.register(serviceWorkerUrl)
+                    .then(function(registration) {
+                        var messaging = firebase.messaging();
+                        messaging.useServiceWorker(registration);
+                        qm.webNotifications.subscribeUser(messaging);
+                    });
+                qm.serviceWorker = navigator.serviceWorker;
+                return qm.serviceWorker;
+            } catch (e){
+                qmLog.error(e.message, e, e);
+                return false;
+            }
         },
         subscribeUser: function(messaging) {
             messaging.requestPermission()
