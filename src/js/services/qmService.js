@@ -837,16 +837,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         menu: {
             stateName: {
                 addStateNamesToBothMenus: function(menus){
-                    menus.active = qmService.menu.addStateNamesToOneMenu(menus.active);
-                    if(menus.custom){menus.custom = qmService.menu.addStateNamesToOneMenu(menus.custom);}
+                    menus.active = qmService.menu.stateName.addStateNamesToOneMenu(menus.active);
+                    if(menus.custom){menus.custom = qmService.menu.stateName.addStateNamesToOneMenu(menus.custom);}
                     return menus;
                 },
                 addStateNamesToOneMenu: function(menu){
                     for(var i =0; i < menu.length; i++){
-                        menu[i] = qmService.menu.addStateNameToMenuItem(menu[i]);
+                        menu[i] = qmService.menu.stateName.addStateNameToMenuItem(menu[i]);
                         if(menu[i].subMenu){
                             for(var j =0; j < menu[i].subMenu.length; j++){
-                                menu[i].subMenu[j] = qmService.menu.addStateNameToMenuItem(menu[i].subMenu[j]);
+                                menu[i].subMenu[j] = qmService.menu.stateName.addStateNameToMenuItem(menu[i].subMenu[j]);
                             }
                         }
                     }
