@@ -6830,7 +6830,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             .position(getToastPosition());
         $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { buttonFunction(); } });
     };
-    qmService.configureAppSettings = function(appSettings){
+    qmService.processAndSaveAppSettings = function(appSettings){
+        qmLog.info("processAndSaveAppSettings for " + appSettings.clientId, appSettings, appSettings);
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
             if(!qm.getAppSettings().favicon){return;}
@@ -6843,27 +6844,62 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if (oldLink) {document.head.removeChild(oldLink);}
             document.head.appendChild(link);
         }
-        qm.appSettings = appSettings;
-        qm.getAppSettings().designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        qm.getAppSettings().appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(qm.getAppSettings().appDesign.menu);
-        //window.qm.getAppSettings().appDesign.menu = qmService.convertHrefInAllMenus(window.qm.getAppSettings().appDesign.menu);  // Should be done on server
-        //window.qm.getAppSettings().appDesign.floatingActionButton = qmService.convertHrefInFab(window.qm.getAppSettings().appDesign.floatingActionButton);
-        if(!qm.getAppSettings().appDesign.ionNavBarClass){ qm.getAppSettings().appDesign.ionNavBarClass = "bar-positive"; }
+        appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
+        function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
+            function convertStateNameAndParamsToHrefInAllMenuItems(menu){
+                function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
+                    if(!menuItem.stateName){
+                        qmLog.debug('No stateName on menu item', null, menuItem);
+                        return menuItem;
+                    }
+                    /** @namespace menuItem.subMenu */
+                    if(menuItem.subMenu && menuItem.subMenu.length){
+                        qmLog.debug('menuItem is a parent', null, menuItem);
+                        return menuItem;
+                    }
+                    for(var i = 0; i < allStates.length; i++){
+                        if(menuItem.stateName === allStates[i].name){
+                            menuItem.href = "#/app" + allStates[i].url;
+                            if(menuItem.href.indexOf(":") !== -1){
+                                var pieces = menuItem.href.split(":");
+                                var paramName = pieces[pieces.length-1];
+                                if(menuItem.params && menuItem.params[paramName]){
+                                    menuItem.href = menuItem.href.replace(":" + paramName, menuItem.params[paramName]);
+                                } else {
+                                    menuItem.href = menuItem.href.replace(":" + paramName, "Anything");
+                                }
+                            }
+                            return menuItem;
+                        }
+                    }
+                }
+                for(var i =0; i < menu.length; i++){
+                    if(menu[i].subMenu){
+                        for(var j =0; j < menu[i].subMenu.length; j++){
+                            menu[i].subMenu[j] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i].subMenu[j]);
+                        }
+                    } else {
+                        menu[i] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i]);
+                    }
+                }
+                return menu;
+            }
+            menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
+            if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
+            return menu;
+        }
+        appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(appSettings.appDesign.menu);
+        qm.appsManager.processAndSaveAppSettings(appSettings);
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
-        if(typeof qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled !== 'object'){ // TODO: Remove after all clients are updated
-            qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled =
-                {value: qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled};
-        }
         $rootScope.appSettings = qm.getAppSettings();
         qmLogService.debug('appSettings.clientId is ' + qm.getAppSettings().clientId);
-        qmLogService.debug('$rootScope.appSettings: ', null, qm.getAppSettings());
         changeFavicon();
     };
     qmService.initializeApplication = function(appSettings){
         qmLog.info("Initializing application...");
         if(window.config){return;}
-        qmService.configureAppSettings(appSettings);
+        qmService.processAndSaveAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
         qm.commonVariablesHelper.refreshIfNecessary();
@@ -6875,53 +6911,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
-        appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
         qmService.deploy.setVersionInfo();
         //qmService.deploy.fetchUpdate();
     };
-    function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
-        function convertStateNameAndParamsToHrefInAllMenuItems(menu){
-            function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
-                if(!menuItem.stateName){
-                    qmLogService.debug('No stateName on menu item', null, menuItem);
-                    return menuItem;
-                }
-                /** @namespace menuItem.subMenu */
-                if(menuItem.subMenu && menuItem.subMenu.length){
-                    qmLogService.debug('menuItem is a parent', null, menuItem);
-                    return menuItem;
-                }
-                for(var i = 0; i < allStates.length; i++){
-                    if(menuItem.stateName === allStates[i].name){
-                        menuItem.href = "#/app" + allStates[i].url;
-                        if(menuItem.href.indexOf(":") !== -1){
-                            var pieces = menuItem.href.split(":");
-                            var paramName = pieces[pieces.length-1];
-                            if(menuItem.params && menuItem.params[paramName]){
-                                menuItem.href = menuItem.href.replace(":" + paramName, menuItem.params[paramName]);
-                            } else {
-                                menuItem.href = menuItem.href.replace(":" + paramName, "Anything");
-                            }
-                        }
-                        return menuItem;
-                    }
-                }
-            }
-            for(var i =0; i < menu.length; i++){
-                if(menu[i].subMenu){
-                    for(var j =0; j < menu[i].subMenu.length; j++){
-                        menu[i].subMenu[j] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i].subMenu[j]);
-                    }
-                } else {
-                    menu[i] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i]);
-                }
-            }
-            return menu;
-        }
-        menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
-        if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
-        return menu;
-    }
+
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
         if(!qm.push.getLastPushTimeStampInSeconds()){
