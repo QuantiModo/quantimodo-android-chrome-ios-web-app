@@ -1713,7 +1713,7 @@ window.qm = {
                 if(errorHandler){errorHandler(error);}
                 return;
             }
-            qmLog.info("Getting " + key + " from localforage");
+            qmLog.debug("Getting " + key + " from localforage");
             localforage.getItem(key, function (err, data) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
