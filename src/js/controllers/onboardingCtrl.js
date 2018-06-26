@@ -8,11 +8,11 @@ angular.module('starter').controller('OnboardingCtrl',
     };
     if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        if(!qm.getUser()){qmLog.error("No user in onboarding!")}
         setRequireUpgradesInOnboarding();
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(!qm.getUser()){qmLog.debug("No user in onboarding!")}
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();

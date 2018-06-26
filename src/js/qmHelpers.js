@@ -2929,7 +2929,7 @@ window.qm = {
             if (item && typeof item === "string"){
                 qmLog.debug("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
-                window.qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
+                qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
                 return qm.globals[key];
             } else {
                 qmLog.debug(key + ' not found in localStorage');
