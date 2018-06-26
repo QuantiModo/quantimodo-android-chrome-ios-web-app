@@ -159,11 +159,8 @@ window.qm = {
             return urlParams;
         },
         getClientId: function(successHandler){
-            if(qm.appMode.isBuilder()){
-                var builderClientId = qm.stringHelper.getStringAfter(window.location.href, 'configuration/');
-                if(builderClientId){
-                    return qm.clientId = builderClientId;
-                }
+            if(qm.appsManager.getBuilderClientId()){
+                return qm.clientId = qm.appsManager.getBuilderClientId();
             }
             if(qm.api.getClientIdFromQueryParameters() && qm.api.getClientIdFromQueryParameters() !== "default"){
                 qm.clientId = qm.api.getClientIdFromQueryParameters();
