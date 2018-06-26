@@ -3494,6 +3494,25 @@ window.qm = {
                     $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
                 }
             }
+        },
+        convertObjectToQueryString: function(obj){
+            if(!obj){return '';}
+            var str = [];
+            for(var p in obj){
+                if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                }
+            }
+            return '?' + str.join("&");
+        },
+        getStringAfterLastSlash: function(string) {
+            var lastSlashIndex = string.lastIndexOf('/');
+            return string.substring(lastSlashIndex  + 1);
+        },
+        stripQueryString(pathWithQuery) {
+            if(!pathWithQuery){ return pathWithQuery; }
+            if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
+            return pathWithQuery.split("?")[0];
         }
     },
     user: null,

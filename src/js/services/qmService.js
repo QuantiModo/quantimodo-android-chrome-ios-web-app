@@ -9,6 +9,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
+    var allStates = $state.get();
     var qmService = {
         ads: {
             initialize: function(force){
@@ -833,6 +834,155 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $rootScope.$broadcast('updatePrimaryOutcomeHistory');
             }
         },
+        menu: {
+            stateName: {
+                addStateNamesToBothMenus: function(menus){
+                    menus.active = qmService.menu.stateName.addStateNamesToOneMenu(menus.active);
+                    if(menus.custom){menus.custom = qmService.menu.stateName.addStateNamesToOneMenu(menus.custom);}
+                    return menus;
+                },
+                addStateNamesToOneMenu: function(menu){
+                    for(var i =0; i < menu.length; i++){
+                        menu[i] = qmService.menu.stateName.addStateNameToMenuItem(menu[i]);
+                        if(menu[i].subMenu){
+                            for(var j =0; j < menu[i].subMenu.length; j++){
+                                menu[i].subMenu[j] = qmService.menu.stateName.addStateNameToMenuItem(menu[i].subMenu[j]);
+                            }
+                        }
+                    }
+                    return menu;
+                },
+                addStateNameToMenuItem: function(menuItem){
+                    function stripQueryString(pathWithQuery) {
+                        if(!pathWithQuery){ return pathWithQuery; }
+                        if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
+                        return pathWithQuery.split("?")[0];
+                    }
+                    function convertUrlToLowerCaseStateName(menuItem){
+                        if(!menuItem.url){
+                            qmLogService.debug('no url to convert in ' + JSON.stringify(menuItem), null);
+                            return menuItem;
+                        }
+                        return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
+                    }
+                    if(menuItem.stateName){return menuItem;}
+                    if(!menuItem.url && !menuItem.href){return menuItem;}
+                    if(!menuItem.url && menuItem.href){
+                        menuItem.url = menuItem.href.replace('#/app/', '');
+                        menuItem.url = qm.stringHelper.getStringBeforeSubstring('/', menuItem.url);
+                        menuItem.url = '/'+ menuItem.url;
+                        if(menuItem.params && menuItem.params.variableCategoryName && menuItem.url.indexOf('category') !== -1){
+                            //menuItem.url = menuItem.url + '/:variableCategoryName';
+                        }
+                    }
+                    for(var i = 0; i < allStates.length; i++){
+                        var currentUrl = allStates[i].url.replace('/:variableCategoryName', '');
+                        currentUrl = currentUrl.replace('/:variableName', '');
+                        if(currentUrl === menuItem.url){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                        var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
+                        if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                    }
+                    if(!menuItem.stateName){ qmLogService.debug('no state name for ' + JSON.stringify(menuItem)); }
+                    return menuItem;
+
+                }
+            },
+            href: {
+                updateHrefAndIdInMenuItemBasedOnStateName: function(menuItem) {
+                    if(!menuItem.stateName){
+                        qmLog.info("No stateName so can't update", menuItem, menuItem);
+                        return menuItem;
+                    }
+                    function addMenuId(menuItem) {
+                        function convertStringToId(string) {
+                            return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
+                        }
+                        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+                        return menuItem;
+                    }
+                    function addUrlToMenuItem(menuItem){
+                        if(menuItem.url){return menuItem;}
+                        if(menuItem.stateName){
+                            menuItem.url = qmService.stateHelper.getUrlFromStateName(menuItem.stateName);
+                            if(menuItem.url){return menuItem;}
+                        }
+                        if(menuItem.href){
+                            for(var i = 0; i < allStates.length; i++){
+                                if(menuItem.href.indexOf(allStates[i].url) !== -1){
+                                    menuItem.url = allStates[i].url;
+                                }
+                            }
+                        }
+                        return menuItem;
+                    }
+                    menuItem = addUrlToMenuItem(menuItem);
+                    menuItem = qmService.menu.href.convertQueryStringToParams(menuItem);
+                    menuItem = qmService.menu.href.convertUrlAndParamsToHref(menuItem);
+                    menuItem = addMenuId(menuItem);
+                    delete menuItem.url;
+                    return menuItem;
+                },
+                addHrefAndIdToBothMenus: function(menus){
+                    menus.active = qmService.menu.addHrefAndIdToSingleMenuType(menus.active);
+                    menus.custom = qmService.menu.addHrefAndIdToSingleMenuType(menus.custom);
+                    return menus;
+                },
+                addHrefAndIdToSingleMenuType: function (menu){
+                    if(!menu){
+                        qmLogService.debug('No menu given to convertHrefInSingleMenuType', null);
+                        return;
+                    }
+                    for(var i =0; i < menu.length; i++){
+                        menu[i] = qmService.menu.href.updateHrefAndIdInMenuItemBasedOnStateName(menu[i]);
+                        if(menu[i].subMenu){
+                            for(var j =0; j < menu[i].subMenu.length; j++){
+                                menu[i].subMenu[j] = qmService.menu.href.updateHrefAndIdInMenuItemBasedOnStateName(menu[i].subMenu[j]);
+                            }
+                        }
+                    }
+                    return menu;
+                },
+                convertUrlAndParamsToHref: function(menuItem) {
+                    var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
+                    if(!menuItem.subMenu){
+                        menuItem.href = '#/app' + menuItem.url;
+                        if(params && params.variableCategoryName){
+                            menuItem.href += "-category/" + params.variableCategoryName;
+                            delete(params.variableCategoryName);
+                        }
+                        menuItem.href += qm.urlHelper.convertObjectToQueryString(params);
+                        menuItem.href = menuItem.href.replace('app/app', 'app');
+                    }
+                    qmLog.debug('convertUrlAndParamsToHref ', menuItem, menuItem);
+                    return menuItem;
+                },
+                convertQueryStringToParams: function(menuItem){
+                    if(!menuItem.href){
+                        qmLogService.debug('No menuItem.href for ' + JSON.stringify(menuItem), null);
+                        return menuItem;
+                    }
+                    if(menuItem.href && !menuItem.params){
+                        menuItem.params = qm.urlHelper.getAllQueryParamsFromUrlString(menuItem.href);
+                    }
+                    menuItem.href = qm.urlHelper.stripQueryString(menuItem.href);
+                    if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
+                        menuItem.params.variableCategoryName = qm.urlHelper.getStringAfterLastSlash(menuItem.href).replace('?', '');
+                    }
+                    if(menuItem.params && menuItem.params.variableCategoryName){
+                        if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
+                        if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
+                        if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
+                    }
+                    return menuItem;
+                }
+            }
+        },
         navBar: {
             setFilterBarSearchIcon: function(value){
                 qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
@@ -1360,6 +1510,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     params.variableId = variableId;
                 }
                 return params;
+            },
+            getUrlFromStateName: function(stateName){
+                for(var i = 0; i < allStates.length; i++){
+                    if(allStates[i].name === stateName){ return allStates[i].url; }
+                }
+                qmLogService.error("Could not find state with name: " + stateName);
             }
         },
         studyHelper: {
@@ -6669,152 +6825,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         window.QuantiModoIntegration.openConnectorsListPopup();
     };
-    function getStringAfterLastSlash(string) {
-        var lastSlashIndex = string.lastIndexOf('/');
-        return string.substring(lastSlashIndex  + 1);
-    }
-    function convertObjectToQueryString(obj){
-        if(!obj){return '';}
-        var str = [];
-        for(var p in obj){
-            if (obj.hasOwnProperty(p)) {
-                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-            }
-        }
-        return '?' + str.join("&");
-    }
-    function convertUrlAndParamsToHref(menuItem) {
-        var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
-        if(!menuItem.subMenu){
-            menuItem.href = '#/app' + menuItem.url;
-            if(params && params.variableCategoryName){
-                menuItem.href += "-category/" + params.variableCategoryName;
-                delete(params.variableCategoryName);
-            }
-            menuItem.href += convertObjectToQueryString(params);
-            menuItem.href = menuItem.href.replace('app/app', 'app');
-        }
-        if(window.qmLog.isDebugMode()){ qmLogService.debug('convertUrlAndParamsToHref ', null, menuItem); }
-        return menuItem;
-    }
-    function convertStateNameAndParamsToHref(menuItem) {
-        menuItem.url = getUrlFromStateName(menuItem.stateName);
-        return convertUrlAndParamsToHref(menuItem);
-    }
-    var allStates = $state.get();
+
     function prettyJsonStringify(json) {
         return JSON.stringify(json, null, '  ');
     }
-    //qmLogService.debug(prettyJsonStringify(allStates));
-    function stripQueryString(pathWithQuery) {
-        if(!pathWithQuery){ return pathWithQuery; }
-        if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
-        return pathWithQuery.split("?")[0];
-    }
-    function convertUrlToLowerCaseStateName(menuItem){
-        if(!menuItem.url){
-            qmLogService.debug('no url to convert in ' + JSON.stringify(menuItem), null);
-            return menuItem;
-        }
-        return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
-    }
-    function convertQueryStringToParams(menuItem){
-        if(!menuItem.href){
-            qmLogService.debug('No menuItem.href for ' + JSON.stringify(menuItem), null);
-            return menuItem;
-        }
-        if(menuItem.href && !menuItem.params){
-            menuItem.params = qm.urlHelper.getAllQueryParamsFromUrlString(menuItem.href);
-        }
-        menuItem.href = stripQueryString(menuItem.href);
-        if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
-            menuItem.params.variableCategoryName = getStringAfterLastSlash(menuItem.href).replace('?', '');
-        }
-        if(menuItem.params && menuItem.params.variableCategoryName){
-            if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
-            if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
-            if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
-        }
-        return menuItem;
-    }
-    function getUrlFromStateName(stateName){
-        for(var i = 0; i < allStates.length; i++){
-            if(allStates[i].name === stateName){ return allStates[i].url; }
-        }
-        qmLogService.error("Could not find state with name: " + stateName);
-    }
-    qmService.convertHrefInSingleMenuType = function (menu){
-        function convertStringToId(string) {
-            return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
-        }
-        function processMenuItem(menuItem) {
-            function addMenuId(menuItem) {
-                if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
-                return menuItem;
-            }
-            function addUrlToMenuItem(menuItem){
-                if(menuItem.url){return menuItem;}
-                if(menuItem.stateName){
-                    menuItem.url = getUrlFromStateName(menuItem.stateName);
-                    if(menuItem.url){return menuItem;}
-                }
-                if(menuItem.href){
-                    for(var i = 0; i < allStates.length; i++){
-                        if(menuItem.href.indexOf(allStates[i].url) !== -1){
-                            menuItem.url = allStates[i].url;
-                        }
-                    }
-                }
-                return menuItem;
-            }
-            function addStateNameToMenuItem(menuItem){
-                if(menuItem.stateName){return menuItem;}
-                if(menuItem.url){
-                    for(var i = 0; i < allStates.length; i++){
-                        if(allStates[i].url === menuItem.url){
-                            menuItem.stateName = allStates[i].name;
-                            break;
-                        }
-                        var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
-                        if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
-                            menuItem.stateName = allStates[i].name;
-                            break;
-                        }
-                    }
-                }
-                if(!menuItem.stateName){ qmLogService.debug('no state name for ' + JSON.stringify(menuItem), null); }
-                return menuItem;
-            }
-            menuItem = addUrlToMenuItem(menuItem);
-            menuItem = addStateNameToMenuItem(menuItem);
-            menuItem = convertQueryStringToParams(menuItem);
-            menuItem = convertUrlAndParamsToHref(menuItem);
-            menuItem = addMenuId(menuItem);
-            delete menuItem.url;
-            return menuItem;
-        }
-        if(!menu){
-            qmLogService.debug('No menu given to convertHrefInSingleMenuType', null);
-            return;
-        }
-        for(var i =0; i < menu.length; i++){
-            menu[i] = processMenuItem(menu[i]);
-            if(menu[i].subMenu){
-                for(var j =0; j < menu[i].subMenu.length; j++){
-                    menu[i].subMenu[j] = processMenuItem(menu[i].subMenu[j]);
-                }
-            }
-        }
-        return menu;
-    };
-    qmService.convertHrefInFab = function(floatingActionButton) {
-        qmLogService.debug('convertHrefInFab', null);
-        for(var i = 1; i < 5; i++){
-            floatingActionButton.active["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.active["button" + i]);
-            floatingActionButton.custom["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.custom["button" + i]);
-        }
-        return floatingActionButton;
-    };
     var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
     var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
     qmService.showInfoToast = function(text) {
@@ -6831,7 +6845,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { buttonFunction(); } });
     };
     qmService.processAndSaveAppSettings = function(appSettings){
-        qmLog.info("processAndSaveAppSettings for " + appSettings.clientId, appSettings, appSettings);
+        qmLog.debug("processAndSaveAppSettings for " + appSettings.clientId, null, appSettings);
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
             if(!qm.getAppSettings().favicon){return;}
@@ -6845,50 +6859,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             document.head.appendChild(link);
         }
         appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
-        function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
-            function convertStateNameAndParamsToHrefInAllMenuItems(menu){
-                function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
-                    if(!menuItem.stateName){
-                        qmLog.debug('No stateName on menu item', null, menuItem);
-                        return menuItem;
-                    }
-                    /** @namespace menuItem.subMenu */
-                    if(menuItem.subMenu && menuItem.subMenu.length){
-                        qmLog.debug('menuItem is a parent', null, menuItem);
-                        return menuItem;
-                    }
-                    for(var i = 0; i < allStates.length; i++){
-                        if(menuItem.stateName === allStates[i].name){
-                            menuItem.href = "#/app" + allStates[i].url;
-                            if(menuItem.href.indexOf(":") !== -1){
-                                var pieces = menuItem.href.split(":");
-                                var paramName = pieces[pieces.length-1];
-                                if(menuItem.params && menuItem.params[paramName]){
-                                    menuItem.href = menuItem.href.replace(":" + paramName, menuItem.params[paramName]);
-                                } else {
-                                    menuItem.href = menuItem.href.replace(":" + paramName, "Anything");
-                                }
-                            }
-                            return menuItem;
-                        }
-                    }
-                }
-                for(var i =0; i < menu.length; i++){
-                    if(menu[i].subMenu){
-                        for(var j =0; j < menu[i].subMenu.length; j++){
-                            menu[i].subMenu[j] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i].subMenu[j]);
-                        }
-                    } else {
-                        menu[i] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i]);
-                    }
-                }
-                return menu;
-            }
-            menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
-            if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
-            return menu;
-        }
-        appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(appSettings.appDesign.menu);
+        appSettings.appDesign.menu = qmService.menu.stateName.addStateNamesToBothMenus(appSettings.appDesign.menu);
         qm.appsManager.processAndSaveAppSettings(appSettings);
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
