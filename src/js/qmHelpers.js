@@ -330,17 +330,22 @@ window.qm = {
                 qm.api.getViaFetch(url, successHandler, errorHandler);  // Need fetch for service worker
             }
         },
-        getAppSettingsUrl: function (callback) {
-            qm.api.getClientIdWithCallback(function(clientId, clientSecret){
+        getAppSettingsUrl: function (clientId, callback) {
+            function generateUrl(clientId, clientSecret){
                 // Can't use QM SDK in service worker
                 var settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
-                if(clientSecret){
-                    settingsUrl += "&clientSecret=" + clientSecret;
-                }
+                if(clientSecret){settingsUrl += "&clientSecret=" + clientSecret;}
                 if(window.designMode){settingsUrl += '&designMode=true';}
                 window.qmLog.debug('Getting app settings from ' + settingsUrl);
-                callback(settingsUrl);
-            });
+                return settingsUrl;
+            }
+            if(clientId){
+                callback(generateUrl(clientId));
+            } else {
+                qm.api.getClientIdWithCallback(function(clientId, clientSecret){
+                    callback(generateUrl(clientId, clientSecret));
+                });
+            }
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qmLog.pushDebug("Making get request to " + url);
@@ -516,7 +521,7 @@ window.qm = {
                     // return;
                 }
                 if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(successHandler, function () {
+                    qm.appsManager.getAppSettingsFromApi(null, successHandler, function () {
                         qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
                             if(appSettings){qm.appsManager.setAppSettings(appSettings, successHandler);}
                         })
@@ -528,7 +533,7 @@ window.qm = {
                         qm.appsManager.setAppSettings(appSettings, successHandler);
                         return;
                     }
-                    qm.appsManager.getAppSettingsFromApi(successHandler);
+                    qm.appsManager.getAppSettingsFromApi(null, successHandler);
                 })
             });
         },
@@ -538,8 +543,8 @@ window.qm = {
             }
             return false;
         },
-        getAppSettingsFromApi: function (successHandler, errorHandler) {
-            qm.api.getAppSettingsUrl(function(appSettingsUrl){
+        getAppSettingsFromApi: function (clientId, successHandler, errorHandler) {
+            qm.api.getAppSettingsUrl(clientId, function(appSettingsUrl){
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
                     if(!response){
                         if(errorHandler){errorHandler("No response from " + appSettingsUrl);}
@@ -609,7 +614,7 @@ window.qm = {
                 qm.appSettings = appSettings;
                 qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
                 if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
-                    qm.appsManager.getAppSettingsFromApi();
+                    qm.appsManager.getAppSettingsFromApi(null);
                 }
                 if(callback){callback(appSettings);}
             })
