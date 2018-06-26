@@ -88,12 +88,15 @@ window.qm = {
                 }
             }
         },
+        getErrorMessageFromResponse: function(error, response){
+            if(error && error.message){return error.message;}
+            if(response && response.error &&  response.error.message){return response.error.message;}
+            if(response && response.body && response.body.errorMessage){return response.body.errorMessage;}
+            if(response && response.body && response.body.error && response.body.error.message){return response.body.error.message;}
+            return null;
+        },
         generalErrorHandler: function(error, data, response, options){
-            var errorMessage = error.message || response.error.message || error;
-            if(response && response.body){
-                if(response.body.errorMessage){errorMessage += ". " + response.body.errorMessage;}
-                if(response.body.error && response.body.error.message){errorMessage += ". " + response.body.error.message;}
-            }
+            var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
             if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                 {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
             if(errorMessage.toLowerCase().indexOf('expired') !== -1){
@@ -4084,6 +4087,12 @@ window.qm = {
                 function callback(error, data, response) {
                     if(!error){
                         qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
+                    } else {
+                        var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
+                        if(errorMessage.toLowerCase().indexOf('already exists') !== -1){
+                            qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
+                            return;
+                        }
                     }
                     qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
                 }
