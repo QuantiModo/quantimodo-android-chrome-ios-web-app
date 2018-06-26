@@ -487,7 +487,10 @@ window.qm = {
             var clientId = qm.urlHelper.getParam('clientId');
             if(clientId){return clientId;}
             clientId = qm.stringHelper.getStringAfter(window.location.href, 'app/configuration/');
-            if(clientId){return clientId;}
+            if(clientId){
+                clientId = qm.stringHelper.getStringBeforeSubstring('?', clientId, clientId);
+                return clientId;
+            }
             return null;
         },
         getQuantiModoApiUrl: function () {
@@ -3022,10 +3025,11 @@ window.qm = {
         },
         getStringBeforeSubstring: function(needle, haystack){
             var i = haystack.indexOf(needle);
-            if(i > 0)
+            if(i > 0) {
                 return  haystack.slice(0, i);
-            else
+            } else {
                 return haystack;
+            }
         },
         toCamelCaseCase: function(string) {
             return string.toCamelCase();
