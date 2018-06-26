@@ -89,12 +89,11 @@ window.qm = {
             }
         },
         getErrorMessageFromResponse: function(error, response){
-            var errorMessage;
-            if(error && error.message){errorMessage = error.message;}
-            if(response && response.error &&  response.error.message){errorMessage = response.error.message;}
-            if(response && response.body && response.body.errorMessage){errorMessage = response.body.errorMessage;}
-            if(response && response.body && response.body.error && response.body.error.message){errorMessage = response.body.error.message;}
-            return errorMessage;
+            if(error && error.message){return error.message;}
+            if(response && response.error &&  response.error.message){return response.error.message;}
+            if(response && response.body && response.body.errorMessage){return response.body.errorMessage;}
+            if(response && response.body && response.body.error && response.body.error.message){return response.body.error.message;}
+            return null;
         },
         generalErrorHandler: function(error, data, response, options){
             var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
