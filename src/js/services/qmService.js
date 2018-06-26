@@ -3624,7 +3624,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             params.sort = '-reminderTime';
             params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
-                if(response.success) {
+                if(response.data) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                     if($rootScope.platform.isAndroid){
@@ -6861,6 +6861,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         changeFavicon();
     };
     qmService.initializeApplication = function(appSettings){
+        qmLog.info("Initializing application...");
         if(window.config){return;}
         qmService.configureAppSettings(appSettings);
         qmService.switchBackToPhysician();
