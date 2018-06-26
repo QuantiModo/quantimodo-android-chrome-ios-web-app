@@ -1104,15 +1104,13 @@ window.qm = {
                 qm.storage.setItem(qm.items.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
             } else {
-                qmLog.error('No expiresAtMilliseconds!');
-                qmLog.error('No expiresAtMilliseconds!',
+                qmLog.authDebug('No expiresAtMilliseconds!',
                     'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                     {groupingHash: 'No expiresAtMilliseconds!'},
                     "error");
             }
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
-            qmLog.error(groupingHash);
-            qmLog.error(groupingHash,
+            qmLog.authDebug(groupingHash,
                 'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                 {groupingHash: groupingHash}, "error");
         },
