@@ -3834,7 +3834,7 @@ window.qm = {
                 if(number){
                     qm.userVariables.getFromLocalStorage({}, function (userVariables) {
                         if(!userVariables || userVariables.length < number){
-                            qm.userVariables.getFromApi();
+                            qm.userVariables.getFromApi({limit: number + 1});
                         }
                     });
                 }
