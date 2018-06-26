@@ -168,11 +168,8 @@ window.qm = {
             if(!qm.clientId){
                 qm.clientId = qm.api.getClientIdFromSubDomain();
             }
-            if(!qm.clientId && qm.appSettings){
-                qm.clientId =  qm.appSettings.clientId;
-            }
-            if(!qm.clientId && qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().clientId){
-                qm.clientId = qm.appsManager.getAppSettingsFromMemory().clientId;
+            if(!qm.clientId && qm.getAppSettings()){
+                qm.clientId =  qm.getAppSettings().clientId;
             }
             // DON'T DO THIS
             // if(!clientId && qm.platform.isMobile()){
@@ -432,7 +429,7 @@ window.qm = {
                     if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
                     function getAppVersion() {
                         if(qm.chrome.getChromeManifest()){return qm.chrome.getChromeManifest().version;}
-                        if(qm.appSettings){return qm.appSettings.versionNumber;}
+                        if(qm.getAppSettings()){return qm.getAppSettings().versionNumber;}
                         return window.qm.urlHelper.getParam('appVersion');
                     }
                     if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
@@ -441,7 +438,7 @@ window.qm = {
                     return url;
                 }
                 function getAppHostName() {
-                    if(qm.appSettings && qm.appSettings.apiUrl){return "https://" + qm.appSettings.apiUrl;}
+                    if(qm.getAppSettings() && qm.getAppSettings().apiUrl){return "https://" + qm.getAppSettings().apiUrl;}
                     return "https://app.quantimo.do";
                 }
                 var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
@@ -487,8 +484,10 @@ window.qm = {
     appsManager: { // jshint ignore:line
         getBuilderClientId: function(){
             if(!qm.appMode.isBuilder()){return null;}
-            if(qm.urlHelper.getParam('clientId')){return qm.urlHelper.getParam('clientId');}
-            if(qm.stringHelper.getStringAfter('configuration/')){return qm.stringHelper.getStringAfter('configuration/');}
+            var clientId = qm.urlHelper.getParam('clientId');
+            if(clientId){return clientId;}
+            clientId = qm.stringHelper.getStringAfter(window.location.href, 'app/configuration/');
+            if(clientId){return clientId;}
             return null;
         },
         getQuantiModoApiUrl: function () {
@@ -509,7 +508,7 @@ window.qm = {
         },
         getClientSecret: function(){
             if(qm.clientSecret){return qm.clientSecret;}
-            if(qm.appSettings.clientSecret){return qm.appSettings.clientSecret;}
+            if(qm.getAppSettings().clientSecret){return qm.getAppSettings().clientSecret;}
             if(!qm.privateConfig){
                 qmLog.error("No client secret or private config!");
                 return null;
@@ -521,8 +520,8 @@ window.qm = {
             return qm.privateConfig.client_secrets.Web;
         },
         getAppSettingsLocallyOrFromApi: function (successHandler) {
-            if(qm.appSettings && qm.appSettings.clientId){
-                successHandler(qm.appSettings);
+            if(qm.getAppSettings() && qm.getAppSettings().clientId){
+                successHandler(qm.getAppSettings());
                 return;
             }
             var localStorageKey = qm.items.appSettings;
@@ -530,24 +529,24 @@ window.qm = {
             if(builderClientId){localStorageKey = qm.items.appSettingsRevisions;}
             qm.localForage.getItem(localStorageKey, function(appSettings){
                 if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
-                    qm.appsManager.setAppSettings(appSettings[0], successHandler);
+                    qm.appsManager.processAndSaveAppSettings(appSettings[0], successHandler);
                     return;
                 }
                 if(appSettings){
-                    // qm.appsManager.setAppSettings(appSettings, successHandler);
+                    // qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
                     // return;
                 }
                 if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
                     qm.appsManager.getAppSettingsFromApi(null, successHandler, function () {
                         qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
-                            if(appSettings){qm.appsManager.setAppSettings(appSettings, successHandler);}
+                            if(appSettings){qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);}
                         })
                     });
                     return;
                 }
                 qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
                     if(appSettings){
-                        qm.appsManager.setAppSettings(appSettings, successHandler);
+                        qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
                         return;
                     }
                     qm.appsManager.getAppSettingsFromApi(null, successHandler);
@@ -555,9 +554,8 @@ window.qm = {
             });
         },
         getAppSettingsFromMemory: function(){
-            if(typeof qm.appSettings !== "undefined"){
-                return qm.appSettings;
-            }
+            var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
+            if(appSettings){return appSettings;}
             return false;
         },
         getAppSettingsFromApi: function (clientId, successHandler, errorHandler) {
@@ -577,7 +575,7 @@ window.qm = {
                         if(errorHandler){errorHandler("No appSettings response from "+ appSettingsUrl);}
                         return false;
                     }
-                    qm.appsManager.setAppSettings(response.appSettings, successHandler);
+                    qm.appsManager.processAndSaveAppSettings(response.appSettings, successHandler);
                 }, errorHandler)
             });
         },
@@ -585,8 +583,7 @@ window.qm = {
             qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('default.config.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
                 if(parsedResponse){
                     window.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
-                    qm.appSettings = parsedResponse;
-                    qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
+                    qm.appsManager.processAndSaveAppSettings(parsedResponse);
                 }
                 callback(parsedResponse);
             }, function () {
@@ -616,11 +613,13 @@ window.qm = {
                 });
             }
         },
-        setAppSettings: function(appSettings, callback){
+        processAndSaveAppSettings: function(appSettings, callback){
             if(!appSettings){
-                qmLog.error("Nothing given to setAppSettings!");
+                qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
+            appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+            if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
                 for (var propertyName in buildInfo) {
                     if( buildInfo.hasOwnProperty(propertyName) ) {
@@ -628,10 +627,9 @@ window.qm = {
                     }
                 }
                 if(!appSettings.gottenAt){appSettings.gottenAt = qm.timeHelper.getUnixTimestampInSeconds();}
-                qm.appSettings = appSettings;
-                qm.localForage.setItem(qm.items.appSettings, qm.appSettings);
+                qm.localForage.setItem(qm.items.appSettings, appSettings);
                 if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
-                    qm.appsManager.getAppSettingsFromApi(null);
+                    qm.appsManager.getAppSettingsFromApi(appSettings.clientId);
                 }
                 if(callback){callback(appSettings);}
             })
@@ -1579,6 +1577,7 @@ window.qm = {
         accessToken: 'accessToken',
         afterLoginGoToUrl: 'afterLoginGoToUrl',
         afterLoginGoToState: 'afterLoginGoToState',
+        appList: 'appList',
         aggregatedCorrelations: 'aggregatedCorrelations',
         apiUrl: 'apiUrl',
         appSettings: 'appSettings',
@@ -3038,7 +3037,9 @@ window.qm = {
             return between[1];
         },
         getStringAfter: function(fullString, substring){
-            return fullString.split(substring)[1];
+            var array = fullString.split(substring);
+            if(array[1]){return array[1];}
+            return null;
         },
         truncateIfGreaterThan: function (string, maxCharacters) {
             if(string.length > maxCharacters){
