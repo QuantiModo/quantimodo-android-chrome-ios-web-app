@@ -579,13 +579,15 @@ window.qm = {
                 qmLog.error("Could not get appSettings from build-info.json");
             });
         },
-        loadPrivateConfigFromJsonFile: function() {  // I think adding appSettings to the chrome manifest breaks installation
+        loadPrivateConfigFromJsonFile: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
             if(!qm.privateConfig){
                 qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
                     window.qmLog.debug('Got private config from json file', null, parsedResponse);
                     qm.privateConfig = parsedResponse;
+                    if(successHandler){successHandler(parsedResponse);}
                 }, function () {
                     qmLog.error("Could not get private config from json file");
+                    if(errorHandler){errorHandler("Could not get private config from json file");}
                 });
             }
         },
@@ -1343,7 +1345,7 @@ window.qm = {
     },
     geoLocation: {
         getFoursqureClientId: function () {
-            if(qm.privateConfig.FOURSQUARE_CLIENT_ID){/** @namespace qm.privateConfig.FOURSQUARE_CLIENT_ID */
+            if(qm.privateConfig && qm.privateConfig.FOURSQUARE_CLIENT_ID){/** @namespace qm.privateConfig.FOURSQUARE_CLIENT_ID */
                 return qm.privateConfig.FOURSQUARE_CLIENT_ID;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID;}
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
@@ -1351,7 +1353,7 @@ window.qm = {
         },
         getFoursquareClientSecret: function () {
             /** @namespace qm.privateConfig.FOURSQUARE_CLIENT_SECRET */
-            if(qm.privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.privateConfig.FOURSQUARE_CLIENT_SECRET;}
+            if(qm.privateConfig && qm.privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.privateConfig.FOURSQUARE_CLIENT_SECRET;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET){return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET;}
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
             if(connector){/** @namespace connector.connectorClientSecret */
@@ -1359,7 +1361,7 @@ window.qm = {
         },
         getGoogleMapsApiKey: function () {
             /** @namespace qm.privateConfig.GOOGLE_MAPS_API_KEY */
-            if(qm.privateConfig.GOOGLE_MAPS_API_KEY){return qm.privateConfig.GOOGLE_MAPS_API_KEY;}
+            if(qm.privateConfig && qm.privateConfig.GOOGLE_MAPS_API_KEY){return qm.privateConfig.GOOGLE_MAPS_API_KEY;}
             if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY){return qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY;}
         }
     },
@@ -3060,6 +3062,12 @@ window.qm = {
                 }
             }
             return JSON.stringify(obj, printOnceReplacer, indent);
+        },
+        isFalsey: function(value){
+            if(!value){return true;}
+            if(value === "0"){return true;}
+            if(value === "false"){return true;}
+            return false;
         }
     },
     studyHelper: {
