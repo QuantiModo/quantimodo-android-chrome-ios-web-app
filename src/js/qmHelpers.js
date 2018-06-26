@@ -3509,7 +3509,7 @@ window.qm = {
             var lastSlashIndex = string.lastIndexOf('/');
             return string.substring(lastSlashIndex  + 1);
         },
-        stripQueryString(pathWithQuery) {
+        stripQueryString: function(pathWithQuery) {
             if(!pathWithQuery){ return pathWithQuery; }
             if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
             return pathWithQuery.split("?")[0];
