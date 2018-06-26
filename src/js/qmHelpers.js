@@ -3702,7 +3702,7 @@ window.qm = {
                     qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
-            });
+            }, errorHandler);
         },
         refreshIfNecessary: function(){
             //putCommonVariablesInLocalStorageUsingJsonFile();

@@ -1191,7 +1191,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         } else {
                             if(variableSearchErrorHandler){variableSearchErrorHandler();}
                         }
-                    });
+                    }, variableSearchErrorHandler);
                     return deferred.promise;
                 }
                 function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
