@@ -3648,6 +3648,7 @@ window.qm = {
             if(fromGlobals){
                 commonVariables = qm.arrayHelper.filterByRequestParams(fromGlobals, requestParams);
                 successHandler(commonVariables);
+                return;
             }
             qm.api.getViaXhrOrFetch('data/commonVariables.json', function(commonVariables){
                 if(!commonVariables){
