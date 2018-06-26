@@ -273,8 +273,9 @@ window.qmLog = {
         metaData.window_location_href = window.location.href;
         metaData.window_location_origin = window.location.origin;
         if (!metaData.groupingHash) {metaData.groupingHash = name;}
-        if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
-        if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
+        // This causes "access to strict mode caller function is censored" in Firefox
+        //if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
+        //if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
         if (stackTrace) {
             metaData.stackTrace = stackTrace;
         } else {
