@@ -4020,6 +4020,10 @@ window.qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(qm.platform.browser.isFirefox() && window.location.href.indexOf("herokuapp") !== -1){
+                qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
+                return false;
+            }
             if(qm.serviceWorker){
                 qmLog.debug("serviceWorker already registered");
                 return false;
