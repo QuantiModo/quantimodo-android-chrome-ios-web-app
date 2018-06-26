@@ -1116,7 +1116,14 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
     return fs.writeFile(filePath, stringContents, callback);
 }
 gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
-gulp.task('deleteSuccessFile', function () {return cleanFiles(['success']);});
+gulp.task('deleteSuccessFile', function () {
+    if(buildingFor.ios()){
+        qmLog.info("Deleting success file messes up iOS build or so I'm told by my previous comments...");
+        return;
+    }
+    qmLog.info("Deleting success file so we know if build completed...");
+    return cleanFiles(['success']);
+});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
@@ -2622,7 +2629,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(
-        //'deleteSuccessFile',  // I think this breaks iOS build
+        'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
         'rename-adsense',
         'copyIonIconsToWww',
