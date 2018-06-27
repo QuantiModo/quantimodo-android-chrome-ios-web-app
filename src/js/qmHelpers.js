@@ -1505,7 +1505,9 @@ window.qm = {
                 qm.storage.setGlobal(study.studyId, study);
                 return;
             }
-            qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(study.causeVariable.name+"_"+study.effectVariable.name), study);
+            var causeVariableName = study.causeVariableName || study.causeVariable.name;
+            var effectVariableName = study.effectVariableName || study.effectVariable.name;
+            qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName), study);
         },
         getStudy: function(causeVariableName, effectVariableName, studyId){
             if(studyId){return qm.storage.getGlobal(studyId);}
