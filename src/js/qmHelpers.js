@@ -3326,7 +3326,7 @@ window.qm = {
         },
         processAndSaveStudy: function(data){
             qmLog.debug('study response: ', null, data);
-            var study = data.study || data.publicStudy || data.userStudy || data;
+            var study = data.study || data.publicStudy || data.userStudy || data.cohortStudy || data;
             qm.chartHelper.setChartExportOptionsForAllSubProperties(study);
             if(study.text){  // Hack to make consistent with basic correlations to use same HTML template
                 study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics);
