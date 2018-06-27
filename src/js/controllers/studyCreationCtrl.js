@@ -24,7 +24,6 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         $scope.copyLinkText = 'Copied!';
         clipboard.copyText(qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName));
     };
-
     function setOutcomeVariable(variable) {
         $scope.outcomeVariable = variable;
         $scope.outcomeVariableName = variable.name;
@@ -59,4 +58,17 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
         });
     };
+    $scope.createStudy = function(causeVariableName, effectVariableName) {
+        qmLog.info('Clicked createStudy for ' + causeVariableName + ' and ' + effectVariableName);
+        qmService.showInfoToast("Creating study...", 60);
+        qmService.showBasicLoader(60);
+        qm.studiesCreated.createStudy({predictorVariableName: causeVariableName, outcomeVariableName: effectVariableName}, function (study) {
+            qmService.hideLoader();
+            qmService.goToStudyPage(study.causeVariable.name, study.effectVariable.name, study.studyId);
+        }, function (error) {
+            qmService.hideLoader();
+            qmService.showMaterialAlert(error);
+        });
+    };
+
 }]);
