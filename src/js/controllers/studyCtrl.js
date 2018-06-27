@@ -11,7 +11,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             requestParams: {},
             hideStudyButton: true,
             loading: true,
-            study: null
+            study: $stateParams.study
         };
         qmService.hideLoader(); // Hide before robot is called in afterEnter
         setAllStateProperties(getScopedStudyIfMatchesVariableNames());
@@ -20,14 +20,16 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         qmLogService.debug('enter state ' + $state.current.name);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.correlationObject){
-            setAllStatePropertiesAndSaveToLocalStorage($stateParams.correlationObject);
+            setAllStateProperties($stateParams.correlationObject);
         }
         setupRequestParams();
         getStudy();
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
-        if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
+        if(qm.urlHelper.getParam('studyId')){
+            qmService.stateHelper.previousUrl = window.location.href;
+        } else if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
             qmService.stateHelper.previousUrl = window.location.href;
         }
     });
@@ -50,11 +52,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             qmLog.info("No charts on: " + JSON.stringify(lastStudyOrCorrelation).substring(0, 140));
         }
         $scope.state.study = lastStudyOrCorrelation;
-    }
-    function setAllStatePropertiesAndSaveToLocalStorage(lastStudyOrCorrelation) {
-        if(!lastStudyOrCorrelation){return;}
-        setAllStateProperties(lastStudyOrCorrelation);
-        qm.studyHelper.saveLastStudy(lastStudyOrCorrelation);
     }
     function matchesVariableNames(study) {
         if(!study){return false;}
@@ -85,7 +82,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.state.requestParams.causeVariableName = getCauseVariableName();
         $scope.state.requestParams.effectVariableName = getEffectVariableName();
         $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
-        $scope.state.requestParams.studyClientId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyClientId");
+        $scope.state.requestParams.studyId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyId");
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
@@ -150,27 +147,34 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }).catch(function (error) { qmLogService.error(error); });
     }
     $scope.weightedPeriod = 5;
-    function getCorrelationObjectIfNecessary(){
+    function getLocalStudyOrCorrelationObjectIfNecessary(){
         if(getScopedStudyIfMatchesVariableNames()){return;}
-        qmService.getCorrelationsDeferred($scope.state.requestParams)
-            .then(function (data) {
-                if(data.correlations.length) {setAllStatePropertiesAndSaveToLocalStorage(data.correlations[0]);}
-            }, function (error) {
-                qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
-            });
+        qm.studyHelper.getStudyFromLocalForageOrGlobals(getCauseVariableName(), getEffectVariableName(), getStudyId(), function (study) {
+            setAllStateProperties(study);
+        }, function (error) {
+            qmLog.info(error + " So making correlations request");
+            qmService.getCorrelationsDeferred($scope.state.requestParams)
+                .then(function (data) {
+                    if(data.correlations.length) {setAllStateProperties(data.correlations[0]);}
+                }, function (error) {
+                    qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                });
+        });
     }
     function getStudy(recalculate) {
-        if(!getCauseVariableName() || !getEffectVariableName()){
-            qmLogService.error('Cannot get study. Missing cause or effect variable name.');
-            qmService.goToState(qmStates.studyCreation);
-            return;
+        if(!getStudyId()){
+            if(!getCauseVariableName() || !getEffectVariableName()){
+                qmLogService.error('Cannot get study. Missing cause or effect variable name.');
+                qmService.goToState(qmStates.studyCreation);
+                return;
+            }
         }
-        getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
+        getLocalStudyOrCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
-        qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
+        qm.studyHelper.getStudyFromLocalStorageOrApi($scope.state.requestParams, function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
-            setAllStatePropertiesAndSaveToLocalStorage(study);
+            setAllStateProperties(study);
             $scope.loadingCharts = false;
             setActionSheetMenu();
         }, function (error) {
@@ -184,6 +188,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
     function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
+    function getStudyId() {return qm.studyHelper.getStudyId($stateParams, $scope, $rootScope);}
     function getCauseVariable() {return qm.studyHelper.getCauseVariable($stateParams, $scope, $rootScope);}
     function getEffectVariable() {return qm.studyHelper.getEffectVariable($stateParams, $scope, $rootScope);}
     function setActionSheetMenu(){
