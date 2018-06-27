@@ -79,7 +79,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLog.authDebug('beforeEnter in state ' + $state.current.name);
         leaveIfLoggedIn();
-        if(qm.urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
+        if(qm.urlHelper.getParam('loggingIn') || qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags($state.current.name)){
             loginTimeout();
         } else {
             qmLog.authDebug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token');
