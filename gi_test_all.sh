@@ -16,7 +16,10 @@ if [[ "$START_URL" = *"medimodo.herokuapp.com"* ]]; then
     echo "git push exit code was $EXIT_CODE"
     # $? now contains the exit code of the preceding echo
     if [ ${EXIT_CODE} -eq 0 ]; then
-        exit 1
+        echo "Heroku push successful!"
+    else
+        echo "Heroku push FAILED with exit code $EXIT_CODE"
+        exit 1;
     fi
 fi
 if [ -z "$CLIENT_ID" ]
