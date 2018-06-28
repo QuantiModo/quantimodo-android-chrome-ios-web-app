@@ -11,7 +11,16 @@ if [[ "$START_URL" = *"medimodo.herokuapp.com"* ]]; then
     echo "=== Check build progress at https://dashboard.heroku.com/apps/medimodo/activity ==="
     #git push git@heroku.com:medimodo.git master -ff || true;  # Doesn't work on Jenkins for some reason
     #git push heroku master -f || true;  # Doesn't work on Jenkins for some reason
-    git push git@heroku.com:medimodo.git HEAD:master -f; 
+    git push git@heroku.com:medimodo.git HEAD:master -f;
+    EXIT_CODE=$?
+    echo "git push exit code was $EXIT_CODE"
+    # $? now contains the exit code of the preceding echo
+    if [ ${EXIT_CODE} -eq 0 ]; then
+        echo "Heroku push successful!"
+    else
+        echo "Heroku push FAILED with exit code $EXIT_CODE"
+        exit 1;
+    fi
 fi
 if [ -z "$CLIENT_ID" ]
   then
