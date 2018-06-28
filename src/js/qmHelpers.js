@@ -1505,6 +1505,10 @@ window.qm = {
                 qm.storage.setGlobal(study.studyId, study);
                 return;
             }
+            if(!study.causeVariable){
+                qmLog.error("No cause variable in this study: ", study, study);
+                return;
+            }
             var causeVariableName = study.causeVariableName || study.causeVariable.name;
             var effectVariableName = study.effectVariableName || study.effectVariable.name;
             qm.storage.setGlobal(qm.stringHelper.removeSpecialCharacters(causeVariableName+"_"+effectVariableName), study);
