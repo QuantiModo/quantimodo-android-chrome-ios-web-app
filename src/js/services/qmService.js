@@ -82,7 +82,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
                 if(!qm.getUser()){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
                 //if(window && window.plugins && window.plugins.googleplus){qmService.auth.googleLogout();}
-                qmService.showBasicLoader(30000);
+                qmService.showBasicLoader(30);
                 qm.connectorHelper.getConnectorByName(connectorName, function (connector) {
                     return qmService.connectors.oAuthConnect(connector, ev, additionalParams, successHandler, errorHandler);
                 });
@@ -503,7 +503,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
                 qmLog.authDebug("qmService.connectors.facebookMobileConnect for "+JSON.stringify(connector), null, connector);
                 function fbSuccessHandler(result){
-                    qmService.showBasicLoader(15000);
+                    qmService.showBasicLoader(15);
                     qmLog.authDebug("qmService.connectors.facebookMobileConnect success result: "+JSON.stringify(result), null, result);
                     qmService.connectors.connectWithToken(result, connector, successHandler, errorHandler);
                 }
@@ -6602,14 +6602,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.showBasicLoader = function(duration){
         duration = duration || 10000;
         qmLogService.debug('Called showBasicLoader in ' + $state.current.name, null, qmLog.getStackTrace());
-        $ionicLoading.show({duration: duration});
+        $ionicLoading.show({duration: duration * 1000});
     };
     qmService.showBlackRingLoader = function(duration){
-        duration = duration || 10000;
+        duration = duration || 10;
         if(ionic && ionic.Platform && ionic.Platform.isIOS()){
             qmService.showBasicLoader(duration);  // Centering is messed up on iOS for some reason
         } else {
-            $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: duration});
+            $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: duration * 1000});
         }
         qmLogService.debug('Called showBlackRingLoader in ' + $state.current.name, null, qmLog.getStackTrace());
     };
