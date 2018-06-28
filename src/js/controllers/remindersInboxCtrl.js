@@ -257,6 +257,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         getTrackingReminderNotifications();
     }
     function preventDragAfterAlert(ev) {
+		if(!ev){
+			qmLog.debug("No event provided to preventDragAfterAlert");
+			return;
+		}
         ev.preventDefault();
         ev.stopPropagation();
         ev.gesture.stopPropagation();
