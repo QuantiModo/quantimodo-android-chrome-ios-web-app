@@ -95,17 +95,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.studyHelper.shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
     };
     $scope.openSharingUrl = function(sharingUrl){ qmService.openSharingUrl(sharingUrl); };
-    $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
-        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkFacebook);
+    $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName, study) {
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName, study).studyLinkFacebook);
     };
-    $scope.openStudyLinkTwitter = function (predictorVariableName, outcomeVariableName) {
-        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkTwitter);
+    $scope.openStudyLinkTwitter = function (predictorVariableName, outcomeVariableName, study) {
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName, study).studyLinkTwitter);
     };
-    $scope.openStudyLinkGoogle = function (predictorVariableName, outcomeVariableName) {
-        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkGoogle);
+    $scope.openStudyLinkGoogle = function (predictorVariableName, outcomeVariableName, study) {
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName, study).studyLinkGoogle);
     };
-    $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
-        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
+    $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName, study) {
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName, study).studyLinkEmail);
     };
     $scope.toggleVariableShare = function (variableObject, ev) {
         if(variableObject.shareUserMeasurements){qmService.showShareVariableConfirmation(variableObject, ev);} else {qmService.showUnShareVariableConfirmation(variableObject, ev);}

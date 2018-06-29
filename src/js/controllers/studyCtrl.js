@@ -95,17 +95,9 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
-    function getStudyLinks() {
-        if(getScopedStudyIfMatchesVariableNames().studyLinks){return getScopedStudyIfMatchesVariableNames().studyLinks;}
-    }
-    function getStudyLinkStatic() {
-        if(getStudyLinks()){return getStudyLinks().studyLinkStatic;}
-    }
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = "Copied!";
-        var studyLink;
-        if(causeVariableName && effectVariableName){studyLink = qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName);}
-        if(getStudyLinkStatic()){studyLink = getStudyLinkStatic(); }
+        var studyLink = qmService.getStudyLinkStatic(causeVariableName, effectVariableName, $scope.state.study);
         clipboard.copyText(studyLink);
     };
     function addWikipediaInfo() {
