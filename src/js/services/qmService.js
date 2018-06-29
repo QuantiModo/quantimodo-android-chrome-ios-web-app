@@ -6152,7 +6152,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var option = '';
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
-    qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
+    qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName, study){
+        if(study && study.studyLinks){
+            return study.studyLinks;
+        }
         qmService.postVoteDeferred({causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName, vote: 1});
         var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
         var studyLinkStatic = qm.api.getBaseUrl() + "/api/v2/study?causeVariableName=" +
@@ -6165,7 +6168,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             studyLinkEmail: "mailto:?subject=" + encodeURIComponent(subjectLine) + "&body=" + encodeURIComponent(bodyText)
         };
     };
-    qmService.getStudyLinkByVariableNames = function (causeVariableName, effectVariableName) {
+    qmService.getStudyLinkStatic = function (causeVariableName, effectVariableName, study) {
+        if(study && study.studyLinks){return study.studyLinks.studyLinkStatic;}
         return qm.api.getBaseUrl() + '/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
     };
     qmService.getWikipediaArticle = function(title){

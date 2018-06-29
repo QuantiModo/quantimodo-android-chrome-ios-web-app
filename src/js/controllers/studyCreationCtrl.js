@@ -20,9 +20,10 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmService.hideLoader();
     });
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-    $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
+    $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName, study) {
         $scope.copyLinkText = 'Copied!';
-        clipboard.copyText(qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName));
+        var url = qmService.getStudyLinkStatic(causeVariableName, effectVariableName, study);
+        clipboard.copyText(url);
     };
     function setOutcomeVariable(variable) {
         $scope.outcomeVariable = variable;
