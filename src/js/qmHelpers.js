@@ -3330,6 +3330,10 @@ window.qm = {
         },
         processAndSaveStudy: function(data){
             qmLog.debug('study response: ', null, data);
+            if(!data){
+                qmLog.error("No data provided to processAndSaveStudy.  We got: ", data, data);
+                return false;
+            }
             var study = data.study || data.publicStudy || data.userStudy || data.cohortStudy || data;
             if(!study){
                 qmLog.error("No study provided to processAndSaveStudy.  We got: ", data, data);
