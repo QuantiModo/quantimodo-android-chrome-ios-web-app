@@ -51,7 +51,7 @@ cache:
   directories:
   - bundler
   - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
+  #- $HOME/.gradle/wrapper/ # I think this causes Exception in thread "main" java.io.FileNotFoundException: /home/travis/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3-all.zip (Permission denied)
   - $HOME/Library/Caches/Yarn/v1/
   - $HOME/.cache/yarn/v1/
 before_install:
