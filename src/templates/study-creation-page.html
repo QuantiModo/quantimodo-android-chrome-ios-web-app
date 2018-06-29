@@ -24,7 +24,7 @@
                 </p>
                 <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
                 <br>
-                <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(predictorVariable.name, outcomeVariable.name)" ng-if="platform.isWeb">
+                <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(predictorVariable.name, outcomeVariable.name, state.study)" ng-if="platform.isWeb">
                     <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
                 </div>
                 <br>
