@@ -189,7 +189,7 @@ var qmLog = {
     },
     addMetaData: function(metaData){
         metaData = metaData || {};
-        metaData.environment = process.env;
+        metaData.environment = obfuscateSecrets(process.env);
         metaData.subsystem = { name: getCurrentServerContext() };
         metaData.client_id = QUANTIMODO_CLIENT_ID;
         metaData.build_link = qm.buildInfoHelper.getBuildLink();
