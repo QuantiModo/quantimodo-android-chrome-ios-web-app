@@ -176,7 +176,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 		var showDataClearPopup = function(ev){
             var title = 'Log Out';
             var textContent = "Are you sure you want to log out? I'll miss you dearly!";
-            function yesCallback(){qmService.completelyResetAppStateAndLogout();}
+            function yesCallback(){qmService.auth.completelyResetAppStateAndLogout();}
             function noCallback(){
                 //qmService.afterLogoutDoNotDeleteMeasurements();
             }
