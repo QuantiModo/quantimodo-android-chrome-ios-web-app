@@ -18,17 +18,6 @@
                     recruit participants.  You'll also get a link to the full study which will update in real time as more
                     participants anonymously share their data.</p>
             </div>
-            <div ng-if="state.study">
-                <p style="font-size: 30px; line-height: 1;">
-                    Recruit Participants
-                </p>
-                <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
-                <br>
-                <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(predictorVariable.name, outcomeVariable.name, state.study)" ng-if="platform.isWeb">
-                    <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
-                </div>
-                <br>
-            </div>
             <div class="row">
                 <div  class="col col-40">
                     <div id="select-predictor-button" ng-click="selectPredictorVariable($event)"
@@ -87,16 +76,36 @@
             </div>
             <br>
             <button class="button"
-                    ng-if="outcomeVariable && predictorVariable"
+                    ng-if="outcomeVariable && predictorVariable && !state.study"
                     style="background-color: {{state.color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
                                 text-align: center"
-                    id="goToStudyButton"
+                    id="createStudyButton"
                     ng-click="createStudy(predictorVariable.name, outcomeVariable.name)">
                 <span> &nbsp; CREATE STUDY &nbsp;</span>
             </button>
+            <div ng-if="state.study" class="list">
+                <p style="font-size: 30px; line-height: 1;">
+                    Recruit Participants
+                </p>
+                <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
+                <br>
+                <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(predictorVariable.name, outcomeVariable.name, state.study)" ng-if="platform.isWeb">
+                    <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
+                </div>
+                <br>
+                <div class="button-bar">
+                    <button class="button" id="joinStudyButton" ng-click="state.joinStudy()"
+                            style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; font-size: 24px; text-align: center" >
+                        JOIN STUDY
+                    </button>
+                </div>
+                <button id="goToStudyButton" ng-click="state.goToStudyPage()" class="button button-small button-clear button-light">
+                    SEE CURRENT RESULTS
+                </button>
+            </div>
         </div>
     </div>
 </ion-view>
