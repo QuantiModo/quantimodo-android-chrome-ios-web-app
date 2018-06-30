@@ -2731,7 +2731,12 @@ window.qm = {
                 });
             });
         },
-        createStudy: function(body, successHandler, errorHandler){
+        createStudy: function(body, successHandler, errorHandler){\
+            var lastStudy = qm.studyHelper.getStudyFromLocalForageOrGlobals(body.causeVariableName, body.effectVariableName);
+            if(lastStudy){
+                successHandler(lastStudy);
+                return;
+            }
             qm.api.configureClient();
             var apiInstance = new Quantimodo.StudiesApi();
             function callback(error, data, response) {
