@@ -73,5 +73,11 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.showMaterialAlert(error);
         });
     };
+    $scope.state.goToStudyPage = function(){
+        qmService.goToState(qmStates.study, {study: $scope.state.study})
+    };
+    $scope.state.joinStudy = function(){
+        qmService.goToState(qmStates.studyJoin, {study: $scope.state.study})
+    }
 
 }]);
