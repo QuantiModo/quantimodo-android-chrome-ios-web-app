@@ -4,7 +4,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         title: 'Create a Study',
         color: qmService.colors.blue,
         image: { url: "img/robots/quantimodo-robot-waving.svg", height: "85", width: "85" },
-        bodyText: "One moment please..."
+        bodyText: "One moment please...",
+        study: null
     };
     if (!clipboard.supported) {
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
@@ -65,7 +66,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmService.showBasicLoader(60);
         qm.studiesCreated.createStudy({predictorVariableName: causeVariableName, outcomeVariableName: effectVariableName}, function (study) {
             qmService.hideLoader();
-            qmService.goToStudyPage(study.causeVariable.name, study.effectVariable.name, study.studyId);
+            $scope.state.study = study;
+            //qmService.goToStudyPage(study.causeVariable.name, study.effectVariable.name, study.studyId);
         }, function (error) {
             qmService.hideLoader();
             qmService.showMaterialAlert(error);
