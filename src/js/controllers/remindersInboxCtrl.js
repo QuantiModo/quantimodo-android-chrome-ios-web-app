@@ -97,12 +97,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
         setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
-        if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
-            $scope.refreshTrackingReminderNotifications();
-        }
+        if(needToRefresh()){$scope.refreshTrackingReminderNotifications();}
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
         autoRefresh();
 	});
+	function needToRefresh() {
+        if(!qm.storage.getItem(qm.items.trackingReminderNotifications)){ return true; }
+        if(!qm.storage.getItem(qm.items.trackingReminderNotifications).length){ return true; }
+        if(qm.notifications.mostRecentNotificationIsOlderThanMostFrequentInterval()){ return true; }
+        return false;
+    }
 	function autoRefresh() {
 	    $timeout(function () {
             if($state.current.name.toLowerCase().indexOf('inbox') !== -1){

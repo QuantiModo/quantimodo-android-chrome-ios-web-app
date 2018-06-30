@@ -2028,7 +2028,7 @@ window.qm = {
         lastPopupWasBeforeLastReminderTime: function () {
             var lastTime =  qm.notifications.getLastPopupUnixTime();
             qmLog.info("Last popup at " + qm.timeHelper.getTimeSinceString(lastTime));
-            if(lastTime < qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getMostFrequentReminderIntervalInSeconds()){
+            if(lastTime < qm.timeHelper.getUnixTimestampInSeconds() - qm.reminderHelper.getMostFrequentReminderIntervalInSeconds()){
                 qmLog.error("No popups shown since before last reminder time!  Re-initializing popups...");
                 return true; // Sometimes we lose permission for some reason
             }
@@ -2036,9 +2036,6 @@ window.qm = {
         },
         getSecondsSinceLastPopup: function(){
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastPopupUnixTime();
-        },
-        getMostFrequentReminderIntervalInSeconds: function(){
-            return qm.storage.getItem(qm.items.mostFrequentReminderIntervalInSeconds);
         },
         canWeShowPopupYet: function(path) {
             if(!qm.notifications.getLastPopupUnixTime()){
@@ -2272,6 +2269,18 @@ window.qm = {
             if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
             qm.chrome.updateChromeBadge(0);
             chrome.notifications.clear("moodReportNotification", function() {});
+        },
+        mostRecentNotificationIsOlderThanMostFrequentInterval: function(){
+            var trackingReminderNotifications = qm.storage.getTrackingReminderNotifications();
+            var mostRecent = 0;
+            for (var i = 0; i < trackingReminderNotifications.length; i++){
+                var notification = trackingReminderNotifications[i];
+                if(notification.trackingReminderNotificationTimeEpoch > mostRecent){
+                    mostRecent = notification.trackingReminderNotificationTimeEpoch;
+                }
+            }
+            var mostFrequent = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds();
+            return mostRecent < qm.timeHelper.getUnixTimestampInSeconds() - mostFrequent;
         }
     },
     objectHelper: {
@@ -2513,12 +2522,8 @@ window.qm = {
         getTrackingRemindersFromLocalStorage: function(requestParams){
             return qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
         },
-        saveToLocalStorage: function(trackingReminders){
-            trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
-            var sizeInKb = getSizeInKiloBytes(trackingReminders);
-            if(sizeInKb > 2000){
-                trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
-            }
+        getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
+            if(!trackingReminders){trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();}
             var mostFrequentReminderIntervalInSeconds = 86400;
             if(trackingReminders){
                 for (var i = 0; i < trackingReminders.length; i++) {
@@ -2528,6 +2533,14 @@ window.qm = {
                     }
                 }
             }
+        },
+        saveToLocalStorage: function(trackingReminders){
+            trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
+            var sizeInKb = getSizeInKiloBytes(trackingReminders);
+            if(sizeInKb > 2000){
+                trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
+            }
+            var mostFrequentReminderIntervalInSeconds = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds(trackingReminders);
             qm.storage.setItem(qm.items.mostFrequentReminderIntervalInSeconds, mostFrequentReminderIntervalInSeconds);
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
         },
