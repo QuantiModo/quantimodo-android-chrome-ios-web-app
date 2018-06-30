@@ -10,7 +10,7 @@
              position: relative;
              top: 50%;
              transform: translateY(-50%);">
-            <div ng-if="!outcomeVariable || !predictorVariable">
+            <div ng-if="!state.study">
                 <p style="font-size: 30px; line-height: 1;">
                     Create a Study
                 </p>
@@ -18,7 +18,7 @@
                     recruit participants.  You'll also get a link to the full study which will update in real time as more
                     participants anonymously share their data.</p>
             </div>
-            <div ng-if="outcomeVariable && predictorVariable">
+            <div ng-if="state.study">
                 <p style="font-size: 30px; line-height: 1;">
                     Recruit Participants
                 </p>
