@@ -115,6 +115,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.authDebug('plugins.googleplus.logout: disconnected google!');
                     });
                 }
+            },
+            completelyResetAppStateAndLogout: function(){
+                qmService.showBlackRingLoader(60);
+                qm.auth.logout();
+                qmService.completelyResetAppState();
+                saveDeviceTokenToSyncWhenWeLogInAgain();
+                //qmService.goToState(qmStates.intro);
+                if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
+                    qmLog.info("Restarting app to enable opening login window again");
+                    $timeout(function () { // Wait for above functions to complete
+                        //document.location.href = 'index.html#/app/intro?logout=true';  // Try this if below doesn't work
+                        document.location.href = 'index.html?logout=true';
+                    }, 2000);
+                }
+                qmService.showBlackRingLoader();
             }
         },
         barcodeScanner: {
@@ -7248,45 +7263,5 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.deleteDeviceTokenFromServer();
         }
     }
-    function logOutOfWebsite() {
-        //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
-        var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
-        if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
-        if(window.location.href.indexOf('.quantimo.do/') === -1){afterLogoutGoToUrl = window.location.href;}
-        afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
-        if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
-        var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
-        qmLog.info("Sending to " + logoutUrl);
-        //qmService.get(logoutUrl);
-        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
-        //$http(request);
-        // Get request doesn't seem to clear cookies
-        window.location.replace(logoutUrl);
-    }
-    qmService.completelyResetAppStateAndLogout = function(){
-        qmService.showBlackRingLoader();
-        qmService.completelyResetAppState();
-        logOutOfWebsite();
-        saveDeviceTokenToSyncWhenWeLogInAgain();
-        //qmService.goToState(qmStates.intro);
-        if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
-            qmLog.info("Restarting app to enable opening login window again");
-            $timeout(function () { // Wait for above functions to complete
-                //document.location.href = 'index.html#/app/intro?logout=true';  // Try this if below doesn't work
-                document.location.href = 'index.html?logout=true';
-            }, 2000);
-        }
-        qmService.showBlackRingLoader();
-    };
-    qmService.afterLogoutDoNotDeleteMeasurements = function(){
-        qmService.showBlackRingLoader();
-        qmService.rootScope.setUser(null);
-        saveDeviceTokenToSyncWhenWeLogInAgain();
-        window.qm.storage.clearOAuthTokens();
-        logOutOfWebsite();
-        qmService.intro.setIntroSeen(false, "afterLogoutDoNotDeleteMeasurements");
-        window.qm.storage.setItem(qm.items.onboarded, false);
-        qmService.goToState('app.intro');
-    };
     return qmService;
 }]);
