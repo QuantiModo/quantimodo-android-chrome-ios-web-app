@@ -1249,6 +1249,26 @@ window.qm = {
             }
             qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + qm.auth.accessTokenFromUrl);
             return qm.auth.accessTokenFromUrl;
+        },
+        logout: function() {
+            qm.auth.deleteAllAccessTokens();
+            qm.auth.deleteAllCookies();
+            qm.auth.logOutOfWebsite();
+        },
+        logOutOfWebsite: function() {
+            //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
+            var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
+            if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
+            if(window.location.href.indexOf('.quantimo.do/') === -1){afterLogoutGoToUrl = window.location.href;}
+            afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
+            if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
+            var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
+            qmLog.info("Sending to " + logoutUrl);
+            //qmService.get(logoutUrl);
+            var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
+            //$http(request);
+            // Get request doesn't seem to clear cookies
+            window.location.replace(logoutUrl);
         }
     },
     buildInfo: {},
