@@ -28,7 +28,7 @@
                 <div id="causeSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.causeVariableIonIcon}} button-positive"
-                                id="predictorVariableSettingsButton" ng-click="goToVariableSettingsForCauseVariable(state.study.statistics)">
+                                id="causeVariableSettingsButton" ng-click="goToVariableSettingsForCauseVariable(state.study.statistics)">
                             {{state.requestParams.causeVariableName}} Settings
                         </button>
                     </div>
@@ -36,7 +36,7 @@
                 <div id="effectSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.effectVariableIonIcon}} button-positive"
-                                id="outcomeVariableSettingsButton" ng-click="goToVariableSettingsForEffectVariable(state.study.statistics)">
+                                id="effectVariableSettingsButton" ng-click="goToVariableSettingsForEffectVariable(state.study.statistics)">
                             {{state.requestParams.effectVariableName}} Settings
                         </button>
                     </div>

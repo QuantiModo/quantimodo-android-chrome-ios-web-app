@@ -1,21 +1,18 @@
-angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", "$stateParams",
-    function($scope, $state, qmService, qmLogService, clipboard, $mdDialog, $stateParams) {
+angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", "$stateParams", "$rootScope",
+    function($scope, $state, qmService, qmLogService, clipboard, $mdDialog, $stateParams, $rootScope) {
     $scope.state = {
         title: 'Create a Study',
         color: qmService.colors.blue,
         image: { url: "img/robots/quantimodo-robot-waving.svg", height: "85", width: "85" },
         bodyText: "One moment please...",
-        study: null
+        study: null,
+        causeVariable: null,
+        effectVariable: null
     };
     if (!clipboard.supported) {
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
-    $scope.$on('$ionicView.beforeEnter', function(){
-        qmLogService.debug('StudyCreationCtrl beforeEnter in state ' + $state.current.name);
-        if($stateParams.causeVariable){setPredictorVariable($stateParams.causeVariable);}
-        if($stateParams.effectVariable){setOutcomeVariable($stateParams.effectVariable);}
-    });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
@@ -27,13 +24,13 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         clipboard.copyText(url);
     };
     function setOutcomeVariable(variable) {
-        $scope.outcomeVariable = variable;
-        $scope.outcomeVariableName = variable.name;
+        $scope.state.effectVariable = variable;
+        //qm.urlHelper.addUrlParmsToCurrentUrl('effectVariableName', variable.name);  // Doesn't work
         qmLogService.debug('Selected outcome ' + variable.name);
     }
     function setPredictorVariable(variable) {
-        $scope.predictorVariable = variable;
-        $scope.predictorVariableName = variable.name;
+        $scope.state.causeVariable = variable;
+        //qm.urlHelper.addUrlParmsToCurrentUrl('causeVariableName', variable.name);  // Doesn't work
         qmLogService.debug('Selected predictor ' + variable.name);
     }
     $scope.selectOutcomeVariable = function (ev) {
@@ -64,13 +61,13 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qmLog.info('Clicked createStudy for ' + causeVariableName + ' and ' + effectVariableName);
         qmService.showInfoToast("Creating study...", 60);
         qmService.showBasicLoader(60);
-        qm.studiesCreated.createStudy({predictorVariableName: causeVariableName, outcomeVariableName: effectVariableName}, function (study) {
+        qm.studiesCreated.createStudy({causeVariableName: causeVariableName, effectVariableName: effectVariableName}, function (study) {
             qmService.hideLoader();
             $scope.state.study = study;
             //qmService.goToStudyPage(study.causeVariable.name, study.effectVariable.name, study.studyId);
         }, function (error) {
             qmService.hideLoader();
-            qmService.showMaterialAlert(error);
+            qmService.auth.showErrorAlertMessageOrSendToLogin("Could Not Create Study", error);
         });
     };
     $scope.state.goToStudyPage = function(){
@@ -78,6 +75,5 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     };
     $scope.state.joinStudy = function(){
         qmService.goToState(qmStates.studyJoin, {study: $scope.state.study})
-    }
-
+    };
 }]);
