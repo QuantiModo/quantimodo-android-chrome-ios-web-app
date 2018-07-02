@@ -130,6 +130,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, 2000);
                 }
                 qmService.showBlackRingLoader();
+            },
+            showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
+                if(errorMessage){
+                    if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
+                        qmService.login.setAfterLoginGoToUrlAndSendToLogin();
+                    } else {
+                        qmService.showMaterialAlert(title, errorMessage);
+                    }
+                } else {
+                    qmLog.error("No error message provided to showErrorAlertMessageOrSendToLogin!");
+                }
             }
         },
         barcodeScanner: {
@@ -2278,25 +2289,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postStudyDeferred = function(body) {
         var deferred = $q.defer();
         qmService.postStudy(body, function(){deferred.resolve();}, function(error){deferred.reject(error);});
-        return deferred.promise;
-    };
-    qmService.joinStudy = function(body, successHandler, errorHandler){
-        qmService.post('api/v3/study/join', [], body, successHandler, errorHandler);
-    };
-    qmService.joinStudyDeferred = function(body) {
-        var deferred = $q.defer();
-        qmService.joinStudy(body, function(response){
-            if(response && response.data){
-                if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
-                if(response.data.trackingReminders){qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);}
-                /** @namespace response.data.causeUserVariable */
-                /** @namespace response.data.effectUserVariable */
-                if(response.data.causeUserVariable && response.data.effectUserVariable){
-                    qm.userVariables.saveToLocalStorage([response.data.causeUserVariable, response.data.effectUserVariable]);
-                }
-            }
-            deferred.resolve();
-        }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
     qmService.postUserTagDeferred = function(tagData) {
@@ -6167,14 +6159,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var option = '';
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
-    qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName, study){
+    qmService.getStudyLinks = function(causeVariableName, effectVariableName, study){
         if(study && study.studyLinks){
             return study.studyLinks;
         }
-        qmService.postVoteDeferred({causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName, vote: 1});
-        var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
+        qmService.postVoteDeferred({causeVariableName: causeVariableName, effectVariableName: effectVariableName, vote: 1});
+        var subjectLine = "Help us discover the effect of " + causeVariableName + " on " + effectVariableName;
         var studyLinkStatic = qm.api.getBaseUrl() + "/api/v2/study?causeVariableName=" +
-            encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
+            encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
         var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
         return {
             studyLinkFacebook : "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(studyLinkStatic),

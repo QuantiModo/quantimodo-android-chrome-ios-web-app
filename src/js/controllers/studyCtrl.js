@@ -83,6 +83,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.state.requestParams.effectVariableName = getEffectVariableName();
         $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
         $scope.state.requestParams.studyId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyId");
+        return $scope.state.requestParams;
     }
     $scope.refreshStudy = function() {
         qmService.clearCorrelationCache();
@@ -141,7 +142,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     $scope.weightedPeriod = 5;
     function getLocalStudyOrCorrelationObjectIfNecessary(){
         if(getScopedStudyIfMatchesVariableNames()){return;}
-        qm.studyHelper.getStudyFromLocalForageOrGlobals(getCauseVariableName(), getEffectVariableName(), getStudyId(), function (study) {
+        qm.studyHelper.getStudyFromLocalForageOrGlobals(setupRequestParams(), function (study) {
             setAllStateProperties(study);
         }, function (error) {
             qmLog.info(error + " So making correlations request");
