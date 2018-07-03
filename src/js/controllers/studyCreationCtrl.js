@@ -9,14 +9,18 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         causeVariable: null,
         effectVariable: null
     };
-    if (!clipboard.supported) {
-        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
-        $scope.hideClipboardButton = true;
-    }
+    $scope.$on('$ionicView.beforeEnter', function(){
+        $scope.state.causeVariable = $stateParams.causeVariable;
+        $scope.state.effectVariable = $stateParams.effectVariable;
+    });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
     });
+    if (!clipboard.supported) {
+        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
+        $scope.hideClipboardButton = true;
+    }
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName, study) {
         $scope.copyLinkText = 'Copied!';
