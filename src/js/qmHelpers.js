@@ -53,15 +53,16 @@ window.qm = {
             }
             var qmApiClient = Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
-            qmApiClient.authentications.client_id.clientId = qm.getClientId();
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
-            qmApiClient.enableCookies = true;
             quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-            qmApiClient.defaultHeaders = {
-                clientId: qm.getClientId(),
-                platform: qm.platform.getCurrentPlatform(),
-                appVersion: qm.appsManager.getAppVersion()
-            };
+            // TODO: Enable
+            // qmApiClient.authentications.client_id.clientId = qm.getClientId();
+            // qmApiClient.enableCookies = true;
+            // qmApiClient.defaultHeaders = {
+            //     clientId: qm.getClientId(),
+            //     platform: qm.platform.getCurrentPlatform(),
+            //     appVersion: qm.appsManager.getAppVersion()
+            // };
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
