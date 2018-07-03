@@ -475,12 +475,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.storage.deleteById('defaultHelpCards', helpCard.id);
 	};
 	function getDiscoveries() {
-		if(!$scope.state.correlationObjects){
-            qmService.getCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true})
-				.then(function (data) {
-					$scope.state.correlationsExplanation = data.explanation;
-					$scope.state.correlationObjects = data.correlations;
-				});
+		if(!$scope.state.studiesResponse.studies){
+            qm.studyHelper.getStudiesFromApi({limit: 10, fallbackToAggregateCorrelations: true}, function (studiesResponse) {
+				$scope.state.studiesResponse = studiesResponse;
+			});
 		}
     }
     $scope.showUndoToast = function(lastAction) {

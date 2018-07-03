@@ -48,18 +48,18 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.hideMenuButton = false;
         }
     });
-    $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
+    $scope.goToVariableSettingsForCauseVariable = function(study) {
         /** @namespace correlationObject.causeVariable */
-        if(correlationObject.causeVariable){
-            qmService.goToState('app.variableSettingsVariableName', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
+        if(study.causeVariable){
+            qmService.goToState('app.variableSettingsVariableName', {variableObject: study.causeVariable, variableName: study.causeVariableName});
         } else {
-            qmService.goToState('app.variableSettingsVariableName', {variableName: correlationObject.causeVariableName});
+            qmService.goToState('app.variableSettingsVariableName', {variableName: study.causeVariableName});
         }
     };
-    $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
+    $scope.goToVariableSettingsForEffectVariable = function(study) {
         /** @namespace correlationObject.effectVariable */
-        if(correlationObject.effectVariable){ qmService.goToState('app.variableSettingsVariableName', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
-        } else { qmService.goToState('app.variableSettingsVariableName', {variableName: correlationObject.effectVariableName}); }
+        if(study.effectVariable){ qmService.goToState('app.variableSettingsVariableName', {variableObject: study.effectVariable, variableName: study.effectVariableName});
+        } else { qmService.goToState('app.variableSettingsVariableName', {variableName: study.effectVariableName}); }
     };
     $scope.openUrl = function (url, showLocationBar, windowTarget) {
         showLocationBar = showLocationBar || "no";
@@ -74,25 +74,25 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
         }
     };
-    $scope.toggleStudyShare = function (correlationObject, ev) {
-        if(correlationObject.shareUserMeasurements){
-            qmService.studyHelper.showShareStudyConfirmation(correlationObject, ev);
+    $scope.toggleStudyShare = function (study, ev) {
+        if(study.studySharing.shareUserMeasurements){
+            qmService.studyHelper.showShareStudyConfirmation(study, ev);
         } else {
-            qmService.studyHelper.showUnShareStudyConfirmation(correlationObject, ev);
+            qmService.studyHelper.showUnShareStudyConfirmation(study, ev);
         }
     };
-    $scope.shareStudy = function(correlationObject, shareType, ev){
-        if(!correlationObject){
-            qmLogService.error("No correlationObject provided to shareStudy!");
+    $scope.shareStudy = function(study, shareType, ev){
+        if(!study){
+            qmLogService.error("No study provided to shareStudy!");
             return;
         }
-        var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, correlationObject);
-        if(!sharingUrl){qmLogService.error("No sharing url for this correlation: ", {correlation: correlationObject});}
-        if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
-            qmService.studyHelper.showShareStudyConfirmation(correlationObject, sharingUrl, ev);
+        var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, study);
+        if(!sharingUrl){qmLogService.error("No sharing url for this study: ", {study: study});}
+        if(sharingUrl.indexOf('userId') !== -1 && !study.studySharing.shareUserMeasurements){
+            qmService.studyHelper.showShareStudyConfirmation(study, sharingUrl, ev);
             return;
         }
-        qmService.studyHelper.shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
+        qmService.studyHelper.shareStudyNativelyOrViaWeb(study, sharingUrl);
     };
     $scope.openSharingUrl = function(sharingUrl){ qmService.openSharingUrl(sharingUrl); };
     $scope.openStudyLinkFacebook = function (causeVariableName, effectVariableName, study) {
@@ -126,56 +126,60 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
     $scope.welcomeText = qm.getAppSettings().welcomeText;
-    $scope.downVote = function(correlationObject, $index, ev){
+    $scope.downVote = function(study, $index, ev){
+        var correlationObject = study.statistics;
+        var causeVariableName = qm.studyHelper.getCauseVariableName(study);
+        var effectVariableName = qm.studyHelper.getEffectVariableName(study);
         if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
         var title, textContent, yesCallback, noCallback;
-        if (correlationObject.userVote !== 0) {
+        if (study.studyVotes.userVote !== 0) {
             title = 'Implausible relationship?';
-            textContent =  'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '?';
+            textContent =  'Do you think is is IMPOSSIBLE that ' + causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + effectVariableName+ '?';
             yesCallback = function() {
-                correlationObject.userVote = 0;
-                correlationObject.vote = 0;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug('Down voted!', null);}, function () {qmLogService.error('Down vote failed!');});
+                study.studyVotes.userVote = 0;
+                qmService.postVoteToApi(study, function (response) {qmLogService.debug('Down voted!', null);}, function () {qmLogService.error('Down vote failed!');});
             };
             noCallback = function() {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
             title = 'Delete Downvote';
-            textContent = 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this down vote?';
-            yesCallback = function() {deleteVote(correlationObject, $index);};
+            textContent = 'You previously voted that it is IMPOSSIBLE that ' + causeVariableName +
+                ' ' + $scope.increasesDecreases + ' your ' + effectVariableName+ '. Do you want to delete this down vote?';
+            yesCallback = function() {deleteVote(study, $index);};
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
-    $scope.upVote = function(correlationObject, $index, ev){
+    $scope.upVote = function(study, $index, ev){
+        var correlationObject = study.statistics || study;
+        var causeVariableName = qm.studyHelper.getCauseVariableName(study);
+        var effectVariableName = qm.studyHelper.getEffectVariableName(study);
         if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
         var title, textContent, yesCallback, noCallback;
-        if (correlationObject.userVote !== 1) {
+        if (study.studyVotes.userVote !== 1) {
             title = 'Plausible relationship?';
-            textContent = 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '?';
+            textContent = 'Do you think it is POSSIBLE that '+ causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + effectVariableName+ '?';
             yesCallback = function() {
-                correlationObject.userVote = 1;
-                correlationObject.vote = 1;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug('upVote', null);}, function () {qmLogService.error('upVote failed!');});
+                study.studyVotes.userVote = 1;
+                qmService.postVoteToApi(study, function () {qmLogService.debug('upVote', null);}, function () {qmLogService.error('upVote failed!');});
             };
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
             title = 'Delete Upvote';
-            textContent = 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this up vote?';
-            yesCallback = function() {deleteVote(correlationObject, $index);};
+            textContent = 'You previously voted that it is POSSIBLE that '+ causeVariableName +
+                ' ' + $scope.increasesDecreases + ' your ' + effectVariableName+ '. Do you want to delete this up vote?';
+            yesCallback = function() {deleteVote(study, $index);};
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
-    function deleteVote(correlationObject, $index) {
-        correlationObject.userVote = null;
-        qmService.deleteVoteDeferred(correlationObject, function(response){
+    function deleteVote(study) {
+        study.studyVotes.userVote = null;
+        qmService.deleteVoteToApi(study, function(response){
             qmLogService.debug('deleteVote response', null, response);
-        }, function(response){
-            qmLogService.error("deleteVote response", response);
+        }, function(error){
+            qmLogService.error("deleteVote error", error);
         });
     }
     $scope.safeApply = function(fn) {
@@ -317,7 +321,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.updateEmailAndExecuteCallback = function (callback) {
         qmService.updateEmailAndExecuteCallback(callback);
     };
-    $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
+    $scope.goToStudyPage = function(study) {qmService.goToStudyPageViaUrl(study);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
         qmLogService.debug('Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
         //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
