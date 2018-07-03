@@ -3227,10 +3227,11 @@ window.qm = {
         isTruthy: function(value){return value && value !== "false"; }
     },
     studyHelper: {
-        getStudiesApiInstance: function(){
+        getStudiesApiInstance: function(params){
             qm.api.configureClient();
             var apiInstance = new Quantimodo.StudiesApi();
             apiInstance.apiClient.timeout = 120 * 1000;
+            apiInstance.cache = !params || !params.recalculate;
             return apiInstance;
         },
         lastStudy: null,
@@ -3322,12 +3323,18 @@ window.qm = {
                 }
             }
         },
+        studyMatchesParams: function(params, study){
+            if(!study){return false;}
+            var causeVariableName = study.causeVariableName || study.causeVariable.name;
+            var effectVariableName = study.effectVariableName || study.effectVariable.name;
+            if(params.studyId && params.studyId === study.studyId){return true;}
+            if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
+            if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
+            return true;
+        },
         getStudyFromLocalForageOrGlobals: function(params, successHandler, errorHandler) {
             var study;
-            if(qm.studyHelper.lastStudy && qm.studyHelper.lastStudy.causeVariableName === params.causeVariableName &&
-                qm.studyHelper.lastStudy.effectVariableName === params.effectVariableName){
-                study = qm.studyHelper.lastStudy;
-            }
+            if(qm.studyHelper.studyMatchesParams(params, qm.studyHelper.lastStudy)){study = qm.studyHelper.lastStudy;}
             if(qm.globalHelper.getStudy(params)){study = qm.globalHelper.getStudy(params);}
             if(!successHandler){return study;}
             if(study){
@@ -3339,9 +3346,7 @@ window.qm = {
                     if(errorHandler){errorHandler("No last study saved");}
                     return;
                 }
-                if(study.causeVariable.name === params.causeVariableName && study.effectVariable.name === params.effectVariableName){
-                    successHandler(study);
-                } else if(params.studyId && params.studyId === study.studyId){
+                if(qm.studyHelper.studyMatchesParams(params, study)){
                     successHandler(study);
                 } else {
                     if(errorHandler){errorHandler("Last study saved does not match params " + JSON.stringify(params));}
@@ -3380,7 +3385,7 @@ window.qm = {
                 var study = qm.studyHelper.processAndSaveStudy(data);
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
             }
-            qm.studyHelper.getStudiesApiInstance().getStudy(params, callback);
+            qm.studyHelper.getStudiesApiInstance(params).getStudy(params, callback);
         },
         getStudyFromLocalStorageOrApi: function (params, successHandler, errorHandler){
             if(qm.urlHelper.getParam('aggregated')){params.aggregated = true;}
