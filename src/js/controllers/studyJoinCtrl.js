@@ -23,7 +23,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
             causeVariableName: getCauseVariableName(),
             effectVariableName: getEffectVariableName(),
         };
-        if($stateParams.correlationObject){ $scope.requestParams = $stateParams.correlationObject; }
+        if($stateParams.study){ $scope.requestParams = $stateParams.study; }
         if(!$scope.requestParams.causeVariableName){ $scope.goBack(); }
         $scope.state.title = "Help us discover the effects of " + getCauseVariableName() + " on " +
             getEffectVariableName() +"!" ;
