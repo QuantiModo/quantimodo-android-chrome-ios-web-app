@@ -2631,6 +2631,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     var setupGoogleAnalytics = function(user){
+        if(!qm.getAppSettings()){
+            qmLog.error("No appSettings for googleAnalyticsTrackingIds");
+            return;
+        }
         if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds){
             if(typeof Analytics !== "undefined") {
                 Analytics.configuration.accounts[0].tracker = qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps;
