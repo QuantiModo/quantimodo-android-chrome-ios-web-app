@@ -28,7 +28,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		lastClientX : 0,
 		lastClientY : 0,
 		numberOfDisplayedNotifications: 0,
-		favoritesTitle: "Your Favorites"
+		favoritesTitle: "Your Favorites",
+		studiesResponse: null
 	};
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
