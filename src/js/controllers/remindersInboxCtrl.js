@@ -476,7 +476,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.storage.deleteById('defaultHelpCards', helpCard.id);
 	};
 	function getDiscoveries() {
-		if(!$scope.state.studiesResponse.studies){
+		if(!$scope.state.studiesResponse){
             qm.studyHelper.getStudiesFromApi({limit: 10, fallbackToAggregateCorrelations: true}, function (studiesResponse) {
 				$scope.state.studiesResponse = studiesResponse;
 			});
