@@ -62,11 +62,16 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         return null;
     }
     function setupRequestParams() {
-        $scope.state.requestParams.causeVariableName = getCauseVariableName();
-        $scope.state.requestParams.effectVariableName = getEffectVariableName();
-        $scope.state.requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
-        $scope.state.requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
-        return $scope.state.requestParams;
+        return $scope.state.requestParams = getRequestParams();
+    }
+    function getRequestParams(recalculate) {
+        var requestParams = {};
+        requestParams.causeVariableName = getCauseVariableName();
+        requestParams.effectVariableName = getEffectVariableName();
+        requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
+        requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        if(recalculate || qm.urlHelper.getParam('recalculate')){requestParams.recalculate = true;}
+        return requestParams;
     }
     $scope.refreshStudy = function() {
         getStudy(true);
@@ -138,27 +143,33 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     function getStudy(recalculate) {
         if(!getStudyId()){
             if(!getCauseVariableName() || !getEffectVariableName()){
-                qmLogService.error('Cannot get study. Missing cause or effect variable name.');
-                qmService.goToState(qmStates.studyCreation);
-                return;
+                //qmLogService.error('Cannot get study. Missing cause or effect variable name.');
+                //qmService.goToState(qmStates.studyCreation);
+                //return;
             }
         }
         getLocalStudyIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
-        qm.studyHelper.getStudyFromLocalStorageOrApi($scope.state.requestParams, function (study) {
+        function successHandler(study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
             setAllStateProperties(study);
             $scope.loadingCharts = false;
             setActionSheetMenu();
-        }, function (error) {
+        }
+        function errorHandler(error) {
             qmLogService.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
             if(recalculate || qm.urlHelper.getParam('recalculate')){$scope.state.requestParams.recalculate = true;}
-        });
+        }
+        if(recalculate){
+            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate), function (study) {successHandler(study);}, function (error) {errorHandler(error);});
+        } else {
+            qm.studyHelper.getStudyFromLocalStorageOrApi(getRequestParams(recalculate), function (study) {successHandler(study)}, function (error) {errorHandler(error);});
+        }
     }
     function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
     function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}

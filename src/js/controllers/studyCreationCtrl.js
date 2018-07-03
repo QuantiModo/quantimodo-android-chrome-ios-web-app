@@ -10,8 +10,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         effectVariable: null
     };
     $scope.$on('$ionicView.beforeEnter', function(){
-        $scope.state.causeVariable = $stateParams.causeVariable;
-        $scope.state.effectVariable = $stateParams.effectVariable;
+        if($stateParams.causeVariable){$scope.state.causeVariable = $stateParams.causeVariable;}
+        if($stateParams.effectVariable){$scope.state.effectVariable = $stateParams.effectVariable;}
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
@@ -75,7 +75,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         });
     };
     $scope.state.goToStudyPage = function(){
-        qmService.goToState(qmStates.study, {study: $scope.state.study})
+        qmService.goToStudyPageViaUrl(qmStates.study)
     };
     $scope.state.joinStudy = function(){
         qmService.goToState(qmStates.studyJoin, {study: $scope.state.study})
