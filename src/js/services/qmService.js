@@ -130,6 +130,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, 2000);
                 }
                 qmService.showBlackRingLoader();
+            },
+            showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
+                if(errorMessage){
+                    if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
+                        qmService.login.setAfterLoginGoToUrlAndSendToLogin();
+                    } else {
+                        qmService.showMaterialAlert(title, errorMessage);
+                    }
+                } else {
+                    qmLog.error("No error message provided to showErrorAlertMessageOrSendToLogin!");
+                }
             }
         },
         barcodeScanner: {
@@ -251,7 +262,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.post('api/v3/connectors/connect', ['connector', 'connectorCredentials'], body, function(response){
                     var connectors = qmService.connectors.storeConnectorResponse(response);
                     qmLog.authDebug("connectConnectorWithTokenDeferred response: " + JSON.stringify(response), response, response);
-
                     qmService.connectors.broadcastRefreshConnectors();
                     if(successHandler){successHandler(response);}
                 }, function(error){
@@ -512,7 +522,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLogService.error("plugins.googleplus.login could not get userData from Google!  Fallback to qmService.nonNativeMobileLogin registration. Error Message: " +
                             JSON.stringify(errorMessage), null, params);
                     });
-
                 }
             },
             facebookMobileConnect:  function (connector, ev, additionalParams, successHandler, errorHandler) {
@@ -905,7 +914,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     if(!menuItem.stateName){ qmLogService.debug('no state name for ' + JSON.stringify(menuItem)); }
                     return menuItem;
-
                 }
             },
             href: {
@@ -1534,39 +1542,39 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         studyHelper: {
-            showShareStudyConfirmation: function (correlationObject, sharingUrl, ev){
-                qm.studyHelper.lastStudyOrCorrelation = correlationObject;
+            showShareStudyConfirmation: function (study, sharingUrl, ev){
+                qm.studyHelper.lastStudy = study;
                 var title = 'Share Study';
                 var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
                     ' and ' + qm.studyHelper.getEffectVariableName() +
                     ' measurements publicly visible? You can make them private again at any time on this study page.';
                 function yesCallback() {
-                    correlationObject.shareUserMeasurements = true;
-                    qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(correlationObject);
+                    study.studySharing.shareUserMeasurements = true;
+                    qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(study);
                     var body = {causeVariableId: qm.studyHelper.getCauseVariableId(),
                         effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: true};
                     qmService.showBlackRingLoader();
                     qmService.postStudyDeferred(body).then(function () {
                         qmService.hideLoader();
                         if(sharingUrl){
-                            qmService.studyHelper.shareStudyNativelyOrViaWeb(correlationObject, sharingUrl);
+                            qmService.studyHelper.shareStudyNativelyOrViaWeb(study, sharingUrl);
                         }
                     }, function (error) {
                         qmService.hideLoader();
                         qmLogService.error(error);
                     });
                 }
-                function noCallback() {correlationObject.shareUserMeasurements = false;}
+                function noCallback() {study.shareUserMeasurements = false;}
                 qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
             },
-            shareStudyNativelyOrViaWeb: function (correlationObject, sharingUrl) {
+            shareStudyNativelyOrViaWeb: function (study, sharingUrl) {
                 if ($rootScope.platform.isMobile){
                     // this is the complete list of currently supported params you can pass to the plugin (all optional)
                     var options = {
                         //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
                         //subject: correlationObject.sharingTitle, // fi. for email
                         //files: ['', ''], // an array of filenames either locally or remotely
-                        url: correlationObject.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
+                        url: study.studyLinks.studyLinkStatic.replace('local.q', 'app.q'),
                         chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
                     };
                     var onSuccess = function(result) {
@@ -2172,14 +2180,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var options = {};
         qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
     };
-    qmService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v3/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
+    qmService.postVoteToApi = function(study, successHandler, errorHandler){
+        var body = {
+            causeVariableName: qm.studyHelper.getCauseVariableName(study),
+            effectVariableName: qm.studyHelper.getEffectVariableName(study),
+            vote: (study.studyVotes) ? study.studyVotes.userVote : study.userVote
+        };
+        qmService.post('api/v3/votes', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], body, successHandler, errorHandler);
     };
-    qmService.postVoteToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v3/votes', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
-    };
-    qmService.deleteVoteToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
+    qmService.deleteVoteToApi = function(study, successHandler ,errorHandler){
+        var body = {
+            causeVariableName: qm.studyHelper.getCauseVariableName(study),
+            effectVariableName: qm.studyHelper.getEffectVariableName(study)
+        };
+        qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], body, successHandler, errorHandler);
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         if(!qm.api.configureClient('getVariableByIdFromApi', errorHandler)){return false;}
@@ -2278,25 +2292,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.postStudyDeferred = function(body) {
         var deferred = $q.defer();
         qmService.postStudy(body, function(){deferred.resolve();}, function(error){deferred.reject(error);});
-        return deferred.promise;
-    };
-    qmService.joinStudy = function(body, successHandler, errorHandler){
-        qmService.post('api/v3/study/join', [], body, successHandler, errorHandler);
-    };
-    qmService.joinStudyDeferred = function(body) {
-        var deferred = $q.defer();
-        qmService.joinStudy(body, function(response){
-            if(response && response.data){
-                if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
-                if(response.data.trackingReminders){qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);}
-                /** @namespace response.data.causeUserVariable */
-                /** @namespace response.data.effectUserVariable */
-                if(response.data.causeUserVariable && response.data.effectUserVariable){
-                    qm.userVariables.saveToLocalStorage([response.data.causeUserVariable, response.data.effectUserVariable]);
-                }
-            }
-            deferred.resolve();
-        }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
     qmService.postUserTagDeferred = function(tagData) {
@@ -2636,6 +2631,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     var setupGoogleAnalytics = function(user){
+        if(!qm.getAppSettings()){
+            qmLog.error("No appSettings for googleAnalyticsTrackingIds");
+            return;
+        }
         if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds){
             if(typeof Analytics !== "undefined") {
                 Analytics.configuration.accounts[0].tracker = qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps;
@@ -4005,38 +4004,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    // ChartService
-    var useLocalImages = function (correlationObjects) {
-        for(var i = 0; i < correlationObjects.length; i++){
-            var studyImages = correlationObjects[i].studyImages;
-            studyImages.gaugeImage = studyImages.gaugeImage.substring(studyImages.gaugeImage.lastIndexOf("/") + 1);
-            studyImages.gaugeImage = 'img/gauges/246-120/' + studyImages.gaugeImage;
-            studyImages.causeVariableImageUrl = studyImages.causeVariableImageUrl.substring(studyImages.causeVariableImageUrl.lastIndexOf("/") + 1);
-            studyImages.causeVariableImageUrl = 'img/variable_categories/' + studyImages.causeVariableImageUrl;
-            studyImages.effectVariableImageUrl = studyImages.effectVariableImageUrl.substring(studyImages.effectVariableImageUrl.lastIndexOf("/") + 1);
-            studyImages.effectVariableImageUrl = 'img/variable_categories/' + studyImages.effectVariableImageUrl;
-        }
-        return correlationObjects;
-    };
-    qmService.clearCorrelationCache = function(){
-        qm.api.cacheRemove(qm.items.agggre);
-        qm.api.cacheRemove(qm.items.corr);
-    };
-    qmService.getAggregatedCorrelationsDeferred = function(params){
-        var deferred = $q.defer();
-        qm.correlations.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
-            try {
-                correlationObjects = useLocalImages(correlationObjects);
-            } catch (error) {
-                qmLog.error(error);
-            }
-            deferred.resolve(correlationObjects);
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.getNotesDeferred = function(variableName){
         var deferred = $q.defer();
         qmService.getNotesFromApi({variableName: variableName}, function(response){
@@ -4047,41 +4014,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.getCorrelationsDeferred = function (params) {
+    qmService.deleteVoteDeferred = function(study){
         var deferred = $q.defer();
-        qm.correlations.getUserCorrelationsFromApi(params, function(response){
-            if(!response){
-                qmLog.error("No response from getUserCorrelationsFromApi");
-                deferred.reject("No response from getUserCorrelationsFromApi");
-                return;
-            }
-            try {
-                response.data.correlations = useLocalImages(response.data.correlations);
-            } catch (error) {
-                qmLog.error(error);
-            }
-            deferred.resolve(response.data);
-        }, function(error){
-            qmLog.warn(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-    qmService.postVoteDeferred = function(correlationObject){
-        var deferred = $q.defer();
-        qmService.postVoteToApi(correlationObject, function(response){
-            qmService.clearCorrelationCache();
-            deferred.resolve(true);
-        }, function(error){
-            qmLogService.error("postVote response", error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-    qmService.deleteVoteDeferred = function(correlationObject){
-        var deferred = $q.defer();
-        qmService.deleteVoteToApi(correlationObject, function(response){
-            qmService.clearCorrelationCache();
+        qmService.deleteVoteToApi(study, function(response){
             deferred.resolve(true);
         }, function(error){
             qmLogService.error("deleteVote response", error);
@@ -4710,7 +4645,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.processDataAndConfigureLineChart = function(measurements, variableObject) {
         if(!measurements || !measurements.length){
-            qmLogService.info('No measurements provided to qmService.processDataAndConfigureLineChart', null);
+            qmLogService.info('No measurements provided to qmService.processDataAndConfigureLineChart');
             return false;
         }
         var lineChartData = [];
@@ -4738,474 +4673,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return weightedArray;
     }
-    qmService.processDataAndConfigureCorrelationsOverDurationsOfActionChart = function(correlations, weightedPeriod) {
-        if(!correlations || !correlations.length){return false;}
-        var forwardPearsonCorrelationSeries = {
-            name : 'Pearson Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var smoothedPearsonCorrelationSeries = {
-            name : 'Smoothed Pearson Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var forwardSpearmanCorrelationSeries = {
-            name : 'Spearman Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var qmScoreSeries = {
-            name : 'QM Score',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var xAxis = [];
-        var excludeSpearman = false;
-        var excludeQmScoreSeries = false;
-        for (var i = 0; i < correlations.length; i++) {
-            xAxis.push('Day ' + correlations[i].durationOfAction/(60 * 60 * 24));
-            forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
-            forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
-            if(correlations[i].forwardSpearmanCorrelationCoefficient === null){excludeSpearman = true;}
-            qmScoreSeries.data.push(correlations[i].qmScore);
-            if(correlations[i].qmScore === null){excludeQmScoreSeries = true;}
-        }
-        var seriesToChart = [];
-        seriesToChart.push(forwardPearsonCorrelationSeries);
-        smoothedPearsonCorrelationSeries.data = calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
-        seriesToChart.push(smoothedPearsonCorrelationSeries);
-        if(!excludeSpearman){seriesToChart.push(forwardSpearmanCorrelationSeries);}
-        if(!excludeQmScoreSeries){seriesToChart.push(qmScoreSeries);}
-        var minimumTimeEpochMilliseconds = correlations[0].durationOfAction * 1000;
-        var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].durationOfAction * 1000;
-        var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-        if(millisecondsBetweenLatestAndEarliest < 86400*1000){
-            console.warn('Need at least a day worth of data for line chart');
-            //return;
-        }
-        return {
-            title: {
-                text: 'Correlations Over Durations of Action',
-                //x: -20 //center
-            },
-            subtitle: {
-                text: '',
-                //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
-                //x: -20
-            },
-            legend: {enabled: false},
-            xAxis: {
-                title: {text: 'Assumed Duration Of Action'},
-                categories: xAxis
-            },
-            yAxis: {
-                title: {text: 'Value'},
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#EA4335'
-                }]
-            },
-            tooltip: {valueSuffix: ''},
-            series: seriesToChart
-        };
-    };
-    qmService.processDataAndConfigureCorrelationsOverOnsetDelaysChart = function(correlations, weightedPeriod) {
-        if(!correlations){return false;}
-        var forwardPearsonCorrelationSeries = {
-            name : 'Pearson Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var smoothedPearsonCorrelationSeries = {
-            name : 'Smoothed Pearson Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var forwardSpearmanCorrelationSeries = {
-            name : 'Spearman Correlation Coefficient',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var qmScoreSeries = {
-            name : 'QM Score',
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var xAxis = [];
-        var excludeSpearman = false;
-        var excludeQmScoreSeries = false;
-        for (var i = 0; i < correlations.length; i++) {
-            xAxis.push('Day ' + correlations[i].onsetDelay/(60 * 60 * 24));
-            forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
-            forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
-            if(correlations[i].forwardSpearmanCorrelationCoefficient === null){excludeSpearman = true;}
-            qmScoreSeries.data.push(correlations[i].qmScore);
-            if(correlations[i].qmScore === null){excludeQmScoreSeries = true;}
-        }
-        var seriesToChart = [];
-        seriesToChart.push(forwardPearsonCorrelationSeries);
-        smoothedPearsonCorrelationSeries.data = calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
-        seriesToChart.push(smoothedPearsonCorrelationSeries);
-        if(!excludeSpearman){seriesToChart.push(forwardSpearmanCorrelationSeries);}
-        if(!excludeQmScoreSeries){seriesToChart.push(qmScoreSeries);}
-        var minimumTimeEpochMilliseconds = correlations[0].onsetDelay * 1000;
-        var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].onsetDelay * 1000;
-        var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-        if(millisecondsBetweenLatestAndEarliest < 86400*1000){
-            console.warn('Need at least a day worth of data for line chart');
-            //return;
-        }
-        var config = {
-            title: {
-                text: 'Correlations Over Onset Delays',
-                //x: -20 //center
-            },
-            subtitle: {
-                text: '',
-                //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
-                //x: -20
-            },
-            legend : {enabled : false},
-            xAxis: {
-                title: {text: 'Assumed Onset Delay'},
-                categories: xAxis
-            },
-            yAxis: {
-                title: {text: 'Value'},
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#EA4335'
-                }]
-            },
-            tooltip: {valueSuffix: ''},
-            series : seriesToChart
-        };
-        return config;
-    };
-    qmService.processDataAndConfigurePairsOverTimeChart = function(pairs, correlationObject) {
-        if(!pairs){return false;}
-        var predictorSeries = {
-            name : correlationObject.causeVariableName,
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var outcomeSeries = {
-            name : correlationObject.effectVariableName,
-            data : [],
-            tooltip: {valueDecimals: 2}
-        };
-        var xAxis = [];
-        for (var i = 0; i < pairs.length; i++) {
-            xAxis.push(moment(pairs[i].timestamp * 1000).format("ll"));
-            predictorSeries.data.push(pairs[i].causeMeasurementValue);
-            outcomeSeries.data.push(pairs[i].effectMeasurementValue);
-        }
-        var seriesToChart = [];
-        seriesToChart.push(predictorSeries);
-        seriesToChart.push(outcomeSeries);
-        var minimumTimeEpochMilliseconds = pairs[0].timestamp * 1000;
-        var maximumTimeEpochMilliseconds = pairs[pairs.length - 1].timestamp * 1000;
-        var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-        if(millisecondsBetweenLatestAndEarliest < 86400*1000){
-            console.warn('Need at least a day worth of data for line chart');
-            //return;
-        }
-        var config = {
-            title: {
-                text: 'Paired Data Over Time',
-                //x: -20 //center
-            },
-            subtitle: {
-                text: '',
-                //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
-                //x: -20
-            },
-            legend : {enabled : false},
-            xAxis: {
-                title: {text: 'Date'},
-                categories: xAxis
-            },
-            options: {
-                yAxis: [{
-                    lineWidth: 1,
-                    title: {
-                        text: correlationObject.causeVariableName + ' (' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ')'
-                    }
-                }, {
-                    lineWidth: 1,
-                    opposite: true,
-                    title: {
-                        text: correlationObject.effectVariableName + ' (' + correlationObject.effectVariableDefaultUnitAbbreviatedName + ')'
-                    }
-                }]
-            },
-            tooltip: {valueSuffix: ''},
-            series: [ {
-                name: correlationObject.causeVariableName,
-                type: 'spline',
-                color: '#00A1F1',
-                data: predictorSeries.data,
-                marker: {
-                    enabled: false
-                },
-                dashStyle: 'shortdot',
-                tooltip: {valueSuffix: '' + correlationObject.causeVariableDefaultUnitAbbreviatedName}
-            }, {
-                name: correlationObject.effectVariableName,
-                color: '#EA4335',
-                type: 'spline',
-                yAxis: 1,
-                data: outcomeSeries.data,
-                tooltip: {valueSuffix: '' + correlationObject.effectVariableDefaultUnitAbbreviatedName}
-            }]
-        };
-        return config;
-    };
-    var calculatePearsonCorrelation = function(xyValues) {
-        var length = xyValues.length;
-        var xy = [];
-        var x2 = [];
-        var y2 = [];
-        $.each(xyValues,function(index,value){
-            xy.push(value[0] * value[1]);
-            x2.push(value[0] * value[0]);
-            y2.push(value[1] * value[1]);
-        });
-        var sum_x = 0;
-        var sum_y = 0;
-        var sum_xy = 0;
-        var sum_x2 = 0;
-        var sum_y2 = 0;
-        var i=0;
-        $.each(xyValues,function(index,value){
-            sum_x += value[0];
-            sum_y += value[1];
-            sum_xy += xy[i];
-            sum_x2 += x2[i];
-            sum_y2 += y2[i];
-            i+=1;
-        });
-        var step1 = (length * sum_xy) - (sum_x * sum_y);
-        var step2 = (length * sum_x2) - (sum_x * sum_x);
-        var step3 = (length * sum_y2) - (sum_y * sum_y);
-        var step4 = Math.sqrt(step2 * step3);
-        var answer = step1 / step4;
-        // check if answer is NaN, it can occur in the case of very small values
-        return isNaN(answer) ? 0 : answer;
-    };
-    qmService.createScatterPlot = function (correlationObject, pairs, title) {
-        if(!pairs){
-            console.warn('No pairs provided to qmService.createScatterPlot');
-            return false;
-        }
-        var xyVariableValues = [];
-        for(var i = 0; i < pairs.length; i++ ){
-            /** @namespace pairs[i].causeMeasurementValue */
-            /** @namespace pairs[i].effectMeasurementValue */
-            xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
-        }
-        /** @namespace correlationObject.causeVariableDefaultUnitAbbreviatedName */
-        /** @namespace correlationObject.effectVariableDefaultUnitAbbreviatedName */
-        var chartConfig = {
-            chart: {
-                type: 'scatter',
-                zoomType: 'xy'
-            },
-            plotOptions: {
-                scatter: {
-                    marker: {
-                        radius: 5,
-                        states: {
-                            hover: {
-                                enabled: true,
-                                lineColor: 'rgb(100,100,100)'
-                            }
-                        }
-                    },
-                    states: {
-                        hover: {
-                            marker: {enabled: false}
-                        }
-                    },
-                    tooltip: {
-                        //headerFormat: '<b>{series.name}</b><br>',
-                        pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectVariableDefaultUnitAbbreviatedName
-                    }
-                }
-            },
-            credits: {enabled: false},
-            xAxis: {
-                title: {
-                    enabled: true,
-                    text: correlationObject.causeVariableName + ' (' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ')'
-                },
-                startOnTick: true,
-                endOnTick: true,
-                showLastLabel: true
-            },
-            yAxis: {
-                title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectVariableDefaultUnitAbbreviatedName + ')'}
-            },
-            series: [{
-                name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
-                color: 'rgba(223, 83, 83, .5)',
-                data: xyVariableValues
-            }],
-            title: {text: title + ' (R = ' + calculatePearsonCorrelation(xyVariableValues).toFixed(2) + ')'},
-            subtitle: {text: ''},
-            loading: false
-        };
-        return qm.chartHelper.setChartExportingOptionsOnce(chartConfig);
-    };
-    qmService.configureLineChartForCause  = function(correlationObject, pairs) {
-        var variableObject = {unitAbbreviatedName: correlationObject.causeVariableDefaultUnitAbbreviatedName, name: correlationObject.causeVariableName};
-        var data = [];
-        for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].causeMeasurementValue];}
-        return qmService.configureLineChart(data, variableObject);
-    };
-    qmService.configureLineChartForEffect  = function(correlationObject, pairs) {
-        var variableObject = {unitAbbreviatedName: correlationObject.effectVariableDefaultUnitAbbreviatedName, name: correlationObject.effectVariableName};
-        var data = [];
-        for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].effectMeasurementValue];}
-        return qmService.configureLineChart(data, variableObject);
-    };
-    qmService.configureLineChartForPairs = function(params, pairs) {
-        var inputColor = '#26B14C', outputColor = '#3284FF', mixedColor = '#26B14C', linearRegressionColor = '#FFBB00';
-        if(!params.causeVariableName){
-            qmLogService.error("ERROR: No variable name provided to configureLineChart");
-            return;
-        }
-        if(pairs.length < 1){
-            qmLogService.error("ERROR: No data provided to configureLineChart");
-            return;
-        }
-        var date = new Date();
-        var timezoneOffsetHours = (date.getTimezoneOffset())/60;
-        var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
-        var causeSeries = [];
-        var effectSeries = [];
-        for (var i = 0; i < pairs.length; i++) {
-            causeSeries[i] = [pairs[i].timestamp * 1000 - timezoneOffsetMilliseconds, pairs[i].causeMeasurementValue];
-            effectSeries[i] = [pairs[i].timestamp * 1000 - timezoneOffsetMilliseconds, pairs[i].effectMeasurementValue];
-        }
-        var minimumTimeEpochMilliseconds = pairs[0].timestamp * 1000 - timezoneOffsetMilliseconds;
-        var maximumTimeEpochMilliseconds = pairs[pairs.length-1].timestamp * 1000 - timezoneOffsetMilliseconds;
-        var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-        if(millisecondsBetweenLatestAndEarliest < 86400 * 1000){
-            console.warn('Need at least a day worth of data for line chart');
-            return;
-        }
-        var tlSmoothGraph, tlGraphType; // Smoothgraph true = graphType spline
-        var tlEnableMarkers;
-        var tlEnableHorizontalGuides = 1;
-        tlSmoothGraph = true;
-        tlGraphType = tlSmoothGraph === true ? 'spline' : 'line'; // spline if smoothGraph = true
-        tlEnableMarkers = true; // On by default
-        return  {
-            chart: {renderTo: 'timeline', zoomType: 'x'},
-            title: {
-                text: params.causeVariableName + ' & ' + params.effectVariableName + ' Over Time'
-            },
-            //subtitle: {text: 'Longitudinal Timeline' + resolution, useHTML: true},
-            legend: {enabled: false},
-            scrollbar: {
-                barBackgroundColor: '#eeeeee',
-                barBorderRadius: 0,
-                barBorderWidth: 0,
-                buttonBackgroundColor: '#eeeeee',
-                buttonBorderWidth: 0,
-                buttonBorderRadius: 0,
-                trackBackgroundColor: 'none',
-                trackBorderWidth: 0.5,
-                trackBorderRadius: 0,
-                trackBorderColor: '#CCC'
-            },
-            navigator: {
-                adaptToUpdatedData: true,
-                margin: 10,
-                height: 50,
-                handles: {
-                    backgroundColor: '#eeeeee'
-                }
-            },
-            xAxis: {
-                type: 'datetime',
-                gridLineWidth: false,
-                dateTimeLabelFormats: {
-                    millisecond: '%H:%M:%S.%L',
-                    second: '%H:%M:%S',
-                    minute: '%H:%M',
-                    hour: '%H:%M',
-                    day: '%e. %b',
-                    week: '%e. %b',
-                    month: '%b \'%y',
-                    year: '%Y'
-                },
-                min: minimumTimeEpochMilliseconds,
-                max: maximumTimeEpochMilliseconds
-            },
-            yAxis: [
-                {
-                    gridLineWidth: tlEnableHorizontalGuides,
-                    title: {text: '', style: {color: inputColor}},
-                    labels: {
-                        formatter: function () {
-                            return this.value;
-                        }, style: {color: inputColor}
-                    }
-                },
-                {
-                    gridLineWidth: tlEnableHorizontalGuides,
-                    title: {text: 'Data is coming down the pipes!', style: {color: outputColor}},
-                    labels: {
-                        formatter: function () {
-                            return this.value;
-                        }, style: {color: outputColor}
-                    },
-                    opposite: true
-                }
-            ],
-            plotOptions: {
-                series: {
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            enabled: true,
-                            lineWidth: 1.5
-                        }
-                    }
-                }
-            },
-            series: [
-                {
-                    yAxis: 0,
-                    name : params.causeVariableName + ' (' + pairs[0].causeVariableDefaultUnitAbbreviatedName + ')',
-                    type: tlGraphType,
-                    color: inputColor,
-                    data: causeSeries,
-                    marker: {enabled: tlEnableMarkers, radius: 3}
-                },
-                {
-                    yAxis: 1,
-                    name : params.effectVariableName + ' (' + pairs[0].effectVariableDefaultUnitAbbreviatedName + ')',
-                    type: tlGraphType,
-                    color: outputColor,
-                    data: effectSeries,
-                    marker: {enabled: tlEnableMarkers, radius: 3}
-                }
-            ],
-            credits: {
-                enabled: false
-            },
-            rangeSelector: {
-                inputBoxWidth: 120,
-                inputBoxHeight: 18
-            }
-        };
-    };
     qmService.configureLineChart = function(data, variableObject) {
         if(!variableObject.name){
             if(variableObject.variableName){
@@ -6167,14 +5634,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var option = '';
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
-    qmService.getStudyLinks = function(predictorVariableName, outcomeVariableName, study){
-        if(study && study.studyLinks){
-            return study.studyLinks;
-        }
-        qmService.postVoteDeferred({causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName, vote: 1});
-        var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
+    qmService.getStudyLinks = function(causeVariableName, effectVariableName, study){
+        if(study && study.studyLinks){return study.studyLinks;}
+        qmService.postVoteToApi({causeVariableName: causeVariableName, effectVariableName: effectVariableName, userVote: 1});
+        var subjectLine = "Help us discover the effect of " + causeVariableName + " on " + effectVariableName;
         var studyLinkStatic = qm.api.getBaseUrl() + "/api/v2/study?causeVariableName=" +
-            encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
+            encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
         var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
         return {
             studyLinkFacebook : "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(studyLinkStatic),
@@ -6584,10 +6049,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return smoothedMeasurements;
     }
-    qmService.goToStudyPageViaCorrelationObject = function(correlationObject){
-        qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(correlationObject);
+    qmService.goToStudyPageViaUrl = function(study){
+        var causeVariableName = qm.studyHelper.getCauseVariableName(study);
+        var effectVariableName = qm.studyHelper.getEffectVariableName(study);
+        qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(study);
         //qmService.goToState('app.study', {correlationObject: correlationObject});  // We use the url instead so it's copyable
-        qmService.goToStudyPage(correlationObject.causeVariableName, correlationObject.effectVariableName);
+        qmService.goToStudyPage(causeVariableName, effectVariableName);
     };
     qmService.goToStudyPage = function(causeVariableName, effectVariableName, studyId) {
         window.location.href = qm.studyHelper.getStudyUrl(causeVariableName, effectVariableName, studyId);
@@ -7133,7 +6600,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('Can only show popups on android', null);
             return;
         }
-        if(isFalsey(qm.storage.getItem(qm.items.drawOverAppsPopupEnabled))){
+        if(qm.stringHelper.isFalsey(qm.storage.getItem(qm.items.drawOverAppsPopupEnabled))){
             window.qmLog.debug('drawOverAppsPopup is disabled');
             return;
         }

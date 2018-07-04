@@ -349,9 +349,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             var connector = qmService.connector;
             $scope.appSettings = qm.getAppSettings();
             var addAffiliateTag  = connector.connectInstructions.parameters.find(function (obj) {return obj.key === 'addAffiliateTag';});
-            $scope.addAffiliateTag = isTruthy(addAffiliateTag.defaultValue);
+            $scope.addAffiliateTag = qm.stringHelper.isTruthy(addAffiliateTag.defaultValue);
             var importPurchases  = connector.connectInstructions.parameters.find(function (obj) {return obj.key === 'importPurchases';});
-            $scope.importPurchases = isTruthy(importPurchases.defaultValue);
+            $scope.importPurchases = qm.stringHelper.isTruthy(importPurchases.defaultValue);
             $scope.onToggle = function(){
                 var params = { importPurchases: $scope.importPurchases || false, addAffiliateTag: $scope.addAffiliateTag || false };
                 qmService.connectors.connectWithParams(params, connector.name);
