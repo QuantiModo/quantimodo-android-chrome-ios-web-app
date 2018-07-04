@@ -321,12 +321,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.updateEmailAndExecuteCallback = function (callback) {
         qmService.updateEmailAndExecuteCallback(callback);
     };
-    $scope.goToStudyPage = function(study) {qmService.goToStudyPageViaUrl(study);};
-    $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
-        qmLogService.debug('Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
-        //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
-        qmService.goToStudyPage(causeVariableName, effectVariableName);
-    };
+    $scope.goToStudyPageViaStudy = qmService.goToStudyPageViaStudy;
     $scope.showGeneralVariableSearchDialog = function (ev) {
         function selectVariable(variable) {
             $scope.variableObject = variable;
