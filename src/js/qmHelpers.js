@@ -3367,8 +3367,9 @@ window.qm = {
             qm.localForage.removeItem(qm.items.lastStudy);
         },
         getStudyUrl: function(causeVariableName, effectVariableName, studyId) {
-            var url = qm.urlHelper.getBaseAppUrl() + "#/app/study?causeVariableName=" + encodeURIComponent(causeVariableName) +
-                "&effectVariableName=" + encodeURIComponent(effectVariableName);
+            var url = qm.urlHelper.getBaseAppUrl() + "#/app/study";
+            if(causeVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({causeVariableName: causeVariableName}, url);}
+            if(effectVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({effectVariableName: effectVariableName}, url);}
             if(studyId){url += "&studyId=" + studyId;}
             return url;
         },
