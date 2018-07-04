@@ -1388,7 +1388,11 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
         //console.debug("Intro seen so setting default route to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
+        if(qm.appMode.isBuilder()){
+            $urlRouterProvider.otherwise('/app/configuration');
+        } else {
+            $urlRouterProvider.otherwise('/app/reminders-inbox');
+        }
     }
 }])
 .component("mdFabProgress", {
