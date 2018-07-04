@@ -725,7 +725,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -744,7 +744,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -763,7 +763,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -784,7 +784,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -805,7 +805,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -826,7 +826,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -847,7 +847,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -867,7 +867,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -887,7 +887,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -896,10 +896,10 @@ angular.module('starter',
             cache: true,
             url: "/study",
             params: {
-                correlationObject: null,
                 causeVariableName: null,
                 effectVariableName: null,
-                refresh: null
+                refresh: null,
+                study: null
             },
             views: {
                 'menuContent': {
@@ -909,10 +909,12 @@ angular.module('starter',
             }
         })
         .state(qmStates.studyJoin, {
-            cache: false,
+            cache: true,
             url: "/study-join",
             params: {
-                correlationObject: null
+                causeVariableName: null,
+                effectVariableName: null,
+                study: null
             },
             views: {
                 'menuContent': {
@@ -922,12 +924,12 @@ angular.module('starter',
             }
         })
         .state(qmStates.studyCreation, {
-            cache: false,
+            cache: true,
             url: "/study-creation",
             params: {
-                correlationObject: null,
                 causeVariable: null,
-                effectVariable: null
+                effectVariable: null,
+                study: null
             },
             views: {
                 'menuContent': {
