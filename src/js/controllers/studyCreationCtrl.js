@@ -10,6 +10,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         effectVariable: null
     };
     $scope.$on('$ionicView.beforeEnter', function(){
+        if(!qm.getUser()){qm.auth.setAfterLoginGoToUrlAndSendToLogin();}
         if($stateParams.causeVariable){$scope.state.causeVariable = $stateParams.causeVariable;}
         if($stateParams.effectVariable){$scope.state.effectVariable = $stateParams.effectVariable;}
     });

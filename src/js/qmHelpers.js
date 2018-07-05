@@ -3443,6 +3443,10 @@ window.qm = {
                 //successHandler(cachedData);
                 //return;
             }
+            if(!params.studyId && !params.causeVariableName && !params.causeVariableName){
+                errorHandler("No study params provided!");
+                return;
+            }
             if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
             function callback(error, data, response) {
                 var study = qm.studyHelper.processAndSaveStudy(data);
