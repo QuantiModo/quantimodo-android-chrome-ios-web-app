@@ -74,7 +74,4 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.auth.showErrorAlertMessageOrSendToLogin("Could Not Create Study", error);
         });
     };
-    $scope.state.joinStudy = function(){
-        qmService.goToState(qmStates.studyJoin, {study: $scope.state.study})
-    };
 }]);
