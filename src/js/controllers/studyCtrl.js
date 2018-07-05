@@ -77,7 +77,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         getStudy(true);
         qm.windowHelper.scrollToTop();
     };
-    $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {study: $scope.state.study}); };
     if (!clipboard.supported) {
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
