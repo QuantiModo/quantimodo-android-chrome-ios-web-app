@@ -134,7 +134,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                 if(errorMessage){
                     if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
-                        qmService.login.setAfterLoginGoToUrlAndSendToLogin();
+                        qm.auth.setAfterLoginGoToUrlAndSendToLogin();
                     } else {
                         qmService.showMaterialAlert(title, errorMessage);
                     }
@@ -741,9 +741,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         login: {
             completelyResetAppStateAndSendToLogin: function(comeBackAfterLogin){
                 qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin', null);
-                if(comeBackAfterLogin){qmService.login.setAfterLoginGoToUrl();}
+                if(comeBackAfterLogin){qm.auth.setAfterLoginGoToUrl();}
                 qmService.completelyResetAppState();
-                qmService.login.sendToLogin();
+                qm.auth.sendToLogin();
             },
             sendToLoginIfNecessaryAndComeBack: function(afterLoginGoToState, afterLoginGoToUrl){
                 qmLog.authDebug('Called qmService.login.sendToLoginIfNecessaryAndComeBack');
@@ -754,55 +754,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else if (afterLoginGoToState){
                         qmService.login.setAfterLoginGoToState(afterLoginGoToState);
                     } else {
-                        qmService.login.setAfterLoginGoToUrl(afterLoginGoToUrl);
+                        qm.auth.setAfterLoginGoToUrl(afterLoginGoToUrl);
                     }
-                    qmService.login.sendToLogin();
+                    qm.auth.sendToLogin();
                     return true;
                 }
                 return false;
             },
-            setAfterLoginGoToUrlAndSendToLogin: function (){
-                if($state.current.name.indexOf('login') !== -1){
-                    qmLogService.info('qmService.login.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
-                    return;
-                }
-                qmService.login.setAfterLoginGoToUrl();
-                qmService.login.sendToLogin();
-            },
-            setAfterLoginGoToUrl: function (afterLoginGoToUrl){
-                if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
-                if(!qmService.login.weShouldSetAfterLoginStateOrUrl(afterLoginGoToUrl)){return false;}
-                qmLogService.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.', null);
-                qmService.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
-            },
-            sendToLogin: function () {
-                if(qm.urlHelper.getParam('access_token')){
-                    if(!qm.auth.getAccessTokenFromCurrentUrl()){
-                        qmLogService.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
-                    }
-                    qmLogService.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
-                    return;
-                }
-                qmLog.authDebug('Sending to app.login', null);
-                qmService.goToState("app.login");
-            },
-            weShouldSetAfterLoginStateOrUrl: function(afterLoginGoToStateOrUrl){
-                if(qm.storage.getItem(qm.items.afterLoginGoToUrl)){
-                    qmLogService.info('afterLoginGoToUrl already set to '+ qm.storage.getItem(qm.items.afterLoginGoToUrl));
-                    return false;
-                }
-                if(qm.storage.getItem(qm.items.afterLoginGoToState)){
-                    qmLogService.info('afterLoginGoToState already set to '+ qm.storage.getItem(qm.items.afterLoginGoToState));
-                    return false;
-                }
-                if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
-                    qmLogService.info('setAfterLoginGoToState: Why are we sending to login from login state?');
-                    return false;
-                }
-                return true;
-            },
             setAfterLoginGoToState: function(afterLoginGoToState){
-                if(!qmService.login.weShouldSetAfterLoginStateOrUrl(afterLoginGoToState)){return false;}
+                if(!qm.auth.weShouldSetAfterLoginStateOrUrl(afterLoginGoToState)){return false;}
                 qmLogService.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
                 qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
             },
@@ -2091,14 +2051,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         qmLogService.error(errorName, metaData, options.stackTrace);
     }
-    function handle401Response(request, options, headers) {
-        if(options && options.doNotSendToLogin){return;}
-        qmLogService.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
-            JSON.stringify(request), null, options.stackTrace);
-        qmLogService.debug('HEADERS: ' + JSON.stringify(headers), null, options.stackTrace);
-        qm.auth.deleteAllAccessTokens();
-        qmService.login.setAfterLoginGoToUrlAndSendToLogin();
-    }
+
     function getPathWithoutQuery(request) {
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         return pathWithQuery.split("?")[0];
@@ -2108,7 +2061,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(status === 401){
             qmLog.info('Got 401 response with headers: ' + JSON.stringify(headers), null, options.stackTrace);
             qmService.auth.handleExpiredAccessTokenResponse(data);
-            return handle401Response(request, options, headers);
+            return qm.auth.handle401Response(request, options, headers);
         }
         if(!data){
             showOfflineError(options, request);
@@ -2563,7 +2516,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401 || (response.text && response.text.indexOf('expired') !== -1)){
             qmService.auth.handleExpiredAccessTokenResponse(response.body);
-            if(!options || !options.doNotSendToLogin){qmService.login.setAfterLoginGoToUrlAndSendToLogin();}
+            if(!options || !options.doNotSendToLogin){qm.auth.setAfterLoginGoToUrlAndSendToLogin();}
         } else {
             var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
             qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);

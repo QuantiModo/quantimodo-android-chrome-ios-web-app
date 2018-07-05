@@ -59,8 +59,11 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}
         $scope.state.title = "Joining study...";
         $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
-        qmService.showBasicLoader();
-        $scope.state.study.joined = true;
+        if(!$scope.state.study){
+            qmService.showBasicLoader();
+        } else {
+            $scope.state.study.joined = true;
+        }
         qm.studiesJoined.joinStudy(getRequestParams(), function (study) {
             $scope.state.study = study;
             qmService.hideLoader();
