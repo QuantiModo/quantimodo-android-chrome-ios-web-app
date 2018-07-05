@@ -1317,7 +1317,7 @@ window.qm = {
                 return;
             }
             qmLog.authDebug('Sending to app.login', null);
-            window.location.href = '#/app/login?logout=true';
+            window.location.href = '#/app/login';
         },
         setAfterLoginGoToUrlAndSendToLogin: function (){
             if(window.location.href.indexOf('login') !== -1){
@@ -1328,6 +1328,7 @@ window.qm = {
             qm.auth.sendToLogin();
         },
         handle401Response: function(request, options, headers) {
+            options = options || {};
             if(options && options.doNotSendToLogin){return;}
             qmLog.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
                 JSON.stringify(request), null, options.stackTrace);
