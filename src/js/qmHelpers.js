@@ -118,9 +118,8 @@ window.qm = {
                 qm.userHelper.setUser(null);
             }
             if(response.status === 401){
-                if(!options || !options.doNotSendToLogin){
-                    qmLog.info("Not authenticated!");
-                }
+                if(!options || !options.doNotSendToLogin){qmLog.info("Not authenticated!");}
+                qm.auth.handle401Response(response.request, options, response.headers)
             } else {
                 qmLog.error(errorMessage, null, {error: error, apiResponse: response});
             }
@@ -1287,6 +1286,54 @@ window.qm = {
             //$http(request);
             // Get request doesn't seem to clear cookies
             window.location.replace(logoutUrl);
+        },
+        weShouldSetAfterLoginStateOrUrl: function(afterLoginGoToStateOrUrl){
+            if(qm.storage.getItem(qm.items.afterLoginGoToUrl)){
+                qmLog.info('afterLoginGoToUrl already set to '+ qm.storage.getItem(qm.items.afterLoginGoToUrl));
+                return false;
+            }
+            if(qm.storage.getItem(qm.items.afterLoginGoToState)){
+                qmLog.info('afterLoginGoToState already set to '+ qm.storage.getItem(qm.items.afterLoginGoToState));
+                return false;
+            }
+            if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
+                qmLog.info('setAfterLoginGoToState: Why are we sending to login from login state?');
+                return false;
+            }
+            return true;
+        },
+        setAfterLoginGoToUrl: function (afterLoginGoToUrl){
+            if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
+            if(!qm.auth.weShouldSetAfterLoginStateOrUrl(afterLoginGoToUrl)){return false;}
+            qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
+            qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
+        },
+        sendToLogin: function () {
+            if(qm.urlHelper.getParam('access_token')){
+                if(!qm.auth.getAccessTokenFromCurrentUrl()){
+                    qmLog.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
+                }
+                qmLog.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
+                return;
+            }
+            qmLog.authDebug('Sending to app.login', null);
+            window.location.href = '#/app/login?logout=true';
+        },
+        setAfterLoginGoToUrlAndSendToLogin: function (){
+            if(window.location.href.indexOf('login') !== -1){
+                qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
+                return;
+            }
+            qm.auth.setAfterLoginGoToUrl();
+            qm.auth.sendToLogin();
+        },
+        handle401Response: function(request, options, headers) {
+            if(options && options.doNotSendToLogin){return;}
+            qmLog.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
+                JSON.stringify(request), null, options.stackTrace);
+            qmLog.debug('HEADERS: ' + JSON.stringify(headers), null, options.stackTrace);
+            qm.auth.deleteAllAccessTokens();
+            qm.auth.setAfterLoginGoToUrlAndSendToLogin();
         }
     },
     buildInfo: {},
@@ -3325,6 +3372,10 @@ window.qm = {
         },
         studyMatchesParams: function(params, study){
             if(!study){return false;}
+            if(!study.causeVariableName && !study.causeVariable){
+                qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
+                return false;
+            }
             var causeVariableName = study.causeVariableName || study.causeVariable.name;
             var effectVariableName = study.effectVariableName || study.effectVariable.name;
             if(params.studyId && params.studyId === study.studyId){return true;}
