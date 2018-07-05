@@ -63,7 +63,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     };
     $scope.createStudy = function(causeVariableName, effectVariableName) {
         qmLog.info('Clicked createStudy for ' + causeVariableName + ' and ' + effectVariableName);
-        qmService.showInfoToast("Creating study...", 60);
+        qmService.showInfoToast("Creating study...", 30);
         qmService.showBasicLoader(60);
         qm.studiesCreated.createStudy({causeVariableName: causeVariableName, effectVariableName: effectVariableName}, function (study) {
             qmService.hideLoader();
@@ -73,9 +73,6 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.hideLoader();
             qmService.auth.showErrorAlertMessageOrSendToLogin("Could Not Create Study", error);
         });
-    };
-    $scope.state.goToStudyPage = function(){
-        qmService.goToStudyPageViaUrl(qmStates.study)
     };
     $scope.state.joinStudy = function(){
         qmService.goToState(qmStates.studyJoin, {study: $scope.state.study})

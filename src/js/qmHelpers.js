@@ -3251,7 +3251,7 @@ window.qm = {
             if(qm.parameterHelper.getStateUrlRootScopeOrRequestParam('effectVariable', $stateParams, $scope, $rootScope)){
                 return qm.parameterHelper.getStateUrlRootScopeOrRequestParam('effectVariable', $stateParams, $scope, $rootScope);
             }
-            if($scope.state.study && $scope.state.study.effectVariable){
+            if($scope && $scope.state && $scope.state.study && $scope.state.study.effectVariable){
                 return $scope.state.study.effectVariable.name;
             }
             if(qm.studyHelper.lastStudy){
@@ -3266,7 +3266,7 @@ window.qm = {
             if($stateParams.causeVariable){return $stateParams.causeVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['causeVariableName', 'predictorVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
-            if($scope.state.study && $scope.state.study.causeVariable){
+            if($scope && $scope.state && $scope.state.study && $scope.state.study.causeVariable){
                 return $scope.state.study.causeVariable.name;
             }
             if(qm.studyHelper.lastStudy){
@@ -3290,7 +3290,7 @@ window.qm = {
             if($stateParams.effectVariable){return $stateParams.effectVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['effectVariableName', 'outcomeVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
-            if($scope.state.study && $scope.state.study.effectVariable){
+            if($scope && $scope.state && $scope.state.study && $scope.state.study.effectVariable){
                 return $scope.state.study.effectVariable.name;
             }
             if(qm.studyHelper.lastStudy){
@@ -3367,8 +3367,9 @@ window.qm = {
             qm.localForage.removeItem(qm.items.lastStudy);
         },
         getStudyUrl: function(causeVariableName, effectVariableName, studyId) {
-            var url = qm.urlHelper.getBaseAppUrl() + "#/app/study?causeVariableName=" + encodeURIComponent(causeVariableName) +
-                "&effectVariableName=" + encodeURIComponent(effectVariableName);
+            var url = qm.urlHelper.getBaseAppUrl() + "#/app/study";
+            if(causeVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({causeVariableName: causeVariableName}, url);}
+            if(effectVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({effectVariableName: effectVariableName}, url);}
             if(studyId){url += "&studyId=" + studyId;}
             return url;
         },

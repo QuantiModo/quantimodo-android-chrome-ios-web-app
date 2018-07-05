@@ -13,7 +13,7 @@
             <img ng-if="study.studyVotes.userVote === 0" src="img/thumbs/thumb_down_white.png" height="32px" width="32px" />
         </div>
     </div>
-    <div ng-hide="state.hideStudyButton" ng-click="goToStudyPage(study)" class="show-inline" >
+    <div ng-hide="state.hideStudyButton" ng-click="goToStudyPageViaStudy(study)" class="show-inline" >
         <div class="tooltip" title="Go to Full Study"> &nbsp &nbsp <i style="font-size: 32px;" class="ion-ios-book-outline"></i> </div>
     </div> &nbsp; &nbsp;
     <div ng-click="goToVariableSettingsForCauseVariable(study)" class="show-inline">

@@ -45,12 +45,12 @@
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-header-bar class="bar-positive">
             <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')"
-                 ng-if="!physicianUser && user && user.displayName && (user.stripeActive || !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value)">
+                 ng-if="!appSettings.designMode && !physicianUser && user && user.displayName && (user.stripeActive || !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value)">
                 <a ng-if="user && user.avatar" class="button button-clear" >
                     <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a>
                 <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
             </div>
-            <div id="menu-physician" style="cursor:pointer;" ng-click="switchBackToPhysician()" ng-if="physicianUser">
+            <div id="menu-physician" style="cursor:pointer;" ng-click="switchBackToPhysician()" ng-if="!appSettings.designMode && physicianUser">
                 <md-tooltip md-direction="down">Switch back to your account</md-tooltip>
                 <a ng-if="user && user.avatar" class="button button-clear" >
                     <img class="menu-avatar" id="patientAvatar" ng-src="{{user.avatar}}"></a>
@@ -58,9 +58,14 @@
                 <button id="switch-button" class="button button-icon ion-arrow-swap"></button>
             </div>
             <div id="menu-upgrade" style="cursor:pointer;"
-                 ng-if="!physicianUser && user && user.displayName && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
+                 ng-if="!appSettings.designMode && !physicianUser && user && user.displayName && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
                  ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
+            </div>
+            <div id="menu-builder" style="cursor:pointer;"
+                 ng-if="appSettings.designMode"
+                 ng-click="goToState('app.configuration')">
+                <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">App Builder</h1>
             </div>
         </ion-header-bar>
         <ion-content>
@@ -86,7 +91,7 @@
                         <i class="{{subMenuItem.icon}}" menu-toggle>&nbsp; {{subMenuItem.title}}</i>
                     </ion-item>
                 </div>
-                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration" id="configurationMenuItem"><i class="ion-edit" menu-toggle>&nbsp; App Designer</i></ion-item>
+                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration" id="configurationMenuItem"><i class="ion-edit" menu-toggle>&nbsp; App Builder</i></ion-item>
             </ion-list>
             <span ng-include="'templates/fragments/sensead-fragment.html'"></span>
         </ion-content>

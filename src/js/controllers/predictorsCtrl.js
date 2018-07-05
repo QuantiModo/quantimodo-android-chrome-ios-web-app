@@ -204,7 +204,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         };
         self.cancel = function() { $mdDialog.cancel(); };
         self.finish = function() {
-            qmService.goToStudyPageViaUrl(self.study);
+            qmService.goToStudyPageViaStudy(self.study);
             $mdDialog.hide();
         };
         function querySearch (query) {
