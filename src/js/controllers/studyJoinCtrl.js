@@ -14,26 +14,28 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $scope.state.study = $stateParams.study;
-        qmLogService.debug(null, $scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name, null);
+        qmLogService.debug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name, null);
         if(!$rootScope.user){
             qmLogService.debug('Hiding nav menu because we do not have a user', null);
             qmService.navBar.hideNavigationMenu();
         }
-        $scope.requestParams = {
-            causeVariableName: getCauseVariableName(),
-            effectVariableName: getEffectVariableName(),
-        };
-        if($stateParams.study){ $scope.requestParams = $stateParams.study; }
-        if(!$scope.requestParams.causeVariableName){ $scope.goBack(); }
-        $scope.state.title = "Help us discover the effects of " + getCauseVariableName() + " on " +
-            getEffectVariableName() +"!" ;
-        $scope.state.bodyText = "It only takes a few seconds to answer two questions a day.";
-        $scope.state.moreInfo = "By taking a few seconds to answer two questions a day and anonymously pooling your responses with thousands " +
-            "of other participants, you can help us discover the effects of " + $scope.requestParams.causeVariableName +
-            " on " + $scope.requestParams.effectVariableName + ".  After we accumulate a month or two of data, " +
-            "you'll also be able to see personalized study results" +
-            " showing the likely effects of " + $scope.requestParams.causeVariableName + " on your own " +
-            $scope.requestParams.effectVariableName;
+        $scope.requestParams = getRequestParams();
+        qm.studyHelper.getStudyFromLocalForageOrGlobals(getRequestParams(), function (study) {
+            $scope.state.study = study;
+            $scope.requestParams = getRequestParams();
+            $scope.state.title = "Help us discover the effects of " + getCauseVariableName() + " on " +
+                getEffectVariableName() +"!" ;
+            $scope.state.bodyText = "It only takes a few seconds to answer two questions a day.";
+            $scope.state.moreInfo = "By taking a few seconds to answer two questions a day and anonymously pooling your responses with thousands " +
+                "of other participants, you can help us discover the effects of " + getCauseVariableName() +
+                " on " + getEffectVariableName() + ".  After we accumulate a month or two of data, " +
+                "you'll also be able to see personalized study results" +
+                " showing the likely effects of " + getCauseVariableName() + " on your own " +
+                getEffectVariableName();
+        }, function (error) {
+            qmLog.error(error);
+            $scope.goBack();
+        });
     });
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name, null);
@@ -44,6 +46,14 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
     $scope.$on('$ionicView.beforeLeave', function(){ });
     $scope.$on('$ionicView.leave', function(){ });
     $scope.$on('$ionicView.afterLeave', function(){ });
+    function getRequestParams(){
+        var body = {
+            studyId: getStudyId(),
+            causeVariableName: getCauseVariableName(),
+            effectVariableName: getEffectVariableName()
+        };
+        return body;
+    }
     $scope.joinStudy = function () {
         $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}
@@ -51,12 +61,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
         qmService.showBasicLoader();
         $scope.state.study.joined = true;
-        var body = {
-            studyId: getStudyId(),
-            causeVariableName: getCauseVariableName(),
-            effectVariableName: getEffectVariableName()
-        };
-        qm.studiesJoined.joinStudy(body, function (study) {
+        qm.studiesJoined.joinStudy(getRequestParams(), function (study) {
             $scope.state.study = study;
             qmService.hideLoader();
             $scope.state.title = "Thank you!";

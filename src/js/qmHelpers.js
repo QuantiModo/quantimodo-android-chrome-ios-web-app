@@ -2820,7 +2820,7 @@ window.qm = {
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'joinStudy');
             }
             var params = qm.api.addGlobalParams({});
-            qm.studyHelper.getStudiesApiInstance().joinStudy(body, params, callback);
+            qm.studyHelper.getStudiesApiInstance().joinStudy(body, callback);
         },
     },
     storage: {
@@ -3366,11 +3366,21 @@ window.qm = {
             qm.localForage.removeItem(qm.items.lastStudy);
             qm.localForage.removeItem(qm.items.lastStudy);
         },
-        getStudyUrl: function(causeVariableName, effectVariableName, studyId) {
+        getStudyUrl: function(study) {
             var url = qm.urlHelper.getBaseAppUrl() + "#/app/study";
+            return qm.studyHelper.addStudyParamsToUrl(url, study);
+        },
+        getStudyJoinUrl: function(study) {
+            var url = qm.urlHelper.getBaseAppUrl() + "#/app/study-join";
+            return qm.studyHelper.addStudyParamsToUrl(url, study);
+        },
+        addStudyParamsToUrl: function(url, study){
+            qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(study);
+            var causeVariableName = qm.studyHelper.getCauseVariableName(study);
+            var effectVariableName = qm.studyHelper.getEffectVariableName(study);
             if(causeVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({causeVariableName: causeVariableName}, url);}
             if(effectVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({effectVariableName: effectVariableName}, url);}
-            if(studyId){url += "&studyId=" + studyId;}
+            if(study.studyId){url += "&studyId=" + study.studyId;}
             return url;
         },
         getStudyFromApi: function(params, successHandler, errorHandler){
@@ -3435,7 +3445,9 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             qm.studyHelper.getStudiesApiInstance().getStudies(params, callback);
-        }
+        },
+        goToStudyPageJoinPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyJoinUrl(study);},
+        goToStudyPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyUrl(study);}
     },
     timeHelper: {
         getUnixTimestampInMilliseconds: function(dateTimeString) {
