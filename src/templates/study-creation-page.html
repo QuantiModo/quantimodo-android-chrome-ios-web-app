@@ -13,7 +13,7 @@
                             style="box-shadow: 2px 2px 5px #434343; margin: 0 auto; border-radius: 50%; width: 130px; height: 130px; background-color: {{state.color.circleColor}};">
                         <div style="cursor: pointer; position: relative; top: 50%; transform: translateY(-50%);"
                              ng-if="!state.causeVariable" >Select<br>Predictor<br>Variable</div>
-                        <img ng-if="state.causeVariable" style="width: 100%; padding: 10px;" ng-src="{{state.causeVariable.pngUrl}}">
+                        <img ng-if="state.causeVariable" style="width: 100%; padding: 20px;" ng-src="{{state.causeVariable.pngUrl}}">
                     </div>
                 </div>
                 <div  class="col col-20"></div>
@@ -22,7 +22,7 @@
                          style=" box-shadow: 2px 2px 5px #434343; margin: 0 auto; border-radius: 50%; width: 130px; height: 130px; background-color: {{state.color.circleColor}};">
                         <div style="cursor: pointer; position: relative; top: 50%; transform: translateY(-50%);"
                              ng-if="!state.effectVariable" >Select<br>Outcome<br>Variable</div>
-                        <img ng-if="state.effectVariable"  style="width: 100%; padding: 10px;" ng-src="{{state.effectVariable.pngUrl}}">
+                        <img ng-if="state.effectVariable"  style="width: 100%; padding: 20px;" ng-src="{{state.effectVariable.pngUrl}}">
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 </div>
                 <br>
                 <div class="button-bar">
-                    <button id="joinStudyButton" class="button" ng-click="state.joinStudy()"
+                    <button id="joinStudyButton" class="button" ng-click="goToJoinStudyPage(state.study)"
                             style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; font-size: 24px; text-align: center" >
                         JOIN STUDY
                     </button>
