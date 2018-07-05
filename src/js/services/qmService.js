@@ -6049,16 +6049,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         return smoothedMeasurements;
     }
-    qmService.goToStudyPageViaStudy = function(study){
-        var causeVariableName = qm.studyHelper.getCauseVariableName(study);
-        var effectVariableName = qm.studyHelper.getEffectVariableName(study);
-        qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(study);
-        //qmService.goToState('app.study', {correlationObject: correlationObject});  // We use the url instead so it's copyable
-        qmService.goToStudyPageViaVariableNamesOrId(causeVariableName, effectVariableName, study.studyId);
-    };
-    qmService.goToStudyPageViaVariableNamesOrId = function(causeVariableName, effectVariableName, studyId) {
-        window.location.href = qm.studyHelper.getStudyUrl(causeVariableName, effectVariableName, studyId);
-    };
     qmService.getPlanFeatureCards = function () {
         var planFeatureCards = {
             lite: {

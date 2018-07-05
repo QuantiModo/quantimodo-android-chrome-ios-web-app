@@ -63,7 +63,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     };
     $scope.createStudy = function(causeVariableName, effectVariableName) {
         qmLog.info('Clicked createStudy for ' + causeVariableName + ' and ' + effectVariableName);
-        qmService.showInfoToast("Creating study...", 30);
+        qmService.showInfoToast("Creating study...", 20);
         qmService.showBasicLoader(60);
         qm.studiesCreated.createStudy({causeVariableName: causeVariableName, effectVariableName: effectVariableName}, function (study) {
             qmService.hideLoader();
