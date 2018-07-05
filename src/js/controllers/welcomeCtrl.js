@@ -15,12 +15,12 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     $rootScope.sendDailyEmailReminder = true;
     $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
         $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
-        qmService.login.sendToLogin();
+        qm.auth.sendToLogin();
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
         qmLogService.debug('skipInterval: Going to login state...', null);
-        qmService.login.sendToLogin();
+        qm.auth.sendToLogin();
     };
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
