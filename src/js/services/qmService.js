@@ -129,7 +129,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         document.location.href = 'index.html?logout=true';
                     }, 2000);
                 }
-                qmService.showBlackRingLoader();
             },
             showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                 if(errorMessage){
