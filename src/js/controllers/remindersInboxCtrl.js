@@ -479,7 +479,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(!$scope.state.studiesResponse){
             qm.studyHelper.getStudiesFromApi({limit: 10, fallbackToAggregateCorrelations: true}, function (studiesResponse) {
 				$scope.state.studiesResponse = studiesResponse;
-			});
+			}, function (error) {
+				qmLog.error(error);
+            });
 		}
     }
     $scope.showUndoToast = function(lastAction) {
