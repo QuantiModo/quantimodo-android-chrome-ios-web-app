@@ -29,13 +29,17 @@
                     </button>
                 </div>
                 <div ng-if="state.study.joined">
-                    <p style="font-size: 22px; line-height: 1.3;">{{state.study.causeVariable.name}} Data Sources</p>
-                    <div ng-if="!connector.hide" class="item" ng-repeat="connector in state.study.causeVariable.dataSources">
-                        <div ng-include="'templates/items/data-source-item.html'"></div>
+                    <div ng-if="!state.study.causeVariable.numberOfRawMeasurements">
+                        <p style="font-size: 22px; line-height: 1.3;">{{state.study.causeVariable.name}} Data Sources</p>
+                        <div ng-if="!connector.hide" class="item" ng-repeat="connector in state.study.causeVariable.dataSources">
+                            <div ng-include="'templates/items/data-source-item.html'"></div>
+                        </div>
                     </div>
-                    <p style="font-size: 22px; line-height: 1.3;">{{state.study.effectVariable.name}} Data Sources</p>
-                    <div ng-if="!connector.hide" class="item" ng-repeat="connector in state.study.effectVariable.dataSources">
-                        <div ng-include="'templates/items/data-source-item.html'"></div>
+                    <div ng-if="!state.study.causeVariable.numberOfRawMeasurements">
+                        <p style="font-size: 22px; line-height: 1.3;">{{state.study.effectVariable.name}} Data Sources</p>
+                        <div ng-if="!connector.hide" class="item" ng-repeat="connector in state.study.effectVariable.dataSources">
+                            <div ng-include="'templates/items/data-source-item.html'"></div>
+                        </div>
                     </div>
                     <div class="button-bar">
                         <button id="getStartedButton" ng-click="goToState('app.remindersInbox')" class="button"
