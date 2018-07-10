@@ -229,6 +229,8 @@ angular.module('starter',
         "settings": "app.settings",
         "study": "app.study",
         "studies": "app.studies",
+        "studiesOpen": "app.studiesOpen",
+        "studiesCreated": "app.studiesCreated",
         "studyCreation": "app.studyCreation",
         "studyJoin": "app.studyJoin",
         "tabs": "app.tabs",
@@ -718,6 +720,46 @@ angular.module('starter',
                 variableObject : null,
                 causeVariableName: null,
                 effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/studies-list-page.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state(qmStates.studiesOpen, {
+            url: "/studies/open",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                open: true,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/studies-list-page.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state(qmStates.studiesCreated, {
+            url: "/studies/created",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                created: true,
                 requestParams : {
                     correlationCoefficient: null
                 }
