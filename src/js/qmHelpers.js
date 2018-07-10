@@ -86,7 +86,9 @@ window.qm = {
         cache: {},
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
-                qmLog.info("No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params));
+                var message = "No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params);
+                qmLog.info(message);
+                if(errorHandler){errorHandler(message);}
                 return;
             }
             qmLog.debug(response.status + ' response from ' + response.req.url);
@@ -3074,7 +3076,7 @@ window.qm = {
             }
         },
         getGlobal: function(key){
-            qmLog.debug("getting " + key + " from globals");
+            //qmLog.debug("getting " + key + " from globals");
             if(typeof qm.globals[key] === "undefined"){return null;}
             if(qm.globals[key] === "false"){return false;}
             if(qm.globals[key] === "true"){return true;}
@@ -3410,6 +3412,10 @@ window.qm = {
                 qmLog.error("No study provided to saveLastStudyToGlobalsAndLocalForage");
                 return;
             }
+            if(!study.causeVariableName && !study.causeVariable){
+                qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
+                return;
+            }
             qm.globalHelper.setStudy(study);
             qm.localForage.setItem(qm.items.lastStudy, study);
         },
@@ -3456,17 +3462,25 @@ window.qm = {
         },
         getStudyFromLocalStorageOrApi: function (params, successHandler, errorHandler){
             if(qm.urlHelper.getParam('aggregated')){params.aggregated = true;}
+            if(qm.urlHelper.getParam('refresh')){params.refresh = true;}
+            function getStudyFromApi(){
+                qm.studyHelper.getStudyFromApi(params, function (study) {
+                    successHandler(study);
+                }, function (error) {
+                    qmLog.error("qmService.getStudy error: ", error);
+                    errorHandler(error);
+                });
+            }
+            if(params.recalculate || params.refresh){
+                getStudyFromApi();
+                return;
+            }
             qm.studyHelper.getStudyFromLocalForageOrGlobals(params,
                 function(study){
                     successHandler(study);
                 }, function (error) {
                     qmLog.info(error);
-                    qm.studyHelper.getStudyFromApi(params, function (study) {
-                        successHandler(study);
-                    }, function (error) {
-                        qmLog.error("qmService.getStudy error: ", error);
-                        errorHandler(error);
-                    });
+                    getStudyFromApi();
                 });
         },
         processAndSaveStudy: function(data){
