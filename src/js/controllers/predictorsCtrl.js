@@ -127,8 +127,10 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         }
         $scope.searching = true;
         var params = $scope.state.requestParams;
+        params.open = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('open', $stateParams, $scope, $rootScope);
+        params.created = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('created', $stateParams, $scope, $rootScope);
         params.limit = 10;
-        qmLogService.info('Getting studies with params ' + JSON.stringify(params));
+        qmLog.info('Getting studies with params ' + JSON.stringify(params));
         qm.studyHelper.getStudiesFromApi(params, function (studiesResponse) {
             if(studiesResponse){$scope.state.studiesResponse = studiesResponse;}
             if(studiesResponse.studies.length) {
