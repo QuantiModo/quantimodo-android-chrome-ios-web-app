@@ -418,7 +418,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function noCallback() {}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         return true;
-    }
+    };
 	// Triggered on a button click, or some other target
 	$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
 		if(isGhostClick($event)){return;}
