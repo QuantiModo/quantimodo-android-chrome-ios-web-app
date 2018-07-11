@@ -58,11 +58,11 @@ window.qm = {
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
-            // qmApiClient.defaultHeaders = {
-            //     clientId: qm.getClientId(),
-            //     platform: qm.platform.getCurrentPlatform(),
-            //     appVersion: qm.appsManager.getAppVersion()
-            // };
+            qmApiClient.defaultHeaders = {
+                clientId: qm.getClientId(),
+                platform: qm.platform.getCurrentPlatform() + '-ionic',
+                appVersion: qm.appsManager.getAppVersion()
+            };
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
