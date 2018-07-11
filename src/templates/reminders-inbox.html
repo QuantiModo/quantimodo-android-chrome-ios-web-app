@@ -21,7 +21,7 @@
         <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
                 <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
-                    <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
+                    <a style="float: right; margin: 5px; cursor: pointer;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh">&nbsp;Refresh</i></a>
                 </div>
                 <div ng-show="!trackingReminderNotification.hide"
                      ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
