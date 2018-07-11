@@ -84,3 +84,7 @@ ion-side-menu-content.menu-disabled {
         background-position: -2800px 0;
     }
 }
+
+.white-links {
+    a, a:hover, a:active, a:visited { color: white; }
+}
