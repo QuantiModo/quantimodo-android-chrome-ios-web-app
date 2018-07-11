@@ -105,11 +105,12 @@ window.qm = {
             }
         },
         getErrorMessageFromResponse: function(error, response){
-            if(error && error.message){return error.message;}
-            if(response && response.error &&  response.error.message){return response.error.message;}
-            if(response && response.body && response.body.errorMessage){return response.body.errorMessage;}
-            if(response && response.body && response.body.error && response.body.error.message){return response.body.error.message;}
-            return null;
+            var errorMessage = null;
+            if(error && error.message){errorMessage += error.message;}
+            if(response && response.error &&  response.error.message){errorMessage += response.error.message;}
+            if(response && response.body && response.body.errorMessage){errorMessage += response.body.errorMessage;}
+            if(response && response.body && response.body.error && response.body.error.message){errorMessage += response.body.error.message;}
+            return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
             var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
@@ -229,7 +230,7 @@ window.qm = {
                         successHandler(qm.clientId,  preferences.QuantiModoClientSecret);
                     },
                     function(error) {
-                        qmLog.error("Error! " + JSON.stringify(error));
+                        qmLog.error("Error! ", error);
                     }, ["QuantiModoClientId", "QuantiModoClientSecret"]);
             }
             qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
@@ -1334,7 +1335,7 @@ window.qm = {
             if(options && options.doNotSendToLogin){return;}
             qmLog.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
                 JSON.stringify(request), null, options.stackTrace);
-            qmLog.debug('HEADERS: ' + JSON.stringify(headers), null, options.stackTrace);
+            qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
             qm.auth.setAfterLoginGoToUrlAndSendToLogin();
         }
@@ -2248,10 +2249,10 @@ window.qm = {
             if(ratingNotifications.length) {
                 var notification = ratingNotifications[ratingNotifications.length - 1];
                 if(notification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
-                    window.qmLog.info('Got this notification but it\'s from yesterday: ' + JSON.stringify(notification).substring(0, 140) + '...');
+                    window.qmLog.info('Got this notification but it\'s from yesterday: ', notification);
                     //return;
                 }
-                window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
+                window.qmLog.info(null, 'Got this notification: ', notification);
                 //window.qm.storage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
                 //qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', notification.variableName);
                 return notification;
@@ -2912,7 +2913,7 @@ window.qm = {
         deleteByProperty: function (localStorageItemName, propertyName, propertyValue){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
             if(!localStorageItemArray){
-                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
+                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
             } else {
                 qm.storage.setItem(localStorageItemName, qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
             }
@@ -2920,7 +2921,7 @@ window.qm = {
         deleteByPropertyInArray: function (localStorageItemName, propertyName, objectsArray){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
             if(!localStorageItemArray){
-                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qm.storage.getLocalStorageList()));
+                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
             } else {
                 var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
                 for (var i=0; i < arrayOfValuesForProperty.length; i++) {
@@ -3771,7 +3772,7 @@ window.qm = {
             }
         },
         getParameterFromEventUrl: function (event, parameterName) {
-            qmLog.authDebug('extracting ' + parameterName + ' from event: ' + JSON.stringify(event));
+            qmLog.authDebug('extracting ' + parameterName + ' from event: ', event);
             var url = event.url;
             if(!url) {url = event.data;}
             if(!qm.urlHelper.isQuantiMoDoDomain(url)){return;}
@@ -3874,7 +3875,7 @@ window.qm = {
                     user = qm.objectHelper.snakeToCamelCaseProperties(user);
                 }
                 if(user && !user.id){
-                    console.error("No user id in "+ JSON.stringify(qmUser));  // Don't use qmLog.error to avoid infinite loop
+                    console.error("No user id in ", qmUser);  // Don't use qmLog.error to avoid infinite loop
                     qm.userHelper.setUser(null);
                     return null;
                 }
