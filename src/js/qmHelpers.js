@@ -59,9 +59,10 @@ window.qm = {
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
             qmApiClient.defaultHeaders = {
-                clientId: qm.getClientId(),
-                platform: qm.platform.getCurrentPlatform() + '-ionic',
-                appVersion: qm.appsManager.getAppVersion()
+                'X-Client-Id': qm.getClientId(),
+                'X-Platform': qm.platform.getCurrentPlatform(),
+                'X-App-Version': qm.appsManager.getAppVersion(),
+                'X-Framework': 'ionic'
             };
             return qmApiClient;
         },
