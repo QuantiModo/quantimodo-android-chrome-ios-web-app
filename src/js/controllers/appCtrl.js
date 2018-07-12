@@ -125,7 +125,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.positiveRatingOptions = qmService.getPositiveRatingOptions();
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
-    $scope.welcomeText = qm.getAppSettings().welcomeText;
     $scope.downVote = function(study, $index, ev){
         var correlationObject = study.statistics;
         var causeVariableName = qm.studyHelper.getCauseVariableName(study);
