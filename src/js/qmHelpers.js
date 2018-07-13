@@ -647,6 +647,12 @@ window.qm = {
             }
             appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
             if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+            function successHandler() {
+                qm.localForage.setItem(qm.items.appSettings, appSettings);
+                if(callback){callback(appSettings);}
+                return appSettings;
+            }
+            if(qm.appMode.isBuilder()){return successHandler();}  // Don't need to mess with app settings refresh in builder
             qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
                 for (var propertyName in buildInfo) {
                     if( buildInfo.hasOwnProperty(propertyName) ) {
@@ -654,11 +660,10 @@ window.qm = {
                     }
                 }
                 if(!appSettings.gottenAt){appSettings.gottenAt = qm.timeHelper.getUnixTimestampInSeconds();}
-                qm.localForage.setItem(qm.items.appSettings, appSettings);
                 if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
                     qm.appsManager.getAppSettingsFromApi(appSettings.clientId);
                 }
-                if(callback){callback(appSettings);}
+                successHandler();
             })
         },
         // SubDomain : Filename
