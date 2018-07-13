@@ -70,6 +70,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         requestParams.effectVariableName = getEffectVariableName();
         requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
         requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        requestParams.includeCharts = true;
         if(recalculate || qm.urlHelper.getParam('recalculate')){requestParams.recalculate = true;}
         return requestParams;
     }

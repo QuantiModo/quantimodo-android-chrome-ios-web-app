@@ -120,3 +120,4 @@ yarn-error\.log
 GoogleService-Info.plist
 google-services.json
 src/build-info.json
+!/src/css/study.css
