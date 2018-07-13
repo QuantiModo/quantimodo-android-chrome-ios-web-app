@@ -1,0 +1,104 @@
+@import url(https://fonts.googleapis.com/css?family=Droid+Sans);
+.css-parser-hack {  --x-height-multiplier: 0.342; }  /*For some reason parser ignores first rule*/
+.study-title {
+    --x-height-multiplier: 0.342;
+    --baseline-multiplier: 0.22;
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0;
+    /*font-size: 42px;*/
+    margin-left: -2.63px;
+    line-height: 1.04;
+    letter-spacing: -.015em;
+}
+.study-section-body {
+    --x-height-multiplier: 0.375;
+    --baseline-multiplier: 0.17;
+    font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: .01rem;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em;
+}
+.study-section-header {
+    --x-height-multiplier: 0.342;
+    --baseline-multiplier: 0.22;
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0;
+    font-size: 34px;
+    margin-left: -2.13px;
+    line-height: 1.15;
+    letter-spacing: -.015em;
+}
+.study-caption {
+    --x-height-multiplier: 0.342!important;
+    --baseline-multiplier: 0.22!important;
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif!important;
+    letter-spacing: -.02em!important;
+    font-weight: 400!important;
+    font-style: normal!important;
+    letter-spacing: 0!important;
+    font-size: 16px!important;
+    line-height: 20px!important;
+    -webkit-transform: translateY(1.52px);
+    transform: translateY(1.52px);
+}
+
+/* Take care of image borders and formatting */
+img {
+    max-width: 600px;
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: bicubic;
+}
+a {
+    text-decoration: none;
+    border: 0;
+    outline: none;
+}
+a img {
+    border: none;
+}
+/* General styling */
+td, h1, h2, h3  {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 400;
+}
+td {
+    text-align: center;
+}
+body {
+    -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:none;
+    width: 100%;
+    height: 100%;
+    color: #37302d;
+    background: #ffffff;
+    font-size: 16px;
+}
+table {
+    border-collapse: collapse !important;
+}
+.headline {
+    color: #ffffff;
+    font-size: 24px;
+}
+.force-full-width {
+    width: 100% !important;
+}
+.force-width-80 {
+    width: 80% !important;
+}
+.pusher {
+    width: 55px;
+}
+.steps {
+    width: 43px;
+}
