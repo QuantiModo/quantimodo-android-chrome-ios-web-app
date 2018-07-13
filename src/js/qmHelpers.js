@@ -514,7 +514,8 @@ window.qm = {
                 clientId = qm.stringHelper.getStringBeforeSubstring('?', clientId, clientId);
                 return clientId;
             }
-            return null;
+            clientId = qm.storage.getItem(qm.items.builderClientId);
+            return clientId;
         },
         getQuantiModoApiUrl: function () {
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
@@ -1736,6 +1737,7 @@ window.qm = {
         appSettings: 'appSettings',
         appSettingsRevisions: 'appSettingsRevisions',
         authorizedClients: 'authorizedClients',
+        builderClientId: 'builderClientId',
         chromeWindowId: 'chromeWindowId',
         clientId: 'clientId',
         commonVariables: 'commonVariables',
