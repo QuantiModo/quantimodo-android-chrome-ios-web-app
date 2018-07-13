@@ -3486,7 +3486,11 @@ window.qm = {
             }
             qm.studyHelper.getStudyFromLocalForageOrGlobals(params,
                 function(study){
-                    successHandler(study);
+                    if(!params.includeCharts || study.studyCharts){
+                        successHandler(study);
+                    } else {
+                        getStudyFromApi();
+                    }
                 }, function (error) {
                     qmLog.info(error);
                     getStudyFromApi();
