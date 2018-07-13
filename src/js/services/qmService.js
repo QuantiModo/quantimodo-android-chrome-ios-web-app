@@ -6153,7 +6153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             .position(getToastPosition());
         $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { buttonFunction(); } });
     };
-    qmService.processAndSaveAppSettings = function(appSettings){
+    qmService.processAndSaveAppSettings = function(appSettings, callback){
         qmLog.debug("processAndSaveAppSettings for " + appSettings.clientId, null, appSettings);
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
@@ -6169,11 +6169,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
         appSettings.appDesign.menu = qmService.menu.stateName.addStateNamesToBothMenus(appSettings.appDesign.menu);
-        qm.appsManager.processAndSaveAppSettings(appSettings);
+        qm.appsManager.processAndSaveAppSettings(appSettings, callback);
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
-        $rootScope.appSettings = qm.getAppSettings();
-        qmLogService.debug('appSettings.clientId is ' + qm.getAppSettings().clientId);
+        $rootScope.appSettings = appSettings;
+        qmLogService.debug('appSettings.clientId is ' + appSettings.clientId);
         changeFavicon();
     };
     qmService.initializeApplication = function(appSettings){
