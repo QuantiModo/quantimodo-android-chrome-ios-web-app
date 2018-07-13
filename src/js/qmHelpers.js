@@ -2815,7 +2815,7 @@ window.qm = {
             }, function (error) {
                 qmLog.info(error);
                 function callback(error, data, response) {
-                    var study = qm.studyHelper.processAndSaveStudy(data);
+                    var study = qm.studyHelper.processAndSaveStudy(data, error);
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
@@ -3485,10 +3485,12 @@ window.qm = {
                     getStudyFromApi();
                 });
         },
-        processAndSaveStudy: function(data){
+        processAndSaveStudy: function(data, error){
             qmLog.debug('study response: ', null, data);
             if(!data){
-                qmLog.error("No data provided to processAndSaveStudy.  We got: ", data, data);
+                if(!error){ // Error will be handled elsewhere
+                    qmLog.error("No data provided to processAndSaveStudy.  We got: ", data, data);
+                }
                 return false;
             }
             var study = data.study || data.publicStudy || data.userStudy || data.cohortStudy || data;
