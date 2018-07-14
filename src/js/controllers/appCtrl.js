@@ -288,7 +288,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.$on('$stateChangeSuccess', function() {
         qmService.navBar.setOfflineConnectionErrorShowing(false);
-        qmLog.metaData.context = $state.current.name;
+        qmLog.globalMetaData.context = $state.current.name;
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         function showAdSense(){
             return qm.platform.isWeb() &&
