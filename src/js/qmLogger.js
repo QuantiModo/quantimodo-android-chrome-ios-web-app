@@ -122,7 +122,6 @@ window.qmLog = {
         }
         return object;
     },
-    context: null,
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);

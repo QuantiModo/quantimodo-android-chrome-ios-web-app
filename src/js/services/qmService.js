@@ -12,6 +12,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var allStates = $state.get();
     var qmService = {
         adBanner: {
+            adPublisherIds: {
+                ios : {
+                    banner : 'ca-app-pub-2427218021515520/1775529603',
+                    interstitial : ''
+                },
+                android : {
+                    banner : 'ca-app-pub-2427218021515520/1775529603',
+                    interstitial : ''
+                }
+            },
             initialize: function(){
                 if(!qm.platform.isMobile()){
                     qmLog.info("admob: Not Initializing because not on mobile...");
@@ -19,8 +29,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 qmLog.info("admob: Checking if user is older than a day...");
                 if(!qmService.adBanner.admobPluginInstalled()){return;}
-                admob.banner.config({id: 'ca-app-pub-2427218021515520/1775529603',});
-                admob.banner.prepare(); // Create banner
+                if(qmService.adBanner.floatingHotpot.isInstalled()){
+                    qmService.adBanner.floatingHotpot.createBannerView();
+                } else if (typeof admob.banner !== "undefined"){
+                    admob.banner.config({id: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,});
+                    admob.banner.prepare(); // Create banner
+                } else {
+                    admob.setOptions({
+                        publisherId:      qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,
+                        interstitialAdId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].interstitial,
+                        //tappxIdiOS:       "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
+                        //tappxIdAndroid:   "/XXXXXXXXX/Pub-XXXX-Android-AAAA",
+                        //tappxShare:       0.5,
+                    });
+                }
             },
             show: function(force){
                 if(!qmService.adBanner.admobPluginInstalled()){return;}
@@ -35,30 +57,45 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return;
                     }
                     qmLog.info("admob: Initializing admob and creating banner...");
-                    //qmService.adBanner.floatingHotpot.createBannerView();
-                    admob.banner.show();
+                    if(qmService.adBanner.floatingHotpot.isInstalled()){
+                        window.plugins.AdMob.showAd(true);
+                    } else if(typeof admob.createBannerView !== "undefined"){
+                        admob.createBannerView();
+                    } else {
+                        admob.banner.show();
+                    }
                 });
             },
             hide: function(){
                 if(!qmService.adBanner.admobPluginInstalled()){return;}
-                admob.banner.hide();
+                qmLog.info("Hiding ad");
+                if(qmService.adBanner.floatingHotpot.isInstalled()){
+                    window.plugins.AdMob.showAd(false);
+                } else if(typeof admob.destroyBannerView !== "undefined"){
+                    admob.destroyBannerView();
+                } else {
+                    admob.banner.hide();
+                }
             },
             admobPluginInstalled: function(){
-                if(typeof admob === "undefined"){
-                    qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                if(typeof admob === "undefined" && !qmService.adBanner.floatingHotpot.isInstalled()){
+                    qmLog.error("admob not installed on mobile");
                     return false;
                 }
                 return true;
             },
             floatingHotpot: {
+                isInstalled: function(){
+                    return typeof window.plugins.AdMob !== "undefined";
+                },
                 createBannerView: function(){
-                    if(typeof window.plugins.AdMob === "undefined"){
+                    if(!qmService.adBanner.floatingHotpot.isInstalled()){
                         qmLog.error("admob: window.plugins.AdMob undefined on mobile");
                         return;
                     }
                     window.plugins.AdMob.setOptions( {
-                        publisherId: 'ca-app-pub-2427218021515520/1775529603',
-                        interstitialAdId: '',
+                        publisherId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,
+                        interstitialAdId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].interstitial,
                         bannerAtTop: false, // set to true, to put banner at top
                         overlap: false, // set to true, to allow banner overlap webview
                         offsetTopBar: false, // set to true to avoid ios7 status bar overlap

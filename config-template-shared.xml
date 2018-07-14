@@ -129,7 +129,7 @@
     <variable name="APP_NAME" value="QuantiModo"/>
   </plugin>
     <plugin name="cordova-plugin-appsettings" spec="~1.0.2" />
-    <plugin name="cordova-plugin-admob-free" spec="0.17.3" />
+  <plugin name="cordova-plugin-admob" spec="~3.2.4" />
   <plugin name="cordova-plugin-enable-multidex" spec="~0.1.3" />
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="YourWindowsAppIdentifierHere" />
