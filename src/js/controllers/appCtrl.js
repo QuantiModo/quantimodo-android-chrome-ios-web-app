@@ -2,10 +2,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 .controller('AppCtrl', ["$scope", "$timeout", "$ionicPopover", "$ionicLoading", "$state", "$ionicHistory", "$rootScope",
     "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService", "qmLogService",
     "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast", "$sce",
-    "wikipediaFactory", "appSettingsResponse", function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
+    "wikipediaFactory", "appSettingsResponse",  "$stateParams",
+    function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService, qmLogService,
                                 $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
-                                $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse) {
+                                $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
     qmService.numberOfPendingNotifications = null;
@@ -300,6 +301,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $timeout(function () {
                 qmService.rootScope.setProperty('showAdSense', showAdSense()); // This is necessary because of "No slot size for availableWidth=0" error
             }, 3000)
+        }
+        if(qm.platform.isMobile()){
+            if($stateParams.showAds){qmService.adBanner.show();} else {qmService.adBanner.hide();}
         }
         //qmService.login.deleteAfterLoginStateIfItMatchesCurrentState();
         $scope.closeMenu();
