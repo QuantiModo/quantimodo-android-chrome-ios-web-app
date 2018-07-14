@@ -2640,6 +2640,7 @@ window.qm = {
                     }
                 }
             }
+            return mostFrequentReminderIntervalInSeconds;
         },
         saveToLocalStorage: function(trackingReminders){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
