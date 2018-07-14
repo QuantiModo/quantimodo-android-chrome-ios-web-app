@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div id="causeVariableCharts" style="text-align: center;">
-                    <div ng-repeat="(key, causeChart) in state.causeVariable.charts" ng-if="chart.highchartConfig">
+                    <div ng-repeat="(key, causeChart) in state.study.causeVariable.charts" ng-if="causeChart.highchartConfig">
                         <h2>{{causeChart.chartTitle}}</h2>
                         <highchart id="{{causeChart.chartId}}" config="causeChart.highchartConfig"></highchart>
                         <p ng-if="causeChart.explanation">{{causeChart.explanation}}</p>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div id="effectVariableCharts" style="text-align: center;">
-                    <div ng-repeat="(key, effectChart) in state.effectVariable.charts" ng-if="effectChart.highchartConfig">
+                    <div ng-repeat="(key, effectChart) in state.study.effectVariable.charts" ng-if="effectChart.highchartConfig">
                         <h2>{{effectChart.chartTitle}}</h2>
                         <highchart id="{{effectChart.chartId}}" config="effectChart.highchartConfig"></highchart>
                         <p ng-if="effectChart.explanation">{{effectChart.explanation}}</p>
