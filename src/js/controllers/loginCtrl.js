@@ -51,7 +51,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         }
     }
     var loginTimeout = function () {
-        var duration = 60000;
+        var duration = 60;
         qmService.showBlackRingLoader(duration);
         $scope.circlePage.title = 'Logging in...';
         $scope.circlePage.bodyText = 'Thank you for your patience. Your call is very important to us!';
@@ -60,7 +60,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         return $timeout(function () {
             qmLog.authDebug('Finished login timeout');
             if(!qm.getUser()){handleLoginError("timed out");} else {handleLoginSuccess();}
-        }, duration);
+        }, duration * 1000);
     };
     function tryToGetUser() {
         qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
@@ -79,7 +79,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLog.authDebug('beforeEnter in state ' + $state.current.name);
         leaveIfLoggedIn();
-        if(qm.urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrlAndSetLocalStorageFlags()){
+        if(qm.urlHelper.getParam('loggingIn') || qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags($state.current.name)){
             loginTimeout();
         } else {
             qmLog.authDebug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token');
@@ -97,6 +97,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         if(navigator && navigator.splashscreen) {
             qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
+        }
+        if(!qm.stringHelper.isFalsey(qm.urlHelper.getParam('error'))){
+            qmLog.error(qm.urlHelper.getParam('error'));
+            qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  :D")
         }
     });
     $scope.state.setAuthDebugEnabled = function(){

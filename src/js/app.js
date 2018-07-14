@@ -229,6 +229,8 @@ angular.module('starter',
         "settings": "app.settings",
         "study": "app.study",
         "studies": "app.studies",
+        "studiesOpen": "app.studiesOpen",
+        "studiesCreated": "app.studiesCreated",
         "studyCreation": "app.studyCreation",
         "studyJoin": "app.studyJoin",
         "tabs": "app.tabs",
@@ -725,7 +727,47 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state(qmStates.studiesOpen, {
+            url: "/studies/open",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                open: true,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/studies-list-page.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state(qmStates.studiesCreated, {
+            url: "/studies/created",
+            params: {
+                aggregated: null,
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                created: true,
+                requestParams : {
+                    correlationCoefficient: null
+                }
+            },
+            cache: true,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -744,7 +786,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -763,7 +805,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -784,7 +826,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -805,7 +847,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -826,7 +868,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -847,7 +889,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -867,7 +909,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -887,7 +929,7 @@ angular.module('starter',
             cache: true,
             views: {
                 'menuContent': {
-                    templateUrl: "templates/predictors-list.html",
+                    templateUrl: "templates/studies-list-page.html",
                     controller: 'PredictorsCtrl'
                 }
             }
@@ -896,10 +938,10 @@ angular.module('starter',
             cache: true,
             url: "/study",
             params: {
-                correlationObject: null,
                 causeVariableName: null,
                 effectVariableName: null,
-                refresh: null
+                refresh: null,
+                study: null
             },
             views: {
                 'menuContent': {
@@ -909,10 +951,12 @@ angular.module('starter',
             }
         })
         .state(qmStates.studyJoin, {
-            cache: false,
+            cache: true,
             url: "/study-join",
             params: {
-                correlationObject: null
+                causeVariableName: null,
+                effectVariableName: null,
+                study: null
             },
             views: {
                 'menuContent': {
@@ -922,12 +966,12 @@ angular.module('starter',
             }
         })
         .state(qmStates.studyCreation, {
-            cache: false,
+            cache: true,
             url: "/study-creation",
             params: {
-                correlationObject: null,
                 causeVariable: null,
-                effectVariable: null
+                effectVariable: null,
+                study: null
             },
             views: {
                 'menuContent': {
@@ -1386,7 +1430,11 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
         //console.debug("Intro seen so setting default route to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
+        if(qm.appMode.isBuilder()){
+            $urlRouterProvider.otherwise('/app/configuration');
+        } else {
+            $urlRouterProvider.otherwise('/app/reminders-inbox');
+        }
     }
 }])
 .component("mdFabProgress", {

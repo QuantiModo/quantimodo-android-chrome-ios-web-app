@@ -13,7 +13,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmService.intro.setIntroSeen(true, "User clicked startApp in intro");
             if($state.current.name.indexOf('intro') !== -1){
                 // Called to navigate to the main app
-                if(qmService.login.sendToLogin()){ return; }
+                if(qm.auth.sendToLogin()){ return; }
                 if(qm.platform.isDesignMode()){
                     qmService.goToState(qmStates.configuration);
                 } else {

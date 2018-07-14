@@ -1,6 +1,6 @@
-<div ng-show="state.correlationObjects.length" style="padding: 10px;">
+<div ng-show="state.studiesResponse.studies.length" style="padding: 10px;">
     <div class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;">
-        <i class="icon {{state.correlationsExplanation.ionIcon}}"
+        <i class="icon {{state.studiesResponse.ionIcon}}"
            style="position: absolute;
 							top: 15px;
 							left: 15px;
@@ -12,11 +12,11 @@
 							border-radius: 4px;"
         ></i>
         <p style="font-size: 20px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;">
-            {{state.correlationsExplanation.title}}
+            {{state.studiesResponse.title}}
         </p>
     </div>
     <div class="item item-body" style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;" >
-        {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
+        {{state.studiesResponse.description}}  {{state.studiesResponse.startTracking.description}}
         <br>
         <div class="button-bar" style="margin-top: 20px; margin-bottom: 10px;">
             <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)"
@@ -46,9 +46,9 @@
 </div>
 <div ng-show="searching" style="text-align: center"><br><br><br><br><br><ion-spinner icon="android"></ion-spinner><br></div>
 <ion-list>
-    <div id="correlationList" class="list card correlationResultList" style="text-align: center" ng-repeat="correlationObject in state.correlationObjects">
+    <div id="correlationList" class="list card correlationResultList" style="text-align: center" ng-repeat="study in state.studiesResponse.studies">
         <div id="correlationBody" class="item item-body">
-            <div ng-bind-html="trustAsHtml(correlationObject.studyHtml.studyHeaderHtml)" ng-click="goToStudyPage(correlationObject)"></div>
+            <div ng-bind-html="trustAsHtml(study.studyHtml.studyHeaderHtml)" ng-click="goToStudyPageViaStudy(study)"></div>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
             <div ng-include="'templates/buttons/join-study-button.html'"></div>
         </div>

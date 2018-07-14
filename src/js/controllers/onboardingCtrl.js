@@ -2,17 +2,22 @@ angular.module('starter').controller('OnboardingCtrl',
     ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
     $scope.state = {
-        showSkipButton: false
+        showSkipButton: false,
+        //requireUpgrades: true // Might want to do this at some point
+        requireUpgrades: false // Default to false for new users
     };
     if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        setRequireUpgradesInOnboarding();
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(!qm.getUser()){qmLog.debug("No user in onboarding!")}
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        setRequireUpgradesInOnboarding();
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
@@ -22,6 +27,13 @@ angular.module('starter').controller('OnboardingCtrl',
         });
         initializeAddRemindersPageIfNecessary();
     });
+    function setRequireUpgradesInOnboarding() {
+        if(qm.getUser() && qm.getUser().stripeActive){
+            $scope.state.requireUpgrades = false;
+        } else if (!$rootScope.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value){
+            $scope.state.requireUpgrades = false;
+        }
+    }
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
         if(!$rootScope.appSettings.designMode){qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);}

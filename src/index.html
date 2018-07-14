@@ -5,10 +5,11 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
       <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
 <!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
-    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;">
+    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' *.quantimo.do data: https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;">
     <title></title>
     <link href="css/app.min.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="css/study.css" rel="stylesheet">
       <link rel="manifest" href="manifest.json">
     <!-- build:css css/combined.css -->
     <!-- endbuild -->
@@ -16,14 +17,14 @@
     <!-- endinject -->
     <link rel="shortcut icon" href="img/icons/icon_16.png">
     <!-- build:js scripts/combined-head-libraries.js -->
-    <!--<script src="lib/bugsnag/dist/bugsnag.js"></script>-->
+    <script src="lib/bugsnag/dist/bugsnag.js"></script>
     <script src="lib/localforage/dist/localforage.js"></script>
     <script src="lib/jquery/dist/jquery.min.js"></script>  <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
     <!--<script src="lib/templates.js"></script>-->
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
-    <script src="lib/opbeat-angular/opbeat-angular.min.js"></script>
+    <!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->
     <script src="lib/quantimodo/quantimodo-web.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
@@ -94,10 +95,10 @@
     <!--<script src="lib/angular-google-adsense/dist/angular-google-adsense.min.js"></script> Need to use renamed script below to deal with AdBlock-->
     <script src="custom-lib/aga.js"></script>
     <script src="lib/angular-aria/angular-aria.js"></script>
-    <script src="lib/angular-animate/angular-animate.min.js"></script>
+    <script src="lib/angular-animate/angular-animate.js"></script>
     <script src="lib/angular-material/angular-material.js"></script>
     <script src="lib/angular-cache/dist/angular-cache.min.js"></script>
-    <script src="lib/angular-messages/angular-messages.min.js"></script>
+    <script src="lib/angular-messages/angular-messages.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
     <script src="lib/d3/d3.min.js"></script>
     <script src="lib/d3-cloud/build/d3.layout.cloud.js"></script>

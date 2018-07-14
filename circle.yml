@@ -67,7 +67,8 @@ general:
       - develop
       - master
       - /release\/.*/ # or ignore regexes
-      #- /feature\/.*/ # or ignore regexes
+      - /feature\/.*/ # or ignore regexes
+      - /renovate\/.*/ # or ignore regexes
   artifacts:
     - "platforms/android/build/outputs/apk"
     - "plugins/de.appplant.cordova.plugin.local-notification"

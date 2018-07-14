@@ -28,7 +28,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		lastClientX : 0,
 		lastClientY : 0,
 		numberOfDisplayedNotifications: 0,
-		favoritesTitle: "Your Favorites"
+		favoritesTitle: "Your Favorites",
+		studiesResponse: null
 	};
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
@@ -97,12 +98,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
         setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
-        if(!qm.storage.getItem(qm.items.trackingReminderNotifications) || !qm.storage.getItem(qm.items.trackingReminderNotifications).length){
-            $scope.refreshTrackingReminderNotifications();
-        }
+        if(needToRefresh()){$scope.refreshTrackingReminderNotifications();}
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
         autoRefresh();
 	});
+	function needToRefresh() {
+        if(!qm.storage.getItem(qm.items.trackingReminderNotifications)){ return true; }
+        if(!qm.storage.getItem(qm.items.trackingReminderNotifications).length){ return true; }
+        if(qm.notifications.mostRecentNotificationIsOlderThanMostFrequentInterval()){ return true; }
+        return false;
+    }
 	function autoRefresh() {
 	    $timeout(function () {
             if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
@@ -257,6 +262,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         getTrackingReminderNotifications();
     }
     function preventDragAfterAlert(ev) {
+		if(!ev){
+			qmLog.debug("No event provided to preventDragAfterAlert");
+			return;
+		}
         ev.preventDefault();
         ev.stopPropagation();
         ev.gesture.stopPropagation();
@@ -409,7 +418,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function noCallback() {}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         return true;
-    }
+    };
 	// Triggered on a button click, or some other target
 	$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
 		if(isGhostClick($event)){return;}
@@ -467,12 +476,12 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.storage.deleteById('defaultHelpCards', helpCard.id);
 	};
 	function getDiscoveries() {
-		if(!$scope.state.correlationObjects){
-            qmService.getCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true})
-				.then(function (data) {
-					$scope.state.correlationsExplanation = data.explanation;
-					$scope.state.correlationObjects = data.correlations;
-				});
+		if(!$scope.state.studiesResponse){
+            qm.studyHelper.getStudiesFromApi({limit: 10, fallbackToAggregateCorrelations: true}, function (studiesResponse) {
+				$scope.state.studiesResponse = studiesResponse;
+			}, function (error) {
+				qmLog.error(error);
+            });
 		}
     }
     $scope.showUndoToast = function(lastAction) {

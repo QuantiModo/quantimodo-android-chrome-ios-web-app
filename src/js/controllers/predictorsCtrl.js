@@ -4,7 +4,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
         variableName: null,
-        correlationObjects: [],
+        studiesResponse: {studies: []},
         showLoadMoreButton: false
     };
     $scope.data = { "search" : '' };
@@ -72,7 +72,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         populateCorrelationList();
     });
     function variablesHaveChanged() {
-        if(!$scope.state.correlationObjects || !$scope.state.correlationObjects.length){return true;}
+        if(!$scope.state.studiesResponse.studies || !$scope.state.studiesResponse.studies.length){return true;}
         if(getEffectVariableName() && $scope.state.requestParams.effectVariableName &&
             getEffectVariableName() !== $scope.state.requestParams.effectVariableName){
             return true;
@@ -94,20 +94,20 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     $scope.filterSearch = function () {
         qmLogService.debug($scope.data.search, null);
         if($scope.outcomeList) {
-            $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
+            $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.filter(function( obj ) {
                 return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
         } else {
-            $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
+            $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.filter(function( obj ) {
                 return obj.causeVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
         }
-        if($scope.data.search.length < 4 || $scope.state.correlationObjects.length) { return; }
+        if($scope.data.search.length < 4 || $scope.state.studiesResponse.studies.length) { return; }
         if($scope.outcomeList) { $stateParams.effectVariableName = '**' + $scope.data.search + '**';
         } else { $stateParams.causeVariableName = '**' + $scope.data.search + '**'; }
         $scope.state.requestParams.offset = null;
         populateCorrelationList();
     };
     function showLoadMoreButtonIfNecessary() {
-        if($scope.state.correlationObjects.length && $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
+        if($scope.state.studiesResponse.studies.length && $scope.state.studiesResponse.studies.length%$scope.state.requestParams.limit === 0){
             $scope.state.showLoadMoreButton = true;
         } else {
             $scope.state.showLoadMoreButton = false;
@@ -121,47 +121,47 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
     }
     function populateCorrelationList(newSortParam) {
         if(newSortParam){
-            $scope.state.correlationObjects = [];
+            $scope.state.studiesResponse.studies = [];
             qmLogService.debug('Sort by ' + newSortParam);
             $scope.state.requestParams.sort = newSortParam;
         }
         $scope.searching = true;
         var params = $scope.state.requestParams;
+        params.open = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('open', $stateParams, $scope, $rootScope);
+        params.created = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('created', $stateParams, $scope, $rootScope);
         params.limit = 10;
-        qmLogService.info('Getting correlations with params ' + JSON.stringify(params));
-        qmService.getCorrelationsDeferred(params)
-            .then(function (data) {
-                if(data){$scope.state.correlationsExplanation = data.explanation;}
-                if(data.correlations.length) {
-                    qmLogService.info('Got ' + data.correlations.length + ' correlations with params ' + JSON.stringify(params));
-                    qmLogService.info('First correlation is ' + data.correlations[0].causeVariableName + " vs " + data.correlations[0].effectVariableName);
-                    if($scope.state.requestParams.offset){
-                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
-                    } else {
-                        $scope.state.correlationObjects = data.correlations;
-                    }
-                    $scope.state.requestParams.offset = $scope.state.correlationObjects.length;
-                    showLoadMoreButtonIfNecessary();
+        qmLog.info('Getting studies with params ' + JSON.stringify(params));
+        qm.studyHelper.getStudiesFromApi(params, function (studiesResponse) {
+            if(studiesResponse){$scope.state.studiesResponse = studiesResponse;}
+            if(studiesResponse.studies.length) {
+                qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
+                qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " + studiesResponse.studies[0].effectVariableName);
+                if($scope.state.requestParams.offset){
+                    $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
                 } else {
-                    qmLogService.info('Did not get any correlations with params ' + JSON.stringify(params));
-                    $scope.state.noCorrelations = true;
+                    $scope.state.studiesResponse.studies = studiesResponse.studies;
                 }
-                hideLoader();
-            }, function (error) {
-                hideLoader();
-                qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
-            });
+                $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
+                showLoadMoreButtonIfNecessary();
+            } else {
+                qmLogService.info('Did not get any studies with params ' + JSON.stringify(params));
+                $scope.state.noStudies = true;
+            }
+            hideLoader();
+        }, function (error) {
+            hideLoader();
+            qmLogService.error('predictorsCtrl: Could not get studies: ' + JSON.stringify(error));
+        });
     }
     $scope.loadMore = function () {
         qmService.showBlackRingLoader();
-        if($scope.state.correlationObjects.length){
+        if($scope.state.studiesResponse.studies.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
             populateCorrelationList();
         }
     };
     $scope.refreshList = function () {
         $scope.state.requestParams.offset = 0;
-        qmService.clearCorrelationCache();
         populateCorrelationList();
     };
     $scope.openStore = function(name){
@@ -170,9 +170,9 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
         $scope.openUrl(url);
     };
-    $rootScope.openCorrelationSearchDialog = function($event) {
+    $rootScope.openStudySearchDialog = function($event) {
         $mdDialog.show({
-            controller: CorrelationSearchCtrl,
+            controller: StudySearchCtrl,
             controllerAs: 'ctrl',
             templateUrl: 'templates/dialogs/variable-search-dialog.html',
             parent: angular.element(document.body),
@@ -180,9 +180,9 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             clickOutsideToClose: false // I think true causes auto-close on iOS
         });
     };
-    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log) {
+    var StudySearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log) {
         var self = this;
-        self.correlations        = loadAll();
+        self.studies        = loadAll();
         self.querySearch   = querySearch;
         self.selectedItemChange = selectedItemChange;
         self.searchTextChange   = searchTextChange;
@@ -206,7 +206,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         };
         self.cancel = function() { $mdDialog.cancel(); };
         self.finish = function() {
-            qmService.goToStudyPageViaCorrelationObject(self.correlationObject);
+            qmService.goToStudyPageViaStudy(self.study);
             $mdDialog.hide();
         };
         function querySearch (query) {
@@ -223,8 +223,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 requestParams.effectVariableName = $stateParams.effectVariableName;
                 requestParams.causeVariableName = "**" + query + "**";
             }
-            qmService.getCorrelationsDeferred(requestParams)
-                .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
+            qm.studyHelper.getStudiesFromApi(requestParams, function (studiesResponse) { deferred.resolve(loadAll(studiesResponse.studies)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }
         function searchTextChange(text) { $log.debug('Text changed to ' + text, null); }
@@ -234,25 +233,25 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
             self.buttonText = "Go to Study";
             $log.info(null, 'Item changed to ' + item.name, null);
         }
-        function loadAll(correlations) {
-            if(!correlations){ return []; }
-            return correlations.map( function (correlationObject) {
+        function loadAll(studies) {
+            if(!studies){ return []; }
+            return studies.map( function (study) {
                 if($stateParams.effectVariableName){
                     return {
-                        value: correlationObject.causeVariableName.toLowerCase(),
-                        name: correlationObject.causeVariableName,
-                        correlationObject: correlationObject
+                        value: study.causeVariableName.toLowerCase(),
+                        name: study.causeVariableName,
+                        study: study
                     };
                 }
                 if($stateParams.causeVariableName){
                     return {
-                        value: correlationObject.effectVariableName.toLowerCase(),
-                        name: correlationObject.effectVariableName,
-                        correlationObject: correlationObject
+                        value: study.effectVariableName.toLowerCase(),
+                        name: study.effectVariableName,
+                        study: study
                     };
                 }
             });
         }
     };
-    CorrelationSearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
+    StudySearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
 }]);

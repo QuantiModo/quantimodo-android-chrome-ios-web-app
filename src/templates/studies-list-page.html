@@ -20,7 +20,7 @@
             <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
             <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
         </div>
-        <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
+        <div ng-include="'templates/fragments/studies-list-fragment.html'"></div>
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="col col-75">
                         <h2 style="white-space: normal; text-align: center; line-height: normal; ">
-                            {{state.correlationsExplanation.description}}
+                            {{state.studiesResponse.description}}
                         </h2>
                     </div>
                 </div>
