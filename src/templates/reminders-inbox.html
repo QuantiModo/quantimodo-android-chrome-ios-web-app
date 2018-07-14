@@ -21,7 +21,7 @@
         <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
                 <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
-                    <a style="float: right; margin: 5px;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh"></i></a>
+                    <a style="float: right; margin: 5px; cursor: pointer;" ng-click="refreshTrackingReminderNotifications()"><i class="icon ion-refresh">&nbsp;Refresh</i></a>
                 </div>
                 <div ng-show="!trackingReminderNotification.hide"
                      ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
@@ -49,8 +49,8 @@
                 <div class="row" > <div class="button-bar"> <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="refreshTrackingReminderNotifications()"> <i class="ion-refresh"> &nbsp; Refresh &nbsp;</i> </button> </div> </div>
             </div>
         </div>
-        <div ng-if="state.correlationObjects && state.correlationObjects.length"  class="list card">
-            <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
+        <div ng-if="state.studiesResponse.studies && state.studiesResponse.studies.length"  class="list card">
+            <div ng-include="'templates/fragments/studies-list-fragment.html'"></div>
             <div class="button-bar" >
                 <a class="button button-clear button-positive" ng-click="goToState('app.predictorSearch')" style="text-overflow: clip;"><i class="ion-search"> More Discoveries</i></a>
             </div>

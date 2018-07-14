@@ -11,7 +11,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             requestParams: {},
             hideStudyButton: true,
             loading: true,
-            study: null
+            study: $stateParams.study
         };
         qmService.hideLoader(); // Hide before robot is called in afterEnter
         setAllStateProperties(getScopedStudyIfMatchesVariableNames());
@@ -19,42 +19,22 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     $scope.$on("$ionicView.enter", function() {
         qmLogService.debug('enter state ' + $state.current.name);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        if($stateParams.correlationObject){
-            setAllStatePropertiesAndSaveToLocalStorage($stateParams.correlationObject);
-        }
+        if($stateParams.study){setAllStateProperties($stateParams.study);}
         setupRequestParams();
         getStudy();
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
-        if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
+        if(qm.urlHelper.getParam('studyId')){
+            qmService.stateHelper.previousUrl = window.location.href;
+        } else if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
             qmService.stateHelper.previousUrl = window.location.href;
         }
     });
-    function setAllStateProperties(lastStudyOrCorrelation) {
-        if(!lastStudyOrCorrelation){return;}
-        if(!lastStudyOrCorrelation.statistics && lastStudyOrCorrelation.correlationCoefficient){
-            lastStudyOrCorrelation.statistics = JSON.parse(JSON.stringify(lastStudyOrCorrelation));
-        }
-        if(lastStudyOrCorrelation.statistics){
-            delete lastStudyOrCorrelation.statistics.studyText;
-            delete lastStudyOrCorrelation.statistics.charts;
-            delete lastStudyOrCorrelation.statistics.highcharts;
-            $scope.correlationObject = lastStudyOrCorrelation.statistics;
-        } else {
-            $scope.correlationObject = lastStudyOrCorrelation;
-        }
-        if(lastStudyOrCorrelation.charts){
-            lastStudyOrCorrelation.charts = qm.arrayHelper.convertObjectToArray(lastStudyOrCorrelation.charts);
-        } else {
-            qmLog.info("No charts on: " + JSON.stringify(lastStudyOrCorrelation).substring(0, 140));
-        }
-        $scope.state.study = lastStudyOrCorrelation;
-    }
-    function setAllStatePropertiesAndSaveToLocalStorage(lastStudyOrCorrelation) {
-        if(!lastStudyOrCorrelation){return;}
-        setAllStateProperties(lastStudyOrCorrelation);
-        qm.studyHelper.saveLastStudy(lastStudyOrCorrelation);
+    function setAllStateProperties(study) {
+        if(!study){return;}
+        if(study.statistics){delete study.statistics.studyText;}
+        $scope.state.study = study;
     }
     function matchesVariableNames(study) {
         if(!study){return false;}
@@ -67,48 +47,45 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         return false;
     }
     function getScopedStudyIfMatchesVariableNames() {
-        if(matchesVariableNames($stateParams.correlationObject)){return $stateParams.correlationObject;}
+        if(matchesVariableNames($stateParams.study)){return $stateParams.study;}
         if($scope.state && matchesVariableNames($scope.state.study)){return $scope.state.study;}
-        if(matchesVariableNames(qm.studyHelper.lastStudyOrCorrelation)){return qm.studyHelper.lastStudyOrCorrelation;}
+        if(matchesVariableNames(qm.studyHelper.lastStudy)){return qm.studyHelper.lastStudy;}
     }
     function getStatistics() {
         if($scope.state.study && $scope.state.study.statistics){return $scope.state.study.statistics;}
-        if($stateParams.correlationObject){ return $stateParams.correlationObject;}
+        if($stateParams.study){ return $stateParams.study;}
     }
-    function getStateOrUrlOrRootScopeCorrelationOrRequestParam(paramName) {
+    function getStateOrUrlOrRootScopeOrRequestParam(paramName) {
         if(window.qm.urlHelper.getParam(paramName)){return window.qm.urlHelper.getParam(paramName, window.location.href, true);}
         if($stateParams[paramName]){ return $stateParams[paramName]; }
         if($scope.state.requestParams && $scope.state.requestParams[paramName]){return $scope.state.requestParams[paramName];}
         return null;
     }
     function setupRequestParams() {
-        $scope.state.requestParams.causeVariableName = getCauseVariableName();
-        $scope.state.requestParams.effectVariableName = getEffectVariableName();
-        $scope.state.requestParams.userId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("userId");
-        $scope.state.requestParams.studyClientId = getStateOrUrlOrRootScopeCorrelationOrRequestParam("studyClientId");
+        return $scope.state.requestParams = getRequestParams();
+    }
+    function getRequestParams(recalculate) {
+        var requestParams = {};
+        requestParams.causeVariableName = getCauseVariableName();
+        requestParams.effectVariableName = getEffectVariableName();
+        requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
+        requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        requestParams.includeCharts = true;
+        if(recalculate || qm.urlHelper.getParam('recalculate')){requestParams.recalculate = true;}
+        return requestParams;
     }
     $scope.refreshStudy = function() {
-        qmService.clearCorrelationCache();
         getStudy(true);
         qm.windowHelper.scrollToTop();
     };
-    $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: getStatistics()}); };
     if (!clipboard.supported) {
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
-    function getStudyLinks() {
-        if(getScopedStudyIfMatchesVariableNames().studyLinks){return getScopedStudyIfMatchesVariableNames().studyLinks;}
-    }
-    function getStudyLinkStatic() {
-        if(getStudyLinks()){return getStudyLinks().studyLinkStatic;}
-    }
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = "Copied!";
-        var studyLink;
-        if(causeVariableName && effectVariableName){studyLink = qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName);}
-        if(getStudyLinkStatic()){studyLink = getStudyLinkStatic(); }
+        var studyLink = qmService.getStudyLinkStatic(causeVariableName, effectVariableName, $scope.state.study);
         clipboard.copyText(studyLink);
     };
     function addWikipediaInfo() {
@@ -116,7 +93,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         $scope.causeWikiImage = null;
         $scope.effectWikiEntry = null;
         $scope.effectWikiImage = null;
-        var causeSearchTerm = getStatistics().causeVariableCommonAlias;
+        var causeSearchTerm = getCauseVariable().commonAlias;
         if(!causeSearchTerm){ causeSearchTerm = $scope.state.requestParams.causeVariableName; }
         wikipediaFactory.searchArticlesByTitle({
             term: causeSearchTerm,
@@ -132,7 +109,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 qmLogService.error(error);
             }
         }).catch(function (error) { qmLogService.error(error); });
-        var effectSearchTerm = getStatistics().effectVariableCommonAlias;
+        var effectSearchTerm = getEffectVariable().commonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
         wikipediaFactory.searchArticlesByTitle({
             term: effectSearchTerm,
@@ -150,40 +127,47 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }).catch(function (error) { qmLogService.error(error); });
     }
     $scope.weightedPeriod = 5;
-    function getCorrelationObjectIfNecessary(){
+    function getLocalStudyIfNecessary(){
         if(getScopedStudyIfMatchesVariableNames()){return;}
-        qmService.getCorrelationsDeferred($scope.state.requestParams)
-            .then(function (data) {
-                if(data.correlations.length) {setAllStatePropertiesAndSaveToLocalStorage(data.correlations[0]);}
+        qm.studyHelper.getStudyFromLocalForageOrGlobals(setupRequestParams(), function (study) {
+            setAllStateProperties(study);
+        }, function (error) {
+            qmLog.info(error + " So making abstract studies request without charts");
+            qm.studyHelper.getStudiesFromApi($scope.state.requestParams, function (studiesResponse) {
+                if(studiesResponse.studies.length) {setAllStateProperties(studiesResponse.studies[0]);}
             }, function (error) {
-                qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                qmLogService.error('predictorsCtrl: Could not get abstract studies without charts: ' + JSON.stringify(error));
             });
+        });
     }
     function getStudy(recalculate) {
-        if(!getCauseVariableName() || !getEffectVariableName()){
-            qmLogService.error('Cannot get study. Missing cause or effect variable name.');
-            qmService.goToState(qmStates.studyCreation);
-            return;
-        }
-        getCorrelationObjectIfNecessary(); // Get it quick so they have something to look at while waiting for charts
+        getLocalStudyIfNecessary(); // Get it quick so they have something to look at while waiting for charts
         $scope.loadingCharts = true;
-        qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
+        function successHandler(study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
-            setAllStatePropertiesAndSaveToLocalStorage(study);
+            setAllStateProperties(study);
             $scope.loadingCharts = false;
             setActionSheetMenu();
-        }, function (error) {
+        }
+        function errorHandler(error) {
             qmLogService.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
             if(recalculate || qm.urlHelper.getParam('recalculate')){$scope.state.requestParams.recalculate = true;}
-        });
+            if(!$scope.state.study){qmService.goToState(qmStates.studyCreation);}
+        }
+        if(recalculate){
+            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate), function (study) {successHandler(study);}, function (error) {errorHandler(error);});
+        } else {
+            qm.studyHelper.getStudyFromLocalStorageOrApi(getRequestParams(recalculate), function (study) {successHandler(study)}, function (error) {errorHandler(error);});
+        }
     }
     function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
     function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
+    function getStudyId() {return qm.studyHelper.getStudyId($stateParams, $scope, $rootScope);}
     function getCauseVariable() {return qm.studyHelper.getCauseVariable($stateParams, $scope, $rootScope);}
     function getEffectVariable() {return qm.studyHelper.getEffectVariable($stateParams, $scope, $rootScope);}
     function setActionSheetMenu(){

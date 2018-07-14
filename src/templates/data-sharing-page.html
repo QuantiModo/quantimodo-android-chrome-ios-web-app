@@ -5,71 +5,103 @@
         <div ng-include="'templates/input/filter-search-field.html'"></div>
         <div ng-cloak>
             <md-content>
-                <md-tab label="Studies">
-                    <md-card>
-                        <md-list class="md-dense" flex>
-                            <md-list-item ng-repeat="client in user.authorizedClients.studies | orderBy : 'appDisplayName'"
-                                          ng-click="openUrl(client.homepageUrl)" class="noright">
-                                <div ng-include="'templates/items/client-item.html'"></div>
-                            </md-list-item>
-                            <md-list-item class="secondary-button-padding" ng-click="goToState('app.studies')">
-                                <p>FIND NEW STUDIES</p>
-                            </md-list-item>
-                        </md-list>
-                    </md-card>
-                </md-tab>
-                <md-tabs md-dynamic-height md-border-bottom>
-                    <md-tab label="Apps">
-                        <md-list class="md-dense" flex>
-                            <md-list-item ng-repeat="app in user.authorizedClients.apps | orderBy : 'appDisplayName'" class="noright">
-                                <img alt="{{ app.appDisplayName }}" ng-src="{{ (app.iconUrl) ? app.iconUrl : 'https://placehold.it/512x512'  }}" class="md-avatar" />
-                                <div class="md-list-item-text">
-                                    <h4>{{ app.appDisplayName }}</h4>
-                                    <p>{{ app.appDescription }}</p>
-                                </div>
-                                <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(app.homepageUrl)" aria-label="preview">
-                                    <md-icon class="ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></md-icon>
-                                </md-button>
-                                <md-button ng-if="app.appStatus.betaDownloadLinks.chromeExtension" class="md-secondary md-icon-button" style="font-size: 30px;"
-                                           ng-href="{{app.appStatus.betaDownloadLinks.chromeExtension}}" aria-label="edit">
-                                    <md-icon class="ion-social-chrome"><md-tooltip md-direction="down">Download Chrome Extension</md-tooltip></md-icon>
-                                </md-button>
-                                <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(app.clientId)" aria-label="delete">
-                                    <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
-                                </md-button>
-                            </md-list-item>
-                            <md-list-item class="secondary-button-padding" ng-click="openNewAppModalPopup()">
-                                <p>FIND NEW APPS</p>
-                            </md-list-item>
-                        </md-list>
-                    </md-tab>
-                    <md-tab label="Individuals">
-                        <md-card>
-                            <md-list class="md-dense" flex>
-                                <md-list-item ng-repeat="app in user.authorizedClients.individuals | orderBy : 'appDisplayName'"
-                                              ng-click="openUrl('study?studyClientId='+app.clientId)" class="noright">
-                                    <img alt="{{ app.appDisplayName }}" ng-src="{{ (app.iconUrl) ? app.iconUrl : 'https://placehold.it/512x512'  }}"
-                                         class="md-avatar" />
-                                    <div class="md-list-item-text">
-                                        <h4>{{ app.appDisplayName }}</h4>
-                                        <p>{{ app.appDescription }}</p>
+                <md-progress-linear md-mode="indeterminate" ng-if="!state.authorizedClients"></md-progress-linear>
+                <md-card id="Individuals">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Individuals with Access to Your Data
+                            <span flex></span>
+                        </div>
+                    </md-toolbar>
+                    <md-content layout-padding>
+                        <form name="invitationForm">
+                            <md-input-container class="md-block">
+                                <label>Enter email of person to share with</label>
+                                <input required type="email" name="emailAddress" ng-model="state.invitation.emailAddress"
+                                       minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                                <div class="hint">Email address of a friend, family member, or health-care provider who you would like to be able to access your measurements</div>
+                                <div ng-messages="invitationForm.emailAddress.$error" role="alert">
+                                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                                        Your email must be between 10 and 100 characters long and look like an e-mail address.
                                     </div>
-                                    <md-button class="md-secondary md-icon-button" style="font-size: 30px;"
-                                               ng-click="openUrl('study?studyClientId='+app.clientId)" aria-label="preview">
-                                        <md-icon class="ion-android-open"><md-tooltip md-direction="down">See Results</md-tooltip></md-icon>
-                                    </md-button>
-                                    <md-button class="md-secondary md-icon-button" style="font-size: 30px;"
-                                               ng-click="state.revokeAccess(app.clientId)" aria-label="delete">
-                                        <md-icon class="ion-close-round"><md-tooltip md-direction="down">Leave Studies</md-tooltip></md-icon>
-                                    </md-button>
-                                </md-list-item>
-                                <md-list-item class="secondary-button-padding" ng-click="openNewAppModalPopup()">
-                                    <p>INVITE SOMEONE TO VIEW YOUR DATA</p>
-                                </md-list-item>
-                            </md-list>
-                        </md-card>
-                    </md-tab>
-                </md-tabs>
+                                </div>
+                                <div style="text-align: center;">
+                                    <md-button class="icon icon-left ion-plus-round" ng-click="state.sendSharingInvitation()">&nbsp; Send Invitation</md-button>
+                                </div>
+                            </md-input-container>
+                        </form>
+                    </md-content>
+                    <md-list class="md-dense" ng-if="state.authorizedClients.individuals && state.authorizedClients.individuals.length" flex>
+                        <md-list-item ng-repeat="client in state.authorizedClients.individuals | orderBy : 'appDisplayName' | filter:state.searchText"
+                                      ng-click="openUrl(client.homepageUrl)" ng-if="!client.hide" class="noright">
+                            <img alt="{{ client.appDisplayName }}" ng-src="{{ client.iconUrl }}" class="md-avatar" />
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(client.homepageUrl)" aria-label="preview">
+                                <md-icon class="ion-android-open"><md-tooltip md-direction="down">More Details</md-tooltip></md-icon>
+                            </md-button>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(client)" aria-label="delete">
+                                <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                </md-card>
+                <md-card id="Studies">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Studies
+                            <span flex></span>
+                            <md-button class="icon icon-left ion-plus-round" ng-click="goToState('app.studies')">&nbsp; Join a Study</md-button>
+                        </div>
+                    </md-toolbar>
+                    <md-list class="md-dense" flex>
+                        <md-list-item ng-repeat="client in state.authorizedClients.studies | orderBy : 'appDisplayName' | filter:state.searchText"
+                                      ng-click="openUrl(client.homepageUrl)" ng-if="!client.hide" class="noright">
+                            <img alt="{{ client.appDisplayName }}" ng-src="{{ client.iconUrl }}" class="md-avatar" />
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(client.homepageUrl)" aria-label="preview">
+                                <md-icon class="ion-android-open"><md-tooltip md-direction="down">More Details</md-tooltip></md-icon>
+                            </md-button>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(client)" aria-label="delete">
+                                <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                    <md-button ng-if="!state.authorizedClients.studies || !state.authorizedClients.studies.length"
+                               class="icon icon-left ion-plus-round" ng-click="goToState('app.studies')">&nbsp; Join a Study</md-button>
+                </md-card>
+                <md-card id="Apps">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Apps
+                            <span flex></span>
+                            <md-button class="icon icon-left ion-plus-round" ng-click="goToState('app.studies')">&nbsp; Find an App</md-button>
+                        </div>
+                    </md-toolbar>
+                    <md-list class="md-dense" flex>
+                        <md-list-item ng-repeat="client in state.authorizedClients.apps | orderBy : 'appDisplayName' | filter:state.searchText"
+                                      ng-click="openUrl(client.homepageUrl)" ng-if="!client.hide" class="noright">
+                            <img alt="{{ client.appDisplayName }}" ng-src="{{ client.iconUrl }}" class="md-avatar" />
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="openUrl(client.homepageUrl)" aria-label="preview">
+                                <md-icon class="ion-android-open"><md-tooltip md-direction="down">More Details</md-tooltip></md-icon>
+                            </md-button>
+                            <md-button class="md-secondary md-icon-button" style="font-size: 30px;" ng-click="state.revokeAccess(client)" aria-label="delete">
+                                <md-icon class="ion-close-round"><md-tooltip md-direction="down">Revoke Access</md-tooltip></md-icon>
+                            </md-button>
+                        </md-list-item>
+                        <md-button ng-if="!state.authorizedClients.apps || !state.authorizedClients.apps.length"
+                                   class="icon icon-left ion-plus-round" ng-click="goToState('app.studies')">&nbsp; Find an App</md-button>
+                    </md-list>
+                </md-card>
             </md-content>
         </div>
     </ion-content>

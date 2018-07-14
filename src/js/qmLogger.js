@@ -17,7 +17,7 @@ window.qmLog = {
             qmLog.name = body.errorMessage || body.message || JSON.stringify(body);
         }
         qmLog.name = name || message;
-        qmLog.name = "QM: " + name;
+        if(qm.platform.isMobile()){qmLog.name = "QM: " + name;} // Use for filtering in LogCat
     },
     message: null,
     setMessage: function(name, message) {
@@ -116,7 +116,7 @@ window.qmLog = {
     error: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.error("ERROR: " + qmLog.getConsoleLogString(), metaData);
+        console.error(qmLog.getConsoleLogString("ERROR"), metaData);
         qmLog.metaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, qmLog.metaData, qmLog.stackTrace);
         function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
             if(typeof bugsnagClient === "undefined") {
@@ -182,17 +182,17 @@ window.qmLog = {
     warn: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.warn("WARNING: " + qmLog.getConsoleLogString(), qmLog.metaData);
+        console.warn(qmLog.getConsoleLogString("WARNING"), qmLog.metaData);
     },
     info: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("info")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.info("INFO: " + qmLog.getConsoleLogString(), qmLog.metaData);
+        console.info(qmLog.getConsoleLogString("INFO"), qmLog.metaData);
     },
     debug: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("debug")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.debug("DEBUG: " + qmLog.getConsoleLogString(), qmLog.metaData);
+        console.debug(qmLog.getConsoleLogString("DEBUG"), qmLog.metaData);
     },
     errorOrInfoIfTesting: function (name, message, metaData, stackTrace) {
         message = message || name;
@@ -204,7 +204,7 @@ window.qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
-    getConsoleLogString: function (){
+    getConsoleLogString: function (logLevel){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
         if(qm.platform.isMobile() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
@@ -216,6 +216,7 @@ window.qmLog = {
         } catch (error) {
             console.error("Could not stringify log meta data", error);
         }
+        if(qm.platform.isMobile()){logString = logLevel + ": " + logString;}
         return logString;
     },
     shouldWeLog: function(providedLogLevelName) {
@@ -233,7 +234,7 @@ window.qmLog = {
             }
             var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
             if(qm.getUser()){
-                url = qm.urlHelper.addUrlQueryParamsToUrl({userEmail: qm.getUser().email}, url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString({userEmail: qm.getUser().email}, url);
             }
             return url;
         }
@@ -272,8 +273,9 @@ window.qmLog = {
         metaData.window_location_href = window.location.href;
         metaData.window_location_origin = window.location.origin;
         if (!metaData.groupingHash) {metaData.groupingHash = name;}
-        if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
-        if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
+        // This causes "access to strict mode caller function is censored" in Firefox
+        //if (!metaData.callerFunctionName) {metaData.callerFunctionName = getCallerFunctionName();}
+        //if (!metaData.calleeFunctionName) {metaData.calleeFunctionName = getCalleeFunctionName();}
         if (stackTrace) {
             metaData.stackTrace = stackTrace;
         } else {

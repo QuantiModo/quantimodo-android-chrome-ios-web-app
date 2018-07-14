@@ -9,7 +9,7 @@
                 <div ng-hide="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button id="joinStudyButton" class="button button-outline button-block icon-left ion-ios-people button-positive"
-                                 ng-click="joinStudy(state.study.statistics)">
+                                 ng-click="goToJoinStudyPageViaStudy(state.study)">
                             Join this Study
                         </button>
                     </div>
@@ -28,7 +28,7 @@
                 <div id="causeSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.causeVariableIonIcon}} button-positive"
-                                id="predictorVariableSettingsButton" ng-click="goToVariableSettingsForCauseVariable(state.study.statistics)">
+                                id="causeVariableSettingsButton" ng-click="goToVariableSettingsForCauseVariable(state.study.statistics)">
                             {{state.requestParams.causeVariableName}} Settings
                         </button>
                     </div>
@@ -36,15 +36,15 @@
                 <div id="effectSettingsButton" ng-show="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left {{state.study.studyImages.effectVariableIonIcon}} button-positive"
-                                id="outcomeVariableSettingsButton" ng-click="goToVariableSettingsForEffectVariable(state.study.statistics)">
+                                id="effectVariableSettingsButton" ng-click="goToVariableSettingsForEffectVariable(state.study.statistics)">
                             {{state.requestParams.effectVariableName}} Settings
                         </button>
                     </div>
                 </div>
                 <div id="publicStudyToggle" ng-show="state.study.userId && user && state.study.userId === user.id" class="card sign-in" >
-                    <ion-toggle ng-model="state.study.statistics.shareUserMeasurements" ng-change="toggleStudyShare(state.study.statistics)">
-                        <i ng-if="!state.study.statistics.shareUserMeasurements" class="icon ion-locked">&nbsp Study is Private</i>
-                        <i ng-if="state.study.statistics.shareUserMeasurements" class="icon ion-unlocked">&nbsp Study is Public</i>
+                    <ion-toggle ng-model="state.study.studySharing.shareUserMeasurements" ng-change="toggleStudyShare(state.study.statistics)">
+                        <i ng-if="!state.study.studySharing.shareUserMeasurements" class="icon ion-locked">&nbsp Study is Private</i>
+                        <i ng-if="state.study.studySharing.shareUserMeasurements" class="icon ion-unlocked">&nbsp Study is Public</i>
                     </ion-toggle>
                     <!--TODO: Add clipboard plugin for mobile-->
                     <label ng-click="copyStudyUrlToClipboard()" class="item item-content" ng-if="!platform.isMobile && state.study.studyLinks.shareUserMeasurements === true && state.study.studyLinkStatic">
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div id="causeVariableCharts" style="text-align: center;">
-                    <div ng-repeat="(key, causeChart) in state.causeVariable.charts" ng-if="chart.highchartConfig">
+                    <div ng-repeat="(key, causeChart) in state.study.causeVariable.charts" ng-if="causeChart.highchartConfig">
                         <h2>{{causeChart.chartTitle}}</h2>
                         <highchart id="{{causeChart.chartId}}" config="causeChart.highchartConfig"></highchart>
                         <p ng-if="causeChart.explanation">{{causeChart.explanation}}</p>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div id="effectVariableCharts" style="text-align: center;">
-                    <div ng-repeat="(key, effectChart) in state.effectVariable.charts" ng-if="effectChart.highchartConfig">
+                    <div ng-repeat="(key, effectChart) in state.study.effectVariable.charts" ng-if="effectChart.highchartConfig">
                         <h2>{{effectChart.chartTitle}}</h2>
                         <highchart id="{{effectChart.chartId}}" config="effectChart.highchartConfig"></highchart>
                         <p ng-if="effectChart.explanation">{{effectChart.explanation}}</p>
