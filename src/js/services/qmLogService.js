@@ -13,7 +13,7 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
     var qmLogService = {};
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
-        qmLog.context = $state.current.name;
+        qmLog.globalMetaData.context = $state.current.name;
         return message;
     }
     qmLogService.debug = function (name, message, metaData, stackTrace) {

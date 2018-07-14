@@ -3997,7 +3997,7 @@ window.qm = {
                     qmLog.info("userIsOlderThanXSeconds: No userRegistered property to check if older than "+secondsCutoff +" seconds");
                     return;
                 }
-                var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds - qm.timeHelper.universalConversionToUnixTimeSeconds(user.userRegistered);
+                var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds() - qm.timeHelper.universalConversionToUnixTimeSeconds(user.userRegistered);
                 qmLog.info("userIsOlderThanXSeconds: User is " + ageInSeconds + " seconds old. createdAt: " + user.userRegistered);
                 callback(ageInSeconds > secondsCutoff);
             });

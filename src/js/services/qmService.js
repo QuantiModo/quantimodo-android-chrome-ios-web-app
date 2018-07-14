@@ -11,30 +11,91 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $ionicActionSheet) {
     var allStates = $state.get();
     var qmService = {
-        ads: {
-            initialize: function(force){
+        adBanner: {
+            adPublisherIds: {
+                ios : {
+                    banner : 'ca-app-pub-2427218021515520/1775529603',
+                    interstitial : ''
+                },
+                android : {
+                    banner : 'ca-app-pub-2427218021515520/1775529603',
+                    interstitial : ''
+                }
+            },
+            initialize: function(){
                 if(!qm.platform.isMobile()){
                     qmLog.info("admob: Not Initializing because not on mobile...");
                     return false;
                 }
                 qmLog.info("admob: Checking if user is older than a day...");
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                if(qmService.adBanner.floatingHotpot.isInstalled()){
+                    qmService.adBanner.floatingHotpot.createBannerView();
+                } else if (typeof admob.banner !== "undefined"){
+                    admob.banner.config({id: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,});
+                    admob.banner.prepare(); // Create banner
+                } else {
+                    admob.setOptions({
+                        publisherId:      qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,
+                        interstitialAdId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].interstitial,
+                        //tappxIdiOS:       "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
+                        //tappxIdAndroid:   "/XXXXXXXXX/Pub-XXXX-Android-AAAA",
+                        //tappxShare:       0.5,
+                    });
+                }
+            },
+            show: function(force){
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                qmService.adBanner.initialize();
                 qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
                     if(!OlderThan1Day && !force) {
-                        qmLog.info("admob: Not initializing admob because user not older than 1 day");
-                        return;
-                    }
-                    if(typeof window.plugins.AdMob === "undefined"){
-                        qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                        qmLog.info("admob: Not showing admob because user not older than 1 day");
                         return;
                     }
                     if(qm.getUser().loginName === 'bucket_box'){
-                        qmLog.info("admob: Not initializing because it's an Apple test user");
+                        qmLog.info("admob: Not showing because it's an Apple test user");
                         return;
                     }
                     qmLog.info("admob: Initializing admob and creating banner...");
+                    if(qmService.adBanner.floatingHotpot.isInstalled()){
+                        window.plugins.AdMob.showAd(true);
+                    } else if(typeof admob.createBannerView !== "undefined"){
+                        admob.createBannerView();
+                    } else {
+                        admob.banner.show();
+                    }
+                });
+            },
+            hide: function(){
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                qmLog.info("Hiding ad");
+                if(qmService.adBanner.floatingHotpot.isInstalled()){
+                    window.plugins.AdMob.showAd(false);
+                } else if(typeof admob.destroyBannerView !== "undefined"){
+                    admob.destroyBannerView();
+                } else {
+                    admob.banner.hide();
+                }
+            },
+            admobPluginInstalled: function(){
+                if(typeof admob === "undefined" && !qmService.adBanner.floatingHotpot.isInstalled()){
+                    qmLog.error("admob not installed on mobile");
+                    return false;
+                }
+                return true;
+            },
+            floatingHotpot: {
+                isInstalled: function(){
+                    return typeof window.plugins.AdMob !== "undefined";
+                },
+                createBannerView: function(){
+                    if(!qmService.adBanner.floatingHotpot.isInstalled()){
+                        qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                        return;
+                    }
                     window.plugins.AdMob.setOptions( {
-                        publisherId: 'ca-app-pub-2427218021515520/1775529603',
-                        interstitialAdId: '',
+                        publisherId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,
+                        interstitialAdId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].interstitial,
                         bannerAtTop: false, // set to true, to put banner at top
                         overlap: false, // set to true, to allow banner overlap webview
                         offsetTopBar: false, // set to true to avoid ios7 status bar overlap
@@ -42,7 +103,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         autoShow: true // auto show interstitial ad when loaded
                     });
                     window.plugins.AdMob.createBannerView(); // display the banner at startup
-                });
+                }
             }
         },
         api: {
@@ -572,7 +633,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 chcp.installUpdate(function(error) {
                     qmService.deploy.setVersionInfo();
                     if (error) {
-                        qmService.deploy.chcpInfo.error = error;
+                        qmLog.globalMetaData.chcpInfo.error = error;
                         qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
                         qmService.showMaterialAlert('Update error ' + error.code)
                     } else {
@@ -583,6 +644,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             updateCallback: function(error, data) {
+                if(error){qmLog.globalMetaData.chcpInfo.error = error;}
+                if(data){qmLog.globalMetaData.chcpInfo.data = data;}
                 if (error) {
                     qmLog.error("CHCP UPDATE ERROR: ", error);
                 } else {
@@ -607,17 +670,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setVersionInfo: function () {
                 if(!qmService.deploy.chcpIsDefined()){return false;}
                 chcp.getVersionInfo(function(error, versionInfo){
+                    if(error){
+                        qmLog.globalMetaData.chcpInfo.error = error;
+                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
+                    }
+                    if(versionInfo){qmLog.globalMetaData.chcpInfo.versionInfo = versionInfo;}
                     qm.api.getViaXhrOrFetch('chcp.json', function(chcpConfig){
                         if(!chcpConfig){qmLog.error("No chcp.json config!");}
-                        qmService.deploy.chcpInfo = {data: versionInfo, error: error, chcpConfig: chcpConfig};
-                        if (error) {qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmService.deploy.chcpInfo));}
-                        qmLog.info('CHCP VERSION DATA: ', qmService.deploy.chcpInfo);
+                        if(chcpConfig){qmLog.globalMetaData.chcpInfo.chcpConfig = chcpConfig;}
+                        qmLog.info('CHCP VERSION DATA: ', qmLog.globalMetaData.chcpInfo);
                     }, function (error) {
+                        if(error){
+                            qmLog.globalMetaData.chcpInfo.error = error;
+                            qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
+                        }
                         if(errorHandler){errorHandler(error);}
                     });
                 });
-            },
-            chcpInfo: null
+            }
         },
         email: {
             updateEmailAndExecuteCallback: function (callback){
@@ -2621,7 +2691,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("Setting user to: ", user, user);
         qmService.rootScope.setUser(user);
         if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
-            qmService.ads.initialize();
+            qmService.adBanner.initialize();
+
         } else {
             qmLog.info("admob: Not initializing for some reason")
         }
@@ -6241,7 +6312,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmService.deploy.chcpInfo) + '\r\n';
+            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmLog.globalMetaData.chcpInfo) + '\r\n';
             template = addSnapShotList(template);
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
