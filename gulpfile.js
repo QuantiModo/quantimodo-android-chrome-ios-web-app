@@ -2989,6 +2989,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
+        'cordova-hcp-clean-config-files',
         'prepareRepositoryForAndroidWithoutCleaning',
         callback);
 });
@@ -3135,11 +3136,14 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('cordova-hcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
+function chcpCleanConfigFiles(){
+    return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
+}
 gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
-    cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
+    chcpCleanConfigFiles();
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
         execute("gulp copyOverrideFiles", function () {
             execute("cordova-hcp server", function () {
@@ -3148,6 +3152,9 @@ gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], functio
             }, false, false);
         }, false, false);
     }, false, false);
+});
+gulp.task('cordova-hcp-clean-config-files', [], function () {
+    return chcpCleanConfigFiles();
 });
 gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
     if(!qmGit.isDevelop() && !qmGit.isMaster()){
