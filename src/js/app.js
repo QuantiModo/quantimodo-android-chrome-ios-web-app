@@ -749,7 +749,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -770,7 +770,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -791,7 +791,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -811,7 +811,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -831,7 +831,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -853,7 +853,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -875,7 +875,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -897,7 +897,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -919,7 +919,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -940,7 +940,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -961,7 +961,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })

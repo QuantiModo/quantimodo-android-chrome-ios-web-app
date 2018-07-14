@@ -1,7 +1,7 @@
-angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
+angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
     "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog", "$timeout",
     function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService, $rootScope, $ionicActionSheet, $mdDialog, $timeout) {
-    $scope.controller_name = "PredictorsCtrl";
+    $scope.controller_name = "StudiesCtrl";
     $scope.state = {
         variableName: null,
         studiesResponse: {studies: []},
@@ -36,13 +36,13 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug('CANCELLED', null); },
                 buttonClicked: function(index) {
-                    if(index === 0){populateCorrelationList('-statisticalSignificance');}
-                    if(index === 1){populateCorrelationList('-qmScore');}
-                    if(index === 2){populateCorrelationList('correlationCoefficient');}
-                    if(index === 3){populateCorrelationList('-correlationCoefficient');}
-                    if(index === 4){populateCorrelationList('-numberOfUsers');}
-                    if(index === 5){populateCorrelationList('pValue');}
-                    if(index === 6){populateCorrelationList('-optimalPearsonProduct');}
+                    if(index === 0){populateStudyList('-statisticalSignificance');}
+                    if(index === 1){populateStudyList('-qmScore');}
+                    if(index === 2){populateStudyList('correlationCoefficient');}
+                    if(index === 3){populateStudyList('-correlationCoefficient');}
+                    if(index === 4){populateStudyList('-numberOfUsers');}
+                    if(index === 5){populateStudyList('pValue');}
+                    if(index === 6){populateStudyList('-optimalPearsonProduct');}
                     if(index === 7){$scope.refreshList();}
                     if(index === 8){qmService.goToState(qmStates.settings);}
                     return true;
@@ -68,9 +68,56 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         }
         if($stateParams.valence === 'positive'){$scope.state.requestParams.correlationCoefficient = "(gt)0";}
         if($stateParams.valence === 'negative'){$scope.state.requestParams.correlationCoefficient = "(lt)0";}
-        if($stateParams.effectVariableName){$scope.state.title = "Predictors";} else {$scope.state.title = "Outcomes";}
-        populateCorrelationList();
+        setTitle();
+        populateStudyList();
     });
+    function populateStudyList(newSortParam) {
+        if(newSortParam){
+            $scope.state.studiesResponse.studies = [];
+            qmLogService.debug('Sort by ' + newSortParam);
+            $scope.state.requestParams.sort = newSortParam;
+        }
+        $scope.searching = true;
+        var params = $scope.state.requestParams;
+        params.open = getOpenParam();
+        params.created = getCreatedParam();
+        params.limit = 10;
+        qmLog.info('Getting studies with params ' + JSON.stringify(params));
+        qm.studyHelper.getStudiesFromApi(params, function (studiesResponse) {
+            if(studiesResponse){$scope.state.studiesResponse = studiesResponse;}
+            if(studiesResponse.studies.length) {
+                qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
+                qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " + studiesResponse.studies[0].effectVariableName);
+                if($scope.state.requestParams.offset){
+                    $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
+                } else {
+                    $scope.state.studiesResponse.studies = studiesResponse.studies;
+                }
+                $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
+                showLoadMoreButtonIfNecessary();
+            } else {
+                qmLogService.info('Did not get any studies with params ' + JSON.stringify(params));
+                $scope.state.noStudies = true;
+            }
+            hideLoader();
+        }, function (error) {
+            hideLoader();
+            qmLogService.error('studiesCtrl: Could not get studies: ' + JSON.stringify(error));
+        });
+    }
+    function getCreatedParam() {
+        return qm.parameterHelper.getStateUrlRootScopeOrRequestParam('created', $stateParams, $scope, $rootScope);
+    }
+    function getOpenParam() {
+        return qm.parameterHelper.getStateUrlRootScopeOrRequestParam('open', $stateParams, $scope, $rootScope);
+    }
+    function setTitle() {
+        $scope.state.title = "Studies";
+        if(getEffectVariableName()){$scope.state.title = "Predictors";}
+        if(getCauseVariableName()) {$scope.state.title = "Outcomes";}
+        if(getCreatedParam()) {$scope.state.title = "Your Studies";}
+        if(getOpenParam()) {$scope.state.title = "Open Studies";}
+    }
     function variablesHaveChanged() {
         if(!$scope.state.studiesResponse.studies || !$scope.state.studiesResponse.studies.length){return true;}
         if(getEffectVariableName() && $scope.state.requestParams.effectVariableName &&
@@ -104,7 +151,7 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         if($scope.outcomeList) { $stateParams.effectVariableName = '**' + $scope.data.search + '**';
         } else { $stateParams.causeVariableName = '**' + $scope.data.search + '**'; }
         $scope.state.requestParams.offset = null;
-        populateCorrelationList();
+        populateStudyList();
     };
     function showLoadMoreButtonIfNecessary() {
         if($scope.state.studiesResponse.studies.length && $scope.state.studiesResponse.studies.length%$scope.state.requestParams.limit === 0){
@@ -119,50 +166,17 @@ angular.module('starter').controller('PredictorsCtrl', ["$scope", "$ionicLoading
         $scope.searching = false;
         $scope.$broadcast('scroll.infiniteScrollComplete');
     }
-    function populateCorrelationList(newSortParam) {
-        if(newSortParam){
-            $scope.state.studiesResponse.studies = [];
-            qmLogService.debug('Sort by ' + newSortParam);
-            $scope.state.requestParams.sort = newSortParam;
-        }
-        $scope.searching = true;
-        var params = $scope.state.requestParams;
-        params.open = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('open', $stateParams, $scope, $rootScope);
-        params.created = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('created', $stateParams, $scope, $rootScope);
-        params.limit = 10;
-        qmLog.info('Getting studies with params ' + JSON.stringify(params));
-        qm.studyHelper.getStudiesFromApi(params, function (studiesResponse) {
-            if(studiesResponse){$scope.state.studiesResponse = studiesResponse;}
-            if(studiesResponse.studies.length) {
-                qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
-                qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " + studiesResponse.studies[0].effectVariableName);
-                if($scope.state.requestParams.offset){
-                    $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
-                } else {
-                    $scope.state.studiesResponse.studies = studiesResponse.studies;
-                }
-                $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
-                showLoadMoreButtonIfNecessary();
-            } else {
-                qmLogService.info('Did not get any studies with params ' + JSON.stringify(params));
-                $scope.state.noStudies = true;
-            }
-            hideLoader();
-        }, function (error) {
-            hideLoader();
-            qmLogService.error('predictorsCtrl: Could not get studies: ' + JSON.stringify(error));
-        });
-    }
+
     $scope.loadMore = function () {
         qmService.showBlackRingLoader();
         if($scope.state.studiesResponse.studies.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
-            populateCorrelationList();
+            populateStudyList();
         }
     };
     $scope.refreshList = function () {
         $scope.state.requestParams.offset = 0;
-        populateCorrelationList();
+        populateStudyList();
     };
     $scope.openStore = function(name){
         qmLogService.debug('open store for ', null, name); // make url
