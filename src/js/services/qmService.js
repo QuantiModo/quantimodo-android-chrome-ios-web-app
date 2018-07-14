@@ -11,27 +11,51 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $ionicActionSheet) {
     var allStates = $state.get();
     var qmService = {
-        ads: {
-            initialize: function(force){
+        adBanner: {
+            initialize: function(){
                 if(!qm.platform.isMobile()){
                     qmLog.info("admob: Not Initializing because not on mobile...");
                     return false;
                 }
                 qmLog.info("admob: Checking if user is older than a day...");
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                admob.banner.config({id: 'ca-app-pub-2427218021515520/1775529603',});
+                admob.banner.prepare(); // Create banner
+            },
+            show: function(force){
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                qmService.adBanner.initialize();
                 qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
                     if(!OlderThan1Day && !force) {
-                        qmLog.info("admob: Not initializing admob because user not older than 1 day");
+                        qmLog.info("admob: Not showing admob because user not older than 1 day");
                         return;
                     }
+                    if(qm.getUser().loginName === 'bucket_box'){
+                        qmLog.info("admob: Not showing because it's an Apple test user");
+                        return;
+                    }
+                    qmLog.info("admob: Initializing admob and creating banner...");
+                    //qmService.adBanner.floatingHotpot.createBannerView();
+                    admob.banner.show();
+                });
+            },
+            hide: function(){
+                if(!qmService.adBanner.admobPluginInstalled()){return;}
+                admob.banner.hide();
+            },
+            admobPluginInstalled: function(){
+                if(typeof admob === "undefined"){
+                    qmLog.error("admob: window.plugins.AdMob undefined on mobile");
+                    return false;
+                }
+                return true;
+            },
+            floatingHotpot: {
+                createBannerView: function(){
                     if(typeof window.plugins.AdMob === "undefined"){
                         qmLog.error("admob: window.plugins.AdMob undefined on mobile");
                         return;
                     }
-                    if(qm.getUser().loginName === 'bucket_box'){
-                        qmLog.info("admob: Not initializing because it's an Apple test user");
-                        return;
-                    }
-                    qmLog.info("admob: Initializing admob and creating banner...");
                     window.plugins.AdMob.setOptions( {
                         publisherId: 'ca-app-pub-2427218021515520/1775529603',
                         interstitialAdId: '',
@@ -42,7 +66,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         autoShow: true // auto show interstitial ad when loaded
                     });
                     window.plugins.AdMob.createBannerView(); // display the banner at startup
-                });
+                }
             }
         },
         api: {
@@ -2621,7 +2645,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("Setting user to: ", user, user);
         qmService.rootScope.setUser(user);
         if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
-            qmService.ads.initialize();
+            qmService.adBanner.initialize();
+
         } else {
             qmLog.info("admob: Not initializing for some reason")
         }
