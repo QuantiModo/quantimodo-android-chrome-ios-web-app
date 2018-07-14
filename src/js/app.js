@@ -300,6 +300,9 @@ angular.module('starter',
         .state(qmStates.track, {
             url: "/track",
             cache: false,
+            params: {
+                showAds: true
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/track-primary-outcome-variable.html",
@@ -310,6 +313,7 @@ angular.module('starter',
         .state(qmStates.measurementAddSearch, {
             url: "/measurement-add-search",
             params: {
+                showAds: true,
                 reminder : null,
                 fromState : null,
                 measurement : null,
@@ -335,6 +339,7 @@ angular.module('starter',
         .state(qmStates.reminderSearch, {
             url: "/reminder-search",
             params: {
+                showAds: true,
                 variableCategoryName : null,
                 fromState : null,
                 fromUrl : null,
@@ -361,6 +366,7 @@ angular.module('starter',
         .state(qmStates.favoriteSearch, {
             url: "/favorite-search",
             params: {
+                showAds: true,
                 variableCategoryName : null,
                 fromState : null,
                 fromUrl : null,
@@ -388,6 +394,7 @@ angular.module('starter',
             url: "/measurement-add",
             cache: false,
             params: {
+                showAds: true,
                 trackingReminder: null,
                 reminderNotification: null,
                 fromState : null,
@@ -408,6 +415,7 @@ angular.module('starter',
             url: "/measurement-add-variable-name/:variableName",
             cache: false,
             params: {
+                showAds: true,
                 trackingReminder: null,
                 reminderNotification: null,
                 fromState : null,
@@ -426,6 +434,7 @@ angular.module('starter',
             url: "/variable-settings",
             cache: false,
             params: {
+                showAds: true,
                 reminder : null,
                 fromState : null,
                 fromUrl : null,
@@ -445,6 +454,7 @@ angular.module('starter',
             url: "/variable-settings/:variableName",
             cache: false,
             params: {
+                showAds: true,
                 reminder : null,
                 fromState : null,
                 fromUrl : null,
@@ -473,6 +483,7 @@ angular.module('starter',
             url: "/import-native",
             cache: false,
             params: {
+                showAds: true,
                 native: true
             },
             views: {
@@ -486,6 +497,7 @@ angular.module('starter',
             url: "/chart-search",
             cache: false,
             params: {
+                showAds: true,
                 variableCategoryName: null,
                 fromState: null,
                 fromUrl: null,
@@ -511,6 +523,7 @@ angular.module('starter',
             url: "/predictor-search",
             cache: false,
             params: {
+                showAds: true,
                 title: "Outcomes", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for an outcome...",
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
@@ -542,6 +555,7 @@ angular.module('starter',
             url: "/tagee-search",
             cache: false,
             params: {
+                showAds: true,
                 userTagVariableObject: null,
                 title: "Select Tagee", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a variable to tag...",
@@ -571,6 +585,7 @@ angular.module('starter',
             url: "/tag-search",
             cache: false,
             params: {
+                showAds: true,
                 userTaggedVariableObject: null,
                 title: "Tags", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a tag...",
@@ -600,6 +615,7 @@ angular.module('starter',
             url: "/tag-add",
             cache: false,
             params: {
+                showAds: true,
                 tagConversionFactor: null,
                 fromState : null,
                 fromStateParams: null,
@@ -624,6 +640,7 @@ angular.module('starter',
             url: "/outcome-search",
             cache: false,
             params: {
+                showAds: true,
                 title: "Predictors", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for an predictor...",
                 helpText: "Search for a predictor like a food or treatment that you want to know the effects of...",
@@ -654,6 +671,7 @@ angular.module('starter',
             url: "/search-variables-with-user-predictors",
             cache: false,
             params: {
+                showAds: true,
                 variableCategoryName: null,
                 nextState: qmStates.predictorsAll,
                 doNotShowAddVariableButton: true,
@@ -676,6 +694,7 @@ angular.module('starter',
             url: "/search-variables-with-common-predictors",
             cache: false,
             params: {
+                showAds: true,
                 variableCategoryName: null,
                 nextState: qmStates.predictorsAll,
                 doNotShowAddVariableButton: true,
@@ -698,6 +717,7 @@ angular.module('starter',
             url: "/charts/:variableName",
             cache: false,
             params: {
+                showAds: true,
                 trackingReminder : null,
                 variableObject: null,
                 measurementInfo: null,
@@ -716,6 +736,7 @@ angular.module('starter',
         .state(qmStates.studies, {
             url: "/studies",
             params: {
+                showAds: true,
                 aggregated: null,
                 variableObject : null,
                 causeVariableName: null,
@@ -728,13 +749,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.studiesOpen, {
             url: "/studies/open",
             params: {
+                showAds: true,
                 aggregated: null,
                 variableObject : null,
                 causeVariableName: null,
@@ -748,13 +770,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.studiesCreated, {
             url: "/studies/created",
             params: {
+                showAds: true,
                 aggregated: null,
                 variableObject : null,
                 causeVariableName: null,
@@ -768,13 +791,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsAll, {
             url: "/predictors/:effectVariableName",
             params: {
+                showAds: true,
                 aggregated: false,
                 variableObject : null,
                 causeVariableName: null,
@@ -787,13 +811,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.outcomesAll, {
             url: "/outcomes/:causeVariableName",
             params: {
+                showAds: true,
                 aggregated: false,
                 variableObject : null,
                 causeVariableName: null,
@@ -806,13 +831,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsPositive, {
             url: "/predictors-positive",
             params: {
+                showAds: true,
                 aggregated: false,
                 valence: 'positive',
                 variableObject : null,
@@ -827,13 +853,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsPositiveVariable, {
             url: "/predictors-positive-variable/:effectVariableName",
             params: {
+                showAds: true,
                 aggregated: false,
                 valence: 'positive',
                 variableObject : null,
@@ -848,13 +875,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsNegative, {
             url: "/predictors-negative",
             params: {
+                showAds: true,
                 aggregated: false,
                 valence: 'negative',
                 variableObject : null,
@@ -869,13 +897,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsNegativeVariable, {
             url: "/predictors-negative-variable/:effectVariableName",
             params: {
+                showAds: true,
                 aggregated: false,
                 valence: 'negative',
                 variableObject : null,
@@ -890,13 +919,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsUser, {
             url: "/predictors/user/:effectVariableName",
             params: {
+                showAds: true,
                 aggregated: false,
                 variableObject : null,
                 causeVariableName: null,
@@ -910,13 +940,14 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
         .state(qmStates.predictorsAggregated, {
             url: "/predictors/aggregated/:effectVariableName",
             params: {
+                showAds: true,
                 aggregated: true,
                 variableObject : null,
                 fallBackToPrimaryOutcome: true,
@@ -930,7 +961,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/studies-list-page.html",
-                    controller: 'PredictorsCtrl'
+                    controller: 'StudiesCtrl'
                 }
             }
         })
@@ -938,6 +969,7 @@ angular.module('starter',
             cache: true,
             url: "/study",
             params: {
+                showAds: true,
                 causeVariableName: null,
                 effectVariableName: null,
                 refresh: null,
@@ -969,6 +1001,7 @@ angular.module('starter',
             cache: true,
             url: "/study-creation",
             params: {
+                showAds: true,
                 causeVariable: null,
                 effectVariable: null,
                 study: null
@@ -1049,6 +1082,7 @@ angular.module('starter',
         .state(qmStates.history, {
             url: "/history",
             params: {
+                showAds: true,
                 updatedMeasurementHistory: null,
                 variableObject : null,
                 refresh: null,
@@ -1067,6 +1101,7 @@ angular.module('starter',
             url: "/history-all",
             cache: true,
             params: {
+                showAds: true,
                 variableCategoryName: null,
                 connectorName: null,
                 sourceName: null,
@@ -1084,6 +1119,7 @@ angular.module('starter',
             url: "/history-all-category/:variableCategoryName",
             cache: true,
             params: {
+                showAds: true,
                 updatedMeasurementHistory: null,
                 refresh: null
             },
@@ -1098,6 +1134,7 @@ angular.module('starter',
             url: "/history-all-variable/:variableName",
             cache: true,
             params: {
+                showAds: true,
                 variableObject : null,
                 updatedMeasurementHistory: null,
                 refresh: null
@@ -1113,6 +1150,7 @@ angular.module('starter',
             url: "/reminders-inbox",
             cache: true,
             params: {
+                showAds: true,
                 title: 'Reminder Inbox',
                 reminderFrequency: null,
                 unit: null,
@@ -1154,6 +1192,7 @@ angular.module('starter',
             url: "/favorites",
             cache: false,
             params: {
+                showAds: true,
                 reminderFrequency: 0,
                 unit: null,
                 variableName : null,
@@ -1191,6 +1230,7 @@ angular.module('starter',
         .state(qmStates.remindersInboxToday, {
             url: "/reminders-inbox-today",
             params: {
+                showAds: true,
                 unit: null,
                 variableName : null,
                 dateTime : null,
@@ -1208,6 +1248,7 @@ angular.module('starter',
         .state(qmStates.manageScheduledMeds, {
             url: "/manage-scheduled-meds",
             params: {
+                showAds: true,
                 title: "Manage Scheduled Meds",
                 helpText: "Here you can add and manage your scheduled medications.  Long-press on a medication for more options.  You can drag down to refresh.",
                 addButtonText: "Add scheduled medication",
@@ -1224,6 +1265,7 @@ angular.module('starter',
         .state(qmStates.todayMedSchedule, {
             url: "/today-med-schedule",
             params: {
+                showAds: true,
                 title: "Today's Med Schedule",
                 helpText: "Here you can see and record today's scheduled doses.",
                 today : true,
@@ -1239,6 +1281,7 @@ angular.module('starter',
         .state(qmStates.asNeededMeds, {
             url: "/as-needed-meds",
             params: {
+                showAds: true,
                 title: "As Needed Meds",
                 variableCategoryName : 'Treatments'
             },
@@ -1259,6 +1302,7 @@ angular.module('starter',
                 }
             },
             params: {
+                showAds: true,
                 variableCategoryName : null,
                 trackingReminders: null
             }
@@ -1273,6 +1317,7 @@ angular.module('starter',
                 }
             },
             params: {
+                showAds: true,
                 trackingReminders: null
             }
         })
@@ -1286,6 +1331,7 @@ angular.module('starter',
                 }
             },
             params: {
+                showAds: true,
                 variableCategoryName : null,
                 trackingReminders: null
             }
@@ -1300,6 +1346,7 @@ angular.module('starter',
                 }
             },
             params: {
+                showAds: true,
                 trackingReminders: null
             }
         })
@@ -1307,6 +1354,7 @@ angular.module('starter',
             cache: true,
             url: "/variable-list",
             params: {
+                showAds: true,
                 variableCategoryName : null,
                 trackingReminders: null
             },
@@ -1321,6 +1369,7 @@ angular.module('starter',
             cache: true,
             url: "/variable-list-category/:variableCategoryName",
             params: {
+                showAds: true,
                 trackingReminders: null
             },
             views: {

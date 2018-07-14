@@ -136,7 +136,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             qm.studyHelper.getStudiesFromApi($scope.state.requestParams, function (studiesResponse) {
                 if(studiesResponse.studies.length) {setAllStateProperties(studiesResponse.studies[0]);}
             }, function (error) {
-                qmLogService.error('predictorsCtrl: Could not get abstract studies without charts: ' + JSON.stringify(error));
+                qmLogService.error('studiesCtrl: Could not get abstract studies without charts: ' + JSON.stringify(error));
             });
         });
     }
