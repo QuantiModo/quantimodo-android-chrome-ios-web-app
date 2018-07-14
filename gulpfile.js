@@ -2415,7 +2415,9 @@ gulp.task('copyMaterialIconsToWww', [], function () {
 gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
     if(!qm.buildSettings.getDoNotMinify()){
         return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
-            '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon']);
+            '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon',
+            '!src/chcp*',
+        ]);
     }
 });
 gulp.task('_copy-src-to-www', [], function () {
@@ -3137,7 +3139,7 @@ gulp.task('cordova-hcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
 function chcpCleanConfigFiles(){
-    return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json']);
+    return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
 }
 gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
