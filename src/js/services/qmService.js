@@ -596,7 +596,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 chcp.installUpdate(function(error) {
                     qmService.deploy.setVersionInfo();
                     if (error) {
-                        qmService.deploy.chcpInfo.error = error;
+                        qmLog.metaData.chcpInfo.error = error;
                         qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
                         qmService.showMaterialAlert('Update error ' + error.code)
                     } else {
@@ -607,6 +607,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             updateCallback: function(error, data) {
+                if(error){qmLog.metaData.chcpInfo.error = error;}
+                if(data){qmLog.metaData.chcpInfo.data = data;}
                 if (error) {
                     qmLog.error("CHCP UPDATE ERROR: ", error);
                 } else {
@@ -631,17 +633,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             setVersionInfo: function () {
                 if(!qmService.deploy.chcpIsDefined()){return false;}
                 chcp.getVersionInfo(function(error, versionInfo){
+                    if(error){
+                        qmLog.metaData.chcpInfo.error = error;
+                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.metaData.chcpInfo));
+                    }
+                    if(versionInfo){qmLog.metaData.chcpInfo.versionInfo = versionInfo;}
                     qm.api.getViaXhrOrFetch('chcp.json', function(chcpConfig){
                         if(!chcpConfig){qmLog.error("No chcp.json config!");}
-                        qmService.deploy.chcpInfo = {data: versionInfo, error: error, chcpConfig: chcpConfig};
-                        if (error) {qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmService.deploy.chcpInfo));}
-                        qmLog.info('CHCP VERSION DATA: ', qmService.deploy.chcpInfo);
+                        if(chcpConfig){qmLog.metaData.chcpInfo.chcpConfig = chcpConfig;}
+                        qmLog.info('CHCP VERSION DATA: ', qmLog.metaData.chcpInfo);
                     }, function (error) {
+                        if(error){
+                            qmLog.metaData.chcpInfo.error = error;
+                            qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.metaData.chcpInfo));
+                        }
                         if(errorHandler){errorHandler(error);}
                     });
                 });
-            },
-            chcpInfo: null
+            }
         },
         email: {
             updateEmailAndExecuteCallback: function (callback){
@@ -6266,7 +6275,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmService.deploy.chcpInfo) + '\r\n';
+            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmLog.metaData.chcpInfo) + '\r\n';
             template = addSnapShotList(template);
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
