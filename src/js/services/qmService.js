@@ -771,7 +771,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             predictors: 'ion-log-in',
             outcomes: 'ion-log-out',
             study: 'ion-ios-book',
-            discoveries: 'ion-ios-analytics'
+            discoveries: 'ion-ios-analytics',
+            importData: 'ion-ios-cloud-download-outline'
         },
         localNotifications: {
             localNotificationsPluginInstalled: function() {
