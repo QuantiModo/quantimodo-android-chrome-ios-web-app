@@ -14,6 +14,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		allReminders : [ ],
 		trackingReminderNotifications : [ ],
 		filteredReminderNotifications : [ ],
+		favoritesArray: null,
 		measurementDate : new Date(),
 		slots : {
 			epochTime: new Date().getTime()/1000,
@@ -190,10 +191,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         }
     }
 	function getFavorites() {
-		if(!$scope.favoritesArray){
+		if(!$scope.state.favoritesArray){
             qmService.storage.getFavorites(getVariableCategoryName())
 				.then(function(favorites){
-            		$scope.favoritesArray = favorites;
+            		$scope.state.favoritesArray = favorites;
 				});
 		}
     }
