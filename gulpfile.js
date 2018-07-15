@@ -328,8 +328,8 @@ var qm = {
                 return true;
             }
             if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
-            if(!qmGit.isMaster() && !qmGit.isDevelop()){
-                qmLog.info("Not on develop or master so buildDebug is true");
+            if(!qmGit.isMaster()){
+                qmLog.info("Not on master so buildDebug is true");
                 return true;
             }
             return false;
