@@ -342,7 +342,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmService.addToTrackingReminderSyncQueue(remindersArray);
         $scope.state.savingText = "Saving "+ $scope.state.trackingReminder.variableName + '...';
         qmService.showInfoToast($scope.state.savingText);
-        qmService.syncTrackingReminders(true).then(function () {
+        qmService.trackingReminders.syncTrackingReminders(true).then(function () {
             var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();

@@ -1643,6 +1643,87 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return appSettings;
             }
+        },
+        trackingReminders: {
+            syncPromise: null,
+            syncTrackingReminders: function(force) {
+                if(qmService.trackingReminders.syncPromise){
+                    qmLog.error("Returning existing qmService.trackingReminders.syncPromise");
+                    return qmService.trackingReminders.syncPromise;
+                }
+                var deferred = $q.defer();
+                var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
+                if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
+                    qmLogService.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ', null, trackingReminderSyncQueue);
+                    qmLog.info("Syncing "+ trackingReminderSyncQueue.length+ " reminders in queue");
+                    var postTrackingRemindersToApiAndHandleResponse = function(){
+                        qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
+                            qmLogService.debug('postTrackingRemindersToApi response: ', response);
+                            if(response && response.data){
+                                if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
+                                if(!response.data.trackingReminders){
+                                    qmLogService.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
+                                } else if(!response.data.trackingReminders.length){
+                                    qmLogService.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
+                                } else {
+                                    qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
+                                    qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
+                                    qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
+                                    qmService.reminders.broadcastGetTrackingReminders();
+                                }
+                                if(!response.data.trackingReminderNotifications){
+                                    qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
+                                } else if(!response.data.trackingReminderNotifications.length){
+                                    qmLogService.error("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
+                                } else {
+                                    // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
+                                    //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
+                                    var notifications = response.data.trackingReminderNotifications;
+                                    var notificationExists = false;
+                                    for (var i = 0; i < notifications.length; i++){
+                                        if(notifications[i].variableName === trackingReminderSyncQueue[0].variableName){
+                                            notificationExists = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!notificationExists && trackingReminderSyncQueue[0].reminderFrequency){
+                                        qmLogService.error("Notification not found for reminder we just created!", null, {'reminder': trackingReminderSyncQueue[0]});
+                                    }
+                                    qmLog.info("Got " + notifications.length + " notifications to from postTrackingRemindersDeferred response", null, {notifications: notifications});
+                                    qm.storage.setTrackingReminderNotifications(notifications);
+                                }
+                            } else {
+                                qmLogService.error("No postTrackingRemindersToApi response.data!");
+                            }
+                            deferred.resolve(response);
+                        }, function(error){deferred.reject(error);});
+                    };
+                    qmService.postTrackingReminderNotificationsDeferred().then(function () {
+                        postTrackingRemindersToApiAndHandleResponse();
+                    }, function(error){
+                        postTrackingRemindersToApiAndHandleResponse();
+                        deferred.reject(error);
+                    });
+                } else {
+                    qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
+                    qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                        if(qm.reminderHelper.getActive(trackingReminders) && qm.reminderHelper.getActive(trackingReminders).length){
+                            checkHoursSinceLastPushNotificationReceived();
+                            qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                            qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
+                        }
+                        deferred.resolve(trackingReminders);
+                        qmService.trackingReminders.syncPromise = null;
+                    }, function(error){
+                        qmLogService.error(error);
+                        deferred.reject(error);
+                        qmService.trackingReminders.syncPromise = null;
+                    });
+                }
+                qmService.trackingReminders.syncPromise = deferred.promise;
+                $timeout(function () {qmService.trackingReminders.syncPromise = null;}, 30000);
+                return deferred.promise;
+            }
         }
     };
     qmService.actionSheets = {
@@ -2718,7 +2799,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.login.afterLoginGoToUrlOrState();
     };
     qmService.syncAllUserData = function(){
-        qmService.syncTrackingReminders();
+        qmService.trackingReminders.syncTrackingReminders();
         qmService.getFromLocalStorageOrApiDeferred();
     };
     qmService.refreshUser = function(force){
@@ -3671,7 +3752,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.storage.getTrackingReminders(variableCategoryName).then(function (trackingReminders) {
             if (trackingReminders && trackingReminders.length) {deferred.resolve(trackingReminders);
-            } else {qmService.syncTrackingReminders().then(function (trackingReminders) {deferred.resolve(trackingReminders);});}
+            } else {qmService.trackingReminders.syncTrackingReminders().then(function (trackingReminders) {deferred.resolve(trackingReminders);});}
         });
         return deferred.promise;
     };
@@ -3860,76 +3941,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
         qmService.reminders.broadcastGetTrackingReminders();
     };
-    qmService.syncTrackingReminders = function(force) {
-        var deferred = $q.defer();
-        var trackingReminderSyncQueue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
-        if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmLogService.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ', null, trackingReminderSyncQueue);
-            qmLog.info("Syncing "+ trackingReminderSyncQueue.length+ " reminders in queue");
-            var postTrackingRemindersToApiAndHandleResponse = function(){
-                qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
-                    qmLogService.debug('postTrackingRemindersToApi response: ', response);
-                    if(response && response.data){
-                        if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
-                        if(!response.data.trackingReminders){
-                            qmLogService.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
-                        } else if(!response.data.trackingReminders.length){
-                            qmLogService.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
-                        } else {
-                            qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
-                            qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
-                            qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
-                            qmService.reminders.broadcastGetTrackingReminders();
-                        }
-                        if(!response.data.trackingReminderNotifications){
-                            qmLogService.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
-                        } else if(!response.data.trackingReminderNotifications.length){
-                            qmLogService.error("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
-                        } else {
-                            // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
-                            //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
-                            var notifications = response.data.trackingReminderNotifications;
-                            var notificationExists = false;
-                            for (var i = 0; i < notifications.length; i++){
-                                if(notifications[i].variableName === trackingReminderSyncQueue[0].variableName){
-                                    notificationExists = true;
-                                    break;
-                                }
-                            }
-                            if(!notificationExists && trackingReminderSyncQueue[0].reminderFrequency){
-                                qmLogService.error("Notification not found for reminder we just created!", null, {'reminder': trackingReminderSyncQueue[0]});
-                            }
-                            qmLog.info("Got " + notifications.length + " notifications to from postTrackingRemindersDeferred response", null, {notifications: notifications});
-                            qm.storage.setTrackingReminderNotifications(notifications);
-                        }
-                    } else {
-                        qmLogService.error("No postTrackingRemindersToApi response.data!");
-                    }
-                    deferred.resolve(response);
-                }, function(error){deferred.reject(error);});
-            };
-            qmService.postTrackingReminderNotificationsDeferred().then(function () {
-                postTrackingRemindersToApiAndHandleResponse();
-            }, function(error){
-                postTrackingRemindersToApiAndHandleResponse();
-                deferred.reject(error);
-            });
-        } else {
-            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
-            qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
-                if(qm.reminderHelper.getActive(trackingReminders) && qm.reminderHelper.getActive(trackingReminders).length){
-                    checkHoursSinceLastPushNotificationReceived();
-                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
-                    qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
-                }
-                deferred.resolve(trackingReminders);
-            }, function(error){
-                qmLogService.error(error);
-                deferred.reject(error);
-            });
-        }
-        return deferred.promise;
-    };
     qmService.storage.deleteTrackingReminderNotification = function(body){
         qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
         window.qm.storage.deleteTrackingReminderNotification(body);
@@ -4016,7 +4027,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var defaultReminders = qmService.getDefaultReminders();
                 if(defaultReminders && defaultReminders.length){
                     qmService.addToTrackingReminderSyncQueue(defaultReminders);
-                    qmService.syncTrackingReminders().then(function (trackingReminders){ deferred.resolve(trackingReminders);});
+                    qmService.trackingReminders.syncTrackingReminders().then(function (trackingReminders){ deferred.resolve(trackingReminders);});
                     qmLogService.debug('Creating default reminders ', defaultReminders, null);
                 }
             } else {
@@ -5722,7 +5733,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
         qmService.goToState('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
-        qmService.syncTrackingReminders();
+        qmService.trackingReminders.syncTrackingReminders();
     };
     qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
         var doneState = getDefaultState();
@@ -5754,7 +5765,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
                 });
             }, 1);
-            qmService.syncTrackingReminders();
+            qmService.trackingReminders.syncTrackingReminders();
         }, 1);
     };
     qmService.getDefaultReminders = function(){

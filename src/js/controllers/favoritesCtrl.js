@@ -40,13 +40,16 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+        qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){
+            $scope.favoritesArray = favorites;
+            qmService.showInfoToast('Got '+favorites.length+' favorites!');
+        });
     };
     $scope.favoriteAddButtonClick = function () {qmService.goToState('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
-        qmLogService.debug('ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms', null);
-        qmService.showInfoToast('Syncing...');
-        qmService.syncTrackingReminders(true).then(function () {
+        qmLogService.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
+        qmService.showInfoToast('Syncing favorites...');
+        qmService.trackingReminders.syncTrackingReminders(true).then(function () {
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
