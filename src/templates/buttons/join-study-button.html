@@ -1,7 +1,7 @@
-<div ng-if="!correlationObject.userId || (user && correlationObject.userId !== user.id)" class="row" >
+<div ng-if="!study.userId || (user && study.userId !== user.id)" class="row" ng-init="study = study || state.study">
     <div class="button-bar">
         <button class="button button-clear button-assertive" style="font-size: 22px;"
-                ng-click="goToState('app.studyJoin', {correlationObject: correlationObject})">
+                ng-click="goToState('app.studyJoin', {study: study})">
             <i class="ion-ios-flask"> &nbsp; Join this Study &nbsp;</i>
         </button>
     </div>
