@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Predictors">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Studies">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-header-bar ng-if="showSearchFilterBox" class="bar-subheader item-input-inset">
         <label class="item-input-wrapper">
@@ -17,7 +17,7 @@
         <ion-refresher on-refresh="refreshList()"></ion-refresher>
         <div ng-show="searching">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
-            <div> <h1 style="text-align: center;">Analyzing data...</h1> </div>
+            <div> <h1 style="text-align: center; padding: 20px;">Analyzing data...</h1> </div>
             <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
         </div>
         <div ng-include="'templates/fragments/studies-list-fragment.html'"></div>
