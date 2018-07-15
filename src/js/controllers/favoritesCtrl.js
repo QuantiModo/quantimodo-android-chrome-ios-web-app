@@ -3,6 +3,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     $scope.controller_name = "FavoritesCtrl";
     qmLogService.debug('Loading ' + $scope.controller_name, null);
     $scope.state = {
+        favoritesArray: [],
         selected1to5Value : false,
         loading : true,
         trackingReminder : null,
@@ -31,7 +32,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
             $scope.state.title = 'As-Needed Meds';
         }
         if($stateParams.presetVariables){
-            $scope.favoritesArray = $stateParams.presetVariables;
+            $scope.state.favoritesArray = $stateParams.presetVariables;
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
         } else {
@@ -41,7 +42,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     });
     var getFavoritesFromLocalStorage = function(){
         qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){
-            $scope.favoritesArray = favorites;
+            $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got '+favorites.length+' favorites!');
         });
     };
