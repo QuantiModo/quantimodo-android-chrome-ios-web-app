@@ -217,7 +217,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.trackByFavorite(trackingReminder, modifiedReminderValue);
     };
     // Triggered on a button click, or some other target
-    $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
+    $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure, state) {
         var variableObject = {id: favorite.variableId, name: favorite.variableName};
         var actionMenuButtons = [
             { text: '<i class="icon ion-gear-a"></i>Edit Reminder' },
@@ -246,7 +246,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return true;
             },
             destructiveButtonClicked: function() {
-                favorite.hide = true;
+                state.favoritesArray = state.favoritesArray.filter(function (oneFavorite) {
+                    return oneFavorite.id !== favorite.id;
+                });
                 qmService.deleteTrackingReminderDeferred(favorite);
                 return true;
             }
