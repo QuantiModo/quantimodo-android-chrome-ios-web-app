@@ -21,19 +21,6 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             });
         }
     };
-    function userCanConnect(connector) {
-        if(!$rootScope.user){
-            qmService.refreshUser();
-            return true;
-        }
-        if(qmService.premiumModeDisabledForTesting){return false;}
-        if($rootScope.user.stripeActive){return true;}
-        if(qm.platform.isChromeExtension()){return true;}
-        if(connector && !connector.premium){return true;}
-        //if(qm.platform.isAndroid()){return true;}
-        //if(qm.platform.isWeb()){return true;}
-        return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
-	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 	    if(!$scope.helpCard || $scope.helpCard.title !== "Import Your Data"){
             $scope.helpCard = {
@@ -46,7 +33,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         if(typeof $rootScope.hideNavigationMenu === "undefined") {
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         }
-        $scope.state.connectorName = qm.urlHelper.getParam('connectorName');
+        $scope.state.searchText = qm.urlHelper.getParam('connectorName');
         if($scope.state.connectorName){
             qm.connectorHelper.getConnectorByName($scope.state.connectorName, function (connector) {
                 $scope.state.connector = connector;
@@ -61,6 +48,23 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmService.refreshUser(); // Check if user upgrade via web since last user refresh
         }
 	});
+    $scope.$on('$ionicView.afterEnter', function(e) {
+        var message = decodeURIComponent(qm.urlHelper.getParam('message'));
+        if(message){qmService.showMaterialAlert(message, "You should begin seeing your imported data within an hour or so.")}
+    });
+	function userCanConnect(connector) {
+        if(!$rootScope.user){
+            qmService.refreshUser();
+            return true;
+        }
+        if(qmService.premiumModeDisabledForTesting){return false;}
+        if($rootScope.user.stripeActive){return true;}
+        if(qm.platform.isChromeExtension()){return true;}
+        if(connector && !connector.premium){return true;}
+        //if(qm.platform.isAndroid()){return true;}
+        //if(qm.platform.isWeb()){return true;}
+        return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
+    }
 	$scope.hideImportHelpCard = function () {
 		$scope.showImportHelpCard = false;
         window.qm.storage.setItem(qm.items.hideImportHelpCard, true);
