@@ -1,10 +1,10 @@
 <div class="item" style="padding:0" >
     <div class="row">
-        <div id="favoriteItemIcon" ng-click="showFavoriteActionSheet(trackingReminder)" class="col col-10" style="text-align: left;">
+        <div id="favoriteItemIcon" ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)" class="col col-10" style="text-align: left;">
             <img ng-src="{{trackingReminder.pngPath}}" style="max-width: 20px" ng-if="trackingReminder.unitAbbreviatedName !== '/5'">
         </div>
         <div class="col col-80" >
-            <h2 id="favoriteItemTitle" ng-click="showFavoriteActionSheet(trackingReminder)"
+            <h2 id="favoriteItemTitle" ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)"
                 style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
                 {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
             </h2>
@@ -15,7 +15,7 @@
                 <i class="ion-android-done"> &nbsp; Record {{trackingReminder.defaultValue}} {{trackingReminder.unitAbbreviatedName}}</i>
             </button>
         </div>
-        <div id="favoriteItemSettings" ng-click="showFavoriteActionSheet(trackingReminder)" class="col col-10">
+        <div id="favoriteItemSettings" ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)" class="col col-10">
             <i style="font-size: 20px; padding: 0;" class="icon positive ion-more"></i>
         </div>
     </div>
