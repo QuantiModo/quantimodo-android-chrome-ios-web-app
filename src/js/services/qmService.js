@@ -457,6 +457,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return url;
             },
             webConnectViaRedirect: function (connector, ev, additionalParams) {
+                qmService.showInfoToast("Connecting "+connector.displayName + "...", 30);
+                qmService.showBasicLoader();
+                qm.auth.setAfterLoginGoToUrl(window.location.href);
                 var url = qmService.connectors.getConnectUrl(connector, additionalParams);
                 window.location.href = url;
             },
