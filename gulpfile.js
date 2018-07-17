@@ -928,7 +928,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()}}];
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()+'/chcp.json'}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
         }
     });
