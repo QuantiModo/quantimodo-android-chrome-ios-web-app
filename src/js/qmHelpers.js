@@ -4395,7 +4395,9 @@ window.qm = {
                 var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
                 if(variableCategories){
                     return variableCategories.find(function(variableCategory){
-                        return variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase();
+                        if(variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase()){return true;}
+                        if(variableCategory.synonyms && variableCategory.synonyms.indexOf(variableCategoryName) !== -1){return true;}
+                        return variableCategory.variableCategoryNameSingular && variableCategory.variableCategoryNameSingular.toLowerCase() === variableCategoryName.toLowerCase();
                     });
                 }
             }

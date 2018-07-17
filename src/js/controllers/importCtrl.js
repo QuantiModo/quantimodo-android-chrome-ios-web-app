@@ -49,8 +49,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         }
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {
-        var message = decodeURIComponent(qm.urlHelper.getParam('message'));
-        if(message){qmService.showMaterialAlert(message, "You should begin seeing your imported data within an hour or so.")}
+        var message = qm.urlHelper.getParam('message');
+        if(message){qmService.showMaterialAlert(decodeURIComponent(message), "You should begin seeing your imported data within an hour or so.")}
     });
 	function userCanConnect(connector) {
         if(!$rootScope.user){
