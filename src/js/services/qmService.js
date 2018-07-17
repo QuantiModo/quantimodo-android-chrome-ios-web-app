@@ -6112,7 +6112,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return planFeatureCards;
     };
     qmService.showBasicLoader = function(duration){
-        duration = duration || 10000;
+        duration = duration || 10;
         qmLogService.debug('Called showBasicLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         $ionicLoading.show({duration: duration * 1000});
     };

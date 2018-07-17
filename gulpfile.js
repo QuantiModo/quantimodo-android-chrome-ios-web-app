@@ -3106,7 +3106,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicInfo',
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
-        'cordova-hcp-deploy', // This should cover iOS as well
+        'cordova-hcp-deploy', // This should cover iOS as well (except mooodimodoapp)
         'delete-chcp-login',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
