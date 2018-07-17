@@ -25,8 +25,6 @@ npm install
 fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
 fastlane add_plugin ionic
-
-
 if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]];
     then
         #gulp prepare-ios-app-without-cleaning;
@@ -35,5 +33,10 @@ if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]];
     else
         gulp build-ios-app-without-cleaning;
 fi
-
+if [[ ${QUANTIMODO_CLIENT_ID} = *"moodimodoapp"* ]];
+    then
+        gulp cordova-hcp-deploy
+    else
+        echo "CHCP deploy should be done in Android build"
+fi
 source ${WORKSPACE}/scripts/save_last_build_workspace.sh
