@@ -12,7 +12,7 @@
             </select>
         </label>-->
         <div style="padding: 10px;">
-            <div ng-if="state.showVariableCategorySelector || state.showMoreOptions" >
+            <div ng-if="!state.variableCategoryObject || state.showMoreOptions" >
                 <div class="md-subhead" layout-margin>What type of variable is this?</div>
                 <div layout="row" layout-margin>
                     <md-input-container id="categorySelectorBlock" class="md-block" style="min-width: 150px;" flex-gt-sm>
@@ -27,7 +27,7 @@
                     </md-input-container>
                 </div>
             </div>
-            <div ng-if="!state.showVariableCategorySelector || state.showMoreOptions || state.trackingReminder.id">
+            <div ng-if="state.variableCategoryObject || state.showMoreOptions || state.trackingReminder.id">
                 <br>
                 <div layout="row" layout-margin  >
                     <md-input-container id="defaultValueContainer" ng-if="!state.hideDefaultValueField" class="md-block" flex-gt-sm>
