@@ -77,12 +77,12 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                     "frequency reminder", null);
 				if(!qm.storage.getItem(qm.items.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
-					qmService.syncTrackingReminders();
+					qmService.trackingReminders.syncTrackingReminders();
 				}
 			});
 		} else {
             qmService.showMaterialAlert('Enabled Multiple Notifications', 'You will get a separate device notification for each reminder that you create.', ev);
-			qmService.cancelAllNotifications().then(function() {qmService.syncTrackingReminders();});
+			qmService.cancelAllNotifications().then(function() {qmService.trackingReminders.syncTrackingReminders();});
 		}
 	};
 	$scope.getPreviewBuildsChange = function() {
@@ -132,7 +132,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 					} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 						$rootScope.user.earliestReminderTime = newEarliestReminderTime;
                         var params = qm.timeHelper.addTimeZoneOffsetProperty({earliestReminderTime: $rootScope.user.earliestReminderTime});
-						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
+						qmService.updateUserSettingsDeferred(params).then(function(){qmService.trackingReminders.syncTrackingReminders();});
                         qmService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
 					}
 				}
@@ -161,7 +161,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 					} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 						$rootScope.user.latestReminderTime = newLatestReminderTime;
                         var params = qm.timeHelper.addTimeZoneOffsetProperty({latestReminderTime: $rootScope.user.latestReminderTime});
-						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
+						qmService.updateUserSettingsDeferred(params).then(function(){qmService.trackingReminders.syncTrackingReminders();});
                         qmService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
 					}
 				}
