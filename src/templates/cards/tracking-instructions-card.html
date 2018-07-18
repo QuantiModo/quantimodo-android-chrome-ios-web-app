@@ -11,7 +11,7 @@
     <md-card-content>
         <div ng-bind-html="variable.trackingInstructionsCard.htmlContent"></div>
     </md-card-content>
-    <md-card-actions layout="row" layout-align="end center">
+    <md-card-actions layout="column" layout-align="start">
         <md-button id="{{button.title}}" aria-label="{{button.title}}"
                    href="{{button.link}}"
                    ng-repeat="button in variable.trackingInstructionsCard.buttons">
