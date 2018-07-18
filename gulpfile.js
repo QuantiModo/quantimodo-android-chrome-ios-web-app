@@ -2639,6 +2639,7 @@ gulp.task('configureApp', [], function (callback) {
         'sass',
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         //'commentOrUncommentCordovaJs',
+        'downloadSwaggerJson',
         'getCommonVariables',
         'getConnectors',
         'getUnits',

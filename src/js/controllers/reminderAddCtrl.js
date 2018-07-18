@@ -7,7 +7,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
         units: qm.unitHelper.getProgressivelyMoreUnits(),
-        showAddVariableCard : false,
+        showVariableCategorySelector : false,
         showUnits: false,
         selectedFrequencyName : 'Daily',
         selectedReminder : false,
@@ -77,12 +77,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setupByVariableObject(qm.getPrimaryOutcomeVariable());
         } else {
             $scope.goBack();
-        }
-        if($stateParams.skipReminderSettingsIfPossible){
-            //$scope.save();
-        }
-        if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
-            $scope.state.showAddVariableCard = true;
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){
@@ -169,8 +163,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupByVariableObject = function(selectedVariable){
         qmLogService.info('remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
-        if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
-        $scope.state.variableObject=selectedVariable;
+        $scope.state.variableObject = selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
         if (selectedVariable.unitAbbreviatedName) {
             $scope.state.trackingReminder.unitAbbreviatedName = selectedVariable.unitAbbreviatedName;
@@ -406,7 +399,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupVariableCategory = function(variableCategoryName){
         qmLogService.debug('remindersAdd.setupVariableCategory ' + variableCategoryName, null);
-        if(!variableCategoryName || variableCategoryName === 'Anything'){variableCategoryName = '';}
+        if(variableCategoryName === 'Anything'){variableCategoryName = null;}
+        if(!variableCategoryName){return;}
         $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
         $scope.state.variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
         if (!$scope.state.trackingReminder.unitAbbreviatedName) {
