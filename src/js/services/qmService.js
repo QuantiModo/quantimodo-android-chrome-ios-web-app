@@ -106,6 +106,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
+        alerts: {
+            errorAlert: function (message) {
+                qmLog.error(message);
+                qmService.showMaterialAlert(message, "Please create a ticket at https://help.quantimo.do");
+            }
+        },
         api: {
             headersGetter: function(headers) {
                 var headersObj = typeof headers === 'object' ? headers : undefined;
