@@ -31,8 +31,7 @@
                     </div>
                 </div>
                 <div ng-if="state.study.joined">
-                    <div ng-include="'templates/cards/tracking-instructions-card.html'" ng-init="variable = state.study.causeVariable"></div>
-                    <div ng-include="'templates/cards/tracking-instructions-card.html'" ng-init="variable = state.study.effectVariable"></div>
+                    <div ng-include="'templates/cards/tracking-instructions-card.html'" ng-repeat="variable in [state.study.causeVariable, state.study.effectVariable]"></div>
                     <div ng-if="!state.study.causeVariable.numberOfRawMeasurements">
                         <p style="font-size: 22px; line-height: 1.3;">{{state.study.causeVariable.name}} Data Sources</p>
                         <div ng-if="!connector.hide" class="item" ng-repeat="connector in state.study.causeVariable.dataSources">

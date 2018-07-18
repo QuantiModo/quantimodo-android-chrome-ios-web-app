@@ -161,7 +161,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 $scope.goBack(backStateParams);
             }
         });
-        if(!unitChanged){$scope.goBack(backStateParams);} // We can go back immediately if no unit change
+        if(!unitChanged){
+            $scope.goBack(backStateParams);  // We can go back immediately if no unit change
+        } else {
+            qmService.showBasicLoader(20);
+            qmService.showInfoToast("Saving measurement and updating your default unit");
+        }
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
         setupUnit(qmService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);

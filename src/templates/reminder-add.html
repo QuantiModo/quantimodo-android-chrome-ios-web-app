@@ -4,7 +4,7 @@
         <md-toolbar class="md-theme-light" id="reminder-header">
             <h2 class="md-toolbar-tools"><span style="color: white;">{{state.trackingReminder.variableName}}</span></h2>
         </md-toolbar>
-<!--        <label class="item item-input item-select" ng-if="state.showAddVariableCard">
+<!--        <label class="item item-input item-select" ng-if="state.showVariableCategorySelector">
             <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
             <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName"
                     ng-options="variableCategoryName as variableCategoryName for variableCategoryName in state.variableCategoryNames"
@@ -12,7 +12,7 @@
             </select>
         </label>-->
         <div style="padding: 10px;">
-            <div ng-if="state.showAddVariableCard || state.showMoreOptions" >
+            <div ng-if="!state.variableCategoryObject || state.showMoreOptions" >
                 <div class="md-subhead" layout-margin>What type of variable is this?</div>
                 <div layout="row" layout-margin>
                     <md-input-container id="categorySelectorBlock" class="md-block" style="min-width: 150px;" flex-gt-sm>
@@ -27,10 +27,10 @@
                     </md-input-container>
                 </div>
             </div>
-            <div ng-if="!state.showAddVariableCard || state.showMoreOptions">
+            <div ng-if="state.variableCategoryObject || state.showMoreOptions || state.trackingReminder.id">
                 <br>
-                <div layout="row" layout-margin  ng-if="!state.hideDefaultValueField">
-                    <md-input-container class="md-block" flex-gt-sm>
+                <div layout="row" layout-margin  >
+                    <md-input-container id="defaultValueContainer" ng-if="!state.hideDefaultValueField" class="md-block" flex-gt-sm>
                         <label>{{state.defaultValueLabel}}</label>
                         <input id="defaultValue" type="number" ng-model="state.trackingReminder.defaultValue" placeholder="{{state.defaultValuePlaceholderText}}">
                     </md-input-container>
@@ -140,7 +140,8 @@
                     <span class="input-label">Instructions</span>
                     <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
                 </label>
-                <ion-toggle id="enable-toggle" ng-if="state.trackingReminder.id && state.trackingReminder.reminderFrequency" ng-model="state.trackingReminder.enabled" ng-change="toggleReminderEnabled()">
+                <ion-toggle id="enable-toggle" ng-if="state.trackingReminder.id && state.trackingReminder.reminderFrequency"
+                            ng-model="state.trackingReminder.enabled" ng-change="toggleReminderEnabled()">
                     <div ng-if="state.trackingReminder.enabled"><i class="icon ion-android-notifications"></i> &nbsp Inbox Notifications Active &nbsp</div>
                     <div ng-if="!state.trackingReminder.enabled"><i class="icon ion-android-notifications-off"></i> &nbsp Inbox Notifications Disabled &nbsp</div>
                 </ion-toggle>
