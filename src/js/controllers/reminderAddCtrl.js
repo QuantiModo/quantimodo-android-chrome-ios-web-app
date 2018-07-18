@@ -78,12 +78,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         } else {
             $scope.goBack();
         }
-        if($stateParams.skipReminderSettingsIfPossible){
-            //$scope.save();
-        }
-        if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
-            $scope.state.showVariableCategorySelector = true;
-        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('ReminderAddCtrl beforeEnter...');
@@ -169,7 +163,6 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupByVariableObject = function(selectedVariable){
         qmLogService.info('remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
-        if (!selectedVariable.variableCategoryName) {$scope.state.showVariableCategorySelector = true;}
         $scope.state.variableObject = selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
         if (selectedVariable.unitAbbreviatedName) {
@@ -406,10 +399,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupVariableCategory = function(variableCategoryName){
         qmLogService.debug('remindersAdd.setupVariableCategory ' + variableCategoryName, null);
-        if(!variableCategoryName || variableCategoryName === 'Anything'){variableCategoryName = '';}
+        if(variableCategoryName === 'Anything'){variableCategoryName = null;}
+        if(!variableCategoryName){return;}
         $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
         $scope.state.variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
-        if(!$scope.state.variableCategoryObject.common){$scope.state.showVariableCategorySelector = true;}
         if (!$scope.state.trackingReminder.unitAbbreviatedName) {
             $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
         }
