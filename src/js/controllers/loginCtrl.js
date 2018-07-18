@@ -15,7 +15,6 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         });
     };
     $scope.controller_name = "LoginCtrl";
-    $scope.headline = qm.getAppSettings().headline;
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.circlePage = {
         title: null,
