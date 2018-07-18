@@ -7,7 +7,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
         units: qm.unitHelper.getProgressivelyMoreUnits(),
-        showAddVariableCard : false,
+        showVariableCategorySelector : false,
         showUnits: false,
         selectedFrequencyName : 'Daily',
         selectedReminder : false,
@@ -82,7 +82,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             //$scope.save();
         }
         if(!$scope.state.trackingReminder.variableCategoryName || $scope.state.trackingReminder.variableCategoryName === ""){
-            $scope.state.showAddVariableCard = true;
+            $scope.state.showVariableCategorySelector = true;
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){
@@ -169,8 +169,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     };
     var setupByVariableObject = function(selectedVariable){
         qmLogService.info('remindersAdd.setupByVariableObject: ' + selectedVariable.name, null);
-        if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
-        $scope.state.variableObject=selectedVariable;
+        if (!selectedVariable.variableCategoryName) {$scope.state.showVariableCategorySelector = true;}
+        $scope.state.variableObject = selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
         if (selectedVariable.unitAbbreviatedName) {
             $scope.state.trackingReminder.unitAbbreviatedName = selectedVariable.unitAbbreviatedName;
@@ -409,6 +409,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         if(!variableCategoryName || variableCategoryName === 'Anything'){variableCategoryName = '';}
         $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
         $scope.state.variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
+        if(!$scope.state.variableCategoryObject.common){$scope.state.showVariableCategorySelector = true;}
         if (!$scope.state.trackingReminder.unitAbbreviatedName) {
             $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
         }
