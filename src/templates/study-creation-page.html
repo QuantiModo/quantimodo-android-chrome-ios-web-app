@@ -1,7 +1,7 @@
 <ion-view ng-controller="StudyCreationCtrl as ctrl" hide-nav-bar="hideNavigationMenu" view-title="Create Study">
     <div style=" background-color: {{state.color.backgroundColor}}; text-align: center; color: white; padding: 40px; height: 100%" >
         <div style=" position: relative; top: 50%; transform: translateY(-50%);">
-            <div ng-if="!state.study">
+            <div ng-if="!state.study && (!state.effectVariable || !state.causeVariable)">
                 <p style="font-size: 30px; line-height: 1;"> Create a Study </p>
                 <p>After selecting a predictor and outcome variable, you'll be given a shareable url that you can use to
                     recruit participants.  You'll also get a link to the full study which will update in real time as more
@@ -32,13 +32,27 @@
                 <div class="col col-40"> <div ng-if="state.effectVariable">{{state.effectVariable.name}}</div> </div>
             </div>
             <br>
-            <button id="createStudyButton" class="button" ng-if="state.effectVariable && state.causeVariable && !state.study"
-                    style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
-                    ng-click="createStudy(state.causeVariable.name, state.effectVariable.name)">
-                <span> &nbsp; CREATE STUDY &nbsp;</span>
-            </button>
+            <div id="createButtonsSection" ng-if="state.effectVariable && state.causeVariable && !state.study">
+                <p style="font-size: 20px; line-height: 1;"> What type do you want to create? </p>
+                <p>{{state.typesDescription}}</p>
+                <button id="createIndividualStudyButton" class="button"
+                        style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
+                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'individual')">
+                    <span><i class="ion-person"></i> &nbsp; CREATE INDIVIDUAL STUDY &nbsp;</span>
+                </button><br>
+                <button id="createStudyButton" class="button"
+                        style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
+                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'cohort')">
+                    <span><i class="ion-android-people"></i> &nbsp; CREATE GROUP STUDY &nbsp;</span>
+                </button><br>
+                <button id="createPopulationStudyButton" class="button"
+                        style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
+                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'population')">
+                    <span><i class="ion-android-globe"></i> &nbsp; CREATE GLOBAL STUDY &nbsp;</span>
+                </button>
+            </div>
             <div ng-if="state.study" class="list">
-                <p style="font-size: 30px; line-height: 1;"> Recruit Participants </p>
+                <p style="font-size: 30px; line-height: 1;"> <i class="ion-person-add"></i> &nbsp; Recruit Participants </p>
                 <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
                 <br>
                 <div style="cursor: pointer" ng-click="copyStudyUrlToClipboard(state.causeVariable.name, state.effectVariable.name, state.study)" ng-if="platform.isWeb">
