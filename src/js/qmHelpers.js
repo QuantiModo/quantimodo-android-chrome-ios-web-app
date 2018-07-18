@@ -705,8 +705,8 @@ window.qm = {
             });
         },
         getPropertyDescription: function (modelName, propertyName, callback){
-            qm.apiHelper.getModelDefinition(function (modelDefinition) {
-                var explanation = qm.apiHelper.convetToExplanation(propertyName, modelDefinition);
+            qm.apiHelper.getModelDefinition(modelName, function (modelDefinition) {
+                var explanation = qm.apiHelper.convertToExplanation(propertyName, modelDefinition);
                 callback(explanation);
             });
         },
@@ -716,13 +716,17 @@ window.qm = {
             return explanation;
         },
         getRequiredProperties: function (modelName, callback){
-            qm.apiHelper.getModelDefinition(function (modelDefinition) {
+            qm.apiHelper.getModelDefinition(modelName, function (modelDefinition) {
                 callback(modelDefinition.required);
             });
         },
         getModelDefinition: function (modelName, callback){
             qm.apiHelper.getApiDocs(function (apiDocs) {
-                callback(apiDocs.definitions[modelName]);
+                var definition = apiDocs.definitions[modelName];
+                if(!definition){
+                    qmLog.error(modelName + " definition not found.  Available definitions are "+JSON.stringify(apiDocs.definitions));
+                }
+                callback(definition);
             });
         },
         checkRequiredProperties: function(bodyToCheck, modelName, callback){
