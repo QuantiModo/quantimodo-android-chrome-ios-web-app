@@ -1,6 +1,6 @@
 <div ng-show="state.studiesResponse.studies.length" style="padding: 10px;">
-    <div class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;">
-        <i class="icon {{state.studiesResponse.ionIcon}}"
+    <div id="studiesResponse-title-container" class="item item-avatar" style="background: #F48120; border-radius: 15px 15px 0 0; border-width: 0;">
+        <i id="studiesResponse-ionIcon" class="icon {{state.studiesResponse.ionIcon}}"
            style="position: absolute;
 							top: 15px;
 							left: 15px;
@@ -11,36 +11,36 @@
 							color: white;
 							border-radius: 4px;"
         ></i>
-        <p style="font-size: 20px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;">
-            {{state.studiesResponse.title}}
+        <p id="studiesResponse-title" style="font-size: 20px; text-align: center; height: 40px; line-height: 40px; white-space: nowrap; color: white;">
+            {{state.studiesResponse.summary}}
         </p>
     </div>
-    <div class="item item-body" style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;" >
+    <div id="studiesResponse-description" class="item item-body"
+         style="text-align: center; background: #F48120; border-width: 0; border-radius: 0 0 15px 15px; color: white;" >
         {{state.studiesResponse.description}}  {{state.studiesResponse.startTracking.description}}
         <br>
         <div class="button-bar" style="margin-top: 20px; margin-bottom: 10px;">
-            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)"
-               style="text-overflow: clip;"><div style="background: white ; color: #F48120; border-radius: 30px; width: 230px; margin: 0 auto;"><i class="ion-information-circled" style="font-size: 150%; ">  </i> Improve Predictions </div></a>
+            <a id="more-studies-info" class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)" style="text-overflow: clip;">
+                <div style="background: white ; color: #F48120; border-radius: 30px; width: 230px; margin: 0 auto;">
+                    <i class="ion-information-circled" style="font-size: 150%;">  </i> Improve Predictions
+                </div>
+            </a>
         </div>
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
-         class="item item-body"
-         style="text-align: center;">
+         class="item item-body" style="text-align: center;">
         Results in order of descending statistical significance.
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
-         class="item item-body"
-         style="text-align: center;">
+         class="item item-body" style="text-align: center;">
         Results in order of descending QM Score which is a combination of effect size and statistical significance.
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
-         class="item item-body"
-         style="text-align: center;">
+         class="item item-body" style="text-align: center;">
         Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
-         class="item item-body"
-         style="text-align: center;">
+         class="item item-body" style="text-align: center;">
         Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
     </div>
 </div>
