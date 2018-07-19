@@ -656,16 +656,27 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(error){qmLog.globalMetaData.chcpInfo.error = error;}
                 if(data){qmLog.globalMetaData.chcpInfo.data = data;}
                 if (error) {
-                    qmLog.error("CHCP UPDATE ERROR: ", error);
+                    qmLog.error("CHCP updateCallback ERROR: ", error);
                 } else {
                     qmLog.info('CHCP update is loaded: ', data);
-                    //qmService.deploy.installUpdate();
+                    qmService.deploy.installUpdate(qmService.deploy.installUpdateCallback);
                     // var title = 'Update available';
                     // var textContent = 'An update was just downloaded. Would you like to restart your app to use the latest features?';
                     // var noText = 'Not now';
                     // function yesCallback() {qmService.deploy.installUpdate();}
                     // function noCallback() {}
                     // qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, null, noText);
+                }
+            },
+            installUpdateCallback: function(error) {
+                if (error) {
+                    qmLog.error("CHCP installUpdateCallback ERROR:", error);
+                    // failed to install the update, should handle this gracefuly;
+                    // probably nothing that user can do, just let him in the app.
+                } else {
+                    qmLog.error("CHCP installUpdateCallback Success!");
+                    // update installed and user can proceed;
+                    // and he will, since the plugin will reload app to the index page.
                 }
             },
             chcpIsDefined: function(){
@@ -6284,7 +6295,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(qm.urlHelper.getParam('finish_url')){$rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);}
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
         qmService.deploy.setVersionInfo();
-        //qmService.deploy.fetchUpdate();
+        qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
