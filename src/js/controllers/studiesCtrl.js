@@ -84,6 +84,11 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         params.limit = 10;
         qmLog.info('Getting studies with params ' + JSON.stringify(params));
         qm.studyHelper.getStudiesFromApi(params, function (studiesResponse) {
+            if(!studiesResponse){
+                qmService.alerts.errorAlert("Could not get studies!");
+                $scope.goBack();
+                return;
+            }
             if(studiesResponse){$scope.state.studiesResponse = studiesResponse;}
             if(studiesResponse.studies.length) {
                 qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
