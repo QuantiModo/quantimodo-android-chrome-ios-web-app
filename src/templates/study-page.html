@@ -8,7 +8,8 @@
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'" style="text-align: center;"></div><br>
                 <div ng-hide="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)" class="row">
                     <div class="col">
-                        <button id="joinStudyButton" class="button button-outline button-block icon-left ion-ios-people button-positive"
+                        <button id="joinStudyButton" ng-if="!state.study.joined"
+                                class="button button-outline button-block icon-left ion-ios-people button-positive"
                                  ng-click="goToJoinStudyPageViaStudy(state.study)">
                             Join this Study
                         </button>
