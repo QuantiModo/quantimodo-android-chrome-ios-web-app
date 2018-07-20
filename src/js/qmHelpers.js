@@ -3648,10 +3648,12 @@ window.qm = {
             if(currentlyDisplayedUnits === qm.unitHelper.getNonAdvancedUnits()){return qm.unitHelper.getManualTrackingUnits();}
             return qm.unitHelper.getAllUnits();
         },
-        getByAbbreviatedName: function(unitAbbreviatedName){
+        getByNameAbbreviatedNameOrId: function(unitAbbreviatedNameOrId){
             var allUnits = qm.storage.getItem(qm.items.units);
             for (var i = 0; i < allUnits.length; i++) {
-                if(allUnits[i].abbreviatedName === unitAbbreviatedName){return allUnits[i];}
+                if(allUnits[i].abbreviatedName === unitAbbreviatedNameOrId){return allUnits[i];}
+                if(allUnits[i].name === unitAbbreviatedNameOrId){return allUnits[i];}
+                if(allUnits[i].id === unitAbbreviatedNameOrId){return allUnits[i];}
             }
             return null;
         },
@@ -3684,6 +3686,24 @@ window.qm = {
                 qm.api.responseHandler(error, data, response, successHandler, errorHandler);
             }
             apiInstance.getUnits(callback);
+        },
+        updateAllUnitPropertiesOnObject: function(unitNameAbbreviatedNameOrId, object){
+            var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(unitNameAbbreviatedNameOrId);
+            for (var objectProperty in object) {
+                if (object.hasOwnProperty(objectProperty)) {
+                    if(objectProperty.toLowerCase().indexOf('unit') === -1){continue;}
+                    var lowerCaseObjectProperty = objectProperty.toLowerCase().replace('defaultUnit', '').replace('userUnit', '').replace('unit', '');
+                    for (var unitProperty in unit) {
+                        if (unit.hasOwnProperty(unitProperty)) {
+                            var lowerCaseUnitProperty = unitProperty.toLowerCase();
+                            if(lowerCaseObjectProperty === lowerCaseUnitProperty){
+                                object[objectProperty] = unit[unitProperty];
+                            }
+                        }
+                    }
+                }
+            }
+            return object;
         }
     },
     urlHelper: {
