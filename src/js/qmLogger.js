@@ -161,9 +161,6 @@ window.qmLog = {
         if(message.indexOf("cloudtestlabaccounts") !== -1){ // Keeps spamming bugsnag
             return qmLog.setAuthDebugEnabled(false);
         }
-        if(qmLog.isDebugMode()){
-            return true;
-        }
         if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){
             return qmLog.setAuthDebugEnabled(true)
         }
@@ -209,15 +206,15 @@ window.qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
-    getConsoleLogString: function (logLevel, metaData){
+    getConsoleLogString: function (logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
         if(qm.platform.isMobileOrTesting() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
-        if(qm.platform.isMobileOrTesting()){ // Meta object is already logged nicely in browser console
+        if(errorSpecificMetaData && qm.platform.isMobileOrTesting()){ // Meta object is already logged nicely in browser console
             try {
                 if(qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
-                    logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(metaData);
+                    logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(errorSpecificMetaData);
                 }
             } catch (error) {
                 console.error("Could not stringify log meta data", error);
