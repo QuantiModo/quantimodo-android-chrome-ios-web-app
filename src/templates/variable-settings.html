@@ -36,15 +36,15 @@
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content>
-                    <div ng-if="state.variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
+                    <div ng-if="state.variableObject.availableUnits" layout="row" layout-align="space-between center">
                         <span>Default Unit</span>
                         <md-select ng-model="state.variableObject.unitId" ng-show="!platform.isMobile">
-                            <md-option ng-repeat="unit in state.variableObject.availableDefaultUnits" ng-value="unit.id" >
+                            <md-option ng-repeat="unit in state.variableObject.availableUnits" ng-value="unit.id" >
                                 {{unit.name}}
                             </md-option>
                         </md-select>
                         <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName" ng-show="platform.isMobile"
-                                ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableDefaultUnits">
+                                ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableUnits">
                         </select>
                     </div>
                     <div ng-if="state.variableObject.variableCategoryName" layout="row" layout-align="space-between center">
