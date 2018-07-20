@@ -3689,6 +3689,7 @@ window.qm = {
         },
         updateAllUnitPropertiesOnObject: function(unitNameAbbreviatedNameOrId, object){
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(unitNameAbbreviatedNameOrId);
+            qmLog.info('Changing unit to ' + unit.name);
             for (var objectProperty in object) {
                 if (object.hasOwnProperty(objectProperty)) {
                     if(objectProperty.toLowerCase().indexOf('unit') === -1){continue;}
@@ -3697,6 +3698,7 @@ window.qm = {
                         if (unit.hasOwnProperty(unitProperty)) {
                             var lowerCaseUnitProperty = unitProperty.toLowerCase();
                             if(lowerCaseObjectProperty === lowerCaseUnitProperty){
+                                qmLog.info("Setting " + objectProperty + " to " + unit[unitProperty]);
                                 object[objectProperty] = unit[unitProperty];
                             }
                         }
