@@ -282,6 +282,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         return frequencyChart[frequencyName];
     }
     $scope.save = function(){
+        $scope.state.trackingReminder = qm.unitHelper.updateAllUnitPropertiesOnObject($scope.state.trackingReminder.unitAbbreviatedName, $scope.state.trackingReminder);
         qmLogService.info('Clicked save reminder');
         if($stateParams.favorite){
             $scope.state.trackingReminder.reminderFrequency = 0;
@@ -480,8 +481,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             showMoreUnits();
         } else {
             qmLogService.debug('selecting_unit', null, $scope.state.trackingReminder.unitAbbreviatedName);
-            $scope.state.trackingReminder.unitName = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].name;
-            $scope.state.trackingReminder.unitId = qm.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;
+            $scope.state.trackingReminder = qm.unitHelper.updateAllUnitPropertiesOnObject($scope.state.trackingReminder.unitAbbreviatedName, $scope.state.trackingReminder);
         }
         setHideDefaultValueField();
     };
