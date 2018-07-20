@@ -125,7 +125,7 @@ window.qmLog = {
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.error(qmLog.getConsoleLogString("ERROR"), errorSpecificMetaData);
+        console.error(qmLog.getConsoleLogString("ERROR", metaData), errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
         function bugsnagNotify(name, message, errorSpecificMetaData, logLevel, stackTrace){
             if(typeof bugsnagClient === "undefined") {
@@ -191,17 +191,17 @@ window.qmLog = {
     warn: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.warn(qmLog.getConsoleLogString("WARNING"), metaData);
+        console.warn(qmLog.getConsoleLogString("WARNING", metaData), metaData);
     },
     info: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("info")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.info(qmLog.getConsoleLogString("INFO"), metaData);
+        console.info(qmLog.getConsoleLogString("INFO", metaData), metaData);
     },
     debug: function (name, message, metaData, stackTrace) {
         if(!qmLog.shouldWeLog("debug")){return;}
         qmLog.populateReport(name, message, metaData, stackTrace);
-        console.debug(qmLog.getConsoleLogString("DEBUG"), metaData);
+        console.debug(qmLog.getConsoleLogString("DEBUG", metaData), metaData);
     },
     errorOrInfoIfTesting: function (name, message, metaData, stackTrace) {
         message = message || name;
@@ -213,17 +213,19 @@ window.qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
-    getConsoleLogString: function (logLevel){
+    getConsoleLogString: function (logLevel, metaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
         if(qm.platform.isMobile() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
-        try {
-            if(qmLog.globalMetaData && qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
-                logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(qmLog.globalMetaData);
+        if(qm.platform.isMobile()){ // Meta object is already logged nicely in browser console
+            try {
+                if(qmLog.globalMetaData && qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
+                    logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(metaData);
+                }
+            } catch (error) {
+                console.error("Could not stringify log meta data", error);
             }
-        } catch (error) {
-            console.error("Could not stringify log meta data", error);
         }
         if(qm.platform.isMobile()){logString = logLevel + ": " + logString;}
         return logString;

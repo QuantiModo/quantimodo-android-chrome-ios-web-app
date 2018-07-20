@@ -2367,7 +2367,7 @@ window.qm = {
             }
         },
         clearNotifications: function() {
-            if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
+            if(!qm.platform.isChromeExtension()){ return;}
             qm.chrome.updateChromeBadge(0);
             chrome.notifications.clear("moodReportNotification", function() {});
         },
@@ -2488,10 +2488,7 @@ window.qm = {
     platform: {
         isChromeExtension: function (){
             if(qm.platform.isMobile()){return false;}
-            if(typeof chrome === "undefined"){
-                window.qmLog.debug('chrome is undefined', null, null);
-                return false;
-            }
+            if(typeof chrome === "undefined"){return false;}
             if(typeof chrome.runtime === "undefined"){
                 window.qmLog.debug('chrome.runtime is undefined', null, null);
                 return false;
@@ -2822,16 +2819,19 @@ window.qm = {
             });
         },
         createStudy: function(body, successHandler, errorHandler){
-            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
-                successHandler(study);
-            }, function (error) {
-                qmLog.info(error);
+            function createStudy(){
                 function callback(error, data, response) {
                     var study = qm.studyHelper.processAndSaveStudy(data, error);
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
                 qm.studyHelper.getStudiesApiInstance().createStudy(body, params, callback);
+            }
+            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
+                successHandler(study);
+            }, function (error) {
+                qmLog.info(error);
+                createStudy();
             });
         },
     },
