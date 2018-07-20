@@ -2490,14 +2490,11 @@ window.qm = {
             if(qm.platform.isMobile()){return false;}
             if(typeof chrome === "undefined"){return false;}
             if(typeof chrome.runtime === "undefined"){
-                window.qmLog.debug('chrome.runtime is undefined', null, null);
+                qmLog.debug('chrome.runtime is undefined');
                 return false;
             }
-            if(typeof chrome.alarms === "undefined"){
-                window.qmLog.debug('chrome.alarms is undefined', null, null);
-                return false;
-            }
-            window.qmLog.debug('isChromeExtension returns true', null, null);
+            if(typeof chrome.alarms === "undefined"){return false;}
+            qmLog.debug('isChromeExtension returns true');
             return true;
         },
         isWeb: function (){
