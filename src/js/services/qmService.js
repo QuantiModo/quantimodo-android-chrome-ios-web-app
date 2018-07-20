@@ -1750,7 +1750,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         actionSheetButtons: {
             charts: { state: qmStates.charts,  icon: qmService.ionIcons.charts, text: 'Charts'},
             chartSearch: { state: qmStates.chartSearch,  icon: qmService.ionIcons.charts, text: 'Charts'},
-            compare: { icon: qmService.ionIcons.study, text: 'Compare Another Variable'},
+            compare: { icon: qmService.ionIcons.study, text: 'Create Study'},
             help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
             historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
             historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
@@ -1892,7 +1892,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     };
                 }
                 var hideSheet = $ionicActionSheet.show(actionSheetParams);
-                $timeout(function() {hideSheet();}, 30000);
+                //$timeout(function() {hideSheet();}, 30000);
             };
         },
         showVariableObjectActionSheet: function(variableName, variableObject){
@@ -3243,7 +3243,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
-        if(platform.isMobile){qmService.actionSheets.actionSheetButtons.compare.text = "Compare Another";}
         qmLog.info("Platform: ", platform);
     };
     qmService.getProtocol = function () {
