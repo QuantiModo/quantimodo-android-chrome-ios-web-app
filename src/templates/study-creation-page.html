@@ -27,8 +27,8 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col col-50"> <div ng-if="state.causeVariable">{{state.causeVariable.name}}</div> </div>
-                <div class="col col-50"> <div ng-if="state.effectVariable">{{state.effectVariable.name}}</div> </div>
+                <div class="col col-50"> <div id="causeVariableName" ng-if="state.causeVariable">{{state.causeVariable.name}}</div> </div>
+                <div class="col col-50"> <div id="effectVariableName" ng-if="state.effectVariable">{{state.effectVariable.name}}</div> </div>
             </div>
             <br>
             <div id="createButtonsSection" ng-if="state.effectVariable && state.causeVariable && !state.study">
@@ -38,12 +38,12 @@
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
                         ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'individual')">
                     <span><i class="ion-person"></i> &nbsp; INDIVIDUAL STUDY &nbsp;</span>
-                </button>
+                </button><br>
                 <button id="createStudyButton" class="button"
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
                         ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'cohort')">
                     <span><i class="ion-android-people"></i> &nbsp; GROUP STUDY &nbsp;</span>
-                </button>
+                </button><br>
                 <button id="createPopulationStudyButton" class="button"
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
                         ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'population')">
