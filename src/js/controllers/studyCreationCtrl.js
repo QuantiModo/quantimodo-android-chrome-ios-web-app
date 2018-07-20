@@ -47,7 +47,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     }
     function showTypesExplanation() {
         if($scope.state.causeVariable && $scope.state.effectVariable){
-            qm.apiHelper.getPropertyDescription('CreateStudyBody', 'type', function (description) {
+            qm.apiHelper.getPropertyDescription('StudyCreationBody', 'type', function (description) {
                 $scope.state.title = "What kind of study do you want to create?";
                 $scope.state.bodyText = description;
             });
