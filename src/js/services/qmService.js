@@ -1357,21 +1357,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         noResultsHandler(userErrorMessage)
                     });
                 };
+                function logDebug(message, queryString) {
+                    if(queryString){message += "("+queryString+")";}
+                    qmLog.debug("VariableSearchDialog: " + message)
+                }
+                logDebug("Opened search dialog");
                 function showVariableList() {
                     $timeout(function(){
                         if(self.items && self.items.length){
                             self.hidden = false;
-                            qmLog.info("showing list");
-                            console.log(document);
+                            logDebug("showing list");
                             document.querySelector('#variable-search-box').focus();
                             //document.getElementById('variable-search-box').focus();
                             //document.getElementById('variable-search-box').select();
                         } else {
-                            qmLog.info("Not showing list because we don't have results yet");
+                            logDebug("Not showing list because we don't have results yet");
                         }
                     }, 100);
                 }
                 function createNewVariable(variableName) {
+                    logDebug("Creating new variable: " + variableName);
                     qmService.goToState(qmStates.reminderAdd, {variableName: variableName});
                     $mdDialog.cancel();
                 }
@@ -1388,13 +1393,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     if(!query || query === ""){
                         if(self.items && self.items.length > 10){
+                            logDebug("Returning " + self.items.length + " items from querySearch");
                             deferred.resolve(self.items);
                             return deferred.promise;
                         }
                     }
                     self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                     if(query === self.lastApiQuery && self.lastResults){
-                        qmLog.debug("Why are we researching with the same query?");
+                        logDebug("Why are we researching with the same query?", query);
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         return deferred.promise;
                     }
@@ -1404,9 +1410,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         self.lastApiQuery = query;
                     }
                     if(query === "" && dialogParameters.requestParams.searchPhrase){delete dialogParameters.requestParams.searchPhrase;} // This happens after clicking x clear button
+                    logDebug("getFromLocalStorageOrApi in querySearch with params: "+JSON.stringify(dialogParameters.requestParams), query);
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
                         self.lastResults = variables;
-                        qmLogService.debug('Got ' + self.lastResults.length + ' results matching ' + query);
+                        logDebug('Got ' + self.lastResults.length + ' results matching ', query);
                         showVariableList();
                         deferred.resolve(convertVariablesToToResultsList(self.lastResults));
                         if(variables && variables.length){
@@ -1417,7 +1424,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, variableSearchErrorHandler);
                     return deferred.promise;
                 }
-                function searchTextChange(text) { qmLogService.debug('Text changed to ' + text); }
+                function searchTextChange(text) { logDebug('Text changed to ' + text+ " in querySearch"); }
                 function selectedItemChange(item) {
                     if(!item){return;}
                     self.selectedItem = item;
@@ -1429,7 +1436,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $scope.variable = item.variable;
                     item.variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();
                     qm.userVariables.saveToLocalStorage(item.variable);
-                    qmLogService.debug('Item changed to ' + item.variable.name);
+                    logDebug('Item changed to ' + item.variable.name+ " in querySearch");
                     self.finish();
                 }
                 /**
@@ -1440,7 +1447,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return variables.map( function (variable) {
                         var variableName = variable.displayName || variable.variableName || variable.name;
                         if(!variableName){
-                            qmLog.error("No variable name!");
+                            qmLog.error("No variable name in convertVariablesToToResultsList");
                             return;
                         }
                         return {
@@ -1469,7 +1476,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 successHandler(variable);
             }, function(error) {
                 if(errorHandler){errorHandler(error);}
-                qmLogService.debug('User cancelled selection');
+                qmLog.debug('User cancelled selection');
             });
         },
         storage: {},

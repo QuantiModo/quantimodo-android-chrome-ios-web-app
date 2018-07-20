@@ -13,9 +13,9 @@ window.qm = {
     },
     appMode: {
         isTesting: function(){
-            if(qm.getUser()){
-                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){return true;}
-                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            if(window.qmUser){
+                if(window.qmUser.email && window.qmUser.email.toLowerCase().indexOf('test') !== -1){return true;}
+                if(window.qmUser.displayName && window.qmUser.displayName.toLowerCase().indexOf('test') !== -1){return true;}
             }
             return window.location.href.indexOf("medimodo.heroku") !== -1;
         },
@@ -2367,7 +2367,7 @@ window.qm = {
             }
         },
         clearNotifications: function() {
-            if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
+            if(!qm.platform.isChromeExtension()){ return;}
             qm.chrome.updateChromeBadge(0);
             chrome.notifications.clear("moodReportNotification", function() {});
         },
@@ -2488,19 +2488,13 @@ window.qm = {
     platform: {
         isChromeExtension: function (){
             if(qm.platform.isMobile()){return false;}
-            if(typeof chrome === "undefined"){
-                window.qmLog.debug('chrome is undefined', null, null);
-                return false;
-            }
+            if(typeof chrome === "undefined"){return false;}
             if(typeof chrome.runtime === "undefined"){
-                window.qmLog.debug('chrome.runtime is undefined', null, null);
+                qmLog.debug('chrome.runtime is undefined');
                 return false;
             }
-            if(typeof chrome.alarms === "undefined"){
-                window.qmLog.debug('chrome.alarms is undefined', null, null);
-                return false;
-            }
-            window.qmLog.debug('isChromeExtension returns true', null, null);
+            if(typeof chrome.alarms === "undefined"){return false;}
+            qmLog.debug('isChromeExtension returns true');
             return true;
         },
         isWeb: function (){
@@ -2527,6 +2521,9 @@ window.qm = {
             return false;
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
+        isMobileOrTesting: function(){
+            return qm.platform.isMobile() || qm.appMode.isTesting();
+        },
         getCurrentPlatform: function(){
             if(qm.urlHelper.getParam('platform')){return qm.urlHelper.getParam('platform');}
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
@@ -2822,16 +2819,19 @@ window.qm = {
             });
         },
         createStudy: function(body, successHandler, errorHandler){
-            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
-                successHandler(study);
-            }, function (error) {
-                qmLog.info(error);
+            function createStudy(){
                 function callback(error, data, response) {
                     var study = qm.studyHelper.processAndSaveStudy(data, error);
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
                 qm.studyHelper.getStudiesApiInstance().createStudy(body, params, callback);
+            }
+            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
+                successHandler(study);
+            }, function (error) {
+                qmLog.info(error);
+                createStudy();
             });
         },
     },
