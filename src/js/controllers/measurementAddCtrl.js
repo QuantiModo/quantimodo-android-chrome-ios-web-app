@@ -210,7 +210,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(unitAbbreviatedName === 'Show more units'){
             showMoreUnits();
         } else {
-            qmLogService.debug('selecting_unit ' + unitAbbreviatedName, null);
+            qmLog.info('selected unit: ' + unitAbbreviatedName);
             $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
             $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
         }
