@@ -125,7 +125,7 @@ window.qmLog = {
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.error(qmLog.getConsoleLogString("ERROR", metaData), errorSpecificMetaData);
+        console.error(qmLog.getConsoleLogString("ERROR", errorSpecificMetaData), errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
         function bugsnagNotify(name, message, errorSpecificMetaData, logLevel, stackTrace){
             if(typeof bugsnagClient === "undefined") {
@@ -142,7 +142,7 @@ window.qmLog = {
         bugsnagNotify(qmLog.name, qmLog.message, errorSpecificMetaData, "error", qmLog.stackTrace);
         //if(window.qmLog.mobileDebug){alert(name + ": " + message);}
     },
-    pushDebug: function(name, message, metaData, stackTrace) {
+    pushDebug: function(name, message, errorSpecificMetaData, stackTrace) {
         //qmLog.pushDebugEnabled = true;
         if(!qmLog.pushDebugEnabled){
             qmLog.pushDebugEnabled = window.location.href.indexOf("pushDebugEnabled") !== -1;
@@ -152,9 +152,9 @@ window.qmLog = {
         }
         if(!qmLog.pushDebugEnabled && window.localStorage){qmLog.pushDebugEnabled = localStorage.getItem('pushDebugEnabled');}
         if(qmLog.pushDebugEnabled || qmLog.isDebugMode()){
-            qmLog.error("PushNotification Debug: " + name, message, metaData, stackTrace);
+            qmLog.error("PushNotification Debug: " + name, message, errorSpecificMetaData, stackTrace);
         } else {
-            qmLog.info("PushNotification Debug: " + name, message, metaData, stackTrace);
+            qmLog.info("PushNotification Debug: " + name, message, errorSpecificMetaData, stackTrace);
         }
     },
     getAuthDebugEnabled: function(message){
@@ -172,36 +172,32 @@ window.qmLog = {
         }
         return qmLog.authDebugEnabled;
     },
-    authDebug: function(name, message, metaData) {
+    authDebug: function(name, message, errorSpecificMetaData) {
+        if(!qmLog.getAuthDebugEnabled(name)){return;}
         name = "Auth Debug: " + name;
-        if(qmLog.getAuthDebugEnabled(name)){
-            if(qm.platform.isMobile()){
-                qmLog.error(name, message, metaData);
-            } else {
-                qmLog.info(name, message, metaData);
-            }
+        if(qm.platform.isMobile()){
+            qmLog.error(name, message, errorSpecificMetaData);
         } else {
-            //console.log("Log level is " + qmLog.getLogLevelName());
-            qmLog.debug(message, message, null);
+            qmLog.info(name, message, errorSpecificMetaData);
         }
     },
-    webAuthDebug: function(name, message, metaData) {
-        if(!qm.platform.isMobile()){qmLog.authDebug(name, message, metaData);}
+    webAuthDebug: function(name, message, errorSpecificMetaData) {
+        if(!qm.platform.isMobile()){qmLog.authDebug(name, message, errorSpecificMetaData);}
     },
-    warn: function (name, message, metaData, stackTrace) {
+    warn: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
-        qmLog.populateReport(name, message, metaData, stackTrace);
-        console.warn(qmLog.getConsoleLogString("WARNING", metaData), metaData);
+        qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
+        console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData), errorSpecificMetaData);
     },
-    info: function (name, message, metaData, stackTrace) {
+    info: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("info")){return;}
-        qmLog.populateReport(name, message, metaData, stackTrace);
-        console.info(qmLog.getConsoleLogString("INFO", metaData), metaData);
+        qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
+        console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData), errorSpecificMetaData);
     },
-    debug: function (name, message, metaData, stackTrace) {
+    debug: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("debug")){return;}
-        qmLog.populateReport(name, message, metaData, stackTrace);
-        console.debug(qmLog.getConsoleLogString("DEBUG", metaData), metaData);
+        qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
+        console.debug(qmLog.getConsoleLogString("DEBUG", errorSpecificMetaData), errorSpecificMetaData);
     },
     errorOrInfoIfTesting: function (name, message, metaData, stackTrace) {
         message = message || name;
