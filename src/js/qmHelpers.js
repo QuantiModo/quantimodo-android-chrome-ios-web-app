@@ -13,9 +13,9 @@ window.qm = {
     },
     appMode: {
         isTesting: function(){
-            if(qm.getUser()){
-                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){return true;}
-                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            if(window.qmUser){
+                if(window.qmUser.email && window.qmUser.email.toLowerCase().indexOf('test') !== -1){return true;}
+                if(window.qmUser.displayName && window.qmUser.displayName.toLowerCase().indexOf('test') !== -1){return true;}
             }
             return window.location.href.indexOf("medimodo.heroku") !== -1;
         },
