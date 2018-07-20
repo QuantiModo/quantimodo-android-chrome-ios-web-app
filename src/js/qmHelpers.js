@@ -2521,6 +2521,9 @@ window.qm = {
             return false;
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
+        isMobileOrTesting: function(){
+            return qm.platform.isMobile() || qm.appMode.isTesting();
+        },
         getCurrentPlatform: function(){
             if(qm.urlHelper.getParam('platform')){return qm.urlHelper.getParam('platform');}
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}

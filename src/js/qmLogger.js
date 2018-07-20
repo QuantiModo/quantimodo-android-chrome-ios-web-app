@@ -212,18 +212,18 @@ window.qmLog = {
     getConsoleLogString: function (logLevel, metaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
-        if(qm.platform.isMobile() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
+        if(qm.platform.isMobileOrTesting() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
-        if(qm.platform.isMobile()){ // Meta object is already logged nicely in browser console
+        if(qm.platform.isMobileOrTesting()){ // Meta object is already logged nicely in browser console
             try {
-                if(qmLog.globalMetaData && qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
+                if(qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
                     logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(metaData);
                 }
             } catch (error) {
                 console.error("Could not stringify log meta data", error);
             }
         }
-        if(qm.platform.isMobile()){logString = logLevel + ": " + logString;}
+        if(qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
         return logString;
     },
     shouldWeLog: function(providedLogLevelName) {
