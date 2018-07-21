@@ -891,6 +891,7 @@ function copyFiles(sourceFiles, destinationPath, excludedFolder) {
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
+    qmLog.info("Setting appDisplayName to " + appSettings.appDisplayName + " in config.xml");
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
