@@ -36,20 +36,21 @@
                 <p>{{state.typesDescription}}</p>
                 <button id="createIndividualStudyButton" class="button"
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
-                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'individual')">
+                        ng-click="createStudy('individual')">
                     <span><i class="ion-person"></i> &nbsp; INDIVIDUAL STUDY &nbsp;</span>
                 </button><br>
                 <button id="createStudyButton" class="button"
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
-                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'cohort')">
+                        ng-click="createStudy('cohort')">
                     <span><i class="ion-android-people"></i> &nbsp; GROUP STUDY &nbsp;</span>
                 </button><br>
                 <button id="createPopulationStudyButton" class="button"
                         style="background-color: {{state.color.backgroundColor}}; border: none; outline: none; color: white; text-align: center"
-                        ng-click="createStudy(state.causeVariable.name, state.effectVariable.name, 'population')">
+                        ng-click="createStudy('population')">
                     <span><i class="ion-android-globe"></i> &nbsp; GLOBAL STUDY &nbsp;</span>
                 </button>
             </div>
+            <div ng-if="state.study" ng-init="card = state.study.studyCard" ng-include="'templates/cards/material-card.html'"></div>
             <div ng-if="state.study" class="list">
                 <p style="font-size: 30px; line-height: 1;"> <i class="ion-person-add"></i> &nbsp; Recruit Participants </p>
                 <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
