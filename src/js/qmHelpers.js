@@ -3330,6 +3330,7 @@ window.qm = {
             if($stateParams.causeVariable){return $stateParams.causeVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['causeVariableName', 'predictorVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
+            if($scope && $scope.state && $scope.state.causeVariable){return $scope.state.causeVariable.name;}
             if($scope && $scope.state && $scope.state.study && $scope.state.study.causeVariable){
                 return $scope.state.study.causeVariable.name;
             }
@@ -3354,6 +3355,7 @@ window.qm = {
             if($stateParams.effectVariable){return $stateParams.effectVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['effectVariableName', 'outcomeVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
+            if($scope && $scope.state && $scope.state.effectVariable){return $scope.state.effectVariable.name;}
             if($scope && $scope.state && $scope.state.study && $scope.state.study.effectVariable){
                 return $scope.state.study.effectVariable.name;
             }
@@ -3398,6 +3400,7 @@ window.qm = {
             if(params.studyId && params.studyId === study.studyId){return true;}
             if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
             if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
+            if(params.type && params.type !== study.type){return false;}
             return true;
         },
         getStudyFromLocalForageOrGlobals: function(params, successHandler, errorHandler) {
