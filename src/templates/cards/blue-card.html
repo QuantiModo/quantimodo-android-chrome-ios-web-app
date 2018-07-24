@@ -16,7 +16,7 @@
     <div ng-repeat="button in card.buttons">
         <div class="row" >
             <div class="button-bar">
-                <a id="{{button.id}}" href="{{button.link}}" class="button button-clear button-balanced">
+                <a id="{{button.id}}" class="button button-clear button-balanced" ng-click="generalButtonClickHandler(button)">
                     <i class="{{button.ionIcon}}"> &nbsp; {{button.text}} &nbsp;</i>
                 </a>
             </div>
