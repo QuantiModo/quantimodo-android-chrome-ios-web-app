@@ -3899,6 +3899,10 @@ window.qm = {
         },
         getBaseAppUrl: function(){
             return window.location.origin + window.location.pathname;
+        },
+        goToUrl: function(url){
+            qmLog.info("Going to "+url);
+            window.location.href = url;
         }
     },
     user: null,
