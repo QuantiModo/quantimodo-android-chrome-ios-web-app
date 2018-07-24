@@ -1,0 +1,25 @@
+<div class="card" id="{{card.id}}" style="background-color: #2E294E; border-radius: 15px" ng-if="!card.hide">
+    <div id="card-header" class="item item-avatar item-borderless" style="background-color: #2E294E; padding-left: 0; padding-right: 0">
+    <span style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;">
+        <i id="card-icon" ng-if="!card.avatar" class="icon balanced {{card.ionIcon}}"></i>
+        <img id="card-image" style="max-width: 40px; max-height: 40px;" ng-if="card.avatar" ng-src="{{card.avatar}}">
+    </span>
+        <span style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; font-family: 'Open Sans', sans-serif;">
+            <p ng-if="!platform.isMobile" style="font-size: 24px; color: white; margin: auto; max-width: 80%; white-space: normal;">{{card.title}}</p>
+            <p ng-if="platform.isMobile" style="font-size: 18px; color: white; margin: auto; max-width: 80%; white-space: normal;">{{card.title}}</p>
+        </span>
+        <button id="closeButton" class="button button-clear button-assertive" ng-click="card.hide = true;"
+                style="position: absolute; top: 10px; right: 10px; font-size: 25px;" ><i class="ion-close-round"></i>
+        </button>
+    </div>
+    <div style="padding: 5px;" ng-bind-html="trustAsHtml(card.htmlContent)"></div>
+    <div ng-repeat="button in card.buttons">
+        <div class="row" >
+            <div class="button-bar">
+                <a id="{{button.id}}" href="{{button.link}}" class="button button-clear button-balanced">
+                    <i class="{{button.ionIcon}}"> &nbsp; {{button.text}} &nbsp;</i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

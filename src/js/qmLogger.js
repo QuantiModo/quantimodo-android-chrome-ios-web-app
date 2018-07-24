@@ -184,17 +184,29 @@ window.qmLog = {
     warn: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData), errorSpecificMetaData);
+        if(errorSpecificMetaData){
+            console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData), errorSpecificMetaData);
+        } else {
+            console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData));
+        }
     },
     info: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("info")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData), errorSpecificMetaData);
+        if(errorSpecificMetaData){
+            console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData), errorSpecificMetaData);
+        } else {
+            console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData));
+        }
     },
     debug: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("debug")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.debug(qmLog.getConsoleLogString("DEBUG", errorSpecificMetaData), errorSpecificMetaData);
+        if(errorSpecificMetaData){
+            console.debug(qmLog.getConsoleLogString("DEBUG", errorSpecificMetaData), errorSpecificMetaData);
+        } else {
+            console.debug(qmLog.getConsoleLogString("DEBUG", errorSpecificMetaData));
+        }
     },
     errorOrInfoIfTesting: function (name, message, metaData, stackTrace) {
         message = message || name;
