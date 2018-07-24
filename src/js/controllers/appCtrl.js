@@ -38,6 +38,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
+    $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
     $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
     }, function (ratio) {
         if (ratio == 1){

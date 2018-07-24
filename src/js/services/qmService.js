@@ -304,6 +304,32 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableObject;
             }
         },
+        buttonClickHandlers: {
+            generalButtonClickHandler: function(button, ev){
+                if(button.link){return qm.urlHelper.goToUrl(button.link);}
+                if(!qmService.buttonClickHandlers[button.functionToCall]){
+                    qmLog.error("qmService.buttonClickHandlers." + button.functionToCall + " is not defined!", button);
+                    return;
+                }
+                if(!button.confirmationText){
+                    qmService.buttonClickHandlers[button.functionToCall]();
+                    return;
+                }
+                function yesCallback() {
+                    if(button.successToastText){qmService.showInfoToast(button.successToastText)}
+                    qmService.buttonClickHandlers[button.functionToCall]();
+                }
+                function noCallback() {qmLog.info("Canceled " + button.text)}
+                qmService.showMaterialConfirmationDialog(button.text, button.confirmationText, yesCallback, noCallback, ev, 'No');
+            },
+            vote: function (button) {
+                qmService.postVoteToApi(button.functionParameters, function () {
+                    qmLog.debug('upVote');
+                }, function (error) {
+                    qmLog.error('upVote failed!', error);
+                });
+            }
+        },
         charts: {
             broadcastUpdateCharts: function(){
                 qmLog.info("Broadcasting updateCharts");
