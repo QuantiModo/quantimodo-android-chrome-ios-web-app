@@ -16,9 +16,9 @@
     <div ng-repeat="button in card.buttons">
         <div class="row" >
             <div class="button-bar">
-                <button id="{{button.id}}" href="{{button.link}}" class="button button-clear button-balanced">
+                <a id="{{button.id}}" href="{{button.link}}" class="button button-clear button-balanced">
                     <i class="{{button.ionIcon}}"> &nbsp; {{button.text}} &nbsp;</i>
-                </button>
+                </a>
             </div>
         </div>
     </div>
