@@ -14,6 +14,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         joining: false
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         $scope.state.study = $stateParams.study;
         qmLogService.debug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name, null);
         if(!$rootScope.user){
@@ -59,6 +60,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         return body;
     }
     $scope.joinStudy = function () {
+        qmService.showBasicLoader();
         $scope.state.joining = true;
         $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}

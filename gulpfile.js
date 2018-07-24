@@ -1321,7 +1321,7 @@ gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], fun
 gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
     return postNotifyCollaborators('android');
 });
-gulp.task('post-app-status', [], function () {
+gulp.task('post-app-status', ['getAppConfigs'], function () {
     return postAppStatus();
 });
 gulp.task('validateChromeManifest', function () {
