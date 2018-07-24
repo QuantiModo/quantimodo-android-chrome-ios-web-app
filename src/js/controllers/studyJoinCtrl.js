@@ -10,7 +10,8 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         bodyText: "One moment please...",
         moreInfo: "No personally identifiable data will be shared.  Data will only be used in an anonymous and " +
             "aggregated form as is done in epidemiological studies.",
-        study: null
+        study: null,
+        joining: false
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $scope.state.study = $stateParams.study;
@@ -58,6 +59,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
         return body;
     }
     $scope.joinStudy = function () {
+        $scope.state.joining = true;
         $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
         if(qmService.login.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}
         $scope.state.title = "Joining study...";
