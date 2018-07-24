@@ -8,9 +8,9 @@
             <span class="md-subhead">{{card.subTitle}}</span>
         </md-card-header-text>
     </md-card-header>
-    <img ng-src="{{card.image}}" class="md-card-image" alt="Washed Out">
+    <img ng-src="{{card.image}}" class="md-card-image" alt="{{card.image}}" ng-if="card.image">
     <md-card-content>
-        <div>{{card.content}}</div>
+        <div ng-bind-html="trustAsHtml(card.htmlContent)"></div>
     </md-card-content>
     <md-card-actions layout="column" layout-align="start" >
         <md-button id="{{button.title}}" aria-label="{{button.title}}"

@@ -52,13 +52,13 @@
 }
 
 /* Take care of image borders and formatting */
-img {
-    max-width: 600px;
-    outline: none;
-    text-decoration: none;
+.study-img {
+    /* max-width: 600px; */
+    /* outline: none; */
+    /* text-decoration: none; */
     -ms-interpolation-mode: bicubic;
 }
-a {
+.study-a {
     text-decoration: none;
     border: 0;
     outline: none;
@@ -74,7 +74,7 @@ td, h1, h2, h3  {
 td {
     text-align: center;
 }
-body {
+.study-body {
     -webkit-font-smoothing:antialiased;
     -webkit-text-size-adjust:none;
     width: 100%;
@@ -83,7 +83,7 @@ body {
     background: #ffffff;
     font-size: 16px;
 }
-table {
+.study-table {
     border-collapse: collapse !important;
 }
 .headline {
