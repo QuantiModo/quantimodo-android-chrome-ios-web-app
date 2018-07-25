@@ -20,11 +20,11 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         });
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
+        qmLog.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
     });
     if (!clipboard.supported) {
-        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
+        qmLog.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
@@ -46,8 +46,9 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         showTypesExplanation();
     }
     function showTypesExplanation() {
+        $scope.state.study = null;
         if($scope.state.causeVariable && $scope.state.effectVariable){
-            qm.apiHelper.getPropertyDescription('CreateStudyBody', 'type', function (description) {
+            qm.apiHelper.getPropertyDescription('StudyCreationBody', 'type', function (description) {
                 $scope.state.title = "What kind of study do you want to create?";
                 $scope.state.bodyText = description;
             });
@@ -77,19 +78,19 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
         });
     };
-    $scope.createStudy = function(causeVariableName, effectVariableName, type) {
-        qmLog.info('Clicked createStudy for ' + causeVariableName + ' and ' + effectVariableName);
+    $scope.createStudy = function(type) {
+        qmLog.info('Clicked createStudy for ' + getCauseVariableName() + ' and ' + getEffectVariableName());
         qmService.showInfoToast("Creating study...", 20);
         qmService.showBasicLoader(60);
-        var body = new Quantimodo.StudyCreationBody(causeVariableName, effectVariableName);
-        body.type = type;
+        var body = new Quantimodo.StudyCreationBody(getCauseVariableName(), getEffectVariableName(), type);
         qm.studiesCreated.createStudy(body, function (study) {
             qmService.hideLoader();
             $scope.state.study = study;
-            //qmService.goToStudyPage(study.causeVariable.name, study.effectVariable.name, study.studyId);
         }, function (error) {
             qmService.hideLoader();
             qmService.auth.showErrorAlertMessageOrSendToLogin("Could Not Create Study", error);
         });
     };
+    function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
+    function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
 }]);

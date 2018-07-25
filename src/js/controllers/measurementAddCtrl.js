@@ -106,10 +106,10 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.validationFailure(message, $scope.state.measurement);
             return false;
         } else {
-            if(!qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName)){
+            if(!qm.unitHelper.getByNameAbbreviatedNameOrId($scope.state.measurement.unitAbbreviatedName)){
             qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
                 ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
-            } else {$scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName($scope.state.measurement.unitAbbreviatedName).id;}
+            } else {$scope.state.measurement.unitId = qm.unitHelper.getByNameAbbreviatedNameOrId($scope.state.measurement.unitAbbreviatedName).id;}
         }
         return true;
     };
@@ -210,10 +210,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         if(unitAbbreviatedName === 'Show more units'){
             showMoreUnits();
         } else {
-            qmLogService.debug('selecting_unit ' + unitAbbreviatedName, null);
+            qmLog.info('selected unit: ' + unitAbbreviatedName);
             $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
-            $scope.state.measurement.unitName = qm.unitHelper.getByAbbreviatedName(unitAbbreviatedName).name;
-            $scope.state.measurement.unitId = qm.unitHelper.getByAbbreviatedName(unitAbbreviatedName).id;
+            $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
         }
         setupValueFieldType(unitAbbreviatedName, valence);
     }

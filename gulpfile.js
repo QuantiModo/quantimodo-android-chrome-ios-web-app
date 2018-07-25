@@ -891,6 +891,7 @@ function copyFiles(sourceFiles, destinationPath, excludedFolder) {
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
+    qmLog.info("Setting appDisplayName to " + appSettings.appDisplayName + " in config.xml");
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
@@ -1320,7 +1321,7 @@ gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], fun
 gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
     return postNotifyCollaborators('android');
 });
-gulp.task('post-app-status', [], function () {
+gulp.task('post-app-status', ['getAppConfigs'], function () {
     return postAppStatus();
 });
 gulp.task('validateChromeManifest', function () {

@@ -435,13 +435,20 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             qmService.actionSheets.actionSheetButtons.charts,
-            qmService.actionSheets.actionSheetButtons.historyAllVariable
+            qmService.actionSheets.actionSheetButtons.historyAllVariable,
+            //qmService.actionSheets.actionSheetButtons.variableSettings
         ];
+		if(trackingReminderNotification.outcome === true){
+            buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
+        } else if(trackingReminderNotification.outcome === false) {
+            buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
+        } else {
+			qmLog.error("Why is outcome not boolean in this notification!?!?!", null, trackingReminderNotification)
+		}
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
         buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
-        buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
