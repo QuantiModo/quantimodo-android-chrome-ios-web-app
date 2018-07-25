@@ -20,11 +20,11 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         });
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
+        qmLog.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
     });
     if (!clipboard.supported) {
-        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
+        qmLog.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
