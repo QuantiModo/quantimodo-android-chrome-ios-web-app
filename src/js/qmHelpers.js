@@ -13,9 +13,9 @@ window.qm = {
     },
     appMode: {
         isTesting: function(){
-            if(qm.getUser()){
-                if(qm.getUser().email && qm.getUser().email.toLowerCase().indexOf('test') !== -1){return true;}
-                if(qm.getUser().displayName && qm.getUser().displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            if(window.qmUser){
+                if(window.qmUser.email && window.qmUser.email.toLowerCase().indexOf('test') !== -1){return true;}
+                if(window.qmUser.displayName && window.qmUser.displayName.toLowerCase().indexOf('test') !== -1){return true;}
             }
             return window.location.href.indexOf("medimodo.heroku") !== -1;
         },
@@ -2367,7 +2367,7 @@ window.qm = {
             }
         },
         clearNotifications: function() {
-            if(!qm.platform.isChromeExtension()){ window.qmLog.debug('Can\'t clearNotifications because chrome is undefined'); return;}
+            if(!qm.platform.isChromeExtension()){ return;}
             qm.chrome.updateChromeBadge(0);
             chrome.notifications.clear("moodReportNotification", function() {});
         },
@@ -2488,19 +2488,13 @@ window.qm = {
     platform: {
         isChromeExtension: function (){
             if(qm.platform.isMobile()){return false;}
-            if(typeof chrome === "undefined"){
-                window.qmLog.debug('chrome is undefined', null, null);
-                return false;
-            }
+            if(typeof chrome === "undefined"){return false;}
             if(typeof chrome.runtime === "undefined"){
-                window.qmLog.debug('chrome.runtime is undefined', null, null);
+                qmLog.debug('chrome.runtime is undefined');
                 return false;
             }
-            if(typeof chrome.alarms === "undefined"){
-                window.qmLog.debug('chrome.alarms is undefined', null, null);
-                return false;
-            }
-            window.qmLog.debug('isChromeExtension returns true', null, null);
+            if(typeof chrome.alarms === "undefined"){return false;}
+            qmLog.debug('isChromeExtension returns true');
             return true;
         },
         isWeb: function (){
@@ -2527,6 +2521,9 @@ window.qm = {
             return false;
         },
         isMobile: function (){return qm.platform.isAndroid() || qm.platform.isIOS();},
+        isMobileOrTesting: function(){
+            return qm.platform.isMobile() || qm.appMode.isTesting();
+        },
         getCurrentPlatform: function(){
             if(qm.urlHelper.getParam('platform')){return qm.urlHelper.getParam('platform');}
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
@@ -2822,16 +2819,19 @@ window.qm = {
             });
         },
         createStudy: function(body, successHandler, errorHandler){
-            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
-                successHandler(study);
-            }, function (error) {
-                qmLog.info(error);
+            function createStudy(){
                 function callback(error, data, response) {
                     var study = qm.studyHelper.processAndSaveStudy(data, error);
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
                 qm.studyHelper.getStudiesApiInstance().createStudy(body, params, callback);
+            }
+            qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
+                successHandler(study);
+            }, function (error) {
+                qmLog.info(error);
+                createStudy();
             });
         },
     },
@@ -3330,6 +3330,7 @@ window.qm = {
             if($stateParams.causeVariable){return $stateParams.causeVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['causeVariableName', 'predictorVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
+            if($scope && $scope.state && $scope.state.causeVariable){return $scope.state.causeVariable.name;}
             if($scope && $scope.state && $scope.state.study && $scope.state.study.causeVariable){
                 return $scope.state.study.causeVariable.name;
             }
@@ -3354,6 +3355,7 @@ window.qm = {
             if($stateParams.effectVariable){return $stateParams.effectVariable.name;}
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['effectVariableName', 'outcomeVariableName'], $stateParams, $scope, $rootScope);
             if(value){return value;}
+            if($scope && $scope.state && $scope.state.effectVariable){return $scope.state.effectVariable.name;}
             if($scope && $scope.state && $scope.state.study && $scope.state.study.effectVariable){
                 return $scope.state.study.effectVariable.name;
             }
@@ -3398,6 +3400,7 @@ window.qm = {
             if(params.studyId && params.studyId === study.studyId){return true;}
             if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
             if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
+            if(params.type && params.type !== study.type){return false;}
             return true;
         },
         getStudyFromLocalForageOrGlobals: function(params, successHandler, errorHandler) {
@@ -3648,10 +3651,12 @@ window.qm = {
             if(currentlyDisplayedUnits === qm.unitHelper.getNonAdvancedUnits()){return qm.unitHelper.getManualTrackingUnits();}
             return qm.unitHelper.getAllUnits();
         },
-        getByAbbreviatedName: function(unitAbbreviatedName){
+        getByNameAbbreviatedNameOrId: function(unitAbbreviatedNameOrId){
             var allUnits = qm.storage.getItem(qm.items.units);
             for (var i = 0; i < allUnits.length; i++) {
-                if(allUnits[i].abbreviatedName === unitAbbreviatedName){return allUnits[i];}
+                if(allUnits[i].abbreviatedName === unitAbbreviatedNameOrId){return allUnits[i];}
+                if(allUnits[i].name === unitAbbreviatedNameOrId){return allUnits[i];}
+                if(allUnits[i].id === unitAbbreviatedNameOrId){return allUnits[i];}
             }
             return null;
         },
@@ -3684,6 +3689,26 @@ window.qm = {
                 qm.api.responseHandler(error, data, response, successHandler, errorHandler);
             }
             apiInstance.getUnits(callback);
+        },
+        updateAllUnitPropertiesOnObject: function(unitNameAbbreviatedNameOrId, object){
+            var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(unitNameAbbreviatedNameOrId);
+            qmLog.info('Changing unit to ' + unit.name);
+            for (var objectProperty in object) {
+                if (object.hasOwnProperty(objectProperty)) {
+                    if(objectProperty.toLowerCase().indexOf('unit') === -1){continue;}
+                    var lowerCaseObjectProperty = objectProperty.toLowerCase().replace('defaultUnit', '').replace('userUnit', '').replace('unit', '');
+                    for (var unitProperty in unit) {
+                        if (unit.hasOwnProperty(unitProperty)) {
+                            var lowerCaseUnitProperty = unitProperty.toLowerCase();
+                            if(lowerCaseObjectProperty === lowerCaseUnitProperty){
+                                qmLog.info("Setting " + objectProperty + " to " + unit[unitProperty]);
+                                object[objectProperty] = unit[unitProperty];
+                            }
+                        }
+                    }
+                }
+            }
+            return object;
         }
     },
     urlHelper: {
@@ -3874,6 +3899,10 @@ window.qm = {
         },
         getBaseAppUrl: function(){
             return window.location.origin + window.location.pathname;
+        },
+        goToUrl: function(url){
+            qmLog.info("Going to "+url);
+            window.location.href = url;
         }
     },
     user: null,

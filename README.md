@@ -40,3 +40,4 @@ For more info about the types of data you can store and get from the QuantiModo 
 <br><br>
 <img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?" width="300">
 </p>
+ 

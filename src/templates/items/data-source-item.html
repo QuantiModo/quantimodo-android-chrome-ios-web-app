@@ -17,12 +17,12 @@
     <h2>IMPORT ISSUE</h2>
     <p ng-bind-html="connector.updateError"></p>
 </div>-->
-<div class="buttons" style="text-align: center;" ng-if="connector.spreadsheetUpload">
+<div class="buttons" style="text-align: center;" ng-if="connector.spreadsheetUploadLink">
     <button ng-repeat="button in connector.buttons" class="button button-balanced"
             style="text-overflow: clip; margin: 5px;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
         <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i> </button>
 </div>
-<div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUpload">
+<div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUploadLink">
     <button ng-repeat="button in connector.buttons" class="button button-balanced" style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button, $event)">
         <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
     </button>
