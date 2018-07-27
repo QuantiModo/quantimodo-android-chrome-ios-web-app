@@ -815,6 +815,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             outcomes: 'ion-log-out',
             study: 'ion-ios-book',
             discoveries: 'ion-ios-analytics',
+            inbox: 'ion-android-inbox',
             importData: 'ion-ios-cloud-download-outline',
             login: 'ion-log-in',
             tag: 'ion-pricetag',
