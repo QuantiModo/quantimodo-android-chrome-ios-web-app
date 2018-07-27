@@ -10,7 +10,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
     var allStates = $state.get();
-    console.log(qm.stringHelper.prettyJsonStringify(allStates));
+    //console.log(qm.stringHelper.prettyJsonStringify(allStates));
     var qmService = {
         adBanner: {
             adPublisherIds: {
@@ -5767,11 +5767,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
             qmLogService.debug('Going to favoriteAdd state', null);
-            qmService.goToState('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
+            qmService.goToState(qmStates.favoriteAdd, {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
             return;
         }
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
-        qmService.goToState('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+        qmService.goToState(qmStates.favorites, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
         qmService.trackingReminders.syncTrackingReminders();
     };
     qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
