@@ -62,9 +62,9 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				$scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 			}
 			$scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
-            actionButtons[2] = { text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' +
+            actionButtons[2] = { text: '<i class="icon ' + ionIcons.history + '"></i>' +
                 $stateParams.variableCategoryName + ' History'};
-            actionButtons[3] = { text: '<i class="icon ' + qmService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
+            actionButtons[3] = { text: '<i class="icon ' + ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
         actionButtons[4] = qmService.actionSheets.actionSheetButtons.measurementAddSearch;
         actionButtons[5] = qmService.actionSheets.actionSheetButtons.charts;
