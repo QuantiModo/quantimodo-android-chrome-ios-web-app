@@ -3222,7 +3222,8 @@ window.qm = {
                 return haystack;
             }
         },
-        toCamelCaseCase: function(string) {
+        toCamelCase: function(string) {
+            string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
             return string.toCamelCase();
         },
         getStringBetween: function(string, firstString, secondString){
