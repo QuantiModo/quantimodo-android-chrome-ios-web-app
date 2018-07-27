@@ -2353,7 +2353,7 @@ angular.module('starter',
                 doneState: null,
                 skipReminderSettingsIfPossible: null,
                 title: "Add Favorite",
-                ionIcon: ionIcons.start
+                ionIcon: ionIcons.star
             },
             views: {
                 'menuContent': {
