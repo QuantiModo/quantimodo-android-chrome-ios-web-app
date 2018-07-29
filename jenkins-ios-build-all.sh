@@ -9,6 +9,8 @@ set -x
 bundle install
 bundle update
 npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli
+cordova platform rm ios
+cordova platform add ios@4.5.2
 yarn install
 fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
