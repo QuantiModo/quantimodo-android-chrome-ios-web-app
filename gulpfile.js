@@ -1827,6 +1827,14 @@ gulp.task('platform-add-ios', function (callback) {
         callback();
     }
 });
+gulp.task('cordova-plugin-rm-cordova-plugin-console', function (callback) {
+    try {
+        execute('cordova plugin rm cordova-plugin-console', callback);
+    } catch (e) {
+        qmLog.info(JSON.stringify(e));
+        callback();
+    }
+});
 gulp.task('ionic-build-ios', function (callback) {
     execute('ionic build ios', callback, false, true);
 });
@@ -2247,6 +2255,7 @@ gulp.task('makeIosApp', function (callback) {
         'deleteFacebookPlugin',
         'googleServicesPList',
         'platform-add-ios',
+        'cordova-plugin-rm-cordova-plugin-console',
         'ionicResources',
         'addFacebookPlugin',
         //'addGooglePlusPlugin',
@@ -2534,6 +2543,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
+        'cordova-plugin-rm-cordova-plugin-console',
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2562,6 +2572,7 @@ gulp.task('build-ios-app', function (callback) {
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
+        'cordova-plugin-rm-cordova-plugin-console',
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2588,6 +2599,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
+        'cordova-plugin-rm-cordova-plugin-console',
         callback);
 });
 gulp.task('prepare-ios-app-without-cleaning', function (callback) {
