@@ -5,6 +5,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.state = $stateParams;
     $scope.state.searching = true;
     $scope.state.variableSearchResults = [];
+    $scope.state.variableSearchParameters = {};
     //$scope.state.variableSearchParameters = {};  DON'T OVERWRITE $stateParams.variableSearchParameters
     $scope.state.variableSearchQuery = {name:''};
     if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
@@ -193,7 +194,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
+        qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
