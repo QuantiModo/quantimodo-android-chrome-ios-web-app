@@ -10,7 +10,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet) {
     var allStates = $state.get();
-    //console.log(qm.stringHelper.prettyJsonStringify(allStates));
     var qmService = {
         adBanner: {
             adPublisherIds: {
@@ -1491,6 +1490,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(errorHandler){errorHandler(error);}
                 qmLog.debug('User cancelled selection');
             });
+        },
+        states: {
+            outputStateNameConstantsForPHP: function(){
+                for (var i = 0; i < allStates.length; i++) {
+                    var x = allStates[i];
+                    console.log("const " + x.name.replace('app.', '') + " = '" + x.name + "';")
+                }
+            },
+            outputStateInfoForJsonFile: function(){
+                console.log(qm.stringHelper.prettyJsonStringify(allStates));
+            }
         },
         storage: {},
         search: {
