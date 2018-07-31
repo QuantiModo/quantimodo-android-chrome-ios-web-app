@@ -57,7 +57,7 @@
     "gulp-watch": "5.0.1",
     "gulp-zip": "3.2.0",
     "inquirer": "6.0.0",
-    "ionic": "2.2.3",
+    "ionic": "4.0.2",
     "jshint": "2.9.6",
     "lazypipe": "1.0.1",
     "morgan": "1.9.0",
