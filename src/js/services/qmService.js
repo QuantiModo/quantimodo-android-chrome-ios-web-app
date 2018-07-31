@@ -2840,7 +2840,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncAllUserData = function(){
         qmService.trackingReminders.syncTrackingReminders();
-        qmService.getFromLocalStorageOrApiDeferred();
+        qm.userVariables.getFromLocalStorageOrApi();
     };
     qmService.refreshUser = function(force){
         var deferred = $q.defer();
@@ -4964,15 +4964,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error('Error deleting all measurements for variable: ', error);
             deferred.reject(error);
         });
-        return deferred.promise;
-    };
-    qmService.getFromLocalStorageOrApiDeferred = function(params){
-        var deferred = $q.defer();
-        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
-            params = params || {};
-            deferred.resolve(userVariables);
-        }, function (error) {
-            deferred.reject(error);});
         return deferred.promise;
     };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
