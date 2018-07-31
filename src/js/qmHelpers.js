@@ -533,6 +533,14 @@ window.qm = {
             }
             return apiUrl;
         },
+        getQuantiModoResourcesUrl: function () {
+            var apiUrl = "https://quantimodo.quantimo.do";
+            if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://qm-staging.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+            qmLog.info("Using "+apiUrl+" for resources because we can't load service worker from redirect");
+            return apiUrl + "/ionic/Modo/www/";
+        },
         getClientSecret: function(){
             if(qm.clientSecret){return qm.clientSecret;}
             if(qm.getAppSettings().clientSecret){return qm.getAppSettings().clientSecret;}
@@ -4480,7 +4488,7 @@ window.qm = {
                 qmLog.error(e.message, e, e);
                 return false;
             }
-            var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
+            var serviceWorkerUrl = qm.appsManager.getQuantiModoResourcesUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qmLog.error("navigator.serviceWorker is not defined!");
