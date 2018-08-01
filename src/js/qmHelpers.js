@@ -4480,6 +4480,7 @@ window.qm = {
                 qmLog.error(e.message, e, e);
                 return false;
             }
+            // Service worker must be served from same origin with no redirect so we serve directly with nginx
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
