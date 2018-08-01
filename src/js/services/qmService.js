@@ -806,20 +806,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.storage.setItem(qm.items.introSeen, value);
             }
         },
-        ionIcons: {
-            history: 'ion-ios-list-outline',
-            reminder: 'ion-android-notifications-none',
-            recordMeasurement: 'ion-compose',
-            charts: 'ion-arrow-graph-up-right',
-            settings: 'ion-settings',
-            help: 'ion-help',
-            refresh: 'ion-android-refresh',
-            predictors: 'ion-log-in',
-            outcomes: 'ion-log-out',
-            study: 'ion-ios-book',
-            discoveries: 'ion-ios-analytics',
-            importData: 'ion-ios-cloud-download-outline'
-        },
         localNotifications: {
             localNotificationsPluginInstalled: function() {
                 var installed = true;
@@ -1505,6 +1491,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.debug('User cancelled selection');
             });
         },
+        states: {
+            outputStateNameConstantsForPHP: function(){
+                for (var i = 0; i < allStates.length; i++) {
+                    var x = allStates[i];
+                    console.log("const " + x.name.replace('app.', '') + " = '" + x.name + "';")
+                }
+            },
+            outputStateInfoForJsonFile: function(){
+                console.log(qm.stringHelper.prettyJsonStringify(allStates));
+            }
+        },
         storage: {},
         search: {
             getTitle: function(variableCategoryName){
@@ -1781,28 +1778,28 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.actionSheets = {
         actionSheetButtons: {
-            charts: { state: qmStates.charts,  icon: qmService.ionIcons.charts, text: 'Charts'},
-            chartSearch: { state: qmStates.chartSearch,  icon: qmService.ionIcons.charts, text: 'Charts'},
-            compare: { icon: qmService.ionIcons.study, text: 'Create Study'},
-            help: { state: window.qmStates.help,  icon: qmService.ionIcons.help, text: 'Help'},
-            historyAll: {state: qmStates.historyAll, icon: qmService.ionIcons.history, text: 'History'},
-            historyAllCategory: {state: qmStates.historyAllCategory, icon: qmService.ionIcons.history, text: 'History'},
-            historyAllVariable: {state: qmStates.historyAllVariable, icon: qmService.ionIcons.history, text: 'History'},
-            lastValuesAction: { icon: qmService.ionIcons.recordMeasurement },
-            measurementAdd: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-            measurementAddSearch: { state: qmStates.measurementAddSearch, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-            measurementAddVariable: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-            outcomes: { icon: qmService.ionIcons.outcomes, text: 'Top Outcomes'},
-            openUrl: { icon: qmService.ionIcons.outcomes, text: 'Go to Website'},
-            predictors: { icon: qmService.ionIcons.predictors, text: 'Top Predictors'},
-            relationships: { icon: qmService.ionIcons.discoveries, text: 'Relationships'},
-            recordMeasurement: { state: qmStates.measurementAddVariable, icon: qmService.ionIcons.recordMeasurement, text: 'Record Measurement'},
-            refresh: { icon: qmService.ionIcons.refresh, text: 'Refresh'},
-            reminderAdd: { state: qmStates.reminderAdd, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
-            reminderSearch: { state: qmStates.reminderSearch, icon: qmService.ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
-            settings: { state: window.qmStates.settings,  icon: qmService.ionIcons.settings, text: 'Settings'},
-            studyCreation: { icon: qmService.ionIcons.study, text: 'Create Study'},
-            variableSettings: { state: qmStates.variableSettingsVariableName, icon: qmService.ionIcons.settings, text: 'Analysis Settings'},
+            charts: { state: qmStates.charts,  icon: ionIcons.charts, text: 'Charts'},
+            chartSearch: { state: qmStates.chartSearch,  icon: ionIcons.charts, text: 'Charts'},
+            compare: { icon: ionIcons.study, text: 'Create Study'},
+            help: { state: window.qmStates.help,  icon: ionIcons.help, text: 'Help'},
+            historyAll: {state: qmStates.historyAll, icon: ionIcons.history, text: 'History'},
+            historyAllCategory: {state: qmStates.historyAllCategory, icon: ionIcons.history, text: 'History'},
+            historyAllVariable: {state: qmStates.historyAllVariable, icon: ionIcons.history, text: 'History'},
+            lastValuesAction: { icon: ionIcons.recordMeasurement },
+            measurementAdd: { state: qmStates.measurementAddSearch, icon: ionIcons.recordMeasurement, text: 'Record Measurement'},
+            measurementAddSearch: { state: qmStates.measurementAddSearch, icon: ionIcons.recordMeasurement, text: 'Record Measurement'},
+            measurementAddVariable: { state: qmStates.measurementAddVariable, icon: ionIcons.recordMeasurement, text: 'Record Measurement'},
+            outcomes: { icon: ionIcons.outcomes, text: 'Top Outcomes'},
+            openUrl: { icon: ionIcons.outcomes, text: 'Go to Website'},
+            predictors: { icon: ionIcons.predictors, text: 'Top Predictors'},
+            relationships: { icon: ionIcons.discoveries, text: 'Relationships'},
+            recordMeasurement: { state: qmStates.measurementAddVariable, icon: ionIcons.recordMeasurement, text: 'Record Measurement'},
+            refresh: { icon: ionIcons.refresh, text: 'Refresh'},
+            reminderAdd: { state: qmStates.reminderAdd, icon: ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
+            reminderSearch: { state: qmStates.reminderSearch, icon: ionIcons.reminder, text: 'Add Reminder', stateParams: {skipReminderSettingsIfPossible: true}},
+            settings: { state: window.qmStates.settings,  icon: ionIcons.settings, text: 'Settings'},
+            studyCreation: { icon: ionIcons.study, text: 'Create Study'},
+            variableSettings: { state: qmStates.variableSettingsVariableName, icon: ionIcons.settings, text: 'Analysis Settings'},
         },
         addHtmlToActionSheetButton: function(actionSheetButton, id) {
             if(actionSheetButton.ionIcon){actionSheetButton.icon = actionSheetButton.ionIcon;}
@@ -1899,7 +1896,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 action: actionArrayItem,
                                 id: actionArrayItem.callback,
                                 text:  '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
-                                qmService.ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
+                                ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
                             });
                         }
                         if(buttons.length > 8){break;}
@@ -2853,7 +2850,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.syncAllUserData = function(){
         qmService.trackingReminders.syncTrackingReminders();
-        qmService.getFromLocalStorageOrApiDeferred();
+        qm.userVariables.getFromLocalStorageOrApi();
     };
     qmService.refreshUser = function(force){
         var deferred = $q.defer();
@@ -4979,15 +4976,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.getFromLocalStorageOrApiDeferred = function(params){
-        var deferred = $q.defer();
-        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
-            params = params || {};
-            deferred.resolve(userVariables);
-        }, function (error) {
-            deferred.reject(error);});
-        return deferred.promise;
-    };
     qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
         var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, params);
         if(!commonVariables || !commonVariables.length){
@@ -5780,11 +5768,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
             qmLogService.debug('Going to favoriteAdd state', null);
-            qmService.goToState('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
+            qmService.goToState(qmStates.favoriteAdd, {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
             return;
         }
         qmService.addToTrackingReminderSyncQueue(trackingReminder);
-        qmService.goToState('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+        qmService.goToState(qmStates.favorites, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
         qmService.trackingReminders.syncTrackingReminders();
     };
     qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
