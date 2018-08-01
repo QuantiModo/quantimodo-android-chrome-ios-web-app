@@ -61,7 +61,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 helpText: explanation.textContent,
                 placeholder: "Search for an outcome...",
                 buttonText: "Select Variable",
-                requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
+                requestParams: {includePublic: true, sort:"-numberOfCorrelationsAsEffect"}
             };
             qmService.showVariableSearchDialog(dialogParameters, setOutcomeVariable, null, ev);
         });
@@ -73,7 +73,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 helpText: explanation.textContent,
                 placeholder: "Search for a predictor...",
                 buttonText: "Select Variable",
-                requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
+                requestParams: {includePublic: true, sort:"-numberOfCorrelationsAsCause"}
             };
             qmService.showVariableSearchDialog(dialogParameters, setPredictorVariable, null, ev);
         });
