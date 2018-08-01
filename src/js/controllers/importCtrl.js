@@ -84,7 +84,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
 	};
     $scope.showActionSheetForConnector = function(connector) {
         var connectorButtons = JSON.parse(JSON.stringify(connector.buttons));
-        connectorButtons.push({text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + connector.displayName + ' History',
+        connectorButtons.push({text: '<i class="icon ' + ionIcons.history + '"></i>' + connector.displayName + ' History',
             id: 'history', state: qmStates.historyAll, stateParams: {connectorName: connector.name}});
         connectorButtons = qmService.actionSheets.addHtmlToActionSheetButtonArray(connectorButtons);
         connectorButtons.map(function (button) {
