@@ -293,21 +293,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.navBar.setOfflineConnectionErrorShowing(false);
         qmLog.globalMetaData.context = $state.current.name;
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-        function showAdSense(){
-            return qm.platform.isWeb() &&
-            $rootScope.hideNavigationMenu === false &&
-            $rootScope.user &&
-            !$rootScope.user.stripeActive &&
-            $rootScope.appSettings.additionalSettings.monetizationSettings.advertisingEnabled
-        }
-        if($rootScope.showAdSense !== showAdSense()){
-            $timeout(function () {
-                qmService.rootScope.setProperty('showAdSense', showAdSense()); // This is necessary because of "No slot size for availableWidth=0" error
-            }, 3000)
-        }
-        if(qm.platform.isMobile()){
-            if($stateParams.showAds){qmService.adBanner.show();} else {qmService.adBanner.hide();}
-        }
+        qmService.adSense.showOrHide();
+        qmService.adBanner.showOrHide($stateParams);
         //qmService.login.deleteAfterLoginStateIfItMatchesCurrentState();
         $scope.closeMenu();
     });
