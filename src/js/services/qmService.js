@@ -12,6 +12,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     var allStates = $state.get();
     var qmService = {
         adBanner: {
+            showOrHide: function(stateParams){
+                if(qm.platform.isMobile()){
+                    document.addEventListener('deviceready', function () {
+                        if($stateParams.showAds){qmService.adBanner.show();} else {qmService.adBanner.hide();}
+                    }, false);
+                }
+            },
             adPublisherIds: {
                 ios : {
                     banner : 'ca-app-pub-2427218021515520/1775529603',
@@ -58,7 +65,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     qmLog.info("admob: Initializing admob and creating banner...");
                     if(qmService.adBanner.floatingHotpot.isInstalled()){
-                        window.plugins.AdMob.showAd(true);
+                        qmService.cordova.getPlugins().AdMob.showAd(true);
                     } else if(typeof admob.createBannerView !== "undefined"){
                         admob.createBannerView();
                     } else {
@@ -70,7 +77,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(!qmService.adBanner.admobPluginInstalled()){return;}
                 qmLog.info("Hiding ad");
                 if(qmService.adBanner.floatingHotpot.isInstalled()){
-                    window.plugins.AdMob.showAd(false);
+                    qmService.cordova.getPlugins().AdMob.showAd(false);
                 } else if(typeof admob.destroyBannerView !== "undefined"){
                     admob.destroyBannerView();
                 } else {
@@ -86,14 +93,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             floatingHotpot: {
                 isInstalled: function(){
-                    return typeof window.plugins.AdMob !== "undefined";
+                    return typeof qmService.cordova.getPlugins().AdMob !== "undefined";
                 },
                 createBannerView: function(){
                     if(!qmService.adBanner.floatingHotpot.isInstalled()){
                         qmLog.error("admob: window.plugins.AdMob undefined on mobile");
                         return;
                     }
-                    window.plugins.AdMob.setOptions( {
+                    qmService.cordova.getPlugins().AdMob.setOptions( {
                         publisherId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].banner,
                         interstitialAdId: qmService.adBanner.adPublisherIds[qm.platform.getCurrentPlatform()].interstitial,
                         bannerAtTop: false, // set to true, to put banner at top
@@ -102,7 +109,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         isTesting: false, // receiving test ad
                         autoShow: true // auto show interstitial ad when loaded
                     });
-                    window.plugins.AdMob.createBannerView(); // display the banner at startup
+                    qmService.cordova.getPlugins().AdMob.createBannerView(); // display the banner at startup
+                }
+            }
+        },
+        adSense: {
+            showOrHide: function(){
+                function showAdSense(){
+                    return qm.platform.isWeb() &&
+                        $rootScope.hideNavigationMenu === false &&
+                        $rootScope.user &&
+                        !$rootScope.user.stripeActive &&
+                        $rootScope.appSettings.additionalSettings.monetizationSettings.advertisingEnabled
+                }
+                if($rootScope.showAdSense !== showAdSense()){
+                    $timeout(function () {
+                        qmService.rootScope.setProperty('showAdSense', showAdSense()); // This is necessary because of "No slot size for availableWidth=0" error
+                    }, 3000)
                 }
             }
         },
@@ -148,7 +171,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
                 if(!qm.getUser()){qmService.login.setAfterLoginGoToState(qmStates.onboarding);}
-                //if(window && window.plugins && window.plugins.googleplus){qmService.auth.googleLogout();}
+                //if(window && qmService.cordova.getPlugins() && qmService.cordova.getPlugins().googleplus){qmService.auth.googleLogout();}
                 qmService.showBasicLoader(30);
                 qm.connectorHelper.getConnectorByName(connectorName, function (connector) {
                     return qmService.connectors.oAuthConnect(connector, ev, additionalParams, successHandler, errorHandler);
@@ -172,13 +195,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.authDebug('googleLogout so we care able to get serverAuthCode again if logging in a second time');
                 document.addEventListener('deviceready', deviceReady, false);
                 function deviceReady() {
-                    /** @namespace window.plugins.googleplus */
-                    window.plugins.googleplus.logout(function (msg) {
+                    /** @namespace qmService.cordova.getPlugins().googleplus */
+                    qmService.cordova.getPlugins().googleplus.logout(function (msg) {
                         qmLog.authDebug('plugins.googleplus.logout: logged out of google!', msg, msg);
                     }, function (error) {
                         qmLog.authDebug('plugins.googleplus.logout: failed to logout', error, error);
                     });
-                    window.plugins.googleplus.disconnect(function (msg) {
+                    qmService.cordova.getPlugins().googleplus.disconnect(function (msg) {
                         qmLog.authDebug('plugins.googleplus.logout: disconnected google!');
                     });
                 }
@@ -556,7 +579,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.connectors.oAuthMobileConnect(connector, ev, additionalParams, successHandler, errorHandler);
             },
             googleLogout: function(callback){
-                window.plugins.googleplus.logout(function (msg) {
+                qmService.cordova.getPlugins().googleplus.logout(function (msg) {
                     qmLog.authDebug('plugins.googleplus.logout: logged out of google so we should get a serverAuthCode now', msg, msg);
                     callback();
                 }, function (error) {
@@ -594,12 +617,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             if(errorHandler){errorHandler(error);}
                         });
                     }
-                    window.plugins.googleplus.login(params, function (googleResponse) {
+                    qmService.cordova.getPlugins().googleplus.login(params, function (googleResponse) {
                         qmLog.authDebug('plugins.googleplus.login response:', googleResponse, googleResponse);
                         if(!googleResponse.serverAuthCode || googleResponse.serverAuthCode === ""){
                             qmLog.error("plugins.googleplus.login: no serverAuthCode so logging out of Google and trying again");
                             qmService.connectors.googleLogout(function(){
-                                window.plugins.googleplus.login(params, function (googleResponse) {
+                                qmService.cordova.getPlugins().googleplus.login(params, function (googleResponse) {
                                     if(!connector){qmLog.error("No connector after logout and login!")}else{qmLog.authDebug("have connector after logout and login")}
                                     qmLog.authDebug('plugins.googleplus.login response:', googleResponse, googleResponse);
                                     googleLoginSuccessHandler(googleResponse, connector);
@@ -650,6 +673,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             storeConnectorResponse: function(response){
                 if(response.user){qmService.setUser(response.user)}
                 return qm.connectorHelper.storeConnectorResponse(response);
+            }
+        },
+        cordova: {
+            getPlugins: function () {
+                if(!window.plugins){
+                    qmLog.error("window.plugins not defined!  Did you use deviceReady event wrapper?");
+                    return {};
+                } else {
+                    return window.plugins;
+                }
             }
         },
         deploy: {
@@ -1664,7 +1697,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var onError = function(msg) {
                         qmLog.error("Sharing failed with message: " + msg);
                     };
-                    window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+                    qmService.cordova.getPlugins().socialsharing.shareWithOptions(options, onSuccess, onError);
                 } else {
                     qmService.openSharingUrl(sharingUrl);
                 }
@@ -5595,9 +5628,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             cordova.plugins.email.isAvailable(
                 function (isAvailable) {
                     if(isAvailable){
-                        if(window.plugins && window.plugins.emailComposer) {
+                        if(qmService.cordova.getPlugins() && qmService.cordova.getPlugins().emailComposer) {
                             qmLogService.debug('Generating email with cordova-plugin-email-composer', null);
-                            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                            qmService.cordova.getPlugins().emailComposer.showEmailComposerWithCallback(function(result) {
                                     qmLogService.debug('Response -> ' + result, null);
                                 },
                                 subjectLine, // Subject
