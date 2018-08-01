@@ -149,6 +149,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 				if (typeof (val) === 'undefined') {
 					qmLogService.debug('Time not selected', null);
 				} else {
+                    var a = new Date();
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
