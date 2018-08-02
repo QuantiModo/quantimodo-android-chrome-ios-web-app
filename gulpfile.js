@@ -1829,7 +1829,7 @@ gulp.task('platform-add-ios', function (callback) {
 });
 gulp.task('cordova-plugin-rm-cordova-plugin-console', function (callback) {
     try {
-        execute('cordova plugin rm cordova-plugin-console', callback);
+        execute('cordova plugin rm cordova-plugin-console --save', callback);
     } catch (e) {
         qmLog.info(JSON.stringify(e));
         callback();
