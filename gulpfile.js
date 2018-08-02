@@ -1829,7 +1829,7 @@ gulp.task('platform-add-ios', function (callback) {
 });
 gulp.task('cordova-plugin-rm-cordova-plugin-console', function (callback) {
     try {
-        execute('cordova plugin rm cordova-plugin-console', callback);
+        execute('cordova plugin rm cordova-plugin-console --save', callback);
     } catch (e) {
         qmLog.info(JSON.stringify(e));
         callback();
@@ -2571,8 +2571,8 @@ gulp.task('build-ios-app', function (callback) {
         'cordova-hcp-config',
         'write-build-json',
         'googleServicesPList',
-        'platform-add-ios',
         'cordova-plugin-rm-cordova-plugin-console',
+        'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2598,8 +2598,8 @@ gulp.task('prepare-ios-app', function (callback) {
         'copyIconsToWwwImg',
         'write-build-json',
         'googleServicesPList',
-        'platform-add-ios',
         'cordova-plugin-rm-cordova-plugin-console',
+        'platform-add-ios',
         callback);
 });
 gulp.task('prepare-ios-app-without-cleaning', function (callback) {
