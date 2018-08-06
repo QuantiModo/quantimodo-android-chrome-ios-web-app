@@ -85,7 +85,11 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         var body = new Quantimodo.StudyCreationBody(getCauseVariableName(), getEffectVariableName(), type);
         qm.studiesCreated.createStudy(body, function (study) {
             qmService.hideLoader();
-            $scope.state.study = study;
+            if(body.type === 'individual'){
+                qmService.goToState(qmStates.study, {study: study});
+            } else {
+                $scope.state.study = study;
+            }
         }, function (error) {
             qmService.hideLoader();
             qmService.auth.showErrorAlertMessageOrSendToLogin("Could Not Create Study", error);
