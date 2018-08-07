@@ -502,8 +502,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 url = qm.urlHelper.addUrlQueryParamsToUrlString({
                     final_callback_url: final_callback_url,
-                    clientId: qm.api.getClientId(),
-                    clientSecret: qm.api.getClientSecret()}, url);
+                    clientId: qm.api.getClientId()}, url);
+                if(qm.api.getClientSecret()){url = qm.urlHelper.addUrlQueryParamsToUrlString({clientSecret: qm.api.getClientSecret()}, url);}
                 if(qm.auth.getAccessTokenFromUrlUserOrStorage()){
                     additionalParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
                 }

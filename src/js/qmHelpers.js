@@ -3856,6 +3856,10 @@ window.qm = {
             for (var key in params) {
                 if (params.hasOwnProperty(key)) {
                     if(url.indexOf(key + '=') === -1){
+                        if(params[key] === null){
+                            qmLog.error("Not adding null param "+key);
+                            continue;
+                        }
                         if(url.indexOf('?') === -1){
                             url = url + "?" + key + "=" + encodeURIComponent(params[key]);
                         } else {
