@@ -530,8 +530,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     })();
     $scope.toggleReminderEnabled = function (){
         if(!$scope.state.trackingReminder.enabled){
-            var moment = moment();
-            $scope.state.selectedStopTrackingDate = moment.subtract(1, 'days');
+            $scope.state.selectedStopTrackingDate = moment().subtract(1, 'days');
         } else {
             $scope.state.selectedStopTrackingDate = null;
         }

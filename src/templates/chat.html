@@ -1,0 +1,238 @@
+<ion-view hide-nav-bar="false" view-title="Chat Titel">
+    <ion-content scroll="true" overflow-scroll="true">
+        <iframe style="height: 100%; width: 100%;"
+                data-tap-disabled="true"
+                frameborder="0"
+                allow="microphone;"
+                src="https://console.dialogflow.com/api-client/demo/embedded/6c71b4a4-4770-45a9-b8b3-dd34bbbb61c7">
+        </iframe>
+<!--        <div layout="row" ng-repeat="dialog in state.messages" class="md-padding message-row ng-scope contact layout-row"
+             ng-class="dialog.who">
+            &lt;!&ndash; ngIf: dialog.who ==='contact' &ndash;&gt;
+            <img ng-if="dialog.who === 'contact'" ng-src="img/robots/robot-head.svg" class="avatar ng-scope"
+                                                       alt="Shauna" src="img/robots/robot-head.svg">
+            <img ng-if="dialog.who === 'user'" class="avatar ng-scope" ng-src="{{user.avatarImage}}" src="{{user.avatarImage}}">
+            <div class="bubble">
+                <div class="message ng-binding">You are the worst!</div>
+                <div class="time secondary-text ng-binding">05/02/2016</div>
+            </div>
+        </div>
+        <div ng-if="$ctrl.surface.value === 'PHONE'"
+             ng-style="{'transform': 'scale(' + $ctrl.zoomConfigs.currentZoomLevel + ')'}"
+             class="md-whiteframe-2dp s7r-debug-infos-valyrian-container c6i-background-color-valyrian c5e-spinner-covered ng-scope"
+             onload="$ctrl.onLoadValyrianNg()"
+             ng-include="'/modules/nativesimulator/debug_infos/debug_infos_display_valyrian.ng'"
+             style="transform: scale(0.789548);"> &lt;!&ndash; ngIf: $ctrl.browserConfig.shouldShowBrowser &ndash;&gt;
+            &lt;!&ndash; ngIf: $ctrl.shouldShowCanvas &ndash;&gt;
+            <div class="s7r-debug-infos-display-background-container ng-scope">
+                &lt;!&ndash; ngIf: !$ctrl.hasBackgroundImage() &ndash;&gt;
+                <div ng-if="!$ctrl.hasBackgroundImage()"
+                     class="s7r-debug-infos-display-background s7r-debug-infos-display-white-background c6i-background-color-valyrian ng-scope"></div>
+                &lt;!&ndash; end ngIf: !$ctrl.hasBackgroundImage() &ndash;&gt; &lt;!&ndash; ngIf: $ctrl.hasBackgroundImage() &ndash;&gt;
+                &lt;!&ndash; ngIf: $ctrl.hasBackgroundImage() &ndash;&gt; &lt;!&ndash; ngIf: $ctrl.hasBackgroundImage() &ndash;&gt; </div>
+            <div flex="" layout="row" layout-align="start center"
+                 class="s7r-debug-infos-valyrian-header ng-scope layout-align-start-center layout-row flex">
+                <div class="s7r-debug-infos-valyrian-header-app-logo"> &lt;!&ndash; ngIf: $ctrl.hasAgentLogoUrl() &ndash;&gt;
+                    <div ng-if="$ctrl.hasAgentLogoUrl()" class="ng-scope"><img
+                            ng-src="https://www.gstatic.com/voice/opa/partner_icons/generic_3p_avatar.png"
+                            src="https://www.gstatic.com/voice/opa/partner_icons/generic_3p_avatar.png"></div>
+                    &lt;!&ndash; end ngIf: $ctrl.hasAgentLogoUrl() &ndash;&gt; &lt;!&ndash; ngIf: !$ctrl.hasAgentLogoUrl() &ndash;&gt; </div>
+                <div class="s7r-debug-infos-valyrian-header-app-name c6i-white-theme-text-valyrian ng-binding"> Dr.
+                    Modo
+                </div>
+                <div flex="auto" class="flex-auto"></div>
+                <button class="md-icon-button md-accent s7r-debug-infos-valyrian-header-exit-button md-button md-actions-blue-theme"
+                        type="button" ng-transclude="" ng-click="$ctrl.onExitApp()" aria-label="Exit conversation"
+                        md-no-ink=""><i ng-class="{'s7r-debug-info-display-white-color': $ctrl.hasBackgroundImage()}"
+                                        class="material-icons ng-scope">close</i></button>
+            </div>
+            <div class="s7r-debug-infos-valyrian-visual-elements c5e-scroll-bar-auto-hide ng-scope">
+                &lt;!&ndash; ngIf: $ctrl.hasVisualElements() &ndash;&gt;
+                <div ng-if="$ctrl.hasVisualElements()" class="ng-scope">
+                    <div flex="" layout="column" layout-align="start start"
+                         ng-class="{'s7r-debug-infos-valyrian-display-text-only-height': $ctrl.hasOnlyDisplayTextVisualElement()}"
+                         class="s7r-debug-infos-valyrian-display-prompt c6i-white-theme-text-valyrian layout-align-start-start layout-column flex">
+                        &lt;!&ndash; ngRepeat: displayText in $ctrl.getDisplayTextListFromVisualElements() track by $index &ndash;&gt;<span
+                            ng-repeat="displayText in $ctrl.getDisplayTextListFromVisualElements() track by $index"
+                            class="ng-binding ng-scope">  Your Overall Mood is generally highest after around 0.05 applications Clobetasol Propionate Cream 0.05%.  How severe is your inflammation on a scale of 1 to 5? </span>
+                        &lt;!&ndash; end ngRepeat: displayText in $ctrl.getDisplayTextListFromVisualElements() track by $index &ndash;&gt;
+                    </div>
+                    &lt;!&ndash; ngRepeat: visualElement in $ctrl.responseData.getVisualResponse().getVisualElementsList() &ndash;&gt;
+                    <div ng-repeat="visualElement in $ctrl.responseData.getVisualResponse().getVisualElementsList()"
+                         class="ng-scope" style=""> &lt;!&ndash; ngIf: ::visualElement.hasBasicCard() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasListSelect() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCarouselSelect() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCarouselBrowse() &ndash;&gt; &lt;!&ndash; ngIf: ::visualElement.hasTableCard() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCollapsedReceipt() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasSimulatorMediaResponse() &ndash;&gt; </div>
+                    &lt;!&ndash; end ngRepeat: visualElement in $ctrl.responseData.getVisualResponse().getVisualElementsList() &ndash;&gt;
+                    <div ng-repeat="visualElement in $ctrl.responseData.getVisualResponse().getVisualElementsList()"
+                         class="ng-scope"> &lt;!&ndash; ngIf: ::visualElement.hasBasicCard() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasListSelect() &ndash;&gt;
+                        <s7r-list-card ng-if="::visualElement.hasListSelect()"
+                                       card-data="$ctrl.jspbToJsonWithStyle( visualElement.getListSelect())"
+                                       on-list-card-select="$ctrl.onListCardSelect(item)" surface="'PHONE'"
+                                       class="ng-scope ng-isolate-scope"> &lt;!&ndash; ngIf: ::($ctrl.surface === 'PHONE') &ndash;&gt;
+                            <div ng-if="::($ctrl.surface === 'PHONE')" class="s7r-list-card-valyrian ng-scope">
+                                <div flex="" layout="column"
+                                     class="s7r-list-card-valyrian-container layout-column flex">
+                                    <div class="s7r-list-card-valyrian-title-container">
+                                        &lt;!&ndash; ngIf: ::$ctrl.cardData.title &ndash;&gt;
+                                        <div ng-if="::$ctrl.cardData.title"
+                                             class="s7r-list-card-valyrian-title c6i-header-list-card-valyrian c6i-text-font-list-card-valyrian c6i-white-theme-text-list-card-valyrian ng-binding ng-scope">
+                                            How severe is your inflammation on a scale of 1 to 5?
+                                        </div>&lt;!&ndash; end ngIf: ::$ctrl.cardData.title &ndash;&gt; </div>
+                                    <div flex="" layout="column"
+                                         class="s7r-list-card-valyrian-items c5e-scroll-bar-auto-hide layout-column flex">
+                                        &lt;!&ndash; ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt;
+                                        <div flex="noshrink" layout="column"
+                                             class="s7r-list-card-valyrian-items-list ng-scope layout-column flex-noshrink"
+                                             ng-click="$ctrl.selectListCardAction(item)"
+                                             ng-repeat="item in ::$ctrl.cardData.itemsList" role="button" tabindex="0">
+                                            <div flex="" layout="row" class="layout-row flex">
+                                                <div flex="70" layout="column"
+                                                     class="s7r-list-card-valyrian-item-text layout-column flex-70">
+                                                    <div class="s7r-list-card-valyrian-item-title c6i-white-theme-text-list-card-valyrian ng-binding">
+                                                        4/5
+                                                    </div>
+                                                    <div class="s7r-list-card-valyrian-item-description c6i-white-theme-text-list-card-valyrian c5e-scroll-bar-auto-hide ng-binding"></div>
+                                                </div>
+                                                <div flex="" class="flex"></div> &lt;!&ndash; ngIf: ::item.image.url &ndash;&gt;
+                                                <div ng-if="::item.image.url"
+                                                     class="s7r-list-card-valyrian-item-image ng-scope"
+                                                     aria-label="29668807_track_4_/5"
+                                                     md-labeled-by-tooltip="md-tooltip-80"><img
+                                                        ng-style="{'background-image': 'url(https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_sad.png)'}"
+                                                        ng-src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_sad.png"
+                                                        class="c6i-boarder-list-card-valyrian"
+                                                        src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_sad.png"
+                                                        style="background-image: url(&quot;https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_sad.png&quot;); border-radius: 0px;">
+                                                    &lt;!&ndash; ngIf: ::item.image.accessibilityText &ndash;&gt;
+                                                    &lt;!&ndash; end ngIf: ::item.image.accessibilityText &ndash;&gt; </div>
+                                                &lt;!&ndash; end ngIf: ::item.image.url &ndash;&gt; </div>
+                                        </div>&lt;!&ndash; end ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt;
+                                        <div flex="noshrink" layout="column"
+                                             class="s7r-list-card-valyrian-items-list ng-scope layout-column flex-noshrink"
+                                             ng-click="$ctrl.selectListCardAction(item)"
+                                             ng-repeat="item in ::$ctrl.cardData.itemsList" role="button" tabindex="0">
+                                            <div flex="" layout="row" class="layout-row flex">
+                                                <div flex="70" layout="column"
+                                                     class="s7r-list-card-valyrian-item-text layout-column flex-70">
+                                                    <div class="s7r-list-card-valyrian-item-title c6i-white-theme-text-list-card-valyrian ng-binding">
+                                                        3/5
+                                                    </div>
+                                                    <div class="s7r-list-card-valyrian-item-description c6i-white-theme-text-list-card-valyrian c5e-scroll-bar-auto-hide ng-binding"></div>
+                                                </div>
+                                                <div flex="" class="flex"></div> &lt;!&ndash; ngIf: ::item.image.url &ndash;&gt;
+                                                <div ng-if="::item.image.url"
+                                                     class="s7r-list-card-valyrian-item-image ng-scope"
+                                                     aria-label="29668807_track_3_/5"
+                                                     md-labeled-by-tooltip="md-tooltip-81"><img
+                                                        ng-style="{'background-image': 'url(https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ok.png)'}"
+                                                        ng-src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ok.png"
+                                                        class="c6i-boarder-list-card-valyrian"
+                                                        src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ok.png"
+                                                        style="background-image: url(&quot;https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ok.png&quot;); border-radius: 0px;">
+                                                    &lt;!&ndash; ngIf: ::item.image.accessibilityText &ndash;&gt;
+                                                    &lt;!&ndash; end ngIf: ::item.image.accessibilityText &ndash;&gt; </div>
+                                                &lt;!&ndash; end ngIf: ::item.image.url &ndash;&gt; </div>
+                                        </div>&lt;!&ndash; end ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt;
+                                        <div flex="noshrink" layout="column"
+                                             class="s7r-list-card-valyrian-items-list ng-scope layout-column flex-noshrink"
+                                             ng-click="$ctrl.selectListCardAction(item)"
+                                             ng-repeat="item in ::$ctrl.cardData.itemsList" role="button" tabindex="0">
+                                            <div flex="" layout="row" class="layout-row flex">
+                                                <div flex="70" layout="column"
+                                                     class="s7r-list-card-valyrian-item-text layout-column flex-70">
+                                                    <div class="s7r-list-card-valyrian-item-title c6i-white-theme-text-list-card-valyrian ng-binding">
+                                                        1/5
+                                                    </div>
+                                                    <div class="s7r-list-card-valyrian-item-description c6i-white-theme-text-list-card-valyrian c5e-scroll-bar-auto-hide ng-binding"></div>
+                                                </div>
+                                                <div flex="" class="flex"></div> &lt;!&ndash; ngIf: ::item.image.url &ndash;&gt;
+                                                <div ng-if="::item.image.url"
+                                                     class="s7r-list-card-valyrian-item-image ng-scope"
+                                                     aria-label="29668807_track_1_/5"
+                                                     md-labeled-by-tooltip="md-tooltip-82"><img
+                                                        ng-style="{'background-image': 'url(https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ecstatic.png)'}"
+                                                        ng-src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ecstatic.png"
+                                                        class="c6i-boarder-list-card-valyrian"
+                                                        src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ecstatic.png"
+                                                        style="background-image: url(&quot;https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_ecstatic.png&quot;); border-radius: 0px;">
+                                                    &lt;!&ndash; ngIf: ::item.image.accessibilityText &ndash;&gt;
+                                                    &lt;!&ndash; end ngIf: ::item.image.accessibilityText &ndash;&gt; </div>
+                                                &lt;!&ndash; end ngIf: ::item.image.url &ndash;&gt; </div>
+                                        </div>&lt;!&ndash; end ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt;
+                                        <div flex="noshrink" layout="column"
+                                             class="s7r-list-card-valyrian-items-list ng-scope layout-column flex-noshrink"
+                                             ng-click="$ctrl.selectListCardAction(item)"
+                                             ng-repeat="item in ::$ctrl.cardData.itemsList" role="button" tabindex="0">
+                                            <div flex="" layout="row" class="layout-row flex">
+                                                <div flex="70" layout="column"
+                                                     class="s7r-list-card-valyrian-item-text layout-column flex-70">
+                                                    <div class="s7r-list-card-valyrian-item-title c6i-white-theme-text-list-card-valyrian ng-binding">
+                                                        5/5
+                                                    </div>
+                                                    <div class="s7r-list-card-valyrian-item-description c6i-white-theme-text-list-card-valyrian c5e-scroll-bar-auto-hide ng-binding"></div>
+                                                </div>
+                                                <div flex="" class="flex"></div> &lt;!&ndash; ngIf: ::item.image.url &ndash;&gt;
+                                                <div ng-if="::item.image.url"
+                                                     class="s7r-list-card-valyrian-item-image ng-scope"
+                                                     aria-label="29668807_track_5_/5"
+                                                     md-labeled-by-tooltip="md-tooltip-83"><img
+                                                        ng-style="{'background-image': 'url(https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_depressed.png)'}"
+                                                        ng-src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_depressed.png"
+                                                        class="c6i-boarder-list-card-valyrian"
+                                                        src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_depressed.png"
+                                                        style="background-image: url(&quot;https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_depressed.png&quot;); border-radius: 0px;">
+                                                    &lt;!&ndash; ngIf: ::item.image.accessibilityText &ndash;&gt;
+                                                    &lt;!&ndash; end ngIf: ::item.image.accessibilityText &ndash;&gt; </div>
+                                                &lt;!&ndash; end ngIf: ::item.image.url &ndash;&gt; </div>
+                                        </div>&lt;!&ndash; end ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt;
+                                        <div flex="noshrink" layout="column"
+                                             class="s7r-list-card-valyrian-items-list ng-scope layout-column flex-noshrink"
+                                             ng-click="$ctrl.selectListCardAction(item)"
+                                             ng-repeat="item in ::$ctrl.cardData.itemsList" role="button" tabindex="0">
+                                            <div flex="" layout="row" class="layout-row flex">
+                                                <div flex="70" layout="column"
+                                                     class="s7r-list-card-valyrian-item-text layout-column flex-70">
+                                                    <div class="s7r-list-card-valyrian-item-title c6i-white-theme-text-list-card-valyrian ng-binding">
+                                                        2/5
+                                                    </div>
+                                                    <div class="s7r-list-card-valyrian-item-description c6i-white-theme-text-list-card-valyrian c5e-scroll-bar-auto-hide ng-binding"></div>
+                                                </div>
+                                                <div flex="" class="flex"></div> &lt;!&ndash; ngIf: ::item.image.url &ndash;&gt;
+                                                <div ng-if="::item.image.url"
+                                                     class="s7r-list-card-valyrian-item-image ng-scope"
+                                                     aria-label="29668807_track_2_/5"
+                                                     md-labeled-by-tooltip="md-tooltip-84"><img
+                                                        ng-style="{'background-image': 'url(https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_happy.png)'}"
+                                                        ng-src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_happy.png"
+                                                        class="c6i-boarder-list-card-valyrian"
+                                                        src="https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_happy.png"
+                                                        style="background-image: url(&quot;https://quantimodo.quantimo.do/ionic/Modo/www/img/rating/100/face_rating_button_100_happy.png&quot;); border-radius: 0px;">
+                                                    &lt;!&ndash; ngIf: ::item.image.accessibilityText &ndash;&gt;
+                                                    &lt;!&ndash; end ngIf: ::item.image.accessibilityText &ndash;&gt; </div>
+                                                &lt;!&ndash; end ngIf: ::item.image.url &ndash;&gt; </div>
+                                        </div>&lt;!&ndash; end ngRepeat: item in ::$ctrl.cardData.itemsList &ndash;&gt; </div>
+                                </div>
+                            </div>&lt;!&ndash; end ngIf: ::($ctrl.surface === 'PHONE') &ndash;&gt;
+                            &lt;!&ndash; ngIf: ::($ctrl.surface === 'SMART_DISPLAY') &ndash;&gt; </s7r-list-card>
+                        &lt;!&ndash; end ngIf: ::visualElement.hasListSelect() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCarouselSelect() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCarouselBrowse() &ndash;&gt; &lt;!&ndash; ngIf: ::visualElement.hasTableCard() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasCollapsedReceipt() &ndash;&gt;
+                        &lt;!&ndash; ngIf: ::visualElement.hasSimulatorMediaResponse() &ndash;&gt; </div>
+                    &lt;!&ndash; end ngRepeat: visualElement in $ctrl.responseData.getVisualResponse().getVisualElementsList() &ndash;&gt;
+                </div>&lt;!&ndash; end ngIf: $ctrl.hasVisualElements() &ndash;&gt; </div>
+            <div flex="" layout="column" layout-align="center start"
+                 class="s7r-debug-infos-valyrian-suggestion-container ng-scope layout-align-center-start layout-column flex">
+                &lt;!&ndash; ngIf: !$ctrl.waitingResponse &ndash;&gt;
+                <div ng-if="!$ctrl.waitingResponse" flex="" layout="row" layout-align="start center"
+                     class="ng-scope layout-align-start-center layout-row flex" style="">
+                    <div class="s7r-conversation-chips-list c5e-scroll-bar-auto-hide">
+                        &lt;!&ndash; ngRepeat: chip in $ctrl.responseData.getVisualResponse().getSuggestionsList() &ndash;&gt; </div>
+                </div>&lt;!&ndash; end ngIf: !$ctrl.waitingResponse &ndash;&gt; </div>
+        </div>-->
+    </ion-content>
+</ion-view>

@@ -182,6 +182,7 @@ angular.module('starter',
         "asNeededMeds": "app.asNeededMeds",
         "charts": "app.charts",
         "chartSearch": "app.chartSearch",
+        "chat": "app.chat",
         "configuration": "app.configuration",
         "configurationClientId": "app.configurationClientId",
         "contact": "app.contact",
@@ -1592,6 +1593,20 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/tabs.html",
                     controller: 'TabsCtrl'
+                }
+            }
+        })
+        .state(qmStates.chat, {
+            url: "/chat",
+            cache: true,
+            params: {
+                title: "Talk to Dr. Modo",
+                ionIcon: ionIcons.chatbox
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/chat.html",
+                    controller: 'ChatCtrl'
                 }
             }
         })
