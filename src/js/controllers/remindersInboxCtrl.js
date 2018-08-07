@@ -39,9 +39,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
-        if ($stateParams.hideNavigationMenu !== true){
-            qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        }
+        if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
 		// setPageTitle(); // Setting title beforeEnter doesn't fix cutoff on Android
 	});
 	$scope.$on('$ionicView.enter', function(e) {
