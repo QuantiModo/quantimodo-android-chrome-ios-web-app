@@ -537,7 +537,7 @@ window.qm = {
             if(qm.clientSecret){return qm.clientSecret;}
             if(qm.getAppSettings().clientSecret){return qm.getAppSettings().clientSecret;}
             if(!qm.privateConfig){
-                qmLog.error("No client secret or private config!");
+                if(window.location.href.indexOf('quantimo.do') === -1){qmLog.error("No client secret or private config!");}
                 return null;
             }
             if (qm.platform.isIOS()) { return qm.privateConfig.client_secrets.iOS; }
