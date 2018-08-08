@@ -1373,8 +1373,8 @@ function writeStaticDataFile(){
         chromeExtensionManifest: qm.chromeExtensionManifest
     };
     var string = 'window.qm.staticData = '+ prettyJSONStringify(staticData)+ ';';
-    writeToFile('www/qmStaticData.js', string);
-    return writeToFile('src/qmStaticData.js', string);
+    writeToFile('www/data/qmStaticData.js', string);
+    return writeToFile('src/data/qmStaticData.js', string);
 }
 gulp.task('staticDataFile', function () {
     return writeStaticDataFile();
