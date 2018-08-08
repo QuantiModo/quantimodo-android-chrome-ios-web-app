@@ -931,6 +931,8 @@ function generateConfigXmlFromTemplate(callback) {
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
             parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()+'/chcp.json'}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
+            qm.configXml = parsedXmlFile;
+            writeStaticDataFile();
         }
     });
 }
@@ -1024,7 +1026,7 @@ var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bu
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
-    var chromeExtensionManifest = {
+    qm.chromeExtensionManifest = {
         'manifest_version': 2,
         'name': appSettings.appDisplayName,
         'description': appSettings.appDescription,
@@ -1061,7 +1063,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
         }
     };
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
-    chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
+    var chromeExtensionManifest = JSON.stringify(qm.chromeExtensionManifest, null, 2);
     qmLog.info("Creating chrome manifest at " + outputPath);
     writeToFile(outputPath, chromeExtensionManifest);
 }
@@ -1132,12 +1134,6 @@ gulp.task('validateDevCredentials', ['setClientId'], function () {
 });
 gulp.task('saveDevCredentials', ['setClientId'], function () {
     return writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
-});
-gulp.task('downloadSwaggerJson', [], function () {
-    var url = 'https://raw.githubusercontent.com/QuantiModo/docs/develop/swagger/swagger.json';
-    qmLog.info("Downloading "+url);
-    return download(url)
-        .pipe(gulp.dest("src/data/"));
 });
 function downloadFile(url, filename, destinationFolder) {
     qmLog.info("Downloading  " + url + " to " + destinationFolder + "/" + filename);
@@ -1345,7 +1341,9 @@ gulp.task('verifyExistenceOfChromeExtension', function () {
 });
 gulp.task('getCommonVariables', function () {
     return getConstantsFromApiAndWriteToJson('commonVariables',
-        'public/variables?removeAdvancedProperties=true&limit=1000&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3');
+        'public/variables?removeAdvancedProperties=true&limit=1000&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3' +
+        '&concise=true'
+        );
 });
 gulp.task('getConnectors', function () {
     return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
@@ -1353,9 +1351,38 @@ gulp.task('getConnectors', function () {
 gulp.task('getUnits', function () {
     return getConstantsFromApiAndWriteToJson('units');
 });
+gulp.task('downloadSwaggerJson', [], function () {
+    var url = 'https://raw.githubusercontent.com/QuantiModo/docs/develop/swagger/swagger.json';
+    // qmLog.info("Downloading "+url);
+    // return download(url)
+    //     .pipe(gulp.dest("src/data/"));
+    return getConstantsFromApiAndWriteToJson('docs', url);
+});
+function writeStaticDataFile(){
+    var staticData = {
+        commonVariables: qm.commonVariables,
+        units: qm.units,
+        variableCategories: qm.variableCategories,
+        connectors: qm.connectors,
+        docs: qm.docs,
+        appSettings: appSettings,
+        privateConfig: privateConfig,
+        chcp: qm.chcp,
+        buildInfo: qm.buildInfoHelper.getPreviousBuildInfo(),
+        configXml: qm.configXml,
+        chromeExtensionManifest: qm.chromeExtensionManifest
+    };
+    var string = 'window.qm.staticData = '+ prettyJSONStringify(staticData)+ ';';
+    writeToFile('www/qmStaticData.js', string);
+    return writeToFile('src/qmStaticData.js', string);
+}
+gulp.task('staticDataFile', function () {
+    return writeStaticDataFile();
+});
 function getConstantsFromApiAndWriteToJson(type, urlPath){
     if(!urlPath){urlPath = type;}
     var url = appHostName + '/api/v1/' + urlPath;
+    if(urlPath.indexOf("http") !== -1){url = urlPath;}
     qmLog.info('gulp ' + type + ' from '+ url);
     var destinations = [
         './src/data/',
@@ -1364,6 +1391,7 @@ function getConstantsFromApiAndWriteToJson(type, urlPath){
     var pipeLine = request(url, defaultRequestOptions)
         .pipe(source(type + '.json'))
         .pipe(streamify(jeditor(function (constants) {
+            qm[type] = constants;
             return constants;
         })));
     try {
@@ -2658,8 +2686,10 @@ gulp.task('configureApp', [], function (callback) {
         'getUnits',
         'getVariableCategories',
         'getAppConfigs',
+        'buildInfo',
         'uncommentBugsnagInIndexHtml',
         //'uncommentOpbeatInIndexHtml',
+        'staticDataFile',
         'uglify-error-debugging',
         'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
@@ -2669,7 +2699,6 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
-        'buildInfo',
         'setVersionNumberInFiles',
         'createSuccessFile',
         'verifyExistenceOfBuildInfo',
@@ -3046,7 +3075,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         return;
     }
     /** @namespace appSettings.additionalSettings.appIds.appleId */
-    var chcpJson = {
+    qm.chcp = {
         "name": appSettings.appDisplayName,
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "us-east-1",
@@ -3056,7 +3085,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "update": "start",
         "content_url": getCHCPContentUrl()
     };
-    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(chcpJson), function(err){
+    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(qm.chcp), function(err){
         if(err) {return qmLog.error(err);}
         var chcpBuildOptions = {
             "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
