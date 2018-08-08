@@ -2372,16 +2372,22 @@ window.qm = {
             chrome.notifications.clear("moodReportNotification", function() {});
         },
         mostRecentNotificationIsOlderThanMostFrequentInterval: function(){
+            var MostRecentNotification = qm.notifications.getMostRecentNotification();
+            var mostFrequent = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds();
+            return MostRecentNotification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - mostFrequent;
+        },
+        getMostRecentNotification: function(){
             var trackingReminderNotifications = qm.storage.getTrackingReminderNotifications();
             var mostRecent = 0;
+            var MostRecentNotification;
             for (var i = 0; i < trackingReminderNotifications.length; i++){
                 var notification = trackingReminderNotifications[i];
                 if(notification.trackingReminderNotificationTimeEpoch > mostRecent){
                     mostRecent = notification.trackingReminderNotificationTimeEpoch;
+                    MostRecentNotification = notification;
                 }
             }
-            var mostFrequent = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds();
-            return mostRecent < qm.timeHelper.getUnixTimestampInSeconds() - mostFrequent;
+            return MostRecentNotification;
         }
     },
     objectHelper: {
