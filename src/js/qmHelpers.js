@@ -3213,24 +3213,28 @@ window.qm = {
                                       null;*/
             navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
         },
+        config: {
+            DEFAULT: false, // false will override system default voice
+            //VOICE: 'Fred',
+            VOICE: 'Google UK English Female'
+        },
         makeRobotTalk: function(text){
-            var CONFIG = {
-                DEFAULT: false, // will override system default voice
-                VOICE: 'Fred'
-            };
             var robot = document.querySelector('.robot');
-            var message = new SpeechSynthesisUtterance();
-            message.text = text;
-            var voices = [];
+            var utterance = new SpeechSynthesisUtterance();
+            utterance.text = text;
+            var voices = speechSynthesis.getVoices();
+            utterance.voice = voices.find(function (voice) {
+                return voice.name === qm.speech.config.VOICE;
+            });
             speechSynthesis.addEventListener('voiceschanged', function (event) {
                 voices = speechSynthesis.getVoices();
-                if (!CONFIG.DEFAULT) {
-                    message.voice = voices.find(function (voice) {
-                        return voice.name === CONFIG.VOICE;
+                if (!qm.speech.config.DEFAULT) {
+                    utterance.voice = voices.find(function (voice) {
+                        return voice.name === qm.speech.config.VOICE;
                     });
                 }
             });
-            message.onend = function (event) {
+            utterance.onend = function (event) {
                 robot.classList.remove('robot_speaking');
             };
             robot.addEventListener('click', function (event) {
@@ -3239,11 +3243,11 @@ window.qm = {
                     speechSynthesis.cancel();
                 } else {
                     robot.classList.add('robot_speaking');
-                    speechSynthesis.speak(message);
+                    speechSynthesis.speak(utterance);
                 }
             });
             robot.classList.add('robot_speaking');
-            speechSynthesis.speak(message);
+            speechSynthesis.speak(utterance);
         },
         startListening: function(commands){
             qm.speech.visualizeVoice();
