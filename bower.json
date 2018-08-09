@@ -45,7 +45,8 @@
     "pluralize": "^1.2.1",
     "quantimodo": "5.9.73116",
     "underscore": "^1.9.1",
-    "annyang": "^2.6.1"
+    "annyang": "^2.6.1",
+    "svg-morpheus": "^0.3.2"
   },
   "resolutions": {
     "angular": "1.5.9",
