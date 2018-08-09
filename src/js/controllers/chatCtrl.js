@@ -15,7 +15,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
             postMessage(qm.dialogFlow.welcomeBody);
         });
-        $scope.state.userReply = function() {
+        $scope.state.userReply = function(reply) {
+            if(reply){$scope.state.replyMessage = reply;}
             if ( $scope.state.replyMessage === '' ) {return;}
 			$scope.state.messages.push({
 				who    : 'user',
@@ -36,12 +37,15 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             	respondWithMessageToUser(error);
 			});
         }
+        function talk(message) {
+            var useRobot = false;
+            if(useRobot){qm.speech.makeRobotTalk(message);} else {qm.speech.readOutLoud(message);}
+        }
         function respondWithMessageToUser(message) {
 			if(!message && !qm.dialogFlow.lastApiResponse.payload.google){return;}
 			message = message || qm.dialogFlow.lastApiResponse.payload.google.systemIntent.data.listSelect.title;
 			$scope.state.lastBotMessage = message;
-			var useRobot = true;
-			if(useRobot){qm.speech.makeRobotTalk(message);} else {qm.speech.readOutLoud(message);}
+			talk(message);
             $scope.state.messages.push({
                 who    : 'bot',
                 message: message,
@@ -49,14 +53,17 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             });
             //qm.speech.initializeSpeechKit(qmService);
             var commands = {
+                "I don't know": function () {
+                    talk("OK. We'll skip that one.");
+                    $scope.state.userReply('skip');
+                },
                 '*tag': function(tag) {
                 	if(tag.indexOf($scope.state.lastBotMessage.toLowerCase().substring(0, 10)) !== -1){
                 		qmLog.info("Just heard bot say " + tag);
 					} else {
                         qmLog.info("Just heard user say " + tag);
 					}
-                    $scope.state.replyMessage = tag;
-                    $scope.state.userReply();
+                    $scope.state.userReply(tag);
                 }
             };
             qm.speech.startListening(commands);
