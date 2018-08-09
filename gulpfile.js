@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
-var appSettings, privateConfig, devCredentials, versionNumbers;
+var devCredentials, versionNumbers;
 var androidX86ReleaseName = 'android-x86-release';
 var androidArm7DebugApkName = 'android-armv7-debug';
 var androidX86DebugApkName = 'android-x86-debug';
@@ -376,6 +376,31 @@ var qm = {
             if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
         }
     },
+    getAdditionalSettings: function(){
+        return qm.staticData.appSettings.additionalSettings;
+    },
+    getAppDisplayName: function(){
+        if (!qm.staticData.appSettings.appDisplayName) { throw 'Please export appSettings.appDisplayName';}
+        return qm.staticData.appSettings.appDisplayName;
+    },
+    getAppIds: function(){
+        return qm.getAdditionalSettings().appIds;
+    },
+    getAppIdentifier: function(){
+        return qm.getAppIds().appIdentifier;
+    },
+    getAppStatus: function(){
+        return qm.staticData.appSettings.appStatus;
+    },
+    getBuildStatus: function(){
+        return qm.staticData.appSettings.appStatus.buildStatus;
+    },
+    getClientId: function(){
+        return qm.staticData.appSettings.clientId;
+    },
+    getMonetizationSettings: function(){
+        return qm.staticData.appSettings.additionalSettings.monetizationSettings;
+    },
     releaseService: {
         getReleaseStage: function () {
             if(!process.env.RELEASE_STAGE){
@@ -397,7 +422,20 @@ var qm = {
             if(qm.releaseService.isStaging()){return "qm-staging";}
             return "quantimodo";
         }
-    }
+    },
+    staticData: {
+        commonVariables: null,
+        units: null,
+        variableCategories: null,
+        connectors: null,
+        docs: null,
+        appSettings: null,
+        privateConfig: null,
+        chcp: null,
+        buildInfo: null,
+        configXml: null,
+        chromeExtensionManifest: null
+    },
 };
 var buildingFor = {
     getPlatformBuildingFor: function(){
@@ -542,18 +580,18 @@ function getS3Url(relative_filename) {
     return s3BaseUrl + getS3RelativePath(relative_filename);
 }
 function uploadBuildToS3(filePath) {
-    if(appSettings.apiUrl === "local.quantimo.do"){
-        qmLog.info("Not uploading because appSettings.apiUrl is " + appSettings.apiUrl);
+    if(qm.getAppSettings().apiUrl === "local.quantimo.do"){
+        qmLog.info("Not uploading because qm.getAppSettings().apiUrl is " + qm.getAppSettings().apiUrl);
         return;
     }
-    /** @namespace appSettings.appStatus.betaDownloadLinks */
-    appSettings.appStatus.betaDownloadLinks[convertFilePathToPropertyName(filePath)] = getS3Url(filePath);
-    /** @namespace appSettings.appStatus.buildStatus */
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(filePath)] = "READY";
+    /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
+    qm.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = getS3Url(filePath);
+    /** @namespace qm.getAppSettings().appStatus.buildStatus */
+    qm.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
     return uploadToS3(filePath);
 }
 function uploadAppImagesToS3(filePath) {
-    //appSettings.additionalSettings.appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP constructor
+    //qm.getAdditionalSettings().appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP constructor
     return uploadToS3(filePath);
 }
 function checkAwsEnvs() {
@@ -702,15 +740,15 @@ function fastlaneSupply(track, callback) {
     if(onWindows(callback)){return;}
     var apk_paths;
     qmLog.info("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
-    /** @namespace appSettings.additionalSettings */
+    /** @namespace qm.getAppSettings().additionalSettings */
     /** @namespace buildSettings.xwalkMultipleApk */
     if(buildSettings.xwalkMultipleApk) {
         apk_paths = paths.apk.arm7Release + ',' + paths.apk.x86Release;
     } else {
         apk_paths = paths.apk.combinedRelease;
     }
-    /** @namespace appSettings.additionalSettings.appIds.appIdentifier */
-    /** @namespace appSettings.additionalSettings.appIds */
+    /** @namespace qm.getAppSettings().additionalSettings.appIds.appIdentifier */
+    /** @namespace qm.getAppSettings().additionalSettings.appIds */
     execute('fastlane supply' +
         ' --apk_paths ' + apk_paths +
         ' --track ' + track +
@@ -718,7 +756,7 @@ function fastlaneSupply(track, callback) {
         ' --skip_upload_images ' +
         ' --skip_upload_screenshots ' +
         ' --verbose ' +
-        ' --package_name ' + appSettings.additionalSettings.appIds.appIdentifier +
+        ' --package_name ' + qm.getAppIdentifier() +
         ' --json_key supply_json_key_for_google_play.json',
         callback);
 }
@@ -767,8 +805,8 @@ function obfuscateStringify(message, object, maxCharacters) {
 }
 function postAppStatus() {
     var options = getPostRequestOptions();
-    options.body.appStatus = appSettings.appStatus;
-    qmLog.info("Posting appStatus", appSettings.appStatus);
+    options.body.appStatus = qm.getAppStatus();
+    qmLog.info("Posting appStatus", qm.getAppStatus());
     return makeApiRequest(options);
 }
 function makeApiRequest(options, successHandler) {
@@ -794,7 +832,7 @@ function postNotifyCollaborators(appType) {
 function getRequestOptions(path) {
     var options = {
         uri: appHostName + path,
-        qs: {clientId: QUANTIMODO_CLIENT_ID, includeClientSecret: true},
+        qs: {clientId: QUANTIMODO_CLIENT_ID, includeClientSecret: true, allStaticAppData: true},
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
@@ -807,13 +845,13 @@ function getRequestOptions(path) {
     return options;
 }
 function getAppEditUrl() {
-    return getAppsListUrl() + '?clientId=' + appSettings.clientId;
+    return getAppsListUrl() + '?clientId=' + qm.getClientId();
 }
 function getAppsListUrl() {
     return 'https://app.quantimo.do/ionic/Modo/www/configuration-index.html#/app/configuration';
 }
 function getAppDesignerUrl() {
-    return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
+    return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + qm.getClientId();
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -890,10 +928,10 @@ function copyFiles(sourceFiles, destinationPath, excludedFolder) {
     return gulp.src(srcArray).pipe(gulp.dest(destinationPath));
 }
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
-    parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
-    qmLog.info("Setting appDisplayName to " + appSettings.appDisplayName + " in config.xml");
-    parsedXmlFile.widget.description[0] = appSettings.appDescription;
-    parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
+    parsedXmlFile.widget.name[0] = qm.getAppDisplayName();
+    qmLog.info("Setting appDisplayName to " + qm.getAppDisplayName() + " in config.xml");
+    parsedXmlFile.widget.description[0] = qm.getAppSettings().appDescription;
+    parsedXmlFile.widget.$.id = qm.getAppIdentifier();
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk", value: !!(buildSettings.xwalkMultipleApk)}});
     return parsedXmlFile;
 }
@@ -917,12 +955,12 @@ function generateConfigXmlFromTemplate(callback) {
     //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
     var configXmlPath = 'config-template-shared.xml';
     var xml = fs.readFileSync(configXmlPath, 'utf8');
-    /** @namespace appSettings.additionalSettings.appIds.googleReversedClientId */
-    if (appSettings.additionalSettings.appIds.googleReversedClientId) {
-        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
+    /** @namespace qm.getAppSettings().additionalSettings.appIds.googleReversedClientId */
+    if (qm.getAppIds().googleReversedClientId) {
+        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', qm.getAppIds().googleReversedClientId);
     }
-    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', appSettings.clientId);
-    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', appSettings.clientSecret);
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', qm.getClientId());
+    xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', qm.getAppSettings().clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
             throw new Error('ERROR: failed to read xml file' + err);
@@ -931,7 +969,7 @@ function generateConfigXmlFromTemplate(callback) {
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
             parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()+'/chcp.json'}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
-            qm.configXml = parsedXmlFile;
+            qm.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
         }
     });
@@ -1026,10 +1064,10 @@ var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bu
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
-    qm.chromeExtensionManifest = {
+    qm.staticData.chromeExtensionManifest = {
         'manifest_version': 2,
-        'name': appSettings.appDisplayName,
-        'description': appSettings.appDescription,
+        'name': qm.getAppDisplayName(),
+        'description': qm.getAppSettings().appDescription,
         'version': versionNumbers.ionicApp,
         'options_page': 'chrome_options.html',
         'icons': {
@@ -1090,9 +1128,9 @@ function createProgressiveWebAppManifest(outputPath) {
     outputPath = outputPath || paths.src + '/manifest.json';
     var pwaManifest = {
         'manifest_version': 2,
-        'name': appSettings.appDisplayName,
-        'short_name': appSettings.clientId,
-        'description': appSettings.appDescription,
+        'name': qm.getAppDisplayName(),
+        'short_name': qm.getClientId(),
+        'description': qm.getAppSettings().appDescription,
         "start_url": "index.html",
         "display": "standalone",
         "icons": [{
@@ -1148,26 +1186,26 @@ function downloadAndUnzipFile(url, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 gulp.task('downloadChromeExtension', [], function(){
-    return downloadAndUnzipFile(appSettings.appStatus.betaDownloadLinks.chromeExtension, getPathToUnzippedChromeExtension());
+    return downloadAndUnzipFile(qm.getAppStatus().betaDownloadLinks.chromeExtension, getPathToUnzippedChromeExtension());
 });
 gulp.task('downloadIcon', [], function(){
-    /** @namespace appSettings.additionalSettings.appImages.appIcon */
-    /** @namespace appSettings.additionalSettings.appImages */
-    var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
+    /** @namespace qm.getAppSettings().additionalSettings.appImages.appIcon */
+    /** @namespace qm.getAppSettings().additionalSettings.appImages */
+    var iconUrl = (qm.getAdditionalSettings().appImages.appIcon) ? qm.getAdditionalSettings().appImages.appIcon : qm.getAppSettings().iconUrl;
     return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
-    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey){
-        qmLog.error("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
+    if(!qm.getMonetizationSettings().playPublicLicenseKey){
+        qmLog.error("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), qm.getAdditionalSettings());
         return;
     }
-    var manifestJson = {'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value};
+    var manifestJson = {'play_store_key': qm.getMonetizationSettings().playPublicLicenseKey.value};
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
 gulp.task('downloadSplashScreen', [], function(){
-    /** @namespace appSettings.additionalSettings.appImages.splashScreen */
-    var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
+    /** @namespace qm.getAppSettings().additionalSettings.appImages.splashScreen */
+    var splashScreen = (qm.getAdditionalSettings().appImages.splashScreen) ? qm.getAdditionalSettings().appImages.splashScreen : qm.getAppSettings().splashScreen;
     return downloadFile(splashScreen, 'splash.png', "./resources");
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
@@ -1176,32 +1214,31 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', ['setClientId'], function () {
-    if(appSettings && appSettings.clientId === QUANTIMODO_CLIENT_ID){
-        qmLog.info("Already have appSettings for " + appSettings.clientId);
+    if(qm.getAppSettings() && qm.getClientId() === QUANTIMODO_CLIENT_ID){
+        qmLog.info("Already have appSettings for " + qm.getClientId());
         return;
     }
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
-        appSettings = response.appSettings;
-        process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;  // Need env for Fastlane
-        process.env.APP_IDENTIFIER = appSettings.additionalSettings.appIds.appIdentifier;  // Need env for Fastlane
-        if(response.privateConfig){privateConfig = response.privateConfig;}
+        qm.staticData = response;
+        process.env.APP_DISPLAY_NAME = qm.getAppDisplayName();  // Need env for Fastlane
+        process.env.APP_IDENTIFIER = qm.getAppIdentifier();  // Need env for Fastlane
         function addBuildInfoToAppSettings() {
-            appSettings.buildServer = getCurrentServerContext();
-            appSettings.buildLink = qm.buildInfoHelper.getBuildLink();
-            appSettings.versionNumber = versionNumbers.ionicApp;
-            appSettings.androidVersionCode = versionNumbers.androidVersionCode;
-            appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
-            appSettings.builtAt = timeHelper.getUnixTimestampInSeconds();
-            // if (!appSettings.clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
-            //     appSettings.clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
+            qm.getAppSettings().buildServer = getCurrentServerContext();
+            qm.getAppSettings().buildLink = qm.buildInfoHelper.getBuildLink();
+            qm.getAppSettings().versionNumber = versionNumbers.ionicApp;
+            qm.getAppSettings().androidVersionCode = versionNumbers.androidVersionCode;
+            qm.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG);
+            qm.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds();
+            // if (!qm.getAppSettings().clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
+            //     qm.getAppSettings().clientSecret = process.env.QUANTIMODO_CLIENT_SECRET;
             // }
-            buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
-            delete appSettings.additionalSettings.buildSettings;
-            /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
-            /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
-            if (appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release) {
-                appSettings.appStatus.additionalSettings.buildSettings.xwalkMultipleApk = true;
+            buildSettings = JSON.parse(JSON.stringify(qm.getAdditionalSettings().buildSettings));
+            delete qm.getAdditionalSettings().buildSettings;
+            /** @namespace qm.getAppSettings().appStatus.buildEnabled.androidArmv7Release */
+            /** @namespace qm.getAppSettings().appStatus.buildEnabled.androidX86Release */
+            if (qm.getAppStatus().buildEnabled.androidX86Release || qm.getAppStatus().buildEnabled.androidArmv7Release) {
+                qm.getAdditionalSettings().buildSettings.xwalkMultipleApk = true;
             }
         }
         addBuildInfoToAppSettings();
@@ -1209,25 +1246,25 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         writeDefaultConfigJson('www');
         writePrivateConfigs('www'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         writePrivateConfigs('src'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
-        qmLog.info("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
-        //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
-        if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
+        qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " + getAppEditUrl());
+        //qm.staticData.appSettings = removeCustomPropertiesFromAppSettings(qm.staticData.appSettings);
+        if(process.env.APP_HOST_NAME){qm.getAppSettings().apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
     }
     return makeApiRequest(options, successHandler);
 });
 function writeDefaultConfigJson(path) {
-    writeToFile(path + "/default.config.json", prettyJSONStringify(appSettings));
+    writeToFile(path + "/default.config.json", prettyJSONStringify(qm.getAppSettings()));
 }
 function writePrivateConfigs(path) {
-    if (!privateConfig && devCredentials.accessToken) {
+    if (!qm.staticData.privateConfig && devCredentials.accessToken) {
         qmLog.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-            + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail +
+            + getAppsListUrl() + ' ' + qm.getAdditionalSettings().companyEmail +
             " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
     }
     /** @namespace response.privateConfig */
-    if (privateConfig) {
+    if (qm.staticData.privateConfig) {
         try {
-            writeToFile(path + '/default.private_config.json', prettyJSONStringify(privateConfig));
+            writeToFile(path + '/default.private_config.json', prettyJSONStringify(qm.staticData.privateConfig));
         } catch (error) {
             qmLog.error(error);
         }
@@ -1359,19 +1396,7 @@ gulp.task('downloadSwaggerJson', [], function () {
     return getConstantsFromApiAndWriteToJson('docs', url);
 });
 function writeStaticDataFile(){
-    var staticData = {
-        commonVariables: qm.commonVariables,
-        units: qm.units,
-        variableCategories: qm.variableCategories,
-        connectors: qm.connectors,
-        docs: qm.docs,
-        appSettings: appSettings,
-        privateConfig: privateConfig,
-        chcp: qm.chcp,
-        buildInfo: qm.buildInfoHelper.getCurrentBuildInfo(),
-        configXml: qm.configXml,
-        chromeExtensionManifest: qm.chromeExtensionManifest
-    };
+    qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
     var string = 'window.qm.staticData = '+ prettyJSONStringify(staticData)+ ';';
     writeToFile('www/data/qmStaticData.js', string);
     return writeToFile('src/data/qmStaticData.js', string);
@@ -1391,7 +1416,7 @@ function getConstantsFromApiAndWriteToJson(type, urlPath){
     var pipeLine = request(url, defaultRequestOptions)
         .pipe(source(type + '.json'))
         .pipe(streamify(jeditor(function (constants) {
-            qm[type] = constants;
+            qm.staticData[type] = constants;
             return constants;
         })));
     try {
@@ -2000,8 +2025,8 @@ gulp.task('addFacebookPlugin', ['getAppConfigs'], function () {
     var addFacebookPlugin = function () {
         var commands = [
             'cordova -d plugin add ../fbplugin/phonegap-facebook-plugin',
-            'APP_ID="' + privateConfig.FACEBOOK_APP_ID + '"',
-            'APP_NAME="' + privateConfig.FACEBOOK_APP_NAME + '"'
+            'APP_ID="' + qm.staticData.privateConfig.FACEBOOK_APP_ID + '"',
+            'APP_NAME="' + qm.staticData.privateConfig.FACEBOOK_APP_NAME + '"'
         ].join(' --variable ');
         execute(commands, function (error) {
             if (error !== null) {
@@ -2112,8 +2137,8 @@ gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function 
 });
 gulp.task('fixResourcesPlist', function () {
     var deferred = q.defer();
-    if (!appSettings.appDisplayName) {deferred.reject('Please export appSettings.appDisplayName');}
-    var myPlist = plist.parse(fs.readFileSync('platforms/ios/' + appSettings.appDisplayName + '/' + appSettings.appDisplayName + '-Info.plist', 'utf8'));
+    if (!qm.getAppDisplayName()) {deferred.reject('Please export appSettings.appDisplayName');}
+    var myPlist = plist.parse(fs.readFileSync('platforms/ios/' + qm.getAppDisplayName() + '/' + qm.getAppDisplayName() + '-Info.plist', 'utf8'));
     var LSApplicationQueriesSchemes = [
         'fbapi',
         'fbapi20130214',
@@ -2157,7 +2182,7 @@ gulp.task('fixResourcesPlist', function () {
         myPlist.NSAppTransportSecurity.NSExceptionDomains['akamaihd.net'] = akamaihdDotNet;
         qmLog.info('Updated akamaihd.net');
     }
-    fs.writeFile('platforms/ios/' + appSettings.appDisplayName + '/' + appSettings.appDisplayName + '-Info.plist', plist.build(myPlist), 'utf8', function (err) {
+    fs.writeFile('platforms/ios/' + qm.getAppDisplayName() + '/' + qm.getAppDisplayName() + '-Info.plist', plist.build(myPlist), 'utf8', function (err) {
         if (err) {
             qmLog.error('ERROR: error writing to plist', err);
             deferred.reject();
@@ -2170,7 +2195,7 @@ gulp.task('fixResourcesPlist', function () {
 });
 gulp.task('addPodfile', function () {
     var deferred = q.defer();
-    if (!appSettings.appDisplayName) {deferred.reject('Please export appSettings.appDisplayName');}
+    if (!qm.getAppDisplayName()) {deferred.reject('Please export appSettings.appDisplayName');}
     var addBugsnagToPodfile = function () {
         fs.readFile('./platforms/ios/Podfile', function (err, data) {
             if (err) {throw err;}
@@ -2179,7 +2204,7 @@ gulp.task('addPodfile', function () {
                 qmLog.info('no Bugsnag detected');
                 gulp.src('./platforms/ios/Podfile')
                     .pipe(change(function (content) {
-                        var bugsnag_str = 'target \'' + appSettings.appDisplayName + '\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
+                        var bugsnag_str = 'target \'' + qm.getAppDisplayName() + '\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
                         qmLog.info('Bugsnag Added to Podfile');
                         deferred.resolve();
                         return content.replace(/target.*/g, bugsnag_str);
@@ -2215,16 +2240,14 @@ gulp.task('addPodfile', function () {
     return deferred.promise;
 });
 gulp.task('addInheritedToOtherLinkerFlags', function () {
-    if (!appSettings.appDisplayName) {qmLog.info('Please export appSettings.appDisplayName');}
-    return gulp.src('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/project.pbxproj')
+    return gulp.src('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, 'OTHER_LDFLAGS = (\n\t\t\t\t\t"$(inherited)",');
         }))
-        .pipe(gulp.dest('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/'));
+        .pipe(gulp.dest('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/'));
 });
 gulp.task('addDeploymentTarget', function () {
-    if (!appSettings.appDisplayName) {qmLog.info('Please export appSettings.appDisplayName');}
-    return gulp.src('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/project.pbxproj')
+    return gulp.src('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             if (content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1) {
                 return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, 'IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;');
@@ -2234,7 +2257,7 @@ gulp.task('addDeploymentTarget', function () {
         .pipe(change(function (content) {
             qmLog.info('*****************\n\n\n', content, '\n\n\n*****************');
         }))
-        .pipe(gulp.dest('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/'));
+        .pipe(gulp.dest('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/'));
 });
 gulp.task('installPods', ['addPodfile'], function () {
     var deferred = q.defer();
@@ -2254,8 +2277,7 @@ gulp.task('installPods', ['addPodfile'], function () {
     return deferred.promise;
 });
 gulp.task('addBugsnagInObjC', function () {
-    if (!appSettings.appDisplayName) {qmLog.info('Please export appSettings.appDisplayName');}
-    return gulp.src('./platforms/ios/' + appSettings.appDisplayName + '/Classes/AppDelegate.m')
+    return gulp.src('./platforms/ios/' + qm.getAppDisplayName() + '/Classes/AppDelegate.m')
         .pipe(change(function (content) {
             if (content.indexOf('Bugsnag') !== -1) {
                 qmLog.info('Bugsnag Already Present');
@@ -2267,15 +2289,14 @@ gulp.task('addBugsnagInObjC', function () {
             }
             return content;
         }))
-        .pipe(gulp.dest('./platforms/ios/' + appSettings.appDisplayName + '/Classes/'));
+        .pipe(gulp.dest('./platforms/ios/' + qm.getAppDisplayName() + '/Classes/'));
 });
 gulp.task('enableBitCode', function () {
-    if (!appSettings.appDisplayName) {qmLog.info('Please export appSettings.appDisplayName');}
-    return gulp.src('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/project.pbxproj')
+    return gulp.src('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             return content.replace(/FRAMEWORK_SEARCH_PATHS(\s*)?=(\s*)?\(/g, 'ENABLE_BITCODE = NO;\n\t\t\t\tFRAMEWORK_SEARCH_PATHS = (');
         }))
-        .pipe(gulp.dest('./platforms/ios/' + appSettings.appDisplayName + '.xcodeproj/'));
+        .pipe(gulp.dest('./platforms/ios/' + qm.getAppDisplayName() + '.xcodeproj/'));
 });
 gulp.task('makeIosApp', function (callback) {
     runSequence(
@@ -2706,9 +2727,9 @@ gulp.task('configureApp', [], function (callback) {
         callback);
 });
 gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
-    if(!appSettings.appStatus.buildEnabled.chromeExtension){
+    if(!qm.getAppStatus().buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
-            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
+            qm.getAppStatus().buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2718,9 +2739,9 @@ gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     buildingFor.setChrome();
-    if(!appSettings.appStatus.buildEnabled.chromeExtension){
-        qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
-            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
+    if(!qm.getAppStatus().buildEnabled.chromeExtension){
+        qmLog.error("Not building chrome extension because qm.getAppStatus().buildEnabled.chromeExtension is " +
+            qm.getAppStatus().buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2735,9 +2756,9 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
 });
 gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
     buildingFor.setChrome();
-    if(!appSettings.appStatus.buildEnabled.chromeExtension){
-        qmLog.error("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
-            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
+    if(!qm.getAppStatus().buildEnabled.chromeExtension){
+        qmLog.error("Not building chrome extension because qm.getAppStatus().buildEnabled.chromeExtension is " +
+            qm.getAppStatus().buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2956,17 +2977,17 @@ gulp.task('platform-remove-ios', function (callback) {
     execute('ionic platform remove ios', callback);
 });
 function buildAndroidDebug(callback){
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus.androidDebug = "BUILDING";
+    qm.getBuildStatus()[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
+    qm.getBuildStatus()[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
+    qm.getBuildStatus().androidDebug = "BUILDING";
     postAppStatus();
     paths.apk.builtApk = paths.apk.combinedDebug;
     execute(getCordovaBuildCommand('debug', 'android'), callback);
 }
 function buildAndroidRelease(callback){
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus.androidRelease = "BUILDING";
+    qm.getBuildStatus()[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
+    qm.getBuildStatus()[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
+    qm.getBuildStatus().androidRelease = "BUILDING";
     postAppStatus();
     paths.apk.builtApk = paths.apk.combinedRelease;
     execute(getCordovaBuildCommand('release', 'android'), callback);
@@ -3066,7 +3087,7 @@ function getCHCPContentPath(){
     return path;
 }
 function getCHCPContentUrl(){
-    return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + appSettings.clientId + "/" + getCHCPContentPath();
+    return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + qm.getClientId() + "/" + getCHCPContentPath();
 }
 gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
     if(false && buildingFor.web()){
@@ -3074,23 +3095,23 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         callback();
         return;
     }
-    /** @namespace appSettings.additionalSettings.appIds.appleId */
-    qm.chcp = {
-        "name": appSettings.appDisplayName,
+    /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
+    qm.staticData.chcp = {
+        "name": qm.getAppDisplayName(),
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "us-east-1",
-        "s3prefix": appSettings.clientId + "/"+getCHCPContentPath()+"/",
-        "ios_identifier": appSettings.additionalSettings.appIds.appleId,
-        "android_identifier": appSettings.additionalSettings.appIds.appIdentifier,
+        "s3prefix": qm.getClientId() + "/"+getCHCPContentPath()+"/",
+        "ios_identifier": qm.getAppIds().appleId,
+        "android_identifier": qm.getAppIdentifier(),
         "update": "start",
         "content_url": getCHCPContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(qm.chcp), function(err){
         if(err) {return qmLog.error(err);}
         var chcpBuildOptions = {
-            "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/dev/www/chcp.json"},
-            "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/production/www/chcp.json"},
-            "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+appSettings.clientId+"/qa/chcp.json"}
+            "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qm.getClientId()+"/dev/www/chcp.json"},
+            "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qm.getClientId()+"/production/www/chcp.json"},
+            "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qm.getClientId()+"/qa/chcp.json"}
         };
         return writeToFileWithCallback('chcpbuild.options', prettyJSONStringify(chcpBuildOptions), function(err){
             if(err) {return qmLog.error(err);}
@@ -3113,19 +3134,19 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     buildingFor.platform = qmPlatform.android;
-    /** @namespace appSettings.additionalSettings.monetizationSettings */
-    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value */
-    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey.value && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value){
+    /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
+    /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
+    if(!qm.getMonetizationSettings().playPublicLicenseKey.value && qm.getMonetizationSettings().subscriptionsEnabled.value){
         qmLog.error("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
         qmLog.error("No playPublicLicenseKey so disabling subscriptions on Android build");
-        //appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value = false;
-        //generateDefaultConfigJson(appSettings);
+        //qm.getMonetizationSettings().subscriptionsEnabled.value = false;
+        //generateDefaultConfigJson(qm.staticData.appSettings);
     }
-    /** @namespace appSettings.appStatus.buildEnabled */
-    /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
-    if(!appSettings.appStatus.buildEnabled.androidRelease){
-        qmLog.info("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is " +
-            appSettings.appStatus.buildEnabled.androidRelease + ".  You can enable it at " + getAppDesignerUrl());
+    /** @namespace qm.getAppStatus().buildEnabled */
+    /** @namespace qm.getAppStatus().buildEnabled.androidRelease */
+    if(!qm.getAppStatus().buildEnabled.androidRelease){
+        qmLog.info("Not building android app because qm.getAppStatus().buildEnabled.androidRelease is " +
+            qm.getAppStatus().buildEnabled.androidRelease + ".  You can enable it at " + getAppDesignerUrl());
         return;
     }
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
@@ -3297,7 +3318,7 @@ gulp.task('googleServicesPList', ['getAppConfigs'], function() {
         '\t<key>PLIST_VERSION</key>\n' +
         '\t<string>1</string>\n' +
         '\t<key>BUNDLE_ID</key>\n' +
-        '\t<string>'+appSettings.additionalSettings.appIds.appIdentifier+'</string>\n' +
+        '\t<string>'+qm.getAppIdentifier()+'</string>\n' +
         '\t<key>PROJECT_ID</key>\n' +
         '\t<string>quantimo-do</string>\n' +
         '\t<key>STORAGE_BUCKET</key>\n' +
@@ -3319,7 +3340,7 @@ gulp.task('googleServicesPList', ['getAppConfigs'], function() {
         '</dict>\n' +
         '</plist>';
     return writeToFile('GoogleService-Info.plist', string);
-    //return writeToFile('platforms/ios/'+appSettings.appDisplayName+'/Resources/GoogleService-Info.plist', string);
+    //return writeToFile('platforms/ios/'+qm.getAppDisplayName()+'/Resources/GoogleService-Info.plist', string);
 });
 gulp.task('google-services-json', [], function() {
     var string =
@@ -3335,7 +3356,7 @@ gulp.task('google-services-json', [], function() {
         '      "client_info": {\n' +
         '        "mobilesdk_app_id": "1:1052648855194:android:b40c24a456cfe8f5",\n' +
         '        "android_client_info": {\n' +
-        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '          "package_name": "'+qm.getAppIdentifier()+'"\n' +
         '        }\n' +
         '      },\n' +
         '      "oauth_client": [\n' +
@@ -3343,7 +3364,7 @@ gulp.task('google-services-json', [], function() {
         '          "client_id": "1052648855194-qdidrqml70rfpiv15ita3on7g7oc20st.apps.googleusercontent.com",\n' +
         '          "client_type": 1,\n' +
         '          "android_info": {\n' +
-        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "package_name": "'+qm.getAppIdentifier()+'",\n' +
         '            "certificate_hash": "aff84d452d36ade90ce1a96c6d11c1ef038837ae"\n' +
         '          }\n' +
         '        },\n' +
@@ -3351,7 +3372,7 @@ gulp.task('google-services-json', [], function() {
         '          "client_id": "1052648855194-bd9puomjjr1k0pq2gv6iv8uc4rbgb1d9.apps.googleusercontent.com",\n' +
         '          "client_type": 1,\n' +
         '          "android_info": {\n' +
-        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "package_name": "'+qm.getAppIdentifier()+'",\n' +
         '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
         '          }\n' +
         '        },\n' +
@@ -3392,8 +3413,8 @@ gulp.task('google-services-json', [], function() {
         '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
         '              "client_type": 2,\n' +
         '              "ios_info": {\n' +
-        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
-        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '                "bundle_id": "'+qm.getAppIdentifier()+'",\n' +
+        '                "app_store_id": "'+qm.getAppIds().appleId+'"\n' +
         '              }\n' +
         '            }\n' +
         '          ]\n' +
@@ -3459,8 +3480,8 @@ gulp.task('google-services-json', [], function() {
         '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
         '              "client_type": 2,\n' +
         '              "ios_info": {\n' +
-        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
-        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '                "bundle_id": "'+qm.getAppIdentifier()+'",\n' +
+        '                "app_store_id": "'+qm.getAppIds().appleId+'"\n' +
         '              }\n' +
         '            }\n' +
         '          ]\n' +
@@ -3474,7 +3495,7 @@ gulp.task('google-services-json', [], function() {
         '      "client_info": {\n' +
         '        "mobilesdk_app_id": "1:1052648855194:android:88b22d1114b98c3d",\n' +
         '        "android_client_info": {\n' +
-        '          "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'"\n' +
+        '          "package_name": "'+qm.getAppIdentifier()+'"\n' +
         '        }\n' +
         '      },\n' +
         '      "oauth_client": [\n' +
@@ -3482,7 +3503,7 @@ gulp.task('google-services-json', [], function() {
         '          "client_id": "1052648855194-lse0ugfnigiii3v7npmlpa6dfbhsdn15.apps.googleusercontent.com",\n' +
         '          "client_type": 1,\n' +
         '          "android_info": {\n' +
-        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "package_name": "'+qm.getAppIdentifier()+'",\n' +
         '            "certificate_hash": "943730f4f7c645691ac6bbd5b893707274b2a0ba"\n' +
         '          }\n' +
         '        },\n' +
@@ -3494,7 +3515,7 @@ gulp.task('google-services-json', [], function() {
         '          "client_id": "1052648855194-en385jlnknb38ma8om296pnej3i4tjad.apps.googleusercontent.com",\n' +
         '          "client_type": 1,\n' +
         '          "android_info": {\n' +
-        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "package_name": "'+qm.getAppIdentifier()+'",\n' +
         '            "certificate_hash": "559679b24cec5f864e055fd1ae85320f7ab670dc"\n' +
         '          }\n' +
         '        },\n' +
@@ -3502,7 +3523,7 @@ gulp.task('google-services-json', [], function() {
         '          "client_id": "1052648855194-9shgemkqn8n5h67rugjioi260223sk3c.apps.googleusercontent.com",\n' +
         '          "client_type": 1,\n' +
         '          "android_info": {\n' +
-        '            "package_name": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
+        '            "package_name": "'+qm.getAppIdentifier()+'",\n' +
         '            "certificate_hash": "c96637dabff2fe6b215692b0a4d1f871affb8ac7"\n' +
         '          }\n' +
         '        },\n' +
@@ -3542,8 +3563,8 @@ gulp.task('google-services-json', [], function() {
         '              "client_id": "1052648855194-ifoi5gva7emm5igvpac2kp5u8kt8k8an.apps.googleusercontent.com",\n' +
         '              "client_type": 2,\n' +
         '              "ios_info": {\n' +
-        '                "bundle_id": "'+appSettings.additionalSettings.appIds.appIdentifier+'",\n' +
-        '                "app_store_id": "'+appSettings.additionalSettings.appIds.appleId+'"\n' +
+        '                "bundle_id": "'+qm.getAppIdentifier()+'",\n' +
+        '                "app_store_id": "'+qm.getAppIds().appleId+'"\n' +
         '              }\n' +
         '            }\n' +
         '          ]\n' +
