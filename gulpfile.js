@@ -392,6 +392,9 @@ var qm = {
     getAppStatus: function(){
         return qm.staticData.appSettings.appStatus;
     },
+    getAppSettings: function(){
+        return qm.staticData.appSettings;
+    },
     getBuildStatus: function(){
         return qm.staticData.appSettings.appStatus.buildStatus;
     },
