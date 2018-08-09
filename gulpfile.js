@@ -1368,7 +1368,7 @@ function writeStaticDataFile(){
         appSettings: appSettings,
         privateConfig: privateConfig,
         chcp: qm.chcp,
-        buildInfo: qm.buildInfoHelper.getPreviousBuildInfo(),
+        buildInfo: qm.buildInfoHelper.getCurrentBuildInfo(),
         configXml: qm.configXml,
         chromeExtensionManifest: qm.chromeExtensionManifest
     };
