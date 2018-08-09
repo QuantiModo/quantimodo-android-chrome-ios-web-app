@@ -67,15 +67,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                         return false;
                     }
 					qmLog.info("Just heard user say " + tag);
-                    function isNumeric(n) {
-                        return !isNaN(parseFloat(n)) && isFinite(n);
-                    }
-					if(tag === "skip" || "snooze" || isNumeric(tag)){
+                    function isNumeric(n) {return !isNaN(parseFloat(n)) && isFinite(n);}
+                    var possibleResponses = ["skip", "snooze", "yes", "no"];
+					if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
                         $scope.state.userReply(tag);
                     } else {
-                        talk("I'm not sure how to handle "+tag+".  You can say a number, skip or snooze.  Thanks!");
+                        talk("I'm kind of an idiot, and I'm not sure how to handle the response " + tag +
+                            ".  You can say a number or skip or snooze or yes or no.  Thank you for loving me despite my failures!");
                     }
-
                 }
             };
             qm.speech.startListening(commands);
