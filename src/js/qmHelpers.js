@@ -454,11 +454,7 @@ window.qm = {
                     url = addQueryParameter(url, 'platform', qm.platform.getCurrentPlatform());
                     return url;
                 }
-                function getAppHostName() {
-                    if(qm.getAppSettings() && qm.getAppSettings().apiUrl){return "https://" + qm.getAppSettings().apiUrl;}
-                    return "https://app.quantimo.do";
-                }
-                var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
+                var url = addGlobalQueryParameters(qm.appsManager.getQuantiModoApiUrl() + "/api/" + path);
                 qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
@@ -1506,6 +1502,395 @@ window.qm = {
             }
             apiInstance.getCorrelations(params, callback);
         }
+    },
+    dialogFlow: {
+        post: function(body, successHandler, errorHandler){
+            qm.api.postToQuantiModo(body, "v1/dialogflow", function(response){
+                qm.dialogFlow.lastApiResponse = response;
+                successHandler(response);
+            }, function(error){
+                errorHandler(error);
+            });
+        },
+        welcomeBody: {
+            "responseId": "ab13a388-57f7-42a0-af43-868b2676ff9f",
+            "queryResult": {
+                "queryText": "GOOGLE_ASSISTANT_WELCOME",
+                "action": "input.welcome",
+                "parameters": {},
+                "allRequiredParamsPresent": true,
+                "fulfillmentText": "Oh. It's you. What do you want?",
+                "fulfillmentMessages": [
+                    {
+                        "text": {
+                            "text": [
+                                "Oh. It's you. What do you want?"
+                            ]
+                        }
+                    }
+                ],
+                "outputContexts": [
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/google_assistant_welcome"
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/actions_capability_screen_output"
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/actions_capability_audio_output"
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/google_assistant_input_type_keyboard"
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/actions_capability_web_browser"
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533757655027/contexts/actions_capability_media_response_audio"
+                    }
+                ],
+                "intent": {
+                    "name": "projects/dr-modo/agent/intents/b69ed140-5dd7-4cf1-a5b7-f11f8d38bff0",
+                    "displayName": "Default Welcome Intent"
+                },
+                "intentDetectionConfidence": 1,
+                "languageCode": "en-us"
+            },
+            "originalDetectIntentRequest": {
+                "source": "google",
+                "version": "2",
+                "payload": {
+                    "isInSandbox": true,
+                    "surface": {
+                        "capabilities": [
+                            {
+                                "name": "actions.capability.AUDIO_OUTPUT"
+                            },
+                            {
+                                "name": "actions.capability.SCREEN_OUTPUT"
+                            },
+                            {
+                                "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+                            },
+                            {
+                                "name": "actions.capability.WEB_BROWSER"
+                            }
+                        ]
+                    },
+                    "requestType": "SIMULATOR",
+                    "inputs": [
+                        {
+                            "rawInputs": [
+                                {
+                                    "query": "Talk to Dr. Modo",
+                                    "inputType": "KEYBOARD"
+                                }
+                            ],
+                            "intent": "actions.intent.MAIN"
+                        }
+                    ],
+                    "user": {
+                        "lastSeen": "2018-08-07T16:26:13Z",
+                        "idToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjlhMzNiNWVkYjQ5ZDA4NjdhODY3MmQ5NTczYjFlMGQyMzc1ODg2ZTEifQ.eyJhdWQiOiI5MTg3NjEzMjU0OTEtazJ0Y3VkbGg5ZHEyMjdtb2RrMWhnbmlvMDR1aGhvNWQuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTg0NDQ2OTMxODQ4Mjk1NTUzNjIiLCJoZCI6InRoaW5rYnludW1iZXJzLm9yZyIsImVtYWlsIjoibUB0aGlua2J5bnVtYmVycy5vcmciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXhwIjoxNTMzNzYxMjU1LCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJqdGkiOiJlODFlY2Q4YTA5NmVhOGQ0YmVmOTk0YWMwYTVjZjlmZDczMjBkMTU4IiwiaWF0IjoxNTMzNzU3NjU1LCJuYmYiOjE1MzM3NTczNTUsIm5hbWUiOiJNaWtlIFNpbm4iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1CSHI0aHlVV3FaVS9BQUFBQUFBQUFBSS9BQUFBQUFBSUcyOC8yTHYwZW43MzhJSS9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiTWlrZSIsImZhbWlseV9uYW1lIjoiU2lubiJ9.qzSwaFXvQiPeKRAX4iCN1hbZMnwRucXF_bgHGxvHL_kJVyeOtjxNBXI8OdJsG1JTrO5J7wSRowbIMpaWdfREjxL6mh_J6nCsF7Q6iIOscCUlfvbHs7Qhqo_nutEXJxrObUFUUMVGvGFXvhkql0kawsgr_YVlCFc7iD4zJC9ljyCOjBJbe3rZBvoQwkOk_4shnRKL0OShHezrfQR4uUHR2etNQwMDva3JZzB9kXGndKYZgbQr1221s6Yklza1VSy0BuIFGQOHZsM5ig5EeQ7PQ7EfQ3gIT2O6u1O0rPQ42j7YNqrXZ2OT4ZRE6x0v4r4QEq8qAZkRqqaeNH7ab4pySA",
+                        "locale": "en-US",
+                        "userId": "ABwppHHxfsyj2umsF4FaFTEIOzSDJf2jDveTQtBP5CJH-KLJYugjxHPpR_uRxBLovyUADcMpHA"
+                    },
+                    "conversation": {
+                        "conversationId": "1533757655027",
+                        "type": "NEW"
+                    },
+                    "availableSurfaces": [
+                        {
+                            "capabilities": [
+                                {
+                                    "name": "actions.capability.AUDIO_OUTPUT"
+                                },
+                                {
+                                    "name": "actions.capability.SCREEN_OUTPUT"
+                                },
+                                {
+                                    "name": "actions.capability.WEB_BROWSER"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "session": "projects/dr-modo/agent/sessions/1533757655027"
+        },
+        lastApiResponse: {
+            "payload": {
+                "google": {
+                    "expectUserResponse": true,
+                    "richResponse": {
+                        "items": [
+                            {
+                                "simpleResponse": {
+                                    "ssml": "<speak> How severe is your stomach cramps on a scale of 1 to 5?<\/speak>",
+                                    "displayText": " How severe is your stomach cramps on a scale of 1 to 5?"
+                                }
+                            }
+                        ]
+                    },
+                    "systemIntent": {
+                        "intent": "actions.intent.OPTION",
+                        "data": {
+                            "@type": "type.googleapis.com\/google.actions.v2.OptionValueSpec",
+                            "listSelect": {
+                                "title": "How severe is your stomach cramps on a scale of 1 to 5?",
+                                "items": [
+                                    {
+                                        "optionInfo": {
+                                            "key": "1\/5-button",
+                                            "synonyms": [
+                                            ]
+                                        },
+                                        "title": "1\/5"
+                                    },
+                                    {
+                                        "optionInfo": {
+                                            "key": "2\/5-button",
+                                            "synonyms": [
+                                            ]
+                                        },
+                                        "title": "2\/5"
+                                    },
+                                    {
+                                        "optionInfo": {
+                                            "key": "3\/5-button",
+                                            "synonyms": [
+                                            ]
+                                        },
+                                        "title": "3\/5"
+                                    },
+                                    {
+                                        "optionInfo": {
+                                            "key": "5\/5-button",
+                                            "synonyms": [
+                                            ]
+                                        },
+                                        "title": "5\/5"
+                                    },
+                                    {
+                                        "optionInfo": {
+                                            "key": "4\/5-button",
+                                            "synonyms": [
+                                            ]
+                                        },
+                                        "title": "4\/5"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "outputContexts": [
+                {
+                    "name": "projects\/dr-modo\/agent\/sessions\/1533759866859\/contexts\/tracking_reminder_notification",
+                    "lifespanCount": 5,
+                    "parameters": {
+                        "variableName": "Stomach Cramps",
+                        "trackingReminderNotificationId": 29901440,
+                        "unitName": "1 to 5 Rating"
+                    }
+                }
+            ]
+        },
+        postNotificationResponse: function(value, successHandler, errorHandler){
+            if(!qm.dialogFlow.lastApiResponse.outputContexts){
+                qmLog.error("No outputContexts!");
+                return false;
+            }
+            var outputContext = qm.dialogFlow.lastApiResponse.outputContexts[0];
+            if(!outputContext.parameters){
+                qmLog.error("No parameters!");
+                return false;
+            }
+            outputContext.parameters.value = value;
+            qm.dialogFlow.notificationResponseBody.queryResult.outputContexts = [outputContext];
+            qm.dialogFlow.post(qm.dialogFlow.notificationResponseBody, successHandler, errorHandler);
+        },
+        notificationResponseBody: {
+            "responseId": "eec8a67e-114c-4bd8-8026-c6de0154b7e6",
+            "queryResult": {
+                "queryText": "actions_intent_OPTION",
+                "action": "tracking_reminder_notification",
+                "parameters": {
+                    "notificationAction": "track",
+                    "value": "",
+                    "yesNo": ""
+                },
+                "allRequiredParamsPresent": true,
+                "fulfillmentMessages": [
+                    {
+                        "text": {
+                            "text": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "outputContexts": [
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/google_assistant_input_type_touch",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/actions_intent_option",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "OPTION": "1/5-button",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/actions_capability_screen_output",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/actions_capability_audio_output",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/tracking_reminder_notification",
+                        "lifespanCount": 2,
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "variableName": "Hand Pain",
+                            "unitName": "1 to 5 Rating",
+                            "trackingReminderNotificationId": 29901441,
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/actions_capability_media_response_audio",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    },
+                    {
+                        "name": "projects/dr-modo/agent/sessions/1533759866859/contexts/actions_capability_web_browser",
+                        "parameters": {
+                            "yesNo": "",
+                            "notificationAction": "track",
+                            "value.original": "",
+                            "notificationAction.original": "",
+                            "value": "",
+                            "yesNo.original": ""
+                        }
+                    }
+                ],
+                "intent": {
+                    "name": "projects/dr-modo/agent/intents/921bbe0e-6f16-490c-b243-1743081bb25d",
+                    "displayName": "Tracking Reminder Notification Intent"
+                },
+                "intentDetectionConfidence": 1,
+                "languageCode": "en-us"
+            },
+            "originalDetectIntentRequest": {
+                "source": "google",
+                "version": "2",
+                "payload": {
+                    "isInSandbox": true,
+                    "surface": {
+                        "capabilities": [
+                            {
+                                "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+                            },
+                            {
+                                "name": "actions.capability.WEB_BROWSER"
+                            },
+                            {
+                                "name": "actions.capability.AUDIO_OUTPUT"
+                            },
+                            {
+                                "name": "actions.capability.SCREEN_OUTPUT"
+                            }
+                        ]
+                    },
+                    "requestType": "SIMULATOR",
+                    "inputs": [
+                        {
+                            "rawInputs": [
+                                {
+                                    "query": "1/5",
+                                    "inputType": "TOUCH"
+                                }
+                            ],
+                            "arguments": [
+                                {
+                                    "textValue": "1/5-button",
+                                    "name": "OPTION"
+                                }
+                            ],
+                            "intent": "actions.intent.OPTION"
+                        }
+                    ],
+                    "user": {
+                        "lastSeen": "2018-08-08T20:22:25Z",
+                        "idToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjlhMzNiNWVkYjQ5ZDA4NjdhODY3MmQ5NTczYjFlMGQyMzc1ODg2ZTEifQ.eyJhdWQiOiI5MTg3NjEzMjU0OTEtazJ0Y3VkbGg5ZHEyMjdtb2RrMWhnbmlvMDR1aGhvNWQuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTg0NDQ2OTMxODQ4Mjk1NTUzNjIiLCJoZCI6InRoaW5rYnludW1iZXJzLm9yZyIsImVtYWlsIjoibUB0aGlua2J5bnVtYmVycy5vcmciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXhwIjoxNTMzNzYzODk5LCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJqdGkiOiI0NTNhYTgzNDMwOTlmNzRjODMzZjdjY2RkZTA1ODViMjVjN2NjOTkwIiwiaWF0IjoxNTMzNzYwMjk5LCJuYmYiOjE1MzM3NTk5OTksIm5hbWUiOiJNaWtlIFNpbm4iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDYuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1CSHI0aHlVV3FaVS9BQUFBQUFBQUFBSS9BQUFBQUFBSUcyOC8yTHYwZW43MzhJSS9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiTWlrZSIsImZhbWlseV9uYW1lIjoiU2lubiJ9.Tl8oQIoNlou3p2Yy4a2MaxEJMftKn1ovDFfzgV8MkMFoqEGDkoNvGNbmJyDKGfS6B1kZwY7wBNuDTguKEpR9lTE6lj2Q4oQA4BzgLp_tYN8gohijJJDw3knwJ1q_A4KRfy7wBvV5xjI1nF74Q1wkpgDfmU275tjqp-xiuiHVEqMyp0gliCuD8eAZvgX_CpmjPxubqKi6f9mXW5wfp-z-1YfujQ2eT0XCMEOWFWddtr8-_Jm2_z_K_ua5LXHw5bU8S2ym0IqPkF4Kqa6GYJOSWrjmiC_pnBALpD4ME9wNOvTnNkp3ntfKtKE_HLz2v4LqrOPMDu0p0_BLOMqrUxclbg",
+                        "locale": "en-US",
+                        "userId": "ABwppHHxfsyj2umsF4FaFTEIOzSDJf2jDveTQtBP5CJH-KLJYugjxHPpR_uRxBLovyUADcMpHA"
+                    },
+                    "conversation": {
+                        "conversationId": "1533759866859",
+                        "type": "ACTIVE",
+                        "conversationToken": "[\"tracking_reminder_notification\"]"
+                    },
+                    "availableSurfaces": [
+                        {
+                            "capabilities": [
+                                {
+                                    "name": "actions.capability.WEB_BROWSER"
+                                },
+                                {
+                                    "name": "actions.capability.AUDIO_OUTPUT"
+                                },
+                                {
+                                    "name": "actions.capability.SCREEN_OUTPUT"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "session": "projects/dr-modo/agent/sessions/1533759866859"
+        },
     },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
@@ -2748,6 +3133,7 @@ window.qm = {
             }
         },
         readOutLoud: function(message){
+            return responsiveVoice.speak(message);
             var speech = new SpeechSynthesisUtterance();
             // Set the text and voice attributes.
             speech.text = message;
@@ -2770,6 +3156,104 @@ window.qm = {
             SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/themes/flat.css');
             // Render KITT's interface
             SpeechKITT.vroom();
+        },
+        visualizeVoice: function(){
+            var paths = document.getElementsByTagName('path');
+            var visualizer = document.getElementById('visualizer');
+            var mask = visualizer.getElementById('mask');
+            var h = document.getElementsByTagName('h1')[0];
+            var path;
+            var report = 0;
+
+            var soundAllowed = function (stream) {
+                //Audio stops listening in FF without // window.persistAudioStream = stream;
+                //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
+                //https://support.mozilla.org/en-US/questions/984179
+                window.persistAudioStream = stream;
+                h.innerHTML = "Thanks";
+                h.setAttribute('style', 'opacity: 0;');
+                var audioContent = new AudioContext();
+                var audioStream = audioContent.createMediaStreamSource( stream );
+                var analyser = audioContent.createAnalyser();
+                audioStream.connect(analyser);
+                analyser.fftSize = 1024;
+
+                var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
+                visualizer.setAttribute('viewBox', '0 0 255 255');
+
+                //Through the frequencyArray has a length longer than 255, there seems to be no
+                //significant data after this point. Not worth visualizing.
+                for (var i = 0 ; i < 255; i++) {
+                    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('stroke-dasharray', '4,1');
+                    mask.appendChild(path);
+                }
+                var doDraw = function () {
+                    requestAnimationFrame(doDraw);
+                    analyser.getByteFrequencyData(frequencyArray);
+                    var adjustedLength;
+                    for (var i = 0 ; i < 255; i++) {
+                        adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+                        paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
+                    }
+
+                }
+                doDraw();
+            }
+
+            var soundNotAllowed = function (error) {
+                h.innerHTML = "You must allow your microphone.";
+                console.log(error);
+            }
+
+            /*window.navigator = window.navigator || {};
+            /*navigator.getUserMedia =  navigator.getUserMedia       ||
+                                      navigator.webkitGetUserMedia ||
+                                      navigator.mozGetUserMedia    ||
+                                      null;*/
+            navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
+        },
+        config: {
+            DEFAULT: false, // false will override system default voice
+            //VOICE: 'Fred',
+            VOICE: 'Google UK English Female'
+        },
+        makeRobotTalk: function(text){
+            var robot = document.querySelector('.robot');
+            var utterance = new SpeechSynthesisUtterance();
+            utterance.text = text;
+            var voices = speechSynthesis.getVoices();
+            utterance.voice = voices.find(function (voice) {
+                return voice.name === qm.speech.config.VOICE;
+            });
+            speechSynthesis.addEventListener('voiceschanged', function (event) {
+                voices = speechSynthesis.getVoices();
+                if (!qm.speech.config.DEFAULT) {
+                    utterance.voice = voices.find(function (voice) {
+                        return voice.name === qm.speech.config.VOICE;
+                    });
+                }
+            });
+            utterance.onend = function (event) {
+                robot.classList.remove('robot_speaking');
+            };
+            robot.addEventListener('click', function (event) {
+                if (speechSynthesis.speaking) {
+                    robot.classList.remove('robot_speaking');
+                    speechSynthesis.cancel();
+                } else {
+                    robot.classList.add('robot_speaking');
+                    speechSynthesis.speak(utterance);
+                }
+            });
+            robot.classList.add('robot_speaking');
+            speechSynthesis.speak(utterance);
+        },
+        startListening: function(commands){
+            qm.speech.visualizeVoice();
+            // Add our commands to annyang
+            annyang.addCommands(commands);
+            annyang.start(); // Start listening. You can call this here, or attach this call to an event, button, etc.
         }
     },
     shares: {

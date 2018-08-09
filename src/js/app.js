@@ -30,7 +30,8 @@ angular.module('starter',
         //'ngOpbeat',
         'angular-web-notification',
         //'ui-iconpicker',
-        'ngFitText'
+        'ngFitText',
+        'ngMdIcons'
     ]
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
@@ -107,7 +108,7 @@ angular.module('starter',
     }
 }])
 .config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
-    "$ionicConfigProvider", "AnalyticsProvider",
+    "$ionicConfigProvider", "AnalyticsProvider", "ngMdIconServiceProvider",
     //"$opbeatProvider",
     function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
                  $ionicConfigProvider, AnalyticsProvider
