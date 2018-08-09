@@ -38,7 +38,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			});
         }
         function talk(message) {
-            var useRobot = false;
+            var useRobot = true;
             if(useRobot){qm.speech.makeRobotTalk(message);} else {qm.speech.readOutLoud(message);}
         }
         function respondWithMessageToUser(message) {
@@ -60,10 +60,22 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 '*tag': function(tag) {
                 	if(tag.indexOf($scope.state.lastBotMessage.toLowerCase().substring(0, 10)) !== -1){
                 		qmLog.info("Just heard bot say " + tag);
-					} else {
-                        qmLog.info("Just heard user say " + tag);
+                        return false;
 					}
-                    $scope.state.userReply(tag);
+                    if($scope.state.lastBotMessage.toLowerCase().indexOf(tag) !== -1){
+                        qmLog.info("Just heard bot say " + tag);
+                        return false;
+                    }
+					qmLog.info("Just heard user say " + tag);
+                    function isNumeric(n) {
+                        return !isNaN(parseFloat(n)) && isFinite(n);
+                    }
+					if(tag === "skip" || "snooze" || isNumeric(tag)){
+                        $scope.state.userReply(tag);
+                    } else {
+                        talk("I'm not sure how to handle "+tag+".  You can say a number, skip or snooze.  Thanks!");
+                    }
+
                 }
             };
             qm.speech.startListening(commands);
