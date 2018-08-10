@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
-var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
+var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://local.quantimo.do";
 var devCredentials, versionNumbers;
 var androidX86ReleaseName = 'android-x86-release';
 var androidArm7DebugApkName = 'android-armv7-debug';
@@ -1223,7 +1223,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
-        qm.staticData = response;
+        qm.staticData = response.staticData;
         process.env.APP_DISPLAY_NAME = qm.getAppDisplayName();  // Need env for Fastlane
         process.env.APP_IDENTIFIER = qm.getAppIdentifier();  // Need env for Fastlane
         function addBuildInfoToAppSettings() {
@@ -1400,7 +1400,7 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'window.qm.staticData = '+ prettyJSONStringify(staticData)+ ';';
+    var string = 'window.qm.staticData = '+ prettyJSONStringify(qm.staticData)+ ';';
     writeToFile('www/data/qmStaticData.js', string);
     return writeToFile('src/data/qmStaticData.js', string);
 }

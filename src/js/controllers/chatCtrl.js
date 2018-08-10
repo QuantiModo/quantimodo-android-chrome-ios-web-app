@@ -5,15 +5,25 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			dialogFlow: false,
 			trackingReminderNotification: null,
 			messages: [],
-            replyMessage: ''
+            replyMessage: '',
+            visualizationType: 'rainbow' // 'siri', 'rainbow', 'equalizer'
 		};
+		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
+        if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
+        if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e) {
             qmLog.debug('beforeEnter state ' + $state.current.name);
+            $scope.state.trackingReminderNotification = qm.notifications.getMostRecentNotification();
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
         });
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
-            postMessage(qm.dialogFlow.welcomeBody);
+            if($scope.state.trackingReminderNotification){
+                respondWithMessageToUser($scope.state.trackingReminderNotification.longQuestion)
+            } else {
+                postMessage(qm.dialogFlow.welcomeBody);
+            }
+
         });
         $scope.state.userReply = function(reply) {
             if(reply){$scope.state.replyMessage = reply;}
@@ -42,6 +52,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             if(useRobot){qm.speech.makeRobotTalk(message);} else {qm.speech.readOutLoud(message);}
         }
         function respondWithMessageToUser(message) {
+            if(!message && !qm.dialogFlow.lastApiResponse.payload){return;}
 			if(!message && !qm.dialogFlow.lastApiResponse.payload.google){return;}
 			message = message || qm.dialogFlow.lastApiResponse.payload.google.systemIntent.data.listSelect.title;
 			$scope.state.lastBotMessage = message;
@@ -58,26 +69,19 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     $scope.state.userReply('skip');
                 },
                 '*tag': function(tag) {
-                	if(tag.indexOf($scope.state.lastBotMessage.toLowerCase().substring(0, 10)) !== -1){
-                		qmLog.info("Just heard bot say " + tag);
-                        return false;
-					}
-                    if($scope.state.lastBotMessage.toLowerCase().indexOf(tag) !== -1){
-                        qmLog.info("Just heard bot say " + tag);
-                        return false;
-                    }
 					qmLog.info("Just heard user say " + tag);
                     function isNumeric(n) {return !isNaN(parseFloat(n)) && isFinite(n);}
                     var possibleResponses = ["skip", "snooze", "yes", "no"];
 					if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
                         $scope.state.userReply(tag);
                     } else {
-                        talk("I'm kind of an idiot, and I'm not sure how to handle the response " + tag +
-                            ".  You can say a number or skip or snooze or yes or no.  Thank you for loving me despite my failures!");
+                        talk("I'm kind of an idiot, ! . ! . ! . ! and I'm not sure how to handle the response " + tag +
+                            ". ! . ! . ! . ! You can say a number ! . ! . ! . ! or skip ! . ! . ! . !"+
+                            " or ! . ! . ! . ! snooze ! . ! . ! . ! or yes or no. ! . ! . ! . ! Thank you for loving me despite my many failures in life!");
                     }
                 }
             };
-            qm.speech.startListening(commands);
+            qm.speech.startListening(commands, $scope.state.visualizationType);
         }
 		function getMostRecentNotification() {
 			$scope.state.trackingReminderNotification = qm.notifications.getMostRecentNotification();
