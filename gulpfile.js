@@ -1401,10 +1401,14 @@ gulp.task('downloadSwaggerJson', [], function () {
 function writeStaticDataFile(){
     qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
     var string = 'window.qm.staticData = '+ prettyJSONStringify(qm.staticData)+ ';';
-    writeToFile('www/data/qmStaticData.js', string);
+    try {
+        writeToFile('www/data/qmStaticData.js', string);
+    } catch(e){
+        qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
+    }
     return writeToFile('src/data/qmStaticData.js', string);
 }
-gulp.task('staticDataFile', function () {
+gulp.task('staticDataFile', ['getAppConfigs'], function () {
     return writeStaticDataFile();
 });
 function getConstantsFromApiAndWriteToJson(type, urlPath){
