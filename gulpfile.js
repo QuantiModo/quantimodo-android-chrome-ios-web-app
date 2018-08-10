@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
-var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://local.quantimo.do";
+var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var devCredentials, versionNumbers;
 var androidX86ReleaseName = 'android-x86-release';
 var androidArm7DebugApkName = 'android-armv7-debug';
