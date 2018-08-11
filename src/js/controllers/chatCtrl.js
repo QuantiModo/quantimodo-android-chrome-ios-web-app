@@ -6,7 +6,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			trackingReminderNotification: null,
 			messages: [],
             userInputString: '',
-            visualizationType: 'siri', // 'siri', 'rainbow', 'equalizer'
+            visualizationType: 'rainbow', // 'siri', 'rainbow', 'equalizer'
             listening: qm.speech.listening
 		};
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
@@ -43,12 +43,17 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 if (speechSynthesis.speaking) {
                     qm.speech.shutUpRobot();
                 } else {
-                    qm.speech.talkRobot(qm.speech.lastUtterance.text);
+                    if(qm.speech.lastUtterance){
+                        qm.speech.talkRobot(qm.speech.lastUtterance.text);
+                    } else {
+                        qmLog.info("Nothing to say");
+                    }
                 }
             });
             qm.speech.initializeListening(reminderNotificationCommands, $scope.state.visualizationType);
             getMostRecentNotificationAndTalk();
-            qm.speech.siriVisualizer();
+            //qm.speech.siriVisualizer();
+            qm.speech.rainbowCircleVisualizer();
         });
         function ask(text){
             qm.speech.listening = $scope.state.listening = true;
@@ -77,11 +82,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 return;
             }
 			$scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
-            var notification = $scope.state.trackingReminderNotification;
-            notification.modifiedValue = reply;
-            qmService.trackTrackingReminderNotificationDeferred(notification);
-            var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + reply + ".  ";
-            talk(message);
             getMostRecentNotificationAndTalk();
 			// qm.dialogFlow.postNotificationResponse($scope.state.userInputString, function (body) {
 			// 	talk()
@@ -113,17 +113,93 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 				time   : 'Just now'
 			})
 		}
+		qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
+
+		    qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
+		    qm.speech.abortListening();
+		    qmService.goToDefaultState();
+        };
+		function getEntityFromLastUserStatement(entityName){
+            var lastUserStatement = qm.speech.lastUserStatement.toLowerCase();
+            var entries = qm.staticData.dialogAgent.entities[entityName].entries;
+            var words = lastUserStatement.split(" ");
+            var i, j, word, entry;
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    entry = entries[i];
+                    if(word === entry.name.toLowerCase()){return entry;}
+                }
+            }
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    for (var k = 0; k < entry.synonyms; k += 1) {
+                        var synonym = synonyms[i];
+                        if(word === synonym.toLowerCase()){return entry;}
+                    }
+                }
+            }
+            return null;
+        }
+        function weHaveRequiredParams(intent){
+            var parameters = intent.responses[0].parameters;
+            for (var i = 0; i < parameters.length; i++) {
+                var parameter = parameters[i];
+                var parameterName = parameter.name;
+                if(parameter.required){
+                    var value = qm.speech.currentIntent.parameters[parameterName];
+                    if(value){
+                        continue;
+                    }
+                    value = getEntityFromLastUserStatement(parameterName);
+                    if(value){
+                        qm.speech.currentIntent.parameters[parameterName] = value;
+                        continue;
+                    }
+                    qm.speech.parameterToGet = parameterName;
+                    qm.speech.talkRobot(parameter.prompts[0].value, function(){
+                        var value = getEntityFromLastUserStatement(qm.speech.parameterToGet);
+                        qm.speech.currentIntent.parameters[qm.speech.parameterToGet] = value;
+                    });
+                    return false;
+                }
+            }
+            return true;
+        }
+        qm.staticData.dialogAgent.intents["Create Reminder Intent"].callback = function(){
+		    qm.speech.currentIntent.name = "Create Reminder Intent";
+		    var intent = qm.staticData.dialogAgent.intents["Create Reminder Intent"];
+            if(!weHaveRequiredParams(intent)){return;}
+            qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: qm.speech.currentIntent.parameters.variableName}, function(variable){
+                qmService.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"});
+            });
+        };
 		var reminderNotificationCommands = {
             "I don't know": function () {
                 qm.speech.talkRobot("OK. We'll skip that one.");
                 $scope.state.userReply('skip');
             },
             '*tag': function(tag) {
+                if(qm.speech.callback){
+                    qm.speech.callback(tag);
+                }
+                qm.speech.lastUserStatement = tag;
                 qmLog.info("Just heard user say " + tag);
-                function isNumeric(n) {return !isNaN(parseFloat(n)) && isFinite(n);}
+                function isNumeric(n) {
+                    return !isNaN(parseFloat(n)) && isFinite(n);
+                }
                 var possibleResponses = ["skip", "snooze", "yes", "no"];
                 if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
-                    $scope.state.userReply(tag);
+                    var notification = $scope.state.trackingReminderNotification;
+                    notification.modifiedValue = tag;
+                    qmService.trackTrackingReminderNotificationDeferred(notification);
+                    var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
+                    var prefix = qm.speech.afterNotificationMessages.pop();
+                    if(prefix){message = prefix + message;}
+                    talk(message);
+                    getMostRecentNotificationAndTalk();
+                    //$scope.state.userReply(message);
                 } else {
                     qm.speech.fallbackMessage(tag);
                 }
