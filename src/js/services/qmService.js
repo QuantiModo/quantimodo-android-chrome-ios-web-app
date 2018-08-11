@@ -1278,6 +1278,43 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.configurePushNotifications();
                 }
             },
+            skipAllForVariable: function(successHandler, errorHandler){
+                var title = "Skip all?";
+                var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
+                function yesCallback() {
+                    trackingReminderNotification.hide = true;
+                    qmLogService.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
+                    qmService.showInfoToast("Skipping all " + trackingReminderNotification.variableName + " notifications...");
+                    var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
+                    //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
+                    qmService.skipAllTrackingReminderNotificationsDeferred(params)
+                        .then(function(response){
+                            if(successHandler){successHandler(response);}
+                        }, function(error){
+                            if(errorHandler){errorHandler(error);}
+                            qmLog.error(error);
+                            qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
+                        });
+                }
+                function noCallback() {}
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+                return true;
+            },
+            lastAction: "",
+            showUndoToast: function(callback){
+                qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
+                    qm.notifications.undo();
+                    if(callback){callback();}
+                });
+            },
+            handleNotificationAction: function(trackingReminderNotification, undoCallback){
+                qmLog.info("Clicked "+ qmService.notifications.lastAction + " for " + trackingReminderNotification.variableName);
+                trackingReminderNotification.hide = true;
+                qmService.numberOfPendingNotifications--;
+                qmService.notifications.showUndoToast(undoCallback);
+                trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
+                return trackingReminderNotification;
+            }
         },
         reminders: {
             broadcastGetTrackingReminders: function(){
