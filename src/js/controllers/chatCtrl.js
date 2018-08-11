@@ -6,15 +6,27 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			trackingReminderNotification: null,
 			messages: [],
             userInputString: '',
-            visualizationType: 'rainbow', // 'siri', 'rainbow', 'equalizer'
+            visualizationType: 'siri', // 'siri', 'rainbow', 'equalizer'
             listening: qm.speech.listening
 		};
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
         if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
         qmService.navBar.setFilterBarSearchIcon(false);
+        function blurAll(){
+            var tmp = document.createElement("input");
+            document.body.appendChild(tmp);
+            tmp.focus();
+            document.body.removeChild(tmp);
+        }
 		$scope.state.toggleMicrophone = function(){
             $scope.state.listening = qm.speech.toggleListening();
+            var container = document.getElementById('mic-input-field-container');
+            if($scope.state.listening){
+                blurAll();
+            } else {
+                container[0].focus();
+            }
         };
         $scope.$on('$ionicView.beforeEnter', function(e) {
             qmLog.debug('beforeEnter state ' + $state.current.name);
@@ -26,13 +38,28 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }
+            var robot = document.querySelector('.robot');
+            robot.addEventListener('click', function (event) {
+                if (speechSynthesis.speaking) {
+                    qm.speech.shutUpRobot();
+                } else {
+                    qm.speech.talkRobot(qm.speech.lastUtterance.text);
+                }
+            });
             qm.speech.initializeListening(reminderNotificationCommands, $scope.state.visualizationType);
             getMostRecentNotificationAndTalk();
+            qm.speech.siriVisualizer();
         });
+        function ask(text){
+            qm.speech.listening = $scope.state.listening = true;
+            talk(text);
+            //annyang.addCommands(reminderNotificationCommands);
+        }
         function getMostRecentNotificationAndTalk(){
-            var trackingReminderNotification = $scope.state.trackingReminderNotification = qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
+            qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
+                $scope.state.trackingReminderNotification = trackingReminderNotification;
                 if(trackingReminderNotification){
-                    talk(trackingReminderNotification.card.title)
+                    ask(trackingReminderNotification.card.title);
                 } else {
                     qmLog.error("No tracking reminder notification");
                     postToDialogFlow(qm.dialogFlow.welcomeBody);
@@ -53,11 +80,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             var notification = $scope.state.trackingReminderNotification;
             notification.modifiedValue = reply;
             qmService.trackTrackingReminderNotificationDeferred(notification);
-            if(notification.optimalValueMessage){
-                talk(notification.optimalValueMessage);
-            } else {
-                talk("OK. I'll record " + reply + ".  ")
-            }
+            var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + reply + ".  ";
+            talk(message);
             getMostRecentNotificationAndTalk();
 			// qm.dialogFlow.postNotificationResponse($scope.state.userInputString, function (body) {
 			// 	talk()
@@ -79,7 +103,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			message = message || qm.dialogFlow.lastApiResponse.payload.google.systemIntent.data.listSelect.title;
 			$scope.state.lastBotMessage = message;
             $scope.state.messages.push({who    : 'bot', message: message, time   : 'Just now'});
-            qm.speech.makeRobotTalk(message)
+            qm.speech.talkRobot(message)
         }
 		function getMostRecentNotification() {
 			$scope.state.trackingReminderNotification = qm.notifications.getMostRecentNotification();
@@ -91,7 +115,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 		}
 		var reminderNotificationCommands = {
             "I don't know": function () {
-                qm.speech.makeRobotTalk("OK. We'll skip that one.");
+                qm.speech.talkRobot("OK. We'll skip that one.");
                 $scope.state.userReply('skip');
             },
             '*tag': function(tag) {
@@ -101,9 +125,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
                     $scope.state.userReply(tag);
                 } else {
-                    qm.speech.makeRobotTalk("I'm kind of an idiot, ! . ! . ! . ! and I'm not sure how to handle the response " + tag +
-                        ". ! . ! . ! . ! You can say a number ! . ! . ! . ! or skip ! . ! . ! . !"+
-                        " or ! . ! . ! . ! snooze ! . ! . ! . ! or yes or no. ! . ! . ! . ! Thank you for loving me despite my many failures in life!");
+                    qm.speech.fallbackMessage(tag);
                 }
             }
         };
