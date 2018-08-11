@@ -2761,7 +2761,7 @@ window.qm = {
             var mostFrequent = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds();
             return MostRecentNotification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - mostFrequent;
         },
-        getMostRecentNotification: function(){
+        getMostRecentNotification: function(successHandler, errorHandler){
             var trackingReminderNotifications = qm.storage.getTrackingReminderNotifications();
             var mostRecent = 0;
             var MostRecentNotification;
@@ -2772,7 +2772,18 @@ window.qm = {
                     MostRecentNotification = notification;
                 }
             }
-            return MostRecentNotification;
+            if(MostRecentNotification){
+                if(successHandler){successHandler(MostRecentNotification)}else {return MostRecentNotification;}
+            }
+            if(!successHandler){return null;}
+            qm.notifications.refreshNotifications(function(notifications){
+                var notification = qm.notifications.getMostRecentNotification();
+                if(notification){
+                    successHandler(notification);
+                } else if(errorHandler){
+                    errorHandler("No notifications even after refresh!")
+                }
+            }, errorHandler);
         }
     },
     objectHelper: {
@@ -3215,43 +3226,106 @@ window.qm = {
             //VOICE: 'Fred',
             VOICE: 'Google UK English Female'
         },
+        lastUtterance: false,
         makeRobotTalk: function(text){
+            qm.speech.pauseListening();
             var robot = document.querySelector('.robot');
             var utterance = new SpeechSynthesisUtterance();
             utterance.text = text;
-            var voices = speechSynthesis.getVoices();
-            utterance.voice = voices.find(function (voice) {
-                return voice.name === qm.speech.config.VOICE;
-            });
             speechSynthesis.addEventListener('voiceschanged', function (event) {
-                voices = speechSynthesis.getVoices();
-                if (!qm.speech.config.DEFAULT) {
-                    utterance.voice = voices.find(function (voice) {
-                        return voice.name === qm.speech.config.VOICE;
-                    });
-                }
+                var voices = speechSynthesis.getVoices();
+                utterance.voice = voices.find(function (voice) {
+                    return voice.name === qm.speech.config.VOICE;
+                });
+                speak(utterance); // Wait for voices to load before speaking
             });
+            if(qm.speech.lastUtterance){speak(utterance);} // Voice already set
             utterance.onend = function (event) {
                 robot.classList.remove('robot_speaking');
+                qm.speech.resumeListening();
             };
+            function speak(utterance){
+                qm.speech.pauseListening();
+                robot.classList.add('robot_speaking');
+                speechSynthesis.speak(utterance);
+                qm.speech.lastUtterance = utterance;
+            }
             robot.addEventListener('click', function (event) {
-                annyang.pause();
                 if (speechSynthesis.speaking) {
                     robot.classList.remove('robot_speaking');
                     speechSynthesis.cancel();
                 } else {
-                    robot.classList.add('robot_speaking');
-                    speechSynthesis.speak(utterance);
+                    speak(utterance);
                 }
             });
-            robot.classList.add('robot_speaking');
-            speechSynthesis.speak(utterance);
         },
-        startListening: function(commands, visualizationType){
+        listening: false,
+        toggleListening: function(){
+            if(qm.speech.listening){
+                qm.speech.pauseListening();
+            } else {
+                qm.speech.resumeListening();
+            }
+            return qm.speech.listening = !qm.speech.listening;
+        },
+        abortListening: function(){
+            annyang.abort(); // Stop listening, and turn off mic.
+        },
+        pauseListening: function(){
+            annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
+        },
+        resumeListening: function(){
+            annyang.pause(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
+        },
+        startListening: function(){
+            annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
+                autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
+                continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
+                paused: true // Start annyang in paused mode.
+            });
+        },
+        debugListening: function(){
+            annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
+        },
+        setLanguage: function(language){
+            annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
+        },
+        initializeListening: function(commands, visualizationType){
             qm.speech.visualizeVoice(visualizationType);
-            // Add our commands to annyang
-            annyang.addCommands(commands);
-            annyang.start(); // Start listening. You can call this here, or attach this call to an event, button, etc.
+            annyang.addCommands(commands); // Add our commands to annyang
+            qm.speech.startListening();
+            annyang.addCallback('start', function() {
+                qmLog.info('browser\'s Speech Recognition engine started listening');
+            });
+            annyang.addCallback('soundstart', function() {
+                qmLog.info('sound detected');
+            });
+            annyang.addCallback('error', function(error) {
+                qmLog.error("Speech Recognition failed because of an error", error);
+            });
+            annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
+                qmLog.error("Speech Recognition failed because of a network error", error);
+            }, this);
+            annyang.addCallback('errorPermissionBlocked', function(error){
+                qmLog.error("browser blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('errorPermissionDenied', function(error){
+                qmLog.error("user blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('end', function(error){
+                qmLog.error("browser's Speech Recognition engine stopped", error);
+            });
+            annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
+                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
+                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
+                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
         },
         siriVisualizer: function(){
             // the canvas size
@@ -3519,11 +3593,11 @@ window.qm = {
                     ctx.stroke();
                 }
                 requestAnimationFrame(animate);
-            };
+            }
             window.addEventListener('resize',function(){
                 setCanvasSizes();
             });
-        }
+        },
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){

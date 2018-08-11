@@ -1,5 +1,33 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
     <ion-content scroll="true" overflow-scroll="true" style="{{state.bodyCss}}">
+        <div class="animated-microphone-input-container">
+            <form ng-submit="state.userReply()" flex="">
+                <input type="text" placeholder="{{state.lastBotMessage}}" ng-model="state.userInputString">
+                <div class="animated-microphone-input-search" ng-click="state.toggleMicrophone()">
+                    <img ng-if="!state.listening" src="img/micoff.png" style="position: absolute; margin: auto; top: 24px; left: 23px;" alt="">
+                    <img ng-if="state.listening" src="img/micon.png" style="position: absolute; margin: auto; top: 24px; left: 23px;" alt="">
+                </div>
+            </form>
+        </div>
+        <!--            <md-autocomplete
+                    ng-disabled="state.isDisabled"
+                    md-no-cache="state.noCache"
+                    md-selected-item="state.selectedItem"
+                    md-search-text-change="state.searchTextChange(state.searchText)"
+                    md-search-text="state.searchText"
+                    md-selected-item-change="state.selectedItemChange(item)"
+                    md-items="item in state.querySearch(state.searchText)"
+                    md-item-text="item.display"
+                    md-min-length="0"
+                    placeholder="What is your favorite US state?">
+                <md-item-template>
+                    <span md-highlight-text="state.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                </md-item-template>
+                <md-not-found>
+                    No states matching "{{state.searchText}}" were found.
+                    <a ng-click="state.newState(state.searchText)">Create a new one!</a>
+                </md-not-found>
+            </md-autocomplete>-->
         <div ng-if="state.visualizationType === 'equalizer'">
             <svg preserveAspectRatio="none" id="visualizer" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <defs>
@@ -202,17 +230,14 @@
         </div>
         <canvas id="canvas" ng-if="state.visualizationType === 'siri'" style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px;"></canvas>
         <canvas id="rainbow-canvas" ng-if="state.visualizationType === 'rainbow'" style="position: absolute; z-index: -1"></canvas>
-        <div ng-if="state.searchBox" class="search-wrapper">
-            <input type="text" class="search" placeholder="Enter a Keyword, Phrase, or Question..." />
-            <div class="anim">
-                <div class="circle inner">
-                    <i class="material-icons">settings_voice</i>
-                </div>
-                <div class="circle outer">
-                </div>
+<!--        <div ng-if="false && state.searchBox" class="microphone-search-wrapper">
+            <input type="text" class="microphone-search" placeholder="Enter a Keyword, Phrase, or Question..." />
+            <div class="microphone-search-anim">
+                <div class="microphone-search-circle inner"> <i class="material-icons">settings_voice</i> </div>
+                <div class="microphone-search-circle outer"> </div>
             </div>
-        </div>
-        <div ng-if="state.trackingReminderNotification && !state.trackingReminderNotification.hide"
+        </div>-->
+        <div ng-if="false && state.trackingReminderNotification && !state.trackingReminderNotification.hide"
               ng-init="trackingReminderNotification = state.trackingReminderNotification"
              style="position: absolute; top: 25%; margin-left: auto; margin-right: auto;">
             <div layout-fill layout="column" layout-align="center none">
