@@ -1,15 +1,12 @@
 html {
 	box-sizing: border-box;
 }
-
 *, *:before, *:after {
 	box-sizing: inherit;
 }
-
 body {
 	background-color: #333;
 }
-
 .robot {
 	box-sizing: border-box;
 	position: absolute;
@@ -18,7 +15,6 @@ body {
 	bottom: 0;
 	left: calc(50% - 80px);
 }
-
 .head {
 	position: absolute;
 	width: 160px;
@@ -32,7 +28,6 @@ body {
 	-webkit-animation: bob 8000ms ease-in-out alternate infinite -1000ms;
 	animation: bob 8000ms ease-in-out alternate infinite -1000ms;
 }
-
 .eyes {
 	position: absolute;
 	top: calc(25% - 10px);
@@ -42,7 +37,6 @@ body {
 	-webkit-animation: blink 10000ms linear forwards infinite;
 	animation: blink 10000ms linear forwards infinite;
 }
-
 .eyeball {
 	position: absolute;
 	width: 12px;
@@ -50,21 +44,18 @@ body {
 	border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 	background-color: black;
 }
-
 .eyeball_left {
 	left: 0;
 	transition: -webkit-transform 100ms ease-in-out;
 	transition: transform 100ms ease-in-out;
 	transition: transform 100ms ease-in-out, -webkit-transform 100ms ease-in-out;
 }
-
 .eyeball_right {
 	right: 0;
 	transition: -webkit-transform 100ms ease-in-out;
 	transition: transform 100ms ease-in-out;
 	transition: transform 100ms ease-in-out, -webkit-transform 100ms ease-in-out;
 }
-
 .mouth {
 	position: absolute;
 	bottom: 5px;
@@ -76,7 +67,6 @@ body {
 	border-radius: 5px;
 	transition: height 100ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
-
 .mouth-container {
 	position: absolute;
 	top: 0;
@@ -84,7 +74,6 @@ body {
 	bottom: 0;
 	left: 0;
 }
-
 .robot_speaking .mouth {
 	height: 40px;
 }
@@ -92,7 +81,6 @@ body {
 	-webkit-animation: speakingAnim 0.3s infinite;
 	animation: speakingAnim 0.3s infinite;
 }
-
 .mouth-container-line {
 	position: absolute;
 	top: 50%;
@@ -101,7 +89,6 @@ body {
 	width: 100%;
 	margin-top: -1px;
 }
-
 .torso {
 	position: absolute;
 	bottom: 0;
@@ -111,7 +98,6 @@ body {
 	border-radius: 6px 6px 0 0;
 	background: linear-gradient(to right, #ccc 0%, #e6e6e6 40%, #e6e6e6 60%, #ccc 100%);
 }
-
 .neck {
 	position: absolute;
 	bottom: 45px;
@@ -121,7 +107,6 @@ body {
 	border-radius: 15px;
 	background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 7%, #646464 10%), linear-gradient(to right, #ccc 0%, #e6e6e6 40%, #e6e6e6 60%, #ccc 100%);
 }
-
 .arms {
 	position: absolute;
 	bottom: 0;
@@ -129,7 +114,6 @@ body {
 	right: 30px;
 	height: 50px;
 }
-
 .arm {
 	position: absolute;
 	top: 0;
@@ -138,15 +122,12 @@ body {
 	border-radius: 10px 10px 0 0;
 	background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 7%, #646464 10%), linear-gradient(to right, #ccc 0%, #e6e6e6 40%, #e6e6e6 60%, #ccc 100%);
 }
-
 .arm_left {
 	left: 0;
 }
-
 .arm_right {
 	right: 0;
 }
-
 @-webkit-keyframes lowAnim {
 	0% {
 		-webkit-filter: url("#low-0");
@@ -169,7 +150,6 @@ body {
 		filter: url("#low-4");
 	}
 }
-
 @keyframes lowAnim {
 	0% {
 		-webkit-filter: url("#low-0");

@@ -1,9 +1,10 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
     <ion-content scroll="true" overflow-scroll="true" style="{{state.bodyCss}}">
-        <div class="animated-microphone-input-container">
+        <div id="mic-input-field-container" class="animated-microphone-input-container">
+        <!--<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">-->
             <form ng-submit="state.userReply()" flex="">
                 <input type="text" placeholder="{{state.lastBotMessage}}" ng-model="state.userInputString">
-                <div class="animated-microphone-input-search" ng-click="state.toggleMicrophone()">
+                <div id="mic-input-field-button" class="animated-microphone-input-search" ng-click="state.toggleMicrophone()">
                     <img ng-if="!state.listening" src="img/micoff.png" style="position: absolute; margin: auto; top: 24px; left: 23px;" alt="">
                     <img ng-if="state.listening" src="img/micon.png" style="position: absolute; margin: auto; top: 24px; left: 23px;" alt="">
                 </div>
