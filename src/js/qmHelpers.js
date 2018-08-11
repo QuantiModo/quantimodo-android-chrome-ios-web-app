@@ -3114,49 +3114,6 @@ window.qm = {
     },
     serviceWorker: false,
     speech: {
-        initializeSpeechRecognition: function(){
-            try {
-                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                var recognition = new SpeechRecognition();
-            }
-            catch(e) {
-                console.error(e);
-                $('.no-browser-support').show();
-                $('.app').hide();
-            }
-            recognition.onstart = function() {
-                instructions.text('Voice recognition activated. Try speaking into the microphone.');
-            };
-            recognition.onspeechend = function() {
-                instructions.text('You were quiet for a while so voice recognition turned itself off.');
-            }
-            recognition.onerror = function(event) {
-                if(event.error == 'no-speech') {
-                    instructions.text('No speech was detected. Try again.');
-                };
-            }
-            recognition.onresult = function(event) {
-                // event is a SpeechRecognitionEvent object.
-                // It holds all the lines we have captured so far.
-                // We only need the current one.
-                var current = event.resultIndex;
-                // Get a transcript of what was said.
-                var transcript = event.results[current][0].transcript;
-                // Add the current transcript to the contents of our Note.
-                noteContent += transcript;
-                noteTextarea.val(noteContent);
-            }
-        },
-        readOutLoud: function(message){
-            return responsiveVoice.speak(message);
-            var speech = new SpeechSynthesisUtterance();
-            // Set the text and voice attributes.
-            speech.text = message;
-            speech.volume = 1;
-            speech.rate = 1;
-            speech.pitch = 1;
-            window.speechSynthesis.speak(speech);
-        },
         initializeSpeechKit: function(qmService){
             var commands = {
                 'record a measurement': function() {
@@ -3171,6 +3128,10 @@ window.qm = {
             SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/themes/flat.css');
             // Render KITT's interface
             SpeechKITT.vroom();
+        },
+        currentIntent: {
+            name: "",
+            parameters: {}
         },
         visualizeVoice: function(type){
             if(type === 'siri'){return qm.speech.siriVisualizer();}
@@ -3231,12 +3192,15 @@ window.qm = {
             VOICE: 'Google UK English Female'
         },
         lastUtterance: false,
-        pendingUtterance: false,
+        pendingUtteranceText: false,
         shutUpRobot: function(){
             var robot = document.querySelector('.robot');
             robot.classList.remove('robot_speaking');
             speechSynthesis.cancel();
-            //qm.speech.resumeListening();
+            setTimeout(function(){
+                qm.speech.resumeListening();
+            }, 1500);
+            //
         },
         fallbackMessageIndex: 0,
         fallbackMessage: function(tag){
@@ -3246,33 +3210,52 @@ window.qm = {
                     ". ! . ! . ! . ! You can say a number ! . ! . ! . ! or skip ! . ! . ! . !"+
                     " or ! . ! . ! . ! snooze ! . ! . ! . ! or yes or no. ! . ! . ! . ! Thank you for loving me despite my many failures in life!");
             }
-            mesages.push("Say what?");
+            messages.push("Say what?");
             var index = (qm.speech.fallbackMessageIndex < messages.length) ? qm.speech.fallbackMessageIndex : messages.length - 1;
+            qm.speech.fallbackMessageIndex++;
             qm.speech.talkRobot(messages[index]);
         },
-        talkRobot: function(text){
+        afterNotificationMessages: ['Yummy data!'],
+        utterances: [],
+        talkRobot: function(text, callback){
+            qm.speech.callback = callback;
+            if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
+            var voices = speechSynthesis.getVoices();
+            if(!voices.length){
+                qmLog.info("Waiting for voices to load with " + text);
+                qm.speech.pendingUtteranceText = text;
+                setTimeout(function(){ // Listener never fires sometimes
+                    qmLog.info("Timeout with " + text);
+                    if(qm.speech.pendingUtteranceText){qm.speech.talkRobot(qm.speech.pendingUtteranceText);}
+                }, 1000);
+                speechSynthesis.addEventListener('voiceschanged', function (event) {
+                    qmLog.info("Voices loaded with " + text);
+                    //if(qm.speech.pendingUtteranceText){qm.speech.talkRobot(qm.speech.pendingUtteranceText);}
+                });
+                return;
+            }
             var robot = document.querySelector('.robot');
             var utterance = new SpeechSynthesisUtterance();
             utterance.text = text;
-            utterance.onend = function (event) {qm.speech.shutUpRobot();};
-            speak(utterance);
-            function speak(utterance){
-                var voices = speechSynthesis.getVoices();
-                if(!voices.length){  // Wait for voices to load before speaking
-                    qm.speech.pendingUtterance = utterance;
-                    speechSynthesis.addEventListener('voiceschanged', function (event) {
-                        if(qm.speech.pendingUtterance){speak(qm.speech.pendingUtterance);}
-                    });
-                    return;
-                }
-                utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
-                robot.classList.add('robot_speaking');
-                //qm.speech.pauseListening();
-                speechSynthesis.speak(utterance);
-                qm.speech.lastUtterance = utterance;
-                qm.speech.pendingUtterance = false;
-            }
+
+            utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
+            robot.classList.add('robot_speaking');
+            qm.speech.pauseListening();
+            if(annyang.isListening()){qmLog.error("annyang still listening!")}
+            qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
+            console.info("speechSynthesis.speak(utterance)", utterance);
+
+            utterance.onend = function (event) {
+                if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
+                qmLog.info("Utterance ended for " + text);
+                qm.speech.shutUpRobot();
+            };
+            qm.speech.lastUtterance = utterance;
+            speechSynthesis.speak(utterance);
+            qm.speech.pendingUtteranceText = false;
+
+
         },
         listening: false,
         toggleListening: function(){
@@ -3293,7 +3276,7 @@ window.qm = {
         },
         resumeListening: function(){
             qmLog.info("resumeListening");
-            annyang.pause(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
+            annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
         },
         startListening: function(){
             qmLog.info("startListening");
@@ -3310,6 +3293,7 @@ window.qm = {
             annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
         },
         initializeListening: function(commands, visualizationType){
+            qm.speech.debugListening();
             visualizationType = visualizationType || 'rainbow';
             qm.speech.visualizeVoice(visualizationType);
             annyang.addCommands(commands); // Add our commands to annyang
