@@ -680,17 +680,8 @@ window.qm = {
     },
     apiHelper: {
         getApiDocs: function (callback){
-            if(qm.apiHelper.docs){callback(qm.apiHelper.docs);}
-            var path = 'data/swagger.json';
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath(path), function (parsedResponse) {  // Can't use QM SDK in service worker
-                if(parsedResponse){
-                    qmLog.debug('Got '+path, null, parsedResponse);
-                    qm.apiHelper.docs = parsedResponse;
-                }
-                callback(parsedResponse);
-            }, function () {
-                qmLog.error("Could not get "+path);
-            });
+            if(!callback){return qm.staticData.docs;}
+            callback(qm.staticData.docs);
         },
         docs: null,
         getParameterDescription: function (parameterName, callback) {
@@ -2170,6 +2161,7 @@ window.qm = {
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
+        speechEnabled: 'speechEnabled',
         studiesCreated: 'studiesCreated',
         studiesJoined: 'studiesJoined',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -3193,7 +3185,25 @@ window.qm = {
         },
         lastUtterance: false,
         pendingUtteranceText: false,
+        speechAvailable: false,
+        getSpeechEnabled: function(){
+            if(!qm.speech.getSpeechAvailable()){return qm.speech.setSpeechEnabled(false);}
+            return qm.storage.getItem(qm.items.speechEnabled);
+        },
+        setSpeechEnabled: function(value){
+            qmLog.info("set speechEnabled " + value);
+            return qm.speech.speechEnabled = value;
+        },
+        getSpeechAvailable: function(){
+            if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
+            if(typeof speechSynthesis === "undefined"){
+                if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
+                return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
+            }
+            return qm.speech.speechAvailable = true;
+        },
         shutUpRobot: function(resumeListening){
+            if(!qm.speech.speechAvailable){return;}
             var robot = document.querySelector('.robot');
             robot.classList.remove('robot_speaking');
             speechSynthesis.cancel();
@@ -3221,6 +3231,7 @@ window.qm = {
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
         talkRobot: function(text, callback, resumeListening){
+            if(!qm.speech.getSpeechAvailable()){return;}
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
@@ -3257,8 +3268,6 @@ window.qm = {
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
             qm.speech.pendingUtteranceText = false;
-
-
         },
         listening: false,
         toggleListening: function(){
