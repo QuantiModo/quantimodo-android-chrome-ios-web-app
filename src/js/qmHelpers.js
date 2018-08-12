@@ -680,17 +680,8 @@ window.qm = {
     },
     apiHelper: {
         getApiDocs: function (callback){
-            if(qm.apiHelper.docs){callback(qm.apiHelper.docs);}
-            var path = 'data/swagger.json';
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath(path), function (parsedResponse) {  // Can't use QM SDK in service worker
-                if(parsedResponse){
-                    qmLog.debug('Got '+path, null, parsedResponse);
-                    qm.apiHelper.docs = parsedResponse;
-                }
-                callback(parsedResponse);
-            }, function () {
-                qmLog.error("Could not get "+path);
-            });
+            if(!callback){return qm.staticData.docs;}
+            callback(qm.staticData.docs);
         },
         docs: null,
         getParameterDescription: function (parameterName, callback) {
