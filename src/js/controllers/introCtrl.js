@@ -54,12 +54,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     });
     function readSlide() {
+        if(!qm.speech.getSpeechAvailable()){return;}
         var slide = getSlide();
         $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
         $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
-        var message = slide.title + ".  " + slide.bodyText + ".  ";
-        slide.bodyText = null;
-        qm.speech.talkRobot(message);
+        qm.speech.talkRobot(slide.title + ".  " + slide.bodyText + ".  ");
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];

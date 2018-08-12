@@ -1563,6 +1563,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         speech: {
             showRobot: function(startListening){
+                if(!qm.speech.getSpeechAvailable()){return;}
                 qmService.rootScope.setProperty('showRobot', true);
                 if(startListening !== false){
                     qmService.speech.showVisualizer();
@@ -6415,6 +6416,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
         qmService.deploy.setVersionInfo();
         qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
+        qmService.rootScope.setProperty('speechAvailable', qm.speech.getSpeechAvailable());
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
