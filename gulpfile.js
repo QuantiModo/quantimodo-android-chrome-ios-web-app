@@ -1472,7 +1472,10 @@ gulp.task('sass', function (done) {
         .pipe(gulp.dest('./src/css/'))
         .on('end', done);
 });
-gulp.task('watch', function () {gulp.watch(paths.sass, ['sass']);});
+gulp.task('watch', function () {
+    qmLog.info("Watching for changes to "+paths.sass);
+    gulp.watch(paths.sass, ['sass']);
+});
 gulp.task('install', ['git-check'], function () {
     return bower.commands.install().on('log', function (data) {gutil.log('bower', gutil.colors.cyan(data.id), data.message);});
 });

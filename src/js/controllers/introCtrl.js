@@ -4,6 +4,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
     qmService.initializeApplication(appSettingsResponse);
     qmService.navBar.setFilterBarSearchIcon(false);
+    $scope.state = {
+        hideSplashText: true,
+        hideCircle: false,
+    };
     $scope.myIntro = {
         ready : false,
         backgroundColor : 'white',
@@ -30,8 +34,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
-            if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[index].backgroundColor;}
-            if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[index].textColor;}
+            readSlide();
+            if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = slide.backgroundColor;}
+            if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = slide.textColor;}
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
@@ -50,6 +55,8 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readSlide() {
         var slide = getSlide();
+        $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
+        $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
         var message = slide.title + ".  " + slide.bodyText + ".  ";
         slide.bodyText = null;
         qm.speech.talkRobot(message);
@@ -64,6 +71,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
+        qmService.speech.showRobot();
+        readSlide();
+        qmService.speech.showVisualizer();
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
 }]);
