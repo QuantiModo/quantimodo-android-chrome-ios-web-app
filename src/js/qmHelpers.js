@@ -3193,7 +3193,17 @@ window.qm = {
         },
         lastUtterance: false,
         pendingUtteranceText: false,
+        speechAvailable: null,
+        getSpeechAvailable: function(){
+            if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
+            if(typeof speechSynthesis === "undefined"){
+                if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
+                return qm.speech.speechAvailable = false;
+            }
+            return qm.speech.speechAvailable = true;
+        },
         shutUpRobot: function(resumeListening){
+            if(!qm.speech.speechAvailable){return;}
             var robot = document.querySelector('.robot');
             robot.classList.remove('robot_speaking');
             speechSynthesis.cancel();
@@ -3221,6 +3231,7 @@ window.qm = {
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
         talkRobot: function(text, callback, resumeListening){
+            if(!qm.speech.speechAvailable){return;}
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
@@ -3257,8 +3268,6 @@ window.qm = {
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
             qm.speech.pendingUtteranceText = false;
-
-
         },
         listening: false,
         toggleListening: function(){
