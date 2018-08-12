@@ -3231,7 +3231,7 @@ window.qm = {
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
         talkRobot: function(text, callback, resumeListening){
-            if(!qm.speech.speechAvailable){return;}
+            if(!qm.speech.getSpeechAvailable()){return;}
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
