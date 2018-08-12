@@ -2170,6 +2170,7 @@ window.qm = {
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
+        speechEnabled: 'speechEnabled',
         studiesCreated: 'studiesCreated',
         studiesJoined: 'studiesJoined',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -3193,12 +3194,20 @@ window.qm = {
         },
         lastUtterance: false,
         pendingUtteranceText: false,
-        speechAvailable: null,
+        speechAvailable: false,
+        getSpeechEnabled: function(){
+            if(!qm.speech.getSpeechAvailable()){return qm.speech.setSpeechEnabled(false);}
+            return qm.storage.getItem(qm.items.speechEnabled);
+        },
+        setSpeechEnabled: function(value){
+            qmLog.info("set speechEnabled " + value);
+            return qm.speech.speechEnabled = value;
+        },
         getSpeechAvailable: function(){
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
             if(typeof speechSynthesis === "undefined"){
                 if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
-                return qm.speech.speechAvailable = false;
+                return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
             return qm.speech.speechAvailable = true;
         },
