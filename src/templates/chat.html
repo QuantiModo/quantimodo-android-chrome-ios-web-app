@@ -1,5 +1,6 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
     <ion-content scroll="true" overflow-scroll="true" style="{{state.bodyCss}}">
+        <div ng-include="'templates/fragments/circle-page.html'" ng-init="circlePage = state.circlePage"></div>
         <div id="mic-input-field-container" class="animated-microphone-input-container">
         <!--<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">-->
             <form ng-submit="state.userReply()" flex="">
@@ -238,9 +239,9 @@
                 <div class="microphone-search-circle outer"> </div>
             </div>
         </div>-->
-        <div ng-if="false && state.trackingReminderNotification && !state.trackingReminderNotification.hide"
+        <div ng-if="state.trackingReminderNotification && !state.trackingReminderNotification.hide"
               ng-init="trackingReminderNotification = state.trackingReminderNotification"
-             style="position: absolute; top: 25%; margin-left: auto; margin-right: auto;">
+             style="position: absolute; top: 5%; margin-left: auto; margin-right: auto;">
             <div layout-fill layout="column" layout-align="center none">
                 <div layout="row" layout-align="center none">
                     <md-card>

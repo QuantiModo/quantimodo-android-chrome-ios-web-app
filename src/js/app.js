@@ -55,6 +55,10 @@ angular.module('starter',
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
     $rootScope.goToState = function(stateName, stateParameters, ev){
+        if(stateName === 'toggleRobot'){
+            qmService.speech.toggleRobot();
+            return;
+        }
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
             /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */

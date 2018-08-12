@@ -7,7 +7,13 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			messages: [],
             userInputString: '',
             visualizationType: 'rainbow', // 'siri', 'rainbow', 'equalizer'
-            listening: qm.speech.listening
+            listening: qm.speech.listening,
+            circlePage: {
+			    title: null,
+                image: {
+			        url: null
+                }
+            }
 		};
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
@@ -41,7 +47,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             var robot = document.querySelector('.robot');
             robot.addEventListener('click', function (event) {
                 if (speechSynthesis.speaking) {
-                    qm.speech.shutUpRobot();
+                    qm.speech.shutUpRobot(true);
                 } else {
                     if(qm.speech.lastUtterance){
                         qm.speech.talkRobot(qm.speech.lastUtterance.text);
@@ -64,6 +70,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
                 $scope.state.trackingReminderNotification = trackingReminderNotification;
                 if(trackingReminderNotification){
+                    $scope.state.circlePage.image.url = trackingReminderNotification.svgUrl;
                     ask(trackingReminderNotification.card.title);
                 } else {
                     qmLog.error("No tracking reminder notification");
@@ -98,6 +105,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			});
         }
         function talk(message) {
+            $scope.state.circlePage.title = message;
             if(!message && !qm.dialogFlow.lastApiResponse.payload){return;}
 			if(!message && !qm.dialogFlow.lastApiResponse.payload.google){return;}
 			message = message || qm.dialogFlow.lastApiResponse.payload.google.systemIntent.data.listSelect.title;
@@ -105,14 +113,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             $scope.state.messages.push({who    : 'bot', message: message, time   : 'Just now'});
             qm.speech.talkRobot(message)
         }
-		function getMostRecentNotification() {
-			$scope.state.trackingReminderNotification = qm.notifications.getMostRecentNotification();
-			$scope.state.messages.push({
-				who    : 'bot',
-				message: $scope.state.trackingReminderNotification.longQuestion,
-				time   : 'Just now'
-			})
-		}
 		qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
 
 		    qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
