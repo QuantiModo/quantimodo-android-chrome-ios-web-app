@@ -3193,14 +3193,17 @@ window.qm = {
         },
         lastUtterance: false,
         pendingUtteranceText: false,
-        shutUpRobot: function(){
+        shutUpRobot: function(resumeListening){
             var robot = document.querySelector('.robot');
             robot.classList.remove('robot_speaking');
             speechSynthesis.cancel();
-            setTimeout(function(){
-                qm.speech.resumeListening();
-            }, 1500);
-            //
+            if(resumeListening){
+                var duration = 1.5;
+                qmLog.info("Will resume listening in "+duration+" seconds...");
+                setTimeout(function(){qm.speech.resumeListening();}, duration * 1000);
+            } else {
+                qmLog.info("Not listening");
+            }
         },
         fallbackMessageIndex: 0,
         fallbackMessage: function(tag){
@@ -3217,7 +3220,7 @@ window.qm = {
         },
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
-        talkRobot: function(text, callback){
+        talkRobot: function(text, callback, resumeListening){
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
@@ -3249,7 +3252,7 @@ window.qm = {
             utterance.onend = function (event) {
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
-                qm.speech.shutUpRobot();
+                qm.speech.shutUpRobot(resumeListening);
             };
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
@@ -3602,6 +3605,21 @@ window.qm = {
                 setCanvasSizes();
             });
         },
+        getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
+            qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
+                if(trackingReminderNotification){
+                    qm.speech.intent = qm.staticData.dialogAgent.intents["Tracking Reminder Notification Intent"];
+                    qm.speech.talkRobot(trackingReminderNotification.card.title);
+                    if(successHandler){successHandler(trackingReminderNotification);}
+                } else {
+                    qmLog.error("No tracking reminder notification");
+                    if(errorHandler){errorHandler(error);}
+                }
+            }, function(error){
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        }
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){

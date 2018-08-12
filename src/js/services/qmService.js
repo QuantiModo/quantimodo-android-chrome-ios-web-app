@@ -1561,6 +1561,35 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.debug('User cancelled selection');
             });
         },
+        speech: {
+            showRobot: function(startListening){
+                qmService.rootScope.setProperty('showRobot', true);
+                if(startListening){
+                    $timeout(function(){
+                        qmService.speech.showVisualizer();
+                    }, 2)
+                }
+            },
+            hideRobot: function(){
+                qmService.rootScope.setProperty('showRobot', false);
+                qmService.speech.hideVisualizer();
+            },
+            toggleRobot: function(){
+                if($rootScope.showRobot){
+                    qmService.speech.hideRobot();
+                } else {
+                    qmService.speech.showRobot();
+                }
+            },
+            showVisualizer: function(){
+                qmService.rootScope.setProperty('showVisualizer', true);
+                qm.speech.rainbowCircleVisualizer();
+            },
+            hideVisualizer: function(){
+                qm.speech.abortListening();
+                qmService.rootScope.setProperty('showVisualizer', false);
+            },
+        },
         states: {
             outputStateNameConstantsForPHP: function(){
                 for (var i = 0; i < allStates.length; i++) {

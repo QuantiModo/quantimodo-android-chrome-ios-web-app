@@ -48,6 +48,15 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             $scope.myIntro.ready = true;
         }
     });
+    function readSlide() {
+        var slide = getSlide();
+        var message = slide.title + ".  " + slide.bodyText + ".  ";
+        slide.bodyText = null;
+        qm.speech.talkRobot(message);
+    }
+    function getSlide(){
+        return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
+    }
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
