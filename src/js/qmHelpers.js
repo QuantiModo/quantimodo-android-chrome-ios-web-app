@@ -4325,6 +4325,9 @@ window.qm = {
             if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
             if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
             if(params.type && params.type !== study.type){return false;}
+            if(!params.causeVariableName){ params.causeVariableName = study.causeVariableName; } // In case we're populating from last study without params and need to get charts from API
+            if(!params.effectVariableName){ params.effectVariableName = study.effectVariableName; }  // In case we're populating from last study without params and need to get charts from API
+            if(!params.type){ params.type = study.type; }  // In case we're populating from last study without params and need to get charts from API
             return true;
         },
         getStudyFromLocalForageOrGlobals: function(params, successHandler, errorHandler) {
