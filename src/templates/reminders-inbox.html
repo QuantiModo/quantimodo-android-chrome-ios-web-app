@@ -71,5 +71,5 @@
 <!--    <div ng-show="showUndoButton && !hideNavigationMenu" ng-click="undoInboxAction()" class="bar bar-footer bar-balanced">
         <div class="title"> <i class="icon ion-reply"></i> &nbsp Undo {{lastAction}}</div>
     </div>-->
-    <div ng-hide="hideNavigationMenu" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+    <div ng-hide="hideNavigationMenu || showRobot" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

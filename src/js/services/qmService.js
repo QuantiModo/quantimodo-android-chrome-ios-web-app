@@ -1564,10 +1564,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         speech: {
             showRobot: function(startListening){
                 qmService.rootScope.setProperty('showRobot', true);
-                if(startListening){
-                    $timeout(function(){
-                        qmService.speech.showVisualizer();
-                    }, 2)
+                if(startListening !== false){
+                    qmService.speech.showVisualizer();
                 }
             },
             hideRobot: function(){
@@ -1583,7 +1581,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showVisualizer: function(){
                 qmService.rootScope.setProperty('showVisualizer', true);
-                qm.speech.rainbowCircleVisualizer();
+                $timeout(function(){
+                    qm.speech.rainbowCircleVisualizer();
+                }, 1);
             },
             hideVisualizer: function(){
                 qm.speech.abortListening();
