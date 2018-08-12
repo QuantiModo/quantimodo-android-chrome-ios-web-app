@@ -1,7 +1,9 @@
 <nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round" resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu"
      menu-state="mfbMenuState">
+    <button ng-if="showRobot && speechAvailable" id="micoff" mfb-button icon="ion-ios-mic-off" label="Turn Mic Off" ng-click="goToState('toggleRobot', null, $event)"></button>
+    <button ng-if="!showRobot && speechAvailable" id="micon" mfb-button icon="ion-ios-mic" label="Turn Mic On" ng-click="goToState('toggleRobot', null, $event)"></button>
     <button id="mfb4" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button4.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button4.label}}" ng-click="goToState('button4', null, $event)"></button>
-    <button id="mfb3" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button3.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button3.label}}" ng-click="goToState('button3', null, $event)"></button>
+    <button ng-if="!speechAvailable" id="mfb3" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button3.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button3.label}}" ng-click="goToState('button3', null, $event)"></button>
     <button id="mfb2" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button2.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button2.label}}" ng-click="goToState('button2', null, $event)"></button>
     <button id="mfb1" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button1.icon}}" label="{{appSettings.appDesign.floatingActionButton.active.button1.label}}" ng-click="goToState('button1', null, $event)"></button>
 </nav>
