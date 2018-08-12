@@ -1,4 +1,4 @@
-svg{
+.equalizer-svg {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -6,7 +6,7 @@ svg{
 	margin: 0;
 	position:absolute;
 }
-h1{
+.equalizer-h1{
 	width: 100%;
 	font-family: sans-serif;
 	position:absolute;
@@ -19,11 +19,11 @@ h1{
 	-moz-transition: opacity 1s ease-in-out;
 	-webkit-transition: opacity 1s ease-in-out;
 }
-h1 a{
+.equalizer-h1 a{
 	color: #48b1f4;
 	text-decoration:none;
 }
-path{
+.equalizer-path{
 	stroke-linecap: square;
 	stroke: white;
 	stroke-width: 0.5px;
