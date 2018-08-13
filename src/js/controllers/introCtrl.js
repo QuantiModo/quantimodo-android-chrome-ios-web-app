@@ -74,5 +74,8 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         readSlide();
         qmService.speech.showVisualizer();
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
+        //new Audio('sound/air-of-another-planet-looped.mp3').play()
+        new Audio('sound/air-of-another-planet-full.mp3').play();
+        qmService.speech.showVisualizer();
     });
 }]);
