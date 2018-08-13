@@ -4724,7 +4724,7 @@ window.qm = {
                 if (params.hasOwnProperty(key)) {
                     if(url.indexOf(key + '=') === -1){
                         if(params[key] === null){
-                            qmLog.error("Not adding null param "+key);
+                            console.error("Not adding null param "+key);  // Don't use qmLog here because it's called by the logger -> infitnite loop
                             continue;
                         }
                         if(url.indexOf('?') === -1){
