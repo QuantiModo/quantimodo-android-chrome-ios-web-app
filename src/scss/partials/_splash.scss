@@ -63,14 +63,16 @@
   content: '';
   height: 100%;
   position: absolute;
-  width: 100%; }
+  width: 100%;
+  left: 0;}
 
 .splash-grid:before {
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 30%, rgba(209, 0, 177, 0.5) 90%);
   content: '';
   height: 100%;
   position: absolute;
-  width: 100%; }
+  width: 100%;
+  left: 0;}
 
 .logo-triangle {
   -webkit-animation: dash 6s linear forwards;
