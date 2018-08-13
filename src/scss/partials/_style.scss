@@ -25,10 +25,6 @@ p.heading {
 	font-size : 30px;
 	padding-bottom: 10px;
 }
-.like-dislike-buttons {
-	display:inline-block;
-	float:right;
-}
 .show-inline{
 	display:inline-block;
 }
@@ -36,12 +32,6 @@ p.heading {
 	display:inline-block;
 	/*padding-top: 20px;*/
 	max-width: 130px;
-}
-.history-block {
-	display:inline-block;
-	padding-top: 0px;
-	padding-left: 10px;
-    max-width: 100%;
 }
 .calm-icon {
 	font-size: 40px;
@@ -222,16 +212,4 @@ label.item.item-input.item-text > input[type="text"] {
 }
 .white-links {
   a, a:hover, a:active, a:visited { color: white; }
-}
-.pane,
-.view {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* background-color: #fff; */
-  overflow: hidden;
 }
