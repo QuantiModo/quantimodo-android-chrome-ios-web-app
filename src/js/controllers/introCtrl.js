@@ -1,5 +1,7 @@
-angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-                                                           $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse) {
+angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading",
+    "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", "$timeout",
+    function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
+             $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse, $timeout) {
 
     qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
     qmService.initializeApplication(appSettingsResponse);
@@ -28,6 +30,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         },
         next : function(index) {
+            if(index === null){index = $scope.myIntro.slideIndex++;}
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
             if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
         },
@@ -58,7 +61,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         var slide = getSlide();
         $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
         $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
-        qm.speech.talkRobot(slide.title + ".  " + slide.bodyText + ".  ");
+        qm.speech.talkRobot(
+            //slide.title + ".  " +
+            slide.bodyText + ".  ", $scope.myIntro.next);
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
@@ -71,8 +76,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             navigator.splashscreen.hide();
         }
         qmService.speech.showRobot();
-        readSlide();
-        qmService.speech.showVisualizer();
+        qm.music.play();
+        qmService.speech.showVisualizer("1");
+        $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
+        $scope.$on('$ionicView.afterLeave', function(){
+            qm.music.fadeOut();
+            qmService.speech.hideVisualizer();
+        });
 }]);
