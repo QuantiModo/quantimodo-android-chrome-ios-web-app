@@ -2372,6 +2372,46 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    music: {
+        player: null,
+        status: 'pause',
+        play: function(){
+            if(qm.music.status === 'play') return false;
+            qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
+            qm.music.player.volume = 0.1;
+            qm.music.player.play();
+            qm.music.status = 'play';
+            return qm.music.player;
+        },
+        fadeIn: function(){
+            if(qm.music.status === 'play') return false;
+            var actualVolume = 0;
+            qm.music.player.play();
+            qm.music.status = 'play';
+            var fadeInInterval = setInterval(function(){
+                actualVolume = (parseFloat(actualVolume) + 0.1).toFixed(1);
+                if(actualVolume <= 1){
+                    qm.music.player.volume = actualVolume;
+                } else {
+                    clearInterval(fadeInInterval);
+                }
+            }, 100);
+        },
+        fadeOut: function(){
+            if(qm.music.status !== 'play') return false;
+            var actualVolume = qm.music.player.volume;
+            var fadeOutInterval = setInterval(function(){
+                actualVolume = (parseFloat(actualVolume) - 0.1).toFixed(1);
+                if(actualVolume >= 0){
+                    qm.music.player.volume = actualVolume;
+                } else {
+                    qm.music.player.pause();
+                    qm.music.status = 'pause';
+                    clearInterval(fadeOutInterval);
+                }
+            }, 100);
+        }
+    },
     notifications: {
         actions: {
             trackYesAction: function (data){
@@ -3125,9 +3165,9 @@ window.qm = {
             name: "",
             parameters: {}
         },
-        visualizeVoice: function(type){
+        visualizeVoice: function(type, zIndex){
             if(type === 'siri'){return qm.speech.siriVisualizer();}
-            if(type === 'rainbow'){return qm.speech.rainbowCircleVisualizer();}
+            if(type === 'rainbow'){return qm.speech.rainbowCircleVisualizer(zIndex);}
             var paths = document.getElementsByTagName('path');
             var visualizer = document.getElementById('visualizer');
             if(!visualizer){return;}
@@ -3185,7 +3225,7 @@ window.qm = {
         },
         lastUtterance: false,
         pendingUtteranceText: false,
-        speechAvailable: false,
+        speechAvailable: null,
         getSpeechEnabled: function(){
             if(!qm.speech.getSpeechAvailable()){return qm.speech.setSpeechEnabled(false);}
             return qm.storage.getItem(qm.items.speechEnabled);
@@ -3232,6 +3272,7 @@ window.qm = {
         utterances: [],
         talkRobot: function(text, callback, resumeListening){
             if(!qm.speech.getSpeechAvailable()){return;}
+            speechSynthesis.cancel();
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
             qmLog.info("talkRobot called with "+text);
@@ -3251,8 +3292,16 @@ window.qm = {
             }
             var robot = document.querySelector('.robot');
             var utterance = new SpeechSynthesisUtterance();
+            function resumeInfinity() {
+                window.speechSynthesis.resume();
+                qm.speech.timeoutResumeInfinity = setTimeout(resumeInfinity, 1000);
+            }
+            utterance.onstart = function(event) {resumeInfinity();};
+            utterance.onend = function(event) {clearTimeout(qm.speech.timeoutResumeInfinity);};
+            utterance.onerror = function(event) {
+                qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
+            };
             utterance.text = text;
-
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             robot.classList.add('robot_speaking');
             qm.speech.pauseListening();
@@ -3264,9 +3313,14 @@ window.qm = {
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
+                if(callback){callback();}
             };
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
+            //pass it into the chunking function to have it played out.
+            //you can set the max number of characters by changing the chunkLength property below.
+            //a callback function can also be added that will fire once the entire text has been spoken.
+            //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
             qm.speech.pendingUtteranceText = false;
         },
         listening: false,
@@ -3304,10 +3358,10 @@ window.qm = {
         setLanguage: function(language){
             annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
         },
-        initializeListening: function(commands, visualizationType){
+        initializeListening: function(commands, visualizationType, zIndex){
             qm.speech.debugListening();
             visualizationType = visualizationType || 'rainbow';
-            qm.speech.visualizeVoice(visualizationType);
+            qm.speech.visualizeVoice(visualizationType, zIndex);
             annyang.addCommands(commands); // Add our commands to annyang
             qm.speech.startListening();
             annyang.addCallback('start', function() {
@@ -3519,7 +3573,7 @@ window.qm = {
                 requestAnimationFrame(visualize);
             }
         },
-        rainbowCircleVisualizer: function(){
+        rainbowCircleVisualizer: function(zIndex){
             /* SOUND */
             // Audio vars
             var audioCtx = new AudioContext(),
@@ -3572,6 +3626,7 @@ window.qm = {
             var canvas = document.getElementById('rainbow-canvas'),
                 ctx = canvas.getContext('2d'),
                 w, h, w2, h2, h3, h4; // Canvas sizes
+            //if(zIndex !== null){canvas.style.zIndex = zIndex;}
             function setCanvasSizes() {
                 w = canvas.width = window.innerWidth,
                     h = canvas.height = window.innerHeight,
@@ -3628,6 +3683,67 @@ window.qm = {
                 qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
+        },
+        speechUtteranceChunker: function (utt, settings, callback) {
+            settings = settings || {};
+            var newUtt;
+            var txt = (settings && settings.offset !== undefined ? utt.text.substring(settings.offset) : utt.text);
+            if (utt.voice && utt.voice.voiceURI === 'native') { // Not part of the spec
+                newUtt = utt;
+                newUtt.text = txt;
+                newUtt.addEventListener('end', function () {
+                    if (speechUtteranceChunker.cancel) {
+                        speechUtteranceChunker.cancel = false;
+                    }
+                    if (callback !== undefined) {
+                        callback();
+                    }
+                });
+            }
+            else {
+                var chunkLength = (settings && settings.chunkLength) || 160;
+                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
+                var chunkArr = txt.match(pattRegex);
+
+                if (chunkArr[0] === undefined || chunkArr[0].length <= 2) {
+                    //call once all text has been spoken...
+                    if (callback !== undefined) {
+                        callback();
+                    }
+                    return;
+                }
+                var chunk = chunkArr[0];
+                newUtt = new SpeechSynthesisUtterance(chunk);
+                var x;
+                for (x in utt) {
+                    if (utt.hasOwnProperty(x) && x !== 'text') {
+                        newUtt[x] = utt[x];
+                    }
+                }
+                newUtt.addEventListener('end', function () {
+                    if (speechUtteranceChunker.cancel) {
+                        speechUtteranceChunker.cancel = false;
+                        return;
+                    }
+                    settings.offset = settings.offset || 0;
+                    settings.offset += chunk.length - 1;
+                    speechUtteranceChunker(utt, settings, callback);
+                });
+            }
+
+            if (settings.modifier) {
+                settings.modifier(newUtt);
+            }
+            console.log(newUtt); //IMPORTANT!! Do not remove: Logging the object out fixes some onend firing issues.
+            //placing the speak invocation inside a callback fixes ordering and onend issues.
+            setTimeout(function () {
+                speechSynthesis.speak(newUtt);
+            }, 0);
+        },
+        deepThought: function(callback){
+            var deepThoughts = qm.staticData.deepThoughts;
+            var deepThought = deepThoughts[[Math.floor(Math.random() * (deepThoughts.length - 1))]];
+            qm.speech.talkRobot(deepThought.text + "! . ! . !", callback);
         }
     },
     shares: {
