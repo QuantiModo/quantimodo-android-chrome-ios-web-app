@@ -1,0 +1,77 @@
+/* Intro */
+.slider {
+  height: 100%;
+}
+.slider-slide {
+  //padding-top: 10px;
+  color: #000;
+  background-color: #fff;
+  text-align: center;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+.slider-pager-page {
+  color: white !important;
+}
+.slider-pager-page.active {
+  color: darkgray !important;
+}
+div.previous {
+  float: left;
+  margin-left: 15px;
+  font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+}
+div.next{
+  float:right;
+  margin-right:15px;
+  font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+}
+div.intro-content{
+  margin: -100px 40px 0px 40px;
+  position: relative;
+  top: 50%;
+  height: 100%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+}
+p.intro-paragraph {
+  font-size: 18px;
+  line-height: initial;
+}
+p.intro-paragraph-small {
+  font-size: 16px;
+  line-height: initial;
+}
+p.intro-header {
+  font-size:26px;
+  line-height:initial
+}
+img.intro-primary-outcome-variable-rating-buttons {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+#skipButtonIntro:hover, #nextButtonIntro:hover, #goButtonIntro:hover{
+  border: none;
+  outline:none;
+}
+#skipButtonIntro, #nextButtonIntro, #goButtonIntro{
+  border: none;
+  outline:none;
+}

@@ -17,3 +17,7 @@
 	height: 18px;
 	width: 18px;
 }
+// Dirty hack to fix autocomplete dropdown height on study creation page
+.md-virtual-repeat-container.md-not-found {
+	height: 255.5px;
+}
