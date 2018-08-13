@@ -13,7 +13,7 @@
             Cancel
         </button>
     </ion-header-bar>
-    <ion-content scroll="true" overflow-scroll="true" style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true }">
+    <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshList()"></ion-refresher>
         <div ng-show="searching">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
