@@ -1,0 +1,21 @@
+.blink {
+  -webkit-animation: fadein 2s infinite; /* Safari, Chrome and Opera > 12.1 */
+  animation: fadein 2s infinite;
+  -webkit-animation-timing-function: ease-in-out;
+}
+.sync-indicator{
+  text-align: center;
+  color: white;
+  position: absolute;
+  top: 40px;
+  z-index: 5;
+  background-color: #A0E749;
+}
+.connection-error-indicator{
+  text-align: center;
+  color: white;
+  position: absolute;
+  top: 40px;
+  z-index: 5;
+  background-color: #db3236;
+}
