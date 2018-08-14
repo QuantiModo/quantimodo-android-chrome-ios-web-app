@@ -154,10 +154,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			return false;
 		}
 	};
-	var setLastAction = function(modifiedValue, unitAbbreviatedName){
-		var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
-		qm.notifications.lastAction = qmService.formatValueUnitDisplayText(lastAction);
-	};
 	function refreshIfRunningOutOfNotifications() {
 	    if($scope.state.numberOfDisplayedNotifications < 2){
 	        if(qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
@@ -171,7 +167,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(isGhostClick($event)){return;}
         if(!qmService.valueIsValid(trackingReminderNotification, trackingReminderNotification.modifiedValue)){return false;}
 		trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
-		setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
+        qm.notifications.setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
         notificationAction(trackingReminderNotification);
 		qmService.trackTrackingReminderNotificationDeferred(trackingReminderNotification);
         refreshIfRunningOutOfNotifications();
@@ -243,7 +239,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
 		if(isGhostClick($event)){ return false; }
 		if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
-		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
+		qm.notifications.setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
 		// I think this slows down inbox
@@ -270,8 +266,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
         preventDragAfterAlert(ev);
-        var title = "Record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
-        var textContent = "Do you want to record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
+        var title = "Record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
+        var textContent = "Do you want to record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
         function yesCallback(ev) {
             trackAll(trackingReminderNotification, modifiedReminderValue, ev);
