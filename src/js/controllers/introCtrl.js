@@ -81,8 +81,8 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
-        $scope.$on('$ionicView.afterLeave', function(){
-            qm.music.fadeOut();
-            qmService.speech.hideVisualizer();
-        });
+    $scope.$on('$ionicView.beforeLeave', function(){
+        qm.music.fadeOut();
+        qmService.speech.hideVisualizer();
+    });
 }]);
