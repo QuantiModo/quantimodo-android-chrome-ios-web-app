@@ -152,14 +152,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     if(value){
                         continue;
                     }
-                    value = getEntityFromLastUserStatement(parameterName);
+                    value = qm.speech.getEntityFromLastUserStatement(parameterName);
                     if(value){
                         qm.speech.currentIntent.parameters[parameterName] = value;
                         continue;
                     }
                     qm.speech.parameterToGet = parameterName;
                     qm.speech.talkRobot(parameter.prompts[0].value, function(){
-                        var value = getEntityFromLastUserStatement(qm.speech.parameterToGet);
+                        var value = qm.speech.getEntityFromLastUserStatement(qm.speech.parameterToGet);
                         qm.speech.currentIntent.parameters[qm.speech.parameterToGet] = value;
                     });
                     return false;
