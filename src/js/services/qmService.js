@@ -158,6 +158,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         },
+        appContainer: {
+            hide: function(){
+                qmService.rootScope.setProperty('hideAppContainer', true);
+            },
+            show: function(){
+                qmService.rootScope.setProperty('hideAppContainer', false);
+            }
+        },
         auth: {
             deleteAllAccessTokens: function () {
                 if($rootScope.user){$rootScope.user.accessToken = null;}
@@ -1310,7 +1318,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             handleNotificationAction: function(trackingReminderNotification, undoCallback){
                 qmLog.info("Clicked "+ qm.notifications.lastAction + " for " + trackingReminderNotification.variableName);
                 trackingReminderNotification.hide = true;
-                qmService.numberOfPendingNotifications--;
+                qm.notifications.numberOfPendingNotifications--;
                 qmService.notifications.showUndoToast(undoCallback);
                 trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
                 return trackingReminderNotification;
@@ -1570,12 +1578,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showRobot: function(startListening){
                 if(!qm.speech.getSpeechAvailable()){return;}
                 qmService.rootScope.setProperty('showRobot', true);
-                $timeout(function(){qm.speech.deepThought();}, 100);
+                qmService.appContainer.hide();
+                qm.speech.setSpeechEnabled(true);
+                $timeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
                 if(startListening !== false){qmService.speech.showVisualizer("1");}
             },
             hideRobot: function(){
+                qm.speech.setSpeechEnabled(false);
                 qmService.rootScope.setProperty('showRobot', false);
                 qmService.speech.hideVisualizer();
+                qmService.appContainer.show();
             },
             toggleRobot: function(){
                 if($rootScope.showRobot){
@@ -3790,7 +3802,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
         qmService.notifications.broadcastGetTrackingReminderNotifications();
-        qmService.numberOfPendingNotifications = trackingReminderNotifications.length;
+        qm.notifications.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
     };
     qmService.getSecondsSinceWeLastGotNotifications = function () {
@@ -3825,37 +3837,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    var scheduleNotificationSync = function (delayBeforePostingNotificationsInMilliseconds) {
-        if(!delayBeforePostingNotificationsInMilliseconds){
-            delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
-            //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
-        }
-        var trackingReminderNotificationSyncScheduled = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
-        if(!trackingReminderNotificationSyncScheduled ||
-            parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
-            qmService.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
-            if(!$rootScope.platform.isMobile){ // Better performance
-                qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
-            }
-            $timeout(function() {
-                qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
-                // Post notification queue in 5 minutes if it's still there
-                qmService.postTrackingReminderNotificationsDeferred();
-            }, delayBeforePostingNotificationsInMilliseconds);
-        } else {
-            if(!$rootScope.platform.isMobile){ // Better performance
-                qmLog.info("Not scheduling sync because one is already scheduled " +
-                    qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
-            }
-        }
-    };
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
-        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
+        qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
         trackingReminderNotification.action = 'skip';
         qm.notifications.addToSyncQueue(trackingReminderNotification);
-        scheduleNotificationSync();
+        qm.notifications.scheduleNotificationSync();
         return deferred.promise;
     };
     qmService.skipAllTrackingReminderNotificationsDeferred = function(params){
@@ -3873,37 +3860,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    /**
-     * @param trackingReminderNotification
-     * @param trackAll
-     */
-    qmService.trackTrackingReminderNotificationDeferred = function(trackingReminderNotification, trackAll){
-        var deferred = $q.defer();
-        if(!$rootScope.platform.isMobile){
-            qmLogService.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
-        }
-        if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
-            var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications, trackingReminderNotification.trackingReminderNotificationId);
-            if(notificationFromLocalStorage){
-                if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
-                    notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
-                }
-                trackingReminderNotification = notificationFromLocalStorage;
-            }
-        }
-        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
-        trackingReminderNotification.action = 'track';
-        if(trackAll){trackingReminderNotification.action = 'trackAll';}
-        qm.notifications.addToSyncQueue(trackingReminderNotification);
-        if(trackAll){scheduleNotificationSync(1);} else {scheduleNotificationSync();}
-        return deferred.promise;
-    };
     qmService.snoozeTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
-        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
+        qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
         trackingReminderNotification.action = 'snooze';
         qm.notifications.addToSyncQueue(trackingReminderNotification);
-        scheduleNotificationSync();
+        qm.notifications.scheduleNotificationSync();
         return deferred.promise;
     };
     qmService.getTrackingRemindersDeferred = function(variableCategoryName) {
@@ -4100,7 +4062,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.reminders.broadcastGetTrackingReminders();
     };
     qmService.storage.deleteTrackingReminderNotification = function(body){
-        qmService.numberOfPendingNotifications -= qmService.numberOfPendingNotifications;
+        qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
         window.qm.storage.deleteTrackingReminderNotification(body);
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
@@ -6417,6 +6379,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deploy.setVersionInfo();
         qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
         qmService.rootScope.setProperty('speechAvailable', qm.speech.getSpeechAvailable());
+        if(qm.speech.getSpeechEnabled()){qmService.speech.showRobot(true);}
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}

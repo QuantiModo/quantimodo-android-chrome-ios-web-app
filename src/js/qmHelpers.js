@@ -1882,6 +1882,54 @@ window.qm = {
             },
             "session": "projects/dr-modo/agent/sessions/1533759866859"
         },
+        getEntityFromLastUserStatement: function(entityName){
+            var lastUserStatement = qm.speech.lastUserStatement.toLowerCase();
+            var entries = qm.staticData.dialogAgent.entities[entityName].entries;
+            var words = lastUserStatement.split(" ");
+            var i, j, word, entry;
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    entry = entries[i];
+                    if(word === entry.name.toLowerCase()){return entry;}
+                }
+            }
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    for (var k = 0; k < entry.synonyms; k += 1) {
+                        var synonym = synonyms[i];
+                        if(word === synonym.toLowerCase()){return entry;}
+                    }
+                }
+            }
+            return null;
+        },
+        weHaveRequiredParams: function(intent){
+            var parameters = intent.responses[0].parameters;
+            for (var i = 0; i < parameters.length; i++) {
+                var parameter = parameters[i];
+                var parameterName = parameter.name;
+                if(parameter.required){
+                    var value = qm.speech.currentIntent.parameters[parameterName];
+                    if(value){
+                        continue;
+                    }
+                    value = qm.dialogFlow.getEntityFromLastUserStatement(parameterName);
+                    if(value){
+                        qm.speech.currentIntent.parameters[parameterName] = value;
+                        continue;
+                    }
+                    qm.speech.parameterToGet = parameterName;
+                    qm.speech.talkRobot(parameter.prompts[0].value, function(){
+                        var value = qm.dialogFlow.getEntityFromLastUserStatement(qm.speech.parameterToGet);
+                        qm.speech.currentIntent.parameters[qm.speech.parameterToGet] = value;
+                    });
+                    return false;
+                }
+            }
+            return true;
+        }
     },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
@@ -2825,6 +2873,49 @@ window.qm = {
                     errorHandler("No notifications even after refresh!")
                 }
             }, errorHandler);
+        },
+        scheduleNotificationSync: function (delayBeforePostingNotificationsInMilliseconds) {
+            if(!delayBeforePostingNotificationsInMilliseconds){
+                delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+                //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
+            }
+            var trackingReminderNotificationSyncScheduled = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
+            if(!trackingReminderNotificationSyncScheduled ||
+                parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
+                qm.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
+                if(!qm.platform.isMobile()){ // Better performance
+                    qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
+                }
+                setTimeout(function() {
+                    qmLog.info("Notifications sync countdown completed.  Syncing now... ");
+                    qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
+                    // Post notification queue in 5 minutes if it's still there
+                    qmService.postTrackingReminderNotificationsDeferred();
+                }, delayBeforePostingNotificationsInMilliseconds);
+            } else {
+                if(!qm.platform.isMobile()){ // Better performance
+                    qmLog.info("Not scheduling sync because one is already scheduled " +
+                        qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
+                }
+            }
+        },
+        trackTrackingReminderNotificationDeferred: function(trackingReminderNotification, trackAll){
+            qmLog.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
+            if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
+                var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
+                    trackingReminderNotification.trackingReminderNotificationId);
+                if(notificationFromLocalStorage){
+                    if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
+                        notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
+                    }
+                    trackingReminderNotification = notificationFromLocalStorage;
+                }
+            }
+            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
+            trackingReminderNotification.action = 'track';
+            if(trackAll){trackingReminderNotification.action = 'trackAll';}
+            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            if(trackAll){qm.notifications.scheduleNotificationSync(1);} else {qm.notifications.scheduleNotificationSync();}
         }
     },
     objectHelper: {
@@ -3237,7 +3328,7 @@ window.qm = {
         },
         setSpeechEnabled: function(value){
             qmLog.info("set speechEnabled " + value);
-            return qm.speech.speechEnabled = value;
+            return qm.storage.setItem(qm.items.speechEnabled, value);
         },
         getSpeechAvailable: function(){
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
@@ -3351,13 +3442,17 @@ window.qm = {
             qmLog.info("resumeListening");
             annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
         },
-        startListening: function(){
+        startListening: function(commands){
             qmLog.info("startListening");
             annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
                 autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
                 continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
                 paused: false // Start annyang in paused mode.
             });
+            if(commands){annyang.addCommands(commands);}
+        },
+        listenForNotificationResponse: function(){
+            qm.speech.initializeListening(qm.speech.reminderNotificationCommands);
         },
         debugListening: function(){
             annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
@@ -3679,8 +3774,9 @@ window.qm = {
         getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
             qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
                 if(trackingReminderNotification){
+                    qm.speech.currentNotification = trackingReminderNotification;
                     qm.speech.intent = qm.staticData.dialogAgent.intents["Tracking Reminder Notification Intent"];
-                    qm.speech.talkRobot(trackingReminderNotification.card.title);
+                    qm.speech.talkRobot(trackingReminderNotification.card.title, qm.speech.listenForNotificationResponse);
                     if(successHandler){successHandler(trackingReminderNotification);}
                 } else {
                     qmLog.error("No tracking reminder notification");
@@ -3751,6 +3847,33 @@ window.qm = {
             var deepThoughts = qm.staticData.deepThoughts;
             var deepThought = deepThoughts[[Math.floor(Math.random() * (deepThoughts.length - 1))]];
             qm.speech.talkRobot(deepThought.text + "! . ! . !", callback);
+        },
+        reminderNotificationCommands: {
+            "I don't know": function () {
+                qm.speech.talkRobot("OK. We'll skip that one.");
+            },
+            '*tag': function(tag) {
+                if(qm.speech.callback){
+                    qm.speech.callback(tag);
+                }
+                qm.speech.lastUserStatement = tag;
+                qmLog.info("Just heard user say " + tag);
+                function isNumeric(n) {
+                    return !isNaN(parseFloat(n)) && isFinite(n);
+                }
+                var possibleResponses = ["skip", "snooze", "yes", "no"];
+                if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
+                    var notification = qm.speech.currentNotification;
+                    notification.modifiedValue = tag;
+                    qm.notifications.trackTrackingReminderNotificationDeferred(notification);
+                    var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
+                    var prefix = qm.speech.afterNotificationMessages.pop();
+                    if(prefix){message = prefix + message;}
+                    qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
+                } else {
+                    qm.speech.fallbackMessage(tag);
+                }
+            }
         }
     },
     shares: {
@@ -5141,26 +5264,15 @@ window.qm = {
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getCommonVariablesFromJsonFile: function (requestParams, successHandler, errorHandler) {
-            var globalKey = 'CommonVariablesFromJsonFile';
-            var fromGlobals = qm.globalHelper.getItem(globalKey); // Reduce web requests.  Pretty big to keep in localForage
-            var commonVariables;
-            if(fromGlobals){
-                commonVariables = qm.arrayHelper.filterByRequestParams(fromGlobals, requestParams);
+            var commonVariables = qm.staticData.commonVariables;
+            commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
+            if(commonVariables && commonVariables.length){
                 successHandler(commonVariables);
-                return;
+            } else {
+                var message = "No common variables found matching params" + JSON.stringify(requestParams);
+                qmLog.info(message);
+                if(errorHandler){errorHandler(message);}
             }
-            qm.api.getViaXhrOrFetch('data/commonVariables.json', function(commonVariables){
-                if(!commonVariables){
-                    qmLog.error("No common variables from json file!");
-                    errorHandler("No common variables from json file!");
-                    return;
-                }
-                qm.globalHelper.setItem(globalKey, commonVariables); // Reduce web requests.  Pretty big to keep in localForage
-                commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
-                successHandler(commonVariables);
-            }, function (error) {
-                if(errorHandler){errorHandler(error);}
-            });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
