@@ -156,7 +156,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	var setLastAction = function(modifiedValue, unitAbbreviatedName){
 		var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
-		qmService.notifications.lastAction = qmService.formatValueUnitDisplayText(lastAction);
+		qm.notifications.lastAction = qmService.formatValueUnitDisplayText(lastAction);
 	};
 	function refreshIfRunningOutOfNotifications() {
 	    if($scope.state.numberOfDisplayedNotifications < 2){
@@ -281,7 +281,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
     };
 	$scope.skip = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){ return; }
-		qmService.notifications.lastAction = 'Skipped';
+		qm.notifications.lastAction = 'Skipped';
 		var params = notificationAction(trackingReminderNotification);
 		qmService.skipTrackingReminderNotificationDeferred(params);
         qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
@@ -289,7 +289,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	$scope.snooze = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
-		qmService.notifications.lastAction = 'Snoozed';
+		qm.notifications.lastAction = 'Snoozed';
 		var params = notificationAction(trackingReminderNotification);
 		qmService.snoozeTrackingReminderNotificationDeferred(params);
         qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
