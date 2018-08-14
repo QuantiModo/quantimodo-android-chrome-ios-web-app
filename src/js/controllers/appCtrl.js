@@ -206,7 +206,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return;
         }
         trackingReminder.displayTotal =
-            qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
+            qm.stringHelper.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
         qmService.postMeasurementByReminder(trackingReminder, trackingReminder.modifiedValue)
             .then(function () {
                 qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
