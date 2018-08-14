@@ -75,10 +75,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
-        qmService.speech.showRobot();
-        qm.music.play();
-        qmService.speech.showVisualizer("1");
-        $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
+        if(qm.speech.getSpeechAvailable()){
+            qmService.speech.showRobot();
+            qm.music.play();
+            qmService.speech.showVisualizer("1");
+            $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
+        }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){

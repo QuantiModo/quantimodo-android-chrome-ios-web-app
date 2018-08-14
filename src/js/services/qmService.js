@@ -1295,8 +1295,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.showInfoToast("Skipping all " + trackingReminderNotification.variableName + " notifications...");
                     var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
                     //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
-                    qmService.skipAllTrackingReminderNotificationsDeferred(params)
-                        .then(function(response){
+                    qm.notifications.skipAllTrackingReminderNotifications(params, function(response){
                             if(successHandler){successHandler(response);}
                         }, function(error){
                             if(errorHandler){errorHandler(error);}
@@ -2677,28 +2676,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler,
             errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
     };
-    // snooze tracking reminder
-    qmService.snoozeTrackingReminderNotification = function(params, successHandler, errorHandler){
-        qmService.post('api/v3/trackingReminderNotifications/snooze',
-            ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
-            params,
-            successHandler,
-            errorHandler);
-    };
     // skip tracking reminder
     qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
         qmService.post('api/v3/trackingReminderNotifications/skip',
             ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
-            params,
-            successHandler,
-            errorHandler);
-    };
-    // skip tracking reminder
-    qmService.skipAllTrackingReminderNotifications = function(params, successHandler, errorHandler){
-        if(!params){params = [];}
-        qmService.post('api/v3/trackingReminderNotifications/skip/all',
-            //['trackingReminderId'],
-            [],
             params,
             successHandler,
             errorHandler);
@@ -3841,29 +3822,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
         trackingReminderNotification.action = 'skip';
-        qm.notifications.addToSyncQueue(trackingReminderNotification);
-        qm.notifications.scheduleNotificationSync();
-        return deferred.promise;
-    };
-    qmService.skipAllTrackingReminderNotificationsDeferred = function(params){
-        var deferred = $q.defer();
-        if(!params || !params.trackingReminderId){
-            qm.storage.removeItem(qm.items.trackingReminderNotifications);
-        } else {
-            qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', params.trackingReminderId);
-        }
-        qmService.skipAllTrackingReminderNotifications(params, function(response){
-            if(response.success) {deferred.resolve();} else {deferred.reject();}
-        }, function(error){
-            qmLogService.error(error);
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
-    qmService.snoozeTrackingReminderNotificationDeferred = function(trackingReminderNotification){
-        var deferred = $q.defer();
-        qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
-        trackingReminderNotification.action = 'snooze';
         qm.notifications.addToSyncQueue(trackingReminderNotification);
         qm.notifications.scheduleNotificationSync();
         return deferred.promise;
@@ -6603,7 +6561,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 window.snoozeAction = function (data){
                     var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                     qmLog.pushDebug('snoozeAction', ' push data: ', {pushData: data, notificationsPostBody: body});
-                    qmService.snoozeTrackingReminderNotificationDeferred(body);
+                    qm.notifications.snoozeNotification(body);
                     finishPush(data);
                 };
                 window.trackLastValueAction = function (data){
