@@ -4378,7 +4378,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
             measurements[index].valueUnitVariableName = measurements[index].displayValueAndUnitString + " " + measurements[index].variableName;
-            //measurements[index].valueUnitVariableName = qmService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
+            //measurements[index].valueUnitVariableName = qm.stringHelper.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
             //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
@@ -6172,15 +6172,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
         return inputType;
     };
-    qmService.formatValueUnitDisplayText = function(valueUnitText, abbreviatedUnitName){
-        valueUnitText = valueUnitText.replace(' /', '/');
-        valueUnitText = valueUnitText.replace('1 yes/no', 'YES');
-        valueUnitText = valueUnitText.replace('0 yes/no', 'NO');
-        if(abbreviatedUnitName){
-            valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
-        }
-        return valueUnitText;
-    };
     var deleteAllMeasurementsForVariable = function(variableName) {
         qmService.showBlackRingLoader();
         // Delete all measurements for a variable
@@ -6843,7 +6834,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         } else {
             trackingReminder.total = modifiedReminderValue;
         }
-        trackingReminder.displayTotal = qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
+        trackingReminder.displayTotal = qm.stringHelper.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
         if (!trackingReminder.tally) {
             trackingReminder.tally = 0;
         }

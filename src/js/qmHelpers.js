@@ -2667,6 +2667,10 @@ window.qm = {
         },
         deleteById: function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);},
         lastAction: "",
+        setLastAction: function(modifiedValue, unitAbbreviatedName){
+            var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
+            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction);
+        },
         undo: function(){
             qmLog.info("Called undo notifcation tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
@@ -4331,7 +4335,16 @@ window.qm = {
             if(value === "false"){return true;}
             return false;
         },
-        isTruthy: function(value){return value && value !== "false"; }
+        isTruthy: function(value){return value && value !== "false"; },
+        formatValueUnitDisplayText: function(valueUnitText, abbreviatedUnitName){
+            valueUnitText = valueUnitText.replace(' /', '/');
+            valueUnitText = valueUnitText.replace('1 yes/no', 'YES');
+            valueUnitText = valueUnitText.replace('0 yes/no', 'NO');
+            if(abbreviatedUnitName){
+                valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
+            }
+            return valueUnitText;
+        }
     },
     studyHelper: {
         getStudiesApiInstance: function(params){
