@@ -2899,7 +2899,7 @@ window.qm = {
                 }
             }
         },
-        trackTrackingReminderNotificationDeferred: function(trackingReminderNotification, trackAll){
+        trackNotification: function(trackingReminderNotification, trackAll){
             qmLog.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
             if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
                 var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
@@ -2916,6 +2916,16 @@ window.qm = {
             if(trackAll){trackingReminderNotification.action = 'trackAll';}
             qm.notifications.addToSyncQueue(trackingReminderNotification);
             if(trackAll){qm.notifications.scheduleNotificationSync(1);} else {qm.notifications.scheduleNotificationSync();}
+        },
+        snoozeNotification: function(trackingReminderNotification){
+            qm.notifications.numberOfPendingNotifications--;
+            trackingReminderNotification.action = 'snooze';
+            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            qm.notifications.scheduleNotificationSync();
+        },
+        skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
+            if(!params){params = [];}
+            qm.api.postToQuantiModo(params, 'api/v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
         }
     },
     objectHelper: {
@@ -3865,7 +3875,7 @@ window.qm = {
                 if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
                     var notification = qm.speech.currentNotification;
                     notification.modifiedValue = tag;
-                    qm.notifications.trackTrackingReminderNotificationDeferred(notification);
+                    qm.notifications.trackNotification(notification);
                     var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
                     var prefix = qm.speech.afterNotificationMessages.pop();
                     if(prefix){message = prefix + message;}
