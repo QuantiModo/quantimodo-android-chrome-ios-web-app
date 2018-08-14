@@ -2666,6 +2666,7 @@ window.qm = {
             return unique;
         },
         deleteById: function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);},
+        lastAction: "",
         undo: function(){
             qmLog.info("Called undo notifcation tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
@@ -3294,10 +3295,11 @@ window.qm = {
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
                 window.speechSynthesis.resume();
-                qm.speech.timeoutResumeInfinity = setTimeout(resumeInfinity, 1000);
+                qm.speech.timeoutResumeInfinity = setTimeout(resumeInfinity, 3000);
             }
-            utterance.onstart = function(event) {resumeInfinity();};
-            utterance.onend = function(event) {clearTimeout(qm.speech.timeoutResumeInfinity);};
+            utterance.onstart = function(event) {
+                resumeInfinity();
+            };
             utterance.onerror = function(event) {
                 qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
             };
@@ -3310,6 +3312,7 @@ window.qm = {
             console.info("speechSynthesis.speak(utterance)", utterance);
 
             utterance.onend = function (event) {
+                clearTimeout(qm.speech.timeoutResumeInfinity);
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
