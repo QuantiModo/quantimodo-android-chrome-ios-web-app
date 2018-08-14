@@ -1570,9 +1570,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showRobot: function(startListening){
                 if(!qm.speech.getSpeechAvailable()){return;}
                 qmService.rootScope.setProperty('showRobot', true);
-                if(startListening !== false){
-                    qmService.speech.showVisualizer();
-                }
+                $timeout(function(){qm.speech.deepThought();}, 100);
+                if(startListening !== false){qmService.speech.showVisualizer("1");}
             },
             hideRobot: function(){
                 qmService.rootScope.setProperty('showRobot', false);
@@ -1585,10 +1584,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.speech.showRobot();
                 }
             },
-            showVisualizer: function(){
+            showVisualizer: function(zIndex){
                 qmService.rootScope.setProperty('showVisualizer', true);
+                var element = document.getElementById('splash-screen');
+                if(element){
+                    element.style.opacity = "0.5";
+                    element.style.filter  = 'alpha(opacity=50)'; // IE fallback
+                }
                 $timeout(function(){
-                    qm.speech.rainbowCircleVisualizer();
+                    qm.speech.rainbowCircleVisualizer(zIndex);
                 }, 1);
             },
             hideVisualizer: function(){
