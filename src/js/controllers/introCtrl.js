@@ -69,8 +69,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qm.speech.talkRobot(
             //slide.title + ".  " +
             slide.bodyText + ".  "
-            , $scope.myIntro.next
+            //, $scope.myIntro.next
         );
+        slide.bodyText = null;
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
@@ -83,21 +84,18 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
-        if(qm.speech.getSpeechAvailable()){
-            readMachinesOfLovingGrace();
-        } else {
-            $scope.myIntro.ready = true;
-        }
+        function start(){if(qm.speech.getSpeechEnabled()){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}}
+        if(qm.speech.getSpeechAvailable() && qm.speech.getSpeechEnabled() === null){qmService.dialogs.mayISpeak(function (answer) {start();});} else {start();}
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
         qm.speech.hideVisualizer();
         qm.appContainer.setOpacity(1);
-        qm.speech.hideRobot();
+        qm.robot.hide();
     });
     function readMachinesOfLovingGrace() {
-        qm.speech.showRobot();
+        qm.robot.show();
         qm.music.play();
         qm.speech.showVisualizer("1");
         qm.appContainer.setOpacity(0.5);

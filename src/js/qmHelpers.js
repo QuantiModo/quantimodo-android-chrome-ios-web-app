@@ -13,19 +13,21 @@ window.qm = {
     },
     appContainer: {
         hide: function(){
-            qm.appContainer.getAppContainer().style.display = "none";
+            qm.appContainer.getElement().style.display = "none";
         },
         show: function(){
-            qm.appContainer.getAppContainer().style.display = "block";
+            qm.appContainer.getElement().style.display = "block";
         },
-        getAppContainer: function(){
+        getElement: function(){
             var appContainer = document.querySelector('#app-container');
             return appContainer;
         },
         setOpacity: function(opacity){
             var backgroundColor = (opacity < 1) ? 'black' : 'white';
-            qm.appContainer.getAppContainer().style.backgroundColor = backgroundColor;
-            qm.appContainer.getAppContainer().style.opacity = opacity;
+            qm.appContainer.getElement().style.backgroundColor = backgroundColor;
+            document.querySelector('.pane').style.backgroundColor = backgroundColor;
+            document.body.style.backgroundColor = backgroundColor;
+            qm.appContainer.getElement().style.opacity = opacity;
         }
     },
     appMode: {
@@ -3286,7 +3288,43 @@ window.qm = {
             'img/rating/numeric_rating_button_256_5.png'
         ]
     },
+    robot: {
+        showing: false,
+        hide: function(){
+            qm.robot.getElement().style.display = "none";
+            qm.speech.setSpeechEnabled(false);
+            qm.speech.hideVisualizer();
+            qm.appContainer.show();
+            qm.robot.showing = qm.rootScope.showRobot = false;
+        },
+        show: function(startListening){
+            if(!qm.speech.getSpeechAvailable()){return;}
+            var robot = qm.speech.getRobotElement();
+            if(!robot){
+                qmLog.error("No robot!");
+                return false;
+            }
+            qm.robot.getElement().style.display = "block";
+            qm.robot.showing = qm.rootScope.showRobot = true;
+            qm.speech.setSpeechEnabled(true);
+            if(startListening !== false){qm.speech.showVisualizer("1");}
+        },
+        getElement: function(){
+            var appContainer = document.querySelector('#robot');
+            return appContainer;
+        },
+        toggle: function () {
+            if(qm.robot.showing){
+                qm.robot.hide();
+            } else {
+                qm.robot.show();
+            }
+        },
+    },
     serviceWorker: false,
+    rootScope: {
+        showRobot: false
+    },
     speech: {
         initializeSpeechKit: function(qmService){
             var commands = {
@@ -3931,17 +3969,7 @@ window.qm = {
             }
         },
         showRobot: function(startListening){
-            if(!qm.speech.getSpeechAvailable()){return;}
-            var robot = qm.speech.getRobotElement();
-            if(!robot){
-                qmLog.error("No robot!");
-                return false;
-            }
-            robot.style.display = "block";
-            //qm.appContainer.hide();
-            qm.speech.setSpeechEnabled(true);
-            //setTimeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
-            if(startListening !== false){qm.speech.showVisualizer("1");}
+
         },
         getRobotElement(){
             var robot = document.querySelector('#robot');
@@ -3950,19 +3978,6 @@ window.qm = {
         getRobotClass(){
             var robot = document.querySelector('.robot');
             return robot;
-        },
-        hideRobot: function(){
-            qm.speech.setSpeechEnabled(false);
-            qm.speech.getRobotElement().style.display = "none";
-            qm.speech.hideVisualizer();
-            qm.appContainer.show();
-        },
-        toggleRobot: function(){
-            if($rootScope.showRobot){
-                qm.speech.hideRobot();
-            } else {
-                qm.speech.showRobot();
-            }
         },
         showVisualizer: function(zIndex){
             var visualizer = document.getElementById('rainbow-canvas');
@@ -5678,6 +5693,9 @@ window.qm = {
                     var both = userVariables.concat(commonVariables);
                     both = qm.arrayHelper.getUnique(both, 'id');
                     successHandler(both);
+                }, function(error){
+                    qmLog.info(error);
+                    successHandler(userVariables);
                 });
             });
         },

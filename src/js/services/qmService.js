@@ -768,6 +768,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         },
+        dialogs: {
+            mayISpeak: function(callback, ev){
+                var title = 'Hi!';
+                var textContent = "May I speak to you?";
+                var noText = 'No';
+                function yesCallback() {
+                    qm.speech.setSpeechEnabled(true);
+                    if(callback){callback(true);}
+                }
+                function noCallback() {
+                    qm.speech.setSpeechEnabled(false);
+                    if(callback){callback(false);}
+                }
+                qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
+            }
+        },
         email: {
             updateEmailAndExecuteCallback: function (callback){
                 if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
@@ -5720,7 +5736,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         trackingReminder.variableId = variableObject.id;
         delete trackingReminder.id;
         trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
+        if(variableObject.unit){trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;}
         trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 86400;
@@ -5933,6 +5949,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
     };
     qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev, noText){
+        if(title.length > 15){
+            title = title.substring(0, 10) + '...';
+        }
         ConfirmationDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
         if(!noText){noText = 'Cancel';}
         function ConfirmationDialogController($scope, $mdDialog, dialogParameters) {
@@ -6247,6 +6266,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
         qmService.rootScope.setProperty('speechAvailable', qm.speech.getSpeechAvailable());
         //if(qm.speech.getSpeechEnabled()){$timeout(function(){qm.speech.showRobot(true);}, 100);}
+        qm.rootScope = $rootScope;
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}

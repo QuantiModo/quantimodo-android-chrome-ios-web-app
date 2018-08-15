@@ -56,7 +56,7 @@ angular.module('starter',
     });
     $rootScope.goToState = function(stateName, stateParameters, ev){
         if(stateName === 'toggleRobot'){
-            qm.speech.toggleRobot();
+            qm.robot.toggle();
             return;
         }
         if(stateName.indexOf('button') !== -1){
