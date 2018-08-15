@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="true" id="app-container" ng-if="!hideAppContainer">
+<ion-side-menus enable-menu-with-back-views="true" id="app-container">
     <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}"
                      ng-show="hideNavigationMenu === false || appSettings.designMode" >
@@ -97,5 +97,5 @@
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
-<div ng-include="'templates/robot.html'"></div>
-<canvas id="rainbow-canvas" ng-if="showVisualizer" style="position: absolute; z-index: -1"></canvas>
+<div ng-include="'templates/robot.html'" style="display: none; z-index: 1;"></div>
+<canvas id="rainbow-canvas" style="position: absolute; z-index: -1; display: none;"></canvas>
