@@ -11,6 +11,18 @@ window.qm = {
             inbox: "inbox"
         }
     },
+    appContainer: {
+        hide: function(){
+            qm.appContainer.getAppContainer().style.display = "none";
+        },
+        show: function(){
+            qm.appContainer.getAppContainer().style.display = "block";
+        },
+        getAppContainer: function(){
+            var appContainer = document.querySelector('#app-container');
+            return appContainer;
+        }
+    },
     appMode: {
         isTesting: function(){
             if(window.qmUser){
@@ -1282,7 +1294,6 @@ window.qm = {
             if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
             var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
             qmLog.info("Sending to " + logoutUrl);
-            //qmService.get(logoutUrl);
             var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
             //$http(request);
             // Get request doesn't seem to clear cookies
@@ -1331,7 +1342,7 @@ window.qm = {
         handle401Response: function(request, options, headers) {
             options = options || {};
             if(options && options.doNotSendToLogin){return;}
-            qmLog.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
+            qmLog.debug('generalApiErrorHandler: Sending to login because we got 401 with request ' +
                 JSON.stringify(request), null, options.stackTrace);
             qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
@@ -2890,7 +2901,7 @@ window.qm = {
                     qmLog.info("Notifications sync countdown completed.  Syncing now... ");
                     qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
                     // Post notification queue in 5 minutes if it's still there
-                    qmService.postTrackingReminderNotificationsDeferred();
+                    qm.notifications.postNotifications();
                 }, delayBeforePostingNotificationsInMilliseconds);
             } else {
                 if(!qm.platform.isMobile()){ // Better performance
@@ -2900,7 +2911,7 @@ window.qm = {
             }
         },
         trackNotification: function(trackingReminderNotification, trackAll){
-            qmLog.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
+            qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
             if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
                 var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
                     trackingReminderNotification.trackingReminderNotificationId);
@@ -2926,6 +2937,26 @@ window.qm = {
         skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
             if(!params){params = [];}
             qm.api.postToQuantiModo(params, 'api/v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
+        },
+        postNotifications: function(successHandler, errorHandler){
+            qmLog.info("Called postTrackingReminderNotificationsDeferred...");
+            var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){if(successHandler){successHandler();}}
+            //qmLog.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray));
+            qm.storage.removeItem(qm.items.notificationsSyncQueue);
+            if(!trackingReminderNotificationsArray){
+                if(successHandler){successHandler();}
+                return;
+            }
+            if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+            trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
+            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'api/v3/trackingReminderNotifications', successHandler, function(error){
+                qmLog.info("Called postTrackingReminderNotificationsToApi...");
+                var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                if(newNotificationsSyncQueue){trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);}
+                qm.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
+                if(errorHandler){errorHandler();}
+            });
         }
     },
     objectHelper: {
@@ -3350,7 +3381,7 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            var robot = document.querySelector('.robot');
+            var robot = qm.speech.getRobotElement();
             robot.classList.remove('robot_speaking');
             speechSynthesis.cancel();
             if(resumeListening){
@@ -3396,7 +3427,7 @@ window.qm = {
                 });
                 return;
             }
-            var robot = document.querySelector('.robot');
+            var robot = qm.speech.getRobotElement();
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
                 window.speechSynthesis.resume();
@@ -3884,7 +3915,49 @@ window.qm = {
                     qm.speech.fallbackMessage(tag);
                 }
             }
-        }
+        },
+        showRobot: function(startListening){
+            if(!qm.speech.getSpeechAvailable()){return;}
+            qm.speech.getRobotElement().display = "block";
+            qm.appContainer.hide();
+            qm.speech.setSpeechEnabled(true);
+            setTimeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
+            if(startListening !== false){qm.speech.showVisualizer("1");}
+        },
+        getRobotElement(){
+            var robot = document.querySelector('.robot');
+            return robot;
+        },
+        hideRobot: function(){
+            qm.speech.setSpeechEnabled(false);
+            qm.speech.getRobotElement().style.display = "none";
+            qm.speech.hideVisualizer();
+            qm.appContainer.show();
+        },
+        toggleRobot: function(){
+            if($rootScope.showRobot){
+                qm.speech.hideRobot();
+            } else {
+                qm.speech.showRobot();
+            }
+        },
+        showVisualizer: function(zIndex){
+            var visualizer = document.getElementById('rainbow-canvas');
+            visualizer.style.display = "block";
+            var splash = document.getElementById('splash-screen');
+            if(splash){
+                splash.style.opacity = "0.5";
+                splash.style.filter  = 'alpha(opacity=50)'; // IE fallback
+            }
+            setTimeout(function(){
+                qm.speech.rainbowCircleVisualizer(zIndex);
+            }, 1);
+        },
+        hideVisualizer: function(){
+            qm.speech.abortListening();
+            var visualizer = document.getElementById('rainbow-canvas');
+            visualizer.style.display = "none";
+        },
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){
@@ -4676,7 +4749,7 @@ window.qm = {
                 qm.studyHelper.getStudyFromApi(params, function (study) {
                     successHandler(study);
                 }, function (error) {
-                    qmLog.error("qmService.getStudy error: ", error);
+                    qmLog.error("getStudy error: ", error);
                     errorHandler(error);
                 });
             }

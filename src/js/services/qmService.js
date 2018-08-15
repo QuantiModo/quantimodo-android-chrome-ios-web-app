@@ -158,14 +158,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
         },
-        appContainer: {
-            hide: function(){
-                qmService.rootScope.setProperty('hideAppContainer', true);
-            },
-            show: function(){
-                qmService.rootScope.setProperty('hideAppContainer', false);
-            }
-        },
         auth: {
             deleteAllAccessTokens: function () {
                 if($rootScope.user){$rootScope.user.accessToken = null;}
@@ -1567,50 +1559,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.debug('User cancelled selection');
             });
         },
-        speech: {
-            getSpeechEnabled: function(){
-                return qmService.rootScope.setProperty('speechEnabled', qm.speech.getSpeechEnabled());
-            },
-            setSpeechEnabled: function(value){
-                return qmService.rootScope.setProperty('speechEnabled', qm.speech.setSpeechEnabled(value));
-            },
-            showRobot: function(startListening){
-                if(!qm.speech.getSpeechAvailable()){return;}
-                qmService.rootScope.setProperty('showRobot', true);
-                qmService.appContainer.hide();
-                qm.speech.setSpeechEnabled(true);
-                $timeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
-                if(startListening !== false){qmService.speech.showVisualizer("1");}
-            },
-            hideRobot: function(){
-                qm.speech.setSpeechEnabled(false);
-                qmService.rootScope.setProperty('showRobot', false);
-                qmService.speech.hideVisualizer();
-                qmService.appContainer.show();
-            },
-            toggleRobot: function(){
-                if($rootScope.showRobot){
-                    qmService.speech.hideRobot();
-                } else {
-                    qmService.speech.showRobot();
-                }
-            },
-            showVisualizer: function(zIndex){
-                qmService.rootScope.setProperty('showVisualizer', true);
-                var element = document.getElementById('splash-screen');
-                if(element){
-                    element.style.opacity = "0.5";
-                    element.style.filter  = 'alpha(opacity=50)'; // IE fallback
-                }
-                $timeout(function(){
-                    qm.speech.rainbowCircleVisualizer(zIndex);
-                }, 1);
-            },
-            hideVisualizer: function(){
-                qm.speech.abortListening();
-                qmService.rootScope.setProperty('showVisualizer', false);
-            },
-        },
         states: {
             outputStateNameConstantsForPHP: function(){
                 for (var i = 0; i < allStates.length; i++) {
@@ -1868,7 +1816,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             deferred.resolve(response);
                         }, function(error){deferred.reject(error);});
                     };
-                    qmService.postTrackingReminderNotificationsDeferred().then(function () {
+                    qm.notifications.postNotifications(function () {
                         postTrackingRemindersToApiAndHandleResponse();
                     }, function(error){
                         postTrackingRemindersToApiAndHandleResponse();
@@ -2540,18 +2488,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
         //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
-    };
-    qmService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
-        if(!trackingReminderNotificationsArray){
-            successHandler();
-            return;
-        }
-        if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
-        trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
-        var options = {};
-        options.doNotSendToLogin = false;
-        options.doNotShowOfflineError = true;
-        qmService.post('api/v3/trackingReminderNotifications', [], trackingReminderNotificationsArray, successHandler, errorHandler, options);
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.debug('postTrackingRemindersToApi: ', trackingRemindersArray);
@@ -3791,33 +3727,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!lastGotNotificationsAtMilliseconds){ lastGotNotificationsAtMilliseconds = 0; }
         return parseInt((window.qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds)/1000);
     };
-    qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
-        var deferred = $q.defer();
-        qmLog.info("Called postTrackingReminderNotificationsDeferred...");
-        var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
-        if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
-            if(successHandler){successHandler();}
-            deferred.resolve();
-            return deferred.promise;
-        }
-        qmLogService.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' +
-            JSON.stringify(trackingReminderNotificationsArray));
-        qm.storage.removeItem(qm.items.notificationsSyncQueue);
-        qmService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(response){
-            if(successHandler){successHandler(response);}
-            deferred.resolve(response);
-        }, function(error){
-            qmLog.info("Called postTrackingReminderNotificationsToApi...");
-            var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-            if(newNotificationsSyncQueue){
-                trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
-            }
-            qmService.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
-            if(errorHandler){errorHandler();}
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
         var deferred = $q.defer();
         qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
@@ -3869,7 +3778,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
         }
-        qmService.postTrackingReminderNotificationsDeferred(function(){
+        qm.notifications.postNotifications(function(){
             var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
             if(!params){params = {};}
             params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
@@ -6337,7 +6246,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.deploy.setVersionInfo();
         qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
         qmService.rootScope.setProperty('speechAvailable', qm.speech.getSpeechAvailable());
-        if(qm.speech.getSpeechEnabled()){qmService.speech.showRobot(true);}
+        if(qm.speech.getSpeechEnabled()){$timeout(function(){qm.speech.showRobot(true);}, 100);}
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
