@@ -1,9 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
-    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" >
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
                    style="display: flex; flex-direction: column; justify-content: center;">
             <div ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
-            <div ng-include="'templates/splash.html'" style="position: absolute; height: 100%; width: 100%; z-index: -2"></div>
             <div class="button-bar" style="max-height: 80px;" >
                 <md-button id="goButtonIntro" class="button circle-page-button"
                            ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1" ng-click="myIntro.startApp()">
