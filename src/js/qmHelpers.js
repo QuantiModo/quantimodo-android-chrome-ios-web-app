@@ -3724,7 +3724,12 @@ window.qm = {
     splash: {
         text: {
             hide: function(){
-                qm.splash.text.getElement().style.display = "none";
+                var element = qm.splash.text.getElement();
+                if(!element){
+                    qmLog.error("No splash.text.element!");
+                    return false;
+                }
+                element.style.display = "none";
             },
             show: function(){
                 var element = qm.splash.text.getElement();
