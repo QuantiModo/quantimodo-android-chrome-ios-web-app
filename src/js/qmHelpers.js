@@ -2936,7 +2936,7 @@ window.qm = {
         },
         skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
             if(!params){params = [];}
-            qm.api.postToQuantiModo(params, 'api/v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
+            qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
         },
         postNotifications: function(successHandler, errorHandler){
             qmLog.info("Called postTrackingReminderNotificationsDeferred...");
@@ -2950,7 +2950,7 @@ window.qm = {
             }
             if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
             trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
-            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'api/v3/trackingReminderNotifications', successHandler, function(error){
+            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications', successHandler, function(error){
                 qmLog.info("Called postTrackingReminderNotificationsToApi...");
                 var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
                 if(newNotificationsSyncQueue){trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);}
@@ -3473,18 +3473,29 @@ window.qm = {
         },
         abortListening: function(){
             qmLog.info("pauseListening");
+            if(!qm.speech.annyangAvailable()){return;}
             annyang.abort(); // Stop listening, and turn off mic.
+        },
+        annyangAvailable: function(){
+            if(!annyang){
+                qmLog.error("annyang not available!");
+                return false;
+            }
+            return true;
         },
         pauseListening: function(){
             qmLog.info("pauseListening");
+            if(!qm.speech.annyangAvailable()){return;}
             annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
         },
         resumeListening: function(){
             qmLog.info("resumeListening");
+            if(!qm.speech.annyangAvailable()){return;}
             annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
         },
         startListening: function(commands){
             qmLog.info("startListening");
+            if(!qm.speech.annyangAvailable()){return;}
             annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
                 autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
                 continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
@@ -3918,7 +3929,12 @@ window.qm = {
         },
         showRobot: function(startListening){
             if(!qm.speech.getSpeechAvailable()){return;}
-            qm.speech.getRobotElement().display = "block";
+            var robot = qm.speech.getRobotElement();
+            if(!robot){
+                qmLog.error("No robot!");
+                return false;
+            }
+            robot.display = "block";
             qm.appContainer.hide();
             qm.speech.setSpeechEnabled(true);
             setTimeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
