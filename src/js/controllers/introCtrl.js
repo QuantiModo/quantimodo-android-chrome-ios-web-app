@@ -30,7 +30,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         },
         next : function(index) {
-            if(index === null){index = $scope.myIntro.slideIndex++;}
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
             if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
         },
@@ -58,12 +57,15 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readSlide() {
         if(!qm.speech.getSpeechAvailable()){return;}
+        qm.music.play();
         var slide = getSlide();
         $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
         $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
         qm.speech.talkRobot(
             //slide.title + ".  " +
-            slide.bodyText + ".  ", $scope.myIntro.next);
+            slide.bodyText + ".  "
+            //, $scope.myIntro.next
+        );
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
@@ -75,16 +77,43 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
-        if(qm.speech.getSpeechAvailable()){
-            qm.speech.showRobot();
-            qm.music.play();
-            qm.speech.showVisualizer("1");
-            $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
-        }
+        if(qm.speech.getSpeechAvailable()){readMachinesOfLovingGrace();}
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
         qm.speech.hideVisualizer();
     });
+    function readMachinesOfLovingGrace() {
+        qm.speech.showRobot();
+        qm.music.play();
+        qm.speech.showVisualizer("1");
+        qm.appContainer.setOpacity(0.5);
+        qm.speech.talkRobot("I like to think (and " +
+            "the sooner the better!) " +
+            "of a cybernetic meadow " +
+            "where mammals and computers " +
+            "live together in mutually " +
+            "programming harmony " +
+            "like pure water " +
+            "touching clear sky! " +
+            "I like to think " +
+            "(right now, please!) " +
+            "of a cybernetic forest " +
+            "filled with pines and electronics " +
+            "where deer stroll peacefully " +
+            "past computers " +
+            "as if they were flowers " +
+            "with spinning blossoms.  " +
+            "I like to think " +
+            "(it has to be!) " +
+            "of a cybernetic ecology! " +
+            "where we are free of our labors " +
+            "and joined back to nature, " +
+            "returned to our mammal " +
+            "brothers and sisters, " +
+            "and all watched over " +
+            "by machines of loving grace! ",
+            readSlide);
+    }
 }]);
