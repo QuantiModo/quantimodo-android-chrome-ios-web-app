@@ -2228,6 +2228,7 @@ window.qm = {
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
         speechEnabled: 'speechEnabled',
+        speechAvailable: 'speechAvailable',
         studiesCreated: 'studiesCreated',
         studiesJoined: 'studiesJoined',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -2442,6 +2443,7 @@ window.qm = {
         player: null,
         status: 'pause',
         play: function(){
+            if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
             qm.music.player.volume = 0.1;
@@ -3293,13 +3295,13 @@ window.qm = {
         hide: function(){
             qm.robot.getElement().style.display = "none";
             qm.speech.setSpeechEnabled(false);
-            qm.speech.hideVisualizer();
+            qm.visualizer.hide();
             qm.appContainer.show();
             qm.robot.showing = qm.rootScope.showRobot = false;
         },
         show: function(startListening){
             if(!qm.speech.getSpeechAvailable()){return;}
-            var robot = qm.speech.getRobotElement();
+            var robot = qm.robot.getElement();
             if(!robot){
                 qmLog.error("No robot!");
                 return false;
@@ -3307,11 +3309,15 @@ window.qm = {
             qm.robot.getElement().style.display = "block";
             qm.robot.showing = qm.rootScope.showRobot = true;
             qm.speech.setSpeechEnabled(true);
-            if(startListening !== false){qm.speech.showVisualizer("1");}
+            if(startListening !== false){qm.visualizer.show();}
         },
         getElement: function(){
-            var appContainer = document.querySelector('#robot');
-            return appContainer;
+            var element = document.querySelector('#robot');
+            return element;
+        },
+        getClass: function(){
+            var element = document.querySelector('.robot');
+            return element;
         },
         toggle: function () {
             if(qm.robot.showing){
@@ -3345,59 +3351,6 @@ window.qm = {
             name: "",
             parameters: {}
         },
-        visualizeVoice: function(type, zIndex){
-            if(type === 'siri'){return qm.speech.siriVisualizer();}
-            if(type === 'rainbow'){return qm.speech.rainbowCircleVisualizer(zIndex);}
-            var paths = document.getElementsByTagName('path');
-            var visualizer = document.getElementById('visualizer');
-            if(!visualizer){return;}
-            var mask = visualizer.getElementById('mask');
-            var h = document.getElementsByTagName('h1')[0];
-            var path;
-            var report = 0;
-            var soundAllowed = function (stream) {
-                //Audio stops listening in FF without // window.persistAudioStream = stream;
-                //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
-                //https://support.mozilla.org/en-US/questions/984179
-                window.persistAudioStream = stream;
-                h.innerHTML = "Thanks";
-                h.setAttribute('style', 'opacity: 0;');
-                var audioContent = new AudioContext();
-                var audioStream = audioContent.createMediaStreamSource( stream );
-                var analyser = audioContent.createAnalyser();
-                audioStream.connect(analyser);
-                analyser.fftSize = 1024;
-                var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
-                visualizer.setAttribute('viewBox', '0 0 255 255');
-                //Through the frequencyArray has a length longer than 255, there seems to be no
-                //significant data after this point. Not worth visualizing.
-                for (var i = 0 ; i < 255; i++) {
-                    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('stroke-dasharray', '4,1');
-                    mask.appendChild(path);
-                }
-                var doDraw = function () {
-                    requestAnimationFrame(doDraw);
-                    analyser.getByteFrequencyData(frequencyArray);
-                    var adjustedLength;
-                    for (var i = 0 ; i < 255; i++) {
-                        adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
-                        paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
-                    }
-                }
-                doDraw();
-            }
-            var soundNotAllowed = function (error) {
-                h.innerHTML = "You must allow your microphone.";
-                console.log(error);
-            }
-            /*window.navigator = window.navigator || {};
-            /*navigator.getUserMedia =  navigator.getUserMedia       ||
-                                      navigator.webkitGetUserMedia ||
-                                      navigator.mozGetUserMedia    ||
-                                      null;*/
-            navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
-        },
         config: {
             DEFAULT: false, // false will override system default voice
             //VOICE: 'Fred',
@@ -3412,6 +3365,8 @@ window.qm = {
         },
         setSpeechEnabled: function(value){
             qmLog.info("set speechEnabled " + value);
+            qm.speech.shutUpRobot();
+            qm.music.fadeOut();
             return qm.storage.setItem(qm.items.speechEnabled, value);
         },
         getSpeechAvailable: function(){
@@ -3424,7 +3379,7 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            qm.speech.getRobotClass().classList.remove('robot_speaking');
+            qm.robot.getClass().classList.remove('robot_speaking');
             speechSynthesis.cancel();
             if(resumeListening){
                 var duration = 1.5;
@@ -3451,6 +3406,7 @@ window.qm = {
         utterances: [],
         talkRobot: function(text, callback, resumeListening){
             if(!qm.speech.getSpeechAvailable()){return;}
+            if(!qm.speech.getSpeechEnabled()){return;}
             speechSynthesis.cancel();
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
@@ -3482,7 +3438,7 @@ window.qm = {
             };
             utterance.text = text;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
-            qm.speech.getRobotClass().classList.add('robot_speaking');
+            qm.robot.getClass().classList.add('robot_speaking');
             qm.speech.pauseListening();
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
@@ -3556,7 +3512,7 @@ window.qm = {
         initializeListening: function(commands, visualizationType, zIndex){
             qm.speech.debugListening();
             visualizationType = visualizationType || 'rainbow';
-            qm.speech.visualizeVoice(visualizationType, zIndex);
+            qm.visualizer.visualizeVoice(visualizationType, zIndex);
             annyang.addCommands(commands); // Add our commands to annyang
             qm.speech.startListening();
             annyang.addCallback('start', function() {
@@ -3590,278 +3546,6 @@ window.qm = {
             });
             annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
                 qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
-            });
-        },
-        siriVisualizer: function(){
-            // the canvas size
-            var WIDTH = 1000;
-            var HEIGHT = 400;
-            var ctx = canvas.getContext("2d");
-            // options to tweak the look
-            var opts = {
-                smoothing: 0.6,
-                fft: 5,
-                minDecibels: -70,
-                scale: 0.2,
-                glow: 10,
-                color1: [203, 36, 128],
-                color2: [41, 200, 192],
-                color3: [24, 137, 218],
-                fillOpacity: 0.6,
-                lineWidth: 1,
-                blend: "screen",
-                shift: 50,
-                width: 60,
-                amp: 1 };
-            if(typeof dat !== "undefined"){
-                var gui = new dat.GUI(); // Interactive dat.GUI controls
-                gui.close(); // hide them by default
-                // connect gui to opts
-                gui.addColor(opts, "color1");
-                gui.addColor(opts, "color2");
-                gui.addColor(opts, "color3");
-                gui.add(opts, "fillOpacity", 0, 1);
-                gui.add(opts, "lineWidth", 0, 10).step(1);
-                gui.add(opts, "glow", 0, 100);
-                gui.add(opts, "blend", [
-                    "normal",
-                    "multiply",
-                    "screen",
-                    "overlay",
-                    "lighten",
-                    "difference"]);
-                gui.add(opts, "smoothing", 0, 1);
-                gui.add(opts, "minDecibels", -100, 0);
-                gui.add(opts, "amp", 0, 5);
-                gui.add(opts, "width", 0, 60);
-                gui.add(opts, "shift", 0, 200);
-            }
-            var context = new AudioContext();
-            var analyser = context.createAnalyser();
-            // Array to hold the analyzed frequencies
-            var freqs = new Uint8Array(analyser.frequencyBinCount);
-            navigator.getUserMedia =
-                navigator.getUserMedia ||
-                navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia ||
-                navigator.msGetUserMedia;
-            navigator.getUserMedia({ audio: true }, onStream, onStreamError);
-            /**
-             * Create an input source from the user media stream, connect it to
-             * the analyser and start the visualization.
-             */
-            function onStream(stream) {
-                var input = context.createMediaStreamSource(stream);
-                input.connect(analyser);
-                requestAnimationFrame(visualize);
-            }
-            /**
-             * Display an error message.
-             */
-            function onStreamError(e) {
-                document.body.innerHTML = "<h1>This pen only works with https://</h1>";
-                console.error(e);
-            }
-            /**
-             * Utility function to create a number range
-             */
-            function range(i) {
-                return Array.from(Array(i).keys());
-            }
-            // shuffle frequencies so that neighbors are not too similar
-            var shuffle = [1, 3, 0, 4, 2];
-            /**
-             * Pick a frequency for the given channel and value index.
-             *
-             * The channel goes from 0 to 2 (R/G/B)
-             * The index goes from 0 to 4 (five peaks in the curve)
-             *
-             * We have 32 (2^opts.fft) frequencies to choose from and
-             * we want to visualize most of the spectrum. This function
-             * returns the bands from 0 to 28 in a nice distribution.
-             */
-            function freq(channel, i) {
-                var band = 2 * channel + shuffle[i] * 6;
-                return freqs[band];
-            }
-            /**
-             * Returns the scale factor fot the given value index.
-             * The index goes from 0 to 4 (curve with 5 peaks)
-             */
-            function scale(i) {
-                var x = Math.abs(2 - i); // 2,1,0,1,2
-                var s = 3 - x; // 1,2,3,2,1
-                return s / 3 * opts.amp;
-            }
-            /**
-             *  This function draws a path that roughly looks like this:
-             *       .
-             * __/\_/ \_/\__
-             *   \/ \ / \/
-             *       '
-             *   1 2 3 4 5
-             *
-             * The function is called three times (with channel 0/1/2) so that the same
-             * basic shape is drawn in three different colors, slightly shifted and
-             * each visualizing a different set of frequencies.
-             */
-            function path(channel) {
-                // Read color1, color2, color2 from the opts
-                var color = opts["color" + (channel + 1)].map(Math.floor);
-                // turn the [r,g,b] array into a rgba() css color
-                ctx.fillStyle = "rgba(" + color + ", " + opts.fillOpacity + ")";
-                // set stroke and shadow the same solid rgb() color
-                ctx.strokeStyle = ctx.shadowColor = "rgb(" + color + ")";
-                ctx.lineWidth = opts.lineWidth;
-                ctx.shadowBlur = opts.glow;
-                ctx.globalCompositeOperation = opts.blend;
-                var m = HEIGHT / 2; // the vertical middle of the canvas
-                // for the curve with 5 peaks we need 15 control points
-                // calculate how much space is left around it
-                var offset = (WIDTH - 15 * opts.width) / 2;
-                // calculate the 15 x-offsets
-                var x = range(15).map(function (i) {return offset + channel * opts.shift + i * opts.width;});
-                // pick some frequencies to calculate the y values
-                // scale based on position so that the center is always bigger
-                var y = range(5).map(function (i) {return Math.max(0, m - scale(i) * freq(channel, i));});
-                var h = 2 * m;
-                ctx.beginPath();
-                ctx.moveTo(0, m); // start in the middle of the left side
-                ctx.lineTo(x[0], m + 1); // straight line to the start of the first peak
-                ctx.bezierCurveTo(x[1], m + 1, x[2], y[0], x[3], y[0]); // curve to 1st value
-                ctx.bezierCurveTo(x[4], y[0], x[4], y[1], x[5], y[1]); // 2nd value
-                ctx.bezierCurveTo(x[6], y[1], x[6], y[2], x[7], y[2]); // 3rd value
-                ctx.bezierCurveTo(x[8], y[2], x[8], y[3], x[9], y[3]); // 4th value
-                ctx.bezierCurveTo(x[10], y[3], x[10], y[4], x[11], y[4]); // 5th value
-                ctx.bezierCurveTo(x[12], y[4], x[12], m, x[13], m); // curve back down to the middle
-                ctx.lineTo(1000, m + 1); // straight line to the right edge
-                ctx.lineTo(x[13], m - 1); // and back to the end of the last peak
-                // now the same in reverse for the lower half of out shape
-                ctx.bezierCurveTo(x[12], m, x[12], h - y[4], x[11], h - y[4]);
-                ctx.bezierCurveTo(x[10], h - y[4], x[10], h - y[3], x[9], h - y[3]);
-                ctx.bezierCurveTo(x[8], h - y[3], x[8], h - y[2], x[7], h - y[2]);
-                ctx.bezierCurveTo(x[6], h - y[2], x[6], h - y[1], x[5], h - y[1]);
-                ctx.bezierCurveTo(x[4], h - y[1], x[4], h - y[0], x[3], h - y[0]);
-                ctx.bezierCurveTo(x[2], h - y[0], x[1], m, x[0], m);
-                ctx.lineTo(0, m); // close the path by going back to the start
-                ctx.fill();
-                ctx.stroke();
-            }
-            /**
-             * requestAnimationFrame handler that drives the visualization
-             */
-            function visualize() {
-                // set analysert props in the loop react on dat.gui changes
-                analyser.smoothingTimeConstant = opts.smoothing;
-                analyser.fftSize = Math.pow(2, opts.fft);
-                analyser.minDecibels = opts.minDecibels;
-                analyser.maxDecibels = 0;
-                analyser.getByteFrequencyData(freqs);
-                // set size to clear the canvas on each frame
-                canvas.width = WIDTH;
-                canvas.height = HEIGHT;
-                // draw three curves (R/G/B)
-                path(0);
-                path(1);
-                path(2);
-                // schedule next paint
-                requestAnimationFrame(visualize);
-            }
-        },
-        rainbowCircleVisualizer: function(zIndex){
-            /* SOUND */
-            // Audio vars
-            var audioCtx = new AudioContext(),
-                analyser,
-                bufferLength,
-                step,
-                frequencyData,
-                waveData;
-            // Get microphone input
-            if(navigator.webkitGetUserMedia) {
-                navigator.webkitGetUserMedia(
-                    { audio: true },
-                    doAudioStuff,
-                    function(error) {
-                        canvas.width = 0;
-                        canvas.height = 0;
-                        qmLog.error('Audio error: ' + error.name);
-                    }
-                );
-            } else {
-                navigator.mediaDevices.getUserMedia({audio: true})
-                    .then(doAudioStuff)
-                    .catch(function(error) {
-                        qmLog.error('Audio error: ' + error.name);
-                    });
-            }
-            // Do the thing
-            function doAudioStuff(mediaStream){
-                analyser = audioCtx.createAnalyser();
-                analyser.smoothingTimeConstant = 0.97;
-                analyser.fftSize = 1024;
-                step = analyser.fftSize / 16;
-                bufferLength = analyser.frequencyBinCount;
-                frequencyData = new Uint8Array(bufferLength);
-                waveData = new Uint8Array(bufferLength);
-                window.source = audioCtx.createMediaStreamSource(mediaStream);
-                source.connect(analyser);
-                animate();
-            }
-            // Not used
-            function averageVolume(data) {
-                var value = 0,
-                    l = data.length;
-                for(var i =0; i < l; i++) {
-                    value += data[i];
-                }
-                return value / l;
-            }
-            /* VISION */
-            var canvas = document.getElementById('rainbow-canvas'),
-                ctx = canvas.getContext('2d'),
-                w, h, w2, h2, h3, h4; // Canvas sizes
-            //if(zIndex !== null){canvas.style.zIndex = zIndex;}
-            function setCanvasSizes() {
-                w = canvas.width = window.innerWidth,
-                    h = canvas.height = window.innerHeight,
-                    w2 = w/2,
-                    h2 = h/2,
-                    h3 = h/3,
-                    h4 = h/4;
-            }
-            setCanvasSizes();
-            function byteToNum(byte,min,max) {
-                var hue = (byte / 128) * (max - min) + min;
-                return Math.round(hue);
-            }
-            /* SOUND & VISION */
-            // Animate frames
-            function animate() {
-                analyser.getByteFrequencyData(frequencyData);
-                analyser.getByteTimeDomainData(waveData);
-                ctx.strokeStyle = 'hsl(' + byteToNum(frequencyData[0],1000,3600) + ', 90%, 60%)';
-                ctx.fillStyle = 'hsla(250,10%,10%,0.09)';
-                ctx.fillRect(0,0,w,h);
-                /* Lines */
-                ctx.beginPath();
-                for(var i = 0; i < bufferLength; i++) {
-                    ctx.lineTo(Math.sin(frequencyData[i * step] / 20) * h3 + w2,
-                        Math.cos(frequencyData[i * step] / 20) * h3 + h2);
-                }
-                ctx.closePath();
-                ctx.stroke();
-                /* Circles */
-                for(var i = 0; i < bufferLength; i++) {
-                    ctx.beginPath();
-                    ctx.arc(w2, h2, byteToNum(waveData[i * step] + frequencyData[i * step],h4,h3), 0, Math.PI*2 );
-                    ctx.closePath();
-                    ctx.stroke();
-                }
-                requestAnimationFrame(animate);
-            }
-            window.addEventListener('resize',function(){
-                setCanvasSizes();
             });
         },
         getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
@@ -3967,35 +3651,7 @@ window.qm = {
                     qm.speech.fallbackMessage(tag);
                 }
             }
-        },
-        showRobot: function(startListening){
-
-        },
-        getRobotElement(){
-            var robot = document.querySelector('#robot');
-            return robot;
-        },
-        getRobotClass(){
-            var robot = document.querySelector('.robot');
-            return robot;
-        },
-        showVisualizer: function(zIndex){
-            var visualizer = document.getElementById('rainbow-canvas');
-            visualizer.style.display = "block";
-            var splash = document.getElementById('splash-screen');
-            if(splash){
-                splash.style.opacity = "0.5";
-                splash.style.filter  = 'alpha(opacity=50)'; // IE fallback
-            }
-            setTimeout(function(){
-                qm.speech.rainbowCircleVisualizer(zIndex);
-            }, 1);
-        },
-        hideVisualizer: function(){
-            qm.speech.abortListening();
-            var visualizer = document.getElementById('rainbow-canvas');
-            visualizer.style.display = "none";
-        },
+        }
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){
@@ -4425,7 +4081,7 @@ window.qm = {
                 return null;
             }
             var fromGlobals = qm.storage.getGlobal(key);
-            if(fromGlobals){
+            if(fromGlobals !== null && fromGlobals !== "undefined" && fromGlobals !== "null"){
                 qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
@@ -5777,6 +5433,362 @@ window.qm = {
                 successHandler(match);
             });
         }
+    },
+    visualizer: {
+        showing: false,
+        hide: function(){
+            qm.speech.abortListening();
+            var visualizer = qm.visualizer.getElement();
+            visualizer.style.display = "none";
+        },
+        show: function(){
+            var visualizer = qm.visualizer.getElement();
+            visualizer.style.display = "block";
+            var splash = document.getElementById('splash-screen');
+            if(splash){
+                splash.style.opacity = "0.5";
+                splash.style.filter  = 'alpha(opacity=50)'; // IE fallback
+            }
+            setTimeout(function(){
+                qm.visualizer.rainbowCircleVisualizer();
+            }, 1);
+        },
+        getElement: function(){
+            var element = document.querySelector('#rainbow-canvas');
+            return element;
+        },
+        toggle: function () {
+            if(qm.visualizer.showing){
+                qm.visualizer.hide();
+            } else {
+                qm.visualizer.show();
+            }
+        },
+        rainbowCircleVisualizer: function(){
+            /* SOUND */
+            // Audio vars
+            var audioCtx = new AudioContext(),
+                analyser,
+                bufferLength,
+                step,
+                frequencyData,
+                waveData;
+            // Get microphone input
+            if(navigator.webkitGetUserMedia) {
+                navigator.webkitGetUserMedia(
+                    { audio: true },
+                    doAudioStuff,
+                    function(error) {
+                        canvas.width = 0;
+                        canvas.height = 0;
+                        qmLog.error('Audio error: ' + error.name);
+                    }
+                );
+            } else {
+                navigator.mediaDevices.getUserMedia({audio: true})
+                    .then(doAudioStuff)
+                    .catch(function(error) {
+                        qmLog.error('Audio error: ' + error.name);
+                    });
+            }
+            // Do the thing
+            function doAudioStuff(mediaStream){
+                analyser = audioCtx.createAnalyser();
+                analyser.smoothingTimeConstant = 0.97;
+                analyser.fftSize = 1024;
+                step = analyser.fftSize / 16;
+                bufferLength = analyser.frequencyBinCount;
+                frequencyData = new Uint8Array(bufferLength);
+                waveData = new Uint8Array(bufferLength);
+                window.source = audioCtx.createMediaStreamSource(mediaStream);
+                source.connect(analyser);
+                animate();
+            }
+            // Not used
+            function averageVolume(data) {
+                var value = 0,
+                    l = data.length;
+                for(var i =0; i < l; i++) {
+                    value += data[i];
+                }
+                return value / l;
+            }
+            /* VISION */
+            var canvas = document.getElementById('rainbow-canvas'),
+                ctx = canvas.getContext('2d'),
+                w, h, w2, h2, h3, h4; // Canvas sizes
+            //if(zIndex !== null){canvas.style.zIndex = zIndex;}
+            function setCanvasSizes() {
+                w = canvas.width = window.innerWidth,
+                    h = canvas.height = window.innerHeight,
+                    w2 = w/2,
+                    h2 = h/2,
+                    h3 = h/3,
+                    h4 = h/4;
+            }
+            setCanvasSizes();
+            function byteToNum(byte,min,max) {
+                var hue = (byte / 128) * (max - min) + min;
+                return Math.round(hue);
+            }
+            /* SOUND & VISION */
+            // Animate frames
+            function animate() {
+                analyser.getByteFrequencyData(frequencyData);
+                analyser.getByteTimeDomainData(waveData);
+                ctx.strokeStyle = 'hsl(' + byteToNum(frequencyData[0],1000,3600) + ', 90%, 60%)';
+                ctx.fillStyle = 'hsla(250,10%,10%,0.09)';
+                ctx.fillRect(0,0,w,h);
+                /* Lines */
+                ctx.beginPath();
+                for(var i = 0; i < bufferLength; i++) {
+                    ctx.lineTo(Math.sin(frequencyData[i * step] / 20) * h3 + w2,
+                        Math.cos(frequencyData[i * step] / 20) * h3 + h2);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                /* Circles */
+                for(var i = 0; i < bufferLength; i++) {
+                    ctx.beginPath();
+                    ctx.arc(w2, h2, byteToNum(waveData[i * step] + frequencyData[i * step],h4,h3), 0, Math.PI*2 );
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                requestAnimationFrame(animate);
+            }
+            window.addEventListener('resize',function(){
+                setCanvasSizes();
+            });
+        },
+        siriVisualizer: function(){
+            // the canvas size
+            var WIDTH = 1000;
+            var HEIGHT = 400;
+            var ctx = canvas.getContext("2d");
+            // options to tweak the look
+            var opts = {
+                smoothing: 0.6,
+                fft: 5,
+                minDecibels: -70,
+                scale: 0.2,
+                glow: 10,
+                color1: [203, 36, 128],
+                color2: [41, 200, 192],
+                color3: [24, 137, 218],
+                fillOpacity: 0.6,
+                lineWidth: 1,
+                blend: "screen",
+                shift: 50,
+                width: 60,
+                amp: 1 };
+            if(typeof dat !== "undefined"){
+                var gui = new dat.GUI(); // Interactive dat.GUI controls
+                gui.close(); // hide them by default
+                // connect gui to opts
+                gui.addColor(opts, "color1");
+                gui.addColor(opts, "color2");
+                gui.addColor(opts, "color3");
+                gui.add(opts, "fillOpacity", 0, 1);
+                gui.add(opts, "lineWidth", 0, 10).step(1);
+                gui.add(opts, "glow", 0, 100);
+                gui.add(opts, "blend", [
+                    "normal",
+                    "multiply",
+                    "screen",
+                    "overlay",
+                    "lighten",
+                    "difference"]);
+                gui.add(opts, "smoothing", 0, 1);
+                gui.add(opts, "minDecibels", -100, 0);
+                gui.add(opts, "amp", 0, 5);
+                gui.add(opts, "width", 0, 60);
+                gui.add(opts, "shift", 0, 200);
+            }
+            var context = new AudioContext();
+            var analyser = context.createAnalyser();
+            // Array to hold the analyzed frequencies
+            var freqs = new Uint8Array(analyser.frequencyBinCount);
+            navigator.getUserMedia =
+                navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia;
+            navigator.getUserMedia({ audio: true }, onStream, onStreamError);
+            /**
+             * Create an input source from the user media stream, connect it to
+             * the analyser and start the visualization.
+             */
+            function onStream(stream) {
+                var input = context.createMediaStreamSource(stream);
+                input.connect(analyser);
+                requestAnimationFrame(visualize);
+            }
+            /**
+             * Display an error message.
+             */
+            function onStreamError(e) {
+                document.body.innerHTML = "<h1>This pen only works with https://</h1>";
+                console.error(e);
+            }
+            /**
+             * Utility function to create a number range
+             */
+            function range(i) {
+                return Array.from(Array(i).keys());
+            }
+            // shuffle frequencies so that neighbors are not too similar
+            var shuffle = [1, 3, 0, 4, 2];
+            /**
+             * Pick a frequency for the given channel and value index.
+             *
+             * The channel goes from 0 to 2 (R/G/B)
+             * The index goes from 0 to 4 (five peaks in the curve)
+             *
+             * We have 32 (2^opts.fft) frequencies to choose from and
+             * we want to visualize most of the spectrum. This function
+             * returns the bands from 0 to 28 in a nice distribution.
+             */
+            function freq(channel, i) {
+                var band = 2 * channel + shuffle[i] * 6;
+                return freqs[band];
+            }
+            /**
+             * Returns the scale factor fot the given value index.
+             * The index goes from 0 to 4 (curve with 5 peaks)
+             */
+            function scale(i) {
+                var x = Math.abs(2 - i); // 2,1,0,1,2
+                var s = 3 - x; // 1,2,3,2,1
+                return s / 3 * opts.amp;
+            }
+            /**
+             *  This function draws a path that roughly looks like this:
+             *       .
+             * __/\_/ \_/\__
+             *   \/ \ / \/
+             *       '
+             *   1 2 3 4 5
+             *
+             * The function is called three times (with channel 0/1/2) so that the same
+             * basic shape is drawn in three different colors, slightly shifted and
+             * each visualizing a different set of frequencies.
+             */
+            function path(channel) {
+                // Read color1, color2, color2 from the opts
+                var color = opts["color" + (channel + 1)].map(Math.floor);
+                // turn the [r,g,b] array into a rgba() css color
+                ctx.fillStyle = "rgba(" + color + ", " + opts.fillOpacity + ")";
+                // set stroke and shadow the same solid rgb() color
+                ctx.strokeStyle = ctx.shadowColor = "rgb(" + color + ")";
+                ctx.lineWidth = opts.lineWidth;
+                ctx.shadowBlur = opts.glow;
+                ctx.globalCompositeOperation = opts.blend;
+                var m = HEIGHT / 2; // the vertical middle of the canvas
+                // for the curve with 5 peaks we need 15 control points
+                // calculate how much space is left around it
+                var offset = (WIDTH - 15 * opts.width) / 2;
+                // calculate the 15 x-offsets
+                var x = range(15).map(function (i) {return offset + channel * opts.shift + i * opts.width;});
+                // pick some frequencies to calculate the y values
+                // scale based on position so that the center is always bigger
+                var y = range(5).map(function (i) {return Math.max(0, m - scale(i) * freq(channel, i));});
+                var h = 2 * m;
+                ctx.beginPath();
+                ctx.moveTo(0, m); // start in the middle of the left side
+                ctx.lineTo(x[0], m + 1); // straight line to the start of the first peak
+                ctx.bezierCurveTo(x[1], m + 1, x[2], y[0], x[3], y[0]); // curve to 1st value
+                ctx.bezierCurveTo(x[4], y[0], x[4], y[1], x[5], y[1]); // 2nd value
+                ctx.bezierCurveTo(x[6], y[1], x[6], y[2], x[7], y[2]); // 3rd value
+                ctx.bezierCurveTo(x[8], y[2], x[8], y[3], x[9], y[3]); // 4th value
+                ctx.bezierCurveTo(x[10], y[3], x[10], y[4], x[11], y[4]); // 5th value
+                ctx.bezierCurveTo(x[12], y[4], x[12], m, x[13], m); // curve back down to the middle
+                ctx.lineTo(1000, m + 1); // straight line to the right edge
+                ctx.lineTo(x[13], m - 1); // and back to the end of the last peak
+                // now the same in reverse for the lower half of out shape
+                ctx.bezierCurveTo(x[12], m, x[12], h - y[4], x[11], h - y[4]);
+                ctx.bezierCurveTo(x[10], h - y[4], x[10], h - y[3], x[9], h - y[3]);
+                ctx.bezierCurveTo(x[8], h - y[3], x[8], h - y[2], x[7], h - y[2]);
+                ctx.bezierCurveTo(x[6], h - y[2], x[6], h - y[1], x[5], h - y[1]);
+                ctx.bezierCurveTo(x[4], h - y[1], x[4], h - y[0], x[3], h - y[0]);
+                ctx.bezierCurveTo(x[2], h - y[0], x[1], m, x[0], m);
+                ctx.lineTo(0, m); // close the path by going back to the start
+                ctx.fill();
+                ctx.stroke();
+            }
+            /**
+             * requestAnimationFrame handler that drives the visualization
+             */
+            function visualize() {
+                // set analysert props in the loop react on dat.gui changes
+                analyser.smoothingTimeConstant = opts.smoothing;
+                analyser.fftSize = Math.pow(2, opts.fft);
+                analyser.minDecibels = opts.minDecibels;
+                analyser.maxDecibels = 0;
+                analyser.getByteFrequencyData(freqs);
+                // set size to clear the canvas on each frame
+                canvas.width = WIDTH;
+                canvas.height = HEIGHT;
+                // draw three curves (R/G/B)
+                path(0);
+                path(1);
+                path(2);
+                // schedule next paint
+                requestAnimationFrame(visualize);
+            }
+        },
+        visualizeVoice: function(type, zIndex){
+            if(type === 'siri'){return qm.visualizer.siriVisualizer();}
+            if(type === 'rainbow'){return qm.visualizer.rainbowCircleVisualizer(zIndex);}
+            var paths = document.getElementsByTagName('path');
+            var visualizer = document.getElementById('visualizer');
+            if(!visualizer){return;}
+            var mask = visualizer.getElementById('mask');
+            var h = document.getElementsByTagName('h1')[0];
+            var path;
+            var report = 0;
+            var soundAllowed = function (stream) {
+                //Audio stops listening in FF without // window.persistAudioStream = stream;
+                //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
+                //https://support.mozilla.org/en-US/questions/984179
+                window.persistAudioStream = stream;
+                h.innerHTML = "Thanks";
+                h.setAttribute('style', 'opacity: 0;');
+                var audioContent = new AudioContext();
+                var audioStream = audioContent.createMediaStreamSource( stream );
+                var analyser = audioContent.createAnalyser();
+                audioStream.connect(analyser);
+                analyser.fftSize = 1024;
+                var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
+                visualizer.setAttribute('viewBox', '0 0 255 255');
+                //Through the frequencyArray has a length longer than 255, there seems to be no
+                //significant data after this point. Not worth visualizing.
+                for (var i = 0 ; i < 255; i++) {
+                    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('stroke-dasharray', '4,1');
+                    mask.appendChild(path);
+                }
+                var doDraw = function () {
+                    requestAnimationFrame(doDraw);
+                    analyser.getByteFrequencyData(frequencyArray);
+                    var adjustedLength;
+                    for (var i = 0 ; i < 255; i++) {
+                        adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+                        paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
+                    }
+                }
+                doDraw();
+            }
+            var soundNotAllowed = function (error) {
+                h.innerHTML = "You must allow your microphone.";
+                console.log(error);
+            }
+            /*window.navigator = window.navigator || {};
+            /*navigator.getUserMedia =  navigator.getUserMedia       ||
+                                      navigator.webkitGetUserMedia ||
+                                      navigator.mozGetUserMedia    ||
+                                      null;*/
+            navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
+        },
     },
     webNotifications: {
         initializeFirebase: function(){

@@ -1343,6 +1343,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         rootScope: {
             setProperty: function(property, value, callback){  // Avoid Error: [$rootScope:inprog] $apply already in progress
+                if(!property){
+                    qmLog.error("No property name given to rootScope!");
+                    return value;
+                }
                 if(typeof $rootScope[property] !== "undefined" && $rootScope[property] === value){return value;}
                 $timeout(function() {
                     var string = value;
@@ -6264,8 +6268,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
         qmService.deploy.setVersionInfo();
         qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
-        qmService.rootScope.setProperty('speechAvailable', qm.speech.getSpeechAvailable());
-        //if(qm.speech.getSpeechEnabled()){$timeout(function(){qm.speech.showRobot(true);}, 100);}
+        qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
+        if(qm.speech.getSpeechAvailable()){qmService.rootScope.setProperty(qm.items.speechEnabled, qm.speech.getSpeechEnabled());}
         qm.rootScope = $rootScope;
     };
     function checkHoursSinceLastPushNotificationReceived() {
