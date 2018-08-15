@@ -4048,6 +4048,33 @@ window.qm = {
             apiInstance.deleteShare(clientIdToRevoke, params, callback);
         }
     },
+    splash: {
+        text: {
+            hide: function(){
+                qm.splash.text.getElement().style.display = "none";
+            },
+            show: function(){
+                qm.splash.text.getElement().style.display = "block";
+            },
+            getElement: function(){
+                var element = document.querySelector('#splash-text');
+                return element;
+            },
+        },
+        hide: function(){
+            qm.splash.getElement().style.display = "none";
+        },
+        show: function(){
+            qm.splash.getElement().style.display = "block";
+        },
+        getElement: function(){
+            var appContainer = document.querySelector('#splash-screen');
+            return appContainer;
+        },
+        setOpacity: function(opacity){
+            qm.splash.getElement().style.opacity = opacity;
+        }
+    },
     studiesCreated: {
         getStudiesCreatedFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);

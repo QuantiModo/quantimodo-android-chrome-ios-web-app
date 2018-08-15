@@ -31,7 +31,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         },
         next : function(index) {
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
-            if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
+            var intro = $rootScope.appSettings.appDesign.intro.active;
+            if(index === intro.length - 1){
+                $scope.myIntro.startApp();
+            } else {
+                $ionicSlideBoxDelegate.next();
+            }
+            qm.splash.text.hide();
         },
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
@@ -52,19 +58,18 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmService.goToDefaultState();
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
-            $scope.myIntro.ready = true;
+
         }
     });
     function readSlide() {
         if(!qm.speech.getSpeechAvailable()){return;}
         qm.music.play();
         var slide = getSlide();
-        $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
         $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
         qm.speech.talkRobot(
             //slide.title + ".  " +
             slide.bodyText + ".  "
-            //, $scope.myIntro.next
+            , $scope.myIntro.next
         );
     }
     function getSlide(){
@@ -73,16 +78,23 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
+        qm.splash.text.show();
         if(navigator && navigator.splashscreen) {
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
-        if(qm.speech.getSpeechAvailable()){readMachinesOfLovingGrace();}
+        if(qm.speech.getSpeechAvailable()){
+            readMachinesOfLovingGrace();
+        } else {
+            $scope.myIntro.ready = true;
+        }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
         qm.speech.hideVisualizer();
+        qm.appContainer.setOpacity(1);
+        qm.speech.hideRobot();
     });
     function readMachinesOfLovingGrace() {
         qm.speech.showRobot();
@@ -113,7 +125,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             "returned to our mammal " +
             "brothers and sisters, " +
             "and all watched over " +
-            "by machines of loving grace! ",
-            readSlide);
+            "by machines of loving grace!  " +
+            "I'm Dr. Roboto!  ",
+            function () {
+                $scope.myIntro.ready = true;
+                $timeout(function () {
+                    readSlide();
+                }, 1);
+            });
     }
 }]);
