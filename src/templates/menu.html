@@ -100,3 +100,11 @@
 <div ng-include="'templates/robot.html'"></div>
 <canvas id="rainbow-canvas" style="position: absolute; z-index: -2; display: none;"></canvas>
 <div ng-include="'templates/splash.html'"></div>
+<div id="mute-button" ng-if="speechAvailable" style="bottom: 5px; z-index: 1; position: absolute;">
+    <md-button class="md-icon-button md-accent" style="font-size: 30px;" ng-click="disableAudio()" aria-label="mute" ng-if="speechEnabled">
+        <md-icon class="ion-volume-high"><md-tooltip md-direction="down">Mute</md-tooltip></md-icon>
+    </md-button>
+    <md-button class="md-icon-button md-accent" style="font-size: 30px;" ng-click="enableAudio()" aria-label="mute" ng-if="!speechEnabled">
+        <md-icon class="ion-volume-mute"><md-tooltip md-direction="down">Enable Speech</md-tooltip></md-icon>
+    </md-button>
+</div>

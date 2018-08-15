@@ -42,7 +42,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
+            if(index > 0 ){qm.splash.text.hide();}
             readSlide();
+            var slide = $rootScope.appSettings.appDesign.intro.active[index];
             if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = slide.backgroundColor;}
             if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = slide.textColor;}
         }
@@ -79,25 +81,29 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
+        qm.splash.text.hide();
         qm.splash.text.show();
         if(navigator && navigator.splashscreen) {
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
         function start(){if(qm.speech.getSpeechEnabled()){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}}
-        if(qm.speech.getSpeechAvailable() && qm.speech.getSpeechEnabled() === null){qmService.dialogs.mayISpeak(function (answer) {start();});} else {start();}
+        var speechEnabled = qm.speech.getSpeechEnabled();
+        if(qm.speech.getSpeechAvailable() && speechEnabled === null){
+            qmService.dialogs.mayISpeak(function (answer) {start();});
+        } else {start();}
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
-        qm.speech.hideVisualizer();
+        qm.visualizer.hide();
         qm.appContainer.setOpacity(1);
         qm.robot.hide();
     });
     function readMachinesOfLovingGrace() {
         qm.robot.show();
         qm.music.play();
-        qm.speech.showVisualizer("1");
+        qm.visualizer.show();
         qm.appContainer.setOpacity(0.5);
         qm.speech.talkRobot("I like to think (and " +
             "the sooner the better!) " +
