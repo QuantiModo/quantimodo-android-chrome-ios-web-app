@@ -76,15 +76,15 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             navigator.splashscreen.hide();
         }
         if(qm.speech.getSpeechAvailable()){
-            qmService.speech.showRobot();
+            qm.speech.showRobot();
             qm.music.play();
-            qmService.speech.showVisualizer("1");
+            qm.speech.showVisualizer("1");
             $timeout(function () {readSlide();}, 1000);  // Wait for robot to render
         }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
-        qmService.speech.hideVisualizer();
+        qm.speech.hideVisualizer();
     });
 }]);
