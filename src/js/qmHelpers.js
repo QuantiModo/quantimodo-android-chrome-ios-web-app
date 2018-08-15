@@ -23,6 +23,8 @@ window.qm = {
             return appContainer;
         },
         setOpacity: function(opacity){
+            var backgroundColor = (opacity < 1) ? 'black' : 'white';
+            qm.appContainer.getAppContainer().style.backgroundColor = backgroundColor;
             qm.appContainer.getAppContainer().style.opacity = opacity;
         }
     },
@@ -4054,7 +4056,12 @@ window.qm = {
                 qm.splash.text.getElement().style.display = "none";
             },
             show: function(){
-                qm.splash.text.getElement().style.display = "block";
+                var element = qm.splash.text.getElement();
+                if(element){
+                    element.style.display = "block";
+                } else {
+                    qmLog.error("Could not get splash.text element");
+                }
             },
             getElement: function(){
                 var element = document.querySelector('#splash-text');
@@ -5400,7 +5407,7 @@ window.qm = {
             if(commonVariables && commonVariables.length){
                 successHandler(commonVariables);
             } else {
-                var message = "No common variables found matching params" + JSON.stringify(requestParams);
+                var message = "No CommonVariablesFromJsonFile found matching params" + JSON.stringify(requestParams);
                 qmLog.info(message);
                 if(errorHandler){errorHandler(message);}
             }
@@ -5429,7 +5436,7 @@ window.qm = {
             qm.commonVariablesHelper.getCommonVariablesFromJsonFile(requestParams, function (commonVariables) {
                 getFromLocalForage(commonVariables);
             }, function (error) {
-                qmLog.error(error);
+                qmLog.info(error);
                 getFromLocalForage();
             });
         },
