@@ -1658,7 +1658,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var backView = $ionicHistory.backView();
                     qmLog.info("backView.stateName is " + backView.stateName);
                     var stateId = backView.stateName;
-                    skipSearchPages();
+                    //skipSearchPages();  // TODO:  If we skipSearchPages we have to remove intro page as well
                     if(providedStateParams){
                         addProvidedStateParamsToBackViewStateParams();
                     }
