@@ -21,6 +21,9 @@ window.qm = {
         getAppContainer: function(){
             var appContainer = document.querySelector('#app-container');
             return appContainer;
+        },
+        setOpacity: function(opacity){
+            qm.appContainer.getAppContainer().style.opacity = opacity;
         }
     },
     appMode: {
@@ -428,7 +431,7 @@ window.qm = {
                 if(xhr.readyState === XMLHttpRequest.DONE) {
                     var fallback = xhr.responseText;
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    successHandler(responseObject);
+                    if(successHandler){successHandler(responseObject);}
                 }
             };
             xhr.send(JSON.stringify(body));
@@ -3381,8 +3384,7 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            var robot = qm.speech.getRobotElement();
-            robot.classList.remove('robot_speaking');
+            qm.speech.getRobotClass().classList.remove('robot_speaking');
             speechSynthesis.cancel();
             if(resumeListening){
                 var duration = 1.5;
@@ -3427,7 +3429,6 @@ window.qm = {
                 });
                 return;
             }
-            var robot = qm.speech.getRobotElement();
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
                 window.speechSynthesis.resume();
@@ -3441,7 +3442,7 @@ window.qm = {
             };
             utterance.text = text;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
-            robot.classList.add('robot_speaking');
+            qm.speech.getRobotClass().classList.add('robot_speaking');
             qm.speech.pauseListening();
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
@@ -3934,13 +3935,17 @@ window.qm = {
                 qmLog.error("No robot!");
                 return false;
             }
-            robot.display = "block";
-            qm.appContainer.hide();
+            robot.style.display = "block";
+            //qm.appContainer.hide();
             qm.speech.setSpeechEnabled(true);
-            setTimeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
+            //setTimeout(function(){qm.speech.deepThought(qm.speech.getMostRecentNotificationAndTalk);}, 100);
             if(startListening !== false){qm.speech.showVisualizer("1");}
         },
         getRobotElement(){
+            var robot = document.querySelector('#robot');
+            return robot;
+        },
+        getRobotClass(){
             var robot = document.querySelector('.robot');
             return robot;
         },
