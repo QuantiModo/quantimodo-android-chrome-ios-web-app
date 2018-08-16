@@ -9,7 +9,25 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     $scope.state = {
         hideSplashText: false,
         hideCircle: false,
-        backgroundImage: null
+        backgroundImage: null,
+        splashBackground: true,
+        disableAudio: function(){
+        $timeout(function () {
+            qmService.rootScope.setProperty('speechEnabled', false);
+            qm.speech.setSpeechEnabled(false);
+            qm.robot.hide();
+            qm.visualizer.hide();
+        }, 1);
+    },
+        enableAudio: function(){
+            $timeout(function () {
+                qmService.rootScope.setProperty('speechEnabled', true);
+                qm.speech.setSpeechEnabled(true);
+                qm.robot.show();
+                //qm.visualizer.show();
+                readSlide();
+            }, 1);
+        }
     };
     $scope.myIntro = {
         ready : false,
@@ -31,6 +49,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         },
         next : function(index) {
+            if(!index && index !== 0){index = $scope.myIntro.slideIndex;}
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
             var intro = $rootScope.appSettings.appDesign.intro.active;
             if(index === intro.length - 1){
@@ -65,6 +84,8 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     });
     function readSlide() {
+        qm.visualizer.hide();
+        qm.microphone.setMicrophoneEnabled(false);
         if(!qm.speech.getSpeechAvailable()){return;}
         if(!qm.speech.getSpeechEnabled()){return;}
         qm.music.play();
@@ -74,7 +95,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qm.speech.talkRobot(
             //slide.title + ".  " +
             slide.bodyText + ".  "
-            //, $scope.myIntro.next
+            , $scope.myIntro.next
         );
         slide.bodyText = null;
     }
@@ -90,10 +111,16 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
+        $scope.state.robotClick = $scope.myIntro.next;
         function start(){if(qm.speech.getSpeechEnabled()){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}}
         var speechEnabled = qm.speech.getSpeechEnabled();
-        if(qm.speech.getSpeechAvailable() && !speechEnabled){
-            qmService.dialogs.mayISpeak(function (answer) {start();});
+        if(true || qm.speech.getSpeechAvailable() && !speechEnabled){
+            qmService.dialogs.mayISpeak(function (answer) {
+                if(!answer){
+                    //$scope.state.hideSplashText
+                }
+                start();
+            });
         } else {
             start();
         }
@@ -107,40 +134,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readMachinesOfLovingGrace() {
         qm.robot.show();
-        qm.music.play();
         qm.visualizer.show();
-
-        qm.speech.talkRobot("I like to think (and " +
-            "the sooner the better!) " +
-            "of a cybernetic meadow " +
-            "where mammals and computers " +
-            "live together in mutually " +
-            "programming harmony " +
-            "like pure water " +
-            "touching clear sky! " +
-            "I like to think " +
-            "(right now, please!) " +
-            "of a cybernetic forest " +
-            "filled with pines and electronics " +
-            "where deer stroll peacefully " +
-            "past computers " +
-            "as if they were flowers " +
-            "with spinning blossoms.  " +
-            "I like to think " +
-            "(it has to be!) " +
-            "of a cybernetic ecology! " +
-            "where we are free of our labors " +
-            "and joined back to nature, " +
-            "returned to our mammal " +
-            "brothers and sisters, " +
-            "and all watched over " +
-            "by machines of loving grace!  " +
-            "I'm Dr. Roboto!  ",
-            function () {
-                $scope.myIntro.ready = true;
-                $timeout(function () {
-                    readSlide();
-                }, 1);
-            });
+        function callback(){
+            $scope.myIntro.ready = true;
+            $timeout(function () {readSlide();}, 1);
+        }
+        callback();
+        //qm.speech.machinesOfLovingGrace(callback);
+        qm.music.play();
     }
 }]);

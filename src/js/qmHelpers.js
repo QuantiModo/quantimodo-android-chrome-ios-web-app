@@ -2463,8 +2463,6 @@ window.qm = {
         },
         setMicrophoneEnabled: function(value){
             qmLog.info("set microphoneEnabled " + value);
-            qm.speech.shutUpRobot();
-            qm.music.fadeOut();
             qm.rootScope[qm.items.microphoneEnabled] = value;
             return qm.storage.setItem(qm.items.microphoneEnabled, value);
         },
@@ -3423,7 +3421,7 @@ window.qm = {
             qm.robot.getElement().style.display = "none";
             qm.speech.setSpeechEnabled(false);
             qm.visualizer.hide();
-            qm.appContainer.show();
+            //qm.appContainer.show();
             qm.robot.showing = qm.rootScope.showRobot = false;
         },
         show: function(startListening){
@@ -3493,8 +3491,11 @@ window.qm = {
         },
         setSpeechEnabled: function(value){
             qmLog.info("set speechEnabled " + value);
-            qm.speech.shutUpRobot();
-            qm.music.fadeOut();
+            if(!value){
+                qm.speech.shutUpRobot();
+                qm.music.fadeOut();
+            }
+            qm.rootScope[qm.items.speechEnabled] = value;
             return qm.storage.setItem(qm.items.speechEnabled, value);
         },
         getSpeechAvailable: function(){
@@ -3690,6 +3691,34 @@ window.qm = {
                     qm.speech.fallbackMessage(tag);
                 }
             }
+        },
+        machinesOfLovingGrace: function(callback){
+            qm.speech.talkRobot("I like to think (and " +
+                "the sooner the better!) " +
+                "of a cybernetic meadow " +
+                "where mammals and computers " +
+                "live together in mutually " +
+                "programming harmony " +
+                "like pure water " +
+                "touching clear sky! " +
+                "I like to think " +
+                "(right now, please!) " +
+                "of a cybernetic forest " +
+                "filled with pines and electronics " +
+                "where deer stroll peacefully " +
+                "past computers " +
+                "as if they were flowers " +
+                "with spinning blossoms.  " +
+                "I like to think " +
+                "(it has to be!) " +
+                "of a cybernetic ecology! " +
+                "where we are free of our labors " +
+                "and joined back to nature, " +
+                "returned to our mammal " +
+                "brothers and sisters, " +
+                "and all watched over " +
+                "by machines of loving grace!  " +
+                "I'm Dr. Roboto!  ", callback);
         }
     },
     shares: {

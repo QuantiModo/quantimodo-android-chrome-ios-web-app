@@ -336,22 +336,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
-    $scope.disableAudio = function(){
-        $timeout(function () {
-            qmService.rootScope.setProperty('speechEnabled', false);
-            qm.speech.setSpeechEnabled(false);
-            qm.robot.hide();
-            qm.visualizer.hide();
-        }, 1);
-    };
-    $scope.enableAudio = function(){
-        $timeout(function () {
-            qmService.rootScope.setProperty('speechEnabled', true);
-            qm.speech.setSpeechEnabled(true);
-            qm.robot.show();
-            qm.visualizer.show();
-        }, 1);
-    };
+
     $scope.disableMic = function(){
         $timeout(function () {
             qmService.rootScope.setProperty('micEnabled', false);
