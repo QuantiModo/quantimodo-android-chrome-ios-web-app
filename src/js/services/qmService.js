@@ -779,6 +779,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 function noCallback() {
                     qm.speech.setSpeechEnabled(false);
+                    qm.robot.hide();
                     if(callback){callback(false);}
                 }
                 qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
