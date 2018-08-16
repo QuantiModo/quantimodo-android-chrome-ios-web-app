@@ -3,6 +3,21 @@
         <div ng-show="state.hideCircle || !myIntro.ready" ng-include="'templates/splash-logo.html'"></div>
         <div class="splash-grid"></div>
     </div>
+    <div ng-if="state.speechEnabled === null" style="margin-top: 60%;
+                                                    color: white;
+                                                    text-align: center;
+                                                    z-index: 30;
+                                                    position: absolute;
+                                                    top: 0;
+                                                    left: 0;
+                                                    bottom: 0;
+                                                    right: 0;">
+        <h1>May I speak to you?</h1>
+        <div >
+            <md-button id="disableSpeechButton" ng-click="state.setSpeechEnabled(false)"> &nbsp; NO &nbsp; </md-button>
+            <md-button id="enableSpeechButton" ng-click="state.setSpeechEnabled(true)"> &nbsp; YES &nbsp; </md-button>
+        </div>
+    </div>
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
                    style="display: flex; flex-direction: column; justify-content: center;">

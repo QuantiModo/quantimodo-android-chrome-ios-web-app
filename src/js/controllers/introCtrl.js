@@ -11,22 +11,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         hideCircle: false,
         backgroundImage: null,
         splashBackground: true,
-        disableAudio: function(){
-        $timeout(function () {
-            qmService.rootScope.setProperty('speechEnabled', false);
-            qm.speech.setSpeechEnabled(false);
-            qm.robot.hide();
-            qm.visualizer.hide();
-        }, 1);
-    },
-        enableAudio: function(){
-            $timeout(function () {
-                qmService.rootScope.setProperty('speechEnabled', true);
-                qm.speech.setSpeechEnabled(true);
-                qm.robot.show();
-                //qm.visualizer.show();
-                readSlide();
-            }, 1);
+        speechEnabled: null,
+        setSpeechEnabled: function(value){
+            $scope.state.speechEnabled = value;
+            qmService.rootScope.setProperty('speechEnabled', value);
+            qm.speech.setSpeechEnabled(value);
+            if(value){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}
         }
     };
     $scope.myIntro = {
@@ -49,6 +39,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         },
         next : function(index) {
+            qmLog.info("Going to next slide");
             if(!index && index !== 0){index = $scope.myIntro.slideIndex;}
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
             var intro = $rootScope.appSettings.appDesign.intro.active;
@@ -61,6 +52,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         },
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
+            qmLog.info("slideChanged");
             $scope.myIntro.slideIndex = index;
             if(index > 0 ){qm.splash.text.hide();}
             readSlide();
@@ -97,7 +89,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             slide.bodyText + ".  "
             , $scope.myIntro.next
         );
-        slide.bodyText = null;
+        slide.bodyText = null;l
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
@@ -105,25 +97,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
-        qm.splash.text.hide();
         qm.splash.text.show();
         if(navigator && navigator.splashscreen) {
             qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
             navigator.splashscreen.hide();
         }
         $scope.state.robotClick = $scope.myIntro.next;
-        function start(){if(qm.speech.getSpeechEnabled()){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}}
-        var speechEnabled = qm.speech.getSpeechEnabled();
-        if(true || qm.speech.getSpeechAvailable() && !speechEnabled){
-            qmService.dialogs.mayISpeak(function (answer) {
-                if(!answer){
-                    //$scope.state.hideSplashText
-                }
-                start();
-            });
-        } else {
-            start();
-        }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
@@ -137,10 +116,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qm.visualizer.show();
         function callback(){
             $scope.myIntro.ready = true;
-            $timeout(function () {readSlide();}, 1);
+            readSlide();
         }
-        callback();
-        //qm.speech.machinesOfLovingGrace(callback);
+        //callback();
+        qm.speech.machinesOfLovingGrace(callback);
         qm.music.play();
     }
 }]);

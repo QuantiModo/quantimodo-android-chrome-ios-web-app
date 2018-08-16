@@ -40,7 +40,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         });
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
             if(!qm.getUser()){
-                talk("I'm not sure who you are so while you're logging in, take that time to ask yourself who you think you are on a deeper level.");
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }

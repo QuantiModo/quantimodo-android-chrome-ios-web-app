@@ -100,21 +100,21 @@
 <div ng-include="'templates/robot.html'"></div>
 <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; /* opacity: 0; */ pointer-events: none; background-color: transparent;"></canvas>
 <div id="audio-buttons" style="bottom: 5px; z-index: 30; position: absolute; font-size: 30px;">
-    <div id="mute-button" ng-if="state.enableAudio" style="left: 0;">
-        <md-button class="md-icon-button md-accent" ng-click="state.disableAudio()" aria-label="mute" ng-if="speechEnabled">
+    <div id="mute-button" style="left: 0;">
+        <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
             <md-icon class="ion-volume-high"><md-tooltip md-direction="right">Mute</md-tooltip></md-icon>
         </md-button>
-        <md-button class="md-icon-button md-accent" ng-click="state.enableAudio()" aria-label="un-mute" ng-if="!speechEnabled">
+        <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(true)" aria-label="un-mute" ng-if="!speechEnabled">
             <md-icon class="ion-volume-mute"><md-tooltip md-direction="right">Enable Speech</md-tooltip></md-icon>
         </md-button>
     </div>
-<!--    <div id="mic-button" style="left: 20px;">
+    <div id="mic-button" style="left: 20px;">
         <md-button class="md-icon-button md-accent" ng-click="disableMic()" aria-label="enable-microphone" ng-if="micEnabled">
-            <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Mute</md-tooltip></md-icon>
+            <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Turn Off Microphone</md-tooltip></md-icon>
         </md-button>
         <md-button class="md-icon-button md-accent" ng-click="enableMic()" aria-label="disable-microphone" ng-if="!micEnabled">
-            <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Enable Speech</md-tooltip></md-icon>
+            <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Turn On Microphone</md-tooltip></md-icon>
         </md-button>
-    </div>-->
+    </div>
 </div>
 

@@ -295,7 +295,7 @@ angular.module('starter',
             }
         })
         .state(qmStates.intro, {
-            cache: true,
+            cache: false,
             url: "/intro",
             params: {
                 doNotRedirect: true,
