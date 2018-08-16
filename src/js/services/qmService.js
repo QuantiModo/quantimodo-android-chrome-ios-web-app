@@ -5922,6 +5922,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return object;
     };
     qmService.showMaterialAlert = function(title, textContent, ev){
+        if(qm.speech.getSpeechEnabled()){
+            qm.speech.talkRobot(title, function(){
+                qm.speech.talkRobot(textContent);
+            });
+        }
         AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
         function AlertDialogController($scope, $mdDialog, dialogParameters) {
             var self = this;
