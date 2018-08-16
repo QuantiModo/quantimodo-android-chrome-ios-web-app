@@ -1,5 +1,4 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
-    <div ng-include="'templates/splash.html'"></div>
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" >
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
                    style="display: flex; flex-direction: column; justify-content: center;">

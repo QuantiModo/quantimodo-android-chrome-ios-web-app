@@ -2449,7 +2449,7 @@ window.qm = {
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.1;
+            qm.music.player.volume = 0.2;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
@@ -3309,6 +3309,7 @@ window.qm = {
                 qmLog.error("No robot!");
                 return false;
             }
+            qmLog.info("Showing robot");
             qm.robot.getElement().style.display = "block";
             qm.robot.showing = qm.rootScope.showRobot = true;
             qm.speech.setSpeechEnabled(true);

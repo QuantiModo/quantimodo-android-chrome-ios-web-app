@@ -5,8 +5,9 @@
   overflow: hidden;
   -webkit-perspective: 1200px;
   /* perspective: 1200px; */
-  position: relative;
-  z-index: 2;
+  z-index: 3;
+  width: 100%;
+  position: absolute;
 }
 
 .splash-h1 {
@@ -57,7 +58,7 @@
   position: absolute;
   width: 100%;
   bottom: -27%;
-  z-index: 3;
+  z-index: 4;
 }
 
 .splash-grid:after {
