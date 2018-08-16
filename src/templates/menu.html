@@ -109,10 +109,10 @@
         </md-button>
     </div>
     <div id="mic-button" style="left: 20px;">
-        <md-button class="md-icon-button md-accent" ng-click="disableMic()" aria-label="enable-microphone" ng-if="micEnabled">
+        <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(false)" aria-label="enable-microphone" ng-if="micEnabled">
             <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Turn Off Microphone</md-tooltip></md-icon>
         </md-button>
-        <md-button class="md-icon-button md-accent" ng-click="enableMic()" aria-label="disable-microphone" ng-if="!micEnabled">
+        <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(true)" aria-label="disable-microphone" ng-if="!micEnabled">
             <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Turn On Microphone</md-tooltip></md-icon>
         </md-button>
     </div>
