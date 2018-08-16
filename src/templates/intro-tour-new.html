@@ -1,7 +1,9 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
-    <div ng-include="'templates/splash-background.html'"></div>
-    <div ng-hide="state.hideSplashText" ng-include="'templates/splash-logo.html'"></div>
-    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" style="z-index: 2; position: absolute; top: 0;">
+    <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
+        <div ng-show="state.hideCircle || !myIntro.ready" ng-include="'templates/splash-logo.html'"></div>
+        <div class="splash-grid"></div>
+    </div>
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
                    style="display: flex; flex-direction: column; justify-content: center;">
             <div ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
