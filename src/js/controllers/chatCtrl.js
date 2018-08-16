@@ -7,7 +7,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			messages: [],
             userInputString: '',
             visualizationType: 'rainbow', // 'siri', 'rainbow', 'equalizer'
-            listening: qm.speech.listening,
+            listening: qm.microphone.listening,
             circlePage: {
 			    title: null,
                 image: {
@@ -26,7 +26,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             document.body.removeChild(tmp);
         }
 		$scope.state.toggleMicrophone = function(){
-            $scope.state.listening = qm.speech.toggleListening();
+            $scope.state.listening = qm.microphone.toggleListening();
             var container = document.getElementById('mic-input-field-container');
             if($scope.state.listening){
                 blurAll();
@@ -58,11 +58,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             });
             qm.speech.getMostRecentNotificationAndTalk();
         });
-        function ask(text){
-            qm.speech.listening = $scope.state.listening = true;
-            talk(text);
-            //annyang.addCommands(reminderNotificationCommands);
-        }
         $scope.state.userReply = function(reply) {
             reply = reply || $scope.state.userInputString;
             if(reply){$scope.state.userInputString = reply;}
@@ -74,18 +69,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.speech.getMostRecentNotificationAndTalk();
 			$scope.state.userInputString = '';
 		};
-        function talk(message) {
-            $scope.state.circlePage.title = message;
-            if(!message && !qm.dialogFlow.lastApiResponse.payload){return;}
-			if(!message && !qm.dialogFlow.lastApiResponse.payload.google){return;}
-			message = message || qm.dialogFlow.lastApiResponse.payload.google.systemIntent.data.listSelect.title;
-			$scope.state.lastBotMessage = message;
-            $scope.state.messages.push({who    : 'bot', message: message, time   : 'Just now'});
-            qm.speech.talkRobot(message)
-        }
 		qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
 		    qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
-		    qm.speech.abortListening();
+		    qm.microphone.abortListening();
 		    qmService.goToDefaultState();
         };
         qm.staticData.dialogAgent.intents["Create Reminder Intent"].callback = function(){

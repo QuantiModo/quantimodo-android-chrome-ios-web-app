@@ -352,4 +352,22 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qm.visualizer.show();
         }, 1);
     };
+    $scope.disableMic = function(){
+        $timeout(function () {
+            qmService.rootScope.setProperty('micEnabled', false);
+            qm.speech.setSpeechEnabled(false);
+            qm.microphone.setMicrophoneEnabled(false);
+            qm.robot.hide();
+            qm.visualizer.hide();
+        }, 1);
+    };
+    $scope.enableMic = function(){
+        $timeout(function () {
+            qmService.rootScope.setProperty('micEnabled', true);
+            qm.speech.setSpeechEnabled(true);
+            qm.microphone.setMicrophoneEnabled(true);
+            qm.robot.show();
+            qm.visualizer.show();
+        }, 1);
+    };
 }]);
