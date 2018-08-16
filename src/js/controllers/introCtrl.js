@@ -65,9 +65,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readSlide() {
         if(!qm.speech.getSpeechAvailable()){return;}
+        if(!qm.speech.getSpeechEnabled()){return;}
         qm.music.play();
         var slide = getSlide();
         $scope.state.hideCircle = $scope.myIntro.slideIndex === 0;
+        $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
         qm.speech.talkRobot(
             //slide.title + ".  " +
             slide.bodyText + ".  "
@@ -97,14 +99,14 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
         qm.visualizer.hide();
-        qm.appContainer.setOpacity(1);
+        //qm.appContainer.setOpacity(1);
         qm.robot.hide();
     });
     function readMachinesOfLovingGrace() {
         qm.robot.show();
         qm.music.play();
         qm.visualizer.show();
-        qm.appContainer.setOpacity(0.5);
+
         qm.speech.talkRobot("I like to think (and " +
             "the sooner the better!) " +
             "of a cybernetic meadow " +

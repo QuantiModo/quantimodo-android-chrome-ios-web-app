@@ -6,6 +6,7 @@
   -webkit-perspective: 1200px;
   /* perspective: 1200px; */
   position: relative;
+  z-index: 2;
 }
 
 .splash-h1 {
@@ -19,7 +20,7 @@
   margin:auto;
   text-transform: uppercase;
   top: 5%;
-  z-index: 0;
+  z-index: 4;
   background: -webkit-linear-gradient(top, #151C60, #C6CBF5 40%, black 40%, #E1A0CE 65%, white);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -41,7 +42,7 @@
   transform: skew(-10deg) rotate(-10deg);
   top: 30px;
   width: 100%;
-  z-index: 0;
+  z-index: 4;
 }
 
 .splash-grid {
@@ -56,6 +57,7 @@
   position: absolute;
   width: 100%;
   bottom: -27%;
+  z-index: 3;
 }
 
 .splash-grid:after {
@@ -86,7 +88,7 @@
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
   top: 10%;
-  z-index: -1;
+  z-index: 3;
 }
 
 @-webkit-keyframes dash {

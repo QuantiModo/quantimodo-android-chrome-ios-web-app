@@ -13,21 +13,24 @@ window.qm = {
     },
     appContainer: {
         hide: function(){
-            qm.appContainer.getElement().style.display = "none";
+            qm.appContainer.getPaneClass().style.display = "none";
         },
         show: function(){
-            qm.appContainer.getElement().style.display = "block";
+            qm.appContainer.getPaneClass().style.display = "block";
         },
-        getElement: function(){
-            var appContainer = document.querySelector('#app-container');
-            return appContainer;
+        getPaneClass: function(){
+            var element = document.querySelector('.pane');
+            return element;
+        },
+        setBackgroundColor: function(color){
+
         },
         setOpacity: function(opacity){
             var backgroundColor = (opacity < 1) ? 'black' : 'white';
-            qm.appContainer.getElement().style.backgroundColor = backgroundColor;
-            document.querySelector('.pane').style.backgroundColor = backgroundColor;
+            var paneClass = qm.appContainer.getPaneClass();
+            paneClass.style.backgroundColor = backgroundColor;
+            paneClass.style.opacity = opacity;
             document.body.style.backgroundColor = backgroundColor;
-            qm.appContainer.getElement().style.opacity = opacity;
         }
     },
     appMode: {
@@ -5442,11 +5445,15 @@ window.qm = {
     visualizer: {
         showing: false,
         hide: function(){
+            //qm.appContainer.setOpacity(1);
+            qmLog.info("Hiding visualizer");
             qm.speech.abortListening();
             var visualizer = qm.visualizer.getElement();
             visualizer.style.display = "none";
         },
         show: function(){
+            //qm.appContainer.setOpacity(0.5);
+            qmLog.info("Showing visualizer");
             var visualizer = qm.visualizer.getElement();
             visualizer.style.display = "block";
             var splash = document.getElementById('splash-screen');
