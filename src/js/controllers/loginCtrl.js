@@ -101,8 +101,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qmLog.error(qm.urlHelper.getParam('error'));
             qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  :D")
         }
-        if(qm.speech.getSpeechEnabled()){
-            qm.speech.talkRobot("I'm not sure who you are so while you're logging in, take that time to ask yourself who you think you are on a deeper level.");
+        if(qm.speech.getSpeechEnabled() && !qm.urlHelper.getParam('loggingIn')){
+            qm.speech.sayIfNotInRecentStatements("I'm not sure who you are... So while you're logging in... Take that time to ask yourself who YOU... think YOU are on a deeper level.");
         }
     });
     $scope.state.setAuthDebugEnabled = function(){

@@ -3424,7 +3424,7 @@ window.qm = {
             //qm.appContainer.show();
             qm.robot.showing = qm.rootScope.showRobot = false;
         },
-        show: function(startListening){
+        show: function(){
             if(!qm.speech.getSpeechAvailable()){return;}
             var robot = qm.robot.getElement();
             if(!robot){
@@ -3434,8 +3434,6 @@ window.qm = {
             qmLog.info("Showing robot");
             qm.robot.getElement().style.display = "block";
             qm.robot.showing = qm.rootScope.showRobot = true;
-            qm.speech.setSpeechEnabled(true);
-            if(startListening !== false){qm.visualizer.show();}
         },
         getElement: function(){
             var element = document.querySelector('#robot');
@@ -3533,9 +3531,26 @@ window.qm = {
         },
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
+        recentStatements: [],
+        sayIfNotInRecentStatements: function(text, callback, resumeListening){
+            if(qm.speech.recentStatements.indexOf(text) !== -1){
+                qm.speech.talkRobot(text, callback, resumeListening)
+            } else {
+                qmLog.info("Recently said "+text);
+            }
+        },
+        askQuestion: function(text, commands){
+            qm.speech.talkRobot(text, function(){
+                qm.microphone.initializeListening(commands);
+            });
+        },
+        askYesNoQuestion: function(text, yesCallback, noCallback){
+            qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
+        },
         talkRobot: function(text, callback, resumeListening){
             if(!qm.speech.getSpeechAvailable()){return;}
             if(!qm.speech.getSpeechEnabled()){return;}
+            qm.speech.recentStatements.push(text);
             speechSynthesis.cancel();
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}

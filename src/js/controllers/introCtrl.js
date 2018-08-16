@@ -89,7 +89,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             slide.bodyText + ".  "
             , $scope.myIntro.next
         );
-        slide.bodyText = null;l
+        slide.bodyText = null;
     }
     function getSlide(){
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
@@ -107,9 +107,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
-        qm.visualizer.hide();
-        //qm.appContainer.setOpacity(1);
-        qm.robot.hide();
     });
     function readMachinesOfLovingGrace() {
         qm.robot.show();

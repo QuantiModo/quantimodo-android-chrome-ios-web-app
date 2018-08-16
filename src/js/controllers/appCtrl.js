@@ -336,23 +336,18 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
-
-    $scope.disableMic = function(){
+    $scope.setMicrophoneEnabled = function(value){
         $timeout(function () {
-            qmService.rootScope.setProperty('micEnabled', false);
-            qm.speech.setSpeechEnabled(false);
-            qm.microphone.setMicrophoneEnabled(false);
-            qm.robot.hide();
-            qm.visualizer.hide();
-        }, 1);
-    };
-    $scope.enableMic = function(){
-        $timeout(function () {
-            qmService.rootScope.setProperty('micEnabled', true);
-            qm.speech.setSpeechEnabled(true);
-            qm.microphone.setMicrophoneEnabled(true);
-            qm.robot.show();
-            qm.visualizer.show();
+            qmService.rootScope.setProperty('micEnabled', value);
+            qm.microphone.setMicrophoneEnabled(value);
+            qm.speech.setSpeechEnabled(value);
+            if(!value){
+                qm.robot.hide();
+                qm.visualizer.hide();
+            } else {
+                qm.robot.show();
+                qm.visualizer.show();
+            }
         }, 1);
     };
 }]);
