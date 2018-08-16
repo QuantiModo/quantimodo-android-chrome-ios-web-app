@@ -13,17 +13,28 @@ window.qm = {
     },
     appContainer: {
         hide: function(){
+            qmLog.info("Hiding panel class");
             qm.appContainer.getPaneClass().style.display = "none";
         },
         show: function(){
+            qmLog.info("Showing panel class");
             qm.appContainer.getPaneClass().style.display = "block";
         },
         getPaneClass: function(){
             var element = document.querySelector('.pane');
             return element;
         },
+        getAppContainer: function(){
+            var element = document.querySelector('app-container');
+            return element;
+        },
         setBackgroundColor: function(color){
-
+            qmLog.info("Setting background to "+color);
+            var element = qm.appContainer.getPaneClass();
+            element.style.backgroundColor = color;
+            element = qm.appContainer.getAppContainer();
+            element.style.backgroundColor = color;
+            document.body.style.backgroundColor = color;
         },
         setOpacity: function(opacity){
             var backgroundColor = (opacity < 1) ? 'black' : 'white';
@@ -2222,6 +2233,8 @@ window.qm = {
         logLevel: 'logLevel',
         measurementsQueue: 'measurementsQueue',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
+        microphoneEnabled: 'microphoneEnabled',
+        microphoneAvailable: 'microphoneAvailable',
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
@@ -2442,6 +2455,117 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    microphone: {
+        microphoneAvailable: null,
+        getMicrophoneEnabled: function(){
+            if(!qm.microphone.getMicrophoneAvailable()){return qm.microphone.setMicrophoneEnabled(false);}
+            return qm.storage.getItem(qm.items.microphoneEnabled);
+        },
+        setMicrophoneEnabled: function(value){
+            qmLog.info("set microphoneEnabled " + value);
+            qm.speech.shutUpRobot();
+            qm.music.fadeOut();
+            qm.rootScope[qm.items.microphoneEnabled] = value;
+            return qm.storage.setItem(qm.items.microphoneEnabled, value);
+        },
+        getMicrophoneAvailable: function(){
+            if(qm.microphone.microphoneAvailable !== null){return qm.microphone.microphoneAvailable;}
+            if(typeof annyang === "undefined"){
+                if(!qm.appMode.isTesting()){qmLog.error("Microphone not available!");}
+                return qm.microphone.microphoneAvailable = qm.microphone.microphoneEnabled = false;
+            }
+            return qm.microphone.microphoneAvailable = true;
+        },
+        toggleListening: function(){
+            if(qm.microphone.listening){
+                qm.microphone.pauseListening();
+            } else {
+                qm.microphone.resumeListening();
+            }
+            return qm.microphone.listening = !qm.microphone.listening;
+        },
+        listening: false,
+        abortListening: function(){
+            qmLog.info("pauseListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.abort(); // Stop listening, and turn off mic.
+        },
+        annyangAvailable: function(){
+            if(!annyang){
+                qmLog.error("annyang not available!");
+                return false;
+            }
+            return true;
+        },
+        pauseListening: function(){
+            qmLog.info("pauseListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
+        },
+        resumeListening: function(){
+            qmLog.info("resumeListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
+        },
+        startListening: function(commands){
+            qmLog.info("startListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
+                autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
+                continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
+                paused: false // Start annyang in paused mode.
+            });
+            if(commands){annyang.addCommands(commands);}
+        },
+        listenForNotificationResponse: function(){
+            qm.microphone.initializeListening(qm.speech.reminderNotificationCommands);
+        },
+        debugListening: function(){
+            annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
+        },
+        setLanguage: function(language){
+            annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
+        },
+        initializeListening: function(commands, visualizationType, zIndex){
+            qm.microphone.debugListening();
+            visualizationType = visualizationType || 'rainbow';
+            qm.visualizer.visualizeVoice(visualizationType, zIndex);
+            annyang.addCommands(commands); // Add our commands to annyang
+            qm.microphone.startListening();
+            annyang.addCallback('start', function() {
+                qmLog.info('browser\'s Speech Recognition engine started listening');
+            });
+            annyang.addCallback('soundstart', function() {
+                qmLog.info('sound detected');
+            });
+            annyang.addCallback('error', function(error) {
+                qmLog.info("Speech Recognition failed because of an error", error);
+            });
+            annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
+                qmLog.error("Speech Recognition failed because of a network error", error);
+            }, this);
+            annyang.addCallback('errorPermissionBlocked', function(error){
+                qmLog.error("browser blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('errorPermissionDenied', function(error){
+                qmLog.error("user blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('end', function(error){
+                qmLog.info("browser's Speech Recognition engine stopped", error);
+            });
+            annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
+                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
+                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
+                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
+        },
+    },
     music: {
         player: null,
         status: 'pause',
@@ -3388,7 +3512,7 @@ window.qm = {
             if(resumeListening){
                 var duration = 1.5;
                 qmLog.info("Will resume listening in "+duration+" seconds...");
-                setTimeout(function(){qm.speech.resumeListening();}, duration * 1000);
+                setTimeout(function(){qm.microphone.resumeListening();}, duration * 1000);
             } else {
                 qmLog.info("Not listening");
             }
@@ -3443,7 +3567,7 @@ window.qm = {
             utterance.text = text;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.getClass().classList.add('robot_speaking');
-            qm.speech.pauseListening();
+            qm.microphone.pauseListening();
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
@@ -3462,95 +3586,6 @@ window.qm = {
             //a callback function can also be added that will fire once the entire text has been spoken.
             //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
             qm.speech.pendingUtteranceText = false;
-        },
-        listening: false,
-        toggleListening: function(){
-            if(qm.speech.listening){
-                qm.speech.pauseListening();
-            } else {
-                qm.speech.resumeListening();
-            }
-            return qm.speech.listening = !qm.speech.listening;
-        },
-        abortListening: function(){
-            qmLog.info("pauseListening");
-            if(!qm.speech.annyangAvailable()){return;}
-            annyang.abort(); // Stop listening, and turn off mic.
-        },
-        annyangAvailable: function(){
-            if(!annyang){
-                qmLog.error("annyang not available!");
-                return false;
-            }
-            return true;
-        },
-        pauseListening: function(){
-            qmLog.info("pauseListening");
-            if(!qm.speech.annyangAvailable()){return;}
-            annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
-        },
-        resumeListening: function(){
-            qmLog.info("resumeListening");
-            if(!qm.speech.annyangAvailable()){return;}
-            annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
-        },
-        startListening: function(commands){
-            qmLog.info("startListening");
-            if(!qm.speech.annyangAvailable()){return;}
-            annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
-                autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
-                continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
-                paused: false // Start annyang in paused mode.
-            });
-            if(commands){annyang.addCommands(commands);}
-        },
-        listenForNotificationResponse: function(){
-            qm.speech.initializeListening(qm.speech.reminderNotificationCommands);
-        },
-        debugListening: function(){
-            annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
-        },
-        setLanguage: function(language){
-            annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
-        },
-        initializeListening: function(commands, visualizationType, zIndex){
-            qm.speech.debugListening();
-            visualizationType = visualizationType || 'rainbow';
-            qm.visualizer.visualizeVoice(visualizationType, zIndex);
-            annyang.addCommands(commands); // Add our commands to annyang
-            qm.speech.startListening();
-            annyang.addCallback('start', function() {
-                qmLog.info('browser\'s Speech Recognition engine started listening');
-            });
-            annyang.addCallback('soundstart', function() {
-                qmLog.info('sound detected');
-            });
-            annyang.addCallback('error', function(error) {
-                qmLog.info("Speech Recognition failed because of an error", error);
-            });
-            annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
-                qmLog.error("Speech Recognition failed because of a network error", error);
-            }, this);
-            annyang.addCallback('errorPermissionBlocked', function(error){
-                qmLog.error("browser blocked the permission request to use Speech Recognition", error);
-            });
-            annyang.addCallback('errorPermissionDenied', function(error){
-                qmLog.error("user blocked the permission request to use Speech Recognition", error);
-            });
-            annyang.addCallback('end', function(error){
-                qmLog.info("browser's Speech Recognition engine stopped", error);
-            });
-            annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
-                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
-                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
-                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
-            });
-            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
-                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
-            });
-            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
-                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
-            });
         },
         getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
             qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
@@ -3744,7 +3779,7 @@ window.qm = {
                 }
             },
             getElement: function(){
-                var element = document.querySelector('#splash-text');
+                var element = document.querySelector('#splash-logo');
                 return element;
             },
         },
@@ -5448,20 +5483,15 @@ window.qm = {
         hide: function(){
             //qm.appContainer.setOpacity(1);
             qmLog.info("Hiding visualizer");
-            qm.speech.abortListening();
+            qm.microphone.abortListening();
             var visualizer = qm.visualizer.getElement();
             visualizer.style.display = "none";
         },
         show: function(){
-            //qm.appContainer.setOpacity(0.5);
             qmLog.info("Showing visualizer");
             var visualizer = qm.visualizer.getElement();
             visualizer.style.display = "block";
-            var splash = document.getElementById('splash-screen');
-            if(splash){
-                splash.style.opacity = "0.5";
-                splash.style.filter  = 'alpha(opacity=50)'; // IE fallback
-            }
+            qm.microphone.setMicrophoneEnabled(true);
             setTimeout(function(){
                 qm.visualizer.rainbowCircleVisualizer();
             }, 1);

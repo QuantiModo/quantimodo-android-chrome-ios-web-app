@@ -7,8 +7,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     qmService.initializeApplication(appSettingsResponse);
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {
-        hideSplashText: true,
+        hideSplashText: false,
         hideCircle: false,
+        backgroundImage: null
     };
     $scope.myIntro = {
         ready : false,
@@ -91,9 +92,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
         function start(){if(qm.speech.getSpeechEnabled()){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}}
         var speechEnabled = qm.speech.getSpeechEnabled();
-        if(qm.speech.getSpeechAvailable() && speechEnabled === null){
+        if(qm.speech.getSpeechAvailable() && !speechEnabled){
             qmService.dialogs.mayISpeak(function (answer) {start();});
-        } else {start();}
+        } else {
+            start();
+        }
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
