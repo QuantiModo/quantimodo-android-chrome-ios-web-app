@@ -92,6 +92,12 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			qmLogService.debug('ReminderInbox: Hiding splash screen because app is ready', null);
 			navigator.splashscreen.hide();
 		}
+		if(qm.speech.getSpeechEnabled()){
+			qm.speech.getMostRecentNotificationAndTalk(function (){
+				getTrackingReminderNotifications();
+				//qm.speech.getMostRecentNotificationAndTalk();
+            });
+		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);

@@ -27,12 +27,7 @@ angular.module('starter').controller('OnboardingCtrl',
             if(number > 5){$scope.state.showSkipButton = true;}
         });
         initializeAddRemindersPageIfNecessary();
-        $scope.state.setSpeechEnabled = function(value){
-            $scope.state.speechEnabled = value;
-            qmService.rootScope.setProperty('speechEnabled', value);
-            qm.speech.setSpeechEnabled(value);
-            setCirclePage($scope.state.circlePage);
-        }
+
     });
     function setRequireUpgradesInOnboarding() {
         if(qm.getUser() && qm.getUser().stripeActive){
