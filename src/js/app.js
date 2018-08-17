@@ -34,8 +34,8 @@ angular.module('starter',
         'ngMdIcons'
     ]
 )
-.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
-    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
+.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService",
+    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
     if(!qm.urlHelper.onQMSubDomain()){qm.appsManager.loadPrivateConfigFromJsonFile();}
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
@@ -56,7 +56,7 @@ angular.module('starter',
     });
     $rootScope.goToState = function(stateName, stateParameters, ev){
         if(stateName === 'toggleRobot'){
-            qmService.speech.toggleRobot();
+            qm.robot.toggle();
             return;
         }
         if(stateName.indexOf('button') !== -1){
@@ -295,7 +295,7 @@ angular.module('starter',
             }
         })
         .state(qmStates.intro, {
-            cache: true,
+            cache: false,
             url: "/intro",
             params: {
                 doNotRedirect: true,

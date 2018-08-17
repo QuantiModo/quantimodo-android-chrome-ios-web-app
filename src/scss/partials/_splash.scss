@@ -5,33 +5,37 @@
   overflow: hidden;
   -webkit-perspective: 1200px;
   /* perspective: 1200px; */
-  position: relative;
+  width: 100%;
+  position: absolute;
 }
-
 .splash-h1 {
   color: #C6CBF5;
   font-family: 'Orbitron', sans-serif;
-  font-size: 150px;
   font-weight: 1000;
+  font-size: 25vw;
   line-height: 1.2;
   position: relative;
   text-align: center;
   margin:auto;
   text-transform: uppercase;
   top: 5%;
-  z-index: 11;
+  z-index: 4;
   background: -webkit-linear-gradient(top, #151C60, #C6CBF5 40%, black 40%, #E1A0CE 65%, white);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke-width: 2px;
   -webkit-text-stroke-color: white;
 }
-
+@media screen and (min-width: 600px) {
+  .splash-h1 {
+    font-size: 150px;
+  }
+}
 .splash-h2 {
   color: #d100b1;
   display: block;
   font-family: 'Yellowtail', cursive;
-  font-size: 117px;
+  font-size: 25vw;
   margin-right: -8em;
   position: relative;
   text-shadow: 0 0 1px #d100b1, 0 -3px 3px rgba(255, 255, 255, 0.8), 0 3px 3px rgba(0, 0, 0, 0.5), 0 0 15px #d100b1, 0 0 45px rgba(209, 0, 177, 0.8);
@@ -41,9 +45,13 @@
   transform: skew(-10deg) rotate(-10deg);
   top: 30px;
   width: 100%;
-  z-index: 11;
+  z-index: 4;
 }
-
+@media screen and (min-width: 600px) {
+  .splash-h2 {
+    font-size: 150px;
+  }
+}
 .splash-grid {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0px, rgba(54, 226, 248, 0.5) 0%, rgba(54, 226, 248, 0.5) 3px, rgba(0, 0, 0, 0) 0px), linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(54, 226, 248, 0.5) 0%, rgba(54, 226, 248, 0.5) 3px, rgba(0, 0, 0, 0) 0px);
   background-size: 4em 4em, 4em 4em;
@@ -55,9 +63,10 @@
   transform: scale(1.26) rotateX(80deg);
   position: absolute;
   width: 100%;
-  bottom: -27%;
+  z-index: 4;
+  margin-top:  60%;
+  bottom: -200px;
 }
-
 .splash-grid:after {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, #000000 95%);
   content: '';
@@ -65,7 +74,6 @@
   position: absolute;
   width: 100%;
   left: 0;}
-
 .splash-grid:before {
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 30%, rgba(209, 0, 177, 0.5) 90%);
   content: '';
@@ -73,7 +81,6 @@
   position: absolute;
   width: 100%;
   left: 0;}
-
 .logo-triangle {
   -webkit-animation: dash 6s linear forwards;
   animation: dash 6s linear forwards;
@@ -85,14 +92,12 @@
   position: absolute;
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
-  top: 6em;
-  z-index: 8;
+  top: 10%;
+  z-index: 3;
 }
-
 @-webkit-keyframes dash {
   to {
     stroke-dashoffset: 0; } }
-
 @keyframes dash {
   to {
     stroke-dashoffset: 0; } }

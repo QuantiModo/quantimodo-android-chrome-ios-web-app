@@ -4,7 +4,8 @@ angular.module('starter').controller('OnboardingCtrl',
     $scope.state = {
         showSkipButton: false,
         //requireUpgrades: true // Might want to do this at some point
-        requireUpgrades: false // Default to false for new users
+        requireUpgrades: false, // Default to false for new users
+
     };
     if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
     $scope.$on('$ionicView.beforeEnter', function(e) {
@@ -16,7 +17,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         setRequireUpgradesInOnboarding();
     });
     $scope.$on('$ionicView.afterEnter', function(){
@@ -26,6 +27,7 @@ angular.module('starter').controller('OnboardingCtrl',
             if(number > 5){$scope.state.showSkipButton = true;}
         });
         initializeAddRemindersPageIfNecessary();
+
     });
     function setRequireUpgradesInOnboarding() {
         if(qm.getUser() && qm.getUser().stripeActive){
@@ -37,13 +39,13 @@ angular.module('starter').controller('OnboardingCtrl',
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
         if(!$rootScope.appSettings.designMode){qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);}
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
     };
     $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         qmService.rootScope.setProperty('hideMenuButton', true);
         removeImportPage();
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         $scope.circlePage.nextPageButtonText = "Done connecting data sources";
         qmService.goToState('app.import');
     };
@@ -106,12 +108,16 @@ angular.module('starter').controller('OnboardingCtrl',
         window.qm.storage.setItem(qm.items.onboarded, true);
         qm.storage.removeItem('onboardingPages');
     };
+    function setCirclePage(circlePage){
+        qm.speech.askQuestion(circlePage.bodyText);
+        $scope.circlePage = circlePage;
+    }
     $scope.hideOnboardingPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {
             return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;
         });
         qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         initializeAddRemindersPageIfNecessary();
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             qmService.rootScope.setProperty('hideMenuButton', false);

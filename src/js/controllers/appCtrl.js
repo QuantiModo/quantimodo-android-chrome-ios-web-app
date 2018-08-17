@@ -9,7 +9,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
-    qmService.numberOfPendingNotifications = null;
+    qm.notifications.numberOfPendingNotifications = null;
     $scope.$on('$ionicView.enter', function (e) {
         qmLogService.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
         //$scope.showHelpInfoPopupIfNecessary(e);
@@ -34,7 +34,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     });
     $scope.$on('$ionicView.afterEnter', function (e) {
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
-        qmService.postTrackingReminderNotificationsDeferred();
+        qm.notifications.postNotifications();
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
@@ -336,4 +336,27 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
+    $scope.setMicrophoneEnabled = function(value){
+        $timeout(function () {
+            qmService.rootScope.setProperty('micEnabled', value);
+            qm.microphone.setMicrophoneEnabled(value);
+            qm.speech.setSpeechEnabled(value);
+            if(!value){
+                qm.robot.hide();
+                qm.visualizer.hide();
+            } else {
+                qm.robot.show();
+                qm.visualizer.show();
+            }
+        }, 1);
+    };
+    $scope.setSpeechEnabled = function(value){
+        $scope.speechEnabled = value;
+        qmService.rootScope.setProperty('speechEnabled', value);
+        qm.speech.setSpeechEnabled(value);
+        qm.speech.defaultAction();
+    };
+    $scope.robotClick = function(){
+        qm.speech.defaultAction();
+    }
 }]);

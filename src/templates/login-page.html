@@ -4,7 +4,7 @@
             <div class="inner">
                 <div style="text-align: center; color: white; padding: 30px; height: 100%" >
                     <div>
-                        <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()" ng-cloak></div>
+                        <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()" ng-if="!speechEnabled" ng-cloak></div>
                         <div ng-if="state.showRetry" ng-click="retryLogin('user clicked retry button')" ><br><br>Click here to retry if this takes too long</div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
                             <div id="material-login-buttons" ng-if="true">

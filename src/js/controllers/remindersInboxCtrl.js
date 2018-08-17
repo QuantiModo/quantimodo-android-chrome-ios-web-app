@@ -77,8 +77,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				},
 				destructiveButtonClicked: function() {
 					qmService.showInfoToast('Skipping all reminder notifications...');
-					qmService.skipAllTrackingReminderNotificationsDeferred()
-						.then(function(){
+					qm.notifications.skipAllTrackingReminderNotifications({}, function(){
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							qmLogService.error(error);
@@ -92,6 +91,12 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(navigator && navigator.splashscreen) {
 			qmLogService.debug('ReminderInbox: Hiding splash screen because app is ready', null);
 			navigator.splashscreen.hide();
+		}
+		if(qm.speech.getSpeechEnabled()){
+			qm.speech.getMostRecentNotificationAndTalk(function (){
+				getTrackingReminderNotifications();
+				//qm.speech.getMostRecentNotificationAndTalk();
+            });
 		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
@@ -169,7 +174,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
         qm.notifications.setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
         notificationAction(trackingReminderNotification);
-		qmService.trackTrackingReminderNotificationDeferred(trackingReminderNotification);
+        qm.notifications.trackNotification(trackingReminderNotification);
         refreshIfRunningOutOfNotifications();
 	};
     function getWeekdayCharts() {
@@ -244,7 +249,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		body.modifiedValue = modifiedReminderValue;
 		// I think this slows down inbox
         //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "track", null, modifiedReminderValue);
-		qmService.trackTrackingReminderNotificationDeferred(body, trackAll);
+        qm.notifications.trackNotification(body, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
 	function trackAll(trackingReminderNotification, modifiedReminderValue, ev) {
@@ -287,7 +292,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(isGhostClick($event)){return;}
 		qm.notifications.lastAction = 'Snoozed';
 		var params = notificationAction(trackingReminderNotification);
-		qmService.snoozeTrackingReminderNotificationDeferred(params);
+		qm.notifications.snoozeNotification(params);
         qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
         refreshIfRunningOutOfNotifications();
 	};
@@ -371,7 +376,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		qmService.numberOfPendingNotifications--;
+		qm.notifications.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		qm.notifications.deleteById(trackingReminderNotification.id);
 		qmService.goToState('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
@@ -380,7 +385,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		enlargeChromePopupIfNecessary();
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
-		qmService.numberOfPendingNotifications--;
+		qm.notifications.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		var trackingReminder = trackingReminderNotification;
 		trackingReminder.id = trackingReminderNotification.trackingReminderId;

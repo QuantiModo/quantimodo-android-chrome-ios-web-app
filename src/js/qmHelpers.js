@@ -11,6 +11,39 @@ window.qm = {
             inbox: "inbox"
         }
     },
+    appContainer: {
+        hide: function(){
+            qmLog.info("Hiding panel class");
+            qm.appContainer.getPaneClass().style.display = "none";
+        },
+        show: function(){
+            qmLog.info("Showing panel class");
+            qm.appContainer.getPaneClass().style.display = "block";
+        },
+        getPaneClass: function(){
+            var element = document.querySelector('.pane');
+            return element;
+        },
+        getAppContainer: function(){
+            var element = document.querySelector('app-container');
+            return element;
+        },
+        setBackgroundColor: function(color){
+            qmLog.info("Setting background to "+color);
+            var element = qm.appContainer.getPaneClass();
+            element.style.backgroundColor = color;
+            element = qm.appContainer.getAppContainer();
+            element.style.backgroundColor = color;
+            document.body.style.backgroundColor = color;
+        },
+        setOpacity: function(opacity){
+            var backgroundColor = (opacity < 1) ? 'black' : 'white';
+            var paneClass = qm.appContainer.getPaneClass();
+            paneClass.style.backgroundColor = backgroundColor;
+            paneClass.style.opacity = opacity;
+            document.body.style.backgroundColor = backgroundColor;
+        }
+    },
     appMode: {
         isTesting: function(){
             if(window.qmUser){
@@ -416,7 +449,7 @@ window.qm = {
                 if(xhr.readyState === XMLHttpRequest.DONE) {
                     var fallback = xhr.responseText;
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    successHandler(responseObject);
+                    if(successHandler){successHandler(responseObject);}
                 }
             };
             xhr.send(JSON.stringify(body));
@@ -1282,7 +1315,6 @@ window.qm = {
             if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
             var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
             qmLog.info("Sending to " + logoutUrl);
-            //qmService.get(logoutUrl);
             var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
             //$http(request);
             // Get request doesn't seem to clear cookies
@@ -1331,7 +1363,7 @@ window.qm = {
         handle401Response: function(request, options, headers) {
             options = options || {};
             if(options && options.doNotSendToLogin){return;}
-            qmLog.debug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' +
+            qmLog.debug('generalApiErrorHandler: Sending to login because we got 401 with request ' +
                 JSON.stringify(request), null, options.stackTrace);
             qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
@@ -1882,6 +1914,54 @@ window.qm = {
             },
             "session": "projects/dr-modo/agent/sessions/1533759866859"
         },
+        getEntityFromLastUserStatement: function(entityName){
+            var lastUserStatement = qm.speech.lastUserStatement.toLowerCase();
+            var entries = qm.staticData.dialogAgent.entities[entityName].entries;
+            var words = lastUserStatement.split(" ");
+            var i, j, word, entry;
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    entry = entries[i];
+                    if(word === entry.name.toLowerCase()){return entry;}
+                }
+            }
+            for (i = 0; i < words.length; i += 1) {
+                word = words[i];
+                for (j = 0; i < entries.length; j += 1) {
+                    for (var k = 0; k < entry.synonyms; k += 1) {
+                        var synonym = synonyms[i];
+                        if(word === synonym.toLowerCase()){return entry;}
+                    }
+                }
+            }
+            return null;
+        },
+        weHaveRequiredParams: function(intent){
+            var parameters = intent.responses[0].parameters;
+            for (var i = 0; i < parameters.length; i++) {
+                var parameter = parameters[i];
+                var parameterName = parameter.name;
+                if(parameter.required){
+                    var value = qm.speech.currentIntent.parameters[parameterName];
+                    if(value){
+                        continue;
+                    }
+                    value = qm.dialogFlow.getEntityFromLastUserStatement(parameterName);
+                    if(value){
+                        qm.speech.currentIntent.parameters[parameterName] = value;
+                        continue;
+                    }
+                    qm.speech.parameterToGet = parameterName;
+                    qm.speech.talkRobot(parameter.prompts[0].value, function(){
+                        var value = qm.dialogFlow.getEntityFromLastUserStatement(qm.speech.parameterToGet);
+                        qm.speech.currentIntent.parameters[qm.speech.parameterToGet] = value;
+                    });
+                    return false;
+                }
+            }
+            return true;
+        }
     },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
@@ -2153,6 +2233,8 @@ window.qm = {
         logLevel: 'logLevel',
         measurementsQueue: 'measurementsQueue',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
+        microphoneEnabled: 'microphoneEnabled',
+        microphoneAvailable: 'microphoneAvailable',
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
@@ -2162,6 +2244,7 @@ window.qm = {
         refreshToken: 'refreshToken',
         scheduledLocalNotifications: 'scheduledLocalNotifications',
         speechEnabled: 'speechEnabled',
+        speechAvailable: 'speechAvailable',
         studiesCreated: 'studiesCreated',
         studiesJoined: 'studiesJoined',
         trackingReminderNotifications: 'trackingReminderNotifications',
@@ -2372,13 +2455,135 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    microphone: {
+        microphoneAvailable: null,
+        getMicrophoneEnabled: function(){
+            if(!qm.microphone.getMicrophoneAvailable()){return qm.microphone.setMicrophoneEnabled(false);}
+            return qm.storage.getItem(qm.items.microphoneEnabled);
+        },
+        setMicrophoneEnabled: function(value){
+            qmLog.info("set microphoneEnabled " + value);
+            qm.rootScope[qm.items.microphoneEnabled] = value;
+            return qm.storage.setItem(qm.items.microphoneEnabled, value);
+        },
+        getMicrophoneAvailable: function(){
+            if(qm.microphone.microphoneAvailable !== null){return qm.microphone.microphoneAvailable;}
+            if(typeof annyang === "undefined"){
+                if(!qm.appMode.isTesting()){qmLog.error("Microphone not available!");}
+                return qm.microphone.microphoneAvailable = qm.microphone.microphoneEnabled = false;
+            }
+            return qm.microphone.microphoneAvailable = true;
+        },
+        toggleListening: function(){
+            if(qm.microphone.listening){
+                qm.microphone.pauseListening();
+            } else {
+                qm.microphone.resumeListening();
+            }
+            return qm.microphone.listening = !qm.microphone.listening;
+        },
+        listening: false,
+        abortListening: function(){
+            qm.visualizer.hide();
+            qmLog.info("pauseListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.abort(); // Stop listening, and turn off mic.
+        },
+        annyangAvailable: function(){
+            if(!annyang){
+                qmLog.error("annyang not available!");
+                return false;
+            }
+            return true;
+        },
+        pauseListening: function(){
+            qm.visualizer.hide();
+            qmLog.info("pauseListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
+        },
+        resumeListening: function(){
+            qm.visualizer.show();
+            qmLog.info("resumeListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
+        },
+        startListening: function(commands){
+            qmLog.info("startListening");
+            if(!qm.microphone.annyangAvailable()){return;}
+            annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
+                autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
+                continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
+                paused: false // Start annyang in paused mode.
+            });
+            if(commands){annyang.addCommands(commands);}
+            qm.visualizer.show();
+        },
+        listenForNotificationResponse: function(successHandler, errorHandler){
+            qm.microphone.initializeListening(qm.speech.reminderNotificationCommands, successHandler, errorHandler);
+        },
+        debugListening: function(){
+            annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
+        },
+        setLanguage: function(language){
+            annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
+        },
+        specificErrorHandler: function(message){
+            qmLog.error(message);
+        },
+        generalErrorHandler: function(message, meta){
+            if(qm.microphone.errorHandler){qm.microphone.errorHandler(message);}
+            qmLog.error(message, meta);
+        },
+        initializeListening: function(commands, successHandler, errorHandler){
+            qm.microphone.successHandler = successHandler;
+            qm.microphone.specificErrorHandler = errorHandler;
+            qm.microphone.debugListening();
+            qm.visualizer.visualizeVoice();
+            annyang.addCommands(commands); // Add our commands to annyang
+            qm.microphone.startListening();
+            annyang.addCallback('start', function() {
+                qmLog.info('browser\'s Speech Recognition engine started listening');
+            });
+            annyang.addCallback('soundstart', function() {
+                qmLog.info('sound detected');
+            });
+            annyang.addCallback('error', function(error) {
+                qmLog.info("Speech Recognition failed because of an error", error);
+            });
+            annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
+                qm.microphone.generalErrorHandler("Speech Recognition failed because of a network error", error);
+            }, this);
+            annyang.addCallback('errorPermissionBlocked', function(error){
+                qm.microphone.generalErrorHandler("browser blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('errorPermissionDenied', function(error){
+                qm.microphone.generalErrorHandler("user blocked the permission request to use Speech Recognition", error);
+            });
+            annyang.addCallback('end', function(error){
+                qmLog.info("browser's Speech Recognition engine stopped", error);
+            });
+            annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
+                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
+                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
+                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qm.microphone.generalErrorHandler("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
+            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                qm.microphone.generalErrorHandler("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
+            });
+        },
+    },
     music: {
         player: null,
         status: 'pause',
         play: function(){
+            if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.1;
+            qm.music.player.volume = 0.2;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
@@ -2825,6 +3030,79 @@ window.qm = {
                     errorHandler("No notifications even after refresh!")
                 }
             }, errorHandler);
+        },
+        scheduleNotificationSync: function (delayBeforePostingNotificationsInMilliseconds) {
+            if(!delayBeforePostingNotificationsInMilliseconds){
+                delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+                //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
+            }
+            var trackingReminderNotificationSyncScheduled = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
+            if(!trackingReminderNotificationSyncScheduled ||
+                parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
+                qm.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
+                if(!qm.platform.isMobile()){ // Better performance
+                    qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
+                }
+                setTimeout(function() {
+                    qmLog.info("Notifications sync countdown completed.  Syncing now... ");
+                    qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
+                    // Post notification queue in 5 minutes if it's still there
+                    qm.notifications.postNotifications();
+                }, delayBeforePostingNotificationsInMilliseconds);
+            } else {
+                if(!qm.platform.isMobile()){ // Better performance
+                    qmLog.info("Not scheduling sync because one is already scheduled " +
+                        qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
+                }
+            }
+        },
+        trackNotification: function(trackingReminderNotification, trackAll){
+            qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
+            if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
+                var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
+                    trackingReminderNotification.trackingReminderNotificationId);
+                if(notificationFromLocalStorage){
+                    if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
+                        notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
+                    }
+                    trackingReminderNotification = notificationFromLocalStorage;
+                }
+            }
+            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
+            trackingReminderNotification.action = 'track';
+            if(trackAll){trackingReminderNotification.action = 'trackAll';}
+            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            if(trackAll){qm.notifications.scheduleNotificationSync(1);} else {qm.notifications.scheduleNotificationSync();}
+        },
+        snoozeNotification: function(trackingReminderNotification){
+            qm.notifications.numberOfPendingNotifications--;
+            trackingReminderNotification.action = 'snooze';
+            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            qm.notifications.scheduleNotificationSync();
+        },
+        skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
+            if(!params){params = [];}
+            qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
+        },
+        postNotifications: function(successHandler, errorHandler){
+            qmLog.info("Called postTrackingReminderNotificationsDeferred...");
+            var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){if(successHandler){successHandler();}}
+            //qmLog.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray));
+            qm.storage.removeItem(qm.items.notificationsSyncQueue);
+            if(!trackingReminderNotificationsArray){
+                if(successHandler){successHandler();}
+                return;
+            }
+            if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+            trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
+            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications', successHandler, function(error){
+                qmLog.info("Called postTrackingReminderNotificationsToApi...");
+                var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                if(newNotificationsSyncQueue){trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);}
+                qm.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
+                if(errorHandler){errorHandler();}
+            });
         }
     },
     objectHelper: {
@@ -3149,7 +3427,46 @@ window.qm = {
             'img/rating/numeric_rating_button_256_5.png'
         ]
     },
+    robot: {
+        showing: false,
+        hide: function(){
+            qm.robot.getElement().style.display = "none";
+            qm.speech.setSpeechEnabled(false);
+            qm.visualizer.hide();
+            //qm.appContainer.show();
+            qm.robot.showing = qm.rootScope.showRobot = false;
+        },
+        show: function(){
+            if(!qm.speech.getSpeechAvailable()){return;}
+            var robot = qm.robot.getElement();
+            if(!robot){
+                qmLog.error("No robot!");
+                return false;
+            }
+            qmLog.info("Showing robot");
+            qm.robot.getElement().style.display = "block";
+            qm.robot.showing = qm.rootScope.showRobot = true;
+        },
+        getElement: function(){
+            var element = document.querySelector('#robot');
+            return element;
+        },
+        getClass: function(){
+            var element = document.querySelector('.robot');
+            return element;
+        },
+        toggle: function () {
+            if(qm.robot.showing){
+                qm.robot.hide();
+            } else {
+                qm.robot.show();
+            }
+        },
+    },
     serviceWorker: false,
+    rootScope: {
+        showRobot: false
+    },
     speech: {
         initializeSpeechKit: function(qmService){
             var commands = {
@@ -3170,63 +3487,17 @@ window.qm = {
             name: "",
             parameters: {}
         },
-        visualizeVoice: function(type, zIndex){
-            if(type === 'siri'){return qm.speech.siriVisualizer();}
-            if(type === 'rainbow'){return qm.speech.rainbowCircleVisualizer(zIndex);}
-            var paths = document.getElementsByTagName('path');
-            var visualizer = document.getElementById('visualizer');
-            if(!visualizer){return;}
-            var mask = visualizer.getElementById('mask');
-            var h = document.getElementsByTagName('h1')[0];
-            var path;
-            var report = 0;
-            var soundAllowed = function (stream) {
-                //Audio stops listening in FF without // window.persistAudioStream = stream;
-                //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
-                //https://support.mozilla.org/en-US/questions/984179
-                window.persistAudioStream = stream;
-                h.innerHTML = "Thanks";
-                h.setAttribute('style', 'opacity: 0;');
-                var audioContent = new AudioContext();
-                var audioStream = audioContent.createMediaStreamSource( stream );
-                var analyser = audioContent.createAnalyser();
-                audioStream.connect(analyser);
-                analyser.fftSize = 1024;
-                var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
-                visualizer.setAttribute('viewBox', '0 0 255 255');
-                //Through the frequencyArray has a length longer than 255, there seems to be no
-                //significant data after this point. Not worth visualizing.
-                for (var i = 0 ; i < 255; i++) {
-                    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('stroke-dasharray', '4,1');
-                    mask.appendChild(path);
-                }
-                var doDraw = function () {
-                    requestAnimationFrame(doDraw);
-                    analyser.getByteFrequencyData(frequencyArray);
-                    var adjustedLength;
-                    for (var i = 0 ; i < 255; i++) {
-                        adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
-                        paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
-                    }
-                }
-                doDraw();
-            }
-            var soundNotAllowed = function (error) {
-                h.innerHTML = "You must allow your microphone.";
-                console.log(error);
-            }
-            /*window.navigator = window.navigator || {};
-            /*navigator.getUserMedia =  navigator.getUserMedia       ||
-                                      navigator.webkitGetUserMedia ||
-                                      navigator.mozGetUserMedia    ||
-                                      null;*/
-            navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
-        },
         config: {
             DEFAULT: false, // false will override system default voice
             //VOICE: 'Fred',
             VOICE: 'Google UK English Female'
+        },
+        defaultAction: function(){
+            qm.speech.deepThought(function(){
+                if(qm.notifications.getMostRecentNotification()){
+                    qm.speech.getMostRecentNotificationAndTalk();
+                }
+            });
         },
         lastUtterance: false,
         pendingUtteranceText: false,
@@ -3237,7 +3508,12 @@ window.qm = {
         },
         setSpeechEnabled: function(value){
             qmLog.info("set speechEnabled " + value);
-            return qm.speech.speechEnabled = value;
+            if(!value){
+                qm.speech.shutUpRobot();
+                qm.music.fadeOut();
+            }
+            qm.rootScope[qm.items.speechEnabled] = value;
+            return qm.storage.setItem(qm.items.speechEnabled, value);
         },
         getSpeechAvailable: function(){
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
@@ -3249,13 +3525,12 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            var robot = document.querySelector('.robot');
-            robot.classList.remove('robot_speaking');
+            qm.robot.getClass().classList.remove('robot_speaking');
             speechSynthesis.cancel();
             if(resumeListening){
                 var duration = 1.5;
                 qmLog.info("Will resume listening in "+duration+" seconds...");
-                setTimeout(function(){qm.speech.resumeListening();}, duration * 1000);
+                setTimeout(function(){qm.microphone.resumeListening();}, duration * 1000);
             } else {
                 qmLog.info("Not listening");
             }
@@ -3275,8 +3550,26 @@ window.qm = {
         },
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
+        recentStatements: [],
+        sayIfNotInRecentStatements: function(text, callback, resumeListening){
+            if(qm.speech.recentStatements.indexOf(text) !== -1){
+                qm.speech.talkRobot(text, callback, resumeListening)
+            } else {
+                qmLog.info("Recently said "+text);
+            }
+        },
+        askQuestion: function(text, commands){
+            qm.speech.talkRobot(text, function(){
+                qm.microphone.initializeListening(commands);
+            });
+        },
+        askYesNoQuestion: function(text, yesCallback, noCallback){
+            qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
+        },
         talkRobot: function(text, callback, resumeListening){
             if(!qm.speech.getSpeechAvailable()){return;}
+            if(!qm.speech.getSpeechEnabled()){return;}
+            qm.speech.recentStatements.push(text);
             speechSynthesis.cancel();
             qm.speech.callback = callback;
             if(!text){return qmLog.error("No text provided to talkRobot");}
@@ -3295,7 +3588,6 @@ window.qm = {
                 });
                 return;
             }
-            var robot = document.querySelector('.robot');
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
                 window.speechSynthesis.resume();
@@ -3308,9 +3600,10 @@ window.qm = {
                 qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
             };
             utterance.text = text;
+            utterance.pitch = 1;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
-            robot.classList.add('robot_speaking');
-            qm.speech.pauseListening();
+            qm.robot.getClass().classList.add('robot_speaking');
+            qm.microphone.pauseListening();
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
@@ -3330,358 +3623,15 @@ window.qm = {
             //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
             qm.speech.pendingUtteranceText = false;
         },
-        listening: false,
-        toggleListening: function(){
-            if(qm.speech.listening){
-                qm.speech.pauseListening();
-            } else {
-                qm.speech.resumeListening();
-            }
-            return qm.speech.listening = !qm.speech.listening;
-        },
-        abortListening: function(){
-            qmLog.info("pauseListening");
-            annyang.abort(); // Stop listening, and turn off mic.
-        },
-        pauseListening: function(){
-            qmLog.info("pauseListening");
-            annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
-        },
-        resumeListening: function(){
-            qmLog.info("resumeListening");
-            annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
-        },
-        startListening: function(){
-            qmLog.info("startListening");
-            annyang.start({ // Start listening. It's a good idea to call this after adding some commands first, but not mandatory.
-                autoRestart: true, // Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
-                continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
-                paused: false // Start annyang in paused mode.
-            });
-        },
-        debugListening: function(){
-            annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
-        },
-        setLanguage: function(language){
-            annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
-        },
-        initializeListening: function(commands, visualizationType, zIndex){
-            qm.speech.debugListening();
-            visualizationType = visualizationType || 'rainbow';
-            qm.speech.visualizeVoice(visualizationType, zIndex);
-            annyang.addCommands(commands); // Add our commands to annyang
-            qm.speech.startListening();
-            annyang.addCallback('start', function() {
-                qmLog.info('browser\'s Speech Recognition engine started listening');
-            });
-            annyang.addCallback('soundstart', function() {
-                qmLog.info('sound detected');
-            });
-            annyang.addCallback('error', function(error) {
-                qmLog.info("Speech Recognition failed because of an error", error);
-            });
-            annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
-                qmLog.error("Speech Recognition failed because of a network error", error);
-            }, this);
-            annyang.addCallback('errorPermissionBlocked', function(error){
-                qmLog.error("browser blocked the permission request to use Speech Recognition", error);
-            });
-            annyang.addCallback('errorPermissionDenied', function(error){
-                qmLog.error("user blocked the permission request to use Speech Recognition", error);
-            });
-            annyang.addCallback('end', function(error){
-                qmLog.info("browser's Speech Recognition engine stopped", error);
-            });
-            annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
-                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
-                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
-                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
-            });
-            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
-                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
-            });
-            annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
-                qmLog.error("Speech Recognition failed to find a match for this command! possiblePhrasesArray: ", possiblePhrasesArray);
-            });
-        },
-        siriVisualizer: function(){
-            // the canvas size
-            var WIDTH = 1000;
-            var HEIGHT = 400;
-            var ctx = canvas.getContext("2d");
-            // options to tweak the look
-            var opts = {
-                smoothing: 0.6,
-                fft: 5,
-                minDecibels: -70,
-                scale: 0.2,
-                glow: 10,
-                color1: [203, 36, 128],
-                color2: [41, 200, 192],
-                color3: [24, 137, 218],
-                fillOpacity: 0.6,
-                lineWidth: 1,
-                blend: "screen",
-                shift: 50,
-                width: 60,
-                amp: 1 };
-            if(typeof dat !== "undefined"){
-                var gui = new dat.GUI(); // Interactive dat.GUI controls
-                gui.close(); // hide them by default
-                // connect gui to opts
-                gui.addColor(opts, "color1");
-                gui.addColor(opts, "color2");
-                gui.addColor(opts, "color3");
-                gui.add(opts, "fillOpacity", 0, 1);
-                gui.add(opts, "lineWidth", 0, 10).step(1);
-                gui.add(opts, "glow", 0, 100);
-                gui.add(opts, "blend", [
-                    "normal",
-                    "multiply",
-                    "screen",
-                    "overlay",
-                    "lighten",
-                    "difference"]);
-                gui.add(opts, "smoothing", 0, 1);
-                gui.add(opts, "minDecibels", -100, 0);
-                gui.add(opts, "amp", 0, 5);
-                gui.add(opts, "width", 0, 60);
-                gui.add(opts, "shift", 0, 200);
-            }
-            var context = new AudioContext();
-            var analyser = context.createAnalyser();
-            // Array to hold the analyzed frequencies
-            var freqs = new Uint8Array(analyser.frequencyBinCount);
-            navigator.getUserMedia =
-                navigator.getUserMedia ||
-                navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia ||
-                navigator.msGetUserMedia;
-            navigator.getUserMedia({ audio: true }, onStream, onStreamError);
-            /**
-             * Create an input source from the user media stream, connect it to
-             * the analyser and start the visualization.
-             */
-            function onStream(stream) {
-                var input = context.createMediaStreamSource(stream);
-                input.connect(analyser);
-                requestAnimationFrame(visualize);
-            }
-            /**
-             * Display an error message.
-             */
-            function onStreamError(e) {
-                document.body.innerHTML = "<h1>This pen only works with https://</h1>";
-                console.error(e);
-            }
-            /**
-             * Utility function to create a number range
-             */
-            function range(i) {
-                return Array.from(Array(i).keys());
-            }
-            // shuffle frequencies so that neighbors are not too similar
-            var shuffle = [1, 3, 0, 4, 2];
-            /**
-             * Pick a frequency for the given channel and value index.
-             *
-             * The channel goes from 0 to 2 (R/G/B)
-             * The index goes from 0 to 4 (five peaks in the curve)
-             *
-             * We have 32 (2^opts.fft) frequencies to choose from and
-             * we want to visualize most of the spectrum. This function
-             * returns the bands from 0 to 28 in a nice distribution.
-             */
-            function freq(channel, i) {
-                var band = 2 * channel + shuffle[i] * 6;
-                return freqs[band];
-            }
-            /**
-             * Returns the scale factor fot the given value index.
-             * The index goes from 0 to 4 (curve with 5 peaks)
-             */
-            function scale(i) {
-                var x = Math.abs(2 - i); // 2,1,0,1,2
-                var s = 3 - x; // 1,2,3,2,1
-                return s / 3 * opts.amp;
-            }
-            /**
-             *  This function draws a path that roughly looks like this:
-             *       .
-             * __/\_/ \_/\__
-             *   \/ \ / \/
-             *       '
-             *   1 2 3 4 5
-             *
-             * The function is called three times (with channel 0/1/2) so that the same
-             * basic shape is drawn in three different colors, slightly shifted and
-             * each visualizing a different set of frequencies.
-             */
-            function path(channel) {
-                // Read color1, color2, color2 from the opts
-                var color = opts["color" + (channel + 1)].map(Math.floor);
-                // turn the [r,g,b] array into a rgba() css color
-                ctx.fillStyle = "rgba(" + color + ", " + opts.fillOpacity + ")";
-                // set stroke and shadow the same solid rgb() color
-                ctx.strokeStyle = ctx.shadowColor = "rgb(" + color + ")";
-                ctx.lineWidth = opts.lineWidth;
-                ctx.shadowBlur = opts.glow;
-                ctx.globalCompositeOperation = opts.blend;
-                var m = HEIGHT / 2; // the vertical middle of the canvas
-                // for the curve with 5 peaks we need 15 control points
-                // calculate how much space is left around it
-                var offset = (WIDTH - 15 * opts.width) / 2;
-                // calculate the 15 x-offsets
-                var x = range(15).map(function (i) {return offset + channel * opts.shift + i * opts.width;});
-                // pick some frequencies to calculate the y values
-                // scale based on position so that the center is always bigger
-                var y = range(5).map(function (i) {return Math.max(0, m - scale(i) * freq(channel, i));});
-                var h = 2 * m;
-                ctx.beginPath();
-                ctx.moveTo(0, m); // start in the middle of the left side
-                ctx.lineTo(x[0], m + 1); // straight line to the start of the first peak
-                ctx.bezierCurveTo(x[1], m + 1, x[2], y[0], x[3], y[0]); // curve to 1st value
-                ctx.bezierCurveTo(x[4], y[0], x[4], y[1], x[5], y[1]); // 2nd value
-                ctx.bezierCurveTo(x[6], y[1], x[6], y[2], x[7], y[2]); // 3rd value
-                ctx.bezierCurveTo(x[8], y[2], x[8], y[3], x[9], y[3]); // 4th value
-                ctx.bezierCurveTo(x[10], y[3], x[10], y[4], x[11], y[4]); // 5th value
-                ctx.bezierCurveTo(x[12], y[4], x[12], m, x[13], m); // curve back down to the middle
-                ctx.lineTo(1000, m + 1); // straight line to the right edge
-                ctx.lineTo(x[13], m - 1); // and back to the end of the last peak
-                // now the same in reverse for the lower half of out shape
-                ctx.bezierCurveTo(x[12], m, x[12], h - y[4], x[11], h - y[4]);
-                ctx.bezierCurveTo(x[10], h - y[4], x[10], h - y[3], x[9], h - y[3]);
-                ctx.bezierCurveTo(x[8], h - y[3], x[8], h - y[2], x[7], h - y[2]);
-                ctx.bezierCurveTo(x[6], h - y[2], x[6], h - y[1], x[5], h - y[1]);
-                ctx.bezierCurveTo(x[4], h - y[1], x[4], h - y[0], x[3], h - y[0]);
-                ctx.bezierCurveTo(x[2], h - y[0], x[1], m, x[0], m);
-                ctx.lineTo(0, m); // close the path by going back to the start
-                ctx.fill();
-                ctx.stroke();
-            }
-            /**
-             * requestAnimationFrame handler that drives the visualization
-             */
-            function visualize() {
-                // set analysert props in the loop react on dat.gui changes
-                analyser.smoothingTimeConstant = opts.smoothing;
-                analyser.fftSize = Math.pow(2, opts.fft);
-                analyser.minDecibels = opts.minDecibels;
-                analyser.maxDecibels = 0;
-                analyser.getByteFrequencyData(freqs);
-                // set size to clear the canvas on each frame
-                canvas.width = WIDTH;
-                canvas.height = HEIGHT;
-                // draw three curves (R/G/B)
-                path(0);
-                path(1);
-                path(2);
-                // schedule next paint
-                requestAnimationFrame(visualize);
-            }
-        },
-        rainbowCircleVisualizer: function(zIndex){
-            /* SOUND */
-            // Audio vars
-            var audioCtx = new AudioContext(),
-                analyser,
-                bufferLength,
-                step,
-                frequencyData,
-                waveData;
-            // Get microphone input
-            if(navigator.webkitGetUserMedia) {
-                navigator.webkitGetUserMedia(
-                    { audio: true },
-                    doAudioStuff,
-                    function(error) {
-                        canvas.width = 0;
-                        canvas.height = 0;
-                        qmLog.error('Audio error: ' + error.name);
-                    }
-                );
-            } else {
-                navigator.mediaDevices.getUserMedia({audio: true})
-                    .then(doAudioStuff)
-                    .catch(function(error) {
-                        qmLog.error('Audio error: ' + error.name);
-                    });
-            }
-            // Do the thing
-            function doAudioStuff(mediaStream){
-                analyser = audioCtx.createAnalyser();
-                analyser.smoothingTimeConstant = 0.97;
-                analyser.fftSize = 1024;
-                step = analyser.fftSize / 16;
-                bufferLength = analyser.frequencyBinCount;
-                frequencyData = new Uint8Array(bufferLength);
-                waveData = new Uint8Array(bufferLength);
-                window.source = audioCtx.createMediaStreamSource(mediaStream);
-                source.connect(analyser);
-                animate();
-            }
-            // Not used
-            function averageVolume(data) {
-                var value = 0,
-                    l = data.length;
-                for(var i =0; i < l; i++) {
-                    value += data[i];
-                }
-                return value / l;
-            }
-            /* VISION */
-            var canvas = document.getElementById('rainbow-canvas'),
-                ctx = canvas.getContext('2d'),
-                w, h, w2, h2, h3, h4; // Canvas sizes
-            //if(zIndex !== null){canvas.style.zIndex = zIndex;}
-            function setCanvasSizes() {
-                w = canvas.width = window.innerWidth,
-                    h = canvas.height = window.innerHeight,
-                    w2 = w/2,
-                    h2 = h/2,
-                    h3 = h/3,
-                    h4 = h/4;
-            }
-            setCanvasSizes();
-            function byteToNum(byte,min,max) {
-                var hue = (byte / 128) * (max - min) + min;
-                return Math.round(hue);
-            }
-            /* SOUND & VISION */
-            // Animate frames
-            function animate() {
-                analyser.getByteFrequencyData(frequencyData);
-                analyser.getByteTimeDomainData(waveData);
-                ctx.strokeStyle = 'hsl(' + byteToNum(frequencyData[0],1000,3600) + ', 90%, 60%)';
-                ctx.fillStyle = 'hsla(250,10%,10%,0.09)';
-                ctx.fillRect(0,0,w,h);
-                /* Lines */
-                ctx.beginPath();
-                for(var i = 0; i < bufferLength; i++) {
-                    ctx.lineTo(Math.sin(frequencyData[i * step] / 20) * h3 + w2,
-                        Math.cos(frequencyData[i * step] / 20) * h3 + h2);
-                }
-                ctx.closePath();
-                ctx.stroke();
-                /* Circles */
-                for(var i = 0; i < bufferLength; i++) {
-                    ctx.beginPath();
-                    ctx.arc(w2, h2, byteToNum(waveData[i * step] + frequencyData[i * step],h4,h3), 0, Math.PI*2 );
-                    ctx.closePath();
-                    ctx.stroke();
-                }
-                requestAnimationFrame(animate);
-            }
-            window.addEventListener('resize',function(){
-                setCanvasSizes();
-            });
-        },
         getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
             qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
                 if(trackingReminderNotification){
+                    qm.speech.currentNotification = trackingReminderNotification;
                     qm.speech.intent = qm.staticData.dialogAgent.intents["Tracking Reminder Notification Intent"];
-                    qm.speech.talkRobot(trackingReminderNotification.card.title);
-                    if(successHandler){successHandler(trackingReminderNotification);}
+                    var listen = true;
+                    qm.speech.talkRobot(trackingReminderNotification.card.title, function(){
+                        qm.microphone.listenForNotificationResponse(successHandler, errorHandler)
+                    }, listen);
                 } else {
                     qmLog.error("No tracking reminder notification");
                     if(errorHandler){errorHandler(error);}
@@ -3751,6 +3701,62 @@ window.qm = {
             var deepThoughts = qm.staticData.deepThoughts;
             var deepThought = deepThoughts[[Math.floor(Math.random() * (deepThoughts.length - 1))]];
             qm.speech.talkRobot(deepThought.text + "! . ! . !", callback);
+        },
+        reminderNotificationCommands: {
+            "I don't know": function () {
+                qm.speech.talkRobot("OK. We'll skip that one.");
+            },
+            '*tag': function(tag) {
+                if(qm.speech.callback){
+                    qm.speech.callback(tag);
+                }
+                qm.speech.lastUserStatement = tag;
+                qmLog.info("Just heard user say " + tag);
+                function isNumeric(n) {
+                    return !isNaN(parseFloat(n)) && isFinite(n);
+                }
+                var possibleResponses = ["skip", "snooze", "yes", "no"];
+                if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
+                    var notification = qm.speech.currentNotification;
+                    notification.modifiedValue = tag;
+                    qm.notifications.trackNotification(notification);
+                    var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
+                    var prefix = qm.speech.afterNotificationMessages.pop();
+                    if(prefix){message = prefix + message;}
+                    qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
+                    if(qm.microphone.successHandler){qm.microphone.successHandler(notification);}
+                } else {
+                    qm.speech.fallbackMessage(tag);
+                }
+            }
+        },
+        machinesOfLovingGrace: function(callback){
+            qm.speech.talkRobot("I like to think (and " +
+                "the sooner the better!) " +
+                "of a cybernetic meadow " +
+                "where mammals and computers " +
+                "live together in mutually " +
+                "programming harmony " +
+                "like pure water " +
+                "touching clear sky! " +
+                "I like to think " +
+                "(right now, please!) " +
+                "of a cybernetic forest " +
+                "filled with pines and electronics " +
+                "where deer stroll peacefully " +
+                "past computers " +
+                "as if they were flowers " +
+                "with spinning blossoms.  " +
+                "I like to think " +
+                "(it has to be!) " +
+                "of a cybernetic ecology! " +
+                "where we are free of our labors " +
+                "and joined back to nature, " +
+                "returned to our mammal " +
+                "brothers and sisters, " +
+                "and all watched over " +
+                "by machines of loving grace!  " +
+                "I'm Dr. Roboto!  ", callback);
         }
     },
     shares: {
@@ -3819,6 +3825,43 @@ window.qm = {
             }
             var params = qm.api.addGlobalParams({});
             apiInstance.deleteShare(clientIdToRevoke, params, callback);
+        }
+    },
+    splash: {
+        text: {
+            hide: function(){
+                var element = qm.splash.text.getElement();
+                if(!element){
+                    qmLog.error("No splash.text.element!");
+                    return false;
+                }
+                element.style.display = "none";
+            },
+            show: function(){
+                var element = qm.splash.text.getElement();
+                if(element){
+                    element.style.display = "block";
+                } else {
+                    qmLog.error("Could not get splash.text element");
+                }
+            },
+            getElement: function(){
+                var element = document.querySelector('#splash-logo');
+                return element;
+            },
+        },
+        hide: function(){
+            qm.splash.getElement().style.display = "none";
+        },
+        show: function(){
+            qm.splash.getElement().style.display = "block";
+        },
+        getElement: function(){
+            var appContainer = document.querySelector('#splash-screen');
+            return appContainer;
+        },
+        setOpacity: function(opacity){
+            qm.splash.getElement().style.opacity = opacity;
         }
     },
     studiesCreated: {
@@ -4149,7 +4192,7 @@ window.qm = {
                 return null;
             }
             var fromGlobals = qm.storage.getGlobal(key);
-            if(fromGlobals){
+            if(fromGlobals !== null && fromGlobals !== "undefined" && fromGlobals !== "null"){
                 qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
@@ -4543,7 +4586,7 @@ window.qm = {
                 qm.studyHelper.getStudyFromApi(params, function (study) {
                     successHandler(study);
                 }, function (error) {
-                    qmLog.error("qmService.getStudy error: ", error);
+                    qmLog.error("getStudy error: ", error);
                     errorHandler(error);
                 });
             }
@@ -5141,26 +5184,15 @@ window.qm = {
             qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getCommonVariablesFromJsonFile: function (requestParams, successHandler, errorHandler) {
-            var globalKey = 'CommonVariablesFromJsonFile';
-            var fromGlobals = qm.globalHelper.getItem(globalKey); // Reduce web requests.  Pretty big to keep in localForage
-            var commonVariables;
-            if(fromGlobals){
-                commonVariables = qm.arrayHelper.filterByRequestParams(fromGlobals, requestParams);
+            var commonVariables = qm.staticData.commonVariables;
+            commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
+            if(commonVariables && commonVariables.length){
                 successHandler(commonVariables);
-                return;
+            } else {
+                var message = "No CommonVariablesFromJsonFile found matching params" + JSON.stringify(requestParams);
+                qmLog.info(message);
+                if(errorHandler){errorHandler(message);}
             }
-            qm.api.getViaXhrOrFetch('data/commonVariables.json', function(commonVariables){
-                if(!commonVariables){
-                    qmLog.error("No common variables from json file!");
-                    errorHandler("No common variables from json file!");
-                    return;
-                }
-                qm.globalHelper.setItem(globalKey, commonVariables); // Reduce web requests.  Pretty big to keep in localForage
-                commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
-                successHandler(commonVariables);
-            }, function (error) {
-                if(errorHandler){errorHandler(error);}
-            });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
@@ -5186,7 +5218,7 @@ window.qm = {
             qm.commonVariablesHelper.getCommonVariablesFromJsonFile(requestParams, function (commonVariables) {
                 getFromLocalForage(commonVariables);
             }, function (error) {
-                qmLog.error(error);
+                qmLog.info(error);
                 getFromLocalForage();
             });
         },
@@ -5428,6 +5460,9 @@ window.qm = {
                     var both = userVariables.concat(commonVariables);
                     both = qm.arrayHelper.getUnique(both, 'id');
                     successHandler(both);
+                }, function(error){
+                    qmLog.info(error);
+                    successHandler(userVariables);
                 });
             });
         },
@@ -5509,6 +5544,359 @@ window.qm = {
                 successHandler(match);
             });
         }
+    },
+    visualizer: {
+        showing: false,
+        hide: function(){
+            //qm.appContainer.setOpacity(1);
+            qmLog.info("Hiding visualizer");
+            var visualizer = qm.visualizer.getElement();
+            visualizer.style.display = "none";
+        },
+        show: function(){
+            qmLog.info("Showing visualizer");
+            var visualizer = qm.visualizer.getElement();
+            visualizer.style.display = "block";
+            setTimeout(function(){
+                qm.visualizer.rainbowCircleVisualizer();
+            }, 1);
+        },
+        getElement: function(){
+            var element = document.querySelector('#rainbow-canvas');
+            return element;
+        },
+        toggle: function () {
+            if(qm.visualizer.showing){
+                qm.visualizer.hide();
+            } else {
+                qm.visualizer.show();
+            }
+        },
+        rainbowCircleVisualizer: function(){
+            /* SOUND */
+            // Audio vars
+            var audioCtx = new AudioContext(),
+                analyser,
+                bufferLength,
+                step,
+                frequencyData,
+                waveData;
+            // Get microphone input
+            if(navigator.webkitGetUserMedia) {
+                navigator.webkitGetUserMedia(
+                    { audio: true },
+                    doAudioStuff,
+                    function(error) {
+                        canvas.width = 0;
+                        canvas.height = 0;
+                        qmLog.error('Audio error: ' + error.name);
+                    }
+                );
+            } else {
+                navigator.mediaDevices.getUserMedia({audio: true})
+                    .then(doAudioStuff)
+                    .catch(function(error) {
+                        qmLog.error('Audio error: ' + error.name);
+                    });
+            }
+            // Do the thing
+            function doAudioStuff(mediaStream){
+                analyser = audioCtx.createAnalyser();
+                analyser.smoothingTimeConstant = 0.97;
+                analyser.fftSize = 1024;
+                step = analyser.fftSize / 16;
+                bufferLength = analyser.frequencyBinCount;
+                frequencyData = new Uint8Array(bufferLength);
+                waveData = new Uint8Array(bufferLength);
+                window.source = audioCtx.createMediaStreamSource(mediaStream);
+                source.connect(analyser);
+                animate();
+            }
+            // Not used
+            function averageVolume(data) {
+                var value = 0,
+                    l = data.length;
+                for(var i =0; i < l; i++) {
+                    value += data[i];
+                }
+                return value / l;
+            }
+            /* VISION */
+            var canvas = document.getElementById('rainbow-canvas'),
+                ctx = canvas.getContext('2d'),
+                w, h, w2, h2, h3, h4; // Canvas sizes
+            //if(zIndex !== null){canvas.style.zIndex = zIndex;}
+            function setCanvasSizes() {
+                w = canvas.width = window.innerWidth,
+                    h = canvas.height = window.innerHeight,
+                    w2 = w/2,
+                    h2 = h/2,
+                    h3 = h/3,
+                    h4 = h/4;
+            }
+            setCanvasSizes();
+            function byteToNum(byte,min,max) {
+                var hue = (byte / 128) * (max - min) + min;
+                return Math.round(hue);
+            }
+            /* SOUND & VISION */
+            // Animate frames
+            function animate() {
+                analyser.getByteFrequencyData(frequencyData);
+                analyser.getByteTimeDomainData(waveData);
+                ctx.strokeStyle = 'hsl(' + byteToNum(frequencyData[0],1000,3600) + ', 90%, 60%)';
+                ctx.fillStyle = 'hsla(250,10%,10%,0.09)';
+                ctx.fillRect(0,0,w,h);
+                /* Lines */
+                ctx.beginPath();
+                for(var i = 0; i < bufferLength; i++) {
+                    ctx.lineTo(Math.sin(frequencyData[i * step] / 20) * h3 + w2,
+                        Math.cos(frequencyData[i * step] / 20) * h3 + h2);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                /* Circles */
+                for(var i = 0; i < bufferLength; i++) {
+                    ctx.beginPath();
+                    ctx.arc(w2, h2, byteToNum(waveData[i * step] + frequencyData[i * step],h4,h3), 0, Math.PI*2 );
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                requestAnimationFrame(animate);
+            }
+            window.addEventListener('resize',function(){
+                setCanvasSizes();
+            });
+        },
+        siriVisualizer: function(){
+            // the canvas size
+            var WIDTH = 1000;
+            var HEIGHT = 400;
+            var ctx = canvas.getContext("2d");
+            // options to tweak the look
+            var opts = {
+                smoothing: 0.6,
+                fft: 5,
+                minDecibels: -70,
+                scale: 0.2,
+                glow: 10,
+                color1: [203, 36, 128],
+                color2: [41, 200, 192],
+                color3: [24, 137, 218],
+                fillOpacity: 0.6,
+                lineWidth: 1,
+                blend: "screen",
+                shift: 50,
+                width: 60,
+                amp: 1 };
+            if(typeof dat !== "undefined"){
+                var gui = new dat.GUI(); // Interactive dat.GUI controls
+                gui.close(); // hide them by default
+                // connect gui to opts
+                gui.addColor(opts, "color1");
+                gui.addColor(opts, "color2");
+                gui.addColor(opts, "color3");
+                gui.add(opts, "fillOpacity", 0, 1);
+                gui.add(opts, "lineWidth", 0, 10).step(1);
+                gui.add(opts, "glow", 0, 100);
+                gui.add(opts, "blend", [
+                    "normal",
+                    "multiply",
+                    "screen",
+                    "overlay",
+                    "lighten",
+                    "difference"]);
+                gui.add(opts, "smoothing", 0, 1);
+                gui.add(opts, "minDecibels", -100, 0);
+                gui.add(opts, "amp", 0, 5);
+                gui.add(opts, "width", 0, 60);
+                gui.add(opts, "shift", 0, 200);
+            }
+            var context = new AudioContext();
+            var analyser = context.createAnalyser();
+            // Array to hold the analyzed frequencies
+            var freqs = new Uint8Array(analyser.frequencyBinCount);
+            navigator.getUserMedia =
+                navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia;
+            navigator.getUserMedia({ audio: true }, onStream, onStreamError);
+            /**
+             * Create an input source from the user media stream, connect it to
+             * the analyser and start the visualization.
+             */
+            function onStream(stream) {
+                var input = context.createMediaStreamSource(stream);
+                input.connect(analyser);
+                requestAnimationFrame(visualize);
+            }
+            /**
+             * Display an error message.
+             */
+            function onStreamError(e) {
+                document.body.innerHTML = "<h1>This pen only works with https://</h1>";
+                console.error(e);
+            }
+            /**
+             * Utility function to create a number range
+             */
+            function range(i) {
+                return Array.from(Array(i).keys());
+            }
+            // shuffle frequencies so that neighbors are not too similar
+            var shuffle = [1, 3, 0, 4, 2];
+            /**
+             * Pick a frequency for the given channel and value index.
+             *
+             * The channel goes from 0 to 2 (R/G/B)
+             * The index goes from 0 to 4 (five peaks in the curve)
+             *
+             * We have 32 (2^opts.fft) frequencies to choose from and
+             * we want to visualize most of the spectrum. This function
+             * returns the bands from 0 to 28 in a nice distribution.
+             */
+            function freq(channel, i) {
+                var band = 2 * channel + shuffle[i] * 6;
+                return freqs[band];
+            }
+            /**
+             * Returns the scale factor fot the given value index.
+             * The index goes from 0 to 4 (curve with 5 peaks)
+             */
+            function scale(i) {
+                var x = Math.abs(2 - i); // 2,1,0,1,2
+                var s = 3 - x; // 1,2,3,2,1
+                return s / 3 * opts.amp;
+            }
+            /**
+             *  This function draws a path that roughly looks like this:
+             *       .
+             * __/\_/ \_/\__
+             *   \/ \ / \/
+             *       '
+             *   1 2 3 4 5
+             *
+             * The function is called three times (with channel 0/1/2) so that the same
+             * basic shape is drawn in three different colors, slightly shifted and
+             * each visualizing a different set of frequencies.
+             */
+            function path(channel) {
+                // Read color1, color2, color2 from the opts
+                var color = opts["color" + (channel + 1)].map(Math.floor);
+                // turn the [r,g,b] array into a rgba() css color
+                ctx.fillStyle = "rgba(" + color + ", " + opts.fillOpacity + ")";
+                // set stroke and shadow the same solid rgb() color
+                ctx.strokeStyle = ctx.shadowColor = "rgb(" + color + ")";
+                ctx.lineWidth = opts.lineWidth;
+                ctx.shadowBlur = opts.glow;
+                ctx.globalCompositeOperation = opts.blend;
+                var m = HEIGHT / 2; // the vertical middle of the canvas
+                // for the curve with 5 peaks we need 15 control points
+                // calculate how much space is left around it
+                var offset = (WIDTH - 15 * opts.width) / 2;
+                // calculate the 15 x-offsets
+                var x = range(15).map(function (i) {return offset + channel * opts.shift + i * opts.width;});
+                // pick some frequencies to calculate the y values
+                // scale based on position so that the center is always bigger
+                var y = range(5).map(function (i) {return Math.max(0, m - scale(i) * freq(channel, i));});
+                var h = 2 * m;
+                ctx.beginPath();
+                ctx.moveTo(0, m); // start in the middle of the left side
+                ctx.lineTo(x[0], m + 1); // straight line to the start of the first peak
+                ctx.bezierCurveTo(x[1], m + 1, x[2], y[0], x[3], y[0]); // curve to 1st value
+                ctx.bezierCurveTo(x[4], y[0], x[4], y[1], x[5], y[1]); // 2nd value
+                ctx.bezierCurveTo(x[6], y[1], x[6], y[2], x[7], y[2]); // 3rd value
+                ctx.bezierCurveTo(x[8], y[2], x[8], y[3], x[9], y[3]); // 4th value
+                ctx.bezierCurveTo(x[10], y[3], x[10], y[4], x[11], y[4]); // 5th value
+                ctx.bezierCurveTo(x[12], y[4], x[12], m, x[13], m); // curve back down to the middle
+                ctx.lineTo(1000, m + 1); // straight line to the right edge
+                ctx.lineTo(x[13], m - 1); // and back to the end of the last peak
+                // now the same in reverse for the lower half of out shape
+                ctx.bezierCurveTo(x[12], m, x[12], h - y[4], x[11], h - y[4]);
+                ctx.bezierCurveTo(x[10], h - y[4], x[10], h - y[3], x[9], h - y[3]);
+                ctx.bezierCurveTo(x[8], h - y[3], x[8], h - y[2], x[7], h - y[2]);
+                ctx.bezierCurveTo(x[6], h - y[2], x[6], h - y[1], x[5], h - y[1]);
+                ctx.bezierCurveTo(x[4], h - y[1], x[4], h - y[0], x[3], h - y[0]);
+                ctx.bezierCurveTo(x[2], h - y[0], x[1], m, x[0], m);
+                ctx.lineTo(0, m); // close the path by going back to the start
+                ctx.fill();
+                ctx.stroke();
+            }
+            /**
+             * requestAnimationFrame handler that drives the visualization
+             */
+            function visualize() {
+                // set analysert props in the loop react on dat.gui changes
+                analyser.smoothingTimeConstant = opts.smoothing;
+                analyser.fftSize = Math.pow(2, opts.fft);
+                analyser.minDecibels = opts.minDecibels;
+                analyser.maxDecibels = 0;
+                analyser.getByteFrequencyData(freqs);
+                // set size to clear the canvas on each frame
+                canvas.width = WIDTH;
+                canvas.height = HEIGHT;
+                // draw three curves (R/G/B)
+                path(0);
+                path(1);
+                path(2);
+                // schedule next paint
+                requestAnimationFrame(visualize);
+            }
+        },
+        visualizeVoice: function(type, zIndex){
+            if(type === 'siri'){return qm.visualizer.siriVisualizer();}
+            if(type === 'rainbow'){return qm.visualizer.rainbowCircleVisualizer(zIndex);}
+            var paths = document.getElementsByTagName('path');
+            var visualizer = document.getElementById('visualizer');
+            if(!visualizer){return;}
+            var mask = visualizer.getElementById('mask');
+            var h = document.getElementsByTagName('h1')[0];
+            var path;
+            var report = 0;
+            var soundAllowed = function (stream) {
+                //Audio stops listening in FF without // window.persistAudioStream = stream;
+                //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
+                //https://support.mozilla.org/en-US/questions/984179
+                window.persistAudioStream = stream;
+                h.innerHTML = "Thanks";
+                h.setAttribute('style', 'opacity: 0;');
+                var audioContent = new AudioContext();
+                var audioStream = audioContent.createMediaStreamSource( stream );
+                var analyser = audioContent.createAnalyser();
+                audioStream.connect(analyser);
+                analyser.fftSize = 1024;
+                var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
+                visualizer.setAttribute('viewBox', '0 0 255 255');
+                //Through the frequencyArray has a length longer than 255, there seems to be no
+                //significant data after this point. Not worth visualizing.
+                for (var i = 0 ; i < 255; i++) {
+                    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('stroke-dasharray', '4,1');
+                    mask.appendChild(path);
+                }
+                var doDraw = function () {
+                    requestAnimationFrame(doDraw);
+                    analyser.getByteFrequencyData(frequencyArray);
+                    var adjustedLength;
+                    for (var i = 0 ; i < 255; i++) {
+                        adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+                        paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
+                    }
+                }
+                doDraw();
+            }
+            var soundNotAllowed = function (error) {
+                h.innerHTML = "You must allow your microphone.";
+                console.log(error);
+            }
+            /*window.navigator = window.navigator || {};
+            /*navigator.getUserMedia =  navigator.getUserMedia       ||
+                                      navigator.webkitGetUserMedia ||
+                                      navigator.mozGetUserMedia    ||
+                                      null;*/
+            navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
+        },
     },
     webNotifications: {
         initializeFirebase: function(){
