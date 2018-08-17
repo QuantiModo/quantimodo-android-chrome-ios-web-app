@@ -3592,6 +3592,10 @@ window.qm = {
                 if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
+            if(qm.platform.isWeb() && !qm.platform.browser.isChrome()){
+                if(!qm.appMode.isTesting()){qmLog.error("Speech only available on Chrome");}
+                return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
+            }
             return qm.speech.speechAvailable = true;
         },
         shutUpRobot: function(resumeListening){
