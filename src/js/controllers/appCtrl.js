@@ -350,4 +350,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
         }, 1);
     };
+    $scope.setSpeechEnabled = function(value){
+        $scope.speechEnabled = value;
+        qmService.rootScope.setProperty('speechEnabled', value);
+        qm.speech.setSpeechEnabled(value);
+        qm.speech.defaultAction();
+    };
+    $scope.robotClick = function(){
+        qm.speech.defaultAction();
+    }
 }]);
