@@ -1,12 +1,11 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
-    <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
-        <div ng-show="state.hideCircle || !myIntro.ready" ng-include="'templates/splash-logo.html'"></div>
-        <div class="splash-grid"></div>
-    </div>
+    <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; opacity: 0.5; pointer-events: none; background-color: transparent;"></canvas>
+    <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;"><div class="splash-grid"></div> </div>
+    <div ng-show="!myIntro.ready" ng-include="'templates/splash-logo.html'" style="z-index: 3;"></div>
     <div ng-if="state.speechEnabled === null" style="margin-top: 60%; bottom: 30%;
                                                     color: white;
                                                     text-align: center;
-                                                    z-index: 30;
+                                                    z-index: 3;
                                                     position: absolute;
                                                     left: 0;
                                                     right: 0;">
@@ -16,9 +15,10 @@
             <md-button id="enableSpeechButton" ng-click="state.setSpeechEnabled(true)"> &nbsp; YES &nbsp; </md-button>
         </div>
     </div>
-    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" style="z-index: 2;">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
                    style="display: flex; flex-direction: column; justify-content: center;">
+            <div ng-show="state.hideCircle" ng-include="'templates/splash-logo.html'" style="z-index: 3;"></div>
             <div ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
             <div class="button-bar" style="max-height: 80px;" >
                 <md-button id="goButtonIntro" class="button circle-page-button"
