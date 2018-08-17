@@ -263,7 +263,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
-    if($rootScope.platform.isAndroid){
+    if(qm.platform.isAndroid()){
     	$scope.toggleDrawOverAppsPopup = function(ev){
     		qmService.toggleDrawOverAppsPopup(ev);
     	};
