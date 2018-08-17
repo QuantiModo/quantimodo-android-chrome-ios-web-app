@@ -3581,6 +3581,7 @@ window.qm = {
                 qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
             };
             utterance.text = text;
+            utterance.pitch = 1;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.getClass().classList.add('robot_speaking');
             qm.microphone.pauseListening();
