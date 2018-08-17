@@ -2,7 +2,7 @@
 	box-sizing: border-box;
 	position: absolute;
 	width: 160px;
-	height: 180px;
+	height: 170px;
 	bottom: -30px;
 	left: calc(50% - 80px);
 	z-index: 4; }
@@ -12,10 +12,9 @@
 	width: 130px;
 	left: 20px;
 	height: 100px;
-	background-color: #ccc;
 	border-radius: 490px 550px 550px 550px;
 	overflow: hidden;
-	background: linear-gradient(to right, #b7a9a9 0%, #c1b1b1 40%, #c1b5b5 60%, #ab9c9c 100%);
+	background: #ccc linear-gradient(to right, #b7a9a9 0%, #c1b1b1 40%, #c1b5b5 60%, #ab9c9c 100%);
 	-webkit-transform-origin: 50% 100%;
 	transform-origin: 50% 100%;
 	-webkit-animation: bob 8000ms ease-in-out alternate infinite -1000ms;
@@ -36,10 +35,7 @@
 	position: absolute;
 	width: 20px;
 	height: 20px;
-	border-radius: 50%;
-	background-image: radial-gradient(ellipse, #dffdfe 0%, #11c1f3 50%, #387ef5 60%);
-	background-position: center;
-	background-repeat: no-repeat;
+	background: radial-gradient(ellipse, #dffdfe 0%, #11c1f3 50%, #387ef5 60%) no-repeat center;
 	background-size: 100%;
 	z-index: -2;
 	border-radius: 100%;
