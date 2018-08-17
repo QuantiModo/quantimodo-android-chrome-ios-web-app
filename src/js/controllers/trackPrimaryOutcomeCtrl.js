@@ -27,9 +27,8 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
         $scope.timeRemaining = true;
         $scope.showRatingFaces = false;
-        qm.chrome.updateChromeBadge(0);
         var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
-        qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+        qm.measurements.addToMeasurementsQueue(primaryOutcomeMeasurement);
         updateCharts();
         if(!$rootScope.isSyncing && $rootScope.user){
             qmService.showInfoToast(syncDisplayText);

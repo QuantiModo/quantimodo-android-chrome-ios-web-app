@@ -2442,6 +2442,40 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
             }
             apiInstance.getMeasurements(params, callback);
+        },
+        addLocationDataToMeasurement: function (measurementObject) {
+            if(!measurementObject.latitude){measurementObject.latitude = qm.storage.getItem(qm.items.lastLatitude);}
+            if(!measurementObject.longitude){measurementObject.longitude = qm.storage.getItem(qm.items.lastLongitude);}
+            if(!measurementObject.location){measurementObject.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
+            return measurementObject;
+        },
+        addLocationAndSourceDataToMeasurement: function(measurementObject){
+            qm.measurements.addLocationDataToMeasurement(measurementObject);
+            if(!measurementObject.sourceName){measurementObject.sourceName = qm.getSourceName();}
+            return measurementObject;
+        },
+        addToMeasurementsQueue: function(measurementObject){
+            measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
+            qm.storage.appendToArray('measurementsQueue', measurementObject);
+        },
+        updateMeasurementInQueue: function(measurementInfo) {
+            var measurementsQueue = qm.storage.getItem(qm.items.measurementsQueue);
+            var i = 0;
+            while (i < measurementsQueue.length) {
+                if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
+                    measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
+                    measurementsQueue[i].value = measurementInfo.value;
+                    measurementsQueue[i].note = measurementInfo.note;
+                    break;
+                }
+                i++;
+            }
+            qm.storage.setItem(qm.items.measurementsQueue, measurementsQueue);
+        },
+        getMeasurementsFromQueue: function(params){
+            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params);
+            if(measurements){measurements = qmService.addInfoAndImagesToMeasurements(measurements);}
+            return measurements;
         }
     },
     manualTrackingVariableCategoryNames: [
