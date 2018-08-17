@@ -41,7 +41,6 @@
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
              ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <ion-nav-view name="menuContent">
-
             <div id="audio-buttons" style="bottom: 5px; z-index: 30; position: absolute; font-size: 30px;">
                 <div id="mute-button" style="left: 0;" >
                     <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
@@ -60,8 +59,7 @@
                     </md-button>
                 </div>
             </div>
-
-
+            <canvas id="rainbow-canvas" style="position: absolute; z-index: 40; display: block; opacity: 0.6;  pointer-events: none; background-color: transparent;"></canvas>
         </ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
@@ -119,5 +117,4 @@
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
-<div ng-if="speechEnabled" ng-include="'templates/robot.html'"></div>
-<canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; /* opacity: 0; */ pointer-events: none; background-color: transparent;"></canvas>
+<div ng-show="speechEnabled" ng-include="'templates/robot.html'"></div>

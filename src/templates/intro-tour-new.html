@@ -3,17 +3,15 @@
         <div ng-show="state.hideCircle || !myIntro.ready" ng-include="'templates/splash-logo.html'"></div>
         <div class="splash-grid"></div>
     </div>
-    <div ng-if="state.speechEnabled === null" style="margin-top: 60%;
+    <div ng-if="state.speechEnabled === null" style="margin-top: 60%; bottom: 30%;
                                                     color: white;
                                                     text-align: center;
                                                     z-index: 30;
                                                     position: absolute;
-                                                    top: 0;
                                                     left: 0;
-                                                    bottom: 0;
                                                     right: 0;">
         <h1 style="color: white;">May I speak to you?</h1>
-        <div >
+        <div style="font-size: 60px;">
             <md-button id="disableSpeechButton" ng-click="state.setSpeechEnabled(false)"> &nbsp; NO &nbsp; </md-button>
             <md-button id="enableSpeechButton" ng-click="state.setSpeechEnabled(true)"> &nbsp; YES &nbsp; </md-button>
         </div>
