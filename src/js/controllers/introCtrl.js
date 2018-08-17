@@ -29,7 +29,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmService.intro.setIntroSeen(true, "User clicked startApp in intro");
             if($state.current.name.indexOf('intro') !== -1){
                 var message = "Now let's create a mathematical model of YOU!  ";
-                slide.title = message;
+                if(slide){slide.title = message;}
                 qm.speech.talkRobot(message, function () {
                     // Called to navigate to the main app
                     if(qm.auth.sendToLogin()){ return; }
