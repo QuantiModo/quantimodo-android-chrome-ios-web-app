@@ -78,7 +78,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
         }
-        if(!qm.speech.getSpeechAvailable()){$scope.state.speechEnabled = false;}
+        if(!qm.speech.getSpeechAvailable()){$scope.state.setSpeechEnabled(false);}
     });
     function readSlide() {
         //qm.visualizer.hide();
