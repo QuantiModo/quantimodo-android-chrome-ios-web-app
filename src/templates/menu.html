@@ -40,7 +40,29 @@
             <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
              ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
-        <ion-nav-view name="menuContent"></ion-nav-view>
+        <ion-nav-view name="menuContent">
+
+            <div id="audio-buttons" style="bottom: 5px; z-index: 30; position: absolute; font-size: 30px;">
+                <div id="mute-button" style="left: 0;" >
+                    <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
+                        <md-icon class="ion-volume-high"><md-tooltip md-direction="right">Mute</md-tooltip></md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(true)" aria-label="un-mute" ng-if="!speechEnabled">
+                        <md-icon class="ion-volume-mute"><md-tooltip md-direction="right">Enable Speech</md-tooltip></md-icon>
+                    </md-button>
+                </div>
+                <div id="mic-button" style="left: 20px;">
+                    <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(false)" aria-label="enable-microphone" ng-if="micEnabled">
+                        <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Turn Off Microphone</md-tooltip></md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(true)" aria-label="disable-microphone" ng-if="!micEnabled">
+                        <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Turn On Microphone</md-tooltip></md-icon>
+                    </md-button>
+                </div>
+            </div>
+
+
+        </ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-header-bar class="bar-positive">
@@ -97,24 +119,5 @@
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
-<div ng-include="'templates/robot.html'"></div>
+<div ng-if="speechEnabled" ng-include="'templates/robot.html'"></div>
 <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; /* opacity: 0; */ pointer-events: none; background-color: transparent;"></canvas>
-<div id="audio-buttons" style="bottom: 5px; z-index: 30; position: absolute; font-size: 30px;">
-    <div id="mute-button" style="left: 0;">
-        <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
-            <md-icon class="ion-volume-high"><md-tooltip md-direction="right">Mute</md-tooltip></md-icon>
-        </md-button>
-        <md-button class="md-icon-button md-accent" ng-click="state.setSpeechEnabled(true)" aria-label="un-mute" ng-if="!speechEnabled">
-            <md-icon class="ion-volume-mute"><md-tooltip md-direction="right">Enable Speech</md-tooltip></md-icon>
-        </md-button>
-    </div>
-    <div id="mic-button" style="left: 20px;">
-        <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(false)" aria-label="enable-microphone" ng-if="micEnabled">
-            <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Turn Off Microphone</md-tooltip></md-icon>
-        </md-button>
-        <md-button class="md-icon-button md-accent" ng-click="setMicrophoneEnabled(true)" aria-label="disable-microphone" ng-if="!micEnabled">
-            <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Turn On Microphone</md-tooltip></md-icon>
-        </md-button>
-    </div>
-</div>
-
