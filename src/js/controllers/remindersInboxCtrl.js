@@ -45,6 +45,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	$scope.$on('$ionicView.enter', function(e) {
         qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
         $scope.defaultHelpCards = qmService.setupHelpCards();
+        readHelpCards();
         getTrackingReminderNotifications();
         //getFavorites();  Not sure why we need to do this here?
         qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"});
@@ -92,12 +93,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			qmLogService.debug('ReminderInbox: Hiding splash screen because app is ready', null);
 			navigator.splashscreen.hide();
 		}
-		if(qm.speech.getSpeechEnabled()){
-			qm.speech.getMostRecentNotificationAndTalk(function (){
-				getTrackingReminderNotifications();
-				//qm.speech.getMostRecentNotificationAndTalk();
-            });
-		}
+
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
@@ -106,6 +102,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if($rootScope.platform.isWeb){qm.webNotifications.registerServiceWorker();}
         autoRefresh();
 	});
+	function readHelpCards(helpCard) {
+		if(!qm.speech.getSpeechEnabled()){return;}
+		if(!$scope.defaultHelpCards || !$scope.defaultHelpCards.length){return;}
+		qm.speech.talkRobot(helpCard, function () {
+			//$scope.hideHelpCard($scope.defaultHelpCards[0], $scope.defaultHelpCards[0].emailType);
+			//readHelpCards();
+		})
+    }
 	function needToRefresh() {
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications)){ return true; }
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications).length){ return true; }

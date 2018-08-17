@@ -43,19 +43,12 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }
-            var robot = document.querySelector('.robot');
-            robot.addEventListener('click', function (event) {
-                if (speechSynthesis.speaking) {
-                    qm.speech.shutUpRobot(true);
-                } else {
-                    if(qm.speech.lastUtterance){
-                        qm.speech.talkRobot(qm.speech.lastUtterance.text);
-                    } else {
-                        qmLog.info("Nothing to say");
-                    }
-                }
+            qm.notifications.getMostRecentNotification(function (notification) {
+                $scope.circlePage = qm.notifications.getCirclePage(notification);
             });
-            qm.speech.getMostRecentNotificationAndTalk();
+            $timeout(function () {
+                qm.speech.getMostRecentNotificationAndTalk();
+            }, 1);
         });
         $scope.state.userReply = function(reply) {
             reply = reply || $scope.state.userInputString;
@@ -81,50 +74,5 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmService.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"});
             });
         };
-        $scope.state.simulateQuery = false;
-        $scope.state.isDisabled    = false;
-        $scope.state.allListItems        = loadAll();  // list of `state` value/display objects
-        $scope.state.newState = function(state) {
-            alert("Sorry! You'll need to create a Constitution for " + state + " first!");
-        };
-        $scope.state.querySearch = function(query) {
-            var results = query ? $scope.state.allListItems.filter( createFilterFor(query) ) : $scope.state.allListItems,
-                deferred;
-            if ($scope.state.simulateQuery) {
-                deferred = $q.defer();
-                $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
-                return deferred.promise;
-            } else {
-                return results;
-            }
-        };
-        $scope.state.searchTextChange = function(text) {
-            qmLog.info('Text changed to ' + text);
-        };
-        $scope.state.selectedItemChange = function(item) {
-            qmLog.info('Item changed to ' + JSON.stringify(item));
-        };
-        /**
-         * Create filter function for a query string
-         */
-        function createFilterFor(query) {
-            var lowercaseQuery = query.toLowerCase();
-            return function filterFn(button) {
-                return (button.value.indexOf(lowercaseQuery) === 0);
-            };
-        }
-        /**
-         * Build `states` list of key/value pairs
-         */
-        function loadAll() {
-            if(!$scope.state.trackingReminderNotification){return [];}
-            var buttons = $scope.state.trackingReminderNotification.card.buttons;
-            return buttons.map( function (button) {
-                return {
-                    value: button.longTitle,
-                    display: state.longTitle
-                };
-            });
-        }
     }]
 );

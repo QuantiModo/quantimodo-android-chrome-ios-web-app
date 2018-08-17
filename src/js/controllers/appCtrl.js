@@ -343,7 +343,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qm.speech.setSpeechEnabled(value);
             if(!value){
                 qm.robot.hide();
-                qm.visualizer.hide();
+                qm.visualizer.hideVisualizer();
             } else {
                 qm.robot.show();
                 qm.visualizer.show();
