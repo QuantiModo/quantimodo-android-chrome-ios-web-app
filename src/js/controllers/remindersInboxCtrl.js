@@ -243,19 +243,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
 	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
 		if(isGhostClick($event)){ return false; }
-		if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
-		qm.notifications.setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
-		body.modifiedValue = modifiedReminderValue;
-		// I think this slows down inbox
-        //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "track", null, modifiedReminderValue);
-        qm.notifications.trackNotification(body, trackAll);
+		qmService.notifications.track(body, modifiedReminderValue, $event, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
 	function trackAll(trackingReminderNotification, modifiedReminderValue, ev) {
-		qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-        $scope.track(trackingReminderNotification, modifiedReminderValue, ev, true);
-        qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
+        var body = notificationAction(trackingReminderNotification);
+        qmService.notifications.trackAll(body, modifiedReminderValue, ev);
         getTrackingReminderNotifications();
     }
     function preventDragAfterAlert(ev) {
@@ -393,7 +387,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
     $scope.skipAllForVariable = function(trackingReminderNotification, ev) {
         preventDragAfterAlert(ev);
-    	qmService.notifications.skipAllForVariable(function (response) {
+    	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (response) {
             hideInboxLoader();
             $scope.refreshTrackingReminderNotifications();
         }, function(error){

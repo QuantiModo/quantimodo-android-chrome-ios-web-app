@@ -1147,6 +1147,80 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         notifications: {
+            trackAll: function(trackingReminderNotification, modifiedReminderValue, ev){
+                qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
+                qm.notifications.track(trackingReminderNotification, modifiedReminderValue, ev, true);
+                qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
+            },
+            track: function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
+                if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
+                qm.notifications.setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
+                var body = qmService.notifications.handleNotificationAction(trackingReminderNotification);
+                body.modifiedValue = modifiedReminderValue;
+                // I think this slows down inbox
+                //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "track", null, modifiedReminderValue);
+                qm.notifications.trackNotification(body, trackAll);
+            },
+            showActionSheetForNotification: function(trackingReminderNotification) {
+                var trackingReminder = trackingReminderNotification;
+                trackingReminder.id = trackingReminderNotification.trackingReminderId;
+                var variableObject = trackingReminderNotification;
+                variableObject.id = trackingReminderNotification.variableId;
+                variableObject.name = trackingReminderNotification.variableName;
+                var buttons = [
+                    { text: 'Actions for ' +  trackingReminderNotification.variableName},
+                    { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
+                    qmService.actionSheets.actionSheetButtons.charts,
+                    qmService.actionSheets.actionSheetButtons.historyAllVariable,
+                    //qmService.actionSheets.actionSheetButtons.variableSettings
+                ];
+                if(trackingReminderNotification.outcome === true){
+                    buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
+                } else if(trackingReminderNotification.outcome === false) {
+                    buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
+                } else {
+                    qmLog.error("Why is outcome not boolean in this notification!?!?!", null, trackingReminderNotification)
+                }
+                for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
+                    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
+                }
+                buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
+                // Show the action sheet
+                var hideSheetForNotification = $ionicActionSheet.show({
+                    buttons: buttons,
+                    //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                    cancel: function() {qmLogService.debug('CANCELLED', null);},
+                    buttonClicked: function(index) {
+                        qmLogService.debug('BUTTON CLICKED', null, index);
+                        if(index === 0){qmLogService.debug('clicked variable name', null);}
+                        if(index === 1){qmService.notifications.editReminderSettingsByNotification(trackingReminderNotification);}
+                        if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
+                        if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+                        var buttonIndex = 4;
+                        for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
+                            if(index === buttonIndex){qmService.notifications.trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);}
+                            buttonIndex++;
+                        }
+                        if(index === buttonIndex){qmService.notifications.skipAllForVariable(trackingReminderNotification);}
+                        buttonIndex++;
+                        if(index === buttonIndex){qmService.goToVariableSettingsByName(trackingReminderNotification.variableName);}
+                        return true;
+                    },
+                    destructiveButtonClicked: function() {
+                        qmService.notifications.skipAllForVariable(trackingReminderNotification);
+                        return true;
+                    }
+                });
+                //$timeout(function() {hideSheetForNotification();}, 20000);
+            },
+            editReminderSettingsByNotification: function(trackingReminderNotification){
+                trackingReminderNotification.hide = true;
+                qm.notifications.numberOfPendingNotifications--;
+                var trackingReminder = trackingReminderNotification;
+                trackingReminder.id = trackingReminderNotification.trackingReminderId;
+                qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
+            },
             broadcastGetTrackingReminderNotifications: function(){
                 if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
                     qmLog.info("Broadcasting broadcastGetTrackingReminderNotifications so inbox is updated");
