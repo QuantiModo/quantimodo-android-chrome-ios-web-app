@@ -153,7 +153,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             backStateParams.updatedMeasurementHistory =
                 qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, $scope.state.measurement);
         }
-        qm.measurements.newMeasurements.push(measurementInfo);
         qmService.postMeasurementDeferred(measurementInfo, function(){
             if(unitChanged){
                 qmLog.error("Syncing reminders because unit changed");

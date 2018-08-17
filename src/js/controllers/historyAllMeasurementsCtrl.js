@@ -22,10 +22,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             };
         }
         if($stateParams.refresh){$scope.state.history = null;}
-        if($scope.state.history && qm.measurements.newMeasurements){
-            $scope.state.history = qmService.addInfoAndImagesToMeasurements(qm.measurements.newMeasurements).concat($scope.state.history);
-            qm.measurements.newMeasurements = [];
-        }
+        var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
+        if($scope.state.history && queue){$scope.state.history = queue.concat($scope.state.history);}
         $scope.state.moreDataCanBeLoaded = true;
         // Need to use rootScope here for some reason
         qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
@@ -95,6 +93,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         if(qm.urlHelper.getParam('variableName')){return qm.urlHelper.getParam('variableName');}
 		qmLog.info("Could not get variableName")
     }
+    function getVariableCategoryName() {
+        if($stateParams.variableCategoryName){return $stateParams.variableCategoryName;}
+        if(qm.urlHelper.getParam('variableCategoryName')){return qm.urlHelper.getParam('variableCategoryName');}
+        qmLog.info("Could not get variableCategoryName")
+    }
 	function getConnectorName() {
 		if($stateParams.connectorName){return $stateParams.connectorName;}
 		if(qm.urlHelper.getParam('connectorName')){return qm.urlHelper.getParam('connectorName');}
@@ -109,6 +112,13 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.state.history = [];
 		$scope.getHistory();
 	};
+    function getRequestParams(params){
+	    params = params || {};
+        if(getVariableName()){params.variableName = getVariableName();}
+        if(getConnectorName()){params.connectorName = getConnectorName();}
+        if(getVariableCategoryName()){params.variableCategoryName = getVariableCategoryName();}
+        return params;
+    }
 	$scope.getHistory = function(){
         if($scope.state.loading){return qmLog.info("Already getting measurements!");}
         if(!$scope.state.moreDataCanBeLoaded){
@@ -118,9 +128,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.state.loading = true;
         if(!$scope.state.history){$scope.state.history = [];}
 		var params = {offset: $scope.state.history.length, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
-		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
-		if(getVariableName()){params.variableName = getVariableName();}
-        if(getConnectorName()){params.connectorName = getConnectorName();}
+		params = getRequestParams(params);
 		if(getVariableName()){
 			if(!$scope.state.variableObject){
 				qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
