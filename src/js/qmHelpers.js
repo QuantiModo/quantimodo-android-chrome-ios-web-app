@@ -2442,7 +2442,8 @@ window.qm = {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
             }
             apiInstance.getMeasurements(params, callback);
-        }
+        },
+        newMeasurements: []
     },
     manualTrackingVariableCategoryNames: [
         'Emotions',

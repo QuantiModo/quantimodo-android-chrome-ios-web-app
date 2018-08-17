@@ -22,6 +22,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             };
         }
         if($stateParams.refresh){$scope.state.history = null;}
+        if($scope.state.history && qm.measurements.newMeasurements){
+            $scope.state.history = qmService.addInfoAndImagesToMeasurements(qm.measurements.newMeasurements).concat($scope.state.history);
+            qm.measurements.newMeasurements = [];
+        }
         $scope.state.moreDataCanBeLoaded = true;
         // Need to use rootScope here for some reason
         qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
