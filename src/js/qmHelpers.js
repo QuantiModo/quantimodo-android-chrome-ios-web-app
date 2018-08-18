@@ -675,7 +675,7 @@ window.qm = {
         loadPrivateConfigFromJsonFile: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
             if(!qm.privateConfig){
                 qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
-                    window.qmLog.debug('Got private config from json file', null, parsedResponse);
+                    qmLog.debug('Got private config from json file', null, parsedResponse);
                     qm.privateConfig = parsedResponse;
                     if(successHandler){successHandler(parsedResponse);}
                 }, function () {
@@ -2245,6 +2245,7 @@ window.qm = {
         lastStudy: 'lastStudy',
         lastPopupNotificationUnixTimeSeconds: 'lastPopupNotificationUnixTimeSeconds',
         lastPushTimestamp: 'lastPushTimestamp',
+        lastPushData: 'lastPushData',
         logLevel: 'logLevel',
         measurementsQueue: 'measurementsQueue',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
