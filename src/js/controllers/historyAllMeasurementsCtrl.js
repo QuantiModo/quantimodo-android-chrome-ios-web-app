@@ -139,7 +139,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 		function successHandler(measurements) {
             if(!measurements || measurements.length < params.limit){$scope.state.moreDataCanBeLoaded = false;}
             if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
-            measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             if(!qm.arrayHelper.variableIsArray($scope.state.history)){
                 qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
                 $scope.state.history = measurements;
