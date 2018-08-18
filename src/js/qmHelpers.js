@@ -3041,10 +3041,11 @@ window.qm = {
             qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
         },
         promise: null,
-        refreshNotifications: function(successHandler, errorHandler) {
+        refreshNotifications: function(successHandler, errorHandler, options) {
             var type = "GET";
             var route = qm.apiPaths.trackingReminderNotificationsPast;
-            if(!qm.api.canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){
+            options = options || {blockRequests: true, minimumSecondsBetweenRequests: 300};
+            if(!qm.api.canWeMakeRequestYet(type, route, options)){
                 if(errorHandler){errorHandler("Too soon to refresh notifications again");}
                 return;
             }
@@ -5041,7 +5042,7 @@ window.qm = {
             }
             return null;
         },
-        getAllQueryParamsFromUrlString: function(url){
+        getQueryParams: function(url){
             if(!url){url = window.location.href;}
             var keyValuePairsObject = {};
             var array = [];
