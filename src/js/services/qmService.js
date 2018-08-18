@@ -1103,7 +1103,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return menuItem;
                     }
                     if(menuItem.href && !menuItem.params){
-                        menuItem.params = qm.urlHelper.getAllQueryParamsFromUrlString(menuItem.href);
+                        menuItem.params = qm.urlHelper.getQueryParams(menuItem.href);
                     }
                     menuItem.href = qm.urlHelper.stripQueryString(menuItem.href);
                     if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
@@ -2001,6 +2001,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 stateParams.variableObject = variableObject;
                 stateParams.variableName = variableObject.name || variableObject.variableName;
             }
+            button.state = button.state || button.stateName;
             if(button.state){
                 if(button.state === qmStates.reminderAdd && variableObject){
                     qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
@@ -2104,6 +2105,34 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return buttons;
         },
+        openActionSheet: function (card, destructiveButtonClickedFunction) {
+            qmLog.info("card", card);
+            qmLog.info("actionSheetButtons", card.actionSheetButtons);
+            card.actionSheetButtons = card.actionSheetButtons.map(function(button){
+                if(button.html){button.text = button.html;}
+                return button;
+            });
+            var actionSheetParams = {
+                title: card.title,
+                buttons: card.actionSheetButtons,
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {qmLog.debug('CANCELLED'); return true;},
+                buttonClicked: function(index, button) {
+                    return qmService.actionSheets.handleActionSheetButtonClick(button);
+                }
+            };
+            if(destructiveButtonClickedFunction){
+                actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Dismiss';
+                actionSheetParams.destructiveButtonClicked = function(response) {
+                    qmLog.debug('destructiveButtonClicked', response);
+                    card.hide = true;
+                    destructiveButtonClickedFunction();
+                    return true;
+                };
+            }
+            var hideSheet = $ionicActionSheet.show(actionSheetParams);
+            //$timeout(function() {hideSheet();}, 30000);
+        }
     };
     qmService.actionSheets.addHtmlToAllActionSheetButtons(qmService.actionSheets.actionSheetButtons);
     qmService.navBar.setOfflineConnectionErrorShowing(false); // to prevent more than one popup
@@ -2405,7 +2434,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             status: status,
             request: request,
             requestOptions: options,
-            requestParams: qm.urlHelper.getAllQueryParamsFromUrlString(request.url)
+            requestParams: qm.urlHelper.getQueryParams(request.url)
         };
         if (data.error) {
             metaData.groupingHash = JSON.stringify(data.error);

@@ -3,8 +3,9 @@
         <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
             <div class="splash-grid"></div>
         </div>
+        <div ng-include="'templates/card.html'" style="z-index: 30; position: absolute;"></div>
 <!--        <canvas id="rainbow-canvas" style="position: absolute; z-index: 4; display: block; opacity: 1;  pointer-events: none; background-color: transparent;"></canvas>-->
-        <div ng-include="'templates/fragments/circle-page.html'" style="z-index: 30;"></div>
+
 <!--        <div id="mic-input-field-container" class="animated-microphone-input-container">
         &lt;!&ndash;<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">&ndash;&gt;
             <form ng-submit="state.userReply()" flex="">
