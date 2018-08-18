@@ -1645,7 +1645,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: false,
-                fullscreen: !!($rootScope.platform.isMobile),
+                fullscreen: qm.platform.isMobile(),
                 locals: {dialogParameters: dialogParameters}
             }).then(function(variable) {
                 successHandler(variable);

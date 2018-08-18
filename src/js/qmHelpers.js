@@ -2471,6 +2471,7 @@ window.qm = {
             return measurementObject;
         },
         addToMeasurementsQueue: function(measurementObject){
+            qmLog.info("Adding to measurements queue: ", measurementObject);
             measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
             qm.storage.appendToArray('measurementsQueue', measurementObject);
         },
@@ -2482,6 +2483,7 @@ window.qm = {
                     measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
                     measurementsQueue[i].value = measurementInfo.value;
                     measurementsQueue[i].note = measurementInfo.note;
+                    qmLog.info("Updating measurement in queue: ", measurementInfo);
                     break;
                 }
                 i++;
@@ -2490,7 +2492,12 @@ window.qm = {
         },
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params);
-            if(measurements){measurements = qmService.addInfoAndImagesToMeasurements(measurements);}
+            var count = 0;
+            if(measurements){
+                count = measurements.length;
+                measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+            }
+            qmLog.info("Got "+count +" measurements from queue with params: "+JSON.stringify(params), measurements);
             return measurements;
         }
     },
