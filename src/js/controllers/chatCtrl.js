@@ -39,7 +39,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             }, 1);
         }
         function getQuestion() {
-		    var text =
+		    var text = qm.urlHelper.getParam('text');
             if(qm.urlHelper.getParam('type') === 'question'){
 		        var question = qm.urlHelper.getParam('type')
             }
