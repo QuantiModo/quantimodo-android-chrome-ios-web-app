@@ -2583,9 +2583,11 @@ window.qm = {
             qm.microphone.initializeListening(qm.speech.reminderNotificationCommands, successHandler, errorHandler);
         },
         debugListening: function(){
+            if(!qm.microphone.annyangAvailable()){return;}
             annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
         },
         setLanguage: function(language){
+            if(!qm.microphone.annyangAvailable()){return;}
             annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
         },
         specificErrorHandler: function(message){
