@@ -77,6 +77,21 @@ window.qm = {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
     api: {
+        registerHelpers: function(){
+            Quantimodo.TrackingReminderNotification.prototype.track = function (trackAll, successHandler, errorHandler) {
+                qm.notifications.trackNotification(this, trackAll, successHandler, errorHandler);
+            };
+            Quantimodo.TrackingReminderNotification.prototype.getCirclePage = function () {
+                return {
+                    title: this.longQuestion,
+                    bodyText: null,
+                    image: {
+                        url: this.pngPath
+                    },
+                    hide: false
+                };
+            };
+        },
         configureClient: function (functionName, errorHandler, minimumSecondsBetweenRequests, blockRequests) {
             minimumSecondsBetweenRequests = minimumSecondsBetweenRequests || 1;
             blockRequests = blockRequests || true;
@@ -2498,6 +2513,7 @@ window.qm = {
         setMicrophoneEnabled: function(value){
             qmLog.info("set microphoneEnabled " + value);
             qm.rootScope[qm.items.microphoneEnabled] = value;
+            if(!value){qm.microphone.turnOff();}
             return qm.storage.setItem(qm.items.microphoneEnabled, value);
         },
         getMicrophoneAvailable: function(){
@@ -2507,6 +2523,16 @@ window.qm = {
                 return qm.microphone.microphoneAvailable = qm.microphone.microphoneEnabled = false;
             }
             return qm.microphone.microphoneAvailable = true;
+        },
+        turnOff: function(){
+            if (!window.streamReference) return;
+            window.streamReference.getAudioTracks().forEach(function(track) {
+                track.stop();
+            });
+            window.streamReference.getVideoTracks().forEach(function(track) {
+                track.stop();
+            });
+            window.streamReference = null;
         },
         toggleListening: function(){
             if(qm.microphone.listening){
@@ -2518,7 +2544,7 @@ window.qm = {
         },
         listening: false,
         abortListening: function(){
-            qm.visualizer.hide();
+            qm.visualizer.hideVisualizer();
             qmLog.info("pauseListening");
             if(!qm.microphone.annyangAvailable()){return;}
             annyang.abort(); // Stop listening, and turn off mic.
@@ -2530,8 +2556,8 @@ window.qm = {
             }
             return true;
         },
-        pauseListening: function(){
-            qm.visualizer.hide();
+        pauseListening: function(hideVisualizer){
+            if(hideVisualizer !== false){qm.visualizer.hideVisualizer();}
             qmLog.info("pauseListening");
             if(!qm.microphone.annyangAvailable()){return;}
             annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
@@ -2557,9 +2583,11 @@ window.qm = {
             qm.microphone.initializeListening(qm.speech.reminderNotificationCommands, successHandler, errorHandler);
         },
         debugListening: function(){
+            if(!qm.microphone.annyangAvailable()){return;}
             annyang.debug(); // Turn on output of debug messages to the console. Ugly, but super-handy!
         },
         setLanguage: function(language){
+            if(!qm.microphone.annyangAvailable()){return;}
             annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
         },
         specificErrorHandler: function(message){
@@ -2617,7 +2645,7 @@ window.qm = {
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.2;
+            qm.music.player.volume = 0.25;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
@@ -2718,6 +2746,17 @@ window.qm = {
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
                 qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
+            }
+        },
+        getCirclePage: function(notification){
+            return {
+                //title: notification.longQuestion,
+                bodyText: notification.longQuestion,
+                image: {
+                    url: notification.pngPath
+                },
+                hide: false,
+                buttons: notification.card.buttons
             }
         },
         getFromGlobalsOrLocalStorage : function(variableCategoryName){
@@ -3466,7 +3505,7 @@ window.qm = {
         hide: function(){
             qm.robot.getElement().style.display = "none";
             qm.speech.setSpeechEnabled(false);
-            qm.visualizer.hide();
+            qm.visualizer.hideVisualizer();
             //qm.appContainer.show();
             qm.robot.showing = qm.rootScope.showRobot = false;
         },
@@ -3555,6 +3594,10 @@ window.qm = {
                 if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
+            if(qm.platform.isWeb() && !qm.platform.browser.isChrome()){
+                if(!qm.appMode.isTesting()){qmLog.error("Speech only available on Chrome");}
+                return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
+            }
             return qm.speech.speechAvailable = true;
         },
         shutUpRobot: function(resumeListening){
@@ -3592,7 +3635,11 @@ window.qm = {
                 qmLog.info("Recently said "+text);
             }
         },
-        askQuestion: function(text, commands){
+        askQuestion: function(text, commands, successHandler, errorHandler){
+            if(!qm.speech.getSpeechEnabled()){
+                if(errorHandler){errorHandler("Speech not enabled");}
+                return false;
+            }
             qm.speech.talkRobot(text, function(){
                 qm.microphone.initializeListening(commands);
             });
@@ -3600,13 +3647,23 @@ window.qm = {
         askYesNoQuestion: function(text, yesCallback, noCallback){
             qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
         },
-        talkRobot: function(text, callback, resumeListening){
-            if(!qm.speech.getSpeechAvailable()){return;}
-            if(!qm.speech.getSpeechEnabled()){return;}
+        talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
+            if(!qm.speech.getSpeechAvailable()){
+                if(errorHandler){errorHandler("Speech not available");}
+                return false;
+            }
+            if(!qm.speech.getSpeechEnabled()){
+                if(errorHandler){errorHandler("Speech not enabled");}
+                return false;
+            }
             qm.speech.recentStatements.push(text);
             speechSynthesis.cancel();
-            qm.speech.callback = callback;
-            if(!text){return qmLog.error("No text provided to talkRobot");}
+            qm.speech.callback = successHandler;
+            if(!text){
+                var message = "No text provided to talkRobot";
+                if(errorHandler){errorHandler(message);}
+                return false;
+            }
             qmLog.info("talkRobot called with "+text);
             var voices = speechSynthesis.getVoices();
             if(!voices.length){
@@ -3631,13 +3688,15 @@ window.qm = {
                 resumeInfinity();
             };
             utterance.onerror = function(event) {
-                qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
+                var message = 'An error has occurred with the speech synthesis: ' + event.error;
+                qmLog.error(message);
+                if(errorHandler){errorHandler(message);}
             };
             utterance.text = text;
             utterance.pitch = 1;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.getClass().classList.add('robot_speaking');
-            qm.microphone.pauseListening();
+            qm.microphone.pauseListening(hideVisualizer);
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
@@ -3647,7 +3706,7 @@ window.qm = {
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
-                if(callback){callback();}
+                if(successHandler){successHandler();}
             };
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
@@ -3665,6 +3724,8 @@ window.qm = {
                     var listen = true;
                     qm.speech.talkRobot(trackingReminderNotification.card.title, function(){
                         qm.microphone.listenForNotificationResponse(successHandler, errorHandler)
+                    }, function(error){
+                        qmLog.info(error);
                     }, listen);
                 } else {
                     qmLog.error("No tracking reminder notification");
@@ -3790,7 +3851,7 @@ window.qm = {
                 "brothers and sisters, " +
                 "and all watched over " +
                 "by machines of loving grace!  " +
-                "I'm Dr. Roboto!  ", callback);
+                "I'm Dr. Roboto!  ", callback, false, false);
         }
     },
     shares: {
@@ -5581,18 +5642,24 @@ window.qm = {
     },
     visualizer: {
         showing: false,
-        hide: function(){
+        hideVisualizer: function(){
             //qm.appContainer.setOpacity(1);
             qmLog.info("Hiding visualizer");
             var visualizer = qm.visualizer.getElement();
-            visualizer.style.display = "none";
+            if(visualizer){
+                visualizer.style.display = "none";
+            } else {
+                qmLog.info("qm.visualizer Element not found");
+            }
+
         },
-        show: function(){
+        show: function(type){
             qmLog.info("Showing visualizer");
-            var visualizer = qm.visualizer.getElement();
-            visualizer.style.display = "block";
+            //var visualizer = qm.visualizer.getElement();
+            //visualizer.style.display = "block";
             setTimeout(function(){
-                qm.visualizer.rainbowCircleVisualizer();
+                //qm.visualizer.rainbowCircleVisualizer();
+                qm.visualizer.visualizeVoice('siri');
             }, 1);
         },
         getElement: function(){
@@ -5601,7 +5668,7 @@ window.qm = {
         },
         toggle: function () {
             if(qm.visualizer.showing){
-                qm.visualizer.hide();
+                qm.visualizer.hideVisualizer();
             } else {
                 qm.visualizer.show();
             }
@@ -5635,6 +5702,7 @@ window.qm = {
             }
             // Do the thing
             function doAudioStuff(mediaStream){
+                window.streamReference = mediaStream;
                 analyser = audioCtx.createAnalyser();
                 analyser.smoothingTimeConstant = 0.97;
                 analyser.fftSize = 1024;
@@ -5760,8 +5828,9 @@ window.qm = {
              * Create an input source from the user media stream, connect it to
              * the analyser and start the visualization.
              */
-            function onStream(stream) {
-                var input = context.createMediaStreamSource(stream);
+            function onStream(mediaStream) {
+                window.streamReference = mediaStream;
+                var input = context.createMediaStreamSource(mediaStream);
                 input.connect(analyser);
                 requestAnimationFrame(visualize);
             }
