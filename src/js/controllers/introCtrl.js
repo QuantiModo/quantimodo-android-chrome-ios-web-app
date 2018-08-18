@@ -38,7 +38,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                     } else {
                         qmService.goToState(qmStates.onboarding);
                     }
-                })
+                });
             } else {
                 console.error('Why are we calling $scope.myIntro.startApp from state other than into?');
             }
@@ -93,7 +93,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             //slide.title + ".  " +
             slide.bodyText + ".  "
             , $scope.myIntro.next
-            , false, false
+            , function (error){
+               qmLog.info("Could not read intro slide because: " + error);
+            },  false, false
         );
         slide.bodyText = null;
     }

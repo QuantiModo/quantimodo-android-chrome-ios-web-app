@@ -3635,7 +3635,11 @@ window.qm = {
                 qmLog.info("Recently said "+text);
             }
         },
-        askQuestion: function(text, commands){
+        askQuestion: function(text, commands, successHandler, errorHandler){
+            if(!qm.speech.getSpeechEnabled()){
+                if(errorHandler){errorHandler("Speech not enabled");}
+                return false;
+            }
             qm.speech.talkRobot(text, function(){
                 qm.microphone.initializeListening(commands);
             });
@@ -3643,15 +3647,23 @@ window.qm = {
         askYesNoQuestion: function(text, yesCallback, noCallback){
             qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
         },
-        talkRobot: function(text, callback, resumeListening, hideVisualizer){
-            if(!qm.speech.getSpeechAvailable() || !qm.speech.getSpeechEnabled()){
-                if(callback){callback();}
-                return;
+        talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
+            if(!qm.speech.getSpeechAvailable()){
+                if(errorHandler){errorHandler("Speech not available");}
+                return false;
+            }
+            if(!qm.speech.getSpeechEnabled()){
+                if(errorHandler){errorHandler("Speech not enabled");}
+                return false;
             }
             qm.speech.recentStatements.push(text);
             speechSynthesis.cancel();
-            qm.speech.callback = callback;
-            if(!text){return qmLog.error("No text provided to talkRobot");}
+            qm.speech.callback = successHandler;
+            if(!text){
+                var message = "No text provided to talkRobot";
+                if(errorHandler){errorHandler(message);}
+                return false;
+            }
             qmLog.info("talkRobot called with "+text);
             var voices = speechSynthesis.getVoices();
             if(!voices.length){
@@ -3676,7 +3688,9 @@ window.qm = {
                 resumeInfinity();
             };
             utterance.onerror = function(event) {
-                qmLog.error('An error has occurred with the speech synthesis: ' + event.error);
+                var message = 'An error has occurred with the speech synthesis: ' + event.error;
+                qmLog.error(message);
+                if(errorHandler){errorHandler(message);}
             };
             utterance.text = text;
             utterance.pitch = 1;
@@ -3692,7 +3706,7 @@ window.qm = {
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
-                if(callback){callback();}
+                if(successHandler){successHandler();}
             };
             qm.speech.lastUtterance = utterance;
             speechSynthesis.speak(utterance);
@@ -3710,6 +3724,8 @@ window.qm = {
                     var listen = true;
                     qm.speech.talkRobot(trackingReminderNotification.card.title, function(){
                         qm.microphone.listenForNotificationResponse(successHandler, errorHandler)
+                    }, function(error){
+                        qmLog.info(error);
                     }, listen);
                 } else {
                     qmLog.error("No tracking reminder notification");
