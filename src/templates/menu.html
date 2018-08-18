@@ -71,8 +71,8 @@
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
              ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <ion-nav-view name="menuContent">
-            <canvas id="rainbow-canvas" style="position: absolute; z-index: 40; display: block; opacity: 1;  pointer-events: none; background-color: transparent;"></canvas>
             <div ng-show="speechEnabled" ng-include="'templates/robot.html'" ng-click="robotClick()"></div>
+            <canvas id="canvas" style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px;"></canvas>
         </ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">

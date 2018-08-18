@@ -1,8 +1,12 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
-    <ion-content scroll="true" overflow-scroll="true" style="{{state.bodyCss}}">
-        <div ng-include="'templates/fragments/circle-page.html'" ng-init="circlePage = state.circlePage"></div>
-        <div id="mic-input-field-container" class="animated-microphone-input-container">
-        <!--<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">-->
+    <ion-content scroll="true" overflow-scroll="true">
+        <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
+            <div class="splash-grid"></div>
+        </div>
+<!--        <canvas id="rainbow-canvas" style="position: absolute; z-index: 4; display: block; opacity: 1;  pointer-events: none; background-color: transparent;"></canvas>-->
+        <div ng-include="'templates/fragments/circle-page.html'" style="z-index: 30;"></div>
+<!--        <div id="mic-input-field-container" class="animated-microphone-input-container">
+        &lt;!&ndash;<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">&ndash;&gt;
             <form ng-submit="state.userReply()" flex="">
                 <input type="text" placeholder="{{state.lastBotMessage}}" ng-model="state.userInputString">
                 <div id="mic-input-field-button" class="animated-microphone-input-search" ng-click="state.toggleMicrophone()">
@@ -10,7 +14,7 @@
                     <img ng-if="state.listening" src="img/micon.png" style="position: absolute; margin: auto; top: 24px; left: 23px;" alt="">
                 </div>
             </form>
-        </div>
+        </div>-->
         <!--            <md-autocomplete
                     ng-disabled="state.isDisabled"
                     md-no-cache="state.noCache"
@@ -30,7 +34,7 @@
                     <a ng-click="state.newState(state.searchText)">Create a new one!</a>
                 </md-not-found>
             </md-autocomplete>-->
-        <div ng-if="state.visualizationType === 'equalizer'">
+<!--        <div ng-if="state.visualizationType === 'equalizer'">
             <svg preserveAspectRatio="none" id="visualizer" class="equalizer-svg" version="1.1"
                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <defs>
@@ -45,190 +49,8 @@
                 <rect x="0" y="0" width="100%" height="100%" fill="url(#gradient)" mask="url(#mask)"></rect>
             </svg>
             <div class="equalizer-h1">Please allow the use of your microphone so I can hear you!</div>
-        </div>
-        <div ng-if="true || state.robot" class="robot">
-            <div class="robot">
-                <div class="neck"></div>
-                <div class="arms">
-                    <div class="arm arm_left"></div>
-                    <div class="arm arm_right"></div>
-                </div>
-                <div class="torso"></div>
-                <div class="head">
-                    <div class="eyes">
-                        <div class="eyeball eyeball_left"></div>
-                        <div class="eyeball eyeball_right"></div>
-                    </div>
-                    <div class="mouth">
-                        <div class="mouth-container">
-                            <div class="mouth-container-line"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
-                <defs>
-                    <!-- Low -->
-                    <filter id="low-0">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="0"/>
-                        <feDisplacementMap id="displacement"
-                                           in="SourceGraphic"
-                                           in2="noise"
-                                           scale="1" />
-                    </filter>
-                    <filter id="low-1">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="1.5" />
-                    </filter>
-                    <filter id="low-2">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="2"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="1" />
-                    </filter>
-                    <filter id="low-3">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="1.5" />
-                    </filter>
-                    <filter id="low-4">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.1"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="4"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="0.5" />
-                    </filter>
-                    <!-- Listening -->
-                    <filter id="listening-0">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="0"/>
-                        <feDisplacementMap id="displacement"
-                                           in="SourceGraphic"
-                                           in2="noise"
-                                           scale="2" />
-                    </filter>
-                    <filter id="listening-1">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="3" />
-                    </filter>
-                    <filter id="listening-2">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="2"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="2" />
-                    </filter>
-                    <filter id="listening-3">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="3" />
-                    </filter>
-                    <filter id="listening-4">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.1"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="4"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="1" />
-                    </filter>
-                    <!-- Speaking -->
-                    <filter id="speaking-0">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="0"/>
-                        <feDisplacementMap id="displacement"
-                                           in="SourceGraphic"
-                                           in2="noise"
-                                           scale="12" />
-                    </filter>
-                    <filter id="speaking-1">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="13" />
-                    </filter>
-                    <filter id="speaking-2">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="2"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="12" />
-                    </filter>
-                    <filter id="speaking-3">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.02"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="30"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="13" />
-                    </filter>
-                    <filter id="speaking-4">
-                        <feTurbulence id="turbulence"
-                                      baseFrequency="0.1"
-                                      numOctaves="3"
-                                      result="noise"
-                                      seed="4"/>
-                        <feDisplacementMap in="SourceGraphic"
-                                           in2="noise"
-                                           scale="11" />
-                    </filter>
-                </defs>
-            </svg>
-        </div>
-        <canvas id="canvas" ng-if="state.visualizationType === 'siri'" style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px;"></canvas>
-        <canvas id="rainbow-canvas" ng-if="state.visualizationType === 'rainbow'" style="position: absolute; z-index: -1"></canvas>
+        </div>-->
+
 <!--        <div ng-if="false && state.searchBox" class="microphone-search-wrapper">
             <input type="text" class="microphone-search" placeholder="Enter a Keyword, Phrase, or Question..." />
             <div class="microphone-search-anim">
@@ -236,26 +58,13 @@
                 <div class="microphone-search-circle outer"> </div>
             </div>
         </div>-->
-        <div ng-if="state.trackingReminderNotification && !state.trackingReminderNotification.hide"
-              ng-init="trackingReminderNotification = state.trackingReminderNotification"
-             style="position: absolute; top: 5%; margin-left: auto; margin-right: auto;">
-            <div layout-fill layout="column" layout-align="center none">
-                <div layout="row" layout-align="center none">
-                    <md-card>
-                        <md-card-content>
-                            <div ng-include="'templates/items/notification-item.html'"></div>
-                        </md-card-content>
-                    </md-card>
-                </div>
-            </div>
-        </div>
-        <iframe ng-if="state.dialogFlow" style="height: 100%; width: 100%;"
+<!--        <iframe ng-if="state.dialogFlow" style="height: 100%; width: 100%;"
                 data-tap-disabled="true"
                 frameborder="0"
                 allow="microphone;"
                 src="https://console.dialogflow.com/api-client/demo/embedded/6c71b4a4-4770-45a9-b8b3-dd34bbbb61c7">
-        </iframe>
-        <div ng-if="state.chat">
+        </iframe>-->
+        <!--<div ng-if="state.chat">
             <div class="chat ng-scope layout-column flex" layout="column" flex="" style="">
                 <md-toolbar class="chat-toolbar _md md-default-theme _md-toolbar-transitions">
                     <div class="md-toolbar-tools">
@@ -279,7 +88,7 @@
                         <img ng-if="dialog.who === 'user'" class="avatar ng-scope" ng-src="{{user.avatarImage}}" src="{{user.avatarImage}}">
                         <div class="bubble">
                             <div class="message ng-binding">{{dialog.message}}</div>
-                            <!--<div class="time secondary-text ng-binding">05/02/2016</div>-->
+                            &lt;!&ndash;<div class="time secondary-text ng-binding">05/02/2016</div>&ndash;&gt;
                         </div>
                     </div>
                     <div class="ps-scrollbar-x-rail" style="left: 0px; bottom: -386px;">
@@ -313,9 +122,6 @@
                     </form>
                 </div>
             </div>
-
-
-        </div>
-
+        </div>-->
     </ion-content>
 </ion-view>

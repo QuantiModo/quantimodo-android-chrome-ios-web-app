@@ -19,6 +19,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             if(value){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}
         }
     };
+    var slide;
     $scope.myIntro = {
         ready : false,
         backgroundColor : 'white',
@@ -27,13 +28,18 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         startApp : function() {
             qmService.intro.setIntroSeen(true, "User clicked startApp in intro");
             if($state.current.name.indexOf('intro') !== -1){
-                // Called to navigate to the main app
-                if(qm.auth.sendToLogin()){ return; }
-                if(qm.platform.isDesignMode()){
-                    qmService.goToState(qmStates.configuration);
-                } else {
-                    qmService.goToState(qmStates.onboarding);
+                function goToLoginConfigurationOrOnboarding(){
+                    // Called to navigate to the main app
+                    if(qm.auth.sendToLogin()){ return; }
+                    if(qm.platform.isDesignMode()){
+                        qmService.goToState(qmStates.configuration);
+                    } else {
+                        qmService.goToState(qmStates.onboarding);
+                    }
                 }
+                var message = "Now let's create a mathematical model of YOU!  ";
+                if(slide){slide.title = message;}
+                qm.speech.talkRobot(message, goToLoginConfigurationOrOnboarding, goToLoginConfigurationOrOnboarding);
             } else {
                 console.error('Why are we calling $scope.myIntro.startApp from state other than into?');
             }
@@ -56,7 +62,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             $scope.myIntro.slideIndex = index;
             if(index > 0 ){qm.splash.text.hide();}
             readSlide();
-            var slide = $rootScope.appSettings.appDesign.intro.active[index];
+            slide = $rootScope.appSettings.appDesign.intro.active[index];
             if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = slide.backgroundColor;}
             if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = slide.textColor;}
         }
@@ -72,11 +78,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmService.goToDefaultState();
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
-
         }
+        if(!qm.speech.getSpeechAvailable()){$scope.state.setSpeechEnabled(false);}
     });
     function readSlide() {
-        qm.visualizer.hide();
+        //qm.visualizer.hide();
         qm.microphone.setMicrophoneEnabled(false);
         if(!qm.speech.getSpeechAvailable()){return;}
         if(!qm.speech.getSpeechEnabled()){return;}
@@ -88,6 +94,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             //slide.title + ".  " +
             slide.bodyText + ".  "
             , $scope.myIntro.next
+            , function (error){
+               qmLog.info("Could not read intro slide because: " + error);
+            },  false, false
         );
         slide.bodyText = null;
     }
@@ -110,7 +119,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readMachinesOfLovingGrace() {
         qm.robot.show();
-        qm.visualizer.show();
+        qm.visualizer.rainbowCircleVisualizer();
         function callback(){
             $scope.myIntro.ready = true;
             readSlide();
