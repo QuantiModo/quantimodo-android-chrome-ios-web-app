@@ -1,0 +1,31 @@
+<md-card>
+    <md-card-header>
+        <md-card-avatar>
+            <img class="md-user-avatar" src="{{card.header.avatar}}"/>
+        </md-card-avatar>
+        <md-card-header-text>
+            <span class="md-title">{{card.header.title}}</span>
+            <span class="md-subhead">{{card.header.subhead}}</span>
+        </md-card-header-text>
+    </md-card-header>
+    <img ng-src="{{card.image}}" class="md-card-image" alt="{{card.title}}">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">{{card.title.headline}}</span>
+            <span class="md-subhead">{{card.title.subhead}}</span>
+        </md-card-title-text>
+    </md-card-title>
+    <md-card-actions layout="row" layout-align="start center">
+        <md-card-icon-actions ng-repeat="button in card.iconButtons">
+            <md-button class="md-icon-button" aria-label="button.text">
+                <md-icon md-svg-icon="{{button.svgIconUrl}}"></md-icon>
+            </md-button>
+        </md-card-icon-actions>
+        <md-button ng-repeat="button in card.buttons">{{button.text}}</md-button>
+    </md-card-actions>
+    <md-card-content>
+        <p>
+            {{card.content}}
+        </p>
+    </md-card-content>
+</md-card>
