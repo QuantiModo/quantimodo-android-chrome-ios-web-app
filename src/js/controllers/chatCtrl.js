@@ -1,5 +1,5 @@
-angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout", "$q",
-	function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $q) {
+angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout", "$ionicActionSheet",
+	function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $ionicActionSheet) {
 		$scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
 		$scope.state = {
@@ -14,9 +14,17 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 image: {
 			        url: null
                 }
+            },
+            cardButtonClick: function(card, button){
+			    qmLog.info("card", card);
+                qmLog.info("button", button);
+            },
+            openActionSheet: function (card) {
+                qmService.actionSheets.openActionSheet(card, notification);
             }
 		};
         $scope.$on('$ionicView.beforeEnter', function(e) {
+            qm.notifications.refreshNotifications(null, null, {blockRequests: false, minimumSecondsBetweenRequests: 1});
             qmLog.debug('beforeEnter state ' + $state.current.name);
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
         });
@@ -25,7 +33,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }
-
+            notification();
         });
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
@@ -33,6 +41,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         function notification() {
             qm.notifications.getMostRecentNotification(function (notification) {
                 $scope.circlePage = qm.notifications.getCirclePage(notification);
+                $scope.card = notification.card;
             });
             $timeout(function () {
                 qm.speech.getMostRecentNotificationAndTalk();
