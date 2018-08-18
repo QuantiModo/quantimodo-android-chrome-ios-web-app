@@ -114,7 +114,7 @@ window.qmLog = {
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
                 var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                if(qmLog.secretAliases.indexOf(lowerCaseProperty) !== -1){
                     object[propertyName] = "HIDDEN";
                 } else {
                     object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
@@ -122,6 +122,15 @@ window.qmLog = {
             }
         }
         return object;
+    },
+    secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
+    stringContainsSecretAliasWord: function(string){
+        var lowerCase = string.toLowerCase();
+        for (var i = 0; i < qmLog.secretAliases.length; i++) {
+            var secretAlias = qmLog.secretAliases[i];
+            if(lowerCase.indexOf(secretAlias) !== -1){return true;}
+        }
+        return false;
     },
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
@@ -232,6 +241,9 @@ window.qmLog = {
             } catch (error) {
                 console.error("Could not stringify log meta data", error);
             }
+        }
+        if(qmLog.stringContainsSecretAliasWord(logString)){
+            logString = "Log hidden because it contains a secrety word";
         }
         if(qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
         return logString;
@@ -454,6 +466,7 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
+    if(qm.platform.browser.isFirefox()){return message;}
     if(message === "undefined"){message = "";}
     if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
     if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
