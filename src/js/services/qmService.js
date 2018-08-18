@@ -1369,7 +1369,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.configurePushNotifications();
                 }
             },
-            skipAllForVariable: function(successHandler, errorHandler){
+            skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler){
                 var title = "Skip all?";
                 var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
                 function yesCallback() {
@@ -2488,7 +2488,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     // post new Measurements for user
     qmService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
-        measurementSet = addLocationAndSourceDataToMeasurement(measurementSet);
+        measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
         qmService.post('api/v3/measurements',
             //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
             [], measurementSet, successHandler, errorHandler);
@@ -3208,41 +3208,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             value: numericRatingValue,
             note: null
         };
-        measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
+        measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
         return measurementObject;
     };
-    var addLocationAndSourceDataToMeasurement = function(measurementObject){
-        addLocationDataToMeasurement(measurementObject);
-        if(!measurementObject.sourceName){measurementObject.sourceName = qm.getSourceName();}
-        return measurementObject;
-    };
-    function addLocationDataToMeasurement(measurementObject) {
-        if(!measurementObject.latitude){measurementObject.latitude = qm.storage.getItem(qm.items.lastLatitude);}
-        if(!measurementObject.longitude){measurementObject.longitude = qm.storage.getItem(qm.items.lastLongitude);}
-        if(!measurementObject.location){measurementObject.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
-        return measurementObject;
-    }
-    // used when adding a new measurement from record measurement OR updating a measurement through the queue
-    qmService.addToMeasurementsQueue = function(measurementObject){
-        measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
-        qm.storage.appendToArray('measurementsQueue', measurementObject);
-    };
-    // post a single measurement
-    function updateMeasurementInQueue(measurementInfo) {
-        var found = false;
-        qm.storage.getItem('measurementsQueue', function (measurementsQueue) {
-            var i = 0;
-            while (!found && i < measurementsQueue.length) {
-                if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
-                    found = true;
-                    measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
-                    measurementsQueue[i].value = measurementInfo.value;
-                    measurementsQueue[i].note = measurementInfo.note;
-                }
-            }
-            qmService.storage.setItem('measurementsQueue', measurementsQueue);
-        });
-    }
     function isStartTimeInMilliseconds(measurementInfo){
         var oneWeekInFuture = window.qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
         if(measurementInfo.startTimeEpoch > oneWeekInFuture){
@@ -3254,14 +3222,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     qmService.postMeasurementDeferred = function(measurementInfo, successHandler){
         isStartTimeInMilliseconds(measurementInfo);
-        measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
+        measurementInfo = qm.measurements.addLocationAndSourceDataToMeasurement(measurementInfo);
         if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
-            updateMeasurementInQueue(measurementInfo);
+            qm.measurements.updateMeasurementInQueue(measurementInfo);
         } else if(measurementInfo.id) {
             qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurementInfo.id);
-            qmService.addToMeasurementsQueue(measurementInfo);
+            qm.measurements.addToMeasurementsQueue(measurementInfo);
         } else {
-            qmService.addToMeasurementsQueue(measurementInfo);
+            qm.measurements.addToMeasurementsQueue(measurementInfo);
         }
         qm.userVariables.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
         if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){
@@ -3289,7 +3257,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ]
             }
         ];
-        measurementSet[0].measurements[0] = addLocationDataToMeasurement(measurementSet[0].measurements[0]);
+        measurementSet[0].measurements[0] = qm.measurements.addLocationDataToMeasurement(measurementSet[0].measurements[0]);
         if(!qmService.valueIsValid(trackingReminder, value)){
             deferred.reject('Value is not valid');
             return deferred.promise;
@@ -3339,8 +3307,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 note: parameters.note
             }
         ];
-        measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
-        measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
+        measurementSets[0] = qm.measurements.addLocationDataToMeasurement(measurementSets[0]);
         qmService.postMeasurementsToApi(measurementSets, function(response){
             if(response.success) {
                 if(response && response.data && response.data.userVariables){
