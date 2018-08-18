@@ -6354,6 +6354,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
             template = template + "last Push Received: " + qm.push.getTimeSinceLastPushString() + '\r\n';
+            template = template + "last Push Data: " + qm.stringHelper.prettyJsonStringify(qm.storage.getItem(qm.items.lastPushData)) + '\r\n';
             template = template + "last Local Notification Triggered: " + qm.notifications.getTimeSinceLastLocalNotification() + '\r\n';
             template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
@@ -6426,6 +6427,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
                 push.on('notification', function(data) {
                     qm.storage.setItem(qm.items.lastPushTimestamp, qm.timeHelper.getUnixTimestampInSeconds());
+                    qm.storage.setItem(qm.items.lastPushData, data);
                     qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "received");
                     qmLog.pushDebug('Received push notification: ', data);
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
