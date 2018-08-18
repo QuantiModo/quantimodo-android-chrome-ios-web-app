@@ -2495,9 +2495,61 @@ window.qm = {
             var count = 0;
             if(measurements){
                 count = measurements.length;
-                measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             }
             qmLog.info("Got "+count +" measurements from queue with params: "+JSON.stringify(params), measurements);
+            return measurements;
+        },
+        addInfoAndImagesToMeasurements:  function (measurements){
+            function parseJsonIfPossible(str) {
+                var object = false;
+                try {
+                    object = JSON.parse(str);
+                } catch (e) {
+                    return false;
+                }
+                return object;
+            }
+            var ratingInfo = qm.ratingImages.getRatingInfo();
+            var index;
+            for (index = 0; index < measurements.length; ++index) {
+                var parsedNote =  parseJsonIfPossible(measurements[index].note);
+                if(parsedNote){
+                    if(parsedNote.url && parsedNote.message){
+                        measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
+                    } else {
+                        qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                    }
+                }
+                if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
+                if(measurements[index].variableName === qm.getPrimaryOutcomeVariable().name){
+                    measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
+                }
+                if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
+                if(measurements[index].displayValueAndUnitString){
+                    measurements[index].valueUnitVariableName = measurements[index].displayValueAndUnitString + " " + measurements[index].variableName;
+                } else {
+                    measurements[index].valueUnitVariableName = measurements[index].value +" " +measurements[index].unitAbbreviatedName + " " + measurements[index].variableName;
+                }
+                //measurements[index].valueUnitVariableName = qm.stringHelper.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
+                //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
+                if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
+                }
+                if (measurements[index].roundedValue && measurements[index].valence === 'negative' && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = ratingInfo[measurements[index].roundedValue].negativeImage;
+                }
+                if (!measurements[index].image && measurements[index].roundedValue && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
+                }
+                if(measurements[index].image){ measurements[index].pngPath = measurements[index].image; }
+                measurements[index].icon = measurements[index].icon || measurements[index].ionIcon;
+                if (measurements[index].variableCategoryName && !measurements[index].icon){
+                    var category = qm.variableCategoryHelper.getVariableCategory(measurements[index].variableCategoryName);
+                    measurements[index].icon = category.ionIcon;
+                    measurements[index].pngPath = category.pngPath;
+                }
+            }
             return measurements;
         }
     },
@@ -3506,7 +3558,41 @@ window.qm = {
             'img/rating/numeric_rating_button_256_3.png',
             'img/rating/numeric_rating_button_256_4.png',
             'img/rating/numeric_rating_button_256_5.png'
-        ]
+        ],
+        getRatingInfo: function() {
+            return {
+                1: {
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                    positiveImage: qm.ratingImages.positive[0],
+                    negativeImage: qm.ratingImages.negative[0],
+                    numericImage: qm.ratingImages.numeric[0],
+                },
+                2: {
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                    positiveImage: qm.ratingImages.positive[1],
+                    negativeImage: qm.ratingImages.negative[1],
+                    numericImage: qm.ratingImages.numeric[1],
+                },
+                3: {
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                    positiveImage: qm.ratingImages.positive[2],
+                    negativeImage: qm.ratingImages.negative[2],
+                    numericImage: qm.ratingImages.numeric[2],
+                },
+                4: {
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                    positiveImage: qm.ratingImages.positive[3],
+                    negativeImage: qm.ratingImages.negative[3],
+                    numericImage: qm.ratingImages.numeric[3],
+                },
+                5: {
+                    displayDescription: qm.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                    positiveImage: qm.ratingImages.positive[4],
+                    negativeImage: qm.ratingImages.negative[4],
+                    numericImage: qm.ratingImages.numeric[4],
+                }
+            }
+        }
     },
     robot: {
         showing: false,
