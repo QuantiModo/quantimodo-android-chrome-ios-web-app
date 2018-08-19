@@ -126,10 +126,14 @@ window.qmLog = {
     secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
     stringContainsSecretAliasWord: function(string){
         var lowerCase = string.toLowerCase();
+        var censoredString = lowerCase;
         for (var i = 0; i < qmLog.secretAliases.length; i++) {
             var secretAlias = qmLog.secretAliases[i];
-            if(lowerCase.indexOf(secretAlias) !== -1){return true;}
+            if(lowerCase.indexOf(secretAlias) !== -1){
+                censoredString = qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
+            }
         }
+        if(censoredString !== lowerCase){return censoredString;}
         return false;
     },
     error: function (name, message, errorSpecificMetaData, stackTrace) {
@@ -242,9 +246,8 @@ window.qmLog = {
                 console.error("Could not stringify log meta data", error);
             }
         }
-        if(qmLog.stringContainsSecretAliasWord(logString)){
-            logString = "Log hidden because it contains a secrety word";
-        }
+        var censored = qmLog.stringContainsSecretAliasWord(logString);
+        if(censored){logString = censored;}
         if(qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
         return logString;
     },
