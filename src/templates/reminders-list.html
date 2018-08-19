@@ -11,10 +11,10 @@
 		</div>
 		<div class="list" id="remindersList" ng-cloak>
             <div ng-include="'templates/input/filter-search-field.html'" ng-if="(state.trackingReminders && state.trackingReminders.length > 10) ||
-                (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) || (state.favorites && state.favorites.length > 10)" ></div>
-			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
-			<div id="favoriteItem" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites  | filter:state.searchText track by $index"
-				 on-hold="showFavoriteActionSheet(favorite, $index)">
+                (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) || (state.favoritesArray && state.favoritesArray.length > 10)" ></div>
+			<div class="item item-divider" ng-if="state.favoritesArray && state.favoritesArray.length">As-Needed</div>
+			<div id="favoriteItem" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favoritesArray  | filter:state.searchText track by $index"
+				 on-hold="showFavoriteActionSheet(favorite, $index, null, state)">
 				<div ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
 			<div class="item item-divider" ng-if="state.trackingReminders && state.trackingReminders.length">Scheduled</div>
