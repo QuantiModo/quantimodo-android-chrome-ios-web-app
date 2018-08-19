@@ -3010,7 +3010,7 @@ window.qm = {
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction);
         },
         undo: function(){
-            qmLog.info("Called undo notifcation tracking...");
+            qmLog.info("Called undo notification tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!notificationsSyncQueue){ return false; }
             notificationsSyncQueue[0].hide = false;
@@ -3654,6 +3654,10 @@ window.qm = {
         currentIntent: {
             name: "",
             parameters: {}
+        },
+        readCard: function(card, successHandler, errorHandler){
+            var text = card.subTitle || card.subHeader || card.title || card.headerTitle;
+            qm.speech.talkRobot(text, successHandler, errorHandler);
         },
         config: {
             DEFAULT: false, // false will override system default voice
