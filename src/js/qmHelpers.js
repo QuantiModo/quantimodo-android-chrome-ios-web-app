@@ -2551,7 +2551,18 @@ window.qm = {
                 }
             }
             return measurements;
-        }
+        },
+        recentlyPostedMeasurements: [],
+        getRecentlyPostedMeasurements: function(params){
+            var measurements = qm.arrayHelper.filterByRequestParams(qm.measurements.recentlyPostedMeasurements, params);
+            var count = 0;
+            if(measurements){
+                count = measurements.length;
+                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            }
+            qmLog.info("Got "+count +" measurements from recentlyPostedMeasurements with params: "+JSON.stringify(params), measurements);
+            return measurements;
+        },
     },
     manualTrackingVariableCategoryNames: [
         'Emotions',

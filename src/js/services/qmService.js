@@ -3144,7 +3144,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             defer.reject(errorMessage);
             return defer.promise;
         }
-        var parsedMeasurementsQueue = qm.storage.getItem(qm.items.measurementsQueue);
+        var parsedMeasurementsQueue = qm.measurements.getMeasurementsFromQueue();
         if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
             if(successHandler){successHandler();}
             return;
@@ -3153,6 +3153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response && response.data && response.data.userVariables){
                 qm.userVariables.saveToLocalStorage(response.data.userVariables);
             }
+            qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(parsedMeasurementsQueue);  // Save these for history page
             qm.storage.setItem(qm.items.measurementsQueue, []);
             if(successHandler){successHandler();}
             defer.resolve();
