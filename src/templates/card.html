@@ -20,10 +20,10 @@
     </md-card-title>
     <md-card-actions id="actions" layout="row" layout-align="start center">
         <md-card-icon-actions ng-repeat="button in card.iconButtons" ng-if="card.iconButtons">
-            <md-button class="md-icon-button" aria-label="button.text" ng-click="state.cardButtonClick(card, button)">
+            <md-button class="md-icon-button" aria-label="button.text" ng-click="state.cardButtonClick(card, button)" style="margin-left: 0; margin-right: 0;">
                 <!--<md-icon md-svg-icon="{{button.ionIcon}}"></md-icon>-->
                 <i  id="button-icon" ng-if="button.ionIcon" class="{{button.ionIcon}}"></i>
-                <img id="button-image" class="md-user-avatar" ng-if="button.image" ng-src="{{button.image}}"/>
+                <img id="button-image" class="md-user-avatar" style="width: 100%;" ng-if="button.image" ng-src="{{button.image}}"/>
             </md-button>
         </md-card-icon-actions>
         <md-button id="button" ng-repeat="button in card.buttons" ng-if="card.buttons" ng-click="state.cardButtonClick(card, button)">{{button.title}}</md-button>

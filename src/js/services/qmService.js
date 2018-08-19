@@ -1152,10 +1152,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.notifications.track(trackingReminderNotification, modifiedReminderValue, ev, true);
                 qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
             },
-            track: function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
+            track: function(trackingReminderNotification, modifiedReminderValue, $event, trackAll, undoCallback){
+                if(modifiedReminderValue === null && trackingReminderNotification.modifiedValue){ modifiedReminderValue = trackingReminderNotification.modifiedValue; }
                 if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
                 qm.notifications.setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
-                var body = qmService.notifications.handleNotificationAction(trackingReminderNotification);
+                var body = qmService.notifications.handleNotificationAction(trackingReminderNotification, undoCallback);
                 body.modifiedValue = modifiedReminderValue;
                 // I think this slows down inbox
                 //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "track", null, modifiedReminderValue);
@@ -1402,7 +1403,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 trackingReminderNotification.hide = true;
                 qm.notifications.numberOfPendingNotifications--;
                 qmService.notifications.showUndoToast(undoCallback);
-                trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
+                if(!trackingReminderNotification.trackingReminderNotificationId){
+                    trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
+                }
                 return trackingReminderNotification;
             }
         },
