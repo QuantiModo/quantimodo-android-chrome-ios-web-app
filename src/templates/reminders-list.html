@@ -14,7 +14,7 @@
                 (state.archivedTrackingReminders && state.archivedTrackingReminders.length > 10) || (state.favorites && state.favorites.length > 10)" ></div>
 			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
 			<div id="favoriteItem" ng-if="!trackingReminder.hide" ng-repeat="trackingReminder in state.favorites  | filter:state.searchText track by $index"
-				 on-hold="showFavoriteActionSheet(favorite, $index)">
+				 on-hold="showFavoriteActionSheet(favorite, $index, null, state.favorites)">
 				<div ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
 			<div class="item item-divider" ng-if="state.trackingReminders && state.trackingReminders.length">Scheduled</div>
