@@ -1,9 +1,10 @@
 <md-card id="card" ng-if="card">
     <md-card-header id="card-header">
         <md-card-avatar ng-if="card.avatar" id="card-avatar">
-            <img class="md-user-avatar" ng-src="{{card.avatar}}"/>
+            <img class="md-user-avatar" ng-src="{{card.avatarCircular}}" ng-if="card.avatarCircular"/>
+            <img ng-src="{{card.avatar}}" ng-if="card.avatar"/>
         </md-card-avatar>
-        <md-card-header-text id="card">
+        <md-card-header-text id="card" ng-if="card.headerTitle || card.subHeader">
             <span id="headerTitle" class="md-title" ng-if="card.headerTitle">{{card.headerTitle}}</span>
             <span id="subHeader" class="md-subhead" ng-if="card.subHeader">{{card.subHeader}}</span>
         </md-card-header-text>
@@ -12,7 +13,7 @@
         </md-button>
     </md-card-header>
     <img id="image" ng-src="{{card.image}}" class="md-card-image" alt="{{card.title}}" ng-if="card.image">
-    <md-card-title id="card">
+    <md-card-title id="card" ng-if="card.title || card.subTitle">
         <md-card-title-text id="title-text">
             <span id="title" class="md-headline" ng-if="card.title">{{card.title}}</span>
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
@@ -26,7 +27,7 @@
                 <img id="button-image" class="md-user-avatar" style="width: 100%;" ng-if="button.image" ng-src="{{button.image}}"/>
             </md-button>
         </md-card-icon-actions>
-        <md-button id="button" ng-repeat="button in card.buttons" ng-if="card.buttons" ng-click="state.cardButtonClick(card, button)">{{button.title}}</md-button>
+        <md-button id="button" ng-repeat="button in card.textButtons" ng-if="card.textButtons" ng-click="state.cardButtonClick(card, button)">{{button.title}}</md-button>
     </md-card-actions>
     <md-card-content id="content" ng-if="card.content">
         <p>
