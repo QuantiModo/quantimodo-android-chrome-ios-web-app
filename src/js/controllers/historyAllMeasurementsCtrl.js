@@ -24,6 +24,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         if($stateParams.refresh){$scope.state.history = null;}
         var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
         if($scope.state.history && queue){$scope.state.history = queue.concat($scope.state.history);}
+        var recentlyPosted = qm.measurements.getRecentlyPostedMeasurements(getRequestParams());
+        qm.measurements.recentlyPostedMeasurements = [];
+        if($scope.state.history && recentlyPosted){$scope.state.history = recentlyPosted.concat($scope.state.history);}
         $scope.state.moreDataCanBeLoaded = true;
         // Need to use rootScope here for some reason
         qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
