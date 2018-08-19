@@ -84,6 +84,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmService.hideLoader();
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
         setHideDefaultValueField();
+        if($state.current.name !== qmStates.favoriteAdd){setupEditReminder($scope.state.trackingReminder);}  // Needed to set dates
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
