@@ -2,9 +2,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 	function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $ionicActionSheet) {
 		$scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
+        var currentTrackingReminderNotification;
 		$scope.state = {
 			dialogFlow: false,
-			trackingReminderNotification: null,
 			messages: [],
             userInputString: '',
             visualizationType: 'rainbow', // 'siri', 'rainbow', 'equalizer'
@@ -18,6 +18,20 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             cardButtonClick: function(card, button){
 			    qmLog.info("card", card);
                 qmLog.info("button", button);
+                if(button && button.functionParameters && button.functionParameters.trackingReminderNotificationId){
+                    qmService.notifications.track(button.functionParameters, function () {
+                        card.hide = false;
+                        $scope.card = card;
+                    });
+                    if(currentTrackingReminderNotification.bestStudyCard){
+                        $scope.card = currentTrackingReminderNotification.bestStudyCard;
+                        qm.speech.readCard(currentTrackingReminderNotification.bestStudyCard);
+                    } else {
+                        notification();
+                    }
+                } else {
+                    qmLog.error("Not sure how to handle this button", {card: card, button: button});
+                }
             },
             openActionSheet: function (card) {
                 qmService.actionSheets.openActionSheet(card, notification);
@@ -33,14 +47,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }
-            notification();
+            qm.speech.deepThought(notification);
         });
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
         if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
         function notification() {
             qm.notifications.getMostRecentNotification(function (notification) {
-                $scope.circlePage = qm.notifications.getCirclePage(notification);
+                currentTrackingReminderNotification = notification;
                 $scope.card = notification.card;
             });
             $timeout(function () {
