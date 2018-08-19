@@ -114,7 +114,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         qmLogService.info('Got ' + allTrackingReminderTypes.allTrackingReminders.length + ' ' + $stateParams.variableCategoryName +
             " category allTrackingReminderTypes.allTrackingReminders!", null);
 		$scope.state.showNoRemindersCard = false;
-		$scope.state.favorites = allTrackingReminderTypes.favorites;
+		$scope.state.favoritesArray = allTrackingReminderTypes.favorites;
 		$scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
         var count = 0;
         if(allTrackingReminderTypes.trackingReminders && allTrackingReminderTypes.trackingReminders.length){count = allTrackingReminderTypes.trackingReminders.length;}
