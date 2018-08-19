@@ -9,7 +9,6 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         trackingReminder : null,
         lastSent: new Date(),
         title: "Favorites",
-        favorites: [],
         addButtonText: "Add a Favorite Variable",
         addButtonIcon: "ion-ios-star",
         helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
