@@ -1978,6 +1978,70 @@ window.qm = {
             return true;
         }
     },
+    feed: {
+        getMostRecentCard: function(successHandler, errorHandler){
+            qm.getFromLocalStorageOrApi({}, function(cards){
+                successHandler(cards[0]);
+            }, errorHandler);
+        },
+        getFeedApiInstance: function(params){
+            qm.api.configureClient();
+            var apiInstance = new Quantimodo.FeedApi();
+            apiInstance.cache = !params || !params.noCache;
+            return apiInstance;
+        },
+        getFeedFromLocalForage: function(successHandler, errorHandler){
+            qm.localForage.getItem(qm.items.feed, successHandler, errorHandler);
+        },
+        getFeedFromApi: function(params, successHandler, errorHandler){
+            params = qm.api.addGlobalParams(params);
+            var cacheKey = 'getFeed';
+            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            function callback(error, data, response) {
+                qm.feed.saveFeedInLocalForage(response.cards);
+                qm.api.generalResponseHandler(error, response.cards, response, successHandler, errorHandler, params, cacheKey);
+            }
+            qm.feed.getFeedApiInstance(params).getFeed(params, callback);
+        },
+        saveFeedInLocalForage: function(feed){
+            qm.localForage.addToOrReplaceByIdAndMoveToFront(qm.items.feed, feed);
+        },
+        getFeedFromLocalForageOrApi: function(params, successHandler, errorHandler){
+            qm.localForage.getItem(qm.items.feed, function(cards){
+                if(cards && cards.length){
+                    successHandler(cards);
+                    return;
+                }
+                qm.feed.getFeedFromApi(params, successHandler, errorHandler);
+            }, function(error){
+                qmLog.error(error);
+                qm.feed.getFeedFromApi(params, successHandler, errorHandler);
+            });
+        },
+        deleteCardFromLocalForage: function(submittedCard, successHandler, errorHandler){
+            qm.localForage.deleteById(qm.items.feed, submittedCard.id, successHandler, errorHandler);
+        },
+        postFeedQueue: function(feedQueue){
+            var params = qm.api.addGlobalParams({});
+            var cacheKey = 'postFeed';
+            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            function callback(error, data, response) {
+                qm.feed.saveFeedInLocalForage(response.cards);
+                qm.api.generalResponseHandler(error, response.cards, response, successHandler, errorHandler, params, cacheKey);
+            }
+            qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+        },
+        addToFeedQueue: function(submittedCard, selectedButton){
+            submittedCard.selectedButton = selectedButton
+            qm.localForage.addToArray(qm.items.feedQueue, submittedCard, function(feedQueue){
+                qm.feed.getFeedFromLocalForage(function(remainingCards){
+                    if(feedQueue.length > 5 || remainingCards.length < 5){
+                        qm.feed.postFeedQueue(feedQueue);
+                    }
+                });
+            });
+        }
+    },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -2229,6 +2293,8 @@ window.qm = {
         deviceTokenToSync: 'deviceTokenToSync',
         drawOverAppsPopupEnabled: 'drawOverAppsPopupEnabled',
         expiresAtMilliseconds: 'expiresAtMilliseconds',
+        feed: 'feed',
+        feedQueue: 'feedQueue',
         hideImportHelpCard: 'hideImportHelpCard',
         introSeen: 'introSeen',
         lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
@@ -2337,14 +2403,14 @@ window.qm = {
                 qm.localForage.setItem(key, existingData);
             });
         },
-        deleteById: function(key, id) {
+        deleteById: function(key, id, successHandler, errorHandler) {
             qmLog.info("deleting " + key + " by id " + id);
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
                     return obj.id !== id;
                 });
-                qm.localForage.setItem(key, existingData);
+                qm.localForage.setItem(key, existingData, successHandler, errorHandler);
             });
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
@@ -2400,7 +2466,7 @@ window.qm = {
                 if(err){
                     if(errorHandler){errorHandler(err);}
                 } else {
-                    if(successHandler){successHandler();}
+                    if(successHandler){successHandler(value);}
                 }
             })
         },
@@ -2441,6 +2507,15 @@ window.qm = {
                 var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){successHandler(elementsToKeep);}
+            });
+        },
+        addToArray: function(localStorageItemName, newElement, successHandler){
+            qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElement).substring(0,20)+'...');
+            qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
+                localStorageItemArray = localStorageItemArray || [];
+                localStorageItemArray.push(newElement);
+                qm.localForage.setItem(localStorageItemName, localStorageItemArray);
+                if(successHandler){successHandler(localStorageItemArray);}
             });
         }
     },
@@ -3846,6 +3921,26 @@ window.qm = {
                 if(errorHandler){errorHandler(error);}
             });
         },
+        currentCard: null,
+        getMostRecentFeedCardAndTalk: function(successHandler, errorHandler){
+            qm.feed.getMostRecentCard(function (card) {
+                if(card){
+                    qm.speech.currentCard = card;
+                    var listen = true;
+                    qm.speech.talkRobot(card.title, function(){
+                        qm.microphone.listenForNotificationResponse(successHandler, errorHandler)
+                    }, function(error){
+                        qmLog.info(error);
+                    }, listen);
+                } else {
+                    qmLog.error("No tracking reminder notification");
+                    if(errorHandler){errorHandler(error);}
+                }
+            }, function(error){
+                qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
+            });
+        },
         speechUtteranceChunker: function (utt, settings, callback) {
             settings = settings || {};
             var newUtt;
@@ -3917,21 +4012,58 @@ window.qm = {
                 }
                 qm.speech.lastUserStatement = tag;
                 qmLog.info("Just heard user say " + tag);
-                function isNumeric(n) {
-                    return !isNaN(parseFloat(n)) && isFinite(n);
-                }
-                var possibleResponses = ["skip", "snooze", "yes", "no"];
-                if(possibleResponses.indexOf(tag) > -1 || isNumeric(tag)){
+                if(qm.speech.isValidNotificationResponse(tag)){
                     var notification = qm.speech.currentNotification;
-                    notification.modifiedValue = tag;
-                    qm.notifications.trackNotification(notification);
-                    var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
-                    var prefix = qm.speech.afterNotificationMessages.pop();
-                    if(prefix){message = prefix + message;}
-                    qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
-                    if(qm.microphone.successHandler){qm.microphone.successHandler(notification);}
+                    qm.speech.handleNotificationResponse(tag, notification);
                 } else {
                     qm.speech.fallbackMessage(tag);
+                }
+            }
+        },
+        handleNotificationResponse: function(tag, notification){
+            notification.modifiedValue = tag;
+            qm.notifications.trackNotification(notification);
+            var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + tag + ".  ";
+            var prefix = qm.speech.afterNotificationMessages.pop();
+            if(prefix){message = prefix + message;}
+            qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
+            if(qm.microphone.successHandler){qm.microphone.successHandler(notification);}
+        },
+        isValidNotificationResponse: function(tag){
+            var possibleResponses = ["skip", "snooze", "yes", "no"];
+            if(possibleResponses.indexOf(tag) > -1){return true;}
+            function isNumeric(n) {
+                return !isNaN(parseFloat(n)) && isFinite(n);
+            }
+            return isNumeric(tag);
+        },
+        cardResponseCommands: {
+            "I don't know": function () {
+                qm.speech.talkRobot("OK. We'll skip that one.");
+            },
+            '*tag': function(tag) {
+                var card = qm.speech.currentCard;
+                var buttons = card.textButtons || [];
+                if(card.iconButtons){buttons.push(card.iconButtons);}
+                if(card.actionSheetButtons){buttons.push(card.actionSheetButtons);}
+                var selectedButton = buttons.find(function(button){
+                    return button.text.toLowerCase() === tag;
+                });
+                if(!selectedButton){
+                    selectedButton = buttons.find(function(button){
+                        return button.title.toLowerCase() === tag;
+                    });
+                }
+                if(!selectedButton && qm.speech.isValidNotificationResponse(tag)){
+                    selectedButton = {};
+                    selectedButton.functionParameters = card.parameters;
+                    qm.speech.handleNotificationResponse(tag, card.parameters);
+                    selectedButton.modifiedValue = tag;
+                    card.selectedButton = selectedButton;
+                    qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
+                        qm.speech.getMostRecentFeedCardAndTalk();
+                        qm.feed.addToFeedQueue(card);
+                    });
                 }
             }
         },
