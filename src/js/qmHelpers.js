@@ -1980,7 +1980,7 @@ window.qm = {
     },
     feed: {
         getMostRecentCard: function(successHandler, errorHandler){
-            qm.getFromLocalStorageOrApi({}, function(cards){
+            qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
                 successHandler(cards[0]);
             }, errorHandler);
         },
@@ -2031,10 +2031,11 @@ window.qm = {
             }
             qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
         },
-        addToFeedQueue: function(submittedCard, selectedButton){
+        addToFeedQueue: function(submittedCard, selectedButton, successHandler){
             submittedCard.selectedButton = selectedButton
             qm.localForage.addToArray(qm.items.feedQueue, submittedCard, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
+                    successHandler(remainingCards[1]);
                     if(feedQueue.length > 5 || remainingCards.length < 5){
                         qm.feed.postFeedQueue(feedQueue);
                     }
