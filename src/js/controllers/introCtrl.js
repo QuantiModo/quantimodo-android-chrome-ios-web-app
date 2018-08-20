@@ -107,10 +107,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
-        if(navigator && navigator.splashscreen) {
-            qmLogService.debug('introCtrl.afterEnter: Hiding splash screen because app is ready', null);
-            navigator.splashscreen.hide();
-        }
+        qmService.splash.hideSplashScreen();
         $scope.state.robotClick = $scope.myIntro.next;
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });

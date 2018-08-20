@@ -50,50 +50,20 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         //getFavorites();  Not sure why we need to do this here?
         qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"});
 		$scope.stateParams = $stateParams;
-		qmService.rootScope.setShowActionSheetMenu(function() {
-			// Show the action sheet
-			var hideSheet = $ionicActionSheet.show({
-				buttons: [
-                    qmService.actionSheets.actionSheetButtons.historyAll,
-					qmService.actionSheets.actionSheetButtons.reminderAdd,
-                    qmService.actionSheets.actionSheetButtons.measurementAddSearch,
-            		qmService.actionSheets.actionSheetButtons.charts,
-                    qmService.actionSheets.actionSheetButtons.settings,
-                    qmService.actionSheets.actionSheetButtons.help,
-                    qmService.actionSheets.actionSheetButtons.refresh
-				],
-				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
-				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLogService.debug('CANCELLED', null);},
-				buttonClicked: function(index) {
-					qmLogService.debug('BUTTON CLICKED', null, index);
-                    if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: getVariableCategoryName()});}
-                    if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : getVariableCategoryName()});}
-                    if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : getVariableCategoryName()});}
-                    if(index === 3){qmService.goToState('app.chartSearch', {variableCategoryName : getVariableCategoryName()});}
-                    if(index === 4){qmService.goToState('app.settings');}
-                    if(index === 5){qmService.goToState('app.help');}
-                    if(index === 6){$scope.refreshTrackingReminderNotifications(3)}
-					return true;
-				},
-				destructiveButtonClicked: function() {
-					qmService.showInfoToast('Skipping all reminder notifications...');
-					qm.notifications.skipAllTrackingReminderNotifications({}, function(){
-							$scope.refreshTrackingReminderNotifications();
-						}, function(error){
-							qmLogService.error(error);
-							qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-						});
-					return true;
-				}
-			});
-			$timeout(function() {hideSheet();}, 20000);
-		});
-		if(navigator && navigator.splashscreen) {
-			qmLogService.debug('ReminderInbox: Hiding splash screen because app is ready', null);
-			navigator.splashscreen.hide();
-		}
-
+		qmService.actionSheet.setDefaultActionSheet(function() {$scope.refreshTrackingReminderNotifications(3)},
+			getVariableCategoryName(), 'Clear All Notifications',
+			function(){
+				qmService.showInfoToast('Skipping all reminder notifications...');
+				qm.notifications.skipAllTrackingReminderNotifications({}, function(){
+					$scope.refreshTrackingReminderNotifications();
+				}, function(error){
+					qmLog.error(error);
+					qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
+				});
+				return true;
+			}
+		);
+		qmService.splash.hideSplashScreen();
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
