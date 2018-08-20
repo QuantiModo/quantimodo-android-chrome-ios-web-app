@@ -113,6 +113,44 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
+        actionSheet: {
+            setDefaultActionSheet: function(refreshFunction, variableCategoryName, destructiveText, destructiveFunction){
+                qmService.rootScope.setShowActionSheetMenu(function() {
+                    var params = {
+                        buttons: [
+                            qmService.actionSheets.actionSheetButtons.historyAll,
+                            qmService.actionSheets.actionSheetButtons.reminderAdd,
+                            qmService.actionSheets.actionSheetButtons.measurementAddSearch,
+                            qmService.actionSheets.actionSheetButtons.charts,
+                            qmService.actionSheets.actionSheetButtons.settings,
+                            qmService.actionSheets.actionSheetButtons.help,
+                            qmService.actionSheets.actionSheetButtons.refresh
+                        ],
+                        cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                        cancel: function() {qmLog.debug('CANCELLED', null);},
+                        buttonClicked: function(index) {
+                            qmLog.debug('BUTTON CLICKED', index);
+                            var stateParams = {};
+                            if(variableCategoryName){stateParams.variableCategoryName = variableCategoryName;}
+                            if(index === 0){qmService.goToState('app.historyAll', stateParams);}
+                            if(index === 1){qmService.goToState('app.reminderSearch', stateParams);}
+                            if(index === 2){qmService.goToState('app.measurementAddSearch', stateParams);}
+                            if(index === 3){qmService.goToState('app.chartSearch', stateParams);}
+                            if(index === 4){qmService.goToState('app.settings');}
+                            if(index === 5){qmService.goToState('app.help');}
+                            if(index === 6){$scope.refreshTrackingReminderNotifications(3)}
+                            return true;
+                        },
+                        destructiveButtonClicked: function() {
+                            if(destructiveFunction){destructiveFunction();}
+                            return true;
+                        }
+                    };
+                    if(destructiveText){params.destructiveText = '<i class="icon ion-trash-a"></i>'+destructiveText;}
+                    var hideSheet = $ionicActionSheet.show(params);
+                });
+            },
+        },
         adSense: {
             showOrHide: function(){
                 function showAdSense(){
@@ -1656,6 +1694,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(errorHandler){errorHandler(error);}
                 qmLog.debug('User cancelled selection');
             });
+        },
+        splash: {
+            hideSplashScreen: function(){
+                if(navigator && navigator.splashscreen) {
+                    qmLogService.debug('Hiding splash screen because app is ready', null);
+                    navigator.splashscreen.hide();
+                }
+            }
         },
         states: {
             outputStateNameConstantsForPHP: function(){
