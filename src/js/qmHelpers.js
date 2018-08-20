@@ -1998,8 +1998,8 @@ window.qm = {
             var cacheKey = 'getFeed';
             if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
             function callback(error, data, response) {
-                qm.feed.saveFeedInLocalForage(response.cards);
-                qm.api.generalResponseHandler(error, response.cards, response, successHandler, errorHandler, params, cacheKey);
+                qm.feed.saveFeedInLocalForage(data.cards);
+                qm.api.generalResponseHandler(error, data.cards, response, successHandler, errorHandler, params, cacheKey);
             }
             qm.feed.getFeedApiInstance(params).getFeed(params, callback);
         },

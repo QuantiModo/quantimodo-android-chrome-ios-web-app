@@ -30,7 +30,7 @@
     </md-card-actions>
     <md-card-actions id="actions" layout-align="start center">
         <md-button id="button" ng-repeat="button in card.textButtons" ng-if="card.textButtons" ng-click="state.cardButtonClick(card, button)">
-            {{button.html}}
+            <span ng-bind-html="trustAsHtml(button.html)"></span>
         </md-button>
     </md-card-actions>
     <md-card-content id="content" ng-if="card.content">
