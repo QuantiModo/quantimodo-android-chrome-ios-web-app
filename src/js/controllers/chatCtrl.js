@@ -2,7 +2,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 	function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $ionicActionSheet) {
 		$scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
-        var currentTrackingReminderNotification;
+        var currentCard;
 		$scope.state = {
 			dialogFlow: false,
 			messages: [],
@@ -19,16 +19,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 			    qmLog.info("card", card);
                 qmLog.info("button", button);
                 if(button && button.functionParameters && button.functionParameters.trackingReminderNotificationId){
-                    qmService.notifications.track(button.functionParameters, function () {
-                        card.hide = false;
-                        $scope.card = card;
+                    $scope.card.selectedButton = button;
+                    qm.feed.addToFeedQueue($scope.card, function (nextCard) {
+                        $scope.card = nextCard;
                     });
-                    if(currentTrackingReminderNotification.bestStudyCard){
-                        $scope.card = currentTrackingReminderNotification.bestStudyCard;
-                        qm.speech.readCard(currentTrackingReminderNotification.bestStudyCard);
-                    } else {
-                        notification();
-                    }
+                    notification();
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
                 }
@@ -41,6 +36,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.notifications.refreshNotifications(null, null, {blockRequests: false, minimumSecondsBetweenRequests: 1});
             qmLog.debug('beforeEnter state ' + $state.current.name);
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
+            qm.feed.getFeedFromApi();
         });
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
             if(!qm.getUser()){
@@ -53,9 +49,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
         if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
         function notification() {
-            qm.notifications.getMostRecentNotification(function (notification) {
-                currentTrackingReminderNotification = notification;
-                $scope.card = notification.card;
+            qm.feed.getMostRecentCard(function (card) {
+                $scope.card = card;
             });
             $timeout(function () {
                 qm.speech.getMostRecentNotificationAndTalk();
