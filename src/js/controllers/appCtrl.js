@@ -11,26 +11,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     qmService.initializeApplication(appSettingsResponse);
     qm.notifications.numberOfPendingNotifications = null;
     $scope.$on('$ionicView.enter', function (e) {
-        qmLogService.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
-        //$scope.showHelpInfoPopupIfNecessary(e);
-        if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
-            $scope.showCalendarButton = true;
-        } else { $scope.showCalendarButton = false; }
-        // Show "..." button on top right
-        if (e.targetScope && e.targetScope.controller_name &&
-            e.targetScope.controller_name === "MeasurementAddCtrl" ||
-            e.targetScope.controller_name === "ReminderAddCtrl" ||
-            e.targetScope.controller_name === "FavoriteAddCtrl" ||
-            e.targetScope.controller_name === "ChartsPageCtrl" ||
-            e.targetScope.controller_name === "VariableSettingsCtrl" ||
-            e.targetScope.controller_name === "RemindersInboxCtrl" ||
-            e.targetScope.controller_name === "RemindersManageCtrl" ||
-            e.targetScope.controller_name === "StudyCtrl" ||
-            e.targetScope.controller_name === "StudiesCtrl" ||
-            e.targetScope.controller_name === "historyAllMeasurementsCtrl" ||
-            e.targetScope.controller_name === "ConfigurationCtrl"
-        ) { $scope.showMoreMenuButton = true;
-        } else { $scope.showMoreMenuButton = false; }
+        qmLog.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href);
     });
     $scope.$on('$ionicView.afterEnter', function (e) {
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
