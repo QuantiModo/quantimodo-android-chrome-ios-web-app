@@ -13,7 +13,7 @@
         </button>
     </div>
     <div style="padding: 5px;" ng-bind-html="trustAsHtml(card.htmlContent)"></div>
-    <div ng-repeat="button in card.textButtons">
+    <div ng-repeat="button in card.buttons">
         <div class="row" >
             <div class="button-bar">
                 <a id="{{button.id}}" class="button button-clear button-balanced" ng-click="generalButtonClickHandler(button)">

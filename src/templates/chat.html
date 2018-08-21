@@ -3,7 +3,8 @@
         <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
             <div class="splash-grid"></div>
         </div>
-        <div ng-include="'templates/card.html'" style="z-index: 30; position: absolute; width:100%;"></div>
+        <div ng-include="'templates/card.html'" style="z-index: 30; position: absolute; width:100%;" ng-if="card"></div>
+
 <!--        <canvas id="rainbow-canvas" style="position: absolute; z-index: 4; display: block; opacity: 1;  pointer-events: none; background-color: transparent;"></canvas>-->
 
 <!--        <div id="mic-input-field-container" class="animated-microphone-input-container">
