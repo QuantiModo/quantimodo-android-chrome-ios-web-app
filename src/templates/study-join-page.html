@@ -22,9 +22,9 @@
                     </button>
                 </div>
             </div>
-            <div ng-if="state.study.joined || state.joining">
+            <div ng-if="(state.study.joined || state.joining) && state.study.causeVariable.trackingInstructionsCard">
                 <div ng-include="'templates/cards/blue-card.html'"
-                     ng-repeat="card in [state.study.causeVariable.trackingInstructionsCard, state.study.effectVariable.trackingInstructionsCard]">
+                     ng-repeat="card in [state.study.causeVariable.trackingInstructionsCard, state.study.effectVariable.trackingInstructionsCard] track by $index">
                 </div>
             </div>
             <button id="goToStudyButton" class="button button-small button-clear button-light" ng-if="state.study" ng-click="goToStudyPageViaStudy(state.study)">
