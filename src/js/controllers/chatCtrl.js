@@ -43,15 +43,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 return;
             }
             //qm.speech.deepThought(notification);
-            //notification();
+            talk();
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
-            qm.microphone.errorHandler = qm.microphone.successHandler = talk;
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
-                talk();
+                if(!window.speechSynthesis || !window.speechSynthesis.speaking){talk();}
             });
         }
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
@@ -59,12 +58,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
         function talk() {
             qm.feed.getMostRecentCard(function (card) {
-                //$scope.state.cards = [qm.speech.currentCard];
-                //$scope.state.card = qm.speech.currentCard;
-                $scope.$apply(function () {
+                $scope.$apply(function () { // Not sure why this is necessary
                     $scope.card = qm.speech.currentCard = card;
-                    qm.feed.readCard(qm.speech.currentCard, talk, talk);
                 });
+                card.followUpAction = talk;
+                qm.feed.readCard(qm.speech.currentCard);
             });
         }
         function getQuestion() {

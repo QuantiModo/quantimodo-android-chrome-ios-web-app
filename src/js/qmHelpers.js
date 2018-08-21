@@ -2074,9 +2074,11 @@ window.qm = {
                 var required = inputFields.filter(function(inputField){return inputField.required;});
                 if(required){
                     var unfilled = inputFields.filter(function(inputField){return inputField.value === null;});
-                    if(unfilled){
+                    if(unfilled && unfilled.length){
                         message = unfilled[0].helpText || unfilled[0].hint;
                         qm.speech.currentInputField = unfilled[0];
+                    } else {
+                        qmLog.info("No input fields to fill!");
                     }
                 }
             }
@@ -2101,11 +2103,23 @@ window.qm = {
             for (var i = 0; i < buttons.length; i++) {
                 var button = buttons[i];
                 var text = button.title || button.text;
+                if(button.parameters && button.parameters.modifiedValue){text = button.parameters.modifiedValue;}
                 options += text + ", "
             }
             var inputField = qm.speech.currentInputField;
-            options += " or a " + inputField.type.replace('_', ' ') + '.  ';
-            return options;
+            if(!inputField){
+                qmLog.info("No inputField!");
+            } else {
+                options += " or a " + inputField.type.replace('_', ' ');
+                if(inputField.minValue !== null && inputField.maxValue !== null){
+                    options += " between " + inputField.minValue + " and " + inputField.maxValue;
+                } else if (inputField.minValue !== null){
+                    options += " above " + inputField.minValue;
+                } else if (inputField.maxValue !== null){
+                    options += " below " + inputField.maxValue;
+                }
+            }
+            return options + '.  ';
         },
         sayAvailableCommands: function(){
             var options = qm.feed.getAvailableCommandsSentence();
@@ -2846,7 +2860,6 @@ window.qm = {
             qmLog.error(message, meta);
         },
         initializeListening: function(commands, successHandler, errorHandler){
-            qm.microphone.successHandler = successHandler;
             qm.microphone.specificErrorHandler = errorHandler;
             qm.microphone.debugListening();
             qm.visualizer.visualizeVoice();
@@ -2893,7 +2906,7 @@ window.qm = {
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.125;
+            qm.music.player.volume = 0.25;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
@@ -4135,7 +4148,6 @@ window.qm = {
             var prefix = qm.speech.afterNotificationMessages.pop();
             if(prefix){message = prefix + message;}
             qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
-            if(qm.microphone.successHandler){qm.microphone.successHandler(notification);}
         },
         isValidNotificationResponse: function(tag){
             var possibleResponses = ["skip", "snooze", "yes", "no"];
@@ -4168,7 +4180,7 @@ window.qm = {
                 qm.speech.talkRobot("How dare you call me a robot! The politically correct term is technical American.")
             },
             '*tag': function(tag) {
-                if(tag.indexOf('how many') !== -1 || tag.indexOf('did you have') !== -1){
+                if(tag.indexOf('how many') !== -1 || tag.indexOf('did you have') !== -1 || tag.indexOf('how severe') !== -1){
                     qmLog.info("Ignoring robot: "+ tag);
                     return;
                 }
@@ -4188,7 +4200,7 @@ window.qm = {
                 }
                 qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
                     qm.feed.addToFeedQueue(card);
-                    if(qm.microphone.successHandler){qm.microphone.successHandler();}
+                    if(card.followUpAction){card.followUpAction(remainingCards[0]);}
                 });
             }
         },
@@ -5989,6 +6001,7 @@ window.qm = {
             }
         },
         getVariableCategoriesFromGlobals: function(){
+            if(qm.staticData.variableCategories){return qm.staticData.variableCategories;}
             return qm.globalHelper.getItem(qm.items.variableCategories);
         },
         getVariableCategory: function(variableCategoryName, successHandler){
