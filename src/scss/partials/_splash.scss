@@ -12,14 +12,13 @@
   color: #C6CBF5;
   font-family: 'Orbitron', sans-serif;
   font-weight: 1000;
-  font-size: 25vw;
+  font-size: 35vw;
   line-height: 1.2;
   position: relative;
   text-align: center;
-  margin:auto;
-  text-transform: uppercase;
-  top: 5%;
-  z-index: 4;
+    text-transform: uppercase;
+    margin: 5% auto auto;
+    z-index: 4;
   background: -webkit-linear-gradient(top, #151C60, #C6CBF5 40%, black 40%, #E1A0CE 65%, white);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -35,7 +34,7 @@
   color: #d100b1;
   display: block;
   font-family: 'Yellowtail', cursive;
-  font-size: 25vw;
+  font-size: 30vw;
   margin-right: -8em;
   position: relative;
   text-shadow: 0 0 1px #d100b1, 0 -3px 3px rgba(255, 255, 255, 0.8), 0 3px 3px rgba(0, 0, 0, 0.5), 0 0 15px #d100b1, 0 0 45px rgba(209, 0, 177, 0.8);
@@ -43,7 +42,7 @@
   text-transform: none;
   -webkit-transform: skew(-10deg) rotate(-10deg);
   transform: skew(-10deg) rotate(-10deg);
-  top: 30px;
+  top: 0px;
   width: 100%;
   z-index: 4;
 }
