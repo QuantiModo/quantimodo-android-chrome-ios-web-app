@@ -3992,6 +3992,7 @@ window.qm = {
             };
             utterance.text = text;
             utterance.pitch = 1;
+            utterance.volume = 0.5;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.getClass().classList.add('robot_speaking');
             qm.microphone.pauseListening(hideVisualizer);
