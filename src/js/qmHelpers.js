@@ -178,6 +178,9 @@ window.qm = {
             return errorMessage;
         },
         addGlobalParams: function (urlParams) {
+            if(urlParams && qm.functionHelper.isFunction(urlParams)){
+                throw "params should not be a function!"
+            }
             var url;
             if(!urlParams){urlParams = {};}
             delete urlParams.force;  // Used locally only
@@ -1981,6 +1984,7 @@ window.qm = {
     feed: {
         getMostRecentCard: function(successHandler, errorHandler){
             qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+                qm.speech.currentCard = cards[0];
                 successHandler(cards[0]);
             }, errorHandler);
         },
@@ -1998,10 +2002,20 @@ window.qm = {
             var cacheKey = 'getFeed';
             if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
             function callback(error, data, response) {
-                qm.feed.saveFeedInLocalForage(data.cards);
-                qm.api.generalResponseHandler(error, data.cards, response, successHandler, errorHandler, params, cacheKey);
+                var cards = qm.feed.handleFeedResponse(data);
+                qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
             qm.feed.getFeedApiInstance(params).getFeed(params, callback);
+        },
+        handleFeedResponse: function(data){
+            var cards;
+            if(!data){
+                qmLog.error("No feed data returned!");
+            } else {
+                cards = data.cards;
+                qm.feed.saveFeedInLocalForage(cards);
+            }
+            return cards;
         },
         saveFeedInLocalForage: function(feed){
             qm.localForage.addToOrReplaceByIdAndMoveToFront(qm.items.feed, feed);
@@ -2021,27 +2035,95 @@ window.qm = {
         deleteCardFromLocalForage: function(submittedCard, successHandler, errorHandler){
             qm.localForage.deleteById(qm.items.feed, submittedCard.id, successHandler, errorHandler);
         },
-        postFeedQueue: function(feedQueue){
+        postFeedQueue: function(feedQueue, successHandler, errorHandler){
+            qm.localForage.removeItem(qm.items.feedQueue);
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
             if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
             function callback(error, data, response) {
-                qm.feed.saveFeedInLocalForage(response.cards);
-                qm.api.generalResponseHandler(error, response.cards, response, successHandler, errorHandler, params, cacheKey);
+                var cards = qm.feed.handleFeedResponse(data);
+                if(error){
+                    qmLog.error("Putting back in queue because of error ", error);
+                    qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
+                }
+                qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
             qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
         },
-        addToFeedQueue: function(submittedCard, selectedButton, successHandler){
-            submittedCard.selectedButton = selectedButton
+        addToFeedQueue: function(submittedCard, successHandler){
             qm.localForage.addToArray(qm.items.feedQueue, submittedCard, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
-                    successHandler(remainingCards[1]);
+                    if(successHandler){successHandler(remainingCards[1]);}
                     if(feedQueue.length > 5 || remainingCards.length < 5){
                         qm.feed.postFeedQueue(feedQueue);
                     }
                 });
             });
-        }
+        },
+        readCard: function(card, successHandler, errorHandler, sayOptions){
+            if(!card){card = qm.speech.currentCard;}
+            qm.speech.currentCard = card;
+            var listen = true;
+            var message = '';
+            if(card.title && card.title.length > message.length){message = card.title;}
+            if(card.headerTitle && card.headerTitle.length > message.length){message = card.headerTitle;}
+            if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
+            if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
+            var inputFields = card.inputFields;
+            if(inputFields){
+                var required = inputFields.filter(function(inputField){return inputField.required;});
+                if(required){
+                    var unfilled = inputFields.filter(function(inputField){return inputField.value === null;});
+                    if(unfilled){
+                        message = unfilled[0].helpText || unfilled[0].hint;
+                        qm.speech.currentInputField = unfilled[0];
+                    }
+                }
+            }
+            if(sayOptions){
+                message += " " + qm.feed.getAvailableCommandsSentence();
+            }
+            qm.speech.talkRobot(message, function(){
+                qm.microphone.listenForCardResponse(successHandler, errorHandler)
+            }, function(error){
+                qmLog.info(error);
+            }, listen);
+        },
+        getAvailableButtons: function(includeActionSheet){
+            var card = qm.speech.currentCard;
+            var buttons = card.buttons || [];
+            if(includeActionSheet && card.actionSheetButtons){buttons = buttons.concat(card.actionSheetButtons);}
+            return buttons;
+        },
+        getAvailableCommandsSentence: function(){
+            var buttons = qm.feed.getAvailableButtons(false);
+            var options = 'You can say ';
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                var text = button.title || button.text;
+                options += text + ", "
+            }
+            var inputField = qm.speech.currentInputField;
+            options += " or a " + inputField.type.replace('_', ' ') + '.  ';
+            return options;
+        },
+        sayAvailableCommands: function(){
+            var options = qm.feed.getAvailableCommandsSentence();
+            qm.speech.talkRobot(options);
+        },
+        getButtonMatchingPhrase: function(tag){
+            var buttons = qm.feed.getAvailableButtons(true);
+            var selectedButton = buttons.find(function(button){
+                if(button.text && button.text.toLowerCase() === tag){return true;}
+                if(button.title && button.title.toLowerCase() === tag){return true;}
+                if(button.accessibilityText && button.accessibilityText.toLowerCase() === tag){return true;}
+                if(button.action && button.action.toLowerCase() === tag){return true;}
+                var propertyWithMatchingValue = qm.objectHelper.getKeyWhereValueEqualsProvidedString(tag, button.parameters);
+                if(propertyWithMatchingValue){return true;}
+                return false;
+            });
+            return selectedButton;
+        },
     },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
@@ -2049,6 +2131,9 @@ window.qm = {
             functionName = functionName.substr('function '.length);
             functionName = functionName.substr(0, functionName.indexOf('('));
             return functionName;
+        },
+        isFunction: function(functionToCheck) {
+            return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
         }
     },
     geoLocation: {
@@ -2709,11 +2794,24 @@ window.qm = {
             if(!qm.microphone.annyangAvailable()){return;}
             annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
         },
+        successHandler: function(){
+          qmLog.info("Success!");
+        },
+        errorHandler: function(error){
+            qmLog.error(error);
+        },
         resumeListening: function(){
             qm.visualizer.show();
             qmLog.info("resumeListening");
             if(!qm.microphone.annyangAvailable()){return;}
             annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
+        },
+        addIgnoreCommand: function(phrase){
+            var commands = {};
+            commands[phrase] = function () {
+                qmLog.info("Ignoring robot phrase: "+phrase);
+            };
+            annyang.addCommands(commands);
         },
         startListening: function(commands){
             qmLog.info("startListening");
@@ -2728,6 +2826,9 @@ window.qm = {
         },
         listenForNotificationResponse: function(successHandler, errorHandler){
             qm.microphone.initializeListening(qm.speech.reminderNotificationCommands, successHandler, errorHandler);
+        },
+        listenForCardResponse: function(successHandler, errorHandler){
+            qm.microphone.initializeListening(qm.speech.cardResponseCommands, successHandler, errorHandler);
         },
         debugListening: function(){
             if(!qm.microphone.annyangAvailable()){return;}
@@ -3327,13 +3428,26 @@ window.qm = {
         }
     },
     objectHelper: {
-        copyPropertiesFromOneObjectToAnother: function(source, destination){
+        copyPropertiesFromOneObjectToAnother: function(source, destination, skipNulls){
             for (var prop in source) {
                 if (source.hasOwnProperty(prop)) {
+                    if(skipNulls && source[prop] === null){continue;}
                     destination[prop] = source[prop];
                 }
             }
             return destination;
+        },
+        getKeyWhereValueEqualsProvidedString: function(needleString, haystackObject) {
+            for (var propertyName in haystackObject) {
+                if (haystackObject.hasOwnProperty(propertyName)) {
+                    if(haystackObject[propertyName] === null){continue;}
+                    var haystackString = haystackObject[propertyName].toString();
+                    if(needleString === haystackString){
+                        return propertyName;
+                    }
+                }
+            }
+            return false;
         },
         getSizeInKb: function(object) {
             var string;
@@ -3742,10 +3856,7 @@ window.qm = {
             name: "",
             parameters: {}
         },
-        readCard: function(card, successHandler, errorHandler){
-            var text = card.subTitle || card.subHeader || card.title || card.headerTitle;
-            qm.speech.talkRobot(text, successHandler, errorHandler);
-        },
+        currentInputField: null,
         config: {
             DEFAULT: false, // false will override system default voice
             //VOICE: 'Fred',
@@ -3851,6 +3962,7 @@ window.qm = {
                 return false;
             }
             qmLog.info("talkRobot called with "+text);
+            qm.microphone.addIgnoreCommand(text);
             var voices = speechSynthesis.getVoices();
             if(!voices.length){
                 qmLog.info("Waiting for voices to load with " + text);
@@ -3926,15 +4038,9 @@ window.qm = {
         getMostRecentFeedCardAndTalk: function(successHandler, errorHandler){
             qm.feed.getMostRecentCard(function (card) {
                 if(card){
-                    qm.speech.currentCard = card;
-                    var listen = true;
-                    qm.speech.talkRobot(card.title, function(){
-                        qm.microphone.listenForNotificationResponse(successHandler, errorHandler)
-                    }, function(error){
-                        qmLog.info(error);
-                    }, listen);
+                    qm.feed.readCard(card);
                 } else {
-                    qmLog.error("No tracking reminder notification");
+                    qmLog.error("No feed card!");
                     if(errorHandler){errorHandler(error);}
                 }
             }, function(error){
@@ -4038,34 +4144,51 @@ window.qm = {
             }
             return isNumeric(tag);
         },
+        isValidForInputField: function(tag){
+            var inputField = qm.speech.currentInputField;
+            if(!inputField){return false;}
+            function isNumeric(n) {
+                return !isNaN(parseFloat(n)) && isFinite(n);
+            }
+            if(inputField.type === "number" && !isNumeric(tag)){
+                return false;
+            }
+            inputField.value = tag;
+            return inputField;
+        },
+        readCard: function(card, successHandler, errorHandler, sayOptions){
+            return qm.feed.readCard(card, successHandler, errorHandler, sayOptions);
+        },
         cardResponseCommands: {
             "I don't know": function () {
                 qm.speech.talkRobot("OK. We'll skip that one.");
             },
+            "hey robot": function(){
+                qm.speech.talkRobot("How dare you call me a robot! The politically correct term is technical American.")
+            },
             '*tag': function(tag) {
+                if(tag.indexOf('how many') !== -1 || tag.indexOf('did you have') !== -1){
+                    qmLog.info("Ignoring robot: "+ tag);
+                    return;
+                }
                 var card = qm.speech.currentCard;
-                var buttons = card.textButtons || [];
-                if(card.iconButtons){buttons.push(card.iconButtons);}
-                if(card.actionSheetButtons){buttons.push(card.actionSheetButtons);}
-                var selectedButton = buttons.find(function(button){
-                    return button.text.toLowerCase() === tag;
+                var selectedButton = qm.feed.getButtonMatchingPhrase(tag);
+                var inputField;
+                if(selectedButton){
+                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(selectedButton.parameters, card.parameters, true);
+                } else {
+                    inputField = qm.speech.isValidForInputField(tag);
+                    if(inputField){card.parameters[inputField.key] = tag;}
+                }
+                if(!selectedButton && !inputField){
+                    var provideOptionsList = true;
+                    qm.speech.readCard(null, null, null, provideOptionsList);
+                    return;
+                }
+                qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
+                    qm.feed.addToFeedQueue(card);
+                    if(qm.microphone.successHandler){qm.microphone.successHandler();}
                 });
-                if(!selectedButton){
-                    selectedButton = buttons.find(function(button){
-                        return button.title.toLowerCase() === tag;
-                    });
-                }
-                if(!selectedButton && qm.speech.isValidNotificationResponse(tag)){
-                    selectedButton = {};
-                    selectedButton.functionParameters = card.parameters;
-                    qm.speech.handleNotificationResponse(tag, card.parameters);
-                    selectedButton.modifiedValue = tag;
-                    card.selectedButton = selectedButton;
-                    qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
-                        qm.speech.getMostRecentFeedCardAndTalk();
-                        qm.feed.addToFeedQueue(card);
-                    });
-                }
             }
         },
         machinesOfLovingGrace: function(callback){
