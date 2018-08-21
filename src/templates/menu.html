@@ -31,7 +31,7 @@
                     </a>
                     <button id="menu-help-button" class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"><md-tooltip md-direction="down">Get Help</md-tooltip></button>
                     <button id="menu-showMaterialAlert-button" class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)"><md-tooltip md-direction="down">Get Help</md-tooltip></button>
-                    <button id="menu-more-button" class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
+                    <button id="menu-more-button" class="button button-icon ion-android-more-vertical" ng-show="showActionSheetMenu" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
