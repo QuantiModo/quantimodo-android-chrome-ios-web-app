@@ -1,4 +1,4 @@
-<md-card id="card" ng-if="card">
+<md-card id="card" >
     <md-card-header id="card-header">
         <md-card-avatar ng-if="card.avatar" id="card-avatar">
             <img class="md-user-avatar" ng-src="{{card.avatarCircular}}" ng-if="card.avatarCircular"/>
@@ -19,17 +19,8 @@
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
         </md-card-title-text>
     </md-card-title>
-    <md-card-actions id="actions" layout="row" layout-align="start center" ng-if="card.iconButtons">
-        <md-card-icon-actions ng-repeat="button in card.iconButtons" >
-            <md-button class="md-icon-button" aria-label="button.text" ng-click="state.cardButtonClick(card, button)" style="margin-left: 0; margin-right: 0;">
-                <!--<md-icon md-svg-icon="{{button.ionIcon}}"></md-icon>-->
-                <i  id="button-icon" ng-if="button.ionIcon" class="{{button.ionIcon}}"></i>
-                <img id="button-image" class="md-user-avatar" style="width: 100%;" ng-if="button.image" ng-src="{{button.image}}"/>
-            </md-button>
-        </md-card-icon-actions>
-    </md-card-actions>
-    <md-card-actions id="actions" layout-align="start center">
-        <md-button id="button" ng-repeat="button in card.textButtons" ng-if="card.textButtons" ng-click="state.cardButtonClick(card, button)">
+    <md-card-actions id="actions" layout-align="center center" style="text-align: center;">
+        <md-button id="button" ng-repeat="button in card.buttons" ng-if="card.buttons" ng-click="state.cardButtonClick(card, button)">
             <span ng-bind-html="trustAsHtml(button.html)"></span>
         </md-button>
     </md-card-actions>
