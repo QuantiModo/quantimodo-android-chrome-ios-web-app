@@ -2893,7 +2893,7 @@ window.qm = {
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.25;
+            qm.music.player.volume = 0.125;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
