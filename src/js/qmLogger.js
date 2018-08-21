@@ -232,6 +232,13 @@ window.qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
+    errorAndExceptionTestingOrDevelopment: function (name, message, metaData, stackTrace) {
+        message = message || name;
+        name = name || message;
+        qmLog.globalMetaData = qmLog.globalMetaData || null;
+        qmLog.error(name, message, metaData, stackTrace);
+        if(qm.appMode.isTesting() || qm.appMode.isDevelopment()){throw name;}
+    },
     getConsoleLogString: function (logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
