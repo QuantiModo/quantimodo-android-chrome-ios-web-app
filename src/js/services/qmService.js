@@ -138,7 +138,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             if(index === 3){qmService.goToState('app.chartSearch', stateParams);}
                             if(index === 4){qmService.goToState('app.settings');}
                             if(index === 5){qmService.goToState('app.help');}
-                            if(index === 6){$scope.refreshTrackingReminderNotifications(3)}
+                            if(index === 6){refreshFunction(3)}
                             return true;
                         },
                         destructiveButtonClicked: function() {
@@ -384,7 +384,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showMaterialConfirmationDialog(button.text, button.confirmationText, yesCallback, noCallback, ev, 'No');
             },
             vote: function (button) {
-                qmService.postVoteToApi(button.functionParameters, function () {
+                qmService.postVoteToApi(button.parameters, function () {
                     qmLog.debug('upVote');
                 }, function (error) {
                     qmLog.error('upVote failed!', error);

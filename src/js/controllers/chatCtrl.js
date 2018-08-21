@@ -2,8 +2,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
 	function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $ionicActionSheet) {
 		$scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
-        var currentCard;
 		$scope.state = {
+		    card: null,
 			dialogFlow: false,
 			messages: [],
             userInputString: '',
@@ -18,43 +18,54 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             cardButtonClick: function(card, button){
 			    qmLog.info("card", card);
                 qmLog.info("button", button);
-                if(button && button.functionParameters && button.functionParameters.trackingReminderNotificationId){
-                    $scope.card.selectedButton = button;
-                    qm.feed.addToFeedQueue($scope.card, function (nextCard) {
-                        $scope.card = nextCard;
+                if(button && button.parameters && button.parameters.trackingReminderNotificationId){
+                    $scope.state.card.selectedButton = button;
+                    qm.feed.addToFeedQueue($scope.state.card, function (nextCard) {
+                        $scope.state.card = nextCard;
+                        talk();
                     });
-                    notification();
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
                 }
             },
             openActionSheet: function (card) {
-                qmService.actionSheets.openActionSheet(card, notification);
+                qmService.actionSheets.openActionSheet(card, talk);
             }
 		};
         $scope.$on('$ionicView.beforeEnter', function(e) {
-            qm.notifications.refreshNotifications(null, null, {blockRequests: false, minimumSecondsBetweenRequests: 1});
             qmLog.debug('beforeEnter state ' + $state.current.name);
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
-            qm.feed.getFeedFromApi();
+            refresh();
         });
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
             if(!qm.getUser()){
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
             }
-            qm.speech.deepThought(notification);
+            //qm.speech.deepThought(notification);
+            //notification();
+            qmService.actionSheet.setDefaultActionSheet(function() {
+                refresh();
+            });
+            qm.microphone.errorHandler = qm.microphone.successHandler = talk;
         });
+        function refresh(){
+            qm.feed.getFeedFromApi({}, function(cards){
+                talk();
+            });
+        }
 		if($scope.state.visualizationType === 'rainbow'){$scope.state.bodyCss = "background: hsl(250,10%,10%); overflow: hidden;"}
         if($scope.state.visualizationType === 'siri'){$scope.state.bodyCss = "background: radial-gradient(farthest-side, #182158 0%, #030414 100%) no-repeat fixed 0 0; margin: 0;"}
         if($scope.state.visualizationType === 'equalizer'){$scope.state.bodyCss = "background-color:#333;"}
-        function notification() {
+        function talk() {
             qm.feed.getMostRecentCard(function (card) {
-                $scope.card = card;
+                //$scope.state.cards = [qm.speech.currentCard];
+                //$scope.state.card = qm.speech.currentCard;
+                $scope.$apply(function () {
+                    $scope.card = qm.speech.currentCard = card;
+                    qm.feed.readCard(qm.speech.currentCard, talk, talk);
+                });
             });
-            $timeout(function () {
-                qm.speech.getMostRecentNotificationAndTalk();
-            }, 1);
         }
         function getQuestion() {
 		    var text = qm.urlHelper.getParam('text');
@@ -77,7 +88,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 container[0].focus();
             }
         };
-
         $scope.state.userReply = function(reply) {
             reply = reply || $scope.state.userInputString;
             if(reply){$scope.state.userInputString = reply;}
