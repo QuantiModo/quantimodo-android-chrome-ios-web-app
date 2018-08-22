@@ -36,6 +36,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmLog.debug('beforeEnter state ' + $state.current.name);
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
             refresh();
+            qmService.rootScope.setProperty('showRobot', true);
+            $scope.showRobot = true;  // Not sure why scope doesn't work
         });
         $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
             if(!qm.getUser()){
@@ -47,6 +49,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
+            qm.microphone.onMicrophoneEnabled = talk;
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){

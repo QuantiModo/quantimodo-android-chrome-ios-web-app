@@ -1030,7 +1030,7 @@ window.qm = {
                 qmLog.info("No requestParams provided to filterByRequestParams");
                 return array;
             }
-            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc'];
+            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc', 'variableName'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
                 'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform'];
             var greaterThanPropertyName = null;
@@ -2751,6 +2751,8 @@ window.qm = {
         'Environment'
     ],
     microphone: {
+        onMicrophoneEnabled: function(){qmLog.info("Called onMicrophoneEnabled");},
+        onMicrophoneDisabled: function(){qmLog.info("Called onMicrophoneDisabled");},
         microphoneAvailable: null,
         getMicrophoneEnabled: function(){
             if(!qm.microphone.getMicrophoneAvailable()){return qm.microphone.setMicrophoneEnabled(false);}
@@ -2759,7 +2761,12 @@ window.qm = {
         setMicrophoneEnabled: function(value){
             qmLog.info("set microphoneEnabled " + value);
             qm.rootScope[qm.items.microphoneEnabled] = value;
-            if(!value){qm.microphone.turnOff();}
+            if(!value){
+                qm.microphone.turnOff();
+                qm.microphone.onMicrophoneDisabled();
+            } else {
+                qm.microphone.onMicrophoneEnabled();
+            }
             return qm.storage.setItem(qm.items.microphoneEnabled, value);
         },
         getMicrophoneAvailable: function(){
@@ -2906,7 +2913,7 @@ window.qm = {
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
             qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.25;
+            qm.music.player.volume = 0.15;
             qm.music.player.play();
             qm.music.status = 'play';
             return qm.music.player;
@@ -4204,7 +4211,7 @@ window.qm = {
                 });
             }
         },
-        machinesOfLovingGrace: function(callback){
+        machinesOfLovingGrace: function(successHandler, errorHandler){
             qm.speech.talkRobot("I like to think (and " +
                 "the sooner the better!) " +
                 "of a cybernetic meadow " +
@@ -4230,7 +4237,7 @@ window.qm = {
                 "brothers and sisters, " +
                 "and all watched over " +
                 "by machines of loving grace!  " +
-                "I'm Dr. Roboto!  ", callback, false, false);
+                "I'm Dr. Roboto!  ", successHandler, errorHandler, false, false);
         }
     },
     shares: {
@@ -6028,7 +6035,7 @@ window.qm = {
         hideVisualizer: function(){
             //qm.appContainer.setOpacity(1);
             qmLog.info("Hiding visualizer");
-            var visualizer = qm.visualizer.getElement();
+            var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
             if(visualizer){
                 visualizer.style.display = "none";
             } else {
@@ -6037,15 +6044,20 @@ window.qm = {
 
         },
         show: function(type){
-            qmLog.info("Showing visualizer");
-            //var visualizer = qm.visualizer.getElement();
-            //visualizer.style.display = "block";
+            qmLog.info("Showing visualizer type: " + type);
+            if(type === "rainbow"){
+                var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
+                visualizer.style.display = "block";
+            }
             setTimeout(function(){
-                //qm.visualizer.rainbowCircleVisualizer();
-                qm.visualizer.visualizeVoice('siri');
+                if(type === 'rainbow'){
+                    qm.visualizer.rainbowCircleVisualizer();
+                } else {
+                    qm.visualizer.visualizeVoice('siri');
+                }
             }, 1);
         },
-        getElement: function(){
+        getRainbowVisualizerCanvas: function(){
             var element = document.querySelector('#rainbow-canvas');
             return element;
         },
