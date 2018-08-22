@@ -5858,8 +5858,11 @@ window.qm = {
                 variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
                 if(successHandler){successHandler(variables);}
             }
-            function getFromApi() {
+            function getFromApi(localVariables) {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
+                    if(localVariables && variables.length < localVariables.length){
+                        qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});
+                    }
                     sortUpdateSubtitlesAndReturnVariables(variables);
                 }, function (error) {
                     qmLog.error(error);
@@ -5875,9 +5878,9 @@ window.qm = {
                 getFromApi();
                 return;
             }
-            qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(variables){
-                if(variables && variables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
-                    sortUpdateSubtitlesAndReturnVariables(variables);
+            qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
+                if(localVariables && localVariables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
+                    sortUpdateSubtitlesAndReturnVariables(localVariables);
                     return;
                 }
                 // Using reminders in variable searches creates duplicates and lots of problems
@@ -5886,7 +5889,7 @@ window.qm = {
                 //     sortAndReturnVariables(reminders);
                 //     return;
                 // }
-                getFromApi();
+                getFromApi(localVariables);
             });
         },
         putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
