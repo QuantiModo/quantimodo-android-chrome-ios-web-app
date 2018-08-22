@@ -1510,6 +1510,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     dialogParameters.placeholder += ' or press camera to scan';
                     dialogParameters.helpText += '. Press the camera button to scan a barcode.';
                 }
+                $timeout(function(){
+                    showVariableList();
+                }, 500);
+                qm.speech.askQuestion(dialogParameters.helpText, {
+                    '*tag': function(tag) {
+                        showVariableList();
+                        if(qm.speech.callback){qm.speech.callback(tag);}
+                        qm.speech.lastUserStatement = tag;
+                        qmLog.info("Just heard user say " + tag);
+                        querySearch(tag);
+                        self.searchText = tag;
+                    }
+                });
                 self.minLength = dialogParameters.minLength || 0;
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
@@ -1584,6 +1597,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             self.hidden = false;
                             logDebug("showing list");
                             document.querySelector('#variable-search-box').focus();
+                            document.getElementById('#variable-search-box').querySelector('input').focus();
                             //document.getElementById('variable-search-box').focus();
                             //document.getElementById('variable-search-box').select();
                         } else {

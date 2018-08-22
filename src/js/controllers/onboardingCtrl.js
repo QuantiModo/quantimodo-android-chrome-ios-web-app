@@ -1,6 +1,6 @@
 angular.module('starter').controller('OnboardingCtrl',
-    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService",
-    function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
+    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "$timeout",
+    function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService, $timeout) {
     $scope.state = {
         showSkipButton: false,
         //requireUpgrades: true // Might want to do this at some point
@@ -27,7 +27,6 @@ angular.module('starter').controller('OnboardingCtrl',
             if(number > 5){$scope.state.showSkipButton = true;}
         });
         initializeAddRemindersPageIfNecessary();
-
     });
     function setRequireUpgradesInOnboarding() {
         if(qm.getUser() && qm.getUser().stripeActive){
@@ -62,14 +61,14 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.search.reminderSearch(function (variableObject) {
             if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
                 $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
-                if($rootScope.appSettings.appDesign.onboarding.active[0].title){
-                    $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
-                }
-                $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
-                $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
-                $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
+                var circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+                if(circlePage.title){circlePage.title = circlePage.title.replace('Any', 'More');}
+                circlePage.addButtonText = "Add Another";
+                circlePage.nextPageButtonText = "All Done";
+                circlePage.bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox.  Want to add any more " +
                     variableObject.variableCategoryName.toLowerCase() + '?';
+                askQuestion(circlePage);
                 qmService.storage.setItem('onboardingPages', $rootScope.appSettings.appDesign.onboarding.active);
             }
         }, ev, $scope.circlePage.variableCategoryName);
@@ -108,8 +107,36 @@ angular.module('starter').controller('OnboardingCtrl',
         window.qm.storage.setItem(qm.items.onboarded, true);
         qm.storage.removeItem('onboardingPages');
     };
+    function askQuestion(circlePage) {
+        qm.speech.askYesNoQuestion(circlePage.bodyText, function () {
+            if(circlePage.addButtonText){
+                $scope.goToReminderSearchFromOnboarding();
+            } else if (circlePage.id === 'locationTrackingPage'){
+                $scope.enableLocationTrackingWithMeasurements();
+            } else if (circlePage.id === 'weatherTrackingPage'){
+                $scope.connectWeatherOnboarding();
+            } else if (circlePage.id === 'importDataPage'){
+                $scope.onboardingGoToImportPage();
+            } else if (circlePage.id === 'allDoneCard') {
+                $scope.hideOnboardingPage();
+            } else if (circlePage.unitAbbreviatedName === 'yes/no'){
+                $scope.postMeasurement(circlePage, 1);
+            } else {
+                qmLog.error("Not sure how to respond here");
+                $scope.hideOnboardingPage();
+            }
+        }, function () {
+            if (circlePage.unitAbbreviatedName === 'yes/no'){
+                $scope.postMeasurement(circlePage, 0);
+            } else {
+                $scope.hideOnboardingPage();
+            }
+        });
+    }
     function setCirclePage(circlePage){
-        qm.speech.askQuestion(circlePage.bodyText);
+        $timeout(function () {
+            askQuestion(circlePage);
+        }, 1);
         $scope.circlePage = circlePage;
     }
     $scope.hideOnboardingPage = function () {

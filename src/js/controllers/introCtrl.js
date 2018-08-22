@@ -104,6 +104,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
     }
     $scope.$on('$ionicView.afterEnter', function(){
+        $scope.showRobot = true;
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
