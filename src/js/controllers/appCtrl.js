@@ -328,9 +328,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             if(!value){
                 qm.robot.hideRobot();
                 qm.visualizer.hideVisualizer();
+                qm.mic.onMicDisabled();
             } else {
                 qm.robot.showRobot();
                 qm.visualizer.showVisualizer();
+                qm.mic.onMicEnabled();
             }
         }, 1);
     };
