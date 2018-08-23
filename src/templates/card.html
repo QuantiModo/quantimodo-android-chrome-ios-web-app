@@ -18,15 +18,21 @@
         </md-card-title-text>
     </md-card-title>
     <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">
-        <md-button id="{{button.id}}" ng-repeat="button in card.buttons"  aria-label="{{button.text || button.title || button.id}}"
+        <md-button id="{{button.id+'-text-button'}}" ng-if="!button.image" ng-repeat="button in card.buttons"  aria-label="{{button.text || button.title || button.id}}"
                    ng-click="state.cardButtonClick(card, button)">
+            <md-tooltip ng-if="button.tooltip">'.{{button.tooltip}}.'</md-tooltip>
             <span ng-bind-html="trustAsHtml(button.html)"></span>
+        </md-button>
+        <md-button id="{{button.id}}" ng-if="button.image" ng-repeat="button in card.buttons"  aria-label="{{button.text || button.title || button.id}}"
+                   ng-click="state.cardButtonClick(card, button)">
+            <md-tooltip>'.{{button.tooltip}}.'</md-tooltip>
+            <img style="height: 100%;" src="{{button.image}}">
         </md-button>
     </md-card-actions>
     <md-content layout-padding ng-if="card.inputFields" ng-repeat="inputField in card.inputFields">
         <form name="cardForm" ng-if="inputField.show" layout layout-align="center" layout-padding>
             <div layout="row" flex>
-                <span flex="10" style="margin-top: 30px;" ng-if="inputField.labelLeft"> &nbsp {{inputField.labelLeft}}</span>
+                <span flex="15" style="margin-top: 10px;" ng-if="inputField.labelLeft"> &nbsp {{inputField.labelLeft}}</span>
                 <div flex="5" hide-xs hide-sm><!-- Spacer //--></div>
                 <md-input-container flex class="md-icon-float md-block md-title">
                     <label>{{inputField.displayName}}</label>
@@ -34,7 +40,7 @@
                            min="{{inputField.minValue}}"  max="{{inputField.maxValue}}" ng-pattern="{{inputField.validationPattern}}" />
                 </md-input-container>
                 <div flex="5" hide-xs hide-sm><!-- Spacer //--></div>
-                <span flex="10" style="margin-top: 30px;" ng-if="inputField.labelRight"> &nbsp {{inputField.labelRight}}</span>
+                <span flex="15" style="margin-top: 10px;" ng-if="inputField.labelRight"> &nbsp {{inputField.labelRight}}</span>
                 <md-button flex="20" style="max-height: 40px;" ng-click="state.cardButtonClick(card, inputField.submitButton)">
                     Record {{inputField.submitButton.parameters.value}}
                 </md-button>
