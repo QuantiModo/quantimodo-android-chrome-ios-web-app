@@ -17,11 +17,30 @@
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
         </md-card-title-text>
     </md-card-title>
-    <md-card-actions id="actions" layout-align="center center" style="text-align: center;">
-        <md-button id="button" ng-repeat="button in card.buttons" ng-if="card.buttons" ng-click="state.cardButtonClick(card, button)">
+    <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">
+        <md-button id="{{button.id}}" ng-repeat="button in card.buttons"  aria-label="{{button.text || button.title || button.id}}"
+                   ng-click="state.cardButtonClick(card, button)">
             <span ng-bind-html="trustAsHtml(button.html)"></span>
         </md-button>
     </md-card-actions>
+    <md-content layout-padding ng-if="card.inputFields" ng-repeat="inputField in card.inputFields">
+        <form name="cardForm" ng-if="inputField.show" layout layout-align="center" layout-padding>
+            <div layout="row" flex>
+                <span flex="10" style="margin-top: 30px;" ng-if="inputField.labelLeft"> &nbsp {{inputField.labelLeft}}</span>
+                <div flex="5" hide-xs hide-sm><!-- Spacer //--></div>
+                <md-input-container flex class="md-icon-float md-block md-title">
+                    <label>{{inputField.displayName}}</label>
+                    <input required type="{{inputField.type}}" step="{{inputField.step}}" name="{{inputField.key}}" ng-model="inputField.submitButton.parameters.value"
+                           min="{{inputField.minValue}}"  max="{{inputField.maxValue}}" ng-pattern="{{inputField.validationPattern}}" />
+                </md-input-container>
+                <div flex="5" hide-xs hide-sm><!-- Spacer //--></div>
+                <span flex="10" style="margin-top: 30px;" ng-if="inputField.labelRight"> &nbsp {{inputField.labelRight}}</span>
+                <md-button flex="20" style="max-height: 40px;" ng-click="state.cardButtonClick(card, inputField.submitButton)">
+                    Record {{inputField.submitButton.parameters.value}}
+                </md-button>
+            </div>
+        </form>
+    </md-content>
     <md-card-content id="content" ng-if="card.content">
         <p> {{card.content}} </p>
     </md-card-content>

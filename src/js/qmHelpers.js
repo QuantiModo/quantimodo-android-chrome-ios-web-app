@@ -96,7 +96,11 @@ window.qm = {
             minimumSecondsBetweenRequests = minimumSecondsBetweenRequests || 1;
             blockRequests = blockRequests || true;
             if(functionName && !qm.api.canWeMakeRequestYet('GET', functionName, {minimumSecondsBetweenRequests: 1, blockRequests: blockRequests})){
-                errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
+                if(errorHandler){
+                    errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
+                } else {
+                    console.error("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
+                }
                 return false;
             }
             var qmApiClient = Quantimodo.ApiClient.instance;
@@ -2042,7 +2046,6 @@ window.qm = {
             var doc = nlp(userInput).sentences().out('array');
             console.info(doc);
             // ['We like Roy!', 'We like Roy!']
-
             doc = nlp(userInput).out('html');
             console.info(doc);
         },
@@ -2051,15 +2054,25 @@ window.qm = {
                 qm.localForage.addToArray(qm.items.memories)
             },
             "remind me *tag": function() {
-
             }
         }
     },
     feed: {
         getMostRecentCard: function(successHandler, errorHandler){
-            qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
-                qm.speech.currentCard = cards[0];
-                successHandler(cards[0]);
+            qm.feed.getFeedFromLocalForageOrApi({}, function(feedCards){
+                var queueCards = qm.globalHelper.getItem(qm.items.feedQueue);
+                var notInQueue = feedCards;
+                if(queueCards) {
+                    notInQueue = feedCards.filter(function (feedCard) {
+                        var fromQueue = queueCards.find(function (queueCardParams) {
+                            return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
+                        });
+                        return !fromQueue;
+                    });
+                }
+                qm.speech.currentCard = notInQueue[0];
+                successHandler(notInQueue[0]);
+                qm.feed.saveFeedInLocalForage(notInQueue);
             }, errorHandler);
         },
         getFeedApiInstance: function(params){
@@ -2125,7 +2138,7 @@ window.qm = {
             qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
         },
         addToFeedQueue: function(submittedCard, successHandler){
-            qm.localForage.addToArray(qm.items.feedQueue, submittedCard, function(feedQueue){
+            qm.localForage.addToArray(qm.items.feedQueue, submittedCard.parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
                     if(feedQueue.length > 5 || remainingCards.length < 5){
@@ -2149,7 +2162,7 @@ window.qm = {
                 if(required){
                     var unfilled = inputFields.filter(function(inputField){return inputField.value === null;});
                     if(unfilled && unfilled.length){
-                        message = unfilled[0].helpText || unfilled[0].hint;
+                        message = unfilled[0].helpText;
                         qm.speech.currentInputField = unfilled[0];
                     } else {
                         qmLog.info("No input fields to fill!");
@@ -2157,7 +2170,8 @@ window.qm = {
                 }
             }
             if(sayOptions){
-                message += " " + qm.feed.getAvailableCommandsSentence();
+                //message += " " + qm.feed.getAvailableCommandsSentence();
+                message += " You can say " + qm.speech.currentInputField.hint + ". ";
             }
             qm.speech.talkRobot(message, function(){
                 qm.mic.listenForCardResponse(successHandler, errorHandler)
@@ -2177,7 +2191,9 @@ window.qm = {
             for (var i = 0; i < buttons.length; i++) {
                 var button = buttons[i];
                 var text = button.title || button.text;
-                if(button.parameters && button.parameters.modifiedValue){text = button.parameters.modifiedValue;}
+                if(button.parameters && button.parameters.modifiedValue){
+                    text = button.parameters.modifiedValue;
+                }
                 options += text + ", "
             }
             var inputField = qm.speech.currentInputField;
@@ -2827,7 +2843,7 @@ window.qm = {
     ],
     mic: {
         onMicEnabled: function(){qmLog.info("Called onMicEnabled");},
-        onMicrophoneDisabled: function(){qmLog.info("Called onMicrophoneDisabled");},
+        onMicDisabled: function(){qmLog.info("Called onMicDisabled");},
         microphoneAvailable: null,
         getMicEnabled: function(){
             if(!qm.mic.getMicrophoneAvailable()){return qm.mic.setMicEnabled(false);}
@@ -2854,7 +2870,6 @@ window.qm = {
                     inputButton.classList.add("animated-microphone-input-search-focused");
                     inputField.classList.add("animated-microphone-input-container-focused");
                 }
-
             }
             if(!micEnabled){
                 if (window.streamReference) {
@@ -2866,9 +2881,6 @@ window.qm = {
                     });
                     window.streamReference = null;
                 }
-                qm.mic.onMicrophoneDisabled();
-            } else {
-                qm.mic.onMicEnabled();
             }
             return qm.storage.setItem(qm.items.micEnabled, micEnabled);
         },
@@ -3964,6 +3976,14 @@ window.qm = {
         showRobot: false
     },
     speech: {
+        alreadySpeaking: function(text){
+            if(window.speechSynthesis && window.speechSynthesis.speaking){
+                qmLog.info("already speaking so not going to say "+text);
+                return true;
+            } else {
+                return false;
+            }
+        },
         initializeSpeechKit: function(qmService){
             var commands = {
                 'record a measurement': function() {
@@ -4077,11 +4097,19 @@ window.qm = {
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
             if(!qm.speech.getSpeechAvailable()){
-                if(errorHandler){errorHandler("Speech not available");}
+                if(errorHandler){errorHandler("Speech not available so cannot say " + text);}
                 return false;
             }
             if(!qm.speech.getSpeechEnabled()){
-                if(errorHandler){errorHandler("Speech not enabled");}
+                if(errorHandler){errorHandler("Speech not enabled so cannot say " + text);}
+                return false;
+            }
+            if(qm.speech.alreadySpeaking(text)){
+                if(errorHandler){errorHandler("Already speaking so cannot say " + text);}
+                return false;
+            }
+            if(qm.speech.lastUtterance && qm.speech.lastUtterance.text === text){
+                if(errorHandler){errorHandler("Already said " + text + " last time");}
                 return false;
             }
             qm.speech.recentStatements.push(text);
@@ -4130,7 +4158,6 @@ window.qm = {
             if(annyang.isListening()){qmLog.error("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
-
             utterance.onend = function (event) {
                 clearTimeout(qm.speech.timeoutResumeInfinity);
                 if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
@@ -4167,19 +4194,6 @@ window.qm = {
             });
         },
         currentCard: null,
-        getMostRecentFeedCardAndTalk: function(successHandler, errorHandler){
-            qm.feed.getMostRecentCard(function (card) {
-                if(card){
-                    qm.feed.readCard(card);
-                } else {
-                    qmLog.error("No feed card!");
-                    if(errorHandler){errorHandler(error);}
-                }
-            }, function(error){
-                qmLog.error(error);
-                if(errorHandler){errorHandler(error);}
-            });
-        },
         speechUtteranceChunker: function (utt, settings, callback) {
             settings = settings || {};
             var newUtt;
@@ -4200,7 +4214,6 @@ window.qm = {
                 var chunkLength = (settings && settings.chunkLength) || 160;
                 var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
                 var chunkArr = txt.match(pattRegex);
-
                 if (chunkArr[0] === undefined || chunkArr[0].length <= 2) {
                     //call once all text has been spoken...
                     if (callback !== undefined) {
@@ -4226,7 +4239,6 @@ window.qm = {
                     speechUtteranceChunker(utt, settings, callback);
                 });
             }
-
             if (settings.modifier) {
                 settings.modifier(newUtt);
             }
@@ -6153,7 +6165,6 @@ window.qm = {
             } else {
                 qmLog.info("qm.visualizer Element not found");
             }
-
         },
         showVisualizer: function(type){
             if(!qm.visualizer.visualizerEnabled){return;}
