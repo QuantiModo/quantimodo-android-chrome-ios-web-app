@@ -69,9 +69,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         function talk(nextCard) {
             qm.feed.getMostRecentCard(function (card) {
                 if(nextCard){card = nextCard;}
-                $scope.$apply(function () { // Not sure why this is necessary
-                    $scope.state.cards = [card];
-                });
+                $scope.state.cards = [card];
+                //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 card.followUpAction = talk;
                 qm.feed.readCard(card);
             });
