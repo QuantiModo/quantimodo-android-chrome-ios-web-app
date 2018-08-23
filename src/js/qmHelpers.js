@@ -2070,8 +2070,8 @@ window.qm = {
                         return !fromQueue;
                     });
                 }
-                qm.speech.currentCard = notInQueue[0];
-                successHandler(notInQueue[0]);
+                qm.speech.currentCard = notInQueue.shift();
+                successHandler(qm.speech.currentCard);
                 qm.feed.saveFeedInLocalForage(notInQueue);
             }, errorHandler);
         },
@@ -2123,19 +2123,20 @@ window.qm = {
             qm.localForage.deleteById(qm.items.feed, submittedCard.id, successHandler, errorHandler);
         },
         postFeedQueue: function(feedQueue, successHandler, errorHandler){
-            qm.localForage.removeItem(qm.items.feedQueue);
-            var params = qm.api.addGlobalParams({});
-            var cacheKey = 'postFeed';
-            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
-            function callback(error, data, response) {
-                var cards = qm.feed.handleFeedResponse(data);
-                if(error){
-                    qmLog.error("Putting back in queue because of error ", error);
-                    qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
+            qm.localForage.removeItem(qm.items.feedQueue, function(){
+                var params = qm.api.addGlobalParams({});
+                var cacheKey = 'postFeed';
+                if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+                function callback(error, data, response) {
+                    var cards = qm.feed.handleFeedResponse(data);
+                    if(error){
+                        qmLog.error("Putting back in queue because of error ", error);
+                        qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
+                    }
+                    qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
                 }
-                qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
-            }
-            qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+            }, function(error){qmLog.error(error);});
         },
         addToFeedQueue: function(submittedCard, successHandler){
             qm.localForage.addToArray(qm.items.feedQueue, submittedCard.parameters, function(feedQueue){
@@ -2661,7 +2662,7 @@ window.qm = {
                 }
             })
         },
-        removeItem: function(key, value, successHandler, errorHandler){
+        removeItem: function(key, successHandler, errorHandler){
             qm.globalHelper.removeItem(key);
             localforage.removeItem(key, function (err) {
                 if(err){
@@ -5144,7 +5145,6 @@ window.qm = {
         },
         deleteLastStudyFromGlobalsAndLocalForage: function(){
             qmLog.info("deleteLastStudyFromGlobalsAndLocalForage");
-            qm.localForage.removeItem(qm.items.lastStudy);
             qm.localForage.removeItem(qm.items.lastStudy);
         },
         getStudyUrl: function(study) {
