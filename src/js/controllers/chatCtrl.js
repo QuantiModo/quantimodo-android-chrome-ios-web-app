@@ -23,7 +23,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     card.selectedButton = button;
                     qm.feed.addToFeedQueue(card, function (nextCard) {
                         $scope.state.cards = [nextCard];
-                        talk();
+                        talk(nextCard);
                     });
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
@@ -50,11 +50,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
-            //qm.mic.onMicEnabled = talk;
+            qm.mic.onMicEnabled = talk;
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
-                if(!window.speechSynthesis || !window.speechSynthesis.speaking){talk();}
+                if(!qm.speech.alreadySpeaking()){talk();}
             });
         }
         if($scope.state.visualizationType === 'rainbow'){
@@ -66,8 +66,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'equalizer'){
             $scope.state.bodyCss = "background-color:#333;";
         }
-        function talk() {
+        function talk(nextCard) {
             qm.feed.getMostRecentCard(function (card) {
+                if(nextCard){card = nextCard;}
                 $scope.$apply(function () { // Not sure why this is necessary
                     $scope.state.cards = [card];
                 });
