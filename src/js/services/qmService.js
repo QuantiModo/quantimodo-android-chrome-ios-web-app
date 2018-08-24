@@ -1920,6 +1920,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return appSettings;
             }
         },
+        toast: {
+            showUndoToast: function(text, undoFunction){
+                qmService.showToastWithButton(text, 'UNDO', undoFunction);
+            }
+        },
         trackingReminders: {
             syncPromise: null,
             syncTrackingReminders: function(force) {
