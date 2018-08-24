@@ -2163,12 +2163,12 @@ window.qm = {
                             return !fromQueue;
                         });
                     }
-                    qm.feed.currentCard = notInQueue.shift();
-                    if(qm.feed.recentlyRespondedTo[qm.feed.currentCard.id]){
-                        qmLog.error("Already responded to this card: ", qm.feed.currentCard);
+                    var currentCard = notInQueue.shift();
+                    if(qm.feed.recentlyRespondedTo[currentCard.id]){
+                        qmLog.error("Already responded to this card: ", currentCard);
                     }
                     qm.feed.saveFeedInLocalForage(notInQueue, function(){
-                        successHandler(qm.feed.currentCard);
+                        successHandler(currentCard);
                     }, errorHandler);
                 }, errorHandler);
             }, errorHandler);
@@ -2217,10 +2217,6 @@ window.qm = {
                         return !fromQueue;
                     });
                 }
-                qm.feed.currentCard = notInQueue.shift();
-                if(qm.feed.recentlyRespondedTo[qm.feed.currentCard.id]){
-                    qmLog.error("Already responded to this card: ", qm.feed.currentCard);
-                }
                 qm.localForage.setItem(qm.items.feed, notInQueue, successHandler, errorHandler);
             }, errorHandler);
         },
@@ -2264,7 +2260,7 @@ window.qm = {
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
-                    var minimumRequiredForPost = 0;
+                    var minimumRequiredForPost = 1;
                     if(feedQueue.length > minimumRequiredForPost || remainingCards.length < 5){
                         qm.feed.postFeedQueue(feedQueue);
                     }
@@ -4537,7 +4533,11 @@ window.qm = {
                 }
                 qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
                     qm.feed.addToFeedQueue(card, function(){
-                        if(card.followUpAction){card.followUpAction(responseText);}
+                        if(card.followUpAction){
+                            card.followUpAction(responseText);
+                        } else {
+                            qmLog.error("No card followUpAction!")
+                        }
                     }, function(error){
                         qmLog.error(error)
                     });
