@@ -36,7 +36,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         $scope.$on('$ionicView.beforeEnter', function(e) {
             qmLog.debug('beforeEnter state ' + $state.current.name);
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
-            refresh();
+            //refresh();
             qmService.rootScope.setProperty('showRobot', true);
             $scope.showRobot = true;  // Not sure why scope doesn't work
         });
@@ -46,11 +46,16 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 return;
             }
             //qm.speech.deepThought(notification);
-            talk();
+            talk(null, function(){
+                qm.mic.onMicEnabled = talk;
+            }, function(error){
+                qmLog.error(error);
+                qm.mic.onMicEnabled = talk;
+            });
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
-            qm.mic.onMicEnabled = talk;
+
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
@@ -66,14 +71,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'equalizer'){
             $scope.state.bodyCss = "background-color:#333;";
         }
-        function talk(nextCard) {
+        function talk(nextCard, successHandler, errorHandler) {
             qm.feed.getMostRecentCard(function (card) {
                 if(nextCard){card = nextCard;}
                 $scope.state.cards = [card];
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 card.followUpAction = talk;
-                qm.feed.readCard(card);
-            });
+                qm.feed.readCard(card, successHandler, errorHandler);
+            }, errorHandler);
         }
         $scope.state.userReply = function(reply) {
             reply = reply || $scope.state.userInputString;
