@@ -1549,6 +1549,80 @@ window.qm = {
         }
     },
     dialogFlow: {
+        bravy: null,
+        getBravy: function(){
+            if(qm.dialogFlow.bravy){return qm.dialogFlow.bravy;}
+            var bravy =  new Bravey.Nlp.Fuzzy();
+            var intents = qm.staticData.dialogAgent.intents;
+            qm.objectHelper.loopThroughProperties(intents, function(intentName, intent){
+                var dialogFlowIntentParameterEntities = intent.responses[0].parameters;
+                var bravyIntentEntities = [];
+                for (var i = 0; i < dialogFlowIntentParameterEntities.length; i++) {
+                    var dialogFlowIntentParameterEntity = dialogFlowIntentParameterEntities[i];
+                    var bravyEntityName = dialogFlowIntentParameterEntity.dataType.replace("@sys.", "");
+                    bravyEntityName = bravyEntityName.replace("@", "");
+                    bravyIntentEntities.push({ entity:bravyEntityName, id: dialogFlowIntentParameterEntity.name });
+                }
+                console.debug("bravyIntentEntities", bravyIntentEntities);
+                bravy.addIntent(intentName, bravyIntentEntities);
+            });
+            bravy.addEntity(new Bravey.NumberEntityRecognizer("number"));
+            console.debug("Adding matches...");
+            var entities = qm.staticData.dialogAgent.entities;
+            qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
+                console.debug("Adding sentences for "+entityName);
+                var braveyEntity = new Bravey.StringEntityRecognizer(entityName);
+                var entries = entity.entries;
+                for (var i = 0; i < entries.length; i++) {
+                    var entry = entries[i];
+                    try {
+                        braveyEntity.addMatch(entry.value, entry.value);
+                    } catch (error) {
+                        qmLog.error(error);
+                        continue;
+                    }
+                    var synonyms = entry.synonyms;
+                    console.debug("Adding synonyms for "+entry.value);
+                    for (var j = 0; j < synonyms.length; j++) {
+                        var synonym = synonyms[j];
+                        console.debug("addMatch for "+synonym);
+                        try {
+                            braveyEntity.addMatch(entry.value, synonym);
+                        } catch (error) {
+                            qmLog.error(error);
+                        }
+                    }
+                }
+                console.debug("braveyEntity", braveyEntity);
+                bravy.addEntity(braveyEntity);
+            });
+            console.debug("Adding sentences...");
+            qm.objectHelper.loopThroughProperties(intents, function(intentName, intent){
+                console.debug("Adding sentences for "+intentName);
+                var userSaysSentences = intent.usersays;
+                if(!userSaysSentences){
+                    qmLog.error("No userSaysSentences in " + intentName + ": ", intent);
+                    return;
+                }
+                for (var i = 0; i < userSaysSentences.length; i++) {
+                    var userSaysWords = userSaysSentences[i].data;
+                    var bravySentence = "";
+                    for (var j = 0; j < userSaysWords.length; j++) {
+                        var userSaysWordData = userSaysWords[j];
+                        if(!userSaysWordData.meta){
+                            bravySentence += userSaysWordData.text;
+                        } else {
+                            var entityName = userSaysWordData.meta.replace("@", "");
+                            bravySentence += "{" + entityName + "}";
+                        }
+                    }
+                    console.debug("bravySentence", bravySentence);
+                    bravy.addDocument(bravySentence, intentName);
+                }
+            });
+            qm.dialogFlow.bravy = bravy;
+            return bravy;
+        },
         fulfillIntent: function(userInput){
             var matchedIntents = qm.dialogFlow.getIntent(userInput);
             if(matchedIntents && matchedIntents.length === 1){
@@ -2028,6 +2102,9 @@ window.qm = {
                     "#Software won't let me (log|sign|get) in" : 'LoginIssue',
                 }
             };
+            userInput = userInput.toLowerCase();
+            var matchedEntities = {};
+            var fuzzyMatchedEntities = {};
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 var entries = entity.entries;
                 for (var i = 0; i < entries.length; i++) {
@@ -2035,8 +2112,14 @@ window.qm = {
                     var entryValue = entry.value;
                     var synonyms = entry.synonyms;
                     for (var j = 0; j < synonyms.length; j++) {
-                        var synonym = synonyms[j];
+                        var synonym = synonyms[j].toLowerCase;
                         plugin.words[synonym] = entityName;
+                        if(userInput.indexOf(synonym) !== -1){
+                            fuzzyMatchedEntities[entityName] = entity;
+                        }
+                        if(userInput.indexOf(synonym) !== -1){
+                            fuzzyMatchedEntities[entityName] = entity;
+                        }
                     }
                 }
             });
@@ -2048,6 +2131,7 @@ window.qm = {
             // ['We like Roy!', 'We like Roy!']
             doc = nlp(userInput).out('html');
             console.info(doc);
+            return matchedEntities;
         },
         intentCommands: {
             "remember *tag": function() {
