@@ -4,6 +4,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
             cards: [],
+            chat: true,
             dialogFlow: false,
             messages: [],
             userInputString: '',
@@ -22,8 +23,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 if(button && button.parameters && button.parameters.trackingReminderNotificationId){
                     card.selectedButton = button;
                     qm.feed.addToFeedQueue(card, function (nextCard) {
-                        $scope.state.cards = [nextCard];
-                        talk(nextCard);
+                        //$scope.state.cards = [nextCard];
+                        talk();
                     });
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
@@ -74,7 +75,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         function talk(nextCard, successHandler, errorHandler) {
             qm.feed.getMostRecentCard(function (card) {
                 if(nextCard){card = nextCard;}
-                $scope.state.cards = [card];
+                //$scope.state.cards = [card];
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 card.followUpAction = talk;
                 qm.feed.readCard(card, successHandler, errorHandler);
