@@ -56,6 +56,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
+            qm.mic.initializeListening(qm.mic.startListeningCommands);
+            qm.mic.onMicEnabled = function () {
+                qm.mic.initializeListening(qm.mic.startListeningCommands);
+            };
+            qm.robot.onRobotClick = talk;
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
@@ -74,9 +79,17 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         function talk(nextCard, successHandler, errorHandler) {
             qm.feed.getMostRecentCard(function (card) {
                 if(nextCard){card = nextCard;}
-                //$scope.state.cards = [card];
+                $scope.state.cards = [card];
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
-                card.followUpAction = talk;
+                card.followUpAction = function (successToastText) {
+                    qmService.toast.showUndoToast(successToastText, function () {
+                        qm.localForage.deleteById(qm.items.feedQueue, card.id, function(){
+                            talk(card);
+                        })
+                    });
+                    //qm.speech.talkRobot(successToastText);
+                    talk();
+                };
                 qm.feed.readCard(card, successHandler, errorHandler);
             }, errorHandler);
         }
