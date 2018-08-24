@@ -66,64 +66,34 @@
                 allow="microphone;"
                 src="https://console.dialogflow.com/api-client/demo/embedded/6c71b4a4-4770-45a9-b8b3-dd34bbbb61c7">
         </iframe>-->
-        <!--<div ng-if="state.chat">
-            <div class="chat ng-scope layout-column flex" layout="column" flex="" style="">
-                <md-toolbar class="chat-toolbar _md md-default-theme _md-toolbar-transitions">
-                    <div class="md-toolbar-tools">
-                        <button class="hide-gt-md responsive-chats-button md-icon-button md-button md-default-theme md-ink-ripple"
-                                type="button" aria-label="chats button">
-                            <ng-md-icon icon="hangouts" style="fill: white;" ></ng-md-icon>
-                        </button>
-                        <div class="chat-contact layout-align-start-center layout-row" layout="row"
-                             layout-align="start center" role="button">
-                            <div class="avatar-wrapper"><img ng-src="img/robots/robot-head.svg" class="avatar" alt="Dr. Modo" src="img/robots/robot-head.svg"></div>
-                            <div class="chat-contact-name ng-binding">Talk to Dr. Modo</div>
-                        </div>
-                    </div>
-                </md-toolbar>
-                <md-content id="chat-content" flex="" ms-scroll=""
-                            class="ms-scroll _md md-default-theme flex ps-container ps-theme-default ps-active-y"
-                            data-ps-id="449fae8b-d0f3-59a8-6640-8203fd955d43">
-                    <div layout="row" ng-repeat="dialog in state.messages" class="md-padding message-row ng-scope {{dialog.who}} layout-row" ng-class="dialog.who">
-                        <img ng-if="dialog.who === 'bot'" ng-src="img/robots/robot-head.svg" class="avatar ng-scope"
-                             alt="Dr. Modo" src="img/robots/robot-head.svg">
-                        <img ng-if="dialog.who === 'user'" class="avatar ng-scope" ng-src="{{user.avatarImage}}" src="{{user.avatarImage}}">
-                        <div class="bubble">
-                            <div class="message ng-binding">{{dialog.message}}</div>
-                            &lt;!&ndash;<div class="time secondary-text ng-binding">05/02/2016</div>&ndash;&gt;
-                        </div>
-                    </div>
-                    <div class="ps-scrollbar-x-rail" style="left: 0px; bottom: -386px;">
-                        <div class="ps-scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div>
-                    </div>
-                    <div class="ps-scrollbar-y-rail" style="top: 386px; height: 683px; right: 0px;">
-                        <div class="ps-scrollbar-y" tabindex="0" style="top: 245px; height: 438px;"></div>
-                    </div>
-                </md-content>
-                <div class="chat-footer flex-noshrink layout-align-center-center layout-row" layout="row"
-                     layout-align="center center">
-                    <form ng-submit="state.userReply()" flex=""
-                          class="reply-form ng-valid layout-align-start-center layout-row flex ng-dirty" layout="row"
-                          layout-align="start center" style="">
-                        <md-input-container flex="" md-no-float="" class="md-input-has-placeholder md-default-theme flex">
-                            <div class="md-resize-wrapper">
-                            <textarea ng-keyup="state.userReply($event)" md-no-autogrow="" ng-model="state.replyMessage"
-                                      ng-class="{'grow': state.textareaGrow}" placeholder="Type and hit enter to send message"
-                                      translate="" translate-attr-placeholder="CHAT.REPLY_PLACEHOLDER"
-                                      class="ng-valid ng-scope md-input ng-touched ng-dirty ng-empty" id="input_33"
-                                      aria-invalid="false"
-                                      style="z-index: auto; position: relative; line-height: 26px; font-size: 16px; transition-duration: initial; transition-timing-function: initial; transition-property: none; background: transparent !important;"> </textarea>
-                                <div class="md-resize-handle" style="touch-action: pan-x;"></div>
+        <div ng-if="state.chat">
+            <div layout="row" flex>
+                <md-content style="background-color: #DCDCDC;" id="chat-content">
+                    <md-list>
+                        <md-list-item ng-repeat="message in state.messages" style="margin-top: 8px; margin-bottom: 8px;">
+                            <div flex-order="{{message.user ? 2 : 0}}" layout="column" layout-align="center center" class="md-caption">
+                                <img layout="row" style="margin-right: 3px;" ng-src="{{message.avatar}}"
+                                     class="md-avatar"/>
+                                <div style="text-align: center; color: #5F5F5F;">
+                                    {{message.name}}
+                                </div>
                             </div>
-                            <div class="md-errors-spacer"></div>
-                        </md-input-container>
-                        <button class="md-fab md-button ng-scope md-default-theme md-ink-ripple" type="submit"
-                                aria-label="Send message" translate="" translate-attr-aria-label="CHAT.SEND_MESSAGE">
-                            <ng-md-icon icon="send" style="fill: white; line-height: unset;" ></ng-md-icon>
-                        </button>
-                    </form>
-                </div>
+                            <div flex-order = "1"
+                                 style="background-color: white; padding: 10px; border-radius: 5px;"
+                                 layout-fill>
+                                {{message.text}}
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-content>
             </div>
-        </div>-->
+            <form layout="row" style="padding: 20px; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
+                  ng-submit="state.userReply(state.userInputString)" autocomplete="off">
+                <md-input-container flex layout-align="center" layout-fill>
+                    <label>What do you want to say?</label>
+                    <input type="text" ng-model="state.userInputString"/>
+                </md-input-container>
+            </form>
+        </div>>
     </ion-content>
 </ion-view>

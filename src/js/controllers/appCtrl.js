@@ -343,6 +343,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qm.speech.defaultAction();
     };
     $scope.robotClick = function(){
-        qmService.goToState(qmStates.chat);
+        if($state.current.name === qmStates.chat){
+            qm.robot.onRobotClick();
+        } else {
+            qmService.goToState(qmStates.chat);
+        }
     }
 }]);

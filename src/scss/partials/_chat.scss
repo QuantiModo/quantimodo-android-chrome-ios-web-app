@@ -23,7 +23,7 @@
 	box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
 	border-radius: 6px;
 }
-.avatar {
+.chat-avatar {
 	width: 40px;
 	min-width: 40px;
 	height: 40px;
@@ -60,4 +60,8 @@
 #chat-app .center .content-card .chat .chat-footer .reply-form md-input-container {
 	margin: 0;
 	padding-right: 16px;
+}
+.chat-align-right{
+    text-align: right;
+    float: right;
 }

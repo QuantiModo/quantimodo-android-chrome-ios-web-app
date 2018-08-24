@@ -4,6 +4,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
             cards: [],
+            chat: true,
             dialogFlow: false,
             messages: [],
             userInputString: '',
@@ -22,8 +23,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 if(button && button.parameters && button.parameters.trackingReminderNotificationId){
                     card.selectedButton = button;
                     qm.feed.addToFeedQueue(card, function (nextCard) {
-                        $scope.state.cards = [nextCard];
-                        talk(nextCard);
+                        //$scope.state.cards = [nextCard];
+                        talk();
                     });
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
@@ -55,7 +56,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmService.actionSheet.setDefaultActionSheet(function() {
                 refresh();
             });
-
+            qm.mic.initializeListening(qm.mic.startListeningCommands);
+            qm.mic.onMicEnabled = function () {
+                qm.mic.initializeListening(qm.mic.startListeningCommands);
+            };
+            qm.robot.onRobotClick = talk;
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
@@ -76,7 +81,15 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 if(nextCard){card = nextCard;}
                 $scope.state.cards = [card];
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
-                card.followUpAction = talk;
+                card.followUpAction = function (successToastText) {
+                    qmService.toast.showUndoToast(successToastText, function () {
+                        qm.localForage.deleteById(qm.items.feedQueue, card.id, function(){
+                            talk(card);
+                        })
+                    });
+                    //qm.speech.talkRobot(successToastText);
+                    talk();
+                };
                 qm.feed.readCard(card, successHandler, errorHandler);
             }, errorHandler);
         }
@@ -89,9 +102,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             }
             $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
             $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
-            qm.dialogFlow.getEntitiesFromUserInput($scope.state.userInputString);
-            qm.dialogFlow.fulfillIntent($scope.state.userInputString, function () {
-
+            var bravy = qm.dialogFlow.getBravy();
+            var results = bravy.test($scope.state.userInputString);
+            qmLog.info(results);
+            qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
+                $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
             });
             //qm.speech.getMostRecentNotificationAndTalk();
             $scope.state.userInputString = '';

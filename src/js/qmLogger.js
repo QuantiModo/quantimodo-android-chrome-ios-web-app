@@ -125,6 +125,10 @@ window.qmLog = {
     },
     secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
     stringContainsSecretAliasWord: function(string){
+        if(!string.toLowerCase){
+            console.error("This is not a string: ", string);
+            return false;
+        }
         var lowerCase = string.toLowerCase();
         var censoredString = lowerCase;
         for (var i = 0; i < qmLog.secretAliases.length; i++) {
@@ -252,6 +256,10 @@ window.qmLog = {
             } catch (error) {
                 console.error("Could not stringify log meta data", error);
             }
+        }
+        if(!logString.toLowerCase){
+            console.error("logString not a string: ", logString);
+            return "logString not a string: ";
         }
         var censored = qmLog.stringContainsSecretAliasWord(logString);
         if(censored){logString = censored;}
