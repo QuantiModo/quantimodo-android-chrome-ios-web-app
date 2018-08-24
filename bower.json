@@ -48,7 +48,8 @@
     "annyang": "^2.6.1",
     "svg-morpheus": "^0.3.2",
     "compromise": "https://github.com/spencermountain/compromise.git#^11.11.0",
-    "natural": "https://github.com/NaturalNode/natural.git#^1.0.9"
+    "natural": "https://github.com/NaturalNode/natural.git#^1.0.9",
+    "Bravey": "https://github.com/BraveyJS/Bravey.git"
   },
   "resolutions": {
     "angular": "1.5.9",

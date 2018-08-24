@@ -87,7 +87,8 @@
                     </md-list>
                 </md-content>
             </div>
-            <form layout="row" style="padding: 20px;" ng-submit="state.userReply(state.userInputString)" autocomplete="off">
+            <form layout="row" style="padding: 20px; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
+                  ng-submit="state.userReply(state.userInputString)" autocomplete="off">
                 <md-input-container flex layout-align="center" layout-fill>
                     <label>What do you want to say?</label>
                     <input type="text" ng-model="state.userInputString"/>
