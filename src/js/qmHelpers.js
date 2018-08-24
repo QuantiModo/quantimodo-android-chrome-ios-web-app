@@ -2857,10 +2857,12 @@ window.qm = {
         'Environment'
     ],
     mic: {
+        microphoneDisabled: true,
         onMicEnabled: function(){qmLog.info("Called onMicEnabled");},
         onMicDisabled: function(){qmLog.info("Called onMicDisabled");},
         microphoneAvailable: null,
         getMicEnabled: function(){
+            if(qm.mic.microphoneDisabled){return false;}
             if(!qm.mic.getMicrophoneAvailable()){return qm.mic.setMicEnabled(false);}
             return qm.storage.getItem(qm.items.micEnabled);
         },
