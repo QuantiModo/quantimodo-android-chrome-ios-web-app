@@ -2060,19 +2060,21 @@ window.qm = {
     feed: {
         getMostRecentCard: function(successHandler, errorHandler){
             qm.feed.getFeedFromLocalForageOrApi({}, function(feedCards){
-                var queueCards = qm.globalHelper.getItem(qm.items.feedQueue);
-                var notInQueue = feedCards;
-                if(queueCards) {
-                    notInQueue = feedCards.filter(function (feedCard) {
-                        var fromQueue = queueCards.find(function (queueCardParams) {
-                            return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
+                qm.localForage.getItem(qm.items.feedQueue, function(queueCards){
+                    var notInQueue = feedCards;
+                    if(queueCards) {
+                        notInQueue = feedCards.filter(function (feedCard) {
+                            var fromQueue = queueCards.find(function (queueCardParams) {
+                                return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
+                            });
+                            return !fromQueue;
                         });
-                        return !fromQueue;
-                    });
-                }
-                qm.speech.currentCard = notInQueue.shift();
-                successHandler(qm.speech.currentCard);
-                qm.feed.saveFeedInLocalForage(notInQueue);
+                    }
+                    qm.speech.currentCard = notInQueue.shift();
+                    qm.feed.saveFeedInLocalForage(notInQueue, function(){
+                        successHandler(qm.speech.currentCard);
+                    }, errorHandler);
+                }, errorHandler);
             }, errorHandler);
         },
         getFeedApiInstance: function(params){
@@ -2100,12 +2102,16 @@ window.qm = {
                 qmLog.error("No feed data returned!");
             } else {
                 cards = data.cards;
-                qm.feed.saveFeedInLocalForage(cards);
+                qm.feed.saveFeedInLocalForage(cards, function(){
+                    qmLog.info("saveFeedInLocalForage completed!");
+                }, function (error) {
+                    qmLog.error(error)
+                });
             }
             return cards;
         },
-        saveFeedInLocalForage: function(feed){
-            qm.localForage.addToOrReplaceByIdAndMoveToFront(qm.items.feed, feed);
+        saveFeedInLocalForage: function(feed, successHandler, errorHandler){
+            qm.localForage.setItem(qm.items.feed, feed, successHandler, errorHandler);
         },
         getFeedFromLocalForageOrApi: function(params, successHandler, errorHandler){
             qm.localForage.getItem(qm.items.feed, function(cards){
@@ -2138,15 +2144,15 @@ window.qm = {
                 qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
             }, function(error){qmLog.error(error);});
         },
-        addToFeedQueue: function(submittedCard, successHandler){
+        addToFeedQueue: function(submittedCard, successHandler, errorHandler){
             qm.localForage.addToArray(qm.items.feedQueue, submittedCard.parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
                     if(feedQueue.length > 5 || remainingCards.length < 5){
                         qm.feed.postFeedQueue(feedQueue);
                     }
-                });
-            });
+                }, errorHandler);
+            }, errorHandler);
         },
         readCard: function(card, successHandler, errorHandler, sayOptions){
             if(!card){card = qm.speech.currentCard;}
@@ -2572,7 +2578,7 @@ window.qm = {
             qmLog.info("Clearing localforage!");
             localforage.clear();
         },
-        saveWithUniqueId: function(key, arrayToSave) {
+        saveWithUniqueId: function(key, arrayToSave, successHandler, errorHandler) {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
@@ -2592,7 +2598,7 @@ window.qm = {
                     });
                     existingData.unshift(newObjectToSave);
                 }
-                qm.localForage.setItem(key, existingData);
+                qm.localForage.setItem(key, existingData, successHandler, errorHandler);
             });
         },
         deleteById: function(key, id, successHandler, errorHandler) {
@@ -2637,6 +2643,7 @@ window.qm = {
             qmLog.debug("Getting " + key + " from localforage");
             localforage.getItem(key, function (err, data) {
                 if(err){
+                    qmLog.error(err);
                     if(errorHandler){errorHandler(err);}
                 } else {
                     successHandler(data);
@@ -2699,15 +2706,22 @@ window.qm = {
                 var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){successHandler(elementsToKeep);}
+            }, function(error){
+                qmLog.error(error)
             });
         },
-        addToArray: function(localStorageItemName, newElement, successHandler){
+        addToArray: function(localStorageItemName, newElement, successHandler, errorHandler){
             qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElement).substring(0,20)+'...');
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
                 localStorageItemArray.push(newElement);
-                qm.localForage.setItem(localStorageItemName, localStorageItemArray);
-                if(successHandler){successHandler(localStorageItemArray);}
+                qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
+                    qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
+                    if(successHandler){successHandler(localStorageItemArray);}
+                }, function (error) {
+                    qmLog.error(error);
+                    if(errorHandler){errorHandler(error);}
+                });
             });
         }
     },
@@ -4330,8 +4344,13 @@ window.qm = {
                     return;
                 }
                 qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
-                    qm.feed.addToFeedQueue(card);
-                    if(card.followUpAction){card.followUpAction(remainingCards[0]);}
+                    qm.feed.addToFeedQueue(card, function(){
+                        if(card.followUpAction){card.followUpAction(remainingCards[0]);}
+                    }, function(error){
+                        qmLog.error(error)
+                    });
+                }, function(error){
+                    qmLog.error(error);
                 });
             }
         },
