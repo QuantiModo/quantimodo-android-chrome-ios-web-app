@@ -2282,7 +2282,7 @@ window.qm = {
             qm.feed.recentlyRespondedTo[submittedCard.id] = submittedCard;
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
-                parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(parameters, submittedCard.selectedButton);
+                parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
             }
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
@@ -4518,12 +4518,12 @@ window.qm = {
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.getClass().classList.add('robot_speaking');
             //qm.mic.pauseListening(hideVisualizer);
-            if(annyang.isListening()){qmLog.error("annyang still listening!")}
+            if(annyang.isListening()){qmLog.debug("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
             utterance.onend = function (event) {
                 clearTimeout(qm.speech.timeoutResumeInfinity);
-                if(annyang.isListening()){qmLog.error("annyang still listening before shutup")}
+                if(annyang.isListening()){qmLog.debug("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
                 if(successHandler){successHandler();}
