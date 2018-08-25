@@ -61,6 +61,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qm.mic.initializeListening(qm.mic.startListeningCommands);
             };
             qm.robot.onRobotClick = talk;
+            //qm.dialogFlow.apiAiPrepare();
         });
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
@@ -94,6 +95,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             }, errorHandler);
         }
         $scope.state.userReply = function(reply) {
+            qmLog.info("userReply: "+reply);
             reply = reply || $scope.state.userInputString;
             if(reply){$scope.state.userInputString = reply;}
             if ( reply === '' || !reply) {
@@ -102,9 +104,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             }
             $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
             $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
-            var bravy = qm.dialogFlow.getBravy();
-            var results = bravy.test($scope.state.userInputString);
-            qmLog.info(results);
             qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
                 $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
             });
