@@ -4299,10 +4299,9 @@ window.qm = {
         showing: false,
         hideRobot: function(){
             qmLog.info("Hiding robot");
-            qm.robot.getElement().style.display = "none";
-            qm.speech.setSpeechEnabled(false);
-            qm.visualizer.hideVisualizer();
-            //qm.appContainer.show();
+            if(qm.robot.getElement()){
+                qm.robot.getElement().style.display = "none";
+            }
             qm.robot.showing = qm.rootScope.showRobot = false;
         },
         showRobot: function(){
@@ -6518,6 +6517,9 @@ window.qm = {
             }
         },
         rainbowCircleVisualizer: function(){
+            qmLog.info("Showing rainbowCircleVisualizer...");
+            var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
+            if(visualizer) {visualizer.style.display = "block";}
             /* SOUND */
             // Audio vars
             var audioCtx = new AudioContext(),
