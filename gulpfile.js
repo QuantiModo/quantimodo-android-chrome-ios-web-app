@@ -1151,7 +1151,7 @@ function createProgressiveWebAppManifest(outputPath) {
 }
 function writeToFile(filePath, stringContents) {
     qmLog.info("Writing to " + filePath);
-    if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
+    if(typeof stringContents !== "string"){stringContents = prettyJSONStringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
 }
 function writeToFileWithCallback(filePath, stringContents, callback) {
@@ -3594,4 +3594,46 @@ gulp.task('rename-adsense', [], function () {
     return gulp.src("./src/lib/angular-google-adsense/dist/angular-google-adsense.min.js")
         .pipe(rename("custom-lib/aga.js"))
         .pipe(gulp.dest("./src")); // ./dist/main/text/ciao/goodbye.md
+});
+gulp.task('merge-dialogflow-export', function() {
+    var agent = {entities: {}, intents: {}};
+    var agentPath = 'src/data/apiai';
+    var entitiesPath = agentPath + '/entities';
+    var entityFiles = fs.readdirSync(entitiesPath);
+    for (var i = 0; i < entityFiles.length; i++) {
+        var entityFileName = entityFiles[i];
+        if(entityFileName.indexOf('entries') !== -1){continue;}
+        var entityName = entityFileName.replace('.json', '');
+        var entityPath = entitiesPath+ '/' + entityFileName;
+        agent.entities[entityName] = JSON.parse(fs.readFileSync(entityPath));
+        var entriesPath = entitiesPath+'/'+entityName+'_entries_en.json';
+        var entries = JSON.parse(fs.readFileSync(entriesPath));
+        var entriesString = JSON.stringify(entries);
+        if(entriesString.replace){
+            entriesString = entriesString.replace('***', '');
+        } else {
+            qmLog.info("Cannot replace "+entityName);
+        }
+        agent.entities[entityName].entries = JSON.parse(entriesString);
+        writeToFile(entityPath, agent.entities[entityName]);
+    }
+    var intentsPath = agentPath + '/intents';
+    var intentFiles = fs.readdirSync(intentsPath);
+    for (var i = 0; i < intentFiles.length; i++) {
+        var intentFileName = intentFiles[i];
+        if(intentFileName.indexOf('usersays') !== -1){continue;}
+        var intentName = intentFileName.replace('.json', '');
+        var intentPath = intentsPath+ '/' + intentFileName;
+        agent.intents[intentName] = JSON.parse(fs.readFileSync(intentPath));
+        var userSaysPath = intentsPath+'/'+intentName+'_usersays_en.json';
+        try {
+            var userSays = JSON.parse(fs.readFileSync(userSaysPath));
+        } catch (error) {
+            qmLog.error(error);
+            continue;
+        }
+        var userSaysString = JSON.stringify(userSays);
+        agent.intents[intentName].userSays = JSON.parse(userSaysString);
+        writeToFile(intentPath, agent.intents[intentName]);
+    }
 });
