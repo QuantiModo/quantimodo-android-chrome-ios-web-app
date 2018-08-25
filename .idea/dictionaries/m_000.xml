@@ -8,6 +8,7 @@
       <w>chcp</w>
       <w>chcpbuild</w>
       <w>cordova</w>
+      <w>cortana</w>
       <w>envs</w>
       <w>falsey</w>
       <w>fastlane</w>
@@ -30,6 +31,7 @@
       <w>splashscreen</w>
       <w>truthy</w>
       <w>uglify</w>
+      <w>webhook</w>
       <w>xwalk</w>
     </words>
   </dictionary>
