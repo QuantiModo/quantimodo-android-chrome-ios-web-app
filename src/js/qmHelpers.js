@@ -2293,7 +2293,6 @@ window.qm = {
             if(submittedCard.selectedButton){
                 parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
             }
-            parameters = this.fixFeedQueue(parameters);
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
