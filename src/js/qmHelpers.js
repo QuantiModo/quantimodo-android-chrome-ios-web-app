@@ -6547,6 +6547,10 @@ window.qm = {
                 }
             }, 1);
         },
+        setVisualizationEnabled: function(value){
+            if(value === true){qm.visualizer.showVisualizer();}
+            if(value === false){qm.visualizer.hideVisualizer();}
+        },
         getRainbowVisualizerCanvas: function(){
             var element = document.querySelector('#rainbow-canvas');
             return element;

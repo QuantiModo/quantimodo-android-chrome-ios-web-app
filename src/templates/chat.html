@@ -4,9 +4,7 @@
             <div class="splash-grid"></div>
         </div>
         <div ng-include="'templates/card.html'" style="z-index: 30; position: absolute; width:100%;" ng-repeat="card in state.cards"></div>
-
 <!--        <canvas id="rainbow-canvas" style="position: absolute; z-index: 4; display: block; opacity: 1;  pointer-events: none; background-color: transparent;"></canvas>-->
-
 <!--        <div id="mic-input-field-container" class="animated-microphone-input-container">
         &lt;!&ndash;<div id="mic-input-field-container" class="{'animated-microphone-input-container': state.listening, 'animated-microphone-input-container-disabled: !state.listening">&ndash;&gt;
             <form ng-submit="state.userReply()" flex="">
@@ -52,7 +50,6 @@
             </svg>
             <div class="equalizer-h1">Please allow the use of your microphone so I can hear you!</div>
         </div>-->
-
 <!--        <div ng-if="false && state.searchBox" class="microphone-search-wrapper">
             <input type="text" class="microphone-search" placeholder="Enter a Keyword, Phrase, or Question..." />
             <div class="microphone-search-anim">
@@ -72,27 +69,30 @@
                     <md-list>
                         <md-list-item ng-repeat="message in state.messages" style="margin-top: 8px; margin-bottom: 8px;">
                             <div flex-order="{{message.user ? 2 : 0}}" layout="column" layout-align="center center" class="md-caption">
-                                <img layout="row" style="margin-right: 3px;" ng-src="{{message.avatar}}"
-                                     class="md-avatar"/>
-                                <div style="text-align: center; color: #5F5F5F;">
-                                    {{message.name}}
-                                </div>
+                                <img layout="row" style="margin-right: 3px;" ng-src="{{message.avatar}}" class="md-avatar"/>
+                                <div style="text-align: center; color: #5F5F5F;">{{message.name}}</div>
                             </div>
-                            <div flex-order = "1"
-                                 style="background-color: white; padding: 10px; border-radius: 5px;"
-                                 layout-fill>
-                                {{message.text}}
-                            </div>
+                            <div flex-order = "1" style="background-color: white; padding: 10px; border-radius: 5px;" layout-fill>{{message.text}}</div>
                         </md-list-item>
                     </md-list>
                 </md-content>
             </div>
-            <form layout="row" style="padding: 20px; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
+            <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" style="position: absolute; margin-bottom: 40px; bottom: 0; right: -10px;"></div>
+            <form layout="row" style="padding: 20px 20px 0; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
                   ng-submit="state.userReply(state.userInputString)" autocomplete="off">
-                <md-input-container flex layout-align="center" layout-fill>
-                    <label>{{state.lastBotMessage}}</label>
+                <md-input-container flex layout-align="center" style="margin-right: 50px;" layout-fill>
+                    <label style="color: black;">{{state.lastBotMessage}}</label>
                     <input type="text" ng-model="state.userInputString"/>
                 </md-input-container>
+                <nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round"
+                     resting-icon="ion-ios-mic" toggling-method="click" menu-state="mfbMenuState" style="margin: 10px 10px 5px;">
+                    <button ng-if="micEnabled" id="mic-off" mfb-button icon="ion-ios-mic-off" label="Stop Listening" ng-click="setMicEnabled(false)"></button>
+                    <button ng-if="!micEnabled" id="mic-on" mfb-button icon="ion-ios-mic" label="Start Listening" ng-click="setMicEnabled(true)"></button>
+                    <button ng-if="speechEnabled" id="speech-off" mfb-button icon="ion-ios-mic-off" label="Shut Up" ng-click="setSpeechEnabled(false)"></button>
+                    <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-ios-mic" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
+                    <button ng-if="visualizationEnabled" id="visualization-off" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setSpeechEnabled(false)"></button>
+                    <button ng-if="!visualizationEnabled" id="visualization-on" mfb-button icon="ion-eye-diabled" label="I'm Having a Seizure" ng-click="setSpeechEnabled(true)"></button>
+                </nav>
             </form>
         </div>>
     </ion-content>
