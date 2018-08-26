@@ -2271,9 +2271,7 @@ window.qm = {
                     var cards = qm.feed.handleFeedResponse(data);
                     if(error){
                         qmLog.error("Putting back in queue because of error ", error);
-                        if(feedQueue && feedQueue[0] && qm.arrayHelper.variableIsArray(feedQueue[0])){
-                            throw "Damnit!"
-                        }
+                        feedQueue = this.fixFeedQueue(feedQueue);
                         qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
                     }
                     qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
@@ -2281,15 +2279,21 @@ window.qm = {
                 qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
             }, function(error){qmLog.error(error);});
         },
+        fixFeedQueue: function (parameters) {
+            if (parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])) {
+                qmLog.error("feedQueue is fucked up");
+                var array = parameters.shift();
+                parameters.concat(array);
+            }
+            return parameters;
+        },
         addToFeedQueue: function(submittedCard, successHandler, errorHandler){
             qm.feed.recentlyRespondedTo[submittedCard.id] = submittedCard;
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
                 parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
             }
-            if(parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])){
-                throw "Damnit!"
-            }
+            parameters = this.fixFeedQueue(parameters);
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
@@ -2868,11 +2872,12 @@ window.qm = {
                 qmLog.error(error)
             });
         },
-        addToArray: function(localStorageItemName, newElement, successHandler, errorHandler){
-            qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElement).substring(0,20)+'...');
+        addToArray: function(localStorageItemName, newElementsArray, successHandler, errorHandler){
+            if(!qm.arrayHelper.variableIsArray(newElementsArray)){newElementsArray = [newElementsArray];}
+            qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0,20)+'...');
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
-                localStorageItemArray.push(newElement);
+                localStorageItemArray.concat(newElementsArray);
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
                     qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
                     if(successHandler){successHandler(localStorageItemArray);}
