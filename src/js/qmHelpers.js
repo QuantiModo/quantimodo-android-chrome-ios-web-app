@@ -2329,7 +2329,7 @@ window.qm = {
             if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
             if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
             var unfilledFields = qm.feed.getUnfilledInputFields(card);
-            if(unfilledFields){message = unfilledFields[0].helpText;}
+            if(unfilledFields && unfilledFields.length){message = unfilledFields[0].helpText;}
             if(sayOptions){
                 //message += " " + qm.feed.getAvailableCommandsSentence();
                 message += " You can say " + unfilledFields[0].hint + ". ";
