@@ -2228,7 +2228,7 @@ window.qm = {
                 qm.feed.saveFeedInLocalForage(cards, function(){
                     qmLog.info("saveFeedInLocalForage completed!");
                 }, function (error) {
-                    qmLog.error(error)
+                    qmLog.error(error);
                 });
             }
             return cards;
@@ -2329,10 +2329,12 @@ window.qm = {
             if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
             if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
             var unfilledFields = qm.feed.getUnfilledInputFields(card);
-            if(unfilledFields && unfilledFields.length){message = unfilledFields[0].helpText;}
-            if(sayOptions){
-                //message += " " + qm.feed.getAvailableCommandsSentence();
-                message += " You can say " + unfilledFields[0].hint + ". ";
+            if(unfilledFields && unfilledFields.length){
+                message = unfilledFields[0].helpText;
+                if(sayOptions){
+                    //message += " " + qm.feed.getAvailableCommandsSentence();
+                    message += " You can say " + unfilledFields[0].hint + ". ";
+                }
             }
             qm.speech.talkRobot(message, function(){
                 qm.mic.listenForCardResponse(successHandler, errorHandler)
@@ -3020,12 +3022,6 @@ window.qm = {
     ],
     mic: {
         globalCommands: {
-            "remind me *tag": function() {
-                if(qm.speech.alreadySpeaking(tag)){
-                    qmLog.info("Not handling command because robot is speaking: "+tag);
-                    return false;
-                }
-            },
             "quantimodo": function(){
                 qm.speech.talkRobot("What can I do for you?");
             },
@@ -3061,21 +3057,10 @@ window.qm = {
                 });
             },
             'recall *tag': function (memoryQuestionQuestion) {
-                qm.localForage.getItem(qm.items.memories, function(memories){
-                    memories = memories || {};
-                    var response = "I'm afraid I don't know "+memoryQuestionQuestion +".  Say Remember "+memoryQuestionQuestion +
-                        " so I'll know in the future. ";
-                    if(!memories[memoryQuestionQuestion]){
-                        qm.objectHelper.loopThroughProperties(memories, function(memoryQuestionQuestion, memoryQuestionAnswer){
-                            response += " Or say Recall "+ memoryQuestionQuestion + ". ";
-                        });
-                    } else {
-                        response = memories[memoryQuestionQuestion];
-                    }
-                    qm.speech.talkRobot(response);
-                }, function(error){
-                    qmLog.error(error);
-                });
+                qm.memories.recall(memoryQuestionQuestion);
+            },
+            'remind me *tag': function (memoryQuestionQuestion) {
+                qm.memories.recall(memoryQuestionQuestion);
             }
         },
         wildCardHandler: function(text){
@@ -4325,7 +4310,25 @@ window.qm = {
             }
         }
     },
-    remember: {},
+    memories: {
+        recall: function (memoryQuestionQuestion) {
+            qm.localForage.getItem(qm.items.memories, function(memories){
+                memories = memories || {};
+                var response = "I'm afraid I don't know "+memoryQuestionQuestion +".  Say Remember "+memoryQuestionQuestion +
+                    " so I'll know in the future. ";
+                if(!memories[memoryQuestionQuestion]){
+                    qm.objectHelper.loopThroughProperties(memories, function(memoryQuestionQuestion, memoryQuestionAnswer){
+                        response += " Or say Recall "+ memoryQuestionQuestion + ". ";
+                    });
+                } else {
+                    response = memories[memoryQuestionQuestion];
+                }
+                qm.speech.talkRobot(response);
+            }, function(error){
+                qmLog.error(error);
+            });
+        }
+    },
     robot: {
         showing: false,
         hideRobot: function(){
