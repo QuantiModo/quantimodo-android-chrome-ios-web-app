@@ -2294,6 +2294,22 @@ window.qm = {
                 }, errorHandler);
             }, errorHandler);
         },
+        getUnfilledInputFields: function(card){
+            var unfilledFields = false;
+            var inputFields = card.inputFields;
+            if(inputFields){
+                var required = inputFields.filter(function(inputField){return inputField.required;});
+                if(required){
+                    unfilledFields = inputFields.filter(function(inputField){return inputField.value === null;});
+                    if(unfilledFields && unfilledFields.length){
+                        qm.speech.currentInputField = unfilledFields[0];
+                    } else {
+                        qmLog.info("No input fields to fill!");
+                    }
+                }
+            }
+            return unfilledFields;
+        },
         readCard: function(card, successHandler, errorHandler, sayOptions){
             if(!card){card = qm.feed.currentCard;}
             qm.feed.currentCard = card;
@@ -2303,22 +2319,11 @@ window.qm = {
             if(card.headerTitle && card.headerTitle.length > message.length){message = card.headerTitle;}
             if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
             if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
-            var inputFields = card.inputFields;
-            if(inputFields){
-                var required = inputFields.filter(function(inputField){return inputField.required;});
-                if(required){
-                    var unfilled = inputFields.filter(function(inputField){return inputField.value === null;});
-                    if(unfilled && unfilled.length){
-                        message = unfilled[0].helpText;
-                        qm.speech.currentInputField = unfilled[0];
-                    } else {
-                        qmLog.info("No input fields to fill!");
-                    }
-                }
-            }
+            var unfilledFields = qm.feed.getUnfilledInputFields(card);
+            if(unfilledFields){message = unfilledFields[0].helpText;}
             if(sayOptions){
                 //message += " " + qm.feed.getAvailableCommandsSentence();
-                message += " You can say " + qm.speech.currentInputField.hint + ". ";
+                message += " You can say " + unfilledFields[0].hint + ". ";
             }
             qm.speech.talkRobot(message, function(){
                 qm.mic.listenForCardResponse(successHandler, errorHandler)
@@ -3306,6 +3311,10 @@ window.qm = {
                 qm.feed.currentCard = null;
                 qm.mic.wildCardHandlerReset();
                 qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
+                    var unfilledFields = qm.feed.getUnfilledInputFields(card);
+                    if(unfilledFields){
+                        qmLog.errorAndExceptionTestingOrDevelopment("Un-filled fields: ", unfilledFields);
+                    }
                     qm.feed.addToFeedQueue(card, function(){
                         if(card.followUpAction){
                             card.followUpAction(responseText);
