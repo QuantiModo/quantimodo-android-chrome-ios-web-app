@@ -2271,7 +2271,7 @@ window.qm = {
                     var cards = qm.feed.handleFeedResponse(data);
                     if(error){
                         qmLog.error("Putting back in queue because of error ", error);
-                        feedQueue = this.fixFeedQueue(feedQueue);
+                        feedQueue = qm.feed.fixFeedQueue(feedQueue);
                         qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
                     }
                     qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
