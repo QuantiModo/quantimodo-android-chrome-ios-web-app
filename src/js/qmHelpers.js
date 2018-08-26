@@ -2287,8 +2287,8 @@ window.qm = {
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
                     if(successHandler){successHandler(remainingCards[1]);}
-                    var minimumRequiredForPost = 1;
-                    if(feedQueue.length > minimumRequiredForPost || remainingCards.length < 5){
+                    var minimumRequiredForPost = 5;
+                    if(feedQueue.length > minimumRequiredForPost || remainingCards.length < 3){
                         qm.feed.postFeedQueue(feedQueue);
                     }
                 }, errorHandler);
