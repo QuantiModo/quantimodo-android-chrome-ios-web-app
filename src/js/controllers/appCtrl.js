@@ -325,11 +325,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.rootScope.setProperty('micEnabled', value);
             qm.mic.setMicEnabled(value);
             qm.speech.setSpeechEnabled(value);
-            if(!value){
-                qm.robot.hideRobot();
+            if(value === false){
+                //qm.robot.hideRobot();
                 qm.visualizer.hideVisualizer();
                 qm.mic.onMicDisabled();
-            } else {
+            }
+            if(value === true) {
                 qm.robot.showRobot();
                 qm.visualizer.showVisualizer();
                 qm.mic.onMicEnabled();
@@ -342,11 +343,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qm.speech.setSpeechEnabled(value);
         qm.speech.defaultAction();
     };
+    $scope.setVisualizationEnabled = function(value){
+        $scope.visualizationEnabled = value;
+        qmService.rootScope.setProperty('visualizationEnabled', value);
+        qm.visualizer.setVisualizationEnabled(value);
+    };
     $scope.robotClick = function(){
         if($state.current.name === qmStates.chat){
             qm.robot.onRobotClick();
         } else {
             qmService.goToState(qmStates.chat);
         }
-    }
+    };
 }]);
