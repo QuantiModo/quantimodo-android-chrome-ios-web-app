@@ -1,15 +1,15 @@
 <md-card id="card" >
-    <md-card-header id="card-header">
+    <md-card-header id="card-header" ng-if="card.headerTitle || card.subHeader || card.avatar || card.avatarCircular">
         <md-card-avatar ng-if="card.avatar" id="card-avatar"><img ng-src="{{card.avatar}}"/></md-card-avatar>
         <md-card-avatar ng-if="card.avatarCircular" id="card-avatar"><img class="md-user-avatar" ng-src="{{card.avatarCircular}}"/></md-card-avatar>
         <md-card-header-text id="card" ng-if="card.headerTitle || card.subHeader">
             <span id="headerTitle" class="md-title" ng-if="card.headerTitle">{{card.headerTitle}}</span>
             <span id="subHeader" class="md-subhead" ng-if="card.subHeader">{{card.subHeader}}</span>
         </md-card-header-text>
-        <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="right: 0;" ng-click="state.openActionSheet(card)">
-            <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
-        </md-button>
     </md-card-header>
+    <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:15px; right: 5px; position: absolute;" ng-click="state.openActionSheet(card)">
+        <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
+    </md-button>
     <img id="image" ng-src="{{card.image}}" class="md-card-image" alt="{{card.title}}" ng-if="card.image">
     <md-card-title id="card" ng-if="card.title || card.subTitle">
         <md-card-title-text id="title-text">
@@ -17,6 +17,12 @@
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
         </md-card-title-text>
     </md-card-title>
+    <md-card-content id="content" ng-if="card.content">
+        <p> {{card.content}} </p>
+    </md-card-content>
+    <md-card-content id="html-content" ng-if="card.htmlContent">
+        <div ng-bind-html="trustAsHtml(card.htmlContent)" ng-click="state.htmlClick(card)"></div>
+    </md-card-content>
     <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">
         <md-button id="{{button.id+'-text-button'}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
@@ -34,13 +40,13 @@
             <img style="max-height: 75px; min-width:0; min-height:0; max-width: 100%;" ng-src="{{button.image}}">
         </md-button>
     </md-card-actions>
-    <md-content layout-padding ng-if="card.inputFields" ng-repeat="inputField in card.inputFields">
+    <md-content ng-if="card.inputFields" ng-repeat="inputField in card.inputFields">
         <form name="cardForm" ng-submit="state.cardButtonClick(card, inputField.submitButton)" ng-if="inputField.show"
               layout layout-align="center" layout-padding>
             <div layout="row" flex>
                 <span flex="15" style="margin-top: 10px;" ng-if="inputField.labelLeft"> &nbsp {{inputField.labelLeft}}</span>
                 <div flex="5" hide-xs hide-sm><!-- Spacer //--></div>
-                <md-input-container flex class="md-icon-float md-block md-title">
+                <md-input-container flex class="md-icon-float md-block md-title" style="margin-top: 0; margin-bottom: 0;">
                     <label>{{inputField.displayName}}</label>
                     <input required type="{{inputField.type}}" step="{{inputField.step}}" name="{{inputField.key}}" ng-model="inputField.submitButton.parameters.value"
                            min="{{inputField.minValue}}"  max="{{inputField.maxValue}}" ng-pattern="{{inputField.validationPattern}}" />
@@ -53,7 +59,4 @@
             </div>
         </form>
     </md-content>
-    <md-card-content id="content" ng-if="card.content">
-        <p> {{card.content}} </p>
-    </md-card-content>
 </md-card>
