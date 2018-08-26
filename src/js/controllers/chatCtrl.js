@@ -94,6 +94,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     talk();
                 };
                 qm.feed.readCard(card, successHandler, errorHandler);
+                $scope.state.lastBotMessage = qm.speech.lastUtterance.text;
             }, errorHandler);
         }
         $scope.state.userReply = function(reply) {

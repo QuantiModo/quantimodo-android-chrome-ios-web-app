@@ -66,7 +66,7 @@
                 allow="microphone;"
                 src="https://console.dialogflow.com/api-client/demo/embedded/6c71b4a4-4770-45a9-b8b3-dd34bbbb61c7">
         </iframe>-->
-        <div ng-if="state.chat">
+        <div>
             <div layout="row" flex>
                 <md-content style="background-color: #DCDCDC;" id="chat-content">
                     <md-list>
@@ -90,7 +90,7 @@
             <form layout="row" style="padding: 20px; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
                   ng-submit="state.userReply(state.userInputString)" autocomplete="off">
                 <md-input-container flex layout-align="center" layout-fill>
-                    <label>What do you want to say?</label>
+                    <label>{{state.lastBotMessage}}</label>
                     <input type="text" ng-model="state.userInputString"/>
                 </md-input-container>
             </form>
