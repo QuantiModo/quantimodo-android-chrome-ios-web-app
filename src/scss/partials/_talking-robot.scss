@@ -1,11 +1,18 @@
-.robot {
+.robot-container {
 	box-sizing: border-box;
 	position: absolute;
 	width: 160px;
 	height: 170px;
 	bottom: -30px;
-	left: calc(50% - 80px);
-	z-index: 4; }
+	left: calc(100% - 160px);
+	z-index: 4;
+}
+
+.robot {
+	//box-sizing: border-box;
+	//width: 160px;
+	//height: 170px;
+}
 
 .head {
 	position: absolute;
