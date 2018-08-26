@@ -2876,7 +2876,7 @@ window.qm = {
             qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0,20)+'...');
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
-                localStorageItemArray.concat(newElementsArray);
+                localStorageItemArray = localStorageItemArray.concat(newElementsArray);
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
                     qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
                     if(successHandler){successHandler(localStorageItemArray);}
