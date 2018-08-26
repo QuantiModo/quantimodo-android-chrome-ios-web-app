@@ -1682,7 +1682,7 @@ window.qm = {
                 "action": "input.welcome",
                 "parameters": {},
                 "allRequiredParamsPresent": true,
-                "fulfillmentText": "Oh. It's you. What do you want?",
+                "fulfillmentText": "Oh. It's you. What do you desire?",
                 "fulfillmentMessages": [
                     {
                         "text": {
@@ -2673,6 +2673,7 @@ window.qm = {
         speechAvailable: 'speechAvailable',
         studiesCreated: 'studiesCreated',
         studiesJoined: 'studiesJoined',
+        thoughts: 'thoughts',
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminders: 'trackingReminders',
@@ -3261,7 +3262,15 @@ window.qm = {
                 qmLog.info("Ignoring robot phrase: "+ match);
                 return match;
             }
+            qm.mic.saveThought(possiblePhrases[0]);
             return false;
+        },
+        saveThought: function(phrase){
+            var thoughts = qm.storage.getItem(qm.items.thoughts) || {};
+            thoughts[phrase] = thoughts[phrase] || {};
+            thoughts[phrase].count =  (thoughts[phrase].count) ? thoughts[phrase].count++ : 1;
+            thoughts[phrase].text = phrase;
+            qm.storage.setItem(qm.items.thoughts, thoughts);
         },
         normalizePhrases: function(possiblePhrases){
             if(!qm.arrayHelper.variableIsArray(possiblePhrases)){possiblePhrases = [possiblePhrases];}
