@@ -2271,6 +2271,9 @@ window.qm = {
                     var cards = qm.feed.handleFeedResponse(data);
                     if(error){
                         qmLog.error("Putting back in queue because of error ", error);
+                        if(feedQueue && feedQueue[0] && qm.arrayHelper.variableIsArray(feedQueue[0])){
+                            throw "Damnit!"
+                        }
                         qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
                     }
                     qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
@@ -2283,6 +2286,9 @@ window.qm = {
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
                 parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
+            }
+            if(parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])){
+                throw "Damnit!"
             }
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
@@ -3397,12 +3403,15 @@ window.qm = {
     music: {
         player: null,
         status: 'pause',
-        play: function(){
+        play: function(filePath, volume, succeessHandler, errorHandler){
+            filePath = filePath || 'sound/air-of-another-planet-full.mp3';
             if(!qm.speech.getSpeechEnabled()){return;}
             if(qm.music.status === 'play') return false;
-            qm.music.player = new Audio('sound/air-of-another-planet-full.mp3');
-            qm.music.player.volume = 0.15;
+            qm.music.player = new Audio(filePath);
+            qm.music.player.volume = volume || 0.15;
             qm.music.player.play();
+            if(errorHandler){qm.music.player.onerror = errorHandler;}
+            if(succeessHandler){qm.music.player.onended = succeessHandler;}
             qm.music.status = 'play';
             return qm.music.player;
         },
@@ -4409,6 +4418,8 @@ window.qm = {
             if(!value){
                 qm.speech.shutUpRobot();
                 qm.music.fadeOut();
+            } else {
+                qm.speech.iCanHelp();
             }
             qm.rootScope[qm.items.speechEnabled] = value;
             return qm.storage.setItem(qm.items.speechEnabled, value);
@@ -4475,6 +4486,12 @@ window.qm = {
         },
         askYesNoQuestion: function(text, yesCallback, noCallback){
             qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
+        },
+        iCanHelp: function(successHandler, errorHandler){
+            qm.robot.getClass().classList.add('robot_speaking');
+            qm.music.play('sound/i-can-help.wav', 0.5, function () {
+                qm.robot.getClass().classList.remove('robot_speaking');
+            }, errorHandler);
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
             if(!qm.speech.getSpeechAvailable()){
