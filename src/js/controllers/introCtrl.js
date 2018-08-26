@@ -83,7 +83,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readSlide() {
         //qm.visualizer.hide();
-        qm.mic.setMicEnabled(false);
+        //qm.mic.setMicEnabled(false);
         if(!qm.speech.getSpeechAvailable()){return;}
         if(!qm.speech.getSpeechEnabled()){return;}
         qm.music.play();
@@ -117,6 +117,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     function readMachinesOfLovingGrace() {
         qm.robot.showRobot();
+        qm.mic.setMicEnabled(true);
         qm.visualizer.rainbowCircleVisualizer();
         function callback(){
             $scope.myIntro.ready = true;

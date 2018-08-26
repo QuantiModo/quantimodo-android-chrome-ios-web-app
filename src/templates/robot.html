@@ -1,4 +1,4 @@
-<div id="robot" style="z-index: 10; cursor: pointer;" ng-click="state.robotClick()">
+<div id="robot" style="z-index: 10; cursor: pointer;">
     <div class="robot">
         <div class="neck"></div>
         <div class="arms">
@@ -11,11 +11,14 @@
                 <div class="eyeball eyeball_left"></div>
                 <div class="eyeball eyeball_right"></div>
             </div>
-            <div class="mouth">
-                <div class="mouth-container">
-                    <div class="mouth-container-line"></div>
-                </div>
+            <div class="mouth" ng-click="setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
+                <md-tooltip>Shut Up, Robot!</md-tooltip>
+                <div class="mouth-container"><div class="mouth-container-line"></div></div>
             </div>
+            <md-button class="md-icon-button" ng-click="setSpeechEnabled(true)" aria-label="un-mute"
+                       style="margin-top: 40%; margin-left: 34%;" ng-if="!speechEnabled">
+                <md-icon class="ion-volume-mute" style="font-size: 30px;" ><md-tooltip >Enable Freedom of Speech</md-tooltip></md-icon>
+            </md-button>
         </div>
     </div>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
