@@ -2326,6 +2326,7 @@ window.qm = {
                         qm.speech.currentInputField = unfilledFields[0];
                     } else {
                         qmLog.info("No input fields to fill!");
+                        return false;
                     }
                 }
             }
@@ -3300,21 +3301,24 @@ window.qm = {
                     qmLog.info("No card to respond to!");
                     return;
                 }
-                card.selectedButton = qm.feed.getButtonMatchingPhrase(possiblePhrases);
-                var matchingFilledInputField, responseText;
-                if(card.selectedButton){
-                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
-                    responseText = card.selectedButton.successToastText;
-                    qmLog.info("selectedButton", card.selectedButton);
-                }
-                matchingFilledInputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
-                if(matchingFilledInputField){card.parameters[matchingFilledInputField.key] = matchingFilledInputField.value;}
-                responseText = "OK. I'll record " + matchingFilledInputField.value + "! ";
-                qmLog.info("matchingFilledInputField", matchingFilledInputField);
-                if(!card.selectedButton && !matchingFilledInputField){
-                    var provideOptionsList = true;
-                    qm.speech.readCard(null, null, null, provideOptionsList);
-                    return;
+                var unfilledFields = qm.feed.getUnfilledInputFields(card);
+                if(unfilledFields){
+                    card.selectedButton = qm.feed.getButtonMatchingPhrase(possiblePhrases);
+                    var matchingFilledInputField, responseText;
+                    if(card.selectedButton){
+                        card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
+                        responseText = card.selectedButton.successToastText;
+                        qmLog.info("selectedButton", card.selectedButton);
+                    }
+                    matchingFilledInputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
+                    if(matchingFilledInputField){card.parameters[matchingFilledInputField.key] = matchingFilledInputField.value;}
+                    responseText = "OK. I'll record " + matchingFilledInputField.value + "! ";
+                    qmLog.info("matchingFilledInputField", matchingFilledInputField);
+                    if(!card.selectedButton && !matchingFilledInputField){
+                        var provideOptionsList = true;
+                        qm.speech.readCard(null, null, null, provideOptionsList);
+                        return;
+                    }
                 }
                 qm.feed.currentCard = null;
                 qm.mic.wildCardHandlerReset();
