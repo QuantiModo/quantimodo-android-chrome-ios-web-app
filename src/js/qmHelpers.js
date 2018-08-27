@@ -4150,6 +4150,9 @@ window.qm = {
         isMobileOrTesting: function(){
             return qm.platform.isMobile() || qm.appMode.isTesting();
         },
+        getPlatformAndBrowserString: function(){
+            return "platform: " + qm.platform.getCurrentPlatform() + " & browser: " + qm.platform.browser.get();
+        },
         getCurrentPlatform: function(){
             if(qm.urlHelper.getParam('platform')){return qm.urlHelper.getParam('platform');}
             if(qm.platform.isChromeExtension()){return qm.platform.types.chromeExtension;}
@@ -4491,11 +4494,16 @@ window.qm = {
         getSpeechAvailable: function(){
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
             if(typeof speechSynthesis === "undefined"){
-                if(!qm.appMode.isTesting()){qmLog.error("Speech not available!");}
+                if(!qm.appMode.isTesting()){qmLog.error("Speech not available on " + qm.platform.getPlatformAndBrowserString());}
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
-            if(qm.platform.isWeb() && !qm.platform.browser.isChrome()){
-                if(!qm.appMode.isTesting()){qmLog.error("Speech only available on Chrome");}
+            var isWebBrowser = qm.platform.isWeb();
+            var isChromeBrowser = qm.platform.browser.isChrome();
+            if(isWebBrowser && !isChromeBrowser){
+                if(!qm.appMode.isTesting()){
+                    qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
+                }
+                // TODO: Why is this necessary if we already check typeof speechSynthesis === "undefined"
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
             return qm.speech.speechAvailable = true;
