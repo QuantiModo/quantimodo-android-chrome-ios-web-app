@@ -3220,7 +3220,8 @@ gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], functio
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
     chcpCleanConfigFiles();
-    execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save", function () {
+    execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save",
+        function () {
         execute("gulp copyOverrideFiles", function () {
             execute("cordova-hcp server", function () {
                 qmLog.info("Execute command "+ runCommand + " in new terminal now");
