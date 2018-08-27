@@ -4391,6 +4391,12 @@ window.qm = {
     },
     robot: {
         showing: false,
+        openMouth: function(){
+            if(qm.robot.getClass()){qm.robot.getClass().classList.add('robot_speaking');}
+        },
+        closeMouth: function(){
+            if(qm.robot.getClass()){qm.robot.getClass().classList.remove('robot_speaking');}
+        },
         hideRobot: function(){
             qmLog.info("Hiding robot");
             if(qm.robot.getElement()){
@@ -4510,7 +4516,7 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            if(qm.robot.getClass()){qm.robot.getClass().classList.remove('robot_speaking');}
+            qm.robot.closeMouth();
             speechSynthesis.cancel();
             if(resumeListening){
                 if(!qm.mic.getMicEnabled()){
@@ -4573,9 +4579,9 @@ window.qm = {
         },
         iCanHelp: function(successHandler, errorHandler){
             if(qm.speech.recentlySaid('sound/i-can-help.wav')){return;}
-            qm.robot.getClass().classList.add('robot_speaking');
+            qm.robot.openMouth();
             qm.music.play('sound/i-can-help.wav', 0.5, function () {
-                qm.robot.getClass().classList.remove('robot_speaking');
+                qm.robot.closeMouth();
             }, errorHandler);
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
@@ -4636,7 +4642,7 @@ window.qm = {
             utterance.pitch = 1;
             utterance.volume = 0.5;
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
-            qm.robot.getClass().classList.add('robot_speaking');
+            qm.robot.openMouth();
             //qm.mic.pauseListening(hideVisualizer);
             if(annyang.isListening()){qmLog.debug("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
