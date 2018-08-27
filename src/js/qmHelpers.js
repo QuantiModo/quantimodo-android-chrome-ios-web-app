@@ -3397,6 +3397,7 @@ window.qm = {
                 qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
             });
             annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
+                if(qm.mic.weShouldIgnore(possiblePhrasesArray)){return;}
                 if(qm.mic.wildCardHandler){
                     possiblePhrasesArray = qm.mic.normalizePhrases(possiblePhrasesArray);
                     qm.mic.wildCardHandler(possiblePhrasesArray);

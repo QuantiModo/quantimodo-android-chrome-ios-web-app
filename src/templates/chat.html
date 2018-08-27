@@ -78,8 +78,8 @@
                     </md-list>
                 </md-content>
             </div>
-            <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" style="position: absolute; margin-bottom: 40px; bottom: 0; right: -10px;"></div>
-            <form layout="row" style="padding: 20px 20px 0; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
+            <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" class="robot-container" style="margin-bottom: 40px;"></div>
+            <form layout="row" style="padding: 20px 20px 0; bottom: -20px; position: absolute; z-index: 40; background-color: white; width: 100%;"
                   ng-submit="state.userReply(state.userInputString)" autocomplete="off">
                 <md-input-container flex layout-align="center" style="margin-right: 50px;" layout-fill>
                     <label style="color: black;">{{state.lastBotMessage}}</label>
@@ -91,8 +91,8 @@
                     <button ng-if="!micEnabled" id="mic-on" mfb-button icon="ion-ios-mic" label="Start Listening" ng-click="setMicEnabled(true)"></button>
                     <button ng-if="speechEnabled" id="speech-off" mfb-button icon="ion-volume-mute" label="Shut Up" ng-click="setSpeechEnabled(false)"></button>
                     <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-volume" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
-                    <button ng-if="visualizationEnabled" id="visualization-off" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setVisualizationEnabled(true)"></button>
-                    <button ng-if="!visualizationEnabled" id="visualization-on" mfb-button icon="ion-eye-disabled" label="I'm Having a Seizure" ng-click="setVisualizationEnabled(false)"></button>
+                    <button ng-if="!visualizationEnabled" id="turn-visualization-on" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setVisualizationEnabled(true)"></button>
+                    <button ng-if="visualizationEnabled" id="turn-visualization-off" mfb-button icon="ion-eye-disabled" label="I'm Having a Seizure" ng-click="setVisualizationEnabled(false)"></button>
                 </nav>
             </form>
         </div>>

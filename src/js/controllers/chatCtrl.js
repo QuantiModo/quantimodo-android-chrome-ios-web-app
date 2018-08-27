@@ -117,15 +117,14 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.mic.saveThought(reply);
             $scope.safeApply(function () {
                 $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
-                $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
+                //$scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
                 qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
                     $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
                 });
                 qm.speech.getMostRecentNotificationAndTalk();
                 $scope.state.userInputString = '';
                 $scope.state.lastBotMessage = "One moment please...";
-            })
-
+            });
         };
         qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
             qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
