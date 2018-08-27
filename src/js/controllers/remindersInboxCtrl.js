@@ -252,7 +252,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		if(isGhostClick($event)){ return; }
 		qm.notifications.lastAction = 'Skipped';
 		var params = notificationAction(trackingReminderNotification);
-		qmService.skipTrackingReminderNotificationDeferred(params);
+		qm.notifications.skip(params);
         qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
         refreshIfRunningOutOfNotifications();
 	};
