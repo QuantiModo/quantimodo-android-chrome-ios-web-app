@@ -3955,6 +3955,34 @@ window.qm = {
             }
             return destination;
         },
+        isObject: function(a){
+            return (!!a) && (a.constructor === Object);
+        },
+        isEquivalent: function(a, b) {
+            // Create arrays of property names
+            var aProps = Object.getOwnPropertyNames(a);
+            var bProps = Object.getOwnPropertyNames(b);
+
+            // If number of properties is different,
+            // objects are not equivalent
+            if (aProps.length != bProps.length) {
+                return false;
+            }
+
+            for (var i = 0; i < aProps.length; i++) {
+                var propName = aProps[i];
+
+                // If values of same property are not equal,
+                // objects are not equivalent
+                if (a[propName] !== b[propName]) {
+                    return false;
+                }
+            }
+
+            // If we made it this far, objects
+            // are considered equivalent
+            return true;
+        },
         getKeyWhereValueEqualsProvidedString: function(needleString, haystackObject) {
             for (var propertyName in haystackObject) {
                 if (haystackObject.hasOwnProperty(propertyName)) {
@@ -4457,7 +4485,7 @@ window.qm = {
         },
         shutUpRobot: function(resumeListening){
             if(!qm.speech.speechAvailable){return;}
-            qm.robot.getClass().classList.remove('robot_speaking');
+            if(qm.robot.getClass()){qm.robot.getClass().classList.remove('robot_speaking');}
             speechSynthesis.cancel();
             if(resumeListening){
                 if(!qm.mic.getMicEnabled()){
@@ -5120,10 +5148,13 @@ window.qm = {
         },
         setItem: function(key, value){
             if(!qm.storage.valueIsValid(value)){return false;}
-            if(value === qm.storage.getGlobal(key)){
+            var globalValue = qm.storage.getGlobal(key);
+            if(qm.objectHelper.isObject(value)){
+                qmLog.info("Can't compare because changes made to the gotten object are applied to the global object");
+            } else if (value === globalValue) {
                 var valueString = JSON.stringify(value);
                 qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
-                return;
+                return value;
             }
             qm.storage.setGlobal(key, value);
             var sizeInKb = qm.arrayHelper.getSizeInKiloBytes(value);
@@ -5182,16 +5213,16 @@ window.qm = {
                 qmLog.debug("localStorage not defined");
                 return false;
             }
-            var item = localStorage.getItem(key);
-            if(item === "undefined"){
+            var itemFromLocalStorage = localStorage.getItem(key);
+            if(itemFromLocalStorage === "undefined"){
                 qmLog.error(key + " from localStorage is undefined!");
                 localStorage.removeItem(key);
                 return null;
             }
-            if (item && typeof item === "string"){
+            if (itemFromLocalStorage && typeof itemFromLocalStorage === "string"){
                 qmLog.debug("Parsing " + key + " and setting in globals");
-                qm.globals[key] = qm.stringHelper.parseIfJsonString(item, item);
-                qmLog.debug('Got ' + key + ' from localStorage: ' + item.substring(0, 18) + '...');
+                qm.globals[key] = qm.stringHelper.parseIfJsonString(itemFromLocalStorage, itemFromLocalStorage);
+                qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
             } else {
                 qmLog.debug(key + ' not found in localStorage');
