@@ -1,4 +1,4 @@
-<md-card id="card" >
+<md-card id="card" md-swipe-right="state.onSwipeRight($event, $target)" md-swipe-left="state.onSwipeLeft($event, $target)">
     <md-card-header id="card-header" ng-if="card.headerTitle || card.subHeader || card.avatar || card.avatarCircular">
         <md-card-avatar ng-if="card.avatar" id="card-avatar"><img ng-src="{{card.avatar}}"/></md-card-avatar>
         <md-card-avatar ng-if="card.avatarCircular" id="card-avatar"><img class="md-user-avatar" ng-src="{{card.avatarCircular}}"/></md-card-avatar>
