@@ -3300,17 +3300,18 @@ window.qm = {
                     qmLog.info("No card to respond to!");
                     return;
                 }
-                var selectedButton = qm.feed.getButtonMatchingPhrase(possiblePhrases);
-                var inputField, responseText;
-                if(selectedButton){
-                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(selectedButton.parameters, card.parameters, true);
-                    responseText = selectedButton.successToastText;
-                } else {
-                    inputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
-                    if(inputField){card.parameters[inputField.key] = inputField.value;}
-                    responseText = "OK. I'll record " + inputField.value + "! ";
+                card.selectedButton = qm.feed.getButtonMatchingPhrase(possiblePhrases);
+                var matchingFilledInputField, responseText;
+                if(card.selectedButton){
+                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
+                    responseText = card.selectedButton.successToastText;
+                    qmLog.info("selectedButton", card.selectedButton);
                 }
-                if(!selectedButton && !inputField){
+                matchingFilledInputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
+                if(matchingFilledInputField){card.parameters[matchingFilledInputField.key] = matchingFilledInputField.value;}
+                responseText = "OK. I'll record " + matchingFilledInputField.value + "! ";
+                qmLog.info("matchingFilledInputField", matchingFilledInputField);
+                if(!card.selectedButton && !matchingFilledInputField){
                     var provideOptionsList = true;
                     qm.speech.readCard(null, null, null, provideOptionsList);
                     return;
