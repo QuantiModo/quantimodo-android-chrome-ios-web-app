@@ -24,6 +24,12 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     talk();
                 }
             },
+            onSwipeLeft: function($event, $target){
+                handleSwipe($event, $target);
+            },
+            onSwipeRight: function($event, $target){
+                handleSwipe($event, $target);
+            },
             cardButtonClick: function(card, button){
                 qmLog.info("card", card);
                 qmLog.info("button", button);
@@ -71,6 +77,12 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.mic.wildCardHandler = $scope.state.userReply;
             //qm.dialogFlow.apiAiPrepare();
         });
+        function handleSwipe($event, $target) {
+            qmLog.info("onSwipe $event", $event);
+            qmLog.info("onSwipe $target", $target);
+            if(button.parameters.trackingReminderNotificationId){qmService.notification.skip(button.parameters);}
+            talk();
+        }
         function refresh(){
             qm.feed.getFeedFromApi({}, function(cards){
                 if(!qm.speech.alreadySpeaking()){talk();}
@@ -93,11 +105,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 });
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 card.followUpAction = function (successToastText) {
-                    qmService.toast.showUndoToast(successToastText, function () {
-                        qm.localForage.deleteById(qm.items.feedQueue, card.id, function(){
-                            talk(card);
-                        })
-                    });
+                    if(successToastText){
+                        qmService.toast.showUndoToast(successToastText, function () {
+                            qm.localForage.deleteById(qm.items.feedQueue, card.id, function(){talk(card);});
+                        });
+                    }
                     //qm.speech.talkRobot(successToastText);
                     talk();
                 };

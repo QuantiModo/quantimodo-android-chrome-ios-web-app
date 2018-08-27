@@ -1445,6 +1445,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
                 }
                 return trackingReminderNotification;
+            },
+            skip: function(trackingReminderNotification){
+                qmService.notification.skip(trackingReminderNotification);
+                qmService.showInfoToast("Skipped "+trackingReminderNotification.variableName);
             }
         },
         reminders: {
@@ -3886,14 +3890,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var lastGotNotificationsAtMilliseconds = qm.storage.getItem(qm.items.lastGotNotificationsAtMilliseconds);
         if(!lastGotNotificationsAtMilliseconds){ lastGotNotificationsAtMilliseconds = 0; }
         return parseInt((window.qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds)/1000);
-    };
-    qmService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
-        var deferred = $q.defer();
-        qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
-        trackingReminderNotification.action = 'skip';
-        qm.notifications.addToSyncQueue(trackingReminderNotification);
-        qm.notifications.scheduleNotificationSync();
-        return deferred.promise;
     };
     qmService.getTrackingRemindersDeferred = function(variableCategoryName) {
         var deferred = $q.defer();

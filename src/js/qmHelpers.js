@@ -3185,7 +3185,7 @@ window.qm = {
             annyang.addCommands(commands);
         },
         addCommands: function(commands){
-            qm.mic.removeCommands(commands);
+            //qm.mic.removeCommands(commands);  // I think this causes problems.  Just use dynamic even handlers
             if(!qm.mic.annyangAvailable()){return;}
             qmLog.info("addCommands: ", commands);
             annyang.addCommands(commands);
@@ -3309,6 +3309,13 @@ window.qm = {
                         card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
                         responseText = card.selectedButton.successToastText;
                         qmLog.info("selectedButton", card.selectedButton);
+                        for (var i = 0; i < unfilledFields.length; i++) {
+                            var unfilledField = unfilledFields[i];
+                            var key = unfilledField.key;
+                            if(typeof card.selectedButton.parameters[key] !== "undefined" && card.selectedButton.parameters[key] !== null){
+                                unfilledField.value = card.selectedButton.parameters[key];
+                            }
+                        }
                     }
                     matchingFilledInputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
                     if(matchingFilledInputField){card.parameters[matchingFilledInputField.key] = matchingFilledInputField.value;}
@@ -3371,13 +3378,13 @@ window.qm = {
             qm.mic.inititalized = true;
             qm.mic.debugListening();
             annyang.addCallback('start', function() {
-                qmLog.info('browser\'s Speech Recognition engine started listening');
+                qmLog.debug('browser\'s Speech Recognition engine started listening');
             });
             annyang.addCallback('soundstart', function() {
                 qmLog.info('sound detected');
             });
             annyang.addCallback('error', function(error) {
-                qmLog.info("Speech Recognition failed because of an error", error);
+                qmLog.debug("Speech Recognition failed because of an error", error);
             });
             annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
                 qm.mic.generalErrorHandler("Speech Recognition failed because of a network error", error);
@@ -3389,7 +3396,7 @@ window.qm = {
                 qm.mic.generalErrorHandler("user blocked the permission request to use Speech Recognition", error);
             });
             annyang.addCallback('end', function(error){
-                qmLog.info("browser's Speech Recognition engine stopped", error);
+                qmLog.debug("browser's Speech Recognition engine stopped", error);
             });
             annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
                 qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
@@ -3960,6 +3967,12 @@ window.qm = {
                 qm.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
                 if(errorHandler){errorHandler();}
             });
+        },
+        skip: function(trackingReminderNotification){
+            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
+            trackingReminderNotification.action = 'skip';
+            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            qm.notifications.scheduleNotificationSync();
         }
     },
     objectHelper: {
