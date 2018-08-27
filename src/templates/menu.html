@@ -52,7 +52,7 @@
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
              ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <ion-nav-view name="menuContent">
-            <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()"></div>
+
             <canvas id="canvas" style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px; z-index: 30; pointer-events: none; "></canvas>
         </ion-nav-view>
     </ion-side-menu-content>
@@ -111,21 +111,3 @@
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>
-<div id="audio-buttons" style="bottom: 5px; z-index: 30; position: absolute; font-size: 30px;">
-    <div id="mute-button" style="left: 0;" >
-        <md-button class="md-icon-button md-accent" ng-click="setSpeechEnabled(false)" aria-label="mute" ng-if="speechEnabled">
-            <md-icon class="ion-volume-high"><md-tooltip md-direction="right">Mute</md-tooltip></md-icon>
-        </md-button>
-        <md-button class="md-icon-button md-accent" ng-click="setSpeechEnabled(true)" aria-label="un-mute" ng-if="!speechEnabled">
-            <md-icon class="ion-volume-mute"><md-tooltip md-direction="right">Enable Speech</md-tooltip></md-icon>
-        </md-button>
-    </div>
-    <div id="mic-button" style="left: 20px;">
-        <md-button id="disable-mic-button" class="md-icon-button md-accent" ng-click="setMicEnabled(false)" aria-label="disable-microphone"  style="display: none;">
-            <md-icon class="ion-ios-mic"><md-tooltip md-direction="right">Turn Off Microphone</md-tooltip></md-icon>
-        </md-button>
-        <md-button id="enable-mic-button" class="md-icon-button md-accent" ng-click="setMicEnabled(true)" aria-label="enable-microphone">
-            <md-icon class="ion-ios-mic-off"><md-tooltip md-direction="right">Turn On Microphone</md-tooltip></md-icon>
-        </md-button>
-    </div>
-</div>

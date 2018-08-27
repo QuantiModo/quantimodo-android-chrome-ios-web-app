@@ -1572,6 +1572,10 @@ window.qm = {
             });
         },
         apiAiTest: function(text){
+            if(!qm.apiAi){
+                qmLog.info("qm.apiAi not defined");
+                return false;
+            }
             var out = qm.apiAi.nlp.test(text);
             qmLog.info("api ai: ", out);
             return out;
@@ -1658,6 +1662,10 @@ window.qm = {
         },
         fulfillIntent: function(userInput, successHandler, errorHandler){
             var intent = qm.dialogFlow.getIntent(userInput);
+            if(!intent){
+                qmLog.error("No intent!")
+                return false;
+            }
             if(!intent.webhookUsed){
                 var messages = intent.responses[0].messages;
                 intent.messageIndex = intent.messageIndex || 0;
@@ -2104,6 +2112,10 @@ window.qm = {
         },
         getIntent: function(userInput){
             var result = qm.dialogFlow.apiAiTest(userInput);
+            if(!result){
+                qmLog.error("No intent!");
+                return false;
+            }
             qm.dialogFlow.post(result, function(response){
                 qmLog.info("dialogFlow webhook response: ", response);
             }, function(error){
