@@ -1,5 +1,6 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
     <ion-content scroll="true" overflow-scroll="true">
+        <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; opacity: 0.5; pointer-events: none; background-color: transparent;"></canvas>
         <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
             <div class="splash-grid"></div>
         </div>
@@ -88,10 +89,10 @@
                      resting-icon="ion-ios-mic" toggling-method="click" menu-state="mfbMenuState" style="margin: 10px 10px 5px;">
                     <button ng-if="micEnabled" id="mic-off" mfb-button icon="ion-ios-mic-off" label="Stop Listening" ng-click="setMicEnabled(false)"></button>
                     <button ng-if="!micEnabled" id="mic-on" mfb-button icon="ion-ios-mic" label="Start Listening" ng-click="setMicEnabled(true)"></button>
-                    <button ng-if="speechEnabled" id="speech-off" mfb-button icon="ion-ios-mic-off" label="Shut Up" ng-click="setSpeechEnabled(false)"></button>
-                    <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-ios-mic" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
-                    <button ng-if="visualizationEnabled" id="visualization-off" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setSpeechEnabled(false)"></button>
-                    <button ng-if="!visualizationEnabled" id="visualization-on" mfb-button icon="ion-eye-diabled" label="I'm Having a Seizure" ng-click="setSpeechEnabled(true)"></button>
+                    <button ng-if="speechEnabled" id="speech-off" mfb-button icon="ion-volume-mute" label="Shut Up" ng-click="setSpeechEnabled(false)"></button>
+                    <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-volume" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
+                    <button ng-if="visualizationEnabled" id="visualization-off" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setVisualizationEnabled(true)"></button>
+                    <button ng-if="!visualizationEnabled" id="visualization-on" mfb-button icon="ion-eye-disabled" label="I'm Having a Seizure" ng-click="setVisualizationEnabled(false)"></button>
                 </nav>
             </form>
         </div>>
