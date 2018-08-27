@@ -114,8 +114,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmLog.error("No reply!");
                 return;
             }
+            qm.mic.saveThought(reply);
             $scope.safeApply(function () {
-                qm.mic.saveThought(reply);
                 $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
                 $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
                 qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
