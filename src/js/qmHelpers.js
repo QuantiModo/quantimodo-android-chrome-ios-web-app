@@ -3407,43 +3407,54 @@ window.qm = {
         },
     },
     music: {
-        player: null,
-        status: 'pause',
-        play: function(filePath, volume, succeessHandler, errorHandler){
+        player: {},
+        status: {},
+        isPlaying: function(filePath){
+            return qm.music.status[filePath] === 'play';
+        },
+        setPlayerStatus: function(filePath, status){
+            qm.music.status[filePath] = status;
+        },
+        play: function(filePath, volume, successHandler, errorHandler){
             filePath = filePath || 'sound/air-of-another-planet-full.mp3';
             if(!qm.speech.getSpeechEnabled()){return;}
-            if(qm.music.status === 'play') return false;
-            qm.music.player = new Audio(filePath);
-            qm.music.player.volume = volume || 0.15;
-            qm.music.player.play();
-            if(errorHandler){qm.music.player.onerror = errorHandler;}
-            if(succeessHandler){qm.music.player.onended = succeessHandler;}
-            qm.music.status = 'play';
-            return qm.music.player;
+            if(qm.music.isPlaying(filePath)){return false;}
+            qm.music.player[filePath] = new Audio(filePath);
+            qm.music.player[filePath].volume = volume || 0.15;
+            qm.music.player[filePath].play();
+            if(errorHandler){qm.music.player[filePath].onerror = errorHandler;}
+            qm.music.player[filePath].onended = function(){
+                qm.music.setPlayerStatus(filePath, 'pause');
+                if(successHandler){successHandler();}
+            };
+            qm.music.setPlayerStatus(filePath, 'play');
+            return qm.music.player[filePath];
         },
-        fadeIn: function(){
-            if(qm.music.status === 'play') return false;
+        fadeIn: function(filePath){
+            filePath = filePath || 'sound/air-of-another-planet-full.mp3';
+            if(qm.music.isPlaying(filePath)) return false;
             var actualVolume = 0;
-            qm.music.player.play();
-            qm.music.status = 'play';
+            qm.music.player[filePath].play();
+            qm.music.setPlayerStatus(filePath, 'play');
             var fadeInInterval = setInterval(function(){
                 actualVolume = (parseFloat(actualVolume) + 0.1).toFixed(1);
                 if(actualVolume <= 1){
-                    qm.music.player.volume = actualVolume;
+                    qm.music.player[filePath].volume = actualVolume;
                 } else {
                     clearInterval(fadeInInterval);
                 }
             }, 100);
         },
-        fadeOut: function(){
-            if(qm.music.status !== 'play') return false;
-            var actualVolume = qm.music.player.volume;
+        fadeOut: function(filePath){
+            filePath = filePath || 'sound/air-of-another-planet-full.mp3';
+            if(!qm.music.isPlaying(filePath)) return false;
+            var actualVolume = qm.music.player[filePath].volume;
             var fadeOutInterval = setInterval(function(){
                 actualVolume = (parseFloat(actualVolume) - 0.1).toFixed(1);
                 if(actualVolume >= 0){
-                    qm.music.player.volume = actualVolume;
+                    qm.music.player[filePath].volume = actualVolume;
                 } else {
-                    qm.music.player.pause();
+                    qm.music.player[filePath].pause();
                     qm.music.status = 'pause';
                     clearInterval(fadeOutInterval);
                 }
@@ -4519,13 +4530,8 @@ window.qm = {
         },
         afterNotificationMessages: ['Yummy data!'],
         utterances: [],
-        recentStatements: [],
         sayIfNotInRecentStatements: function(text, callback, resumeListening){
-            if(qm.speech.recentStatements.indexOf(text) !== -1){
-                qm.speech.talkRobot(text, callback, resumeListening)
-            } else {
-                qmLog.info("Recently said "+text);
-            }
+            if(!qm.speech.recentlySaid(text)){qm.speech.talkRobot(text, callback, resumeListening)}
         },
         askQuestion: function(text, commands, successHandler, errorHandler){
             if(!qm.speech.getSpeechEnabled()){
@@ -4539,7 +4545,25 @@ window.qm = {
         askYesNoQuestion: function(text, yesCallback, noCallback){
             qm.speech.askQuestion(text, {"yes": yesCallback, "no": noCallback});
         },
+        recentStatements: {},
+        addToRecentlySaid: function(text){
+            qm.speech.recentStatements[text] = qm.timeHelper.getUnixTimestampInSeconds();
+        },
+        recentlySaid: function(text, maxFrequencyInSeconds){
+            var lastSaidSeconds = qm.speech.recentStatements[text];
+            var currentSeconds = qm.timeHelper.getUnixTimestampInSeconds();
+            if(lastSaidSeconds){
+                var secondsAgo = currentSeconds - lastSaidSeconds;
+                if(!maxFrequencyInSeconds || secondsAgo < maxFrequencyInSeconds){
+                    qmLog.info("Already said "+text+" "+secondsAgo+" seconds ago");
+                    return true;
+                }
+            }
+            qm.speech.addToRecentlySaid(text);
+            return false;
+        },
         iCanHelp: function(successHandler, errorHandler){
+            if(qm.speech.recentlySaid('sound/i-can-help.wav')){return;}
             qm.robot.getClass().classList.add('robot_speaking');
             qm.music.play('sound/i-can-help.wav', 0.5, function () {
                 qm.robot.getClass().classList.remove('robot_speaking');
@@ -4562,7 +4586,7 @@ window.qm = {
                 if(errorHandler){errorHandler("Already said " + text + " last time");}
                 return false;
             }
-            qm.speech.recentStatements.push(text);
+            qm.speech.addToRecentlySaid(text);
             speechSynthesis.cancel();
             qm.speech.callback = successHandler;
             if(!text){
