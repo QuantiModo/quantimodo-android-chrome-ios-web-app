@@ -1408,7 +1408,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.configurePushNotifications();
                 }
             },
-            skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler){
+            skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler, ev){
                 var title = "Skip all?";
                 var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
                 function yesCallback() {

@@ -133,7 +133,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
                     $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
                 });
-                qm.speech.getMostRecentNotificationAndTalk();
                 $scope.state.userInputString = '';
                 $scope.state.lastBotMessage = "One moment please...";
             });

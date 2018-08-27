@@ -2341,6 +2341,8 @@ window.qm = {
             if(card.headerTitle && card.headerTitle.length > message.length){message = card.headerTitle;}
             if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
             if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
+            if(!message || !message.length && card.content){message = card.content;}
+            if(!message || !message.length){message = qm.stringHelper.stripHtmlTags(card.htmlContent);}
             var unfilledFields = qm.feed.getUnfilledInputFields(card);
             if(unfilledFields && unfilledFields.length){
                 message = unfilledFields[0].helpText;
@@ -2350,7 +2352,7 @@ window.qm = {
                 }
             }
             qm.speech.talkRobot(message, function(){
-                qm.mic.listenForCardResponse(successHandler, errorHandler)
+                qm.mic.listenForCardResponse(card, successHandler, errorHandler)
             }, function(error){
                 qmLog.info(error);
             }, listen);
@@ -3227,7 +3229,7 @@ window.qm = {
                     qm.speech.fallbackMessage(possiblePhrases);
                 }
             };
-            qm.mic.initializeListening(qm.speech.reminderNotificationCommands, successHandler, errorHandler);
+            qm.mic.initializeListening(qm.speech.trackingReminderNotificationCommands, successHandler, errorHandler);
         },
         aPhraseEquals: function(needles, phrasesArray){
             if(!qm.arrayHelper.variableIsArray(needles)){needles = [needles];}
@@ -3291,7 +3293,7 @@ window.qm = {
                 return nlp(phrase).normalize().out();
             });
         },
-        listenForCardResponse: function(successHandler, errorHandler){
+        listenForCardResponse: function(card, successHandler, errorHandler){
             qm.mic.wildCardHandler = function(possiblePhrases) {
                 if(qm.mic.weShouldIgnore(possiblePhrases)){
                     return false;
@@ -3347,7 +3349,11 @@ window.qm = {
                     qmLog.error(error);
                 });
             };
-            qm.mic.initializeListening(qm.speech.cardResponseCommands, successHandler, errorHandler);
+            if(card.parameters.trackingReminderNotificationId){
+                qm.mic.initializeListening(qm.notifications.trackingReminderNotificationCommands, successHandler, errorHandler);
+            } else {
+                qm.mic.initializeListening(qm.speech.cardResponseCommands, successHandler, errorHandler);
+            }
         },
         debugListening: function(){
             if(!qm.mic.annyangAvailable()){return;}
@@ -3973,6 +3979,16 @@ window.qm = {
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
             qm.notifications.scheduleNotificationSync();
+        },
+        trackingReminderNotificationCommands: {
+            "I don't know": function () {
+                qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
+                qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
+            },
+            "I don't remember": function () {
+                qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
+                qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
+            }
         }
     },
     objectHelper: {
@@ -4486,11 +4502,7 @@ window.qm = {
             VOICE: 'Google UK English Female'
         },
         defaultAction: function(){
-            qm.speech.deepThought(function(){
-                if(qm.notifications.getMostRecentNotification()){
-                    qm.speech.getMostRecentNotificationAndTalk();
-                }
-            });
+            qm.speech.deepThought();
         },
         lastUtterance: false,
         pendingUtteranceText: false,
@@ -4597,7 +4609,7 @@ window.qm = {
                 qm.robot.closeMouth();
             }, errorHandler);
         },
-        talkRobot: function(text, successHandler, errorHandler, resumeListening, hideVisualizer){
+        talkRobot: function(text, successHandler, errorHandler, resumeListening){
             if(!qm.speech.getSpeechAvailable()){
                 if(errorHandler){errorHandler("Speech not available so cannot say " + text);}
                 return false;
@@ -4675,26 +4687,6 @@ window.qm = {
             //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
             qm.speech.pendingUtteranceText = false;
         },
-        getMostRecentNotificationAndTalk: function(successHandler, errorHandler){
-            qm.notifications.getMostRecentNotification(function (trackingReminderNotification) {
-                if(trackingReminderNotification){
-                    qm.speech.currentNotification = trackingReminderNotification;
-                    qm.speech.intent = qm.staticData.dialogAgent.intents["Tracking Reminder Notification Intent"];
-                    var listen = true;
-                    qm.speech.talkRobot(trackingReminderNotification.card.title, function(){
-                        qm.mic.listenForNotificationResponse(successHandler, errorHandler)
-                    }, function(error){
-                        qmLog.info(error);
-                    }, listen);
-                } else {
-                    qmLog.error("No tracking reminder notification");
-                    if(errorHandler){errorHandler(error);}
-                }
-            }, function(error){
-                qmLog.error(error);
-                if(errorHandler){errorHandler(error);}
-            });
-        },
         speechUtteranceChunker: function (utt, settings, callback) {
             settings = settings || {};
             var newUtt;
@@ -4753,19 +4745,6 @@ window.qm = {
             var deepThoughts = qm.staticData.deepThoughts;
             var deepThought = deepThoughts[[Math.floor(Math.random() * (deepThoughts.length - 1))]];
             qm.speech.talkRobot(deepThought.text + "! . ! . !", callback);
-        },
-        reminderNotificationCommands: {
-            "I don't know": function () {
-                qm.speech.talkRobot("OK. We'll skip that one.");
-            }
-        },
-        handleNotificationResponse: function(possiblePhrases, notification){
-            notification.modifiedValue = possiblePhrases;
-            qm.notifications.trackNotification(notification);
-            var message = notification.userOptimalValueMessage || notification.commonOptimalValueMessage || "OK. I'll record " + possiblePhrases + ".  ";
-            var prefix = qm.speech.afterNotificationMessages.pop();
-            if(prefix){message = prefix + message;}
-            qm.speech.talkRobot(message, qm.speech.getMostRecentNotificationAndTalk);
         },
         isValidNotificationResponse: function(tag){
             var possibleResponses = ["skip", "snooze", "yes", "no"];
@@ -5345,6 +5324,10 @@ window.qm = {
         }
     },
     stringHelper: {
+        stripHtmlTags: function(strInputCode){
+            var cleanText = strInputCode.replace(/<\/?[^>]+(>|$)/g, "");
+            return cleanText;
+        },
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");
         },
