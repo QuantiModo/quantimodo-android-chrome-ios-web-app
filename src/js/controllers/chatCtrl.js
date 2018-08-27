@@ -68,6 +68,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qm.mic.initializeListening(qm.mic.startListeningCommands);
             };
             qm.robot.onRobotClick = talk;
+            qm.mic.wildCardHandler = $scope.state.userReply;
             //qm.dialogFlow.apiAiPrepare();
         });
         function refresh(){
@@ -105,6 +106,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             }, errorHandler);
         }
         $scope.state.userReply = function(reply) {
+            if(qm.arrayHelper.variableIsArray(reply)){reply = reply[0];}
             qmLog.info("userReply: "+reply);
             reply = reply || $scope.state.userInputString;
             if(reply){$scope.state.userInputString = reply;}
@@ -112,14 +114,18 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmLog.error("No reply!");
                 return;
             }
-            $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
-            $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
-            qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
-                $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
-            });
-            //qm.speech.getMostRecentNotificationAndTalk();
-            $scope.state.userInputString = '';
-            $scope.state.lastBotMessage = "One moment please...";
+            $scope.safeApply(function () {
+                qm.mic.saveThought(reply);
+                $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
+                $scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
+                qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
+                    $scope.state.messages.push({who: 'bot', message: reply, time: 'Just now'});
+                });
+                qm.speech.getMostRecentNotificationAndTalk();
+                $scope.state.userInputString = '';
+                $scope.state.lastBotMessage = "One moment please...";
+            })
+
         };
         qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
             qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
