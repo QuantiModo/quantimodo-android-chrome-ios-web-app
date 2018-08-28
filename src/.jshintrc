@@ -37,6 +37,7 @@
     "pluralize"   : false,
     "process" : false,
     "PushNotification" : false,
+    "Pusher": false,
     "qm": false,
     "qm.appsManager" : false,
     "qmAnalytics": false,

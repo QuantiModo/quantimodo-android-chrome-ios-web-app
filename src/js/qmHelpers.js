@@ -1662,8 +1662,12 @@ window.qm = {
         },
         fulfillIntent: function(userInput, successHandler, errorHandler){
             var intent = qm.dialogFlow.getIntent(userInput);
+            if(!intent && qm.mic.wildCardHandler){
+                qm.mic.wildCardHandler(userInput);
+                return true;
+            }
             if(!intent){
-                qmLog.error("No intent!")
+                qmLog.error("No intent!");
                 return false;
             }
             if(!intent.webhookUsed){
@@ -5186,7 +5190,7 @@ window.qm = {
             if(!qm.storage.valueIsValid(value)){return false;}
             var globalValue = qm.storage.getGlobal(key);
             if(qm.objectHelper.isObject(value)){
-                qmLog.info("Can't compare because changes made to the gotten object are applied to the global object");
+                qmLog.info("Can't compare "+key+" because changes made to the gotten object are applied to the global object");
             } else if (value === globalValue) {
                 var valueString = JSON.stringify(value);
                 qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
