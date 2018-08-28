@@ -1517,16 +1517,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $timeout(function(){
                     showVariableList();
                 }, 500);
-                qm.speech.askQuestion(dialogParameters.helpText, {
-                    '*tag': function(tag) {
-                        showVariableList();
-                        if(qm.speech.callback){qm.speech.callback(tag);}
-                        qm.speech.lastUserStatement = tag;
-                        qmLog.info("Just heard user say " + tag);
-                        querySearch(tag);
-                        self.searchText = tag;
-                    }
-                });
+                qm.mic.wildCardHandler = function(tag) {
+                    showVariableList();
+                    if(qm.speech.callback){qm.speech.callback(tag);}
+                    qm.speech.lastUserStatement = tag;
+                    qmLog.info("Just heard user say " + tag);
+                    querySearch(tag);
+                    self.searchText = tag;
+                };
                 self.minLength = dialogParameters.minLength || 0;
                 self.dialogParameters = dialogParameters;
                 self.querySearch   = querySearch;
