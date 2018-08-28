@@ -55,7 +55,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             qmService.addToFavoritesUsingVariableObject(variableObject);
         } else if (window.location.href.indexOf('reminder-search') !== -1) {
             var options = {skipReminderSettingsIfPossible: $scope.state.skipReminderSettingsIfPossible, doneState: $scope.state.doneState};
-            qmService.addToRemindersUsingVariableObject(variableObject, options);
+            qmService.reminders.addToRemindersUsingVariableObject(variableObject, options);
         } else if ($scope.state.nextState.indexOf('predictor') !== -1) {
             qmService.goToState($scope.state.nextState, {effectVariableName: variableObject.name});
         } else if ($scope.state.nextState.indexOf('outcome') !== -1) {
