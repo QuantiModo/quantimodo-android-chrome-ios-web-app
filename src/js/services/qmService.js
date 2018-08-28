@@ -1452,10 +1452,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         pusher: {
-            subscribe: function(){
+            subscribe: function(user){
                 Pusher.logToConsole = qm.appMode.isDevelopment() || qm.appMode.isDebug();  // Enable pusher logging - don't include this in production
                 var pusher = new Pusher('4e7cd12d82bff45e4976', {cluster: 'us2', encrypted: true});
-                var channel = pusher.subscribe('user-'+qm.getUser().id);
+                var channel = pusher.subscribe('user-'+user.id);
                 channel.bind('my-event', function(data) {
                     if($state.current.name !== qmStates.chat){
                         qmService.showToastWithButton(data.message, function(){qmService.goToState(qmStates.chat);});
@@ -3083,6 +3083,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
         qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:', null, user);
         qmService.setUser(user);
+        qmService.pusher.subscribe(user);
         if(qm.urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationStartIfEnabled();
         qmLog.setupBugsnag();
@@ -6348,7 +6349,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
         if(qm.speech.getSpeechAvailable()){qmService.rootScope.setProperty(qm.items.speechEnabled, qm.speech.getSpeechEnabled());}
         qm.rootScope = $rootScope;
-        qmService.pusher.subscribe();
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
