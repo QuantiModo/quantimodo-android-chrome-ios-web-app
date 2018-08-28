@@ -1451,6 +1451,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showInfoToast("Skipped "+trackingReminderNotification.variableName);
             }
         },
+        pusher: {
+            subscribe: function(){
+                Pusher.logToConsole = qm.appMode.isDevelopment() || qm.appMode.isDebug();  // Enable pusher logging - don't include this in production
+                var pusher = new Pusher('4e7cd12d82bff45e4976', {cluster: 'us2', encrypted: true});
+                var channel = pusher.subscribe('user-'+qm.getUser().id);
+                channel.bind('my-event', function(data) {
+                    if($state.current.name !== qmStates.chat){
+                        qmService.showToastWithButton(data.message, function(){qmService.goToState(qmStates.chat);});
+                    } else {
+                        qmService.showInfoToast(data.message);
+                    }
+                    qmService.pusher.stateSpecificMessageHandler(data.message);
+                });
+            },
+            stateSpecificMessageHandler: function(message){
+                qmLog.info("stateSpecificMessageHandler handler not defined for message: "+message);
+            }
+        },
         reminders: {
             broadcastGetTrackingReminders: function(){
                 if($state.current.name.toLowerCase().indexOf(qmStates.remindersManage.toLowerCase()) !== -1){
@@ -6330,6 +6348,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
         if(qm.speech.getSpeechAvailable()){qmService.rootScope.setProperty(qm.items.speechEnabled, qm.speech.getSpeechEnabled());}
         qm.rootScope = $rootScope;
+        qmService.pusher.subscribe();
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}
