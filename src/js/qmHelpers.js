@@ -2341,8 +2341,8 @@ window.qm = {
             if(card.headerTitle && card.headerTitle.length > message.length){message = card.headerTitle;}
             if(card.subTitle && card.subTitle.length > message.length){message = card.subTitle;}
             if(card.subHeader && card.subHeader.length > message.length){message = card.subHeader;}
-            if(!message || !message.length && card.content){message = card.content;}
-            if(!message || !message.length){message = qm.stringHelper.stripHtmlTags(card.htmlContent);}
+            if(card.content){if(!message || !message.length && card.content){message = card.content;}}
+            if(card.htmlContent){if(!message || !message.length){message = qm.stringHelper.stripHtmlTags(card.htmlContent);}}
             var unfilledFields = qm.feed.getUnfilledInputFields(card);
             if(unfilledFields && unfilledFields.length){
                 message = unfilledFields[0].helpText;
@@ -5325,8 +5325,11 @@ window.qm = {
     },
     stringHelper: {
         stripHtmlTags: function(strInputCode){
-            var cleanText = strInputCode.replace(/<\/?[^>]+(>|$)/g, "");
-            return cleanText;
+            if(!strInputCode){
+                qmLog.error("Nothing provided to stripHtmlTags");
+                return strInputCode;
+            }
+            return strInputCode.replace(/<\/?[^>]+(>|$)/g, "");
         },
         removeSpecialCharacters: function (str) {
             return str.replace(/[^A-Z0-9]+/ig, "_");

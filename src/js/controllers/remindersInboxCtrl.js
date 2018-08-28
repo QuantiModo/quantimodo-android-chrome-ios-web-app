@@ -1,7 +1,7 @@
 angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$filter",
-    "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$ionicLoading", "$mdToast",
+    "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService",
     function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService,
-             qmLogService, $ionicLoading, $mdToast) {
+             qmLogService) {
     if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
 	$scope.controller_name = "RemindersInboxCtrl";
 	qmLogService.debug('Loading ' + $scope.controller_name);
@@ -50,19 +50,19 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         //getFavorites();  Not sure why we need to do this here?
         qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"});
 		$scope.stateParams = $stateParams;
-		qmService.actionSheet.setDefaultActionSheet(function() {$scope.refreshTrackingReminderNotifications(3)},
-			getVariableCategoryName(), 'Clear All Notifications',
-			function(){
-				qmService.showInfoToast('Skipping all reminder notifications...');
-				qm.notifications.skipAllTrackingReminderNotifications({}, function(){
-					$scope.refreshTrackingReminderNotifications();
-				}, function(error){
-					qmLog.error(error);
-					qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-				});
-				return true;
-			}
-		);
+        qmService.actionSheet.setDefaultActionSheet(function() {$scope.refreshTrackingReminderNotifications(3);},
+            getVariableCategoryName(), 'Clear All Notifications',
+            function(){
+                qmService.showInfoToast('Skipping all reminder notifications...');
+                qm.notifications.skipAllTrackingReminderNotifications({}, function(){
+                    $scope.refreshTrackingReminderNotifications();
+                }, function(error){
+                    qmLog.error(error);
+                    qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
+                });
+                return true;
+            }
+        );
 		qmService.splash.hideSplashScreen();
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
@@ -78,7 +78,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qm.speech.talkRobot(helpCard, function () {
 			//$scope.hideHelpCard($scope.defaultHelpCards[0], $scope.defaultHelpCards[0].emailType);
 			//readHelpCards();
-		})
+		});
     }
 	function needToRefresh() {
         if(!qm.storage.getItem(qm.items.trackingReminderNotifications)){ return true; }
@@ -86,14 +86,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         if(qm.notifications.mostRecentNotificationIsOlderThanMostFrequentInterval()){ return true; }
         return false;
     }
-	function autoRefresh() {
-	    $timeout(function () {
-            if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
-                $scope.refreshTrackingReminderNotifications();
-                autoRefresh();
-            }
-        }, 30 * 60 * 1000)
-    }
+        function autoRefresh() {
+            $timeout(function () {
+                if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
+                    $scope.refreshTrackingReminderNotifications();
+                    autoRefresh();
+                }
+            }, 30 * 60 * 1000);
+        }
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug('RemindersInboxCtrl afterLeave', null);
 		$rootScope.hideHomeButton = false;
@@ -136,7 +136,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	function refreshIfRunningOutOfNotifications() {
 	    if($scope.state.numberOfDisplayedNotifications < 2){
 	        if(qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
-	            getTrackingReminderNotifications()
+	            getTrackingReminderNotifications();
             } else {
                 $scope.refreshTrackingReminderNotifications();
             }
