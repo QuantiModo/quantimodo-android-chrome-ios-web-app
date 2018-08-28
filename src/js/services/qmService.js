@@ -1523,6 +1523,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             addToRemindersUsingVariableObject: function (variableObject, options, successHandler) {
+                if(qm.arrayHelper.variableIsArray(variableObject)){variableObject = variableObject[0];}
                 var doneState = getDefaultState();
                 if(options.doneState){doneState = options.doneState;}
                 var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
@@ -1539,10 +1540,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
                     return;
                 }
-                if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
+                var unitAbbreviatedName = (variableObject.unit) ? variableObject.unit.abbreviatedName : variableObject.abbreviatedName;
+                if (unitAbbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
                 trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
                 qmService.addToTrackingReminderSyncQueue(trackingReminder);
-                //if($state.current.name !== qmStates.onboarding){qmService.showBasicLoader();} // TODO: Why do we need loader here?  It's failing to timout for some reason
+                //if($state.current.name !== qmStates.onboarding){qmService.showBasicLoader();} // TODO: Why do we need loader here?  It's failing to timeout for some reason
                 $timeout(function () { // Allow loader to show
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                     qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
