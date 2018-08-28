@@ -823,6 +823,50 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
             }
         },
+        dialogFlow: {
+            fulfillIntent: function(userInput, successHandler, errorHandler){
+                var intent = qm.dialogFlow.getIntent(userInput);
+                if(!intent && qm.mic.wildCardHandler){
+                    qm.mic.wildCardHandler(userInput);
+                    return true;
+                }
+                qmLog.info("intent: ", intent);
+                var intents = {
+                    "Cancel Intent": function(intent){
+                        qm.speech.talkRobot(intent.responses.messages.speech);
+                        qm.mic.abortListening();
+                        qmService.goToDefaultState();
+                    },
+                    "Create Reminder Intent": function(intent){
+                        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName}, function(variable){
+                            qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"});
+                        });
+                    },
+                    "Default Fallback Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Default Welcome Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Done With Category Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Help Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Knowledge.KnowledgeBase.MTQ3ODYxNjIwMDE1ODc0NzAzMzY": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Record Measurement Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    },
+                    "Tracking Reminder Notification Intent": function(intent){
+                        qmLog.info("intent: ", intent);
+                    }
+                }
+                intents[intent.name](intent);
+            }
+        },
         email: {
             updateEmailAndExecuteCallback: function (callback){
                 if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
@@ -1477,6 +1521,41 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 } else {
                     qmLog.info("NOT broadcasting broadcastGetTrackingReminders because state is "+$state.current.name);
                 }
+            },
+            addToRemindersUsingVariableObject: function (variableObject, options, successHandler) {
+                if(qm.arrayHelper.variableIsArray(variableObject)){variableObject = variableObject[0];}
+                var doneState = getDefaultState();
+                if(options.doneState){doneState = options.doneState;}
+                var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
+                trackingReminder.variableId = variableObject.id;
+                delete trackingReminder.id;
+                trackingReminder.variableName = variableObject.name;
+                if(variableObject.unit){trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;}
+                trackingReminder.valence = variableObject.valence;
+                trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+                trackingReminder.reminderFrequency = 86400;
+                trackingReminder.reminderStartTime = qmService.getUtcTimeStringFromLocalString("19:00:00");
+                if(variableObject.variableName === "Blood Pressure"){options.skipReminderSettingsIfPossible = true;}
+                if (!options.skipReminderSettingsIfPossible) {
+                    qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
+                    return;
+                }
+                var unitAbbreviatedName = (variableObject.unit) ? variableObject.unit.abbreviatedName : variableObject.abbreviatedName;
+                if (unitAbbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
+                trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
+                qmService.addToTrackingReminderSyncQueue(trackingReminder);
+                //if($state.current.name !== qmStates.onboarding){qmService.showBasicLoader();} // TODO: Why do we need loader here?  It's failing to timeout for some reason
+                $timeout(function () { // Allow loader to show
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
+                    if(successHandler){successHandler(trackingReminder);}
+                    $timeout(function () {
+                        qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+                            qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
+                        });
+                    }, 1);
+                    qmService.trackingReminders.syncTrackingReminders();
+                }, 1);
             }
         },
         rootScope: {
@@ -1766,7 +1845,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     skipReminderSettingsIfPossible: true
                 }, function (variableObject) {
                     if(successHandler){successHandler(variableObject);}
-                    qmService.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
+                    qmService.reminders.addToRemindersUsingVariableObject(variableObject, {skipReminderSettingsIfPossible: true, doneState: "false"}); // false must have quotes
                 }, null, ev);
             },
             measurementAddSearch: function(successHandler, ev, variableCategoryName){
@@ -2092,7 +2171,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             button.state = button.state || button.stateName;
             if(button.state){
                 if(button.state === qmStates.reminderAdd && variableObject){
-                    qmService.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
+                    qmService.reminders.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
                 } else {
                     qmService.goToState(button.state, stateParams);
                 }
@@ -5806,39 +5885,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.goToState(qmStates.favorites, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
         qmService.trackingReminders.syncTrackingReminders();
     };
-    qmService.addToRemindersUsingVariableObject = function (variableObject, options, successHandler) {
-        var doneState = getDefaultState();
-        if(options.doneState){doneState = options.doneState;}
-        var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
-        trackingReminder.variableId = variableObject.id;
-        delete trackingReminder.id;
-        trackingReminder.variableName = variableObject.name;
-        if(variableObject.unit){trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;}
-        trackingReminder.valence = variableObject.valence;
-        trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-        trackingReminder.reminderFrequency = 86400;
-        trackingReminder.reminderStartTime = qmService.getUtcTimeStringFromLocalString("19:00:00");
-        if(variableObject.variableName === "Blood Pressure"){options.skipReminderSettingsIfPossible = true;}
-        if (!options.skipReminderSettingsIfPossible) {
-            qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
-            return;
-        }
-        if (variableObject.unit.abbreviatedName === 'serving'){trackingReminder.defaultValue = 1;}
-        trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
-        qmService.addToTrackingReminderSyncQueue(trackingReminder);
-        //if($state.current.name !== qmStates.onboarding){qmService.showBasicLoader();} // TODO: Why do we need loader here?  It's failing to timout for some reason
-        $timeout(function () { // Allow loader to show
-            // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-            qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
-            if(successHandler){successHandler(trackingReminder);}
-            $timeout(function () {
-                qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
-                    qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
-                });
-            }, 1);
-            qmService.trackingReminders.syncTrackingReminders();
-        }, 1);
-    };
     qmService.getDefaultReminders = function(){
         if(qm.getAppSettings().defaultReminders){return qm.getAppSettings().defaultReminders;}
         if(qm.getAppSettings().defaultRemindersType === 'medication'){
@@ -6349,6 +6395,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
         if(qm.speech.getSpeechAvailable()){qmService.rootScope.setProperty(qm.items.speechEnabled, qm.speech.getSpeechEnabled());}
         qm.rootScope = $rootScope;
+        if(qm.getUser()){
+            qmService.setUserInLocalStorageBugsnagIntercomPush(qm.getUser());
+        }
     };
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.platform.isMobile){return;}

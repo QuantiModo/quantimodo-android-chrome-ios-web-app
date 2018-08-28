@@ -1571,6 +1571,10 @@ window.qm = {
                 qm.apiAi = apiai;
             });
         },
+        loopThroughIntents: function(callback){
+            var intents = qm.staticData.dialogAgent.intents;
+            qm.objectHelper.loopThroughProperties(intents, callback);
+        },
         apiAiTest: function(text){
             if(!qm.apiAi){
                 qmLog.info("qm.apiAi not defined");
@@ -1659,25 +1663,6 @@ window.qm = {
             qm.dialogFlow.bravy = bravy;
             console.debug("bravy", bravy);
             return bravy;
-        },
-        fulfillIntent: function(userInput, successHandler, errorHandler){
-            var intent = qm.dialogFlow.getIntent(userInput);
-            if(!intent && qm.mic.wildCardHandler){
-                qm.mic.wildCardHandler(userInput);
-                return true;
-            }
-            if(!intent){
-                qmLog.error("No intent!");
-                return false;
-            }
-            if(!intent.webhookUsed){
-                var messages = intent.responses[0].messages;
-                intent.messageIndex = intent.messageIndex || 0;
-                var message = messages[intent.messageIndex];
-                intent.messageIndex = (intent.messageIndex === messages.length -1) ? 0 : intent.messageIndex++;
-                return successHandler(message);
-            } else {
-            }
         },
         post: function(body, successHandler, errorHandler){
             qm.api.postToQuantiModo(body, "v1/dialogflow", function(response){
@@ -2067,6 +2052,7 @@ window.qm = {
             "session": "projects/dr-modo/agent/sessions/1533759866859"
         },
         getEntityFromLastUserStatement: function(entityName){
+            qm.dialogFlow.matchedEntities = {};
             var lastUserStatement = qm.speech.lastUserStatement.toLowerCase();
             var entries = qm.staticData.dialogAgent.entities[entityName].entries;
             var words = lastUserStatement.split(" ");
@@ -2083,51 +2069,45 @@ window.qm = {
                 for (j = 0; i < entries.length; j += 1) {
                     for (var k = 0; k < entry.synonyms; k += 1) {
                         var synonym = synonyms[i];
-                        if(word === synonym.toLowerCase()){return entry;}
+                        if(word === synonym.toLowerCase()){
+                            qm.dialogFlow.matchedEntities[entityName] = qm.staticData.dialogAgent.entities[entityName];
+                            qm.dialogFlow.matchedEntities[entityName].userInput = word;
+                        }
                     }
                 }
             }
-            return null;
+            return qm.dialogFlow.matchedEntities;
         },
-        weHaveRequiredParams: function(intent){
+        calculateScore: function(intent){
             var parameters = intent.responses[0].parameters;
+            intent.unfilledParameters = {};
+            intent.parameters = {};
             for (var i = 0; i < parameters.length; i++) {
                 var parameter = parameters[i];
                 var parameterName = parameter.name;
-                if(parameter.required){
-                    var value = qm.speech.currentIntent.parameters[parameterName];
-                    if(value){
-                        continue;
-                    }
-                    value = qm.dialogFlow.getEntityFromLastUserStatement(parameterName);
-                    if(value){
-                        qm.speech.currentIntent.parameters[parameterName] = value;
-                        continue;
-                    }
-                    qm.speech.parameterToGet = parameterName;
-                    qm.speech.talkRobot(parameter.prompts[0].value, function(){
-                        var value = qm.dialogFlow.getEntityFromLastUserStatement(qm.speech.parameterToGet);
-                        qm.speech.currentIntent.parameters[qm.speech.parameterToGet] = value;
-                    });
-                    return false;
+                var dataType = parameter.dataType.replace('@', '');
+                if (qm.dialogFlow.matchedEntities[dataType]) {
+                    intent.parameters[parameterName] = qm.dialogFlow.matchedEntities[dataType];
+                } else if(parameter.required){
+                    intent.unfilledParameters[parameterName] = parameter;
                 }
             }
-            return true;
+            return Object.keys(intent.parameters).length - Object.keys(intent.unfilledParameters).length;
         },
+        matchedEntities: {},
+        matchedIntents: {},
         getIntent: function(userInput){
-            var result = qm.dialogFlow.apiAiTest(userInput);
-            if(!result){
-                qmLog.error("No intent!");
-                return false;
-            }
-            qm.dialogFlow.post(result, function(response){
-                qmLog.info("dialogFlow webhook response: ", response);
-            }, function(error){
-                qmLog.error(error);
+            qm.dialogFlow.getEntitiesFromUserInput(userInput);
+            qm.dialogFlow.matchedIntent = qm.staticData.dialogAgent.intents['Default Fallback Intent'];
+            var bestScore = 0;
+            qm.dialogFlow.loopThroughIntents(function(intentName, intent){
+                var score = qm.dialogFlow.calculateScore(intent);
+                if(score > bestScore){
+                    qm.dialogFlow.matchedIntent = intent;
+                    bestScore = score;
+                }
             });
-            var intentName = result.intent;
-            var intent = qm.staticData.dialogAgent.intents[intentName];
-            return intent;
+            return qm.dialogFlow.matchedIntent;
         },
         getEntities: function(){
             return qm.staticData.dialogAgent.entities;
@@ -2147,22 +2127,27 @@ window.qm = {
                 }
             };
             userInput = userInput.toLowerCase();
-            var matchedEntities = {};
-            var fuzzyMatchedEntities = {};
+            var exactMatches = {};
+            var fuzzyMatches = {};
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 var entries = entity.entries;
                 for (var i = 0; i < entries.length; i++) {
                     var entry = entries[i];
                     var entryValue = entry.value;
                     var synonyms = entry.synonyms;
+                    if(synonyms.indexOf("\"") !== -1){
+                        synonyms = synonyms.split("\"");
+                    }
                     for (var j = 0; j < synonyms.length; j++) {
-                        var synonym = synonyms[j].toLowerCase;
-                        plugin.words[synonym] = entityName;
-                        if(userInput.indexOf(synonym) !== -1){
-                            fuzzyMatchedEntities[entityName] = entity;
-                        }
-                        if(userInput.indexOf(synonym) !== -1){
-                            fuzzyMatchedEntities[entityName] = entity;
+                        var synonym = synonyms[j].toLowerCase();
+                        synonym = synonym.replace('\"', '');
+                        //plugin.words[synonym] = entityName;
+                        if(userInput === synonym){
+                            qm.dialogFlow.matchedEntities[entityName] = exactMatches[entityName] = entity;
+                            entity.matchedEntryValue = entryValue;
+                        } else if (userInput.indexOf(synonym) !== -1){
+                            fuzzyMatches[entityName] = entity;
+                            qm.dialogFlow.matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
                         }
                     }
                 }
@@ -2175,7 +2160,7 @@ window.qm = {
             // ['We like Roy!', 'We like Roy!']
             doc = nlp(userInput).out('html');
             console.info(doc);
-            return matchedEntities;
+            return qm.dialogFlow.matchedEntities;
         },
         intentFulfillment: {
             "Cancel Intent": function(data){
@@ -2352,7 +2337,7 @@ window.qm = {
                 message = unfilledFields[0].helpText;
                 if(sayOptions){
                     //message += " " + qm.feed.getAvailableCommandsSentence();
-                    message += " You can say " + unfilledFields[0].hint + ". ";
+                    message += unfilledFields[0].hint;
                 }
             }
             qm.speech.talkRobot(message, function(){

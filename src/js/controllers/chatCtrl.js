@@ -1,5 +1,5 @@
-angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout", "$ionicActionSheet",
-    function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout, $ionicActionSheet) {
+angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout",
+    function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout) {
         $scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -33,7 +33,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             cardButtonClick: function(card, button){
                 qmLog.info("card", card);
                 qmLog.info("button", button);
-                if(button && button.parameters && button.parameters.trackingReminderNotificationId){
+                if(card.parameters.trackingReminderNotificationId){
                     card.selectedButton = button;
                     qm.feed.addToFeedQueue(card, function (nextCard) {
                         //$scope.state.cards = [nextCard];
@@ -133,24 +133,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             $scope.safeApply(function () {
                 $scope.state.messages.push({who: 'user', message: $scope.state.userInputString, time: 'Just now'});
                 //$scope.state.cards.push({subHeader: reply, avatarCircular: qm.getUser().avatarImage});
-                qm.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
+                qmService.dialogFlow.fulfillIntent($scope.state.userInputString, function (reply) {
                     botReply(reply);
                 });
                 $scope.state.userInputString = '';
                 $scope.state.lastBotMessage = "One moment please...";
-            });
-        };
-        qm.staticData.dialogAgent.intents["Cancel Intent"].callback = function(){
-            qm.speech.talkRobot(qm.staticData.dialogAgent.intents["Cancel Intent"].responses.messages.speech);
-            qm.mic.abortListening();
-            qmService.goToDefaultState();
-        };
-        qm.staticData.dialogAgent.intents["Create Reminder Intent"].callback = function(){
-            qm.speech.currentIntent.name = "Create Reminder Intent";
-            var intent = qm.staticData.dialogAgent.intents["Create Reminder Intent"];
-            if(!qm.dialogFlow.weHaveRequiredParams(intent)){return;}
-            qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: qm.speech.currentIntent.parameters.variableName}, function(variable){
-                qmService.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"});
             });
         };
     }]
