@@ -6594,7 +6594,7 @@ window.qm = {
         }
     },
     visualizer: {
-        visualizerEnabled: false,
+        visualizerEnabled: true,
         showing: false,
         hideVisualizer: function(){
             //qm.appContainer.setOpacity(1);
@@ -6608,7 +6608,7 @@ window.qm = {
         },
         showVisualizer: function(type){
             if(!qm.visualizer.visualizerEnabled){return;}
-            type = type || "rainbow";
+            type = type || "siri";
             qmLog.info("Showing visualizer type: " + type);
             if(type === "rainbow"){
                 var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
@@ -6741,6 +6741,7 @@ window.qm = {
             // the canvas size
             var WIDTH = 1000;
             var HEIGHT = 400;
+            var canvas = $('#siri-canvas')[0];
             var ctx = canvas.getContext("2d");
             // options to tweak the look
             var opts = {
