@@ -839,7 +839,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     },
                     "Create Reminder Intent": function(intent){
                         qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName}, function(variable){
-                            qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"});
+                            qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"}, successHandler, errorHandler);
                         });
                     },
                     "Default Fallback Intent": function(intent){
@@ -1548,9 +1548,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $timeout(function () { // Allow loader to show
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                     qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
+                    trackingReminder.message = "Added " + trackingReminder.variableName;
                     if(successHandler){successHandler(trackingReminder);}
                     $timeout(function () {
-                        qmService.showToastWithButton("Added " + trackingReminder.variableName, "SETTINGS", function () {
+                        qmService.showToastWithButton(trackingReminder.message, "SETTINGS", function () {
                             qmService.goToState(qmStates.reminderAdd, {trackingReminder: trackingReminder})
                         });
                     }, 1);
