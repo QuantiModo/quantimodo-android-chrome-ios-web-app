@@ -4,7 +4,8 @@
         <md-card-avatar ng-if="card.avatarCircular" id="card-avatar"><img class="md-user-avatar" ng-src="{{card.avatarCircular}}"/></md-card-avatar>
         <md-card-header-text id="card" ng-if="card.headerTitle || card.subHeader">
             <span id="headerTitle" class="md-title" ng-if="card.headerTitle">{{card.headerTitle}}</span>
-            <span id="subHeader" class="md-subhead" ng-if="card.subHeader">{{card.subHeader}}</span>
+            <span id="subHeader" class="md-subhead" ng-if="!card.date && card.subHeader">{{card.subHeader}}</span>
+            <span id="date" class="md-subhead" ng-if="card.date" am-time-ago="card.date"></span>
         </md-card-header-text>
     </md-card-header>
     <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:15px; right: 5px; position: absolute;" ng-click="state.openActionSheet(card)">
