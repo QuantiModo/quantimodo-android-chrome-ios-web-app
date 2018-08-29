@@ -862,8 +862,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     },
                     "Tracking Reminder Notification Intent": function(intent){
                         qmLog.info("intent: ", intent);
+                        var card = qm.feed.currentCard;
+                        card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(intent.parameters, card.parameters);
+                        qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
+                            if(card.followUpAction){card.followUpAction();}
+                        });
                     }
-                }
+                };
                 intents[intent.name](intent);
             }
         },
