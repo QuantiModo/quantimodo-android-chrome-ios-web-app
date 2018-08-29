@@ -2078,37 +2078,57 @@ window.qm = {
             }
             return qm.dialogFlow.matchedEntities;
         },
-        calculateScore: function(intent){
+        getUnfilledParameter: function(intent){
+            var param;
+            qm.objectHelper.loopThroughProperties(intent.unfilledParameters, function(parameterName, parameter){
+                param = parameter;
+            });
+            return param;
+        },
+        calculateScore: function(intent, matchedEntities){
             var parameters = intent.responses[0].parameters;
             intent.unfilledParameters = {};
+            intent.unfilledTriggerPhrases = {};
             intent.parameters = {};
-            if(qm.feed.currentCard){intent.parameters = qm.feed.currentCard.parameters;}
+            //if(qm.feed.currentCard){intent.parameters = qm.feed.currentCard.parameters;}
             for (var i = 0; i < parameters.length; i++) {
                 var parameter = parameters[i];
                 var parameterName = parameter.name;
                 var dataType = parameter.dataType.replace('@', '');
-                if (qm.dialogFlow.matchedEntities[dataType]) {
-                    intent.parameters[parameterName] = qm.dialogFlow.matchedEntities[dataType].matchedEntryValue;
+                if (matchedEntities[dataType]) {
+                    var value = matchedEntities[dataType].matchedEntryValue;
+                    if(typeof value === "undefined"){value = matchedEntities[dataType];}
+                    intent.parameters[parameterName] = value
                 } else if(parameter.required){
                     intent.unfilledParameters[parameterName] = parameter;
+                    if(parameterName.toLowerCase().indexOf('triggerphrase') !== -1){
+                        intent.unfilledTriggerPhrases[parameterName] = parameter;
+                    }
                 }
             }
-            return Object.keys(intent.parameters).length - Object.keys(intent.unfilledParameters).length;
+            var filled = Object.keys(intent.parameters).length;
+            var unfilled = Object.keys(intent.unfilledParameters).length;
+            var unfilledTriggerPhrases = Object.keys(intent.unfilledTriggerPhrases).length;
+            return filled - unfilled - unfilledTriggerPhrases;
         },
         matchedEntities: {},
         matchedIntents: {},
+        matchedIntent: null,
         getIntent: function(userInput){
-            qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            qm.dialogFlow.matchedIntent = qm.staticData.dialogAgent.intents['Default Fallback Intent'];
+            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             var bestScore = 0;
+            var intents = [];
+            var matchedIntent = null;
             qm.dialogFlow.loopThroughIntents(function(intentName, intent){
-                var score = qm.dialogFlow.calculateScore(intent);
+                var score = intent.score = qm.dialogFlow.calculateScore(intent, matchedEntities);
                 if(score > bestScore){
-                    qm.dialogFlow.matchedIntent = intent;
+                    matchedIntent = intent;
                     bestScore = score;
                 }
+                intents.push(intent);
             });
-            return qm.dialogFlow.matchedIntent;
+            //if(matchedIntent.name === "Default Fallback Intent"){return null;}
+            return matchedIntent;
         },
         getEntities: function(){
             return qm.staticData.dialogAgent.entities;
@@ -2130,6 +2150,7 @@ window.qm = {
             userInput = userInput.toLowerCase();
             var exactMatches = {};
             var fuzzyMatches = {};
+            var matchedEntities = {};
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 var entries = entity.entries;
                 for (var i = 0; i < entries.length; i++) {
@@ -2144,11 +2165,11 @@ window.qm = {
                         synonym = synonym.replace('\"', '');
                         //plugin.words[synonym] = entityName;
                         if(userInput === synonym){
-                            qm.dialogFlow.matchedEntities[entityName] = exactMatches[entityName] = entity;
+                            matchedEntities[entityName] = exactMatches[entityName] = entity;
                             entity.matchedEntryValue = entryValue;
                         } else if (userInput.indexOf(synonym) !== -1){
                             fuzzyMatches[entityName] = entity;
-                            qm.dialogFlow.matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
+                            matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
                         }
                     }
                 }
@@ -2161,7 +2182,7 @@ window.qm = {
             // ['We like Roy!', 'We like Roy!']
             doc = nlp(userInput).out('html');
             console.info(doc);
-            return qm.dialogFlow.matchedEntities;
+            return matchedEntities;
         },
         intentFulfillment: {
             "Cancel Intent": function(data){

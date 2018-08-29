@@ -83,42 +83,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         qmService.deleteMeasurementFromServer($scope.state.measurement);
         $scope.goBack(backStateParams);
     };
-    var validate = function () {
-        var message;
-        if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
-            typeof $scope.state.measurement.value === 'undefined'){
-            if($scope.state.measurement.unitAbbreviatedName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
-            qmService.validationFailure(message, $scope.state.measurement);
-            return false;
-        }
-        if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
-            message = 'Please enter a variable name';
-            qmService.validationFailure(message, $scope.state.measurement);
-            return false;
-        }
-        if(!$scope.state.measurement.variableCategoryName){
-            message = 'Please select a variable category';
-            qmService.validationFailure(message, $scope.state.measurement);
-            return false;
-        }
-        if(!$scope.state.measurement.unitAbbreviatedName){
-            message = 'Please select a unit for ' + $scope.state.measurement.variableName;
-            qmService.validationFailure(message, $scope.state.measurement);
-            return false;
-        } else {
-            if(!qm.unitHelper.getByNameAbbreviatedNameOrId($scope.state.measurement.unitAbbreviatedName)){
-            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
-                ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
-            } else {$scope.state.measurement.unitId = qm.unitHelper.getByNameAbbreviatedNameOrId($scope.state.measurement.unitAbbreviatedName).id;}
-        }
-        return true;
-    };
     $scope.done = function(){
         if($rootScope.bloodPressure.show){
             trackBloodPressure();
             return;
         }
-        if(!validate()){ return false; }
+        if(!qmService.measurements.measurementValid($scope.state.measurement)){ return false; }
         if(!qmService.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
         if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
             // If "record a different value/time was pressed", skip reminder upon save
@@ -143,7 +113,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         // Assign measurement value if it does not exist
         if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
-        qmLogService.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
+        qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo), null);
         var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
         toastMessage = toastMessage.replace(' /', '/');
         qmService.showInfoToast(toastMessage);
