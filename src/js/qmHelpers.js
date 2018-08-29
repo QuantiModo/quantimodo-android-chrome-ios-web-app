@@ -2082,12 +2082,13 @@ window.qm = {
             var parameters = intent.responses[0].parameters;
             intent.unfilledParameters = {};
             intent.parameters = {};
+            if(qm.feed.currentCard){intent.parameters = qm.feed.currentCard.parameters;}
             for (var i = 0; i < parameters.length; i++) {
                 var parameter = parameters[i];
                 var parameterName = parameter.name;
                 var dataType = parameter.dataType.replace('@', '');
                 if (qm.dialogFlow.matchedEntities[dataType]) {
-                    intent.parameters[parameterName] = qm.dialogFlow.matchedEntities[dataType];
+                    intent.parameters[parameterName] = qm.dialogFlow.matchedEntities[dataType].matchedEntryValue;
                 } else if(parameter.required){
                     intent.unfilledParameters[parameterName] = parameter;
                 }
@@ -2288,7 +2289,7 @@ window.qm = {
             }
             return parameters;
         },
-        addToFeedQueue: function(submittedCard, successHandler, errorHandler){
+        addToFeedQueueAndRemoveFromFeed: function(submittedCard, successHandler, errorHandler){
             qm.feed.recentlyRespondedTo[submittedCard.id] = submittedCard;
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
@@ -2296,11 +2297,16 @@ window.qm = {
             }
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
-                    if(successHandler){successHandler(remainingCards[1]);}
-                    var minimumRequiredForPost = 5;
-                    if(feedQueue.length > minimumRequiredForPost || remainingCards.length < 3){
-                        qm.feed.postFeedQueue(feedQueue);
-                    }
+                    remainingCards = remainingCards.filter(function(card){
+                        return card.id !== submittedCard.id;
+                    });
+                    qm.feed.saveFeedInLocalForage(remainingCards, function(){
+                        if(successHandler){successHandler(remainingCards[0]);}
+                        var minimumRequiredForPost = 5;
+                        if(feedQueue.length > minimumRequiredForPost || remainingCards.length < 3){
+                            qm.feed.postFeedQueue(feedQueue);
+                        }
+                    });
                 }, errorHandler);
             }, errorHandler);
         },
@@ -3325,7 +3331,7 @@ window.qm = {
                     if(unfilledFields){
                         qmLog.errorAndExceptionTestingOrDevelopment("Un-filled fields: ", unfilledFields);
                     }
-                    qm.feed.addToFeedQueue(card, function(){
+                    qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(){
                         if(card.followUpAction){
                             card.followUpAction(responseText);
                         } else {
