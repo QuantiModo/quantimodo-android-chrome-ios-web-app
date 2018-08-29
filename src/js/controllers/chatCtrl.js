@@ -35,7 +35,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 qmLog.info("button", button);
                 if(card.parameters.trackingReminderNotificationId){
                     card.selectedButton = button;
-                    qm.feed.addToFeedQueue(card, function (nextCard) {
+                    qm.feed.addToFeedQueueAndRemoveFromFeed(card, function (nextCard) {
                         //$scope.state.cards = [nextCard];
                         getMostRecentCardAndTalk();
                     });
