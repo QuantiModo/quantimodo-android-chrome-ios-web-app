@@ -50,7 +50,8 @@
     "compromise": "https://github.com/spencermountain/compromise.git#^11.11.0",
     "natural": "https://github.com/NaturalNode/natural.git#^1.0.9",
     "Bravey": "https://github.com/mikepsinn/Bravey.git",
-    "pusher-js": "pusher#^4.3.0"
+    "pusher-js": "pusher#^4.3.0",
+    "angular-moment": "^1.2.0"
   },
   "resolutions": {
     "angular": "1.5.9",

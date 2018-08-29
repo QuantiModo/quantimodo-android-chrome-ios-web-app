@@ -99,6 +99,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.feed.getMostRecentCard(function (card) {
                 if(nextCard){card = nextCard;}
                 $scope.safeApply(function () {
+                    if(card.parameters.trackingReminderNotificationTimeEpoch){
+                        var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        d.setUTCSeconds(card.parameters.trackingReminderNotificationTimeEpoch);
+                        card.date = d;
+                    }
                     $scope.state.cards = [card];
                 });
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary

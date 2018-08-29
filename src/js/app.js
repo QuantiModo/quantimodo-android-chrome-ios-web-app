@@ -31,7 +31,8 @@ angular.module('starter',
         'angular-web-notification',
         //'ui-iconpicker',
         'ngFitText',
-        'ngMdIcons'
+        'ngMdIcons',
+        'angularMoment'
     ]
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService",
