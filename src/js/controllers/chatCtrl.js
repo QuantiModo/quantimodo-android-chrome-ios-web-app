@@ -49,12 +49,13 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         };
         $scope.$on('$ionicView.beforeEnter', function(e) {
             qmLog.debug('beforeEnter state ' + $state.current.name);
+            qmService.showBasicLoader();
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
             //refresh();
             qmService.rootScope.setProperty('showRobot', true);
             $scope.showRobot = true;  // Not sure why scope doesn't work
         });
-        $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();
+        $scope.$on('$ionicView.afterEnter', function(e) {
             if(!qm.getUser()){
                 qmService.login.sendToLoginIfNecessaryAndComeBack();
                 return;
@@ -97,6 +98,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         }
         function getMostRecentCardAndTalk(nextCard, successHandler, errorHandler) {
             qm.feed.getMostRecentCard(function (card) {
+                qmService.hideLoader();
                 if(nextCard){card = nextCard;}
                 $scope.safeApply(function () {
                     if(card.parameters.trackingReminderNotificationTimeEpoch){
