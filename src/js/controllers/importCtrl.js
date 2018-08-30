@@ -98,7 +98,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             cancel: function() {qmLogService.debug('CANCELLED');},
             buttonClicked: function(index) {
                 if(connectorButtons[index].state){
-                    qmService.actionSheets.handleActionSheetButtonClick(connectorButtons[index]);
+                    qmService.actionSheets.handleVariableActionSheetClick(connectorButtons[index]);
                 } else {
                     $scope.connectorAction(connector, connectorButtons[index]);
                 }
