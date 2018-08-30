@@ -831,45 +831,59 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return true;
                 }
                 qmLog.info("intent: ", intent);
-                var intents = {
-                    "Cancel Intent": function(intent){
-                        qm.speech.talkRobot(intent.responses.messages.speech);
-                        qm.mic.abortListening();
-                        qmService.goToDefaultState();
-                    },
-                    "Create Reminder Intent": function(intent){
-                        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName}, function(variable){
-                            qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"}, successHandler, errorHandler);
-                        });
-                    },
-                    "Default Fallback Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Default Welcome Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Done With Category Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Help Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Knowledge.KnowledgeBase.MTQ3ODYxNjIwMDE1ODc0NzAzMzY": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Record Measurement Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                    },
-                    "Tracking Reminder Notification Intent": function(intent){
-                        qmLog.info("intent: ", intent);
-                        var card = qm.feed.currentCard;
-                        card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(intent.parameters, card.parameters);
-                        qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
-                            if(card.followUpAction){card.followUpAction();}
-                        });
-                    }
-                };
-                intents[intent.name](intent);
+                var unfilledParam = qm.dialogFlow.getUnfilledParameter(intent);
+                if(unfilledParam){
+                    var prompt = unfilledParam.prompts[0].value;
+                    qm.speech.talkRobot(prompt);
+                    qm.mic.wildCardHandler = function(userInput){
+                        intent.parameters[unfilledParam.name] = userInput;
+                        qmService.dialogFlow.intents[intent.name](intent);
+                    };
+                    return;
+                }
+                qm.dialogFlow.matchedIntent = null;
+                qmService.dialogFlow.intents[intent.name](intent);
+            },
+            intents: {
+                "Cancel Intent": function(intent){
+                    qm.speech.talkRobot(intent.responses.messages.speech);
+                    qm.mic.abortListening();
+                    qmService.goToDefaultState();
+                },
+                "Create Reminder Intent": function(intent){
+                    qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName}, function(variable){
+                        qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"}, successHandler, errorHandler);
+                    });
+                },
+                "Default Fallback Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Default Welcome Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Done With Category Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Help Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Knowledge.KnowledgeBase.MTQ3ODYxNjIwMDE1ODc0NzAzMzY": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Record Measurement Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                },
+                "Record Symptom Intent": function(intent){
+                    qmService.measurements.saveMeasurement(intent.parameters);
+                },
+                "Tracking Reminder Notification Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+                    var card = qm.feed.currentCard;
+                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(intent.parameters, card.parameters);
+                    qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
+                        if(card.followUpAction){card.followUpAction();}
+                    });
+                }
             }
         },
         email: {
@@ -1055,6 +1069,42 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             broadcastUpdatePrimaryOutcomeHistory: function(){
                 qmLog.info("Broadcasting updatePrimaryOutcomeHistory");
                 $rootScope.$broadcast('updatePrimaryOutcomeHistory');
+            },
+            saveMeasurement: function(measurement, successHandler, errorHandler){
+                if(!qmService.measurements.measurementValid(measurement)){ return false; }
+                var toastMessage = 'Recorded ' + measurement.value  + ' ' + measurement.unitAbbreviatedName;
+                qmService.showInfoToast(toastMessage.replace(' /', '/'));
+                qmService.postMeasurementDeferred(measurement, successHandler, errorHandler);
+            },
+            measurementValid: function(measurement){
+                var message;
+                if(measurement.value === null || measurement.value === '' ||
+                    typeof measurement.value === 'undefined'){
+                    if(measurement.unitAbbreviatedName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
+                    qmService.validationFailure(message, measurement);
+                    return false;
+                }
+                if(!measurement.variableName || measurement.variableName === ""){
+                    message = 'Please enter a variable name';
+                    qmService.validationFailure(message, measurement);
+                    return false;
+                }
+                if(!measurement.variableCategoryName){
+                    message = 'Please select a variable category';
+                    qmService.validationFailure(message, measurement);
+                    return false;
+                }
+                if(!measurement.unitAbbreviatedName){
+                    message = 'Please select a unit for ' + measurement.variableName;
+                    qmService.validationFailure(message, measurement);
+                    return false;
+                } else {
+                    if(!qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName)){
+                        qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + measurement.unitAbbreviatedName +
+                            ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
+                    } else {measurement.unitId = qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName).id;}
+                }
+                return true;
             }
         },
         menu: {
