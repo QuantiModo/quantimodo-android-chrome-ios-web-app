@@ -2217,7 +2217,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
-        handleActionSheetButtonClick: function(button, variableObject) {
+        handleCardActionSheetClick: function(button, card) {
+            var stateParams = {};
+            if(button.stateParams){stateParams = button.stateParams;}
+            button.state = button.state || button.stateName;
+            if(button.state){
+                if(button.state === qmStates.reminderAdd && variableObject){
+                    qmService.reminders.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
+                } else {
+                    qmService.goToState(button.state, stateParams);
+                }
+                return true;
+            }
+            if(button.action && button.action.modifiedValue){
+                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+            }
+            return false; // Don't close if clicking top variable name
+        },
+        handleVariableActionSheetClick: function(button, variableObject) {
             var stateParams = {};
             if(button.stateParams){stateParams = button.stateParams;}
             if(variableObject){
@@ -2298,7 +2315,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED'); return true;},
                     buttonClicked: function(index, button) {
-                        return qmService.actionSheets.handleActionSheetButtonClick(button, variableObject);
+                        return qmService.actionSheets.handleVariableActionSheetClick(button, variableObject);
                     }
                 };
                 if(variableObject.userId){
@@ -2341,7 +2358,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {qmLog.debug('CANCELLED'); return true;},
                 buttonClicked: function(index, button) {
-                    return qmService.actionSheets.handleActionSheetButtonClick(button);
+                    return qmService.actionSheets.handleCardActionSheetClick(button, card);
                 }
             };
             if(destructiveButtonClickedFunction){

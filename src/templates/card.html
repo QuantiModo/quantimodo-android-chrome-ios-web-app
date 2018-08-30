@@ -27,10 +27,12 @@
     <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">
         <md-button id="{{button.id+'-text-button'}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
+                   style="min-width: 0;"
                    ng-click="state.cardButtonClick(card, button)">
             <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
             <span style="color: {{button.color}}" >
-                <i class="icon {{button.ionIcon}}" ng-if="button.ionIcon"></i> &nbsp; {{button.text}}
+                <i class="icon {{button.ionIcon}}" ng-if="button.ionIcon"></i>
+                <span ng-if="button.text && button.text !== ''"> &nbsp; {{button.text}}</span>
             </span>
         </md-button>
         <md-button id="{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttons"
