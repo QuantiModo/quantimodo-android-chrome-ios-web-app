@@ -2222,7 +2222,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
             if(button.state){
-                if(button.state === qmStates.reminderAdd && variableObject){
+                if(button.state === qmStates.reminderAdd){
                     qmService.reminders.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
                 } else {
                     qmService.goToState(button.state, stateParams);
