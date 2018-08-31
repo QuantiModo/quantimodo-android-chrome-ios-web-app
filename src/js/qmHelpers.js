@@ -3457,7 +3457,12 @@ window.qm = {
             if(qm.music.isPlaying(filePath)){return false;}
             qm.music.player[filePath] = new Audio(filePath);
             qm.music.player[filePath].volume = volume || 0.15;
-            qm.music.player[filePath].play();
+            try {
+                qm.music.player[filePath].play();
+            } catch (e) {
+                qmLog.error(e);
+                return false;
+            }
             if(errorHandler){qm.music.player[filePath].onerror = errorHandler;}
             qm.music.player[filePath].onended = function(){
                 qm.music.setPlayerStatus(filePath, 'pause');
@@ -4539,7 +4544,7 @@ window.qm = {
                 qm.speech.shutUpRobot();
                 qm.music.fadeOut();
             } else {
-                qm.speech.iCanHelp();
+                //qm.speech.iCanHelp();  // Causes this sometimes: Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first
             }
             qm.rootScope[qm.items.speechEnabled] = value;
             return qm.storage.setItem(qm.items.speechEnabled, value);
@@ -4626,10 +4631,12 @@ window.qm = {
         },
         iCanHelp: function(successHandler, errorHandler){
             if(qm.speech.recentlySaid('sound/i-can-help.wav')){return;}
-            qm.robot.openMouth();
-            qm.music.play('sound/i-can-help.wav', 0.5, function () {
+            var result = qm.music.play('sound/i-can-help.wav', 0.5, function () {
                 qm.robot.closeMouth();
             }, errorHandler);
+            if(result){
+                qm.robot.openMouth();
+            }
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening){
             if(!qm.speech.getSpeechAvailable()){
@@ -6780,6 +6787,10 @@ window.qm = {
             var WIDTH = 1000;
             var HEIGHT = 400;
             var canvas = $('#siri-canvas')[0];
+            if(!canvas){
+                qmLog.error("No siri canvas!");
+                return false;
+            }
             var ctx = canvas.getContext("2d");
             // options to tweak the look
             var opts = {
