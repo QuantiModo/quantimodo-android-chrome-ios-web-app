@@ -4790,6 +4790,10 @@ window.qm = {
             for (var i = 0; i < possiblePhrases.length; i++) {
                 var tag = possiblePhrases[i];
                 tag = nlp(tag).normalize().out();
+                if(inputField.type === "number"){
+                    if(tag === "yes"){tag = 1;}
+                    if(tag === "no"){tag = 0;}
+                }
                 function isNumeric(n) {return !isNaN(parseFloat(n)) && isFinite(n);}
                 if(inputField.type === "number" && !isNumeric(tag)){continue;}
                 inputField.value = tag;
