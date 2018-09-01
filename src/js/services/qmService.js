@@ -824,29 +824,46 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         dialogFlow: {
+            currentIntent: null,
             fulfillIntent: function(userInput, successHandler, errorHandler){
                 var intent = qm.dialogFlow.getIntent(userInput);
-                if(!intent && qm.mic.wildCardHandler){
-                    qm.mic.wildCardHandler(userInput);
-                    return true;
+                if(!intent){
+                    if(qm.mic.wildCardHandler && qm.dialogFlow.matchedIntent){
+                        qm.mic.wildCardHandler(userInput);
+                        return true;
+                    } else {
+                        intent = qm.staticData.dialogAgent.intents['Default Fallback Intent'];
+                        qmService.dialogFlow.intents[intent.name](intent, userInput);
+                        return;
+                    }
                 }
                 qmLog.info("intent: ", intent);
                 var unfilledParam = qm.dialogFlow.getUnfilledParameter(intent);
                 if(unfilledParam){
                     var prompt = unfilledParam.prompts[0].value;
                     qm.speech.talkRobot(prompt);
+                    qm.dialogFlow.matchedIntent = intent;
                     qm.mic.wildCardHandler = function(userInput){
                         intent.parameters[unfilledParam.name] = userInput;
-                        qmService.dialogFlow.intents[intent.name](intent);
+                        qmService.dialogFlow.intents[intent.name](intent, userInput);
                     };
                     return;
                 }
                 qm.dialogFlow.matchedIntent = null;
-                qmService.dialogFlow.intents[intent.name](intent);
+                qmService.dialogFlow.intents[intent.name](intent, userInput);
             },
             intents: {
+                "Answer Question Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+
+                },
+                "Ask Question Intent": function(intent){
+                    qmLog.info("intent: ", intent);
+
+                },
                 "Cancel Intent": function(intent){
                     qm.speech.talkRobot(intent.responses.messages.speech);
+                    qm.dialogFlow.matchedIntent = null;
                     qm.mic.abortListening();
                     qmService.goToDefaultState();
                 },
@@ -855,8 +872,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.reminders.addToRemindersUsingVariableObject(variable, {skipReminderSettingsIfPossible: true, doneState: "false"}, successHandler, errorHandler);
                     });
                 },
-                "Default Fallback Intent": function(intent){
+                "Default Fallback Intent": function(intent, userInput){
                     qmLog.info("intent: ", intent);
+                    var instruction = intent.responses[0].messages[0].speech[0];
+                    qm.speech.talkRobot(instruction);
+                    var askQuestionIntent = qm.staticData.dialogAgent.intents['Ask Question Intent'];
+                    askQuestionIntent.parameters = {question: userInput, recipientUserId: 230, intent: 'Ask Question Intent'};
+                    qm.feed.postToFeedEndpointImmediately(askQuestionIntent.parameters)
                 },
                 "Default Welcome Intent": function(intent){
                     qmLog.info("intent: ", intent);
