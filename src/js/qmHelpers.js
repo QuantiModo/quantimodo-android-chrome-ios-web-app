@@ -2118,7 +2118,7 @@ window.qm = {
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             var bestScore = 0;
             var intents = [];
-            var matchedIntent = null;
+            var matchedIntent;
             qm.dialogFlow.loopThroughIntents(function(intentName, intent){
                 var score = intent.score = qm.dialogFlow.calculateScore(intent, matchedEntities);
                 if(score > bestScore){
@@ -2128,7 +2128,7 @@ window.qm = {
                 intents.push(intent);
             });
             //if(matchedIntent.name === "Default Fallback Intent"){return null;}
-            return matchedIntent;
+            return matchedIntent || qm.dialogFlow.matchedIntent;
         },
         getEntities: function(){
             return qm.staticData.dialogAgent.entities;
@@ -2169,7 +2169,7 @@ window.qm = {
                             entity.matchedEntryValue = entryValue;
                         } else if (userInput.indexOf(synonym) !== -1){
                             fuzzyMatches[entityName] = entity;
-                            matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
+                            //matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
                         }
                     }
                 }
@@ -2201,9 +2201,13 @@ window.qm = {
             qm.feed.getFeedFromLocalForageOrApi({}, function(feedCards){
                 qm.localForage.getItem(qm.items.feedQueue, function(queueCards){
                     var notInQueue = feedCards;
-                    if(queueCards) {
+                    if(queueCards && queueCards.length) {
                         notInQueue = feedCards.filter(function (feedCard) {
                             var fromQueue = queueCards.find(function (queueCardParams) {
+                                if(!queueCardParams){
+                                    qmLog.error("empty item in queueCards");
+                                    return false;
+                                }
                                 return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
                             });
                             return !fromQueue;
@@ -2262,6 +2266,10 @@ window.qm = {
                 if(queueCards) {
                     notInQueue = feedCards.filter(function (feedCard) {
                         var fromQueue = queueCards.find(function (queueCardParams) {
+                            if(!queueCardParams){
+                                qmLog.error("empty item in queueCards");
+                                return false;
+                            }
                             return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
                         });
                         return !fromQueue;
@@ -2287,20 +2295,23 @@ window.qm = {
         },
         postFeedQueue: function(feedQueue, successHandler, errorHandler){
             qm.localForage.removeItem(qm.items.feedQueue, function(){
-                var params = qm.api.addGlobalParams({});
-                var cacheKey = 'postFeed';
-                if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
-                function callback(error, data, response) {
-                    var cards = qm.feed.handleFeedResponse(data);
-                    if(error){
-                        qmLog.error("Putting back in queue because of error ", error);
-                        feedQueue = qm.feed.fixFeedQueue(feedQueue);
-                        qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
-                    }
-                    qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
-                }
-                qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
             }, function(error){qmLog.error(error);});
+        },
+        postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
+            var params = qm.api.addGlobalParams({});
+            var cacheKey = 'postFeed';
+            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            function callback(error, data, response) {
+                var cards = qm.feed.handleFeedResponse(data);
+                if(error){
+                    qmLog.error("Putting back in queue because of error ", error);
+                    feedQueue = qm.feed.fixFeedQueue(feedQueue);
+                    qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
+                }
+                qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
+            }
+            qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
         },
         fixFeedQueue: function (parameters) {
             if (parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])) {
@@ -2315,6 +2326,12 @@ window.qm = {
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
                 parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
+            }
+            if(!parameters){
+                var error = "No submittedCard provided to addToFeedQueueAndRemoveFromFeed!";
+                if(errorHandler){errorHandler(error);}
+                qmLog.error(error);
+                return;
             }
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
                 qm.feed.getFeedFromLocalForage(function(remainingCards){
@@ -2910,6 +2927,9 @@ window.qm = {
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
                 localStorageItemArray = localStorageItemArray.concat(newElementsArray);
+                localStorageItemArray = localStorageItemArray.filter(function(element){
+                    return element !== null;
+                });
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
                     qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
                     if(successHandler){successHandler(localStorageItemArray);}

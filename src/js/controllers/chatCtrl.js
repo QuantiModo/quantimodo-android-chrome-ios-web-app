@@ -97,28 +97,35 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             $scope.state.bodyCss = "background-color:#333;";
         }
         function getMostRecentCardAndTalk(nextCard, successHandler, errorHandler) {
-            qm.feed.getMostRecentCard(function (card) {
+            qm.feed.getMostRecentCard(function (mostRecentCard) {
                 qmService.hideLoader();
-                if(nextCard){card = nextCard;}
+                if(nextCard){mostRecentCard = nextCard;}
                 $scope.safeApply(function () {
-                    if(card.parameters.trackingReminderNotificationTimeEpoch){
+                    if(mostRecentCard.parameters.trackingReminderNotificationTimeEpoch){
                         var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                        d.setUTCSeconds(card.parameters.trackingReminderNotificationTimeEpoch);
-                        card.date = d;
+                        d.setUTCSeconds(mostRecentCard.parameters.trackingReminderNotificationTimeEpoch);
+                        mostRecentCard.date = d;
                     }
-                    $scope.state.cards = [card];
+                    $scope.state.cards = [mostRecentCard];
                 });
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
-                card.followUpAction = function (successToastText) {
+                mostRecentCard.followUpAction = function (successToastText) {
                     if(successToastText){
                         qmService.toast.showUndoToast(successToastText, function () {
-                            qm.localForage.deleteById(qm.items.feedQueue, card.id, function(){getMostRecentCardAndTalk(card);});
+                            qm.localForage.deleteById(qm.items.feedQueue, mostRecentCard.id, function(){getMostRecentCardAndTalk(mostRecentCard);});
                         });
                     }
                     //qm.speech.talkRobot(successToastText);
-                    getMostRecentCardAndTalk();
+                    if($scope.state.cards && $scope.state.cards.length > 1){
+                        $scope.state.cards = $scope.state.cards.filter(function(card){
+                            return card.id !== mostRecentCard.id;
+                        });
+                        qm.feed.readCard($scope.state.cards[0]);
+                    } else {
+                        getMostRecentCardAndTalk();
+                    }
                 };
-                qm.feed.readCard(card, successHandler, errorHandler);
+                qm.feed.readCard(mostRecentCard, successHandler, errorHandler);
                 $scope.state.lastBotMessage = qm.speech.lastUtterance.text;
             }, errorHandler);
         }
