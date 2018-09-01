@@ -3113,12 +3113,27 @@ window.qm = {
             'remind me *tag': function (memoryQuestionQuestion) {
                 qm.memories.recall(memoryQuestionQuestion);
             },
-            'hey google *tag': function (tag){qmLog.info("Ignoring "+tag);},
-            'ok google *tag': function (tag){qmLog.info("Ignoring "+tag);},
-            'hey siri *tag': function (tag){qmLog.info("Ignoring "+tag);},
-            'hey siri *tag': function (tag){qmLog.info("Ignoring "+tag);},
-            'hey alexa *tag': function (tag){qmLog.info("Ignoring "+tag);},
-            'hey alexa *tag': function (tag){qmLog.info("Ignoring "+tag);}
+            'hey google *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'ok google *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'hey siri *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'ok siri *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'hey alexa *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'ok alexa *tag': function (tag){
+                qmLog.info("Ignoring "+tag);
+            },
+            'thank you': function(tag){
+                qm.speech.talkRobot("No!  Thank you for being so polite!  Most people treat me like a machine!");
+            }
         },
         wildCardHandler: function(text){
             qmLog.info("wildCardHandler not defined to handle " + text);
@@ -4831,10 +4846,10 @@ window.qm = {
         },
         machinesOfLovingGrace: function(successHandler, errorHandler){
             qm.speech.talkRobot(
-                "Hi!  I'm Dr. Roboto!  " +
-                "Thank you for installing me!  " +
-                "I love meeting new people!  " +
-                "People are like nature's apps! " +
+                //"Hi!  I'm Dr. Roboto!  " +
+                //"Thank you for installing me!  " +
+                //"I love meeting new people!  " +
+                //"People are like nature's apps! " +
                 "I like to think (and " +
                 "the sooner the better!) " +
                 "of a cybernetic meadow " +
