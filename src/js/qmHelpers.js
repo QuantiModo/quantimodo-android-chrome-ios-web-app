@@ -1449,16 +1449,6 @@ window.qm = {
             params = qm.api.addGlobalParams(params);
             apiInstance.getConnectors(params, callback);
         },
-        getConnectorsFromJson: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
-            if(!qm.staticData || !qm.staticData.connectors){
-                var message = "No static connectors!";
-                qmLog.error(message);
-                if(errorHandler){errorHandler(message);}
-                return false;
-            }
-            if(successHandler){successHandler(qm.staticData.connectors);}
-            return qm.staticData.connectors;
-        },
         getConnectorsFromLocalStorage: function(){
             var connectors = qm.storage.getItem(qm.items.connectors);
             if(connectors && connectors.connectors){
@@ -1476,10 +1466,12 @@ window.qm = {
             if(qm.getUser()){
                 qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
             } else {
-                qm.connectorHelper.getConnectorsFromJson(successHandler, function (error) {
-                    qmLog.error("Could not get connectors from connectors.json", error);
+                if(qm.staticData && qm.staticData.connectors){
+                    successHandler(qm.staticData.connectors);
+                } else {
+                    qmLog.error("Could not get connectors from qm.staticData.connectors");
                     qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
-                });
+                }
             }
         },
         getConnectorByName: function (connectorName, successHandler, errorHandler) {
@@ -6609,18 +6601,6 @@ window.qm = {
         }
     },
     variableCategoryHelper: {
-        getVariableCategoriesFromJsonFile: function (successHandler, errorHandler) {
-            qm.api.getViaXhrOrFetch('data/variableCategories.json', function(variableCategories){
-                if(!variableCategories){
-                    qmLog.error("No variable categories from json file!");
-                } else {
-                    qm.globalHelper.setItem(qm.items.variableCategories, variableCategories);  // Let's not use storage so user will have updated version
-                }
-                successHandler(variableCategories);
-            }, function (error) {
-                if(errorHandler){errorHandler(error);}
-            });
-        },
         getVariableCategoriesFromApi: function (successHandler, errorHandler) {
             qmLog.info("Getting variable categories from API...");
             function globalSuccessHandler(variableCategories){
@@ -6635,19 +6615,15 @@ window.qm = {
             apiInstance.getVariableCategories(callback);
         },
         getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            if (qm.variableCategoryHelper.getVariableCategoriesFromGlobals()) {
-                successHandler(qm.variableCategoryHelper.getVariableCategoriesFromGlobals());
-            } else {
-                qm.variableCategoryHelper.getVariableCategoriesFromJsonFile(function (variableCategories) {
-                    if(!variableCategories){
-                        qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
-                            successHandler(variableCategories);
-                        }, errorHandler)
-                    } else {
-                        successHandler(variableCategories);
-                    }
-                }, errorHandler)
+            var categories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+            if(!categories && qm.staticData && qm.staticData.variableCategories){categories = qm.staticData.variableCategories;}
+            if (categories) {
+                if(successHandler){successHandler(categories);}
+                return categories;
             }
+            qm.variableCategoryHelper.getVariableCategoriesFromApi(function (variableCategories) {
+                successHandler(variableCategories);
+            }, errorHandler);
         },
         getVariableCategoriesFromGlobals: function(){
             if(qm.staticData.variableCategories){return qm.staticData.variableCategories;}
