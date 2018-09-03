@@ -15,7 +15,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showOrHide: function(stateParams){
                 if(qm.platform.isMobile()){
                     document.addEventListener('deviceready', function () {
-                        if($stateParams.showAds){qmService.adBanner.show();} else {qmService.adBanner.hide();}
+                        if(stateParams.showAds){qmService.adBanner.show();} else {qmService.adBanner.hide();}
                     }, false);
                 }
             },
