@@ -1450,19 +1450,14 @@ window.qm = {
             apiInstance.getConnectors(params, callback);
         },
         getConnectorsFromJson: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('data/connectors.json'), function (connectors) {  // Can't use QM SDK in service worker
-                if(connectors){
-                    qmLog.debug('Got connectors from connectors.json', null, connectors);
-                    qm.storage.setItem(qm.items.connectors, connectors);
-                    if(successHandler){successHandler(connectors);}
-                } else {
-                    qmLog.error("No connectors from getConnectorsFromJson");
-                    if(errorHandler){errorHandler("Could not get connectors from connectors.json");}
-                }
-            }, function (error) {
-                qmLog.error("Could not get connectors from connectors.json: "+error);
-                if(errorHandler){errorHandler("Could not get connectors from connectors.json: "+error);}
-            });
+            if(!qm.staticData || !qm.staticData.connectors){
+                var message = "No static connectors!";
+                qmLog.error(message);
+                if(errorHandler){errorHandler(message);}
+                return false;
+            }
+            if(successHandler){successHandler(qm.staticData.connectors);}
+            return qm.staticData.connectors;
         },
         getConnectorsFromLocalStorage: function(){
             var connectors = qm.storage.getItem(qm.items.connectors);
