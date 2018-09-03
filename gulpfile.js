@@ -1161,6 +1161,9 @@ function writeToFile(filePath, stringContents) {
     return fs.writeFileSync(filePath, stringContents);
 }
 function writeToFileWithCallback(filePath, stringContents, callback) {
+    if(!stringContents){
+        throw filePath + " stringContents not provided to writeToFileWithCallback";
+    }
     qmLog.info("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFile(filePath, stringContents, callback);
@@ -3122,7 +3125,7 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "update": "start",
         "content_url": getCHCPContentUrl()
     };
-    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(qm.chcp), function(err){
+    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(qm.staticData.chcp), function(err){
         if(err) {return qmLog.error(err);}
         var chcpBuildOptions = {
             "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qm.getClientId()+"/dev/www/chcp.json"},
