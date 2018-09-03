@@ -3164,6 +3164,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'cordova-hcp-config',
+        'cordova-hcp-build',
         'copyAndroidLicenses',
         'bowerInstall',
         'configureApp',
