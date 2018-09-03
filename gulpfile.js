@@ -3153,7 +3153,6 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
-    outputCordovaHcpJson();
     buildingFor.platform = qmPlatform.android;
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
