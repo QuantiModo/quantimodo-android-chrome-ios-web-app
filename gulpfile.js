@@ -545,6 +545,12 @@ function readDevCredentials(){
         devCredentials = {};
     }
 }
+function readFile(path){
+    return JSON.parse(fs.readFileSync(path));
+}
+function outputFileContents(path){
+    qmLog.info(path+": "+fs.readFileSync(path))
+}
 function validateJsonFile(filePath) {
     try{
         var parsedOutput = JSON.parse(fs.readFileSync(filePath));
@@ -3127,11 +3133,15 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
             if(err) {return qmLog.error(err);}
             chcpLogin(function(err){
                 if(err) {return qmLog.error(err);}
+                outputCordovaHcpJson();
                 execute("cordova-hcp build", callback);
             });
         });
     });
 });
+function outputCordovaHcpJson() {
+    outputFileContents('cordova-hcp.json');
+}
 function chcpLogin(callback){
     if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
     /** @namespace process.env.AWS_ACCESS_KEY_ID */
@@ -3143,6 +3153,7 @@ gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
     execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
+    outputCordovaHcpJson();
     buildingFor.platform = qmPlatform.android;
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
@@ -3240,6 +3251,7 @@ gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
         callback();
         return;
     }
+    outputCordovaHcpJson();
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('cordova-hcp-login', [], function (callback) {
