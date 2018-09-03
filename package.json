@@ -100,8 +100,8 @@
     },
     {
       "platform": "ios",
-      "version": "4.1.1",
-      "locator": "ios@4.1.1"
+      "version": "4.4.0",
+      "locator": "ios@4.4.0"
     }
   ]
 }
