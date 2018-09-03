@@ -3024,7 +3024,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function getDefaultState() {
         if(window.designMode){return qmStates.configuration;}
         /** @namespace qm.getAppSettings().appDesign.defaultState */
-        return qm.getAppSettings().appDesign.defaultState || qmStates.remindersInbox;
+        if(qm.getAppSettings() && qm.getAppSettings().appDesign.defaultState){return qm.getAppSettings().appDesign.defaultState;}
+        return qmStates.remindersInbox;
     }
     qmService.goToDefaultState = function(params, options){
         qmLogService.info('Called goToDefaultState: ' + getDefaultState());
