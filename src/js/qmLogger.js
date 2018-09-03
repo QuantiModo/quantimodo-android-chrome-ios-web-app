@@ -84,8 +84,10 @@ window.qmLog = {
     },
     setDebugMode: function (value) {
         if (value) {
+            qm.storage.setItem(qm.items.apiUrl, 'utopia.quantimo.do');
             qmLog.setLogLevelName("debug");
         } else {
+            qm.storage.removeItem(qm.items.apiUrl);
             qmLog.setLogLevelName("info");
         }
         return value;
