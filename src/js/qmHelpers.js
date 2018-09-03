@@ -2074,7 +2074,7 @@ window.qm = {
             return qm.dialogFlow.matchedEntities;
         },
         getUnfilledParameter: function(intent){
-            var param;
+            var param = false;
             qm.objectHelper.loopThroughProperties(intent.unfilledParameters, function(parameterName, parameter){
                 param = parameter;
             });
@@ -2122,11 +2122,27 @@ window.qm = {
                 }
                 intents.push(intent);
             });
+            if(matchedIntent){
+                matchedIntent.parameters = matchedEntities.parameters || {};
+                matchedIntent.parameters.userInput = userInput;
+            }
             //if(matchedIntent.name === "Default Fallback Intent"){return null;}
             return matchedIntent || qm.dialogFlow.matchedIntent;
         },
         getEntities: function(){
             return qm.staticData.dialogAgent.entities;
+        },
+        getQuestionFromUserInput: function(userInput){
+            var interrogativeWords = ['who', 'what', 'where', 'when', 'why'];
+            var question = false;
+            for (var i = 0; i < interrogativeWords.length; i++) {
+                var interrogativeWord = interrogativeWords[i];
+                var index = userInput.indexOf(interrogativeWord) !== -1;
+                if(index !== -1){
+                    question = userInput.substr(index, userInput.length);
+                }
+            }
+            return question;
         },
         getEntitiesFromUserInput: function(userInput){
             var entities =  qm.dialogFlow.getEntities();
