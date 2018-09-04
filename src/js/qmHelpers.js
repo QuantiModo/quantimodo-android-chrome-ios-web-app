@@ -376,6 +376,7 @@ window.qm = {
             }
         },
         getBaseUrl: function () {
+            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
@@ -569,6 +570,7 @@ window.qm = {
             return clientId;
         },
         getQuantiModoApiUrl: function () {
+            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
             if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
@@ -1461,13 +1463,14 @@ window.qm = {
             var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
             if(connectors){
                 if(successHandler){successHandler(connectors);}
-                return;
+                return connectors;
             }
             if(qm.getUser()){
                 qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
             } else {
                 if(qm.staticData && qm.staticData.connectors){
-                    successHandler(qm.staticData.connectors);
+                    if(successHandler){successHandler(qm.staticData.connectors);}
+                    return qm.staticData.connectors;
                 } else {
                     qmLog.error("Could not get connectors from qm.staticData.connectors");
                     qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
@@ -3229,10 +3232,14 @@ window.qm = {
         errorHandler: function(error){
             qmLog.error(error);
         },
+        isListening: function(){
+            if(!qm.mic.annyangAvailable()){return false;}
+            return annyang.isListening();
+        },
         resumeListening: function(){
             qm.visualizer.showVisualizer();
             if(!qm.mic.annyangAvailable()){return;}
-            if(annyang.isListening()){
+            if(qm.mic.isListening()){
                 qmLog.info("annyang is Listening");
             } else {
                 qmLog.info("resumeListening");
@@ -4741,12 +4748,12 @@ window.qm = {
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.openMouth();
             //qm.mic.pauseListening(hideVisualizer);
-            if(annyang.isListening()){qmLog.debug("annyang still listening!")}
+            if(qm.mic.isListening()){qmLog.debug("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
             utterance.onend = function (event) {
                 clearTimeout(qm.speech.timeoutResumeInfinity);
-                if(annyang.isListening()){qmLog.debug("annyang still listening before shutup")}
+                if(qm.mic.isListening()){qmLog.debug("annyang still listening before shutup")}
                 qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
                 if(successHandler){successHandler();}
