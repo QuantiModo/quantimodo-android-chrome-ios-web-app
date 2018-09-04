@@ -3240,6 +3240,7 @@ window.qm = {
             }
         },
         addIgnoreCommand: function(phrase){
+            if(!qm.mic.annyangAvailable()){return;}
             var commands = {};
             commands[phrase] = function () {
                 qmLog.info("Ignoring robot phrase: "+phrase);
