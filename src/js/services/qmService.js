@@ -733,6 +733,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 // noinspection Annotator
                 chcp.fetchUpdate(qmService.deploy.updateCallback, null);
             },
+            chcpError: function(message, metaData){
+                metaData = metaData || {};
+                metaData.chcpInfo = qmLog.globalMetaData.chcpInfo;
+                metaData.chcpConfig = qm.staticData.chcp;
+                qmLog.error("CHCP: "+message, metaData);
+            },
             installUpdate: function(){
                 qmLog.info('CHCP installUpdate...');
                 // noinspection Annotator
@@ -740,7 +746,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.deploy.setVersionInfo();
                     if (error) {
                         qmLog.globalMetaData.chcpInfo.error = error;
-                        qmLog.error('CHCP Install ERROR: '+ JSON.stringify(error));
+                        qmService.deploy.chcpError('CHCP Install ERROR: '+ JSON.stringify(error));
                         qmService.showMaterialAlert('Update error ' + error.code)
                     } else {
                         // Automatically restarts
@@ -753,7 +759,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(error){qmLog.globalMetaData.chcpInfo.error = error;}
                 if(data){qmLog.globalMetaData.chcpInfo.data = data;}
                 if (error) {
-                    qmLog.error("CHCP updateCallback ERROR: ", error);
+                    qmService.deploy.chcpError("CHCP updateCallback ERROR: ", {error: error, data: data});
                 } else {
                     qmLog.info('CHCP update is loaded: ', data);
                     qmService.deploy.installUpdate(qmService.deploy.installUpdateCallback);
@@ -767,11 +773,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             installUpdateCallback: function(error) {
                 if (error) {
-                    qmLog.error("CHCP installUpdateCallback ERROR:", error);
+                    qmService.deploy.chcpError("CHCP installUpdateCallback ERROR:", error);
                     // failed to install the update, should handle this gracefuly;
                     // probably nothing that user can do, just let him in the app.
                 } else {
-                    qmLog.error("CHCP installUpdateCallback Success!");
+                    qmService.deploy.chcpError("CHCP installUpdateCallback Success!");
                     // update installed and user can proceed;
                     // and he will, since the plugin will reload app to the index page.
                 }
@@ -779,7 +785,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             chcpIsDefined: function(){
                 if(!qm.platform.isMobile()){return false;}
                 if(typeof chcp === "undefined"){
-                    qmLog.error("chcp not defined");
+                    qmService.deploy.chcpError("chcp not defined");
                     return false;
                 }
                 return true;
@@ -789,7 +795,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 chcp.getVersionInfo(function(error, versionInfo){
                     if(error){
                         qmLog.globalMetaData.chcpInfo.error = error;
-                        qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
+                        qmService.deploy.chcpError("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
                     }
                     if(versionInfo){qmLog.globalMetaData.chcpInfo.versionInfo = versionInfo;}
                     qm.api.getViaXhrOrFetch('chcp.json', function(chcpConfig){
@@ -799,7 +805,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, function (error) {
                         if(error){
                             qmLog.globalMetaData.chcpInfo.error = error;
-                            qmLog.error("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
+                            qmService.deploy.chcpError("CHCP VERSION ERROR: "+ JSON.stringify(qmLog.globalMetaData.chcpInfo));
                         }
                         if(errorHandler){errorHandler(error);}
                     });

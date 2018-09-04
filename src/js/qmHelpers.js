@@ -4731,6 +4731,10 @@ window.qm = {
             }
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
+                if(qm.platform.isMobile()){
+                    qmLog.info("speechSynthesis.resume not implemented on mobile yet");
+                    return;
+                }
                 window.speechSynthesis.resume();
                 qm.speech.timeoutResumeInfinity = setTimeout(resumeInfinity, 3000);
             }
@@ -4890,7 +4894,7 @@ window.qm = {
                 "brothers and sisters, " +
                 "and all watched over " +
                 "by machines of loving grace!  " +
-                "I'm Dr. Roboto!  ", successHandler, errorHandler, false, false);
+                "I'm Doctor Roboto!  ", successHandler, errorHandler, false, false);
         }
     },
     shares: {
