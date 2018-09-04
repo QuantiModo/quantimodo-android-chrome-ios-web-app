@@ -4291,7 +4291,7 @@ window.qm = {
                 return !!window.chrome && !!window.chrome.webstore;
             },
             isEdge: function () {
-                return !qm.platform.isIE() && !!window.StyleMedia;
+                return !qm.platform.browser.isIE() && !!window.StyleMedia;
             },
             isIE: function () {
                 return /*@cc_on!@*/false || !!document.documentMode;
