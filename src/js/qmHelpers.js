@@ -5548,7 +5548,7 @@ window.qm = {
         },
         getFirstWord: function(string){
             if(string.indexOf(" ") === -1){return string;}
-            var words = string[i].split(" ");
+            var words = string.split(" ");
             return words[0];
         }
     },
