@@ -109,7 +109,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
         qmService.splash.hideSplashScreen();
-        $scope.state.robotClick = $scope.myIntro.next;
+        qm.robot.onRobotClick = $scope.myIntro.next;
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){
