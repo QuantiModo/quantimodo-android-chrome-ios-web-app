@@ -376,7 +376,7 @@ window.qm = {
             }
         },
         getBaseUrl: function () {
-            if(qm.appMode.isDebug()){return "https://utopia.quantimo.do";}
+            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
@@ -570,6 +570,7 @@ window.qm = {
             return clientId;
         },
         getQuantiModoApiUrl: function () {
+            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
             var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
             if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
@@ -1462,13 +1463,14 @@ window.qm = {
             var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
             if(connectors){
                 if(successHandler){successHandler(connectors);}
-                return;
+                return connectors;
             }
             if(qm.getUser()){
                 qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
             } else {
                 if(qm.staticData && qm.staticData.connectors){
-                    successHandler(qm.staticData.connectors);
+                    if(successHandler){successHandler(qm.staticData.connectors);}
+                    return qm.staticData.connectors;
                 } else {
                     qmLog.error("Could not get connectors from qm.staticData.connectors");
                     qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
