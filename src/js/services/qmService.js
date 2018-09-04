@@ -6456,6 +6456,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.processAndSaveAppSettings = function(appSettings, callback){
         qmLog.debug("processAndSaveAppSettings for " + appSettings.clientId, null, appSettings);
+        appSettings.doctorRobotAlias = qm.appsManager.getDoctorRobotoAlias(appSettings);
         function changeFavicon(){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
             if(!qm.getAppSettings().favicon){return;}

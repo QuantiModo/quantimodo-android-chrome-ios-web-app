@@ -733,6 +733,14 @@ window.qm = {
             "quantimodo" : "quantimodo",
             "staging" : "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
+        },
+        getDoctorRobotoAlias: function(appSettings){
+            appSettings = appSettings || qm.getAppSettings();
+            if(appSettings.doctorRobotAlias){return appSettings.doctorRobotAlias;}
+            var doctorRobotoAlias = appSettings.appDisplayName.replace('Dr. ', '');
+            doctorRobotoAlias = qm.stringHelper.getFirstWord(doctorRobotoAlias);
+            if (doctorRobotoAlias === 'QuantiModo') { doctorRobotoAlias = 'Roboto'; }
+            return appSettings.doctorRobotoAlias = doctorRobotoAlias;
         }
     },
     apiHelper: {
@@ -4865,7 +4873,7 @@ window.qm = {
         },
         machinesOfLovingGrace: function(successHandler, errorHandler){
             qm.speech.talkRobot(
-                //"Hi!  I'm Dr. Roboto!  " +
+                //"Hi!  I'm Dr. "+qm.appsManager.getDoctorRobotoAlias()+"!  " +
                 //"Thank you for installing me!  " +
                 //"I love meeting new people!  " +
                 //"People are like nature's apps! " +
@@ -4894,7 +4902,9 @@ window.qm = {
                 "brothers and sisters, " +
                 "and all watched over " +
                 "by machines of loving grace!  " +
-                "I'm Doctor Roboto!  ", successHandler, errorHandler, false, false);
+                "I'm Doctor "+qm.appsManager.getDoctorRobotoAlias()+"! ",
+                "I've been programmed to reduce human suffering with data!  ",
+                successHandler, errorHandler, false, false);
         }
     },
     shares: {
@@ -5535,6 +5545,11 @@ window.qm = {
                 valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
             }
             return valueUnitText;
+        },
+        getFirstWord: function(string){
+            if(string.indexOf(" ") === -1){return string;}
+            var words = string.split(" ");
+            return words[0];
         }
     },
     studyHelper: {
