@@ -3260,7 +3260,7 @@ window.qm = {
             commands[phrase] = function () {
                 qmLog.info("Ignoring robot phrase: "+phrase);
             };
-            annyang.addCommands(commands);
+            qm.mic.addCommands(commands);
         },
         addCommands: function(commands){
             //qm.mic.removeCommands(commands);  // I think this causes problems.  Just use dynamic even handlers
@@ -3286,7 +3286,7 @@ window.qm = {
                 continuous: true,  // Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
                 paused: false // Start annyang in paused mode.
             });
-            if(commands){annyang.addCommands(commands);}
+            if(commands){qm.mic.addCommands(commands);}
             qm.visualizer.showVisualizer();
         },
         listenForNotificationResponse: function(successHandler, errorHandler){
@@ -3449,7 +3449,7 @@ window.qm = {
         initialized: false,
         initializeListening: function(commands, successHandler, errorHandler){
             qm.mic.specificErrorHandler = errorHandler;
-            annyang.addCommands(commands); // Add our commands to annyang
+            qm.mic.addCommands(commands); // Add our commands to annyang
             qm.visualizer.showVisualizer();
             qm.mic.startListening();
             if(qm.mic.initialized){return false;}
@@ -4564,7 +4564,7 @@ window.qm = {
                     qmService.goToState(qmStates.measurementAddSearch)
                 },
             };
-            annyang.addCommands(commands);
+            qm.mic.addCommands(commands);
             // Tell KITT to use annyang
             SpeechKITT.annyang();
             // Define a stylesheet for KITT to use
@@ -4903,7 +4903,7 @@ window.qm = {
                 "and all watched over " +
                 "by machines of loving grace!  " +
                 "I'm Doctor "+qm.appsManager.getDoctorRobotoAlias()+"! ",
-                "I've been programmed to reduce human suffering with data!  ",
+                //"I've been programmed to reduce human suffering with data!  ", // Included in intro slide
                 successHandler, errorHandler, false, false);
         }
     },
