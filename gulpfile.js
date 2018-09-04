@@ -3001,7 +3001,15 @@ function buildAndroidDebug(callback){
     qm.getBuildStatus().androidDebug = "BUILDING";
     postAppStatus();
     paths.apk.builtApk = paths.apk.combinedDebug;
-    execute(getCordovaBuildCommand('debug', 'android'), callback);
+    try {
+        execute(getCordovaBuildCommand('debug', 'android'), callback);
+    } catch (e) {
+        if(e.message.indexOf("not find gradle wrapper") !== -1){
+            qmLog.error("Download Android SDK tools package from https://dl.google.com/android/repository/tools_r25.2.3-windows.zip  and copy e to Android\\sdk ")
+        } else {
+            throw e;
+        }
+    }
 }
 function buildAndroidRelease(callback){
     qm.getBuildStatus()[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
