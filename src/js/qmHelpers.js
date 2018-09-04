@@ -733,6 +733,14 @@ window.qm = {
             "quantimodo" : "quantimodo",
             "staging" : "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
+        },
+        getDoctorRobotoAlias: function(appSettings){
+            appSettings = appSettings || qm.getAppSettings();
+            if(appSettings.doctorRobotAlias){return appSettings.doctorRobotAlias;}
+            var doctorRobotoAlias = appSettings.appDisplayName.replace('Dr. ', '');
+            doctorRobotoAlias = qm.stringHelper.getFirstWord(doctorRobotoAlias);
+            if (doctorRobotoAlias === 'QuantiModo') { doctorRobotoAlias = 'Roboto'; }
+            return appSettings.doctorRobotoAlias = doctorRobotoAlias;
         }
     },
     apiHelper: {
@@ -5535,6 +5543,11 @@ window.qm = {
                 valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
             }
             return valueUnitText;
+        },
+        getFirstWord: function(string){
+            if(string.indexOf(" ") === -1){return string;}
+            var words = string[i].split(" ");
+            return words[0];
         }
     },
     studyHelper: {
