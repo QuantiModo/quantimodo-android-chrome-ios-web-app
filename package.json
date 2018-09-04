@@ -73,6 +73,8 @@
     "superagent": "3.8.3",
     "sw-precache": "5.2.1",
     "taco-team-build": "0.2.5",
+    "tap-dancer": "0.0.3",
+    "tape": "4.9.0",
     "vinyl-source-stream": "1.1.2",
     "xcode": "0.9.3",
     "xml2js": "0.4.19",
@@ -89,7 +91,23 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "postinstall": "echo 'Running npm postinstall commands...' && bower install --allow-root && gulp configureAppAfterNpmInstall"
+    "postinstall": "echo 'Running npm postinstall commands...' && bower install --allow-root && gulp configureAppAfterNpmInstall",
+    "test": "tape \"./test/unit/**/*.test.js\" | tap-dancer",
+    "test:spec": "tape \"./test/unit/**/*.test.js\" | tap-spec",
+    "testb": "TESTENV=prod tape \"./test/unit/**/*.test.js\" | tap-dancer",
+    "buildTest": "TESTENV=prod node ./scripts/test.js",
+    "test:types": "tsc --project test/types",
+    "browserTest": "node ./scripts/browserTest.js",
+    "benchmark": "node ./scripts/benchmark.js",
+    "build": "node ./scripts/build/index.js",
+    "pack": "node ./scripts/pack.js",
+    "prepublishOnly": "node ./scripts/prepublish",
+    "postpublish": "node ./scripts/postpublish",
+    "demo": "node ./scripts/demo.js",
+    "watch": "amble ./scratch.js",
+    "filesize": "node ./scripts/lib/filesize.js",
+    "coverage": "node ./scripts/postpublish/coverage.js",
+    "lint": "node ./scripts/prepublish/linter.js"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
