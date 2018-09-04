@@ -4291,7 +4291,7 @@ window.qm = {
                 return !!window.chrome && !!window.chrome.webstore;
             },
             isEdge: function () {
-                return !isIE && !!window.StyleMedia;
+                return !qm.platform.isIE() && !!window.StyleMedia;
             },
             isIE: function () {
                 return /*@cc_on!@*/false || !!document.documentMode;
@@ -4677,6 +4677,7 @@ window.qm = {
             }
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening){
+            qmLog.info("talkRobot: "+text);
             if(!qm.speech.getSpeechAvailable()){
                 if(errorHandler){errorHandler("Speech not available so cannot say " + text);}
                 return false;
@@ -6814,7 +6815,7 @@ window.qm = {
             var HEIGHT = 400;
             var canvas = $('#siri-canvas')[0];
             if(!canvas){
-                qmLog.error("No siri canvas!");
+                qmLog.info("No siri canvas!");
                 return false;
             }
             var ctx = canvas.getContext("2d");
