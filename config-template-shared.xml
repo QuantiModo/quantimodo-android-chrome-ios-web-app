@@ -135,4 +135,9 @@
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="YourWindowsAppIdentifierHere" />
   </vs:platformSpecificValues>
+  <plugin name="phonegap-plugin-speech-recognition" spec="https://github.com/macdonst/SpeechRecognitionPlugin">
+    <variable name="MICROPHONE_USAGE_DESCRIPTION" value="Your microphone can be used to record measurements without typing" />
+  </plugin>
+  <plugin name="phonegap-plugin-speech-synthesis" spec="https://github.com/macdonst/SpeechSynthesisPlugin" />
+  <plugin name="cordova-plugin-media" spec="~3.0.1" />
 </widget>
