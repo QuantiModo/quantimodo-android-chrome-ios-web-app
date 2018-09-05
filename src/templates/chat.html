@@ -1,5 +1,6 @@
 <ion-view hide-nav-bar="false" view-title="Chit Chat">
     <ion-content scroll="true" overflow-scroll="true">
+        <div ng-include="'templates/emotion_detection.html'" style="width:100%;" ng-repeat="card in state.cards"></div>
         <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%; z-index: -1;">
             <div class="splash-grid"></div>
         </div>

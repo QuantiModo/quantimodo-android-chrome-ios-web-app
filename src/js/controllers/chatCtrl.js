@@ -75,6 +75,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qm.mic.wildCardHandler = $scope.state.userReply;
             qmService.pusher.stateSpecificMessageHandler = botReply;
             //qm.dialogFlow.apiAiPrepare();
+            qm.video.emotionDetection();
         });
         function handleSwipe($event, $target) {
             qmLog.info("onSwipe $event", $event);

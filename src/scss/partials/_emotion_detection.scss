@@ -1,0 +1,57 @@
+#emotion_overlay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  -o-transform : scaleX(-1);
+  -webkit-transform : scaleX(-1);
+  transform : scaleX(-1);
+  -ms-filter : fliph; /*IE*/
+  filter : fliph; /*IE*/
+}
+#emotion_video {
+  -o-transform : scaleX(-1);
+  -webkit-transform : scaleX(-1);
+  transform : scaleX(-1);
+  -ms-filter : fliph; /*IE*/
+  filter : fliph; /*IE*/
+}
+#emotion_video_container {
+  position : relative;
+  width : 370px;
+  /*margin : 0px auto;*/
+}
+#emotion_content {
+  margin-top : 50px;
+  margin-left : auto;
+  margin-right : auto;
+  max-width: 600px;
+}
+#emotion_controls {
+  text-align : center;
+}
+#emotion_container {
+  width: 600px;
+}
+#emotion_icons {
+  height: 50px;
+  padding-left: 40px;
+}
+.emotion_icon {
+  width : 40px;
+  height : 40px;
+  margin-top: 5px;
+  /*margin-left : 13px;*/
+  margin-left : 35px;
+}
+#emotion_chart, #emotion_icons {
+  margin: 0 auto;
+  width : 400px;
+}
+#emotion_icon1, #emotion_icon2, #emotion_icon3, #emotion_icon4, #emotion_icon5, #emotion_icon6 {
+  visibility : hidden;
+}
+/* d3 */
+.emotion-bar {
+  fill : steelblue;
+  fill-opacity : .9;
+}

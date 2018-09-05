@@ -1,0 +1,18 @@
+<div id="emotion_content">
+	<div id="emotion_video_container">
+		<video id="emotion_video" width="400" height="300" preload="auto" loop playsinline autoplay> </video>
+		<canvas id="emotion_overlay" width="400" height="300"></canvas>
+	</div>
+	<div id="emotion_container">
+		<div id="emotion_icons">
+			<img class="emotion_icon" id="icon1" src="lib/clmtrackr/examples/media/icon_angry.png">
+			<img class="emotion_icon" id="icon2" src="lib/clmtrackr/examples/media/icon_sad.png">
+			<img class="emotion_icon" id="icon3" src="lib/clmtrackr/examples/media/icon_surprised.png">
+			<img class="emotion_icon" id="icon4" src="lib/clmtrackr/examples/media/icon_happy.png">
+		</div>
+		<div id='emotion_chart'></div>
+	</div>
+	<div id="emotion_controls">
+		<input class="btn" type="button" value="wait, loading video" disabled="disabled" ng-click="startVideo()" id="startbutton">
+	</div>
+</div>
