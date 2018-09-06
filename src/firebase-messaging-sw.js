@@ -47,10 +47,11 @@ function showNotification(pushData) {
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
+            console.log("allActions", qm.allActions);
             for (var i = 0; i < qm.allActions.length; i++) {
                 notificationOptions.actions[i] = {
-                    action: qm.allActions[i].callback,
-                    title: qm.allActions[i].longTitle
+                    action: qm.allActions[i].callback ||  qm.allActions[i].action || qm.allActions[i].functionName,
+                    title: qm.allActions[i].longTitle ||  qm.allActions[i].longTitle ||  qm.allActions[i].text
                 };
             }
             var maxVisibleActions = Notification.maxActions;
@@ -136,6 +137,9 @@ self.addEventListener('notificationclick', function(event) {
     }
     var basePath = '/ionic/Modo/www/index.html#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
+    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
+        urlPathToOpen = event.notification.data.url;
+    }
     if(event.action && event.action.indexOf("https://") !== -1){
         var providedUrl = event.action.replace('src', 'www');
         var route = qm.stringHelper.getStringAfter(providedUrl, basePath);
