@@ -1409,7 +1409,7 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'window.qm.staticData = '+ prettyJSONStringify(qmGulp.staticData)+ ';';
+    var string = 'var staticData = '+ prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else {module.exports = staticData;}';
     try {
         writeToFile('www/data/qmStaticData.js', string);
     } catch(e){
@@ -3666,29 +3666,63 @@ gulp.task('tests', function() {
     var assert = require('assert');
     var qm = require('./src/js/qmHelpers');
     qm.staticData = require('./src/data/qmStaticData');
+    qm.nlp = require('./src/lib/compromise/builds/compromise');
     qm.qmLog = qmLog;
     qmGulp.tests = {
-        getUnits: function(){
+        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
+            var intents = qm.staticData.dialogAgent.intents;
+            var entities = qm.staticData.dialogAgent.entities;
+            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
+            for (var expectedEntityName in expectedEntities) {
+                if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
+                assert(typeof matchedEntities[expectedEntityName] !== "undefined", expectedEntityName + " not in matchedEntities!");
+                assert(matchedEntities[expectedEntityName].matchedEntryValue === expectedEntities[expectedEntityName]);
+            }
+            var expectedIntent = intents[expectedIntentName];
+            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
+            assert(triggerPhraseMatchedIntent.name === expectedIntentName);
+            var score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
+            var filledParameters = expectedIntent.parameters;
+            var expectedParameterName;
+            for (expectedParameterName in expectedParameters) {
+                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
+                if(typeof filledParameters[expectedParameterName] === "undefined"){
+                    score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
+                }
+                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
+                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+            }
+            assert(score > -2);
+            var matchedIntent = qm.dialogFlow.getIntent(userInput);
+            filledParameters = matchedIntent.parameters;
+            assert(matchedIntent.name === expectedIntentName);
+            for (expectedParameterName in expectedParameters) {
+                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
+                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
+                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+            }
+        },
+        getUnitsTest: function(){
             var units = qm.unitHelper.getAllUnits();
             console.log(units);
             assert(units.length > 5);
         },
-        getRememberIntent: function(){
+        rememberIntentTest: function(){
             var userInput = "Remember where my keys are";
-            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            assert(typeof matchedEntities.interrogativeWord !== "undefined");
-            assert(typeof matchedEntities.rememberCommand !== "undefined");
-            var rememberIntent = qm.staticData.dialogAgent.intents['Remember Intent'];
-            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
-            assert(triggerPhraseMatchedIntent.name === 'Remember Intent');
-            var score = qm.dialogFlow.calculateScore(rememberIntent, matchedEntities);
-            assert(score === -1);
-            var matchedIntent = qm.dialogFlow.getIntent(userInput);
-            assert(matchedIntent.name === 'Remember Intent');
-            console.log(matchedEntities);
+            var expectedIntentName = 'Remember Intent';
+            var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"};
+            var expectedParameters = {memoryQuestion: 'where my keys are'};
+            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
+        },
+        recordMeasurementIntentTest: function(){
+            var userInput = "Record 1 Overall Mood";
+            var expectedIntentName = 'Record Measurement Intent';
+            var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"};
+            var expectedParameters = {variableName: 'Overall Mood', value: 1};
+            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
         }
     };
+    qmGulp.tests.recordMeasurementIntentTest();
     qmGulp.tests.getUnits();
-    qmGulp.tests.getRememberIntent();
 });
 

@@ -2056,7 +2056,12 @@ var qm = {
             });
             return param;
         },
-        calculateScore: function(intent, matchedEntities){
+        calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
+            var doc = qm.nlp(userInput);
+            var parsed = doc.out('tags');
+            var number = doc.values().out();
+            if(number){number = parseFloat(number);}
+            qm.qmLog.info(parsed);
             var parameters = intent.responses[0].parameters;
             intent.unfilledParameters = {};
             intent.unfilledTriggerPhrases = {};
@@ -2069,6 +2074,10 @@ var qm = {
                 var parameter = parameters[i];
                 var parameterName = parameter.name;
                 var dataType = parameter.dataType.replace('@', '');
+                if(dataType === 'sys.number'){
+                    if(number !== null && number !== false){intent.parameters[parameterName] = number;}
+                    continue;
+                }
                 if (matchedEntities[dataType]) {
                     var value = matchedEntities[dataType].matchedEntryValue;
                     if(typeof value === "undefined"){value = matchedEntities[dataType];}
@@ -2088,8 +2097,8 @@ var qm = {
         matchedEntities: {},
         matchedIntents: {},
         matchedIntent: null,
-        getCommandOrTriggerPhraseEntity: function(userInput){
-            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
+        getCommandOrTriggerPhraseEntity: function(userInput, matchedEntities){
+            matchedEntities = matchedEntities || qm.dialogFlow.getEntitiesFromUserInput(userInput);
             var triggerEntity = false;
             qm.objectHelper.loopThroughProperties(matchedEntities, function(entityName, entity){
                 if(entityName.indexOf("Command") !== -1){
@@ -2103,8 +2112,8 @@ var qm = {
             });
             return triggerEntity;
         },
-        getIntentMatchingCommandOrTriggerPhrase: function(userInput){
-            var entity = qm.dialogFlow.getCommandOrTriggerPhraseEntity(userInput);
+        getIntentMatchingCommandOrTriggerPhrase: function(userInput, matchedEntities){
+            var entity = qm.dialogFlow.getCommandOrTriggerPhraseEntity(userInput, matchedEntities);
             if(!entity){return false;}
             var matchedIntent = false;
             qm.dialogFlow.loopThroughIntents(function(intentName, intent){
@@ -2119,27 +2128,22 @@ var qm = {
             return matchedIntent;
         },
         getIntent: function(userInput){
-            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
-            if(triggerPhraseMatchedIntent){
-                return triggerPhraseMatchedIntent;
-            }
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            var bestScore = 0;
-            var intents = [];
-            var matchedIntent;
-            qm.dialogFlow.loopThroughIntents(function(intentName, intent){
-                var score = intent.score = qm.dialogFlow.calculateScore(intent, matchedEntities);
-                if(!matchedIntent || score > bestScore){
-                    matchedIntent = intent;
-                    bestScore = score;
-                }
-                intents.push(intent);
-            });
+            var matchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput, matchedEntities);
             if(matchedIntent){
-                matchedIntent.parameters = matchedEntities.parameters || {};
-                matchedIntent.parameters.userInput = userInput;
+                qm.dialogFlow.calculateScoreAndFillParameters(matchedIntent, matchedEntities, userInput);
+            } else {
+                var bestScore = 0;
+                qm.dialogFlow.loopThroughIntents(function(intentName, intent){
+                    var score = intent.score = qm.dialogFlow.calculateScoreAndFillParameters(intent, matchedEntities, userInput);
+                    if(!matchedIntent || score > bestScore){
+                        matchedIntent = intent;
+                        bestScore = score;
+                    }
+                });
+                if(matchedIntent){matchedIntent.parameters = matchedEntities.parameters || {};}
             }
-            //if(matchedIntent.name === "Default Fallback Intent"){return null;}
+            if(matchedIntent){matchedIntent.parameters.userInput = userInput;}
             return matchedIntent || qm.dialogFlow.matchedIntent;
         },
         getEntities: function(){
@@ -3552,6 +3556,9 @@ var qm = {
             }, 100);
         }
     },
+    nlp: function(){
+        return nlp;
+    },
     notifications: {
         actions: {
             trackYesAction: function (data){
@@ -4523,6 +4530,7 @@ var qm = {
             });
         }
     },
+    qmLog: function(){return qmLog;},
     robot: {
         showing: false,
         openMouth: function(){
@@ -7245,4 +7253,5 @@ var qm = {
     }
 };
 if(typeof qmLog !== "undefined"){qm.qmLog = qmLog;}
+if(typeof nlp !== "undefined"){qm.nlp = nlp;}
 if(typeof window !== "undefined"){  window.qm = qm; qm.urlHelper.redirectToHttpsIfNecessary();} else {module.exports = qm;}
