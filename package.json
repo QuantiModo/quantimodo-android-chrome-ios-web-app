@@ -12,7 +12,8 @@
     "karma": "2.0.5",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.2",
-    "karma-spec-reporter": "0.0.32"
+    "karma-spec-reporter": "0.0.32",
+    "power-assert": "^1.6.0"
   },
   "dependencies": {
     "async": "2.6.1",

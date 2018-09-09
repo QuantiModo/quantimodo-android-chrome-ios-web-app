@@ -1,10 +1,10 @@
 /* eslint-disable no-console,no-unused-vars */
-/** @namespace window.qmLog */
+/** @namespace window.qm.qmLog */
 /** @namespace window.qm.chrome */
 /* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
 String.prototype.toCamelCase = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-window.qm = {
+var qm = {
     analytics: {
         eventCategories: {
             pushNotifications: "pushNotifications",
@@ -13,11 +13,11 @@ window.qm = {
     },
     appContainer: {
         hide: function(){
-            qmLog.info("Hiding panel class");
+            qm.qmLog.info("Hiding panel class");
             qm.appContainer.getPaneClass().style.display = "none";
         },
         show: function(){
-            qmLog.info("Showing panel class");
+            qm.qmLog.info("Showing panel class");
             qm.appContainer.getPaneClass().style.display = "block";
         },
         getPaneClass: function(){
@@ -29,7 +29,7 @@ window.qm = {
             return element;
         },
         setBackgroundColor: function(color){
-            qmLog.info("Setting background to "+color);
+            qm.qmLog.info("Setting background to "+color);
             var element = qm.appContainer.getPaneClass();
             element.style.backgroundColor = color;
             element = qm.appContainer.getAppContainer();
@@ -63,7 +63,7 @@ window.qm = {
             return window.location.href.indexOf('configuration-index.html') !== -1;
         },
         isDebug: function(){
-            return qmLog.isDebugMode();
+            return qm.qmLog.isDebugMode();
         },
         getAppMode: function(){
             var env = "production";
@@ -140,11 +140,11 @@ window.qm = {
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName) {
             if(!response){
                 var message = "No response provided to " + functionName + " qmSdkApiResponseHandler with params " +  JSON.stringify(params);
-                qmLog.info(message);
+                qm.qmLog.info(message);
                 if(errorHandler){errorHandler(message);}
                 return;
             }
-            qmLog.debug(response.status + ' response from ' + response.req.url);
+            qm.qmLog.debug(response.status + ' response from ' + response.req.url);
             if (error) {
                 var errorMessage = qm.api.generalErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(errorMessage);}
@@ -167,17 +167,17 @@ window.qm = {
         },
         generalErrorHandler: function(error, data, response, options){
             var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
-            if(!response){return qmLog.error("No API response provided to qmApiGeneralErrorHandler",
+            if(!response){return qm.qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                 {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
             if(errorMessage.toLowerCase().indexOf('expired') !== -1){
                 qm.auth.deleteAllAccessTokens();
                 qm.userHelper.setUser(null);
             }
             if(response.status === 401){
-                if(!options || !options.doNotSendToLogin){qmLog.info("Not authenticated!");}
+                if(!options || !options.doNotSendToLogin){qm.qmLog.info("Not authenticated!");}
                 qm.auth.handle401Response(response.request, options, response.headers)
             } else {
-                qmLog.error(errorMessage, null, {error: error, apiResponse: response});
+                qm.qmLog.error(errorMessage, null, {error: error, apiResponse: response});
             }
             return errorMessage;
         },
@@ -198,7 +198,7 @@ window.qm = {
                 if(qm.getAppSettings().versionNumber){
                     urlParams.appVersion = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().versionNumber);
                 } else {
-                    qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
+                    qm.qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
             if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){urlParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();}
@@ -215,11 +215,11 @@ window.qm = {
             for (var property in urlParams) {
                 if (urlParams.hasOwnProperty(property)) {
                     if(typeof urlParams[property] === "undefined"){
-                        qmLog.error(property + " is undefined!");
+                        qm.qmLog.error(property + " is undefined!");
                         delete urlParams[property];
                     }
                     if(typeof urlParams[property] === ""){
-                        qmLog.error(property + " is empty string!");
+                        qm.qmLog.error(property + " is empty string!");
                         delete urlParams[property];
                     }
                 }
@@ -245,7 +245,7 @@ window.qm = {
             }
             // DON'T DO THIS
             // if(!clientId && qm.platform.isMobile()){
-            //     window.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
+            //     window.qm.qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
             //     clientId = "default"; // On mobile
             // }
             if(!qm.clientId){ // Not sure why but this always returns quantimodo
@@ -259,7 +259,7 @@ window.qm = {
                 qm.clientId = qm.api.getClientIdFromAwsPath();
             }
             if(!qm.clientId){
-                qmLog.info("Could not get client id!");
+                qm.qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
             if (!successHandler) {return qm.clientId;}
@@ -286,7 +286,7 @@ window.qm = {
                         successHandler(qm.clientId,  preferences.QuantiModoClientSecret);
                     },
                     function(error) {
-                        qmLog.error("Error! ", error);
+                        qm.qmLog.error("Error! ", error);
                     }, ["QuantiModoClientId", "QuantiModoClientSecret"]);
             }
             qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
@@ -320,16 +320,16 @@ window.qm = {
             subDomain = subDomain.replace('qm-', '');
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
-                window.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
+                window.qm.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
                     ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
                 return clientIdFromAppConfigName;
             }
-            window.qmLog.debug('Using subDomain as client id: ' + subDomain);
+            window.qm.qmLog.debug('Using subDomain as client id: ' + subDomain);
             return subDomain;
         },
         canWeMakeRequestYet: function(type, route, options){
             if(!route || route === ''){
-                qmLog.error("No route provided to canWeMakeRequestYet!");
+                qm.qmLog.error("No route provided to canWeMakeRequestYet!");
                 return true;
             }
             function getSecondsSinceLastRequest(type, route){
@@ -352,10 +352,10 @@ window.qm = {
                 var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
                     getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
                 if(blockRequests){
-                    qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
+                    qm.qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
                     return false;
                 } else {
-                    qmLog.info(name, message, options);
+                    qm.qmLog.info(name, message, options);
                 }
             }
             window.qm.storage.setItem(qm.api.getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
@@ -364,10 +364,10 @@ window.qm = {
         responseHandler: function(error, data, response, successHandler, errorHandler) {
             if(!response){
                 var message = "No response provided to qm.api.responseHandler";
-                if(qm.getUser()){qmLog.error(message);} else {qmLog.info(message);}
+                if(qm.getUser()){qm.qmLog.error(message);} else {qm.qmLog.info(message);}
                 return;
             }
-            qmLog.debug(response.status + ' response from ' + response.req.url, null);
+            qm.qmLog.debug(response.status + ' response from ' + response.req.url, null);
             if (error) {
                 var errorMessage = qm.api.generalErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(errorMessage);}
@@ -387,7 +387,7 @@ window.qm = {
         },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qm.api.getRequestUrl(path, function(url){
-                qmLog.info("Making POST request to " + url);
+                qm.qmLog.info("Making POST request to " + url);
                 if(typeof XMLHttpRequest !== "undefined"){
                     qm.api.postViaXhr(body, url, successHandler);
                 } else {
@@ -396,7 +396,7 @@ window.qm = {
             });
         },
         getViaXhrOrFetch: function(url, successHandler, errorHandler){
-            qmLog.info("Making GET request to " + url);
+            qm.qmLog.info("Making GET request to " + url);
             if(typeof XMLHttpRequest !== "undefined"){
                 qm.api.getViaXhr(url, successHandler, errorHandler);
             } else {
@@ -409,7 +409,7 @@ window.qm = {
                 var settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(clientSecret){settingsUrl += "&clientSecret=" + clientSecret;}
                 if(window.designMode){settingsUrl += '&designMode=true';}
-                window.qmLog.debug('Getting app settings from ' + settingsUrl);
+                window.qm.qmLog.debug('Getting app settings from ' + settingsUrl);
                 return settingsUrl;
             }
             if(clientId){
@@ -421,7 +421,7 @@ window.qm = {
             }
         },
         getViaFetch: function(url, successHandler, errorHandler){
-            qmLog.pushDebug("Making get request to " + url);
+            qm.qmLog.pushDebug("Making get request to " + url);
             fetch(url, {method: 'get'})
                 .then(function(response) {
                     return response.json();
@@ -431,10 +431,10 @@ window.qm = {
                     }
                 }).catch(function(err) {
                     if(url.indexOf('.config.json')){
-                        qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
+                        qm.qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
                             url + " probably doesn't exist", err);
                     } else {
-                        qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
+                        qm.qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
                     }
                     if(errorHandler){errorHandler(err);}
                 });
@@ -456,12 +456,12 @@ window.qm = {
                 method: 'post',
                 body: JSON.stringify(body)
             }).then(function(response) {
-                qmLog.info("Got " + response.status + " response from POST to " + url);
+                qm.qmLog.info("Got " + response.status + " response from POST to " + url);
                 if(successHandler){
                     successHandler(response);
                 }
             }).catch(function(err) {
-                qmLog.error("Error from POST to " + url + ": " +err);
+                qm.qmLog.error("Error from POST to " + url + ": " +err);
             });
         },
         postViaXhr: function (body, url, successHandler) {
@@ -490,7 +490,7 @@ window.qm = {
                     if (qm.auth.getAccessTokenFromUrlUserOrStorage(user)) {
                         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
                     } else {
-                        window.qmLog.error('No access token!');
+                        window.qm.qmLog.error('No access token!');
                         if(!qm.serviceWorker){
                             qm.chrome.showSignInNotification();
                         }
@@ -511,7 +511,7 @@ window.qm = {
                     return url;
                 }
                 var url = addGlobalQueryParameters(qm.appsManager.getQuantiModoApiUrl() + "/api/" + path);
-                qmLog.debug("Making API request to " + url);
+                qm.qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
         },
@@ -590,7 +590,7 @@ window.qm = {
             if(qm.clientSecret){return qm.clientSecret;}
             if(qm.getAppSettings().clientSecret){return qm.getAppSettings().clientSecret;}
             if(!qm.privateConfig){
-                if(window.location.href.indexOf('quantimo.do') === -1){qmLog.error("No client secret or private config!");}
+                if(window.location.href.indexOf('quantimo.do') === -1){qm.qmLog.error("No client secret or private config!");}
                 return null;
             }
             if (qm.platform.isIOS()) { return qm.privateConfig.client_secrets.iOS; }
@@ -643,7 +643,7 @@ window.qm = {
                 qm.api.getViaXhrOrFetch(appSettingsUrl, function (response) {
                     if(!response){
                         if(errorHandler){errorHandler("No response from " + appSettingsUrl);}
-                        qmLog.error("No response from " + appSettingsUrl);
+                        qm.qmLog.error("No response from " + appSettingsUrl);
                         return;
                     }
                     if(response.privateConfig){
@@ -651,7 +651,7 @@ window.qm = {
                         qm.localForage.setItem(qm.items.privateConfig, response.privateConfig);
                     }
                     if(!response.appSettings){
-                        qmLog.error("No appSettings response from "+ appSettingsUrl);
+                        qm.qmLog.error("No appSettings response from "+ appSettingsUrl);
                         if(errorHandler){errorHandler("No appSettings response from "+ appSettingsUrl);}
                         return false;
                     }
@@ -662,12 +662,12 @@ window.qm = {
         getAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
             qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('default.config.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
                 if(parsedResponse){
-                    window.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
+                    window.qm.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
                     qm.appsManager.processAndSaveAppSettings(parsedResponse);
                 }
                 callback(parsedResponse);
             }, function () {
-                qmLog.error("Could not get appSettings from default.config.json");
+                qm.qmLog.error("Could not get appSettings from default.config.json");
             });
         },
         loadBuildInfoFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
@@ -678,24 +678,24 @@ window.qm = {
                 }
                 callback(parsedResponse);
             }, function () {
-                qmLog.error("Could not get appSettings from build-info.json");
+                qm.qmLog.error("Could not get appSettings from build-info.json");
             });
         },
         loadPrivateConfigFromJsonFile: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
             if(!qm.privateConfig){
                 qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
-                    qmLog.debug('Got private config from json file', null, parsedResponse);
+                    qm.qmLog.debug('Got private config from json file', null, parsedResponse);
                     qm.privateConfig = parsedResponse;
                     if(successHandler){successHandler(parsedResponse);}
                 }, function () {
-                    qmLog.error("Could not get private config from json file");
+                    qm.qmLog.error("Could not get private config from json file");
                     if(errorHandler){errorHandler("Could not get private config from json file");}
                 });
             }
         },
         processAndSaveAppSettings: function(appSettings, callback){
             if(!appSettings){
-                qmLog.error("Nothing given to processAndSaveAppSettings!");
+                qm.qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
             appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
@@ -776,7 +776,7 @@ window.qm = {
             qm.apiHelper.getApiDocs(function (apiDocs) {
                 var definition = apiDocs.definitions[modelName];
                 if(!definition){
-                    qmLog.error(modelName + " definition not found.  Available definitions are "+JSON.stringify(apiDocs.definitions));
+                    qm.qmLog.error(modelName + " definition not found.  Available definitions are "+JSON.stringify(apiDocs.definitions));
                 }
                 callback(definition);
             });
@@ -797,7 +797,7 @@ window.qm = {
     arrayHelper: {
         arrayHasItemWithSpecificPropertyValue: function(propertyName, propertyValue, array){
             if(!array){
-                qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
+                qm.qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
                 return false;
             }
             for (var i = 0; i < array.length; i++) {
@@ -829,7 +829,7 @@ window.qm = {
         },
         convertObjectToArray: function (object) {
             if(!object){
-                qmLog.info(object + " provided to convertObjectToArray");
+                qm.qmLog.info(object + " provided to convertObjectToArray");
                 return object;
             }
             if(qm.arrayHelper.variableIsArray(object)){return object;}
@@ -864,13 +864,13 @@ window.qm = {
             if(!matchingElements){return null;}
             if(matchingElements.length){
                 if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-                    window.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist');
+                    window.qm.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist');
                 }
                 if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-                    window.qmLog.error(filterPropertyName + ' filterPropertyName does not exist');
+                    window.qm.qmLog.error(filterPropertyName + ' filterPropertyName does not exist');
                 }
                 if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-                    window.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist');
+                    window.qm.qmLog.error(lessThanPropertyName + ' lessThanPropertyName does not exist');
                 }
             }
             if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
@@ -896,7 +896,7 @@ window.qm = {
         },
         getContaining: function(searchTerm, array){
             if(!array){
-                qmLog.error("No array provided to getContaining");
+                qm.qmLog.error("No array provided to getContaining");
                 return array;
             }
             searchTerm = searchTerm.toLowerCase();
@@ -910,7 +910,7 @@ window.qm = {
         },
         getWithNameContaining: function(searchTerm, array){
             if(!array){
-                qmLog.error("No array provided to getContaining");
+                qm.qmLog.error("No array provided to getContaining");
                 return array;
             }
             searchTerm = searchTerm.toLowerCase();
@@ -922,10 +922,10 @@ window.qm = {
         },
         getWithNameContainingEveryWord: function(searchTerm, array){
             if(!array){
-                qmLog.error("No array provided to getContaining");
+                qm.qmLog.error("No array provided to getContaining");
                 return array;
             }
-            qmLog.info("Called getWithNameContainingEveryWord...");
+            qm.qmLog.info("Called getWithNameContainingEveryWord...");
             searchTerm = searchTerm.toLowerCase();
             var filterBy = searchTerm.split(/\s+/);
             return array.filter(function(item){
@@ -958,26 +958,26 @@ window.qm = {
         },
         removeLastItem: function(array){
             if(!array){
-                qmLog.error("No array provided to removeLastItem");
+                qm.qmLog.error("No array provided to removeLastItem");
                 return array;
             }
             if(!qm.arrayHelper.variableIsArray(array)){
-                qmLog.error("Non-array provided to removeLastItem");
+                qm.qmLog.error("Non-array provided to removeLastItem");
                 return array;
             }
             array.pop();
         },
         removeLastItemsUntilSizeLessThan: function(maxKb, array){
             if(!array){
-                qmLog.error("No array provided to removeLastItem");
+                qm.qmLog.error("No array provided to removeLastItem");
                 return array;
             }
             if(!qm.arrayHelper.variableIsArray(array)){
-                qmLog.error("Non-array provided to removeLastItemsUntilSizeLessThan");
+                qm.qmLog.error("Non-array provided to removeLastItemsUntilSizeLessThan");
                 return array;
             }
             if(array.length < 2){
-                qmLog.error("Removing only element from single item array!");
+                qm.qmLog.error("Removing only element from single item array!");
                 return [];
             }
             while (qm.arrayHelper.getSizeInKiloBytes(array) > maxKb) {
@@ -986,9 +986,9 @@ window.qm = {
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName){
-            qmLog.info("Sorting by "+propertyName+"...");
+            qm.qmLog.info("Sorting by "+propertyName+"...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
-                qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
+                qm.qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
             }
             if(arrayToSort.length < 2){return arrayToSort;}
@@ -1001,7 +1001,7 @@ window.qm = {
         },
         unsetNullProperties: function (array) {
             if(!array){
-                qmLog.error("Nothing provided to unsetNullProperties");
+                qm.qmLog.error("Nothing provided to unsetNullProperties");
                 return null;
             }
             for (var i = 0; i < array.length; i++) {
@@ -1011,7 +1011,7 @@ window.qm = {
         },
         variableIsArray: function(variable){
             if(!variable){
-                qmLog.info(variable + " provided to variableIsArray");
+                qm.qmLog.info(variable + " provided to variableIsArray");
                 return false;
             }
             var isAnArray = Array.isArray(variable);
@@ -1027,9 +1027,9 @@ window.qm = {
             var a = array.concat();
             for(var i = 0; i < a.length; i++) {
                 for(var j = i + 1; j < a.length; j++) {
-                    if(!a[i]){qmLog.error('a[i] not defined!');}
+                    if(!a[i]){qm.qmLog.error('a[i] not defined!');}
                     if(!a[j]){
-                        qmLog.error('a[j] not defined!');
+                        qm.qmLog.error('a[j] not defined!');
                         return a;
                     }
                     if(a[i].id === a[j].id) {
@@ -1041,7 +1041,7 @@ window.qm = {
         },
         filterByRequestParams: function(array, requestParams) {
             if(!requestParams){
-                qmLog.info("No requestParams provided to filterByRequestParams");
+                qm.qmLog.info("No requestParams provided to filterByRequestParams");
                 return array;
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc', 'variableName'];
@@ -1069,9 +1069,9 @@ window.qm = {
                     if (excludedFilterParams.indexOf(key) !== -1) {
                         return;
                     } else if (allowedFilterParams.indexOf(key) === -1) {
-                        qmLog.error(key + " is not in allowed filter params");
+                        qm.qmLog.error(key + " is not in allowed filter params");
                     } else {
-                        qmLog.info("filtering by " + key);
+                        qm.qmLog.info("filtering by " + key);
                     }
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
@@ -1142,25 +1142,25 @@ window.qm = {
     },
     auth: {
         getAndSaveAccessTokenFromCurrentUrl: function(){
-            qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             if(accessTokenFromUrl){
                 if(!qm.auth.accessTokenIsValid(accessTokenFromUrl)){return null;}
-                qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
+                qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl saving " + accessTokenFromUrl);
                 qm.auth.saveAccessToken(accessTokenFromUrl);
             }
             return accessTokenFromUrl;
         },
         accessTokenIsValid: function(accessToken){
             if(accessToken.length < 10 && accessToken !== "demo"){
-                qmLog.error("This accessTokenFromUrl is not valid: "+ accessToken);
+                qm.qmLog.error("This accessTokenFromUrl is not valid: "+ accessToken);
                 return false;
             }
             return true;
         },
         saveAccessToken: function(accessToken){
             if(!qm.urlHelper.getParam('doNotRemember')){
-                qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
+                qm.qmLog.authDebug("saveAccessToken: Saving access token in local storage because doNotRemember is not set");
                 qm.storage.setItem(qm.items.accessToken, accessToken);
             }
         },
@@ -1173,7 +1173,7 @@ window.qm = {
             if(qm.userHelper.getUserFromLocalStorage() && qm.userHelper.getUserFromLocalStorage().accessToken){
                 accessToken = qm.userHelper.getUserFromLocalStorage().accessToken;
                 if(!qm.auth.accessTokenIsValid(accessToken)){
-                    qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
+                    qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
                 } else {
                     return accessToken;
                 }
@@ -1181,12 +1181,12 @@ window.qm = {
             accessToken = qm.storage.getItem(qm.items.accessToken);
             if(accessToken){
                 if(!qm.auth.accessTokenIsValid(accessToken)){
-                    qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
+                    qm.qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
                 } else {
                     return accessToken;
                 }
             }
-            qmLog.info("No access token or user!");
+            qm.qmLog.info("No access token or user!");
             return null;
         },
         saveAccessTokenResponse: function(accessResponse) {
@@ -1195,7 +1195,7 @@ window.qm = {
             if (accessToken) {
                 window.qm.storage.setItem('accessToken', accessToken);
             } else {
-                qmLog.error('No access token provided to qm.auth.saveAccessTokenResponse');
+                qm.qmLog.error('No access token provided to qm.auth.saveAccessTokenResponse');
                 return;
             }
             var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
@@ -1217,34 +1217,34 @@ window.qm = {
                 /** @namespace accessResponse.expiresIn */
                 var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
                 expiresAtMilliseconds = window.qm.timeHelper.getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
-                qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
+                qm.qmLog.authDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
             }
             if(expiresAtMilliseconds){
                 qm.storage.setItem(qm.items.expiresAtMilliseconds, expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
             } else {
-                qmLog.authDebug('No expiresAtMilliseconds!',
+                qm.qmLog.authDebug('No expiresAtMilliseconds!',
                     'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                     {groupingHash: 'No expiresAtMilliseconds!'},
                     "error");
             }
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
-            qmLog.authDebug(groupingHash,
+            qm.qmLog.authDebug(groupingHash,
                 'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qm.storage.getAsString('user'),
                 {groupingHash: groupingHash}, "error");
         },
         getAccessTokenFromCurrentUrl: function(){
-            qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            qm.qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
             if(accessTokenFromUrl){
-                qmLog.webAuthDebug("Got access token from url");
+                qm.qmLog.webAuthDebug("Got access token from url");
             } else {
-                qmLog.webAuthDebug("No access token from url");
+                qm.qmLog.webAuthDebug("No access token from url");
             }
             return accessTokenFromUrl;
         },
         deleteAllAccessTokens: function(){
-            qmLog.info("deleteAllAccessTokens...");
+            qm.qmLog.info("deleteAllAccessTokens...");
             qm.storage.removeItem('accessToken');
             if(qm.userHelper.getUserFromLocalStorage()){
                 qm.userHelper.getUserFromLocalStorage().accessToken = null;
@@ -1253,7 +1253,7 @@ window.qm = {
             qm.api.configureClient();
         },
         deleteAllCookies: function(){
-            qmLog.info("Deleting all cookies...");
+            qm.qmLog.info("Deleting all cookies...");
             var cookies = document.cookie.split(";");
             for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i];
@@ -1278,21 +1278,21 @@ window.qm = {
             url += "&state=testabcd";
             if(register === true){url += "&register=true";}
             url += "&redirect_uri=" + qm.auth.getRedirectUri();
-            qmLog.debug('generateV1OAuthUrl: ' + url);
+            qm.qmLog.debug('generateV1OAuthUrl: ' + url);
             return url;
         },
         openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler, ref) {
             redirectUrl = redirectUrl || qm.auth.getRedirectUri();
-            qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
+            qm.qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
             ref = ref || window.open(url, '_blank');
             if (!ref) {
-                qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
+                qm.qmLog.error('You must first unblock popups, and and refresh the page for this to work!');
                 alert("In order to log in, please unblock popups by clicking the icon on the right of the address bar. Then refresh the page.");
             } else {
-                qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+                qm.qmLog.authDebug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
                 var interval = setInterval(function () {ref.postMessage('isLoggedIn?', redirectUrl);}, 1000);
                 window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
-                    qmLog.authDebug('message received from sibling tab', null, event.url);
+                    qm.qmLog.authDebug('message received from sibling tab', null, event.url);
                     if(interval !== false){
                         clearInterval(interval);  // Don't ask login question anymore
                         interval = false;
@@ -1319,22 +1319,22 @@ window.qm = {
         },
         getAccessTokenFromUrlAndSetLocalStorageFlags: function(stateName){
             if(qm.auth.accessTokenFromUrl){ return qm.auth.accessTokenFromUrl; }
-            qmLog.webAuthDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
+            qm.qmLog.webAuthDebug("getAccessTokenFromUrl: No previous qm.auth.accessTokenFromUrl");
             qm.auth.accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             if(!qm.auth.accessTokenFromUrl){return null;}
             if(stateName !== 'app.login'){
-                qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
-                qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
+                qm.qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
+                qm.qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qm.storage.setItem(qm.items.onboarded, true);
                 qm.storage.setItem(qm.items.introSeen, true);
-                qmLog.info('Setting onboarded and introSeen to true');
-                qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
+                qm.qmLog.info('Setting onboarded and introSeen to true');
+                qm.qmLog.info('Setting afterLoginGoToState and afterLoginGoToUrl to null');
                 qm.storage.setItem(qm.items.afterLoginGoToState, null);
                 qm.storage.setItem(qm.items.afterLoginGoToUrl, null);
             } else {
-                qmLog.info('On login state so not setting afterLoginGoToState and afterLoginGoToUrl to null');
+                qm.qmLog.info('On login state so not setting afterLoginGoToState and afterLoginGoToUrl to null');
             }
-            qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + qm.auth.accessTokenFromUrl);
+            qm.qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + qm.auth.accessTokenFromUrl);
             return qm.auth.accessTokenFromUrl;
         },
         logout: function() {
@@ -1350,7 +1350,7 @@ window.qm = {
             afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
             if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
             var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
-            qmLog.info("Sending to " + logoutUrl);
+            qm.qmLog.info("Sending to " + logoutUrl);
             var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
             //$http(request);
             // Get request doesn't seem to clear cookies
@@ -1358,15 +1358,15 @@ window.qm = {
         },
         weShouldSetAfterLoginStateOrUrl: function(afterLoginGoToStateOrUrl){
             if(qm.storage.getItem(qm.items.afterLoginGoToUrl)){
-                qmLog.info('afterLoginGoToUrl already set to '+ qm.storage.getItem(qm.items.afterLoginGoToUrl));
+                qm.qmLog.info('afterLoginGoToUrl already set to '+ qm.storage.getItem(qm.items.afterLoginGoToUrl));
                 return false;
             }
             if(qm.storage.getItem(qm.items.afterLoginGoToState)){
-                qmLog.info('afterLoginGoToState already set to '+ qm.storage.getItem(qm.items.afterLoginGoToState));
+                qm.qmLog.info('afterLoginGoToState already set to '+ qm.storage.getItem(qm.items.afterLoginGoToState));
                 return false;
             }
             if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
-                qmLog.info('setAfterLoginGoToState: Why are we sending to login from login state?');
+                qm.qmLog.info('setAfterLoginGoToState: Why are we sending to login from login state?');
                 return false;
             }
             return true;
@@ -1374,23 +1374,23 @@ window.qm = {
         setAfterLoginGoToUrl: function (afterLoginGoToUrl){
             if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
             if(!qm.auth.weShouldSetAfterLoginStateOrUrl(afterLoginGoToUrl)){return false;}
-            qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
+            qm.qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
             qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
         },
         sendToLogin: function () {
             if(qm.urlHelper.getParam('access_token')){
                 if(!qm.auth.getAccessTokenFromCurrentUrl()){
-                    qmLog.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
+                    qm.qmLog.error("Not detecting snake case access_token", {}, qm.qmLog.getStackTrace());
                 }
-                qmLog.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
+                qm.qmLog.error("Why are we sending to login if we have an access token?", {}, qm.qmLog.getStackTrace());
                 return;
             }
-            qmLog.authDebug('Sending to app.login', null);
+            qm.qmLog.authDebug('Sending to app.login', null);
             window.location.href = '#/app/login';
         },
         setAfterLoginGoToUrlAndSendToLogin: function (){
             if(window.location.href.indexOf('login') !== -1){
-                qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
+                qm.qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
                 return;
             }
             qm.auth.setAfterLoginGoToUrl();
@@ -1399,9 +1399,9 @@ window.qm = {
         handle401Response: function(request, options, headers) {
             options = options || {};
             if(options && options.doNotSendToLogin){return;}
-            qmLog.debug('generalApiErrorHandler: Sending to login because we got 401 with request ' +
+            qm.qmLog.debug('generalApiErrorHandler: Sending to login because we got 401 with request ' +
                 JSON.stringify(request), null, options.stackTrace);
-            qmLog.debug('HEADERS: ', headers, options.stackTrace);
+            qm.qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
             qm.auth.setAfterLoginGoToUrlAndSendToLogin();
         }
@@ -1410,7 +1410,7 @@ window.qm = {
     chartHelper: {
         setChartExportingOptionsOnce: function(highchartConfig){
             if(!highchartConfig){
-                qmLog.info("No highchartConfig provided to setChartExportingOptionsOnce");
+                qm.qmLog.info("No highchartConfig provided to setChartExportingOptionsOnce");
                 return highchartConfig;
             }
             highchartConfig.exporting = {enabled: qm.platform.isWeb()};
@@ -1440,15 +1440,15 @@ window.qm = {
     },
     connectorHelper: {
         getConnectorsFromApi: function(params, successCallback, errorHandler){
-            qmLog.info("Getting connectors from API...");
+            qm.qmLog.info("Getting connectors from API...");
             function successHandler(response){
                 var connectors = response.connectors || response;
                 if (connectors) {
-                    qmLog.info("Got connectors from API...");
+                    qm.qmLog.info("Got connectors from API...");
                     qm.storage.setItem(qm.items.connectors, connectors);
                     if(successCallback){successCallback(connectors);}
                 } else {
-                    qmLog.error("Could not get connectors from API...");
+                    qm.qmLog.error("Could not get connectors from API...");
                 }
             }
             qm.api.configureClient();
@@ -1480,7 +1480,7 @@ window.qm = {
                     if(successHandler){successHandler(qm.staticData.connectors);}
                     return qm.staticData.connectors;
                 } else {
-                    qmLog.error("Could not get connectors from qm.staticData.connectors");
+                    qm.qmLog.error("Could not get connectors from qm.staticData.connectors");
                     qm.connectorHelper.getConnectorsFromApi({}, successHandler, errorHandler);
                 }
             }
@@ -1494,7 +1494,7 @@ window.qm = {
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function (connectors) {
                 if(!connectors){
-                    qmLog.error("No getConnectorsFromLocalStorageOrApi!");
+                    qm.qmLog.error("No getConnectorsFromLocalStorageOrApi!");
                     if(errorHandler){errorHandler("No getConnectorsFromLocalStorageOrApi!");}
                     return;
                 }
@@ -1553,7 +1553,7 @@ window.qm = {
     dialogFlow: {
         apiAi: null,
         apiAiPrepare: function(){
-            qmLog.info("apiAiPrepare...");
+            qm.qmLog.info("apiAiPrepare...");
             apiai = new Bravey.ApiAiAdapter("data/apiai", {language:"EN"});
             var entities = qm.staticData.dialogAgent.entities;
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
@@ -1565,7 +1565,7 @@ window.qm = {
                 apiai.loadIntent(intentName);
             });
             apiai.prepare(function(){
-                qmLog.info("apiAi NLP ready!");
+                qm.qmLog.info("apiAi NLP ready!");
                 qm.apiAi = apiai;
             });
         },
@@ -1575,11 +1575,11 @@ window.qm = {
         },
         apiAiTest: function(text){
             if(!qm.apiAi){
-                qmLog.info("qm.apiAi not defined");
+                qm.qmLog.info("qm.apiAi not defined");
                 return false;
             }
             var out = qm.apiAi.nlp.test(text);
-            qmLog.info("api ai: ", out);
+            qm.qmLog.info("api ai: ", out);
             return out;
         },
         bravy: null,
@@ -1615,7 +1615,7 @@ window.qm = {
                     try {
                         braveyEntity.addMatch(entry.value, entry.value);
                     } catch (error) {
-                        qmLog.error(error);
+                        qm.qmLog.error(error);
                         continue;
                     }
                     var synonyms = entry.synonyms;
@@ -1626,7 +1626,7 @@ window.qm = {
                         try {
                             braveyEntity.addMatch(entry.value, synonym);
                         } catch (error) {
-                            qmLog.error(error);
+                            qm.qmLog.error(error);
                         }
                     }
                 }
@@ -1638,7 +1638,7 @@ window.qm = {
                 console.debug("Adding sentences for "+intentName);
                 var userSaysSentences = intent.usersays;
                 if(!userSaysSentences){
-                    qmLog.error("No userSaysSentences in " + intentName + ": ", intent);
+                    qm.qmLog.error("No userSaysSentences in " + intentName + ": ", intent);
                     return;
                 }
                 for (var i = 0; i < userSaysSentences.length; i++) {
@@ -1857,12 +1857,12 @@ window.qm = {
         },
         postNotificationResponse: function(value, successHandler, errorHandler){
             if(!qm.dialogFlow.lastApiResponse.outputContexts){
-                qmLog.error("No outputContexts!");
+                qm.qmLog.error("No outputContexts!");
                 return false;
             }
             var outputContext = qm.dialogFlow.lastApiResponse.outputContexts[0];
             if(!outputContext.parameters){
-                qmLog.error("No parameters!");
+                qm.qmLog.error("No parameters!");
                 return false;
             }
             outputContext.parameters.value = value;
@@ -2049,33 +2049,6 @@ window.qm = {
             },
             "session": "projects/dr-modo/agent/sessions/1533759866859"
         },
-        getEntityFromLastUserStatement: function(entityName){
-            qm.dialogFlow.matchedEntities = {};
-            var lastUserStatement = qm.speech.lastUserStatement.toLowerCase();
-            var entries = qm.staticData.dialogAgent.entities[entityName].entries;
-            var words = lastUserStatement.split(" ");
-            var i, j, word, entry;
-            for (i = 0; i < words.length; i += 1) {
-                word = words[i];
-                for (j = 0; i < entries.length; j += 1) {
-                    entry = entries[i];
-                    if(word === entry.name.toLowerCase()){return entry;}
-                }
-            }
-            for (i = 0; i < words.length; i += 1) {
-                word = words[i];
-                for (j = 0; i < entries.length; j += 1) {
-                    for (var k = 0; k < entry.synonyms; k += 1) {
-                        var synonym = synonyms[i];
-                        if(word === synonym.toLowerCase()){
-                            qm.dialogFlow.matchedEntities[entityName] = qm.staticData.dialogAgent.entities[entityName];
-                            qm.dialogFlow.matchedEntities[entityName].userInput = word;
-                        }
-                    }
-                }
-            }
-            return qm.dialogFlow.matchedEntities;
-        },
         getUnfilledParameter: function(intent){
             var param = false;
             qm.objectHelper.loopThroughProperties(intent.unfilledParameters, function(parameterName, parameter){
@@ -2083,16 +2056,28 @@ window.qm = {
             });
             return param;
         },
-        calculateScore: function(intent, matchedEntities){
+        calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
+            var doc = qm.nlp(userInput);
+            var parsed = doc.out('tags');
+            var number = doc.values().out();
+            if(number){number = parseFloat(number);}
+            qm.qmLog.info(parsed);
             var parameters = intent.responses[0].parameters;
             intent.unfilledParameters = {};
             intent.unfilledTriggerPhrases = {};
             intent.parameters = {};
+            if(intent.name === "Remember Intent"){
+                console.log("Remember Intent");
+            }
             //if(qm.feed.currentCard){intent.parameters = qm.feed.currentCard.parameters;}
             for (var i = 0; i < parameters.length; i++) {
                 var parameter = parameters[i];
                 var parameterName = parameter.name;
                 var dataType = parameter.dataType.replace('@', '');
+                if(dataType === 'sys.number'){
+                    if(number !== null && number !== false){intent.parameters[parameterName] = number;}
+                    continue;
+                }
                 if (matchedEntities[dataType]) {
                     var value = matchedEntities[dataType].matchedEntryValue;
                     if(typeof value === "undefined"){value = matchedEntities[dataType];}
@@ -2112,24 +2097,53 @@ window.qm = {
         matchedEntities: {},
         matchedIntents: {},
         matchedIntent: null,
+        getCommandOrTriggerPhraseEntity: function(userInput, matchedEntities){
+            matchedEntities = matchedEntities || qm.dialogFlow.getEntitiesFromUserInput(userInput);
+            var triggerEntity = false;
+            qm.objectHelper.loopThroughProperties(matchedEntities, function(entityName, entity){
+                if(entityName.indexOf("Command") !== -1){
+                    triggerEntity = entity;
+                }
+            });
+            qm.objectHelper.loopThroughProperties(matchedEntities, function(entityName, entity){
+                if(entityName.indexOf("TriggerPhrase") !== -1){
+                    triggerEntity = entity;
+                }
+            });
+            return triggerEntity;
+        },
+        getIntentMatchingCommandOrTriggerPhrase: function(userInput, matchedEntities){
+            var entity = qm.dialogFlow.getCommandOrTriggerPhraseEntity(userInput, matchedEntities);
+            if(!entity){return false;}
+            var matchedIntent = false;
+            qm.dialogFlow.loopThroughIntents(function(intentName, intent){
+                var parameters = intent.responses[0].parameters;
+                for (var i = 0; i < parameters.length; i++) {
+                    var parameter = parameters[i];
+                    if(parameter.name === entity.name){
+                        matchedIntent = intent;
+                    }
+                }
+            });
+            return matchedIntent;
+        },
         getIntent: function(userInput){
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            var bestScore = 0;
-            var intents = [];
-            var matchedIntent;
-            qm.dialogFlow.loopThroughIntents(function(intentName, intent){
-                var score = intent.score = qm.dialogFlow.calculateScore(intent, matchedEntities);
-                if(score > bestScore){
-                    matchedIntent = intent;
-                    bestScore = score;
-                }
-                intents.push(intent);
-            });
+            var matchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput, matchedEntities);
             if(matchedIntent){
-                matchedIntent.parameters = matchedEntities.parameters || {};
-                matchedIntent.parameters.userInput = userInput;
+                qm.dialogFlow.calculateScoreAndFillParameters(matchedIntent, matchedEntities, userInput);
+            } else {
+                var bestScore = 0;
+                qm.dialogFlow.loopThroughIntents(function(intentName, intent){
+                    var score = intent.score = qm.dialogFlow.calculateScoreAndFillParameters(intent, matchedEntities, userInput);
+                    if(!matchedIntent || score > bestScore){
+                        matchedIntent = intent;
+                        bestScore = score;
+                    }
+                });
+                if(matchedIntent){matchedIntent.parameters = matchedEntities.parameters || {};}
             }
-            //if(matchedIntent.name === "Default Fallback Intent"){return null;}
+            if(matchedIntent){matchedIntent.parameters.userInput = userInput;}
             return matchedIntent || qm.dialogFlow.matchedIntent;
         },
         getEntities: function(){
@@ -2149,24 +2163,13 @@ window.qm = {
         },
         getEntitiesFromUserInput: function(userInput){
             var entities =  qm.dialogFlow.getEntities();
-            var plugin = {
-                words:{
-                    'facebook': 'Software',
-                    'google': 'Software',
-                    'salesforce': 'Software'
-                },
-                patterns:{
-                    "how do? i (can|should)? (log|sign|get) in to my? #Software" : 'LoginIssue',
-                    "i can't (log|sign|get) in to my? #Software" : 'LoginIssue',
-                    "#Software won't let me (log|sign|get) in" : 'LoginIssue',
-                }
-            };
             userInput = userInput.toLowerCase();
-            var exactMatches = {};
-            var fuzzyMatches = {};
             var matchedEntities = {};
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 var entries = entity.entries;
+                if(entityName === 'rememberCommand'){
+                    console.log("");
+                }
                 for (var i = 0; i < entries.length; i++) {
                     var entry = entries[i];
                     var entryValue = entry.value;
@@ -2177,25 +2180,14 @@ window.qm = {
                     for (var j = 0; j < synonyms.length; j++) {
                         var synonym = synonyms[j].toLowerCase();
                         synonym = synonym.replace('\"', '');
-                        //plugin.words[synonym] = entityName;
-                        if(userInput === synonym){
-                            matchedEntities[entityName] = exactMatches[entityName] = entity;
+                        if(qm.stringHelper.sentenceContainsWord(userInput, synonym)){
                             entity.matchedEntryValue = entryValue;
-                        } else if (userInput.indexOf(synonym) !== -1){
-                            fuzzyMatches[entityName] = entity;
-                            //matchedEntities[entityName] = entity.matchedEntryValue = entryValue;
+                            matchedEntities[entityName] = entity;
                         }
                     }
                 }
             });
-            nlp.plugin(plugin);
-            console.debug("nlp plugin", plugin);
-            //console.debug(nlp(userInput).debug());
-            var doc = nlp(userInput).sentences().out('array');
-            console.info(doc);
-            // ['We like Roy!', 'We like Roy!']
-            doc = nlp(userInput).out('html');
-            console.info(doc);
+            console.log("matchedEntities", matchedEntities);
             return matchedEntities;
         },
         intentFulfillment: {
@@ -2207,6 +2199,9 @@ window.qm = {
                 qm.speech.talkRobot("OK. I love you! Bye!");
                 qm.mic.setMicEnabled(false);
             },
+            "Remember Intent": function(data){
+
+            }
         }
     },
     feed: {
@@ -2219,7 +2214,7 @@ window.qm = {
                         notInQueue = feedCards.filter(function (feedCard) {
                             var fromQueue = queueCards.find(function (queueCardParams) {
                                 if(!queueCardParams){
-                                    qmLog.error("empty item in queueCards");
+                                    qm.qmLog.error("empty item in queueCards");
                                     return false;
                                 }
                                 return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
@@ -2233,7 +2228,7 @@ window.qm = {
                         return false;
                     }
                     if(qm.feed.recentlyRespondedTo[currentCard.id]){
-                        qmLog.error("Already responded to this card: ", currentCard);
+                        qm.qmLog.error("Already responded to this card: ", currentCard);
                     }
                     qm.feed.saveFeedInLocalForage(notInQueue, function(){
                         successHandler(currentCard);
@@ -2263,13 +2258,13 @@ window.qm = {
         handleFeedResponse: function(data){
             var cards;
             if(!data){
-                qmLog.error("No feed data returned!");
+                qm.qmLog.error("No feed data returned!");
             } else {
                 cards = data.cards;
                 qm.feed.saveFeedInLocalForage(cards, function(){
-                    qmLog.info("saveFeedInLocalForage completed!");
+                    qm.qmLog.info("saveFeedInLocalForage completed!");
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                 });
             }
             return cards;
@@ -2281,7 +2276,7 @@ window.qm = {
                     notInQueue = feedCards.filter(function (feedCard) {
                         var fromQueue = queueCards.find(function (queueCardParams) {
                             if(!queueCardParams){
-                                qmLog.error("empty item in queueCards");
+                                qm.qmLog.error("empty item in queueCards");
                                 return false;
                             }
                             return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
@@ -2300,7 +2295,7 @@ window.qm = {
                 }
                 qm.feed.getFeedFromApi(params, successHandler, errorHandler);
             }, function(error){
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 qm.feed.getFeedFromApi(params, successHandler, errorHandler);
             });
         },
@@ -2310,7 +2305,7 @@ window.qm = {
         postFeedQueue: function(feedQueue, successHandler, errorHandler){
             qm.localForage.removeItem(qm.items.feedQueue, function(){
                 qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
-            }, function(error){qmLog.error(error);});
+            }, function(error){qm.qmLog.error(error);});
         },
         postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
@@ -2319,7 +2314,7 @@ window.qm = {
             function callback(error, data, response) {
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
-                    qmLog.error("Putting back in queue because of error ", error);
+                    qm.qmLog.error("Putting back in queue because of error ", error);
                     feedQueue = qm.feed.fixFeedQueue(feedQueue);
                     qm.localForage.addToArray(qm.items.feedQueue, feedQueue);
                 }
@@ -2329,7 +2324,7 @@ window.qm = {
         },
         fixFeedQueue: function (parameters) {
             if (parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])) {
-                qmLog.error("feedQueue is fucked up");
+                qm.qmLog.error("feedQueue is fucked up");
                 var array = parameters.shift();
                 parameters.concat(array);
             }
@@ -2344,7 +2339,7 @@ window.qm = {
             if(!parameters){
                 var error = "No submittedCard provided to addToFeedQueueAndRemoveFromFeed!";
                 if(errorHandler){errorHandler(error);}
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 return;
             }
             qm.localForage.addToArray(qm.items.feedQueue, parameters, function(feedQueue){
@@ -2372,7 +2367,7 @@ window.qm = {
                     if(unfilledFields && unfilledFields.length){
                         qm.speech.currentInputField = unfilledFields[0];
                     } else {
-                        qmLog.info("No input fields to fill!");
+                        qm.qmLog.info("No input fields to fill!");
                         return false;
                     }
                 }
@@ -2401,7 +2396,7 @@ window.qm = {
             qm.speech.talkRobot(message, function(){
                 qm.mic.listenForCardResponse(card, successHandler, errorHandler)
             }, function(error){
-                qmLog.info(error);
+                qm.qmLog.info(error);
             }, listen);
         },
         getAvailableButtons: function(includeActionSheet){
@@ -2423,7 +2418,7 @@ window.qm = {
             }
             var inputField = qm.speech.currentInputField;
             if(!inputField){
-                qmLog.info("No inputField!");
+                qm.qmLog.info("No inputField!");
             } else {
                 options += " or a " + inputField.type.replace('_', ' ');
                 if(inputField.minValue !== null && inputField.maxValue !== null){
@@ -2564,7 +2559,7 @@ window.qm = {
                 return;
             }
             if(!study.causeVariable){
-                qmLog.error("No cause variable in this study: ", study, study);
+                qm.qmLog.error("No cause variable in this study: ", study, study);
                 return;
             }
             var causeVariableName = study.causeVariableName || study.causeVariable.name;
@@ -2584,7 +2579,7 @@ window.qm = {
             return qm.storage.getGlobal(key);
         },
         removeItem: function(key){
-            qmLog.debug("Removing " + key + " from globals");
+            qm.qmLog.debug("Removing " + key + " from globals");
             delete qm.globals[key];
         }
     },
@@ -2800,14 +2795,14 @@ window.qm = {
     },
     localForage: {
         clear: function () {
-            qmLog.info("Clearing localforage!");
+            qm.qmLog.info("Clearing localforage!");
             localforage.clear();
         },
         saveWithUniqueId: function(key, arrayToSave, successHandler, errorHandler) {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
-            qmLog.info("saving " + key + " with unique id");
+            qm.qmLog.info("saving " + key + " with unique id");
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
@@ -2827,7 +2822,7 @@ window.qm = {
             });
         },
         deleteById: function(key, id, successHandler, errorHandler) {
-            qmLog.info("deleting " + key + " by id " + id);
+            qm.qmLog.info("deleting " + key + " by id " + id);
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
@@ -2838,7 +2833,7 @@ window.qm = {
         },
         searchByProperty: function (key, propertyName, searchTerm, successHandler, errorHandler) {
             searchTerm = searchTerm.toLowerCase();
-            qmLog.info("searching " + key + " by " + propertyName + " " + searchTerm);
+            qm.qmLog.info("searching " + key + " by " + propertyName + " " + searchTerm);
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
                 existingData = existingData.filter(function( obj ) {
@@ -2850,10 +2845,10 @@ window.qm = {
         },
         getItem: function(key, successHandler, errorHandler){
             if(!successHandler){
-                qmLog.error("No successHandler provided to localForage.getItem!");
+                qm.qmLog.error("No successHandler provided to localForage.getItem!");
                 return;
             }
-            qmLog.debug("Getting " + key + " from globals");
+            qm.qmLog.debug("Getting " + key + " from globals");
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
                 successHandler(fromGlobals);
@@ -2861,14 +2856,14 @@ window.qm = {
             }
             if(typeof localforage === "undefined"){
                 var error = "localforage not defined so can't get " + key + "!";
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
                 return;
             }
-            qmLog.debug("Getting " + key + " from localforage");
+            qm.qmLog.debug("Getting " + key + " from localforage");
             localforage.getItem(key, function (err, data) {
                 if(err){
-                    qmLog.error(err);
+                    qm.qmLog.error(err);
                     if(errorHandler){errorHandler(err);}
                 } else {
                     successHandler(data);
@@ -2881,7 +2876,7 @@ window.qm = {
             qm.globalHelper.setItem(key, value);
             if(typeof localforage === "undefined"){
                 var errorMessage = "local storage is undefined so can't set " + key;
-                qmLog.error(errorMessage);
+                qm.qmLog.error(errorMessage);
                 if(errorHandler){errorHandler(errorMessage)};
                 return;
             }
@@ -2924,7 +2919,7 @@ window.qm = {
             });
         },
         addToOrReplaceByIdAndMoveToFront: function(localStorageItemName, replacementElementArray, successHandler){
-            qmLog.debug('qm.localForage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
+            qm.qmLog.debug('qm.localForage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
                 JSON.stringify(replacementElementArray).substring(0,20)+'...');
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
@@ -2932,12 +2927,12 @@ window.qm = {
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){successHandler(elementsToKeep);}
             }, function(error){
-                qmLog.error(error)
+                qm.qmLog.error(error)
             });
         },
         addToArray: function(localStorageItemName, newElementsArray, successHandler, errorHandler){
             if(!qm.arrayHelper.variableIsArray(newElementsArray)){newElementsArray = [newElementsArray];}
-            qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0,20)+'...');
+            qm.qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0,20)+'...');
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
                 localStorageItemArray = localStorageItemArray.concat(newElementsArray);
@@ -2945,10 +2940,10 @@ window.qm = {
                     return element !== null;
                 });
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
-                    qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
+                    qm.qmLog.info("addToArray in LocalForage "+localStorageItemName+" completed!");
                     if(successHandler){successHandler(localStorageItemArray);}
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             });
@@ -2981,7 +2976,7 @@ window.qm = {
             return measurementObject;
         },
         addToMeasurementsQueue: function(measurementObject){
-            qmLog.info("Adding to measurements queue: ", measurementObject);
+            qm.qmLog.info("Adding to measurements queue: ", measurementObject);
             measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
             qm.storage.appendToArray('measurementsQueue', measurementObject);
         },
@@ -2993,7 +2988,7 @@ window.qm = {
                     measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
                     measurementsQueue[i].value = measurementInfo.value;
                     measurementsQueue[i].note = measurementInfo.note;
-                    qmLog.info("Updating measurement in queue: ", measurementInfo);
+                    qm.qmLog.info("Updating measurement in queue: ", measurementInfo);
                     break;
                 }
                 i++;
@@ -3007,7 +3002,7 @@ window.qm = {
                 count = measurements.length;
                 measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             }
-            qmLog.info("Got "+count +" measurements from queue with params: "+JSON.stringify(params), measurements);
+            qm.qmLog.info("Got "+count +" measurements from queue with params: "+JSON.stringify(params), measurements);
             return measurements;
         },
         addInfoAndImagesToMeasurements:  function (measurements){
@@ -3028,7 +3023,7 @@ window.qm = {
                     if(parsedNote.url && parsedNote.message){
                         measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                     } else {
-                        qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
                     }
                 }
                 if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
@@ -3070,7 +3065,7 @@ window.qm = {
                 count = measurements.length;
                 measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             }
-            qmLog.info("Got "+count +" measurements from recentlyPostedMeasurements with params: "+JSON.stringify(params), measurements);
+            qm.qmLog.info("Got "+count +" measurements from recentlyPostedMeasurements with params: "+JSON.stringify(params), measurements);
             return measurements;
         },
     },
@@ -3085,6 +3080,36 @@ window.qm = {
         'Miscellaneous',
         'Environment'
     ],
+    memory: {
+        askForMemoryAnswer: function(memoryQuestionStatement){
+            qm.localForage.getItem(qm.items.memories, function(memories){
+                memories = memories || {};
+                var response;
+                var memoryQuestionQuestion = memoryQuestionStatement;
+                if(memoryQuestionStatement.indexOf(' my ') !== -1 && memoryQuestionStatement.indexOf(" are") !== -1){
+                    memoryQuestionQuestion = memoryQuestionStatement.replace(" are", "").replace(" my ", " are your ");
+                    response = "OK. "+memoryQuestionQuestion + "? ";
+                } else {
+                    response = "OK. What should I say when you say Recall " + memoryQuestionStatement + "? ";
+                }
+                qm.mic.wildCardHandler = function(possiblePhrases){
+                    if(qm.mic.weShouldIgnore(possiblePhrases)){
+                        return false;
+                    }
+                    qm.mic.wildCardHandlerReset();
+                    var memoryQuestionAnswer = qm.arrayHelper.getFirstElementIfArray(possiblePhrases);
+                    memories[memoryQuestionQuestion] = memoryQuestionAnswer;
+                    memories[memoryQuestionStatement] = memoryQuestionAnswer;
+                    qm.localForage.setItem(qm.items.memories, memories, function(){
+                        qm.speech.talkRobot("OK. When you want me to remind you, just say Recall "+memoryQuestionStatement+"! ");
+                    })
+                };
+                qm.speech.talkRobot(response);
+            }, function(error){
+                qm.qmLog.error(error);
+            });
+        }
+    },
     mic: {
         globalCommands: {
             "quantimodo": function(){
@@ -3094,32 +3119,7 @@ window.qm = {
                 qm.speech.talkRobot("How dare you call me a robot! The politically correct term is technical American! What can I do for you?");
             },
             'remember *tag': function(memoryQuestionStatement) {
-                qm.localForage.getItem(qm.items.memories, function(memories){
-                    memories = memories || {};
-                    var response;
-                    var memoryQuestionQuestion = memoryQuestionStatement;
-                    if(memoryQuestionStatement.indexOf(' my ') !== -1 && memoryQuestionStatement.indexOf(" are") !== -1){
-                        memoryQuestionQuestion = memoryQuestionStatement.replace(" are", "").replace(" my ", " are your ");
-                        response = "OK. "+memoryQuestionQuestion + "? ";
-                    } else {
-                        response = "OK. What should I say when you say Recall " + memoryQuestionStatement + "? ";
-                    }
-                    qm.mic.wildCardHandler = function(possiblePhrases){
-                        if(qm.mic.weShouldIgnore(possiblePhrases)){
-                            return false;
-                        }
-                        qm.mic.wildCardHandlerReset();
-                        var memoryQuestionAnswer = qm.arrayHelper.getFirstElementIfArray(possiblePhrases);
-                        memories[memoryQuestionQuestion] = memoryQuestionAnswer;
-                        memories[memoryQuestionStatement] = memoryQuestionAnswer;
-                        qm.localForage.setItem(qm.items.memories, memories, function(){
-                            qm.speech.talkRobot("OK. When you want me to remind you, just say Recall "+memoryQuestionStatement+"! ");
-                        })
-                    };
-                    qm.speech.talkRobot(response);
-                }, function(error){
-                    qmLog.error(error);
-                });
+                qm.memories.askForMemoryAnswer(memoryQuestionStatement);
             },
             'recall *tag': function (memoryQuestionQuestion) {
                 qm.memories.recall(memoryQuestionQuestion);
@@ -3128,36 +3128,36 @@ window.qm = {
                 qm.memories.recall(memoryQuestionQuestion);
             },
             'hey google *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'ok google *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'hey siri *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'ok siri *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'hey alexa *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'ok alexa *tag': function (tag){
-                qmLog.info("Ignoring "+tag);
+                qm.qmLog.info("Ignoring "+tag);
             },
             'thank you': function(tag){
                 qm.speech.talkRobot("No!  Thank you for being so polite!  Most people treat me like a machine!");
             }
         },
         wildCardHandler: function(text){
-            qmLog.info("wildCardHandler not defined to handle " + text);
+            qm.qmLog.info("wildCardHandler not defined to handle " + text);
         },
         wildCardHandlerReset: function(){
-            qmLog.info("Unset wildcard handler");
+            qm.qmLog.info("Unset wildcard handler");
         },
         microphoneDisabled: false,
-        onMicEnabled: function(){qmLog.info("Called onMicEnabled");},
-        onMicDisabled: function(){qmLog.info("Called onMicDisabled");},
+        onMicEnabled: function(){qm.qmLog.info("Called onMicEnabled");},
+        onMicDisabled: function(){qm.qmLog.info("Called onMicDisabled");},
         microphoneAvailable: null,
         getMicEnabled: function(){
             if(qm.mic.microphoneDisabled){return false;}
@@ -3165,7 +3165,7 @@ window.qm = {
             return qm.storage.getItem(qm.items.micEnabled);
         },
         setMicEnabled: function(micEnabled){
-            qmLog.info("set micEnabled " + micEnabled);
+            qm.qmLog.info("set micEnabled " + micEnabled);
             qm.rootScope[qm.items.micEnabled] = micEnabled;
             var enableButton = document.querySelector('#enable-mic-button');
             var disableButton = document.querySelector('#disable-mic-button');
@@ -3204,7 +3204,7 @@ window.qm = {
         getMicrophoneAvailable: function(){
             if(qm.mic.microphoneAvailable !== null){return qm.mic.microphoneAvailable;}
             if(typeof annyang === "undefined"){
-                if(!qm.appMode.isTesting()){qmLog.error("Microphone not available!");}
+                if(!qm.appMode.isTesting()){qm.qmLog.error("Microphone not available!");}
                 return qm.mic.microphoneAvailable = qm.mic.micEnabled = false;
             }
             return qm.mic.microphoneAvailable = true;
@@ -3220,25 +3220,25 @@ window.qm = {
         listening: false,
         abortListening: function(){
             qm.visualizer.hideVisualizer();
-            qmLog.info("pauseListening");
+            qm.qmLog.info("pauseListening");
             if(!qm.mic.annyangAvailable()){return;}
             annyang.abort(); // Stop listening, and turn off mic.
         },
         annyangAvailable: function(){
             if(!annyang){
-                qmLog.error("annyang not available!");
+                qm.qmLog.error("annyang not available!");
                 return false;
             }
             return true;
         },
         pauseListening: function(hideVisualizer){
             if(hideVisualizer !== false){qm.visualizer.hideVisualizer();}
-            qmLog.info("pauseListening");
+            qm.qmLog.info("pauseListening");
             if(!qm.mic.annyangAvailable()){return;}
             annyang.pause(); // Pause listening. annyang will stop responding to commands (until the resume or start methods are called), without turning off the browser's SpeechRecognition engine or the mic.
         },
         errorHandler: function(error){
-            qmLog.error(error);
+            qm.qmLog.error(error);
         },
         isListening: function(){
             if(!qm.mic.annyangAvailable()){return false;}
@@ -3248,9 +3248,9 @@ window.qm = {
             qm.visualizer.showVisualizer();
             if(!qm.mic.annyangAvailable()){return;}
             if(qm.mic.isListening()){
-                qmLog.info("annyang is Listening");
+                qm.qmLog.info("annyang is Listening");
             } else {
-                qmLog.info("resumeListening");
+                qm.qmLog.info("resumeListening");
                 annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
             }
         },
@@ -3258,25 +3258,25 @@ window.qm = {
             if(!qm.mic.annyangAvailable()){return;}
             var commands = {};
             commands[phrase] = function () {
-                qmLog.info("Ignoring robot phrase: "+phrase);
+                qm.qmLog.info("Ignoring robot phrase: "+phrase);
             };
             qm.mic.addCommands(commands);
         },
         addCommands: function(commands){
             //qm.mic.removeCommands(commands);  // I think this causes problems.  Just use dynamic even handlers
             if(!qm.mic.annyangAvailable()){return;}
-            qmLog.info("addCommands: ", commands);
+            qm.qmLog.info("addCommands: ", commands);
             annyang.addCommands(commands);
         },
         removeCommands: function(commands){
             if(!qm.mic.annyangAvailable()){return;}
-            qmLog.info("removeCommands: ", commands);
+            qm.qmLog.info("removeCommands: ", commands);
             annyang.removeCommands(commands);
         },
         startListening: function(commands){
-            qmLog.info("startListening");
+            qm.qmLog.info("startListening");
             if(qm.mic.getMicEnabled() === false){
-                qmLog.error("Microphone is disabled so can't listen to these commands: ", commands);
+                qm.qmLog.error("Microphone is disabled so can't listen to these commands: ", commands);
                 return;
             }
             qm.mic.setMicEnabled(true);
@@ -3296,7 +3296,7 @@ window.qm = {
                 }
                 if(qm.speech.callback){qm.speech.callback(possiblePhrases);}
                 qm.speech.lastUserStatement = possiblePhrases;
-                qmLog.info("Just heard user say ", possiblePhrases);
+                qm.qmLog.info("Just heard user say ", possiblePhrases);
                 if(qm.speech.isValidNotificationResponse(possiblePhrases)){
                     var notification = qm.speech.currentNotification;
                     qm.speech.handleNotificationResponse(possiblePhrases, notification);
@@ -3314,9 +3314,9 @@ window.qm = {
                 for (var i = 0; i < phrasesArray.length; i++) {
                     var phrase = phrasesArray[i];
                     //phrase = nlp(phrase).normalize().out();  // We should have already done this
-                    qmLog.info("Normalized phrase");
+                    qm.qmLog.info("Normalized phrase");
                     if(phrase === needle){
-                        qmLog.info("Found match: "+phrase);
+                        qm.qmLog.info("Found match: "+phrase);
                         return phrase;
                     }
                 }
@@ -3331,7 +3331,7 @@ window.qm = {
                     var phrase = phrasesArray[i];
                     //phrase = nlp(phrase).normalize().out();  // We should have already done this
                     if (phrase.indexOf(needle) !== -1) {
-                        qmLog.info(phrase + " contains " + needle);
+                        qm.qmLog.info(phrase + " contains " + needle);
                         return phrase;
                     }
                 }
@@ -3340,7 +3340,7 @@ window.qm = {
         },
         weShouldIgnore: function(possiblePhrases){
             if(qm.speech.alreadySpeaking(possiblePhrases)){
-                qmLog.info("Not handling command because robot is speaking: ", possiblePhrases);
+                qm.qmLog.info("Not handling command because robot is speaking: ", possiblePhrases);
                 return true;
             }
             var ignoreThese = [
@@ -3350,7 +3350,7 @@ window.qm = {
             ];
             var match = qm.mic.aPhraseContains(ignoreThese, possiblePhrases);
             if(match){
-                qmLog.info("Ignoring robot phrase: "+ match);
+                qm.qmLog.info("Ignoring robot phrase: "+ match);
                 return match;
             }
             qm.mic.saveThought(possiblePhrases[0]);
@@ -3376,7 +3376,7 @@ window.qm = {
                 }
                 var card = qm.feed.currentCard;
                 if(!card){
-                    qmLog.info("No card to respond to!");
+                    qm.qmLog.info("No card to respond to!");
                     return;
                 }
                 var unfilledFields = qm.feed.getUnfilledInputFields(card);
@@ -3386,7 +3386,7 @@ window.qm = {
                     if(card.selectedButton){
                         card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
                         responseText = card.selectedButton.successToastText;
-                        qmLog.info("selectedButton", card.selectedButton);
+                        qm.qmLog.info("selectedButton", card.selectedButton);
                         for (var i = 0; i < unfilledFields.length; i++) {
                             var unfilledField = unfilledFields[i];
                             var key = unfilledField.key;
@@ -3398,7 +3398,7 @@ window.qm = {
                     matchingFilledInputField = qm.speech.setInputFieldValueIfValid(possiblePhrases);
                     if(matchingFilledInputField){card.parameters[matchingFilledInputField.key] = matchingFilledInputField.value;}
                     responseText = "OK. I'll record " + matchingFilledInputField.value + "! ";
-                    qmLog.info("matchingFilledInputField", matchingFilledInputField);
+                    qm.qmLog.info("matchingFilledInputField", matchingFilledInputField);
                     if(!card.selectedButton && !matchingFilledInputField){
                         var provideOptionsList = true;
                         qm.speech.readCard(null, null, null, provideOptionsList);
@@ -3410,19 +3410,19 @@ window.qm = {
                 qm.feed.deleteCardFromLocalForage(card, function(remainingCards){
                     var unfilledFields = qm.feed.getUnfilledInputFields(card);
                     if(unfilledFields){
-                        qmLog.errorAndExceptionTestingOrDevelopment("Un-filled fields: ", unfilledFields);
+                        qm.qmLog.errorAndExceptionTestingOrDevelopment("Un-filled fields: ", unfilledFields);
                     }
                     qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(){
                         if(card.followUpAction){
                             card.followUpAction(responseText);
                         } else {
-                            qmLog.error("No card followUpAction!")
+                            qm.qmLog.error("No card followUpAction!")
                         }
                     }, function(error){
-                        qmLog.error(error)
+                        qm.qmLog.error(error)
                     });
                 }, function(error){
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                 });
             };
             if(card.parameters.trackingReminderNotificationId){
@@ -3440,11 +3440,11 @@ window.qm = {
             annyang.setLanguage(language); // Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
         },
         specificErrorHandler: function(message){
-            qmLog.error(message);
+            qm.qmLog.error(message);
         },
         generalErrorHandler: function(message, meta){
             if(qm.mic.errorHandler){qm.mic.errorHandler(message);}
-            qmLog.error(message, meta);
+            qm.qmLog.error(message, meta);
         },
         initialized: false,
         initializeListening: function(commands, successHandler, errorHandler){
@@ -3454,19 +3454,19 @@ window.qm = {
             qm.mic.startListening();
             if(qm.mic.initialized){return false;}
             if(!qm.mic.getMicEnabled()){
-                qmLog.info("Not going to initializeListening because mic not enabled");
+                qm.qmLog.info("Not going to initializeListening because mic not enabled");
                 return;
             }
             qm.mic.inititalized = true;
             qm.mic.debugListening();
             annyang.addCallback('start', function() {
-                qmLog.debug('browser\'s Speech Recognition engine started listening');
+                qm.qmLog.debug('browser\'s Speech Recognition engine started listening');
             });
             annyang.addCallback('soundstart', function() {
-                qmLog.info('sound detected');
+                qm.qmLog.info('sound detected');
             });
             annyang.addCallback('error', function(error) {
-                qmLog.debug("Speech Recognition failed because of an error", error);
+                qm.qmLog.debug("Speech Recognition failed because of an error", error);
             });
             annyang.addCallback('errorNetwork', function(error){  // pass local context to a global function called notConnected
                 qm.mic.generalErrorHandler("Speech Recognition failed because of a network error", error);
@@ -3478,12 +3478,12 @@ window.qm = {
                 qm.mic.generalErrorHandler("user blocked the permission request to use Speech Recognition", error);
             });
             annyang.addCallback('end', function(error){
-                qmLog.debug("browser's Speech Recognition engine stopped", error);
+                qm.qmLog.debug("browser's Speech Recognition engine stopped", error);
             });
             annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
-                qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
-                qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
-                qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
+                qm.qmLog.info("resultMatch userSaid:" + userSaid); // sample output: 'hello'
+                qm.qmLog.info("resultMatch commandText:" + commandText); // sample output: 'hello (there)'
+                qm.qmLog.info("resultMatch phrases", phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
             });
             annyang.addCallback('resultNoMatch', function(possiblePhrasesArray) {
                 if(qm.mic.weShouldIgnore(possiblePhrasesArray)){return;}
@@ -3514,7 +3514,7 @@ window.qm = {
             try {
                 qm.music.player[filePath].play();
             } catch (e) {
-                qmLog.error(e);
+                qm.qmLog.error(e);
                 return false;
             }
             if(errorHandler){qm.music.player[filePath].onerror = errorHandler;}
@@ -3556,72 +3556,75 @@ window.qm = {
             }, 100);
         }
     },
+    nlp: function(){
+        return nlp;
+    },
     notifications: {
         actions: {
             trackYesAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                qmLog.pushDebug('trackYesAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackYesAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackNoAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                qmLog.pushDebug('trackNoAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackNoAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackZeroAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 0};
-                qmLog.pushDebug('trackZeroAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackZeroAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackOneRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
-                qmLog.pushDebug('trackOneRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackOneRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackTwoRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 2};
-                qmLog.pushDebug('trackTwoRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackTwoRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThreeRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 3};
-                qmLog.pushDebug('trackThreeRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackThreeRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFourRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 4};
-                qmLog.pushDebug('trackFourRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackFourRatingAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackFiveRatingAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 5};
-                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackDefaultValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackDefaultValueAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             snoozeAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId};
-                qmLog.pushDebug('snoozeAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('snoozeAction push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 body.action = 'snooze';
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.lastValue};
-                qmLog.pushDebug('trackLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackSecondToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.secondToLastValue};
-                qmLog.pushDebug('trackSecondToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackSecondToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             },
             trackThirdToLastValueAction: function (data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: data.thirdToLastValue};
-                qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
+                qm.qmLog.pushDebug('trackThirdToLastValueAction', ' push data: ' + qm.stringHelper.prettyJsonStringify(data, 140), {pushData: data, notificationsPostBody: body});
                 qm.notifications.postTrackingReminderNotifications(body);
             }
         },
@@ -3648,14 +3651,14 @@ window.qm = {
             // Need unique rating notifications because we need to setup initial popup via url params
             var uniqueRatingNotifications = qm.notifications.getAllUniqueRatingNotifications();
             if(!uniqueRatingNotifications){
-                qmLog.info("No uniqueRatingNotifications in storage");
+                qm.qmLog.info("No uniqueRatingNotifications in storage");
                 return null;
             }
             for (var i = 0; i < uniqueRatingNotifications.length; i++) {
                 var notification = uniqueRatingNotifications[i];
                 if(!window.notificationsSyncQueue ||
                     !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
-                    qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName, null, notification);
+                    qm.qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName, null, notification);
                     var hoursAgo = qm.timeHelper.hoursAgo(notification.trackingReminderNotificationTimeEpoch);
                     if(hoursAgo < 24) {
                         //var dueTimeString = qm.timeHelper.getTimeSinceString(notification.trackingReminderNotificationTimeEpoch);
@@ -3665,29 +3668,29 @@ window.qm = {
                     console.log(hoursAgo + " hours ago is too old!");
                 }
             }
-            qmLog.info("No uniqueRatingNotifications not in sync queue");
+            qm.qmLog.info("No uniqueRatingNotifications not in sync queue");
             return null;
         },
         getMostRecentUniqueNotificationNotInSyncQueue: function(){
             var uniqueNotifications = qm.notifications.getUniqueNotificationsDueInLast24();
             if(!uniqueNotifications || !uniqueNotifications.length){
-                qmLog.info("No uniqueNotifications due in last 24 in storage");
+                qm.qmLog.info("No uniqueNotifications due in last 24 in storage");
                 return null;
             }
             for (var i = 0; i < uniqueNotifications.length; i++) {
                 var notification = uniqueNotifications[i];
                 if(!window.notificationsSyncQueue ||
                     !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
-                    qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
+                    qm.qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
                     return notification;
                 }
             }
-            qmLog.info("No uniqueNotifications not in sync queue");
+            qm.qmLog.info("No uniqueNotifications not in sync queue");
             return null;
         },
         setLastPopupTime: function(time){
             if(typeof time === "undefined"){time = qm.timeHelper.getUnixTimestampInSeconds();}
-            qmLog.pushDebug(arguments.callee.caller.name + " setLastPopupTime to "+ time);
+            qm.qmLog.pushDebug(arguments.callee.caller.name + " setLastPopupTime to "+ time);
             qm.storage.setItem(qm.items.lastPopupNotificationUnixTimeSeconds, time);
             return true;
         },
@@ -3702,9 +3705,9 @@ window.qm = {
         },
         lastPopupWasBeforeLastReminderTime: function () {
             var lastTime =  qm.notifications.getLastPopupUnixTime();
-            qmLog.info("Last popup at " + qm.timeHelper.getTimeSinceString(lastTime));
+            qm.qmLog.info("Last popup at " + qm.timeHelper.getTimeSinceString(lastTime));
             if(lastTime < qm.timeHelper.getUnixTimestampInSeconds() - qm.reminderHelper.getMostFrequentReminderIntervalInSeconds()){
-                qmLog.error("No popups shown since before last reminder time!  Re-initializing popups...");
+                qm.qmLog.error("No popups shown since before last reminder time!  Re-initializing popups...");
                 return true; // Sometimes we lose permission for some reason
             }
             return false;
@@ -3725,7 +3728,7 @@ window.qm = {
                 qm.notifications.setLastPopupTime();
                 return true;
             }
-            qmLog.pushDebug('Too soon to show popup!', 'Cannot show popup because last one was only ' + qm.notifications.getTimeSinceLastPopupString() +
+            qm.qmLog.pushDebug('Too soon to show popup!', 'Cannot show popup because last one was only ' + qm.notifications.getTimeSinceLastPopupString() +
                 ' and most Frequent Interval In Minutes is ' + minimumTimeBetweenInMinutes + ". path: " + path);
             return false;
         },
@@ -3739,11 +3742,11 @@ window.qm = {
         },
         getLastNotificationsRefreshTime: function(){
             var lastTime = window.qm.storage.getLastRequestTime("GET", qm.apiPaths.trackingReminderNotificationsPast);
-            qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(lastTime));
+            qm.qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(lastTime));
             return lastTime;
         },
         getSecondsSinceLastNotificationsRefresh: function(){
-            qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
+            qm.qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
         addToSyncQueue: function(trackingReminderNotification){
@@ -3753,52 +3756,52 @@ window.qm = {
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
-                window.qmLog.info('No notifications in local storage');
+                window.qm.qmLog.info('No notifications in local storage');
                 qm.notifications.refreshNotifications(successHandler, errorHandler);
                 return true;
             }
-            qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
+            qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
             successHandler();
             return false
         },
         refreshIfEmptyOrStale: function(callback){
-            qmLog.info("qm.notifications.refreshIfEmptyOrStale");
+            qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if (!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
-                window.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
+                window.qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
                 qm.notifications.refreshNotifications(callback);
             } else {
-                window.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
+                window.qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){callback(qm.notifications.getFromGlobalsOrLocalStorage());}
             }
         },
         getAllUniqueRatingNotifications: function() {
-            qmLog.info("Called getAllUniqueRatingNotifications");
+            qm.qmLog.info("Called getAllUniqueRatingNotifications");
             var ratingNotifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
             if(!ratingNotifications){
-                qmLog.info("No rating notifications in storage!");
+                qm.qmLog.info("No rating notifications in storage!");
                 return null;
             }
-            qmLog.info("Got " + ratingNotifications.length + " total NON-UNIQUE rating notification from storage");
+            qm.qmLog.info("Got " + ratingNotifications.length + " total NON-UNIQUE rating notification from storage");
             var unique = qm.arrayHelper.getUnique(ratingNotifications, 'variableName');
-            qmLog.info("Got " + unique.length + " UNIQUE rating notifications");
+            qm.qmLog.info("Got " + unique.length + " UNIQUE rating notifications");
             return unique;
         },
         getAllUniqueNotifications: function() {
-            qmLog.info("Called getAllUniqueRatingNotifications");
+            qm.qmLog.info("Called getAllUniqueRatingNotifications");
             var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
             if(!notifications){
-                qmLog.info("No notifications in storage!");
+                qm.qmLog.info("No notifications in storage!");
                 return null;
             }
-            qmLog.info("Got " + notifications.length + " total NON-UNIQUE notification from storage");
+            qm.qmLog.info("Got " + notifications.length + " total NON-UNIQUE notification from storage");
             var unique = qm.arrayHelper.getUnique(notifications, 'variableName');
-            qmLog.info("Got " + unique.length + " UNIQUE notifications");
+            qm.qmLog.info("Got " + unique.length + " UNIQUE notifications");
             return unique;
         },
         getNotificationsDueInLast24: function() {
             var allNotifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
             if(!allNotifications){
-                qmLog.info("No NotificationsDueInLast24 in localStorage");
+                qm.qmLog.info("No NotificationsDueInLast24 in localStorage");
                 return null;
             }
             var last24 = [];
@@ -3812,12 +3815,12 @@ window.qm = {
         getUniqueNotificationsDueInLast24: function() {
             var last24 = qm.notifications.getNotificationsDueInLast24();
             if(!last24){
-                qmLog.info("No UNIQUE NotificationsDueInLast24 in localStorage");
+                qm.qmLog.info("No UNIQUE NotificationsDueInLast24 in localStorage");
                 return null;
             }
-            qmLog.info("Got " + last24.length + " total NON-UNIQUE notification due in last 24 from storage");
+            qm.qmLog.info("Got " + last24.length + " total NON-UNIQUE notification due in last 24 from storage");
             var unique = qm.arrayHelper.getUnique(last24, 'variableName');
-            qmLog.info("Got " + unique.length + " UNIQUE notifications");
+            qm.qmLog.info("Got " + unique.length + " UNIQUE notifications");
             return unique;
         },
         deleteById: function(id){qm.storage.deleteById(qm.items.trackingReminderNotifications, id);},
@@ -3827,7 +3830,7 @@ window.qm = {
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction);
         },
         undo: function(){
-            qmLog.info("Called undo notification tracking...");
+            qm.qmLog.info("Called undo notification tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!notificationsSyncQueue){ return false; }
             notificationsSyncQueue[0].hide = false;
@@ -3840,10 +3843,10 @@ window.qm = {
             if(ratingNotifications.length) {
                 var notification = ratingNotifications[ratingNotifications.length - 1];
                 if(notification.trackingReminderNotificationTimeEpoch < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
-                    window.qmLog.info('Got this notification but it\'s from yesterday: ', notification);
+                    window.qm.qmLog.info('Got this notification but it\'s from yesterday: ', notification);
                     //return;
                 }
-                window.qmLog.info(null, 'Got this notification: ', notification);
+                window.qm.qmLog.info(null, 'Got this notification: ', notification);
                 //window.qm.storage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
                 //qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', notification.variableName);
                 return notification;
@@ -3911,24 +3914,24 @@ window.qm = {
             return 0;
         },
         postTrackingReminderNotifications: function(trackingReminderNotifications, onDoneListener, timeout) {
-            qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
+            qm.qmLog.pushDebug("postTrackingReminderNotifications", JSON.stringify(trackingReminderNotifications), trackingReminderNotifications);
             if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){trackingReminderNotifications = [trackingReminderNotifications];}
             if(!onDoneListener){
                 onDoneListener = function (response) {
-                    qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
+                    qm.qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
                 }
             }
             qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
             if(timeout){
                 setTimeout(function () {
-                    qmLog.info("Timeout expired so closing");
+                    qm.qmLog.info("Timeout expired so closing");
                     qm.notifications.closePopup();  // Avoid leaving the popup open too long
                 }, timeout);
             }
         },
         getRatingNotificationPath: function(ratingTrackingReminderNotification){
             if(ratingTrackingReminderNotification.unitAbbreviatedName !== '/5'){
-                qmLog.error('ratingTrackingReminderNotification must have unit /5');
+                qm.qmLog.error('ratingTrackingReminderNotification must have unit /5');
             }
             var url = "android_popup.html?variableName=" + encodeURIComponent(ratingTrackingReminderNotification.variableName) +
                 "&valence=" + ratingTrackingReminderNotification.valence +
@@ -3937,7 +3940,7 @@ window.qm = {
             return url;
         },
         closePopup: function() {
-            window.qmLog.info('closing popup');
+            window.qm.qmLog.info('closing popup');
             qm.notifications.clearNotifications();
             window.close();
             if(typeof OverApps !== "undefined"){
@@ -3992,23 +3995,23 @@ window.qm = {
                 parseInt(trackingReminderNotificationSyncScheduled) < window.qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
                 qm.storage.setItem('trackingReminderNotificationSyncScheduled', window.qm.timeHelper.getUnixTimestampInMilliseconds());
                 if(!qm.platform.isMobile()){ // Better performance
-                    qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
+                    qm.qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds/1000 + " seconds from now..");
                 }
                 setTimeout(function() {
-                    qmLog.info("Notifications sync countdown completed.  Syncing now... ");
+                    qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
                     qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
                     // Post notification queue in 5 minutes if it's still there
                     qm.notifications.postNotifications();
                 }, delayBeforePostingNotificationsInMilliseconds);
             } else {
                 if(!qm.platform.isMobile()){ // Better performance
-                    qmLog.info("Not scheduling sync because one is already scheduled " +
+                    qm.qmLog.info("Not scheduling sync because one is already scheduled " +
                         qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
                 }
             }
         },
         trackNotification: function(trackingReminderNotification, trackAll){
-            qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
+            qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
             if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
                 var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
                     trackingReminderNotification.trackingReminderNotificationId);
@@ -4036,10 +4039,10 @@ window.qm = {
             qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
         },
         postNotifications: function(successHandler, errorHandler){
-            qmLog.info("Called postTrackingReminderNotificationsDeferred...");
+            qm.qmLog.info("Called postTrackingReminderNotificationsDeferred...");
             var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){if(successHandler){successHandler();}}
-            //qmLog.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray));
+            //qm.qmLog.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray));
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             if(!trackingReminderNotificationsArray){
                 if(successHandler){successHandler();}
@@ -4048,7 +4051,7 @@ window.qm = {
             if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
             trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
             qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications', successHandler, function(error){
-                qmLog.info("Called postTrackingReminderNotificationsToApi...");
+                qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
                 var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
                 if(newNotificationsSyncQueue){trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);}
                 qm.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
@@ -4226,11 +4229,11 @@ window.qm = {
             if(qm.platform.isMobile()){return false;}
             if(typeof chrome === "undefined"){return false;}
             if(typeof chrome.runtime === "undefined"){
-                qmLog.debug('chrome.runtime is undefined');
+                qm.qmLog.debug('chrome.runtime is undefined');
                 return false;
             }
             if(typeof chrome.alarms === "undefined"){return false;}
-            qmLog.debug('isChromeExtension returns true');
+            qm.qmLog.debug('isChromeExtension returns true');
             return true;
         },
         isWeb: function (){
@@ -4272,10 +4275,10 @@ window.qm = {
             if(typeof ionic !== "undefined"){
                 var ionicPlatform = ionic.Platform.platform();
                 if(!ionic.Platform.isIPad() && !ionic.Platform.isIOS() && !ionic.Platform.isAndroid()){return qm.platform.web;}
-                qmLog.error("Could not determine platform so returning " + ionicPlatform);
+                qm.qmLog.error("Could not determine platform so returning " + ionicPlatform);
                 return ionicPlatform;
             } else {
-                qmLog.error("Could not determine platform");
+                qm.qmLog.error("Could not determine platform");
             }
         },
         types: {
@@ -4495,10 +4498,39 @@ window.qm = {
                 }
                 qm.speech.talkRobot(response);
             }, function(error){
-                qmLog.error(error);
+                qm.qmLog.error(error);
+            });
+        },
+        askForMemoryAnswer: function(memoryQuestionStatement){
+            qm.localForage.getItem(qm.items.memories, function(memories){
+                memories = memories || {};
+                var response;
+                var memoryQuestionQuestion = memoryQuestionStatement;
+                if(memoryQuestionStatement.indexOf(' my ') !== -1 && memoryQuestionStatement.indexOf(" are") !== -1){
+                    memoryQuestionQuestion = memoryQuestionStatement.replace(" are", "").replace(" my ", " are your ");
+                    response = "OK. "+memoryQuestionQuestion + "? ";
+                } else {
+                    response = "OK. What should I say when you say Recall " + memoryQuestionStatement + "? ";
+                }
+                qm.mic.wildCardHandler = function(possiblePhrases){
+                    if(qm.mic.weShouldIgnore(possiblePhrases)){
+                        return false;
+                    }
+                    qm.mic.wildCardHandlerReset();
+                    var memoryQuestionAnswer = qm.arrayHelper.getFirstElementIfArray(possiblePhrases);
+                    memories[memoryQuestionQuestion] = memoryQuestionAnswer;
+                    memories[memoryQuestionStatement] = memoryQuestionAnswer;
+                    qm.localForage.setItem(qm.items.memories, memories, function(){
+                        qm.speech.talkRobot("OK. When you want me to remind you, just say Recall "+memoryQuestionStatement+"! ");
+                    })
+                };
+                qm.speech.talkRobot(response);
+            }, function(error){
+                qm.qmLog.error(error);
             });
         }
     },
+    qmLog: function(){return qmLog;},
     robot: {
         showing: false,
         openMouth: function(){
@@ -4508,7 +4540,7 @@ window.qm = {
             if(qm.robot.getClass()){qm.robot.getClass().classList.remove('robot_speaking');}
         },
         hideRobot: function(){
-            qmLog.info("Hiding robot");
+            qm.qmLog.info("Hiding robot");
             if(qm.robot.getElement()){
                 qm.robot.getElement().style.display = "none";
             }
@@ -4518,10 +4550,10 @@ window.qm = {
             if(!qm.speech.getSpeechAvailable()){return;}
             var robot = qm.robot.getElement();
             if(!robot){
-                qmLog.error("No robot!");
+                qm.qmLog.error("No robot!");
                 return false;
             }
-            qmLog.info("Showing robot");
+            qm.qmLog.info("Showing robot");
             qm.robot.getElement().style.display = "block";
             qm.robot.showing = qm.rootScope.showRobot = true;
         },
@@ -4541,7 +4573,7 @@ window.qm = {
             }
         },
         onRobotClick: function(){
-            qmLog.info("onRobotClick called but not defined");
+            qm.qmLog.info("onRobotClick called but not defined");
         }
     },
     rootScope: {
@@ -4551,7 +4583,7 @@ window.qm = {
     speech: {
         alreadySpeaking: function(text){
             if(window.speechSynthesis && window.speechSynthesis.speaking){
-                qmLog.info("already speaking so not going to say "+text);
+                qm.qmLog.info("already speaking so not going to say "+text);
                 return true;
             } else {
                 return false;
@@ -4560,7 +4592,7 @@ window.qm = {
         initializeSpeechKit: function(qmService){
             var commands = {
                 'record a measurement': function() {
-                    qmLog.info("said "+ arguments.callee.toString());
+                    qm.qmLog.info("said "+ arguments.callee.toString());
                     qmService.goToState(qmStates.measurementAddSearch)
                 },
             };
@@ -4593,7 +4625,7 @@ window.qm = {
             return qm.storage.getItem(qm.items.speechEnabled);
         },
         setSpeechEnabled: function(value){
-            qmLog.info("set speechEnabled " + value);
+            qm.qmLog.info("set speechEnabled " + value);
             if(!value){
                 qm.speech.shutUpRobot();
                 qm.music.fadeOut();
@@ -4607,16 +4639,16 @@ window.qm = {
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
             if(typeof speechSynthesis === "undefined"){
                 if(!qm.appMode.isTesting() || qm.platform.isMobile()){
-                    qmLog.error("Speech not available on " + qm.platform.getPlatformAndBrowserString());
+                    qm.qmLog.error("Speech not available on " + qm.platform.getPlatformAndBrowserString());
                 }
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
-            qmLog.info("speechSynthesis is available");
+            qm.qmLog.info("speechSynthesis is available");
             var isWebBrowser = qm.platform.isWeb();
             var isChromeBrowser = qm.platform.browser.isChrome();
             if(isWebBrowser && !isChromeBrowser){
                 if(!qm.appMode.isTesting()){
-                    qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
+                    qm.qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
                 }
                 // TODO: Why is this necessary if we already check typeof speechSynthesis === "undefined"
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
@@ -4629,14 +4661,14 @@ window.qm = {
             speechSynthesis.cancel();
             if(resumeListening){
                 if(!qm.mic.getMicEnabled()){
-                    qmLog.info("Not going to resume listening because mic not enabled");
+                    qm.qmLog.info("Not going to resume listening because mic not enabled");
                     return;
                 }
                 var duration = 1.5;
-                qmLog.info("Will resume listening in "+duration+" seconds...");
+                qm.qmLog.info("Will resume listening in "+duration+" seconds...");
                 setTimeout(function(){qm.mic.resumeListening();}, duration * 1000);
             } else {
-                qmLog.info("Not listening");
+                qm.qmLog.info("Not listening");
             }
         },
         fallbackMessageIndex: 0,
@@ -4679,7 +4711,7 @@ window.qm = {
             if(lastSaidSeconds){
                 var secondsAgo = currentSeconds - lastSaidSeconds;
                 if(!maxFrequencyInSeconds || secondsAgo < maxFrequencyInSeconds){
-                    qmLog.info("Already said "+text+" "+secondsAgo+" seconds ago");
+                    qm.qmLog.info("Already said "+text+" "+secondsAgo+" seconds ago");
                     return true;
                 }
             }
@@ -4696,7 +4728,7 @@ window.qm = {
             }
         },
         talkRobot: function(text, successHandler, errorHandler, resumeListening){
-            qmLog.info("talkRobot: "+text);
+            qm.qmLog.info("talkRobot: "+text);
             if(!qm.speech.getSpeechAvailable()){
                 if(errorHandler){errorHandler("Speech not available so cannot say " + text);}
                 return false;
@@ -4721,18 +4753,18 @@ window.qm = {
                 if(errorHandler){errorHandler(message);}
                 return false;
             }
-            qmLog.info("talkRobot called with "+text);
+            qm.qmLog.info("talkRobot called with "+text);
             qm.mic.addIgnoreCommand(text);
             var voices = speechSynthesis.getVoices();
             if(!voices.length){
-                qmLog.info("Waiting for voices to load with " + text);
+                qm.qmLog.info("Waiting for voices to load with " + text);
                 qm.speech.pendingUtteranceText = text;
                 setTimeout(function(){ // Listener never fires sometimes
-                    qmLog.info("Timeout with " + text);
+                    qm.qmLog.info("Timeout with " + text);
                     if(qm.speech.pendingUtteranceText){qm.speech.talkRobot(qm.speech.pendingUtteranceText);}
                 }, 1000);
                 speechSynthesis.addEventListener('voiceschanged', function (event) {
-                    qmLog.info("Voices loaded with " + text);
+                    qm.qmLog.info("Voices loaded with " + text);
                     //if(qm.speech.pendingUtteranceText){qm.speech.talkRobot(qm.speech.pendingUtteranceText);}
                 });
                 return;
@@ -4740,7 +4772,7 @@ window.qm = {
             var utterance = new SpeechSynthesisUtterance();
             function resumeInfinity() {
                 if(qm.platform.isMobile()){
-                    qmLog.info("speechSynthesis.resume not implemented on mobile yet");
+                    qm.qmLog.info("speechSynthesis.resume not implemented on mobile yet");
                     return;
                 }
                 window.speechSynthesis.resume();
@@ -4751,7 +4783,7 @@ window.qm = {
             };
             utterance.onerror = function(event) {
                 var message = 'An error has occurred with the speech synthesis: ' + event.error;
-                qmLog.error(message);
+                qm.qmLog.error(message);
                 if(errorHandler){errorHandler(message);}
             };
             utterance.text = text;
@@ -4760,13 +4792,13 @@ window.qm = {
             utterance.voice = voices.find(function (voice) {return voice.name === qm.speech.config.VOICE;});
             qm.robot.openMouth();
             //qm.mic.pauseListening(hideVisualizer);
-            if(qm.mic.isListening()){qmLog.debug("annyang still listening!")}
+            if(qm.mic.isListening()){qm.qmLog.debug("annyang still listening!")}
             qm.speech.utterances.push(utterance); // https://stackoverflow.com/questions/23483990/speechsynthesis-api-onend-callback-not-working
             console.info("speechSynthesis.speak(utterance)", utterance);
             utterance.onend = function (event) {
                 clearTimeout(qm.speech.timeoutResumeInfinity);
-                if(qm.mic.isListening()){qmLog.debug("annyang still listening before shutup")}
-                qmLog.info("Utterance ended for " + text);
+                if(qm.mic.isListening()){qm.qmLog.debug("annyang still listening before shutup")}
+                qm.qmLog.info("Utterance ended for " + text);
                 qm.speech.shutUpRobot(resumeListening);
                 if(successHandler){successHandler();}
             };
@@ -4932,20 +4964,20 @@ window.qm = {
         },
         saveAuthorizedClientsToLocalStorage: function(authorizedClients){
             if(!authorizedClients){
-                qmLog.error("No authorizedClients provided to saveToLocalStorage");
+                qm.qmLog.error("No authorizedClients provided to saveToLocalStorage");
                 return;
             }
             qm.localForage.setItem(qm.items.authorizedClients, authorizedClients);
         },
         getAuthorizedClientsFromLocalStorage: function(successHandler, errorHandler){
             if(!successHandler){
-                qmLog.error("No successHandler provided to authorizedClients getFromLocalStorage");
+                qm.qmLog.error("No successHandler provided to authorizedClients getFromLocalStorage");
                 return;
             }
             qm.localForage.getItem(qm.items.authorizedClients, function (authorizedClients) {
                 successHandler(authorizedClients);
             }, function (error) {
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
         },
@@ -4958,7 +4990,7 @@ window.qm = {
                 qm.shares.getAuthorizedClientsFromApi(function (authorizedClients) {
                     if(successHandler){successHandler(authorizedClients);}
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             });
@@ -4980,7 +5012,7 @@ window.qm = {
             hide: function(){
                 var element = qm.splash.text.getElement();
                 if(!element){
-                    qmLog.error("No splash.text.element!");
+                    qm.qmLog.error("No splash.text.element!");
                     return false;
                 }
                 element.style.display = "none";
@@ -4990,7 +5022,7 @@ window.qm = {
                 if(element){
                     element.style.display = "block";
                 } else {
-                    qmLog.error("Could not get splash.text element");
+                    qm.qmLog.error("Could not get splash.text element");
                 }
             },
             getElement: function(){
@@ -5024,20 +5056,20 @@ window.qm = {
         },
         saveStudiesCreatedToLocalStorage: function(studiesCreated){
             if(!studiesCreated){
-                qmLog.error("No studiesCreated provided to saveToLocalStorage");
+                qm.qmLog.error("No studiesCreated provided to saveToLocalStorage");
                 return;
             }
             qm.localForage.setItem(qm.items.studiesCreated, studiesCreated);
         },
         getStudiesCreatedFromLocalStorage: function(successHandler, errorHandler){
             if(!successHandler){
-                qmLog.error("No successHandler provided to studiesCreated getFromLocalStorage");
+                qm.qmLog.error("No successHandler provided to studiesCreated getFromLocalStorage");
                 return;
             }
             qm.localForage.getItem(qm.items.studiesCreated, function (studiesCreated) {
                 successHandler(studiesCreated);
             }, function (error) {
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
         },
@@ -5050,7 +5082,7 @@ window.qm = {
                 qm.shares.getStudiesCreatedFromApi(function (studiesCreated) {
                     if(successHandler){successHandler(studiesCreated);}
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             });
@@ -5067,7 +5099,7 @@ window.qm = {
             qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
                 successHandler(study);
             }, function (error) {
-                qmLog.info(error);
+                qm.qmLog.info(error);
                 createStudy();
             });
         },
@@ -5084,20 +5116,20 @@ window.qm = {
         },
         saveStudiesJoinedToLocalStorage: function(studiesJoined){
             if(!studiesJoined){
-                qmLog.error("No studiesJoined provided to saveToLocalStorage");
+                qm.qmLog.error("No studiesJoined provided to saveToLocalStorage");
                 return;
             }
             qm.localForage.setItem(qm.items.studiesJoined, studiesJoined);
         },
         getStudiesJoinedFromLocalStorage: function(successHandler, errorHandler){
             if(!successHandler){
-                qmLog.error("No successHandler provided to studiesJoined getFromLocalStorage");
+                qm.qmLog.error("No successHandler provided to studiesJoined getFromLocalStorage");
                 return;
             }
             qm.localForage.getItem(qm.items.studiesJoined, function (studiesJoined) {
                 successHandler(studiesJoined);
             }, function (error) {
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
         },
@@ -5110,7 +5142,7 @@ window.qm = {
                 qm.shares.getStudiesJoinedFromApi(function (studiesJoined) {
                     if(successHandler){successHandler(studiesJoined);}
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             });
@@ -5127,11 +5159,11 @@ window.qm = {
     storage: {
         valueIsValid: function(value){
             if(typeof value === "undefined"){
-                qmLog.error("value provided to qm.storage.setItem is undefined!");
+                qm.qmLog.error("value provided to qm.storage.setItem is undefined!");
                 return false;
             }
             if(value === "null"){
-                qmLog.error("null string provided to qm.storage.setItem!");
+                qm.qmLog.error("null string provided to qm.storage.setItem!");
                 return false;
             }
             return true;
@@ -5151,11 +5183,11 @@ window.qm = {
         },
         setTrackingReminderNotifications: function(notifications){
             if(!notifications){
-                qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
+                qm.qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
                 return;
             }
-            qmLog.debug("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
-            qmLog.info("Saving " + notifications.length + " notifications to local storage");
+            qm.qmLog.debug("Saving " + notifications.length + " notifications to local storage", null, {notifications: notifications});
+            qm.qmLog.info("Saving " + notifications.length + " notifications to local storage");
             qm.notifications.setLastNotificationsRefreshTime();
             window.qm.chrome.updateChromeBadge(notifications.length);
             qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
@@ -5163,7 +5195,7 @@ window.qm = {
         deleteByProperty: function (localStorageItemName, propertyName, propertyValue){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
             if(!localStorageItemArray){
-                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
+                window.qm.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
             } else {
                 qm.storage.setItem(localStorageItemName, qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
             }
@@ -5171,7 +5203,7 @@ window.qm = {
         deleteByPropertyInArray: function (localStorageItemName, propertyName, objectsArray){
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
             if(!localStorageItemArray){
-                window.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
+                window.qm.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
             } else {
                 var arrayOfValuesForProperty = objectsArray.map(function(a) {return a[propertyName];});
                 for (var i=0; i < arrayOfValuesForProperty.length; i++) {
@@ -5182,7 +5214,7 @@ window.qm = {
         },
         getAllLocalStorageDataWithSizes: function(summary){
             if(typeof localStorage === "undefined"){
-                qmLog.debug("localStorage not defined");
+                qm.qmLog.debug("localStorage not defined");
                 return false;
             }
             var localStorageItemsArray = [];
@@ -5214,7 +5246,7 @@ window.qm = {
                 try {
                     trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
                 } catch (error) {
-                    qmLog.error(error, null, {trackingReminderNotifications: trackingReminderNotifications});
+                    qm.qmLog.error(error, null, {trackingReminderNotifications: trackingReminderNotifications});
                     trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
                     trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
                 }
@@ -5239,10 +5271,10 @@ window.qm = {
             window.qm.storage.deleteByProperty(localStorageItemName, 'id', elementId);
         },
         removeItem: function(key){
-            qmLog.debug("Removing " + key + " from local storage");
+            qm.qmLog.debug("Removing " + key + " from local storage");
             qm.globalHelper.removeItem(key);
             if(typeof localStorage === "undefined"){
-                qmLog.debug("localStorage not defined");
+                qm.qmLog.debug("localStorage not defined");
                 return false;
             }
             return localStorage.removeItem(key);
@@ -5263,7 +5295,7 @@ window.qm = {
             }
         },
         addToOrReplaceByIdAndMoveToFront: function(localStorageItemName, replacementElementArray){
-            qmLog.debug('qm.storage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
+            qm.qmLog.debug('qm.storage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
                 JSON.stringify(replacementElementArray).substring(0,20)+'...');
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
@@ -5273,9 +5305,9 @@ window.qm = {
         },
         setGlobal: function(key, value){
             if(key === "userVariables" && typeof value === "string"){
-                qmLog.error("userVariables should not be a string!");
+                qm.qmLog.error("userVariables should not be a string!");
             }
-            qmLog.debug("Setting " + key + " in globals");
+            qm.qmLog.debug("Setting " + key + " in globals");
             qm.globals[key] = value;
         },
         setLastRequestTime: function(type, route){
@@ -5288,30 +5320,30 @@ window.qm = {
             if(!qm.storage.valueIsValid(value)){return false;}
             var globalValue = qm.storage.getGlobal(key);
             if(qm.objectHelper.isObject(value)){
-                qmLog.info("Can't compare "+key+" because changes made to the gotten object are applied to the global object");
+                qm.qmLog.info("Can't compare "+key+" because changes made to the gotten object are applied to the global object");
             } else if (value === globalValue) {
                 var valueString = JSON.stringify(value);
-                qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
+                qm.qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
                 return value;
             }
             qm.storage.setGlobal(key, value);
             var sizeInKb = qm.arrayHelper.getSizeInKiloBytes(value);
             if(sizeInKb > 2000){
                 if(qm.arrayHelper.variableIsArray(value) && value.length > 1){
-                    qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
+                    qm.qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage so removing last element until less than 2MB...");
                     value = qm.arrayHelper.removeLastItemsUntilSizeLessThan(2000, value);
                 } else {
-                    qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
+                    qm.qmLog.error(key + " is " + sizeInKb + "kb so we can't save to localStorage!");
                     return;
                 }
             }
             if(typeof value !== "string"){value = JSON.stringify(value);}
             var summaryValue = value;
             if(summaryValue){summaryValue = value.substring(0, 18);}
-            window.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
+            window.qm.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
             try {
                 if(typeof localStorage === "undefined"){
-                    qmLog.debug("localStorage not defined");
+                    qm.qmLog.debug("localStorage not defined");
                     return false;
                 }
                 localStorage.setItem(key, value);
@@ -5324,13 +5356,13 @@ window.qm = {
                 var metaData = { localStorageItems: qm.storage.getAllLocalStorageDataWithSizes(true) };
                 metaData['size_of_'+key+"_in_kb"] = sizeInKb;
                 var name = 'Error saving ' + key + ' to local storage: ' + error.message;
-                window.qmLog.error(name, null, metaData);
+                window.qm.qmLog.error(name, null, metaData);
                 deleteLargeLocalStorageItems(metaData.localStorageItems);
                 qm.storage.setItem(key, value);
             }
         },
         getGlobal: function(key){
-            //qmLog.debug("getting " + key + " from globals");
+            //qm.qmLog.debug("getting " + key + " from globals");
             if(typeof qm.globals[key] === "undefined"){return null;}
             if(qm.globals[key] === "false"){return false;}
             if(qm.globals[key] === "true"){return true;}
@@ -5339,31 +5371,31 @@ window.qm = {
         },
         getItem: function(key){
             if(!key){
-                qmLog.error("No key provided to qm.storage.getItem");
+                qm.qmLog.error("No key provided to qm.storage.getItem");
                 return null;
             }
             var fromGlobals = qm.storage.getGlobal(key);
             if(fromGlobals !== null && fromGlobals !== "undefined" && fromGlobals !== "null"){
-                qmLog.debug("Got " + key + " from globals");
+                qm.qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
             if(typeof localStorage === "undefined"){
-                qmLog.debug("localStorage not defined");
+                qm.qmLog.debug("localStorage not defined");
                 return false;
             }
             var itemFromLocalStorage = localStorage.getItem(key);
             if(itemFromLocalStorage === "undefined"){
-                qmLog.error(key + " from localStorage is undefined!");
+                qm.qmLog.error(key + " from localStorage is undefined!");
                 localStorage.removeItem(key);
                 return null;
             }
             if (itemFromLocalStorage && typeof itemFromLocalStorage === "string"){
-                qmLog.debug("Parsing " + key + " and setting in globals");
+                qm.qmLog.debug("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(itemFromLocalStorage, itemFromLocalStorage);
-                qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
+                qm.qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
             } else {
-                qmLog.debug(key + ' not found in localStorage');
+                qm.qmLog.debug(key + ' not found in localStorage');
             }
             return null;
         },
@@ -5391,7 +5423,7 @@ window.qm = {
             if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){trackingReminderNotificationId = body.trackingReminderNotification.id;}
             if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){trackingReminderNotificationId = body.trackingReminderNotificationId;}
             if(qm.storage.getTrackingReminderNotifications() && qm.storage.getTrackingReminderNotifications().length){
-                window.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
+                window.qm.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
                 window.qm.storage.deleteById(qm.items.trackingReminderNotifications, trackingReminderNotificationId);
             } else {
                 window.qm.notifications.refreshIfEmpty();
@@ -5399,7 +5431,7 @@ window.qm = {
         },
         getLocalStorageList: function(){
             if(typeof localStorage === "undefined"){
-                qmLog.debug("localStorage not defined");
+                qm.qmLog.debug("localStorage not defined");
                 return false;
             }
             var localStorageItemsArray = [];
@@ -5410,13 +5442,13 @@ window.qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
-            qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
+            qm.qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
             var array = qm.storage.getItem(localStorageItemName);
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
         },
         clearStorageExceptForUnitsAndCommonVariables: function(){
-            qmLog.info('Clearing local storage!');
+            qm.qmLog.info('Clearing local storage!');
             var commonVariables = qm.storage.getItem(qm.items.commonVariables);
             var units = qm.storage.getItem(qm.items.units);
             qm.storage.clear();
@@ -5428,7 +5460,7 @@ window.qm = {
     stringHelper: {
         stripHtmlTags: function(strInputCode){
             if(!strInputCode){
-                qmLog.error("Nothing provided to stripHtmlTags");
+                qm.qmLog.error("Nothing provided to stripHtmlTags");
                 return strInputCode;
             }
             return strInputCode.replace(/<\/?[^>]+(>|$)/g, "");
@@ -5550,6 +5582,31 @@ window.qm = {
             if(string.indexOf(" ") === -1){return string;}
             var words = string.split(" ");
             return words[0];
+        },
+        removePunctuationFromBeginningAndEnd: function(sentence){
+            var cleaned = sentence.replace(/\b[-.,()&$#!\[\]{}"']+\B|\B[-.,()&$#!\[\]{}"']+\b/g, "");
+            return cleaned;
+        },
+        getLastWord: function(string){
+            if(string.indexOf(" ") === -1){return string;}
+            var words = string.split(" ");
+            var lastWord = words[words.length - 1];
+            lastWord = qm.stringHelper.removePunctuationFromBeginningAndEnd(lastWord);
+            return lastWord;
+        },
+        firstWordIs: function(sentence, word){
+            word = word.trim();
+            sentence = sentence.toLowerCase();
+            word = word.toLowerCase();
+            return sentence.indexOf(word+" ") === 0;
+        },
+        sentenceContainsWord: function(sentence, word){
+            word = word.trim();
+            sentence = sentence.toLowerCase();
+            word = word.toLowerCase();
+            if(qm.stringHelper.firstWordIs(sentence, word)){return true;}
+            if(qm.stringHelper.getLastWord(sentence, word) === word){return true;}
+            return sentence.indexOf(" "+word+" ") !== -1;
         }
     },
     studyHelper: {
@@ -5654,7 +5711,7 @@ window.qm = {
         studyMatchesParams: function(params, study){
             if(!study){return false;}
             if(!study.causeVariableName && !study.causeVariable){
-                qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
+                qm.qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
                 return false;
             }
             var causeVariableName = study.causeVariableName || study.causeVariable.name;
@@ -5691,18 +5748,18 @@ window.qm = {
         },
         saveLastStudyToGlobalsAndLocalForage: function(study){
             if(!study){
-                qmLog.error("No study provided to saveLastStudyToGlobalsAndLocalForage");
+                qm.qmLog.error("No study provided to saveLastStudyToGlobalsAndLocalForage");
                 return;
             }
             if(!study.causeVariableName && !study.causeVariable){
-                qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
+                qm.qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
                 return;
             }
             qm.globalHelper.setStudy(study);
             qm.localForage.setItem(qm.items.lastStudy, study);
         },
         deleteLastStudyFromGlobalsAndLocalForage: function(){
-            qmLog.info("deleteLastStudyFromGlobalsAndLocalForage");
+            qm.qmLog.info("deleteLastStudyFromGlobalsAndLocalForage");
             qm.localForage.removeItem(qm.items.lastStudy);
         },
         getStudyUrl: function(study) {
@@ -5748,7 +5805,7 @@ window.qm = {
                 qm.studyHelper.getStudyFromApi(params, function (study) {
                     successHandler(study);
                 }, function (error) {
-                    qmLog.error("getStudy error: ", error);
+                    qm.qmLog.error("getStudy error: ", error);
                     errorHandler(error);
                 });
             }
@@ -5764,21 +5821,21 @@ window.qm = {
                         getStudyFromApi();
                     }
                 }, function (error) {
-                    qmLog.info(error);
+                    qm.qmLog.info(error);
                     getStudyFromApi();
                 });
         },
         processAndSaveStudy: function(data, error){
-            qmLog.debug('study response: ', null, data);
+            qm.qmLog.debug('study response: ', null, data);
             if(!data){
                 if(!error){ // Error will be handled elsewhere
-                    qmLog.error("No data provided to processAndSaveStudy.  We got: ", data, data);
+                    qm.qmLog.error("No data provided to processAndSaveStudy.  We got: ", data, data);
                 }
                 return false;
             }
             var study = data.study || data.publicStudy || data.userStudy || data.cohortStudy || data;
             if(!study){
-                qmLog.error("No study provided to processAndSaveStudy.  We got: ", data, data);
+                qm.qmLog.error("No study provided to processAndSaveStudy.  We got: ", data, data);
                 return false;
             }
             qm.chartHelper.setChartExportOptionsForAllSubProperties(study);
@@ -5908,7 +5965,9 @@ window.qm = {
             return manualTrackingUnitUnitAbbreviatedNames.indexOf(unitAbbreviatedName) > -1;
         },
         getAllUnits: function(){
-            return qm.storage.getItem(qm.items.units);
+            var units = qm.storage.getItem(qm.items.units);
+            if(!units){units = qm.staticData.units;}
+            return units;
         },
         getProgressivelyMoreUnits: function(currentlyDisplayedUnits){
             if(!currentlyDisplayedUnits){return qm.unitHelper.getNonAdvancedUnits();}
@@ -5956,7 +6015,7 @@ window.qm = {
         },
         updateAllUnitPropertiesOnObject: function(unitNameAbbreviatedNameOrId, object){
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(unitNameAbbreviatedNameOrId);
-            qmLog.info('Changing unit to ' + unit.name);
+            qm.qmLog.info('Changing unit to ' + unit.name);
             for (var objectProperty in object) {
                 if (object.hasOwnProperty(objectProperty)) {
                     if(objectProperty.toLowerCase().indexOf('unit') === -1){continue;}
@@ -5965,7 +6024,7 @@ window.qm = {
                         if (unit.hasOwnProperty(unitProperty)) {
                             var lowerCaseUnitProperty = unitProperty.toLowerCase();
                             if(lowerCaseObjectProperty === lowerCaseUnitProperty){
-                                qmLog.info("Setting " + objectProperty + " to " + unit[unitProperty]);
+                                qm.qmLog.info("Setting " + objectProperty + " to " + unit[unitProperty]);
                                 object[objectProperty] = unit[unitProperty];
                             }
                         }
@@ -5977,7 +6036,7 @@ window.qm = {
     },
     urlHelper: {
         addUrlParmsToCurrentUrl: function insertParam(key, value) {
-            qmLog.error("This adds params before hash"); // TODO: Fix me
+            qm.qmLog.error("This adds params before hash"); // TODO: Fix me
             key = encodeURI(key); value = encodeURI(value);
             var kvp = document.location.search.substr(1).split('&');
             var i=kvp.length; var x; while(i--) {
@@ -6061,7 +6120,7 @@ window.qm = {
                 if (params.hasOwnProperty(key)) {
                     if(url.indexOf(key + '=') === -1){
                         if(params[key] === null){
-                            console.error("Not adding null param "+key);  // Don't use qmLog here because it's called by the logger -> infitnite loop
+                            console.error("Not adding null param "+key);  // Don't use qm.qmLog here because it's called by the logger -> infitnite loop
                             continue;
                         }
                         if(url.indexOf('?') === -1){
@@ -6084,12 +6143,12 @@ window.qm = {
             }
         },
         getParameterFromEventUrl: function (event, parameterName) {
-            qmLog.authDebug('extracting ' + parameterName + ' from event: ', event);
+            qm.qmLog.authDebug('extracting ' + parameterName + ' from event: ', event);
             var url = event.url;
             if(!url) {url = event.data;}
             if(!qm.urlHelper.isQuantiMoDoDomain(url)){return;}
             var value = qm.urlHelper.getParam(parameterName, url);
-            if(value){qmLog.authDebug('got ' + parameterName + ' from ' + url +": " + value);}
+            if(value){qm.qmLog.authDebug('got ' + parameterName + ' from ' + url +": " + value);}
             return value;
         },
         isQuantiMoDoDomain: function (urlToCheck) {
@@ -6097,10 +6156,10 @@ window.qm = {
             var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
             var result = isHttps && matchesQuantiModo;
             if(!result){
-                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                qm.qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
                     urlToCheck + ' is NOT an https QuantiModo domain');
             } else {
-                qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
+                qm.qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
                     urlToCheck + ' IS a QuantiModo domain');
             }
             return result;
@@ -6117,7 +6176,7 @@ window.qm = {
         checkLoadStartEventUrlForErrors: function (ref, event){
             var error = qm.urlHelper.getParam('error', event.url);
             if(error) {
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 ref.close();
             }
         },
@@ -6135,7 +6194,7 @@ window.qm = {
             function loadErrorCallBack(params) {
                 $('#status-message').text("");
                 var scriptErrorMessage = "alert('Sorry we cannot open that page. Message from the server is : " + params.message + "');";
-                qmLog.error(scriptErrorMessage);
+                qm.qmLog.error(scriptErrorMessage);
                 windowRef.executeScript({ code: scriptErrorMessage }, executeScriptCallBack);
                 windowRef.close();
                 windowRef = undefined;
@@ -6169,7 +6228,7 @@ window.qm = {
             return window.location.origin + window.location.pathname;
         },
         goToUrl: function(url){
-            qmLog.info("Going to "+url);
+            qm.qmLog.info("Going to "+url);
             window.location.href = url;
         }
     },
@@ -6191,14 +6250,14 @@ window.qm = {
                     user = qm.objectHelper.snakeToCamelCaseProperties(user);
                 }
                 if(user && !user.id){
-                    console.error("No user id in ", qmUser);  // Don't use qmLog.error to avoid infinite loop
+                    console.error("No user id in ", qmUser);  // Don't use qm.qmLog.error to avoid infinite loop
                     qm.userHelper.setUser(null);
                     return null;
                 }
                 return user;
             }
             if(!successHandler) {
-                if(!window.qmUser){qmLog.debug("We do not have a user in local storage!");}
+                if(!window.qmUser){qm.qmLog.debug("We do not have a user in local storage!");}
                 return checkUserId(window.qmUser);
             }
             if(window.qmUser){
@@ -6217,11 +6276,11 @@ window.qm = {
             qm.storage.setItem(qm.items.user, user);
             qm.localForage.setItem(qm.items.user, user);
             if(!user){return;}
-            window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
+            window.qm.qmLog.debug(window.qmUser.displayName + ' is logged in.');
             if(qm.urlHelper.getParam('doNotRemember')){return;}
-            qmLog.setupUserVoice();
+            qm.qmLog.setupUserVoice();
             if(!user.accessToken){
-                qmLog.error("User does not have access token!", null, {userToSave: user});
+                qm.qmLog.error("User does not have access token!", null, {userToSave: user});
             } else {
                 qm.auth.saveAccessTokenResponse(user);
             }
@@ -6233,21 +6292,21 @@ window.qm = {
                 var currentTime = hours + ':00:00';
                 if(currentTime > qm.userHelper.getUserFromLocalStorage().latestReminderTime ||
                     currentTime < qm.userHelper.getUserFromLocalStorage().earliestReminderTime ){
-                    window.qmLog.info('Not showing notification because outside allowed time range');
+                    window.qm.qmLog.info('Not showing notification because outside allowed time range');
                     return false;
                 }
             }
             return true;
         },
         getUserFromApi: function(successHandler, errorHandler){
-            qmLog.info("Getting user from API...");
+            qm.qmLog.info("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
-                    qmLog.info("Got user from API...");
+                    qm.qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
                     if(successHandler){successHandler(userFromApi);}
                 } else {
-                    qmLog.info("Could not get user from API...");
+                    qm.qmLog.info("Could not get user from API...");
                     if(qm.platform.isChromeExtension()){
                         qm.chrome.openLoginWindow();
                     }
@@ -6290,16 +6349,16 @@ window.qm = {
             qm.getUser(function(user){
                 if(!user){
                     callback(false);
-                    qmLog.info("userIsOlderThanXSeconds: No user to check if older than "+secondsCutoff +" seconds");
+                    qm.qmLog.info("userIsOlderThanXSeconds: No user to check if older than "+secondsCutoff +" seconds");
                     return;
                 }
                 if(!user.userRegistered){
                     callback(false);
-                    qmLog.info("userIsOlderThanXSeconds: No userRegistered property to check if older than "+secondsCutoff +" seconds");
+                    qm.qmLog.info("userIsOlderThanXSeconds: No userRegistered property to check if older than "+secondsCutoff +" seconds");
                     return;
                 }
                 var ageInSeconds = qm.timeHelper.getUnixTimestampInSeconds() - qm.timeHelper.universalConversionToUnixTimeSeconds(user.userRegistered);
-                qmLog.info("userIsOlderThanXSeconds: User is " + ageInSeconds + " seconds old. createdAt: " + user.userRegistered);
+                qm.qmLog.info("userIsOlderThanXSeconds: User is " + ageInSeconds + " seconds old. createdAt: " + user.userRegistered);
                 callback(ageInSeconds > secondsCutoff);
             });
         }
@@ -6328,12 +6387,12 @@ window.qm = {
             qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
                 if(successHandler){successHandler(commonVariables);}
             }, function(error){
-                qmLog.error(error);
+                qm.qmLog.error(error);
             });
         },
         saveToLocalStorage: function(commonVariables){
             if(!commonVariables){
-                qmLog.error("No commonVariables provided to saveToLocalStorage");
+                qm.qmLog.error("No commonVariables provided to saveToLocalStorage");
                 return;
             }
             commonVariables = qm.arrayHelper.convertToArrayIfNecessary(commonVariables);
@@ -6352,13 +6411,13 @@ window.qm = {
                 successHandler(commonVariables);
             } else {
                 var message = "No CommonVariablesFromJsonFile found matching params" + JSON.stringify(requestParams);
-                qmLog.info(message);
+                qm.qmLog.info(message);
                 if(errorHandler){errorHandler(message);}
             }
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
-                qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
+                qm.qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
                 return;
             }
             if(!requestParams){requestParams = {};}
@@ -6373,14 +6432,14 @@ window.qm = {
                     if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
                     successHandler(commonVariables);
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             }
             qm.commonVariablesHelper.getCommonVariablesFromJsonFile(requestParams, function (commonVariables) {
                 getFromLocalForage(commonVariables);
             }, function (error) {
-                qmLog.info(error);
+                qm.qmLog.info(error);
                 getFromLocalForage();
             });
         },
@@ -6393,7 +6452,7 @@ window.qm = {
                 qm.commonVariablesHelper.getCommonVariablesFromApi(params, function (variables) {
                     if(successHandler){successHandler(variables);}
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){errorHandler(error);}
                 });
             }, errorHandler);
@@ -6410,7 +6469,7 @@ window.qm = {
     userVariables: {
         saveToLocalStorage: function(variables){
             if(!variables){
-                qmLog.error("No variables provided to userVariables.saveToLocalStorage");
+                qm.qmLog.error("No variables provided to userVariables.saveToLocalStorage");
                 return;
             }
             variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
@@ -6483,7 +6542,7 @@ window.qm = {
                 if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
                 successHandler(data);
             }, function (error) {
-                qmLog.error(error);
+                qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
         },
@@ -6505,22 +6564,22 @@ window.qm = {
                 }
                 if(userVariables && userVariables.length && !shouldWeMakeVariablesSearchAPIRequest(userVariables, params.searchPhrase)){
                     successHandler(userVariables);
-                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " in local storage");
+                    qm.qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " in local storage");
                     return;
                 }
-                qmLog.info("No user variables matching " + JSON.stringify(params) + " in local storage");
+                qm.qmLog.info("No user variables matching " + JSON.stringify(params) + " in local storage");
                 qm.userVariables.getFromApi(params, function (userVariables) {
-                    qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " from API");
+                    qm.qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " from API");
                     successHandler(userVariables);
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     errorHandler(error);
                 });
             });
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
             if(!qm.getUser()){
-                qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                qm.qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
                 return;
             }
             qm.reminderHelper.getNumberOfReminders(function (number) {
@@ -6549,14 +6608,14 @@ window.qm = {
             function getFromApi(localVariables) {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
                     if(localVariables && variables.length < localVariables.length){
-                        qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});
+                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});
                     }
                     sortUpdateSubtitlesAndReturnVariables(variables);
                 }, function (error) {
-                    qmLog.error(error);
+                    qm.qmLog.error(error);
                     if(errorHandler){
                         if(typeof errorHandler !== "function") {
-                            qmLog.error("errorHandler is not a function! It is: ", errorHandler);
+                            qm.qmLog.error("errorHandler is not a function! It is: ", errorHandler);
                         }
                         errorHandler(error);
                     }
@@ -6582,7 +6641,7 @@ window.qm = {
         },
         putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
             if(!variables){
-                qmLog.error("no variables provided to putManualTrackingFirst");
+                qm.qmLog.error("no variables provided to putManualTrackingFirst");
                 return;
             }
             var manualTracking = variables.filter(function (variableToCheck) {
@@ -6596,7 +6655,7 @@ window.qm = {
         },
         defaultVariableSort: function (variables) {
             if(!variables){
-                qmLog.info("no variables provided to putManualTrackingFirst");
+                qm.qmLog.info("no variables provided to putManualTrackingFirst");
                 return null;
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
@@ -6626,7 +6685,7 @@ window.qm = {
                     both = qm.arrayHelper.getUnique(both, 'id');
                     successHandler(both);
                 }, function(error){
-                    qmLog.info(error);
+                    qm.qmLog.info(error);
                     successHandler(userVariables);
                 });
             });
@@ -6649,7 +6708,7 @@ window.qm = {
     },
     variableCategoryHelper: {
         getVariableCategoriesFromApi: function (successHandler, errorHandler) {
-            qmLog.info("Getting variable categories from API...");
+            qm.qmLog.info("Getting variable categories from API...");
             function globalSuccessHandler(variableCategories){
                 qm.localForage.setItem(qm.items.variableCategories, variableCategories);
                 if(successHandler){successHandler(variableCategories);}
@@ -6700,18 +6759,18 @@ window.qm = {
         showing: false,
         hideVisualizer: function(){
             //qm.appContainer.setOpacity(1);
-            qmLog.info("Hiding visualizer");
+            qm.qmLog.info("Hiding visualizer");
             var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
             if(visualizer){
                 visualizer.style.display = "none";
             } else {
-                qmLog.info("qm.visualizer Element not found");
+                qm.qmLog.info("qm.visualizer Element not found");
             }
         },
         showVisualizer: function(type){
             if(!qm.visualizer.visualizerEnabled){return;}
             type = type || "siri";
-            qmLog.info("Showing visualizer type: " + type);
+            qm.qmLog.info("Showing visualizer type: " + type);
             if(type === "rainbow"){
                 var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
                 visualizer.style.display = "block";
@@ -6740,7 +6799,7 @@ window.qm = {
             }
         },
         rainbowCircleVisualizer: function(){
-            qmLog.info("Showing rainbowCircleVisualizer...");
+            qm.qmLog.info("Showing rainbowCircleVisualizer...");
             var visualizer = qm.visualizer.getRainbowVisualizerCanvas();
             if(visualizer) {visualizer.style.display = "block";}
             /* SOUND */
@@ -6759,14 +6818,14 @@ window.qm = {
                     function(error) {
                         canvas.width = 0;
                         canvas.height = 0;
-                        qmLog.error('Audio error: ' + error.name);
+                        qm.qmLog.error('Audio error: ' + error.name);
                     }
                 );
             } else {
                 navigator.mediaDevices.getUserMedia({audio: true})
                     .then(doAudioStuff)
                     .catch(function(error) {
-                        qmLog.error('Audio error: ' + error.name);
+                        qm.qmLog.error('Audio error: ' + error.name);
                     });
             }
             // Do the thing
@@ -6845,7 +6904,7 @@ window.qm = {
             var HEIGHT = 400;
             var canvas = $('#siri-canvas')[0];
             if(!canvas){
-                qmLog.info("No siri canvas!");
+                qm.qmLog.info("No siri canvas!");
                 return false;
             }
             var ctx = canvas.getContext("2d");
@@ -7076,7 +7135,7 @@ window.qm = {
     webNotifications: {
         initializeFirebase: function(){
             if(qm.firebase){
-                qmLog.debug("Firebase already initialized");
+                qm.qmLog.debug("Firebase already initialized");
                 return qm.firebase;
             }
             var config = {
@@ -7093,28 +7152,28 @@ window.qm = {
         },
         registerServiceWorker: function () {
             if(qm.platform.browser.isFirefox() && window.location.href.indexOf("herokuapp") !== -1){
-                qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
+                qm.qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
                 return false;
             }
             if(qm.serviceWorker){
-                qmLog.debug("serviceWorker already registered");
+                qm.qmLog.debug("serviceWorker already registered");
                 return false;
             }
             if(!qm.platform.isWeb()){
-                qmLog.debug("Not registering service worker because not on Web");
+                qm.qmLog.debug("Not registering service worker because not on Web");
                 return false;
             }
             try {
                 qm.webNotifications.initializeFirebase();
             } catch (e){
-                qmLog.error(e.message, e, e);
+                qm.qmLog.error(e.message, e, e);
                 return false;
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
-            qmLog.info("Loading service worker from " + serviceWorkerUrl);
+            qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
-                qmLog.error("navigator.serviceWorker is not defined!");
+                qm.qmLog.error("navigator.serviceWorker is not defined!");
                 return false;
             }
             try {
@@ -7127,7 +7186,7 @@ window.qm = {
                 qm.serviceWorker = navigator.serviceWorker;
                 return qm.serviceWorker;
             } catch (e){
-                qmLog.error(e.message, e, e);
+                qm.qmLog.error(e.message, e, e);
                 return false;
             }
         },
@@ -7155,7 +7214,7 @@ window.qm = {
                             }
                         })
                         .catch(function(err) {
-                            qmLog.error('An error occurred while retrieving token. ', null, err);
+                            qm.qmLog.error('An error occurred while retrieving token. ', null, err);
                             //showToken('Error retrieving Instance ID token. ', err);
                             //qm.webNotifications.postWebPushSubscriptionToServer(false);
                         });
@@ -7193,4 +7252,6 @@ window.qm = {
         }
     }
 };
-qm.urlHelper.redirectToHttpsIfNecessary();
+if(typeof qmLog !== "undefined"){qm.qmLog = qmLog;}
+if(typeof nlp !== "undefined"){qm.nlp = nlp;}
+if(typeof window !== "undefined"){  window.qm = qm; qm.urlHelper.redirectToHttpsIfNecessary();} else {module.exports = qm;}
