@@ -3661,7 +3661,6 @@ gulp.task('merge-dialogflow-export', function() {
         writeToFile(intentPath, agent.intents[intentName]);
     }
 });
-
 gulp.task('tests', function() {
     var assert = require('assert');
     var qm = require('./src/js/qmHelpers');
@@ -3723,6 +3722,6 @@ gulp.task('tests', function() {
         }
     };
     qmGulp.tests.recordMeasurementIntentTest();
-    qmGulp.tests.getUnits();
+    qmGulp.tests.getUnitsTest();
 });
 
