@@ -5850,7 +5850,7 @@ var qm = {
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getStudies';
             var cachedData = qm.api.cacheGet(params, cacheKey);
-            if(cachedData && successHandler){
+            if(cachedData && successHandler && !params.refresh){
                 successHandler(cachedData);
                 return;
             }
