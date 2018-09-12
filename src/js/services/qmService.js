@@ -3253,13 +3253,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.setUser = function(user){
         qmLog.authDebug("Setting user to: ", user, user);
         qmService.rootScope.setUser(user);
-        if(user && !user.stripeActive && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
+        qm.userHelper.setUser(user);
+        if(!qm.getAppSettings()){
+            qmLog.error("Can't get qm.getAppSettings for some reason!");
+            return;
+        }
+        if(user && !user.stripeActive && qm.getAppSettings() && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
             qmService.adBanner.initialize();
-
         } else {
             qmLog.info("admob: Not initializing for some reason")
         }
-        qm.userHelper.setUser(user);
     };
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
         qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:', null, user);
