@@ -63,7 +63,7 @@ window.qmLog = {
         }
     },
     getLogLevelName: function() {
-        if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
+        //qmService.setUseif(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
         if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
         if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
         if(qmLog.logLevel){return qmLog.logLevel;}
