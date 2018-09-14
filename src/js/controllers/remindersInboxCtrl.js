@@ -44,7 +44,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	});
 	$scope.$on('$ionicView.enter', function(e) {
         qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
-        $scope.defaultHelpCards = qmService.setupHelpCards();
+        $scope.defaultHelpCards = qmService.setupHelpCards($rootScope.appSettings);
         readHelpCards();
         getTrackingReminderNotifications();
         //getFavorites();  Not sure why we need to do this here?
@@ -171,7 +171,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				});
 		}
     }
-	var getFallbackInboxContent = function () {
+	var getFallbackInboxContentIfNecessary = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
             if(getVariableCategoryName()){
                 qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
@@ -212,7 +212,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			$scope.trackingReminderNotifications.shift();
         }
         closeWindowIfNecessary();
-        getFallbackInboxContent();
 		return trackingReminderNotification;
 	};
 	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
@@ -290,7 +289,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 			qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
-            if(!$scope.state.numberOfDisplayedNotifications){getFallbackInboxContent();}  // TODO: Why was this commented?
 		}
 	};
 	var hideInboxLoader = function(){
@@ -304,10 +302,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			.then(function (trackingReminderNotifications) {
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 				$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-				getFallbackInboxContent();
+				getFallbackInboxContentIfNecessary();
 				hideInboxLoader();
 			}, function(error){
-				getFallbackInboxContent();
+				getFallbackInboxContentIfNecessary();
 				qmLogService.error(error);
 				hideInboxLoader();
 				qmLogService.error('failed to get reminder notifications!');
@@ -333,9 +331,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
             hideInboxLoader();
 			getTrackingReminderNotifications();
-			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
+			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContentIfNecessary();}
 		}, function (error) {
-            if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
+            if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContentIfNecessary();}
 			qmLog.info('$scope.refreshTrackingReminderNotifications: ', error);
 			hideInboxLoader();
 		});
