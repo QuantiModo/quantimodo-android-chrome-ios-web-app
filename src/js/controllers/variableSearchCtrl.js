@@ -149,13 +149,19 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     function variableSearchSuccessHandler(variables, successHandler, errorHandler){
         if(successHandler && variables && variables.length){successHandler();}
         if(errorHandler && (!variables || !variables.length)){errorHandler();}
-        $scope.state.noVariablesFoundCard.show = false;
-        $scope.state.showAddVariableButton = false;
-        $scope.state.variableSearchResults = variables;
-        qmLog.info('variable search results', null, variables);
-        $scope.state.searching = false;
+        addVariablesToScope(variables);
         if(!errorHandler){showAddVariableButtonIfNecessary(variables);}
         showNoVariablesFoundCardIfNecessary(errorHandler);
+    }
+    function addVariablesToScope(variables){
+        variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
+        $scope.safeApply(function(){
+            $scope.state.noVariablesFoundCard.show = false;
+            $scope.state.showAddVariableButton = false;
+            $scope.state.variableSearchResults = variables;
+            qmLog.info('variable search results', null, variables);
+            $scope.state.searching = false;
+        });
     }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
@@ -181,9 +187,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qmService.getCommonVariablesDeferred(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
-                    //checkThatVariableNamesExist();
-                    $scope.state.searching = false;
+                    if($scope.state.variableSearchResults){commonVariables = $scope.state.variableSearchResults.concat(commonVariables);}
+                    addVariablesToScope(commonVariables)
                 }
             }
         }, function (error) {
@@ -197,9 +202,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = qm.arrayHelper.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
-                    $scope.state.searching = false;
-                    $scope.state.noVariablesFoundCard.show = false;
+                    if($scope.state.variableSearchResults){userVariables = $scope.state.variableSearchResults.concat(userVariables);}
+                    addVariablesToScope(userVariables);
                 }
             } else {
                 if(!$scope.state.variableSearchParameters.includePublic){
