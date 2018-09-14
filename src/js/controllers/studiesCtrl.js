@@ -80,7 +80,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.searching = true;
         var params = $scope.state.requestParams;
         params.open = getOpenParam();
-        params.refresh = refresh;
+        if(refresh){params.refresh = refresh;}
         params.created = getCreatedParam();
         params.limit = 10;
         qmLog.info('Getting studies with params ' + JSON.stringify(params));
