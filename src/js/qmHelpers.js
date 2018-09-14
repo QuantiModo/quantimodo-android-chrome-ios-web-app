@@ -732,6 +732,7 @@ var qm = {
             "oauth" : "quantimodo",
             "quantimodo" : "quantimodo",
             "staging" : "quantimodo",
+            "utopia" : "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         },
         getDoctorRobotoAlias: function(appSettings){
