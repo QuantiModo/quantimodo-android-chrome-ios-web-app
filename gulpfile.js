@@ -1923,14 +1923,25 @@ function executeTests(tests, callback, startUrl){
     if(startUrl){options.startUrl = startUrl;}
     var test = tests.pop();
     var time = new Date(Date.now()).toLocaleString();
-    qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + '...');
+    qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
+    var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
+    qmLog.info("Check progress at " + testUrl);
     GhostInspector.executeTest(test._id, options, function (err, results, passing) {
         if (err) return console.log('Error: ' + err);
         console.log(passing === true ? 'Passed' : 'Failed');
-        qmLog.info("results", results, 1000);
-        if(!passing){throw test.name + " failed!"}
+        //qmLog.info("results", results, 1000);
+        if(!passing){
+            for (var i = 0; i < results.console.length; i++) {
+                var logObject = results.console[i];
+                if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
+                    console.error(logObject.output);
+                    console.error(logObject.url);
+                }
+            }
+            throw test.name + " failed: " + testUrl;
+        }
         if (tests && tests.length) {
-            executeTests(tests);
+            executeTests(tests, callback, startUrl);
         } else if (callback) {
             callback();
         }
@@ -1940,9 +1951,14 @@ function getSuiteTestsAndExecute(suiteId, failedOnly, callback, startUrl){
     GhostInspector.getSuiteTests(suiteId, function (err, tests) {
         if (err) return console.log('Error: ' + err);
         if(failedOnly){
-            tests = tests.filter(function(test){
+            var failedTests = tests.filter(function(test){
                 return !test.passing;
             });
+            if(!failedTests || !failedTests.length){
+                qmLog.info("No failed tests! Running all tests...");
+            } else {
+                tests = failedTests;
+            }
         }
         for (var i = 0; i < tests.length; i++) {
             var test = tests[i];
@@ -1952,8 +1968,11 @@ function getSuiteTestsAndExecute(suiteId, failedOnly, callback, startUrl){
         executeTests(tests, callback, startUrl);
     });
 }
-gulp.task('ghostInspectorOAuthDisabled', function (callback) {
-    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
+gulp.task('ghostInspectorOAuthDisabledUtopia', function (callback) {
+    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
+});
+gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
+    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('ghostInspectorIonic', function (callback) {
     getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
