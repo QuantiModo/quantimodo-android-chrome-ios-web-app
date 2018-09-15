@@ -1918,7 +1918,7 @@ gulp.task('ionicServe', function (callback) {
 gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
-function runGhostInspectorTest(tests, callback, startUrl){
+function executeTests(tests, callback, startUrl){
     startUrl = startUrl || 'https://utopia.quantimo.do/api/v2/auth/login';
     var options = {startUrl: startUrl};
     var test = tests.pop();
@@ -1930,16 +1930,15 @@ function runGhostInspectorTest(tests, callback, startUrl){
         qmLog.info("results", results, 1000);
         if(!passing){throw test.name + " failed!"}
         if (tests && tests.length) {
-            runGhostInspectorTest(tests);
+            executeTests(tests);
         } else if (callback) {
             callback();
         }
     });
 }
-gulp.task('ghostInspector', function (callback) {
-    GhostInspector.getSuiteTests('57aa05ac6f43214f19b2f055', function (err, tests) {
+function getSuiteTestsAndExecute(suiteId, failedOnly){
+    GhostInspector.getSuiteTests(suiteId, function (err, tests) {
         if (err) return console.log('Error: ' + err);
-        var failedOnly = true;
         if(failedOnly){
             tests = tests.filter(function(test){
                 return !test.passing;
@@ -1950,8 +1949,14 @@ gulp.task('ghostInspector', function (callback) {
             var passFail = (test.passing) ? 'passed' : 'failed';
             qmLog.info(test.name + " recently " + passFail);
         }
-        runGhostInspectorTest(tests, callback);
+        executeTests(tests, callback);
     });
+}
+gulp.task('ghostInspectorOAuthDisabled', function (callback) {
+    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true);
+});
+gulp.task('ghostInspectorIonic', function (callback) {
+    getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){
