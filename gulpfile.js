@@ -1936,7 +1936,7 @@ function runGhostInspectorTest(tests, callback, startUrl){
         }
     });
 }
-gulp.task('sequentialGhostInspectorTests', function (callback) {
+gulp.task('ghostInspector', function (callback) {
     GhostInspector.getSuiteTests('57aa05ac6f43214f19b2f055', function (err, tests) {
         if (err) return console.log('Error: ' + err);
         var failedOnly = true;
