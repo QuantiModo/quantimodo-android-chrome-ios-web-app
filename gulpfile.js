@@ -1919,8 +1919,8 @@ gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
 function executeTests(tests, callback, startUrl){
-    startUrl = startUrl || 'https://utopia.quantimo.do/api/v2/auth/login';
-    var options = {startUrl: startUrl};
+    var options = {};
+    if(startUrl){options.startUrl = startUrl;}
     var test = tests.pop();
     var time = new Date(Date.now()).toLocaleString();
     qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + '...');
@@ -1936,7 +1936,7 @@ function executeTests(tests, callback, startUrl){
         }
     });
 }
-function getSuiteTestsAndExecute(suiteId, failedOnly){
+function getSuiteTestsAndExecute(suiteId, failedOnly, callback, startUrl){
     GhostInspector.getSuiteTests(suiteId, function (err, tests) {
         if (err) return console.log('Error: ' + err);
         if(failedOnly){
@@ -1949,14 +1949,14 @@ function getSuiteTestsAndExecute(suiteId, failedOnly){
             var passFail = (test.passing) ? 'passed' : 'failed';
             qmLog.info(test.name + " recently " + passFail);
         }
-        executeTests(tests, callback);
+        executeTests(tests, callback, startUrl);
     });
 }
 gulp.task('ghostInspectorOAuthDisabled', function (callback) {
-    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true);
+    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('ghostInspectorIonic', function (callback) {
-    getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false);
+    getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){
