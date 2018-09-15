@@ -1922,14 +1922,13 @@ function runGhostInspectorTest(tests, callback, startUrl){
     startUrl = startUrl || 'https://utopia.quantimo.do/api/v2/auth/login';
     var options = {startUrl: startUrl};
     var test = tests.pop();
-    qmLog.info("Testing: ", test)
+    var time = new Date(Date.now()).toLocaleString();
+    qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + '...');
     GhostInspector.executeTest(test._id, options, function (err, results, passing) {
         if (err) return console.log('Error: ' + err);
         console.log(passing === true ? 'Passed' : 'Failed');
-        qmLog.info("results", results);
-        if(!passing){
-            throw "Test failed!"
-        }
+        qmLog.info("results", results, 1000);
+        if(!passing){throw test.name + " failed!"}
         if (tests && tests.length) {
             runGhostInspectorTest(tests);
         } else if (callback) {
@@ -1940,7 +1939,17 @@ function runGhostInspectorTest(tests, callback, startUrl){
 gulp.task('sequentialGhostInspectorTests', function (callback) {
     GhostInspector.getSuiteTests('57aa05ac6f43214f19b2f055', function (err, tests) {
         if (err) return console.log('Error: ' + err);
-        qmLog.info("Tests: ", tests);
+        var failedOnly = true;
+        if(failedOnly){
+            tests = tests.filter(function(test){
+                return !test.passing;
+            });
+        }
+        for (var i = 0; i < tests.length; i++) {
+            var test = tests[i];
+            var passFail = (test.passing) ? 'passed' : 'failed';
+            qmLog.info(test.name + " recently " + passFail);
+        }
         runGhostInspectorTest(tests, callback);
     });
 });
