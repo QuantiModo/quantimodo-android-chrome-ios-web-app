@@ -123,6 +123,7 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
 var filter = require('gulp-filter');
 var fs = require('fs');
+var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var ghPages = require('gulp-gh-pages-will');
 var git = require('gulp-git');
 var gulp = require('gulp');
@@ -1916,6 +1917,32 @@ gulp.task('ionicServe', function (callback) {
 });
 gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
+});
+function runGhostInspectorTest(tests, callback, startUrl){
+    startUrl = startUrl || 'https://utopia.quantimo.do/api/v2/auth/login';
+    var options = {startUrl: startUrl};
+    var test = tests.pop();
+    qmLog.info("Testing: ", test)
+    GhostInspector.executeTest(test._id, options, function (err, results, passing) {
+        if (err) return console.log('Error: ' + err);
+        console.log(passing === true ? 'Passed' : 'Failed');
+        qmLog.info("results", results);
+        if(!passing){
+            throw "Test failed!"
+        }
+        if (tests && tests.length) {
+            runGhostInspectorTest(tests);
+        } else if (callback) {
+            callback();
+        }
+    });
+}
+gulp.task('sequentialGhostInspectorTests', function (callback) {
+    GhostInspector.getSuiteTests('57aa05ac6f43214f19b2f055', function (err, tests) {
+        if (err) return console.log('Error: ' + err);
+        qmLog.info("Tests: ", tests);
+        runGhostInspectorTest(tests, callback);
+    });
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){

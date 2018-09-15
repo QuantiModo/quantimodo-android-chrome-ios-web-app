@@ -7,7 +7,11 @@ then
 else
     echo "Using START_URL env $START_URL"
 fi
-GI_API_KEY=f5b531ccd55da08abf35fadabd7b7b04f3d64312
+if [ -z "$GI_API_KEY" ]
+then
+    echo "Please set GI_API_KEY env!  You can get it here: https://app.ghostinspector.com/account"
+    exit 1;
+fi
 export GI_BASE_URL=https://api.ghostinspector.com/v1/
 export GI_URL_QUERY_STRING="/execute/?clientId=oauth_test_client&apiKey=${GI_API_KEY}&startUrl=${START_URL}"
 if [ -z "$1" ]
