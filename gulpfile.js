@@ -533,7 +533,9 @@ var qmGulp = {
                         return !test.passing;
                     });
                     if(!failedTests || !failedTests.length){
-                        qmLog.info("No failed tests! Running all tests...");
+                        qmLog.info("No failed tests!");
+                        if(callback){callback();}
+                        return;
                     } else {
                         tests = failedTests;
                     }
@@ -2033,6 +2035,9 @@ gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
 });
 gulp.task('ghostInspectorIonic', function (callback) {
     qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
+});
+gulp.task('ghostInspectorIonicFailed', function (callback) {
+    qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){
