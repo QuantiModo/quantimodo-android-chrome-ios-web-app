@@ -2033,10 +2033,15 @@ gulp.task('ghostInspectorOAuthDisabledUtopia', function (callback) {
 gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
     qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
+gulp.task('ghostInspectorOAuthDisabledStagingFailed', function (callback) {
+    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
+    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
+});
 gulp.task('ghostInspectorIonic', function (callback) {
     qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('ghostInspectorIonicFailed', function (callback) {
+    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
