@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Data Sharing">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Data Sharing</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshAuthorizedClients()"></ion-refresher>
         <div id="helpCard" ng-show="state.showHelpCard" ng-click="state.hideHelpCard()" ng-include="'templates/fragments/help-info-card-fragment.html'"></div>

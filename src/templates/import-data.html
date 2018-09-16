@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu || state.connector" view-title="Import Data">
+<ion-view hide-nav-bar="hideNavigationMenu || state.connector">
+    <ion-nav-title>Import Data</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
         <div id="importHelpCard" ng-show="showImportHelpCard && !state.connector" ng-click="hideImportHelpCard()"
