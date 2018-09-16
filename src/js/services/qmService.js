@@ -5547,6 +5547,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.setupHelpCards = function () {
         if(qm.storage.getItem(qm.items.defaultHelpCards)){return qm.storage.getItem(qm.items.defaultHelpCards);}
+        if(!qm.getAppSettings()){
+            qmLog.error("No appSettings to setup help cards!");
+            qm.getAppSettings();
+            return;
+        }
         qm.storage.setItem(qm.items.defaultHelpCards, qm.getAppSettings().appDesign.helpCard.active);
         return qm.getAppSettings().appDesign.helpCard.active;
     };
