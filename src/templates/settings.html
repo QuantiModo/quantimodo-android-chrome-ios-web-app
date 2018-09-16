@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Settings">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Settings</ion-nav-title>
     <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
         <div id="upgrade" ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
              class="list card" ng-click="goToState('app.upgrade')">

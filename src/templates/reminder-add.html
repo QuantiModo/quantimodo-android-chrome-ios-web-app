@@ -1,5 +1,6 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Reminder">
-    <ion-nav-title>Settings</ion-nav-title>
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <!--Using view-title tag above seems to cause ionic errors-->
+    <ion-nav-title>Edit Reminder</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true" ng-class="{ isBrowserView : platform.isWeb == true }">
         <md-toolbar class="md-theme-light" id="reminder-header">
             <h2 class="md-toolbar-tools"><span style="color: white;">{{state.trackingReminder.variableName}}</span></h2>
