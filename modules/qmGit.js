@@ -1,4 +1,5 @@
 var qmLog = require('./qmLog');
+var git = require('gulp-git');
 var qmGit = {
     branchName: null,
     isMaster: function () {
