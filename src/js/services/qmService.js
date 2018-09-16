@@ -6946,7 +6946,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if (trackingReminder.tally !== null) {
                 qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                     .then(function () {
-                        qmLogService.debug('Successfully qmService.postMeasurementByReminder: ', trackingReminder, null);
+                        qmLogService.debug('Successfully qmService.postMeasurementByReminder: ', trackingReminder);
                     }, function (error) {
                         qmLogService.error(error);
                         qmLogService.error('Failed to Track by favorite! ', trackingReminder);

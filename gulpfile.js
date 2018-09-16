@@ -439,6 +439,110 @@ var qmGulp = {
         buildInfo: null,
         configXml: null,
         chromeExtensionManifest: null
+    },
+    tests: {
+        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
+            var intents = qm.staticData.dialogAgent.intents;
+            var entities = qm.staticData.dialogAgent.entities;
+            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
+            for (var expectedEntityName in expectedEntities) {
+                if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
+                assert(typeof matchedEntities[expectedEntityName] !== "undefined", expectedEntityName + " not in matchedEntities!");
+                assert(matchedEntities[expectedEntityName].matchedEntryValue === expectedEntities[expectedEntityName]);
+            }
+            var expectedIntent = intents[expectedIntentName];
+            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
+            assert(triggerPhraseMatchedIntent.name === expectedIntentName);
+            var score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
+            var filledParameters = expectedIntent.parameters;
+            var expectedParameterName;
+            for (expectedParameterName in expectedParameters) {
+                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
+                if(typeof filledParameters[expectedParameterName] === "undefined"){
+                    score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
+                }
+                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
+                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+            }
+            assert(score > -2);
+            var matchedIntent = qm.dialogFlow.getIntent(userInput);
+            filledParameters = matchedIntent.parameters;
+            assert(matchedIntent.name === expectedIntentName);
+            for (expectedParameterName in expectedParameters) {
+                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
+                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
+                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+            }
+        },
+        getUnitsTest: function(){
+            var units = qm.unitHelper.getAllUnits();
+            console.log(units);
+            assert(units.length > 5);
+        },
+        rememberIntentTest: function(){
+            var userInput = "Remember where my keys are";
+            var expectedIntentName = 'Remember Intent';
+            var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"};
+            var expectedParameters = {memoryQuestion: 'where my keys are'};
+            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
+        },
+        recordMeasurementIntentTest: function(){
+            var userInput = "Record 1 Overall Mood";
+            var expectedIntentName = 'Record Measurement Intent';
+            var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"};
+            var expectedParameters = {variableName: 'Overall Mood', value: 1};
+            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
+        },
+        executeTests: function(tests, callback, startUrl){
+            var options = {};
+            if(startUrl){options.startUrl = startUrl;}
+            var test = tests.pop();
+            var time = new Date(Date.now()).toLocaleString();
+            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
+            var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
+            qmLog.info("Check progress at " + testUrl);
+            GhostInspector.executeTest(test._id, options, function (err, results, passing) {
+                if (err) return console.log('Error: ' + err);
+                console.log(passing === true ? 'Passed' : 'Failed');
+                //qmLog.info("results", results, 1000);
+                if(!passing){
+                    for (var i = 0; i < results.console.length; i++) {
+                        var logObject = results.console[i];
+                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
+                            console.error(logObject.output);
+                            console.error(logObject.url);
+                        }
+                    }
+                    throw test.name + " failed: " + testUrl;
+                }
+                if (tests && tests.length) {
+                    qmGulp.tests.executeTests(tests, callback, startUrl);
+                } else if (callback) {
+                    callback();
+                }
+            });
+        },
+        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
+            GhostInspector.getSuiteTests(suiteId, function (err, tests) {
+                if (err) return console.log('Error: ' + err);
+                if(failedOnly){
+                    var failedTests = tests.filter(function(test){
+                        return !test.passing;
+                    });
+                    if(!failedTests || !failedTests.length){
+                        qmLog.info("No failed tests! Running all tests...");
+                    } else {
+                        tests = failedTests;
+                    }
+                }
+                for (var i = 0; i < tests.length; i++) {
+                    var test = tests[i];
+                    var passFail = (test.passing) ? 'passed' : 'failed';
+                    qmLog.info(test.name + " recently " + passFail);
+                }
+                qmGulp.tests.executeTests(tests, callback, startUrl);
+            });
+        }
     }
 };
 var buildingFor = {
@@ -1918,64 +2022,14 @@ gulp.task('ionicServe', function (callback) {
 gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
-function executeTests(tests, callback, startUrl){
-    var options = {};
-    if(startUrl){options.startUrl = startUrl;}
-    var test = tests.pop();
-    var time = new Date(Date.now()).toLocaleString();
-    qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
-    var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
-    qmLog.info("Check progress at " + testUrl);
-    GhostInspector.executeTest(test._id, options, function (err, results, passing) {
-        if (err) return console.log('Error: ' + err);
-        console.log(passing === true ? 'Passed' : 'Failed');
-        //qmLog.info("results", results, 1000);
-        if(!passing){
-            for (var i = 0; i < results.console.length; i++) {
-                var logObject = results.console[i];
-                if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
-                    console.error(logObject.output);
-                    console.error(logObject.url);
-                }
-            }
-            throw test.name + " failed: " + testUrl;
-        }
-        if (tests && tests.length) {
-            executeTests(tests, callback, startUrl);
-        } else if (callback) {
-            callback();
-        }
-    });
-}
-function getSuiteTestsAndExecute(suiteId, failedOnly, callback, startUrl){
-    GhostInspector.getSuiteTests(suiteId, function (err, tests) {
-        if (err) return console.log('Error: ' + err);
-        if(failedOnly){
-            var failedTests = tests.filter(function(test){
-                return !test.passing;
-            });
-            if(!failedTests || !failedTests.length){
-                qmLog.info("No failed tests! Running all tests...");
-            } else {
-                tests = failedTests;
-            }
-        }
-        for (var i = 0; i < tests.length; i++) {
-            var test = tests[i];
-            var passFail = (test.passing) ? 'passed' : 'failed';
-            qmLog.info(test.name + " recently " + passFail);
-        }
-        executeTests(tests, callback, startUrl);
-    });
-}
 gulp.task('ghostInspectorOAuthDisabledUtopia', function (callback) {
-    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
+    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
 });
 gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
-    getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
+    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('ghostInspectorIonic', function (callback) {
-    getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
+    qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){
@@ -3727,60 +3781,6 @@ gulp.task('tests', function() {
     qm.staticData = require('./src/data/qmStaticData');
     qm.nlp = require('./src/lib/compromise/builds/compromise');
     qm.qmLog = qmLog;
-    qmGulp.tests = {
-        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
-            var intents = qm.staticData.dialogAgent.intents;
-            var entities = qm.staticData.dialogAgent.entities;
-            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            for (var expectedEntityName in expectedEntities) {
-                if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
-                assert(typeof matchedEntities[expectedEntityName] !== "undefined", expectedEntityName + " not in matchedEntities!");
-                assert(matchedEntities[expectedEntityName].matchedEntryValue === expectedEntities[expectedEntityName]);
-            }
-            var expectedIntent = intents[expectedIntentName];
-            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
-            assert(triggerPhraseMatchedIntent.name === expectedIntentName);
-            var score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
-            var filledParameters = expectedIntent.parameters;
-            var expectedParameterName;
-            for (expectedParameterName in expectedParameters) {
-                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
-                if(typeof filledParameters[expectedParameterName] === "undefined"){
-                    score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
-                }
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
-            }
-            assert(score > -2);
-            var matchedIntent = qm.dialogFlow.getIntent(userInput);
-            filledParameters = matchedIntent.parameters;
-            assert(matchedIntent.name === expectedIntentName);
-            for (expectedParameterName in expectedParameters) {
-                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
-            }
-        },
-        getUnitsTest: function(){
-            var units = qm.unitHelper.getAllUnits();
-            console.log(units);
-            assert(units.length > 5);
-        },
-        rememberIntentTest: function(){
-            var userInput = "Remember where my keys are";
-            var expectedIntentName = 'Remember Intent';
-            var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"};
-            var expectedParameters = {memoryQuestion: 'where my keys are'};
-            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
-        },
-        recordMeasurementIntentTest: function(){
-            var userInput = "Record 1 Overall Mood";
-            var expectedIntentName = 'Record Measurement Intent';
-            var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"};
-            var expectedParameters = {variableName: 'Overall Mood', value: 1};
-            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
-        }
-    };
     qmGulp.tests.recordMeasurementIntentTest();
     qmGulp.tests.getUnitsTest();
 });
