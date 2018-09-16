@@ -8,6 +8,7 @@ var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.DEBUG_BUILD */
 /** @namespace process.env.BUILD_DEBUG */
 /** @namespace process.env.DO_NOT_MINIFY */
+function isTruthy(value) {return (value && value !== "false");}
 var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 //var buildPath = './build';  Can't use . because => Updated .......  app_uploads/quantimodo/./build/quantimodo-chrome-extension.zip
 var buildPath = 'build';
@@ -158,8 +159,147 @@ var watch = require('gulp-watch');
 var xml2js = require('xml2js');
 var zip = require('gulp-zip');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
-var qmLog = require('./modules/qmLog');
-var qmGit = require('./modules/qmGit');
+var qmLog = {
+    error: function (message, metaData, maxCharacters) {
+        metaData = qmLog.addMetaData(metaData);
+        console.error(qmLog.obfuscateStringify(message, metaData, maxCharacters));
+        metaData.build_info = qmGulp.buildInfoHelper.getCurrentBuildInfo();
+        bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
+    },
+    info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
+    debug: function (message, object, maxCharacters) {
+        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
+            qmLog.info("DEBUG: " + message, object, maxCharacters);
+        }
+    },
+    logErrorAndThrowException: function (message, object) {
+        qmLog.error(message, object);
+        throw message;
+    },
+    addMetaData: function(metaData){
+        metaData = metaData || {};
+        metaData.environment = qmLog.obfuscateSecrets(process.env);
+        metaData.subsystem = { name: qmLog.getCurrentServerContext() };
+        metaData.client_id = QUANTIMODO_CLIENT_ID;
+        metaData.build_link = qmGulp.buildInfoHelper.getBuildLink();
+        return metaData;
+    },
+    obfuscateStringify: function(message, object, maxCharacters) {
+        if(maxCharacters !== false){maxCharacters = maxCharacters || 140;}
+        var objectString = '';
+        if(object){
+            object = qmLog.obfuscateSecrets(object);
+            objectString = ':  ' + qmLog.prettyJSONStringify(object);
+        }
+        if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
+        message += objectString;
+        if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
+        if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
+        if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
+        if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
+        return message;
+    },
+    obfuscateSecrets: function(object){
+        if(typeof object !== 'object'){return object;}
+        object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        for (var propertyName in object) {
+            if (object.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    object[propertyName] = "HIDDEN";
+                } else {
+                    object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
+                }
+            }
+        }
+        return object;
+    },
+    getCurrentServerContext: function() {
+        if(process.env.CIRCLE_BRANCH){return "circleci";}
+        if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+        return process.env.HOSTNAME;
+    },
+    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');}
+};
+var bugsnag = require("bugsnag");
+bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
+bugsnag.releaseStage = qmLog.getCurrentServerContext();
+process.on('unhandledRejection', function (err) {
+    console.error("Unhandled rejection: " + (err && err.stack || err));
+    bugsnag.notify(err);
+});
+bugsnag.onBeforeNotify(function (notification) {
+    var metaData = notification.events[0].metaData;
+    metaData = qmLog.addMetaData(metaData);
+});
+var qmGit = {
+    branchName: null,
+    isMaster: function () {
+        return qmGit.branchName === "master"
+    },
+    isDevelop: function () {
+        if(!qmGit.branchName){
+            throw "Branch name not set!"
+        }
+        return qmGit.branchName === "develop"
+    },
+    isFeature: function () {
+        return qmGit.branchName.indexOf("feature") !== -1;
+    },
+    getCurrentGitCommitSha: function () {
+        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
+        try {
+            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+        } catch (error) {
+            qmLog.info(error);
+        }
+    },
+    accessToken: process.env.GITHUB_ACCESS_TOKEN,
+    getCommitMessage(callback){
+        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+        execute(commandForGit, function (error, output) {
+            var commitMessage = output.trim();
+            qmLog.info("Commit: "+ commitMessage);
+            if(callback) {callback(commitMessage);}
+        });
+    },
+    outputCommitMessageAndBranch: function () {
+        qmGit.getCommitMessage(function (commitMessage) {
+            qmGit.setBranchName(function (branchName) {
+                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+            })
+        })
+    },
+    setBranchName: function (callback) {
+        function setBranch(branch, callback) {
+            qmGit.branchName = branch.replace('origin/', '');
+            qmLog.info('current git branch: ' + qmGit.branchName);
+            if (callback) {callback(qmGit.branchName);}
+        }
+        if (qmGit.getBranchEnv()){
+            setBranch(qmGit.getBranchEnv(), callback);
+            return;
+        }
+        try {
+            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+                if(err){qmLog.error(err); return;}
+                setBranch(branch, callback);
+            });
+        } catch (e) {
+            qmLog.info("Could not set branch name because " + e.message);
+        }
+    },
+    getBranchEnv: function () {
+        function getNameIfNotHead(envName) {
+            if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
+            return false;
+        }
+        if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
+        if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
+        if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
+        if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
+    }
+};
 qmGit.setBranchName();
 var majorMinorVersionNumbers = '2.8.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
@@ -391,7 +531,6 @@ var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
-function isTruthy(value) {return (value && value !== "false");}
 qmGit.outputCommitMessageAndBranch();
 function setClientId(callback) {
     if (process.env.BUDDYBUILD_SCHEME) {

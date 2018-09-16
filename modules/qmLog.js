@@ -1,4 +1,3 @@
-var qmGit = require('./qmGit');
 var qmLog = {
     error: function (message, metaData, maxCharacters) {
         metaData = qmLog.addMetaData(metaData);
@@ -37,7 +36,6 @@ var qmLog = {
         if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
         if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
         if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
-        if(qmGit.accessToken){message = message.replace(qmGit.accessToken, 'HIDDEN');}
         return message;
     },
     obfuscateSecrets: function(object){
