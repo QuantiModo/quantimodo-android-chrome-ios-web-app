@@ -1946,7 +1946,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         stateHelper: {
             previousUrl: null,
             goBack: function (providedStateParams){
-                qmLog.info("Called goBack with state params: "+JSON.stringify(providedStateParams));
+                qmLog.info("goBack: Called goBack with state params: "+JSON.stringify(providedStateParams));
                 if(qmService.stateHelper.previousUrl){
                     qmLog.info("Going to qmService.stateHelper.previousUrl: "+qmService.stateHelper.previousUrl);
                     window.location.href = qmService.stateHelper.previousUrl;
@@ -1977,7 +1977,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 if($ionicHistory.viewHistory().backView){
                     var backView = $ionicHistory.backView();
-                    qmLog.info("backView.stateName is " + backView.stateName);
+                    qmLog.info("goBack: backView.stateName is " + backView.stateName);
                     var stateId = backView.stateName;
                     //skipSearchPages();  // TODO:  If we skipSearchPages we have to remove intro page as well
                     if(providedStateParams){
@@ -1986,7 +1986,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info('Going back to ' + backView.stateId + '  with stateParams ', backView.stateParams, null);
                     $ionicHistory.goBack();
                 } else {
-                    qmLog.info("goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
+                    qmLog.info("goBack: goToDefaultState because there is no $ionicHistory.viewHistory().backView ");
                     qmService.goToDefaultState(providedStateParams);
                 }
             },
