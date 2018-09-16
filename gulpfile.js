@@ -1,8 +1,6 @@
 /* eslint-disable no-process-env */
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
-var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var devCredentials, versionNumbers;
-var androidX86ReleaseName = 'android-x86-release';
 var androidArm7DebugApkName = 'android-armv7-debug';
 var androidX86DebugApkName = 'android-x86-debug';
 var androidArm7ReleaseApkName = 'android-armv7-release';
@@ -383,6 +381,11 @@ var qmGulp = {
     getAppDisplayName: function(){
         if (!qmGulp.staticData.appSettings.appDisplayName) { throw 'Please export appSettings.appDisplayName';}
         return qmGulp.staticData.appSettings.appDisplayName;
+    },
+    getAppHostName: function(){
+        if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
+        if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
+        return "https://app.quantimo.do";
     },
     getAppIds: function(){
         return qmGulp.getAdditionalSettings().appIds;
@@ -939,13 +942,13 @@ function makeApiRequest(options, successHandler) {
 }
 function postNotifyCollaborators(appType) {
     var options = getPostRequestOptions();
-    options.uri = appHostName + '/api/v2/email';
+    options.uri = qmGulp.getAppHostName() + '/api/v2/email';
     options.body.emailType = appType + '-build-ready';
     return makeApiRequest(options);
 }
 function getRequestOptions(path) {
     var options = {
-        uri: appHostName + path,
+        uri: qmGulp.getAppHostName() + path,
         qs: {clientId: QUANTIMODO_CLIENT_ID, includeClientSecret: true, allStaticAppData: true},
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
@@ -954,7 +957,7 @@ function getRequestOptions(path) {
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
         qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+'...');
     } else {
-        qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
+        qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + qmGulp.getAppHostName() + "/api/v2/account");
     }
     return options;
 }
@@ -965,7 +968,7 @@ function getAppsListUrl() {
     return 'https://app.quantimo.do/ionic/Modo/www/configuration-index.html#/app/configuration';
 }
 function getAppDesignerUrl() {
-    return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + qmGulp.getClientId();
+    return qmGulp.getAppHostName() + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + qmGulp.getClientId();
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -1005,7 +1008,7 @@ function getFileNameFromUrl(url) {
 }
 function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
-    var downloadUrl = appHostName + '/api/v2/download?client_id=' + QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
+    var downloadUrl = qmGulp.getAppHostName() + '/api/v2/download?client_id=' + QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     qmLog.info("Downloading " + downloadUrl + ' to ' + decryptedFilename);
     return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
@@ -1527,7 +1530,7 @@ gulp.task('staticDataFile', ['getAppConfigs'], function () {
 });
 function getConstantsFromApiAndWriteToJson(type, urlPath){
     if(!urlPath){urlPath = type;}
-    var url = appHostName + '/api/v1/' + urlPath;
+    var url = qmGulp.getAppHostName() + '/api/v1/' + urlPath;
     if(urlPath.indexOf("http") !== -1){url = urlPath;}
     qmLog.info('gulp ' + type + ' from '+ url);
     var destinations = [
