@@ -158,111 +158,8 @@ var watch = require('gulp-watch');
 var xml2js = require('xml2js');
 var zip = require('gulp-zip');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
-var bugsnag = require("bugsnag");
-bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
-bugsnag.releaseStage = getCurrentServerContext();
-process.on('unhandledRejection', function (err) {
-    console.error("Unhandled rejection: " + (err && err.stack || err));
-    bugsnag.notify(err);
-});
-bugsnag.onBeforeNotify(function (notification) {
-    var metaData = notification.events[0].metaData;
-    metaData = qmLog.addMetaData(metaData);
-});
-var qmLog = {
-    error: function (message, metaData, maxCharacters) {
-        metaData = qmLog.addMetaData(metaData);
-        console.error(obfuscateStringify(message, metaData, maxCharacters));
-        metaData.build_info = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-        bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(metaData)));
-    },
-    info: function (message, object, maxCharacters) {console.log(obfuscateStringify(message, object, maxCharacters));},
-    debug: function (message, object, maxCharacters) {
-        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
-            qmLog.info("DEBUG: " + message, object, maxCharacters);
-        }
-    },
-    logErrorAndThrowException: function (message, object) {
-        qmLog.error(message, object);
-        throw message;
-    },
-    addMetaData: function(metaData){
-        metaData = metaData || {};
-        metaData.environment = obfuscateSecrets(process.env);
-        metaData.subsystem = { name: getCurrentServerContext() };
-        metaData.client_id = QUANTIMODO_CLIENT_ID;
-        metaData.build_link = qmGulp.buildInfoHelper.getBuildLink();
-        return metaData;
-    }
-};
-var qmGit = {
-    branchName: null,
-    isMaster: function () {
-        return qmGit.branchName === "master"
-    },
-    isDevelop: function () {
-        if(!qmGit.branchName){
-            throw "Branch name not set!"
-        }
-        return qmGit.branchName === "develop"
-    },
-    isFeature: function () {
-        return qmGit.branchName.indexOf("feature") !== -1;
-    },
-    getCurrentGitCommitSha: function () {
-        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
-        try {
-            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
-        } catch (error) {
-            qmLog.info(error);
-        }
-    },
-    accessToken: process.env.GITHUB_ACCESS_TOKEN,
-    getCommitMessage(callback){
-        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-        execute(commandForGit, function (error, output) {
-            var commitMessage = output.trim();
-            qmLog.info("Commit: "+ commitMessage);
-            if(callback) {callback(commitMessage);}
-        });
-    },
-    outputCommitMessageAndBranch: function () {
-        qmGit.getCommitMessage(function (commitMessage) {
-            qmGit.setBranchName(function (branchName) {
-                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
-            })
-        })
-    },
-    setBranchName: function (callback) {
-        function setBranch(branch, callback) {
-            qmGit.branchName = branch.replace('origin/', '');
-            qmLog.info('current git branch: ' + qmGit.branchName);
-            if (callback) {callback(qmGit.branchName);}
-        }
-        if (qmGit.getBranchEnv()){
-            setBranch(qmGit.getBranchEnv(), callback);
-            return;
-        }
-        try {
-            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-                if(err){qmLog.error(err); return;}
-                setBranch(branch, callback);
-            });
-        } catch (e) {
-            qmLog.info("Could not set branch name because " + e.message);
-        }
-    },
-    getBranchEnv: function () {
-        function getNameIfNotHead(envName) {
-            if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
-            return false;
-        }
-        if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
-        if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
-        if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
-        if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
-    }
-};
+var qmLog = require('./modules/qmLog');
+var qmGit = require('./modules/qmGit');
 qmGit.setBranchName();
 var majorMinorVersionNumbers = '2.8.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
@@ -353,7 +250,7 @@ var qmGulp = {
             return qmGulp.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
                 builtAt: timeHelper.getUnixTimestampInSeconds(),
-                buildServer: getCurrentServerContext(),
+                buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qmGulp.buildInfoHelper.getBuildLink(),
                 versionNumber: versionNumbers.ionicApp,
                 versionNumbers: versionNumbers,
@@ -442,112 +339,6 @@ var qmGulp = {
         buildInfo: null,
         configXml: null,
         chromeExtensionManifest: null
-    },
-    tests: {
-        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
-            var intents = qm.staticData.dialogAgent.intents;
-            var entities = qm.staticData.dialogAgent.entities;
-            var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
-            for (var expectedEntityName in expectedEntities) {
-                if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
-                assert(typeof matchedEntities[expectedEntityName] !== "undefined", expectedEntityName + " not in matchedEntities!");
-                assert(matchedEntities[expectedEntityName].matchedEntryValue === expectedEntities[expectedEntityName]);
-            }
-            var expectedIntent = intents[expectedIntentName];
-            var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
-            assert(triggerPhraseMatchedIntent.name === expectedIntentName);
-            var score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
-            var filledParameters = expectedIntent.parameters;
-            var expectedParameterName;
-            for (expectedParameterName in expectedParameters) {
-                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
-                if(typeof filledParameters[expectedParameterName] === "undefined"){
-                    score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
-                }
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
-            }
-            assert(score > -2);
-            var matchedIntent = qm.dialogFlow.getIntent(userInput);
-            filledParameters = matchedIntent.parameters;
-            assert(matchedIntent.name === expectedIntentName);
-            for (expectedParameterName in expectedParameters) {
-                if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
-            }
-        },
-        getUnitsTest: function(){
-            var units = qm.unitHelper.getAllUnits();
-            console.log(units);
-            assert(units.length > 5);
-        },
-        rememberIntentTest: function(){
-            var userInput = "Remember where my keys are";
-            var expectedIntentName = 'Remember Intent';
-            var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"};
-            var expectedParameters = {memoryQuestion: 'where my keys are'};
-            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
-        },
-        recordMeasurementIntentTest: function(){
-            var userInput = "Record 1 Overall Mood";
-            var expectedIntentName = 'Record Measurement Intent';
-            var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"};
-            var expectedParameters = {variableName: 'Overall Mood', value: 1};
-            qmGulp.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
-        },
-        executeTests: function(tests, callback, startUrl){
-            var options = {};
-            if(startUrl){options.startUrl = startUrl;}
-            var test = tests.pop();
-            var time = new Date(Date.now()).toLocaleString();
-            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
-            var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
-            qmLog.info("Check progress at " + testUrl);
-            GhostInspector.executeTest(test._id, options, function (err, results, passing) {
-                if (err) return console.log('Error: ' + err);
-                console.log(passing === true ? 'Passed' : 'Failed');
-                //qmLog.info("results", results, 1000);
-                if(!passing){
-                    for (var i = 0; i < results.console.length; i++) {
-                        var logObject = results.console[i];
-                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
-                            console.error(logObject.output);
-                            console.error(logObject.url);
-                        }
-                    }
-                    throw test.name + " failed: " + testUrl;
-                }
-                if (tests && tests.length) {
-                    qmGulp.tests.executeTests(tests, callback, startUrl);
-                } else if (callback) {
-                    callback();
-                }
-            });
-        },
-        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
-            GhostInspector.getSuiteTests(suiteId, function (err, tests) {
-                if (err) return console.log('Error: ' + err);
-                if(failedOnly){
-                    var failedTests = tests.filter(function(test){
-                        return !test.passing;
-                    });
-                    if(!failedTests || !failedTests.length){
-                        qmLog.info("No failed tests!");
-                        if(callback){callback();}
-                        return;
-                    } else {
-                        tests = failedTests;
-                    }
-                }
-                for (var i = 0; i < tests.length; i++) {
-                    var test = tests[i];
-                    var passFail = (test.passing) ? 'passed' : 'failed';
-                    qmLog.info(test.name + " recently " + passFail);
-                }
-                qmGulp.tests.executeTests(tests, callback, startUrl);
-            });
-        }
     }
 };
 var buildingFor = {
@@ -601,11 +392,6 @@ var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
-function getCurrentServerContext() {
-    if(process.env.CIRCLE_BRANCH){return "circleci";}
-    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
-    return process.env.HOSTNAME;
-}
 qmGit.outputCommitMessageAndBranch();
 function setClientId(callback) {
     if (process.env.BUDDYBUILD_SCHEME) {
@@ -745,7 +531,6 @@ function uploadToS3(filePath) {
         }
     });
 }
-function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
 function execute(command, callback, suppressErrors, lotsOfOutput) {
     qmLog.debug('executing ' + command);
     if(lotsOfOutput){
@@ -890,37 +675,6 @@ function getPostRequestOptions() {
     options.method = "POST";
     options.body = {clientId: QUANTIMODO_CLIENT_ID};
     return options;
-}
-function obfuscateSecrets(object){
-    if(typeof object !== 'object'){return object;}
-    object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
-    for (var propertyName in object) {
-        if (object.hasOwnProperty(propertyName)) {
-            var lowerCaseProperty = propertyName.toLowerCase();
-            if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
-                object[propertyName] = "HIDDEN";
-            } else {
-                object[propertyName] = obfuscateSecrets(object[propertyName]);
-            }
-        }
-    }
-    return object;
-}
-function obfuscateStringify(message, object, maxCharacters) {
-    if(maxCharacters !== false){maxCharacters = maxCharacters || 140;}
-    var objectString = '';
-    if(object){
-        object = obfuscateSecrets(object);
-        objectString = ':  ' + prettyJSONStringify(object);
-    }
-    if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
-    message += objectString;
-    if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
-    if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
-    if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
-    if(qmGit.accessToken){message = message.replace(qmGit.accessToken, 'HIDDEN');}
-    return message;
 }
 function postAppStatus() {
     var options = getPostRequestOptions();
@@ -1113,7 +867,7 @@ var timeHelper = {
     secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
 };
 // Set the default to the build task
-gulp.task('default', ['configureApp', 'tests']);
+gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {
@@ -1267,7 +1021,7 @@ function createProgressiveWebAppManifest(outputPath) {
 }
 function writeToFile(filePath, stringContents) {
     qmLog.info("Writing to " + filePath);
-    if(typeof stringContents !== "string"){stringContents = prettyJSONStringify(stringContents);}
+    if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
 }
 function writeToFileWithCallback(filePath, stringContents, callback) {
@@ -1332,7 +1086,7 @@ gulp.task('downloadSplashScreen', [], function(){
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
-    options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
+    options.qs.server = options.qs.currentServerConext = qmLog.getCurrentServerContext();
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', ['setClientId'], function () {
@@ -1346,7 +1100,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         process.env.APP_DISPLAY_NAME = qmGulp.getAppDisplayName();  // Need env for Fastlane
         process.env.APP_IDENTIFIER = qmGulp.getAppIdentifier();  // Need env for Fastlane
         function addBuildInfoToAppSettings() {
-            qmGulp.getAppSettings().buildServer = getCurrentServerContext();
+            qmGulp.getAppSettings().buildServer = qmLog.getCurrentServerContext();
             qmGulp.getAppSettings().buildLink = qmGulp.buildInfoHelper.getBuildLink();
             qmGulp.getAppSettings().versionNumber = versionNumbers.ionicApp;
             qmGulp.getAppSettings().androidVersionCode = versionNumbers.androidVersionCode;
@@ -1375,7 +1129,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     return makeApiRequest(options, successHandler);
 });
 function writeDefaultConfigJson(path) {
-    writeToFile(path + "/default.config.json", prettyJSONStringify(qmGulp.getAppSettings()));
+    writeToFile(path + "/default.config.json", qmLog.prettyJSONStringify(qmGulp.getAppSettings()));
 }
 function writePrivateConfigs(path) {
     if (!qmGulp.staticData.privateConfig && devCredentials.accessToken) {
@@ -1386,7 +1140,7 @@ function writePrivateConfigs(path) {
     /** @namespace response.privateConfig */
     if (qmGulp.staticData.privateConfig) {
         try {
-            writeToFile(path + '/default.private_config.json', prettyJSONStringify(qmGulp.staticData.privateConfig));
+            writeToFile(path + '/default.private_config.json', qmLog.prettyJSONStringify(qmGulp.staticData.privateConfig));
         } catch (error) {
             qmLog.error(error);
         }
@@ -1450,7 +1204,7 @@ function writeBuildJson(){
             }
         };
     }
-    return writeToFile('build.json', prettyJSONStringify(buildJson));
+    return writeToFile('build.json', qmLog.prettyJSONStringify(buildJson));
 }
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!buildSettings.androidReleaseKeystoreFile){
@@ -1502,7 +1256,7 @@ gulp.task('getCommonVariables', function () {
     return getConstantsFromApiAndWriteToJson('commonVariables',
         'public/variables?removeAdvancedProperties=true&limit=1000&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3' +
         '&concise=true'
-        );
+    );
 });
 gulp.task('getConnectors', function () {
     return getConstantsFromApiAndWriteToJson('connectors', 'connectors/list');
@@ -1519,7 +1273,7 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'var staticData = '+ prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else {module.exports = staticData;}';
+    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else {module.exports = staticData;}';
     try {
         writeToFile('www/data/qmStaticData.js', string);
     } catch(e){
@@ -2026,23 +1780,6 @@ gulp.task('ionicServe', function (callback) {
 });
 gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
-});
-gulp.task('ghostInspectorOAuthDisabledUtopia', function (callback) {
-    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
-});
-gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
-    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
-});
-gulp.task('ghostInspectorOAuthDisabledStagingFailed', function (callback) {
-    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
-    qmGulp.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
-});
-gulp.task('ghostInspectorIonic', function (callback) {
-    qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
-});
-gulp.task('ghostInspectorIonicFailed', function (callback) {
-    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
-    qmGulp.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     if(!qmGit.isMaster()){
@@ -3260,14 +2997,14 @@ gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
         "update": "start",
         "content_url": getCHCPContentUrl()
     };
-    writeToFileWithCallback('cordova-hcp.json', prettyJSONStringify(qmGulp.staticData.chcp), function(err){
+    writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
         if(err) {return qmLog.error(err);}
         var chcpBuildOptions = {
             "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/dev/www/chcp.json"},
             "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/production/www/chcp.json"},
             "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/qa/chcp.json"}
         };
-        return writeToFileWithCallback('chcpbuild.options', prettyJSONStringify(chcpBuildOptions), function(err){
+        return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
             if(err) {return qmLog.error(err);}
             chcpLogin(function(err){
                 if(err) {return qmLog.error(err);}
@@ -3371,13 +3108,13 @@ gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], functio
     chcpCleanConfigFiles();
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save",
         function () {
-        execute("gulp copyOverrideFiles", function () {
-            execute("cordova-hcp server", function () {
-                qmLog.info("Execute command "+ runCommand + " in new terminal now");
-                //callback();
+            execute("gulp copyOverrideFiles", function () {
+                execute("cordova-hcp server", function () {
+                    qmLog.info("Execute command "+ runCommand + " in new terminal now");
+                    //callback();
+                }, false, false);
             }, false, false);
         }, false, false);
-    }, false, false);
 });
 gulp.task('cordova-hcp-clean-config-files', [], function () {
     return chcpCleanConfigFiles();
@@ -3788,13 +3525,3 @@ gulp.task('merge-dialogflow-export', function() {
         writeToFile(intentPath, agent.intents[intentName]);
     }
 });
-gulp.task('tests', function() {
-    var assert = require('assert');
-    var qm = require('./src/js/qmHelpers');
-    qm.staticData = require('./src/data/qmStaticData');
-    qm.nlp = require('./src/lib/compromise/builds/compromise');
-    qm.qmLog = qmLog;
-    qmGulp.tests.recordMeasurementIntentTest();
-    qmGulp.tests.getUnitsTest();
-});
-
