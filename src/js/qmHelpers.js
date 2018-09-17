@@ -1046,7 +1046,8 @@ var qm = {
                 qm.qmLog.info("No requestParams provided to filterByRequestParams");
                 return array;
             }
-            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc', 'variableName'];
+            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
+                'variableName', 'connectorName'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
                 'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform'];
             var greaterThanPropertyName = null;
@@ -4555,7 +4556,7 @@ var qm = {
             if(!qm.speech.getSpeechAvailable()){return;}
             var robot = qm.robot.getElement();
             if(!robot){
-                qm.qmLog.error("No robot!");
+                qm.qmLog.info("No robot!");
                 return false;
             }
             qm.qmLog.info("Showing robot");
