@@ -1,0 +1,29 @@
+{
+  "name": "quantimodo-ionic-template-app-tests",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git"
+  },
+  "version": "1.0.0",
+  "description": "Perfect your life!",
+  "devDependencies": {
+    "ghost-inspector": "3.0.0"
+  },
+  "dependencies": {
+    "gulp": "3.9.1",
+    "bugsnag": "1.12.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    }
+  },
+  "jscsConfig": {
+    "preset": "google",
+    "requireCurlyBraces": null
+  },
+  "scripts": {
+    "postinstall": "echo 'Done with npm install!'"
+  }
+}
