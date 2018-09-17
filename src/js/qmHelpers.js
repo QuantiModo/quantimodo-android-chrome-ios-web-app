@@ -4641,6 +4641,7 @@ var qm = {
             return qm.storage.setItem(qm.items.speechEnabled, value);
         },
         getSpeechAvailable: function(){
+            if(qm.platform.isMobile()){return false;}
             if(qm.speech.speechAvailable !== null){return qm.speech.speechAvailable;}
             if(typeof speechSynthesis === "undefined"){
                 if(!qm.appMode.isTesting() || qm.platform.isMobile()){
