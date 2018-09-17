@@ -1314,7 +1314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         notifications: {
             trackAll: function(trackingReminderNotification, modifiedReminderValue, ev){
                 qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                qm.notifications.track(trackingReminderNotification, modifiedReminderValue, ev, true);
+                qmService.notifications.track(trackingReminderNotification, modifiedReminderValue, ev, true);
                 qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
             },
             track: function(trackingReminderNotification, modifiedReminderValue, $event, trackAll, undoCallback){
