@@ -1556,6 +1556,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                 return true;
             },
+            skipAll: function(trackingReminderNotification, successHandler, errorHandler, ev){
+                return qmService.notifications.skipAllForVariable(trackingReminderNotification, successHandler, errorHandler, ev);
+            },
             lastAction: "",
             showUndoToast: function(callback){
                 qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
@@ -2259,10 +2262,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 } else {
                     qmService.goToState(button.state, stateParams);
                 }
-                return true;
+                return true;  // Needed to close action sheet
             }
-            if(button.action && button.action.modifiedValue){
-                qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+            if(button.action && qmService.notifications[button.action]){
+                var trackingReminderNotification = card.parameters;
+                trackingReminderNotification = qm.objectHelper.copyPropertiesFromOneObjectToAnother(button.parameters, trackingReminderNotification, true);
+                qmService.notifications[button.action](trackingReminderNotification);
+                return true;  // Needed to close action sheet
             }
             return false; // Don't close if clicking top variable name
         },
