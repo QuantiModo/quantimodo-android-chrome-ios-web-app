@@ -10,6 +10,7 @@ var document = {};
 var libUrl = getIonicAppBaseUrl()+'lib/';
 console.log("Service worker importing libraries from " + libUrl);
 // Can't use QM SDK in service worker because it uses XHR instead of fetch
+importScripts(getIonicAppBaseUrl()+'data/qmStaticData.js');
 importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
 importScripts(libUrl+'localforage/dist/localforage.js');
