@@ -7174,7 +7174,7 @@ var qm = {
                 return false;
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
-            var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
+            var serviceWorkerUrl = qm.appsManager.getQuantiModoApiUrl()+'/ionic/Modo/src/firebase-messaging-sw.js';
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
