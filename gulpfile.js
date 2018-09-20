@@ -1071,7 +1071,7 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
+var chromeScripts = ['data/qmStaticData.js', 'lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
     'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'lib/underscore/underscore-min.js'];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
