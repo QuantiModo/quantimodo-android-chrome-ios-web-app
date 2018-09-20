@@ -1,0 +1,215 @@
+ul > li {
+	padding-bottom: 10px;
+	font-size: 16px;
+}
+li.item-select {
+	height: 50px;
+}
+.top-left {
+	float:left;
+	top:0px;
+	height:80px;
+	/* max-height: 200px; */
+	padding-bottom: 15px;
+}
+.heading {
+	font-size: 30px;
+}
+.from-top {
+	margin-top: 20px;
+}
+.to-right {
+	padding-left: 100px;
+}
+p.heading {
+	font-size : 30px;
+	padding-bottom: 10px;
+}
+.show-inline{
+	display:inline-block;
+}
+.block {
+	display:inline-block;
+	/*padding-top: 20px;*/
+	max-width: 130px;
+}
+.calm-icon {
+	font-size: 40px;
+	margin-left: 15px;
+	display:inline-block;
+}
+.item-icon-left .ion-spinner {
+  float: left;
+  margin-left: -3.2em;
+  margin-right: 1em;
+  margin-top: -0.2em;
+ }
+p.item-icon-left{
+	color : #11C1F3;
+}
+.backdrop {
+	display:none;
+}
+.popover {
+	height:auto !important;
+}
+.center {
+	text-align: center;
+}
+/*::-webkit-input-placeholder {
+	text-align:right;
+}*/
+label.item.item-input.item-text > input[type="text"] {
+	text-align: right;
+}
+.lower-text {
+    text-transform: lowercase;
+}
+.labeled-control{
+    padding-right: 0px;
+    padding-left: 14px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+    height: 72px;
+}
+.labeled-control .col{
+    padding-top: 23px;
+}
+.show-again-checkbox{
+    width: 15% !important;
+    position: relative;
+    top:2px
+}
+/*
+.button.button-positive {
+    border-color: #3369E8 !important;
+    background-color: #3369E8 !important;
+    color: #fff;
+}
+*/
+/*
+.button.button-assertive {
+    font-size: 15px;
+}
+*/
+.card-item {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+.bold {
+	font-weight: bold;
+}
+.card-calm {
+	margin : 0;
+	padding-bottom: 0;
+	padding-top: 0;
+}
+@keyframes fadein {
+    0% { opacity: 0; }
+    50%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    0% { opacity: 0; }
+    50%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+#list {
+  width: 170px;
+  margin: 30px auto;
+  font-size: 20px;
+}
+#list ol {
+  margin-top: 30px;
+}
+#list ol li {
+  text-align: left;
+  list-style: decimal;
+  margin: 10px 0px;
+}
+.button.ng-hide{
+  display:none;
+}
+.col-l {
+  margin-right: -100px;
+}
+.up-top {
+  margin-top: -8px;
+}
+#import-iframe {
+  padding: 10px;
+}
+@media (max-width: 400px) {
+    #rem-set-left {
+        width: 80%;
+        flex:none;
+    }
+    #rem-set-right {
+        width: 20%;
+        flex:none;
+    }
+}
+/*
+.pane {
+    background-image: url('../img/intro_background.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+}
+*/
+/* Fixes bottom of text being cut off in dropdown selectors */
+.item-select select {
+    padding: 14px 48px 8px 16px;
+}
+#map {
+    height: 100%;
+    width: 100%;
+}
+.scroll {
+    height: 100%;
+}
+.isBrowserView {
+    overflow-y: auto !important;
+}
+.text-right {
+    text-align: right;
+}
+.margin-bottom-0 {
+    margin-bottom: 0;
+}
+// Vertical Alignment Start
+.outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+.inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+// Fix for transparent md-dialog background on iPhone5
+.platform-ios .opaque-on-ios{
+  opacity: 1;
+}
+// Vertical Alignment End
+.row+.row {
+  margin-top: 0;
+  padding-top: 5px;
+}
+.align-right {
+  text-align: right;
+}
+// Fixed truncated header bar titles
+.title.title-center.header-item {
+  left: 49px!important;
+  right: 49px!important;
+}
+.white-links {
+  a, a:hover, a:active, a:visited { color: white; }
+}

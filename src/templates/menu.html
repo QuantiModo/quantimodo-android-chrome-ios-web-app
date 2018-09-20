@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="true">
+<ion-side-menus enable-menu-with-back-views="true" id="app-container">
     <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}"
                      ng-show="hideNavigationMenu === false || appSettings.designMode" >
@@ -31,16 +31,30 @@
                     </a>
                     <button id="menu-help-button" class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"><md-tooltip md-direction="down">Get Help</md-tooltip></button>
                     <button id="menu-showMaterialAlert-button" class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)"><md-tooltip md-direction="down">Get Help</md-tooltip></button>
-                    <button id="menu-more-button" class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
+                    <button id="menu-more-button" class="button button-icon ion-android-more-vertical" ng-show="showActionSheetMenu" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
+        <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%; z-index: 0;">
+            <a href="https://help.quantimo.do" style="text-decoration: none; cursor:pointer;">
+                <div id="splash-logo">
+                    <div id="splash-text" style="margin-top: 20%">
+                        <div class="splash-h1" style="font-size: 60px; z-index: 0;">Offline</div>
+                        <div class="splash-h2" style="font-size: 60px; z-index: 0;">Please reload!</div>
+                    </div>
+                </div>
+            </a>
+            <div class="splash-grid" style="z-index: 0;"></div>
+        </div>
         <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
              style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span>
             <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
              ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
-        <ion-nav-view name="menuContent"></ion-nav-view>
+        <ion-nav-view name="menuContent">
+
+            <canvas id="canvas" style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px; z-index: 30; pointer-events: none; "></canvas>
+        </ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large" ng-class="{'menu-disabled': hideNavigationMenu}">
         <ion-header-bar class="bar-positive">

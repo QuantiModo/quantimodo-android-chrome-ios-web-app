@@ -9,33 +9,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams) {
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
-    qmService.numberOfPendingNotifications = null;
+    qm.notifications.numberOfPendingNotifications = null;
     $scope.$on('$ionicView.enter', function (e) {
-        qmLogService.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
-        //$scope.showHelpInfoPopupIfNecessary(e);
-        if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
-            $scope.showCalendarButton = true;
-        } else { $scope.showCalendarButton = false; }
-        // Show "..." button on top right
-        if (e.targetScope && e.targetScope.controller_name &&
-            e.targetScope.controller_name === "MeasurementAddCtrl" ||
-            e.targetScope.controller_name === "ReminderAddCtrl" ||
-            e.targetScope.controller_name === "FavoriteAddCtrl" ||
-            e.targetScope.controller_name === "ChartsPageCtrl" ||
-            e.targetScope.controller_name === "VariableSettingsCtrl" ||
-            e.targetScope.controller_name === "RemindersInboxCtrl" ||
-            e.targetScope.controller_name === "RemindersManageCtrl" ||
-            e.targetScope.controller_name === "StudyCtrl" ||
-            e.targetScope.controller_name === "StudiesCtrl" ||
-            e.targetScope.controller_name === "historyAllMeasurementsCtrl" ||
-            e.targetScope.controller_name === "ConfigurationCtrl"
-        ) { $scope.showMoreMenuButton = true;
-        } else { $scope.showMoreMenuButton = false; }
+        qmLog.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href);
     });
     $scope.$on('$ionicView.afterEnter', function (e) {
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
-        qmService.postTrackingReminderNotificationsDeferred();
+        qm.notifications.postNotifications();
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
+        $rootScope.setMicEnabled(qm.mic.getMicEnabled());
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
@@ -206,7 +188,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return;
         }
         trackingReminder.displayTotal =
-            qmService.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
+            qm.stringHelper.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
         qmService.postMeasurementByReminder(trackingReminder, trackingReminder.modifiedValue)
             .then(function () {
                 qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
@@ -335,5 +317,42 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.switchToPatient = qmService.switchToPatient;
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
+    };
+    $rootScope.setMicEnabled = function(value){
+        qmLog.info("$rootScope.setMicEnabled");
+        if(value === 'toggle'){value = !qm.mic.getMicEnabled();}
+        $timeout(function () {
+            qmService.rootScope.setProperty('micEnabled', value);
+            qm.mic.setMicEnabled(value);
+            qm.speech.setSpeechEnabled(value);
+            if(value === false){
+                //qm.robot.hideRobot();
+                qm.visualizer.hideVisualizer();
+                qm.mic.onMicDisabled();
+            }
+            if(value === true) {
+                qm.robot.showRobot();
+                qm.visualizer.showVisualizer();
+                qm.mic.onMicEnabled();
+            }
+        }, 1);
+    };
+    $scope.setSpeechEnabled = function(value){
+        $scope.speechEnabled = value;
+        qmService.rootScope.setProperty('speechEnabled', value);
+        qm.speech.setSpeechEnabled(value);
+        qm.speech.defaultAction();
+    };
+    $scope.setVisualizationEnabled = function(value){
+        $scope.visualizationEnabled = value;
+        qmService.rootScope.setProperty('visualizationEnabled', value);
+        qm.visualizer.setVisualizationEnabled(value);
+    };
+    $scope.robotClick = function(){
+        if($state.current.name === qmStates.chat){
+            qm.robot.onRobotClick();
+        } else {
+            qmService.goToState(qmStates.chat);
+        }
     };
 }]);

@@ -1,0 +1,67 @@
+#chat-app .center .content-card .chat #chat-content .message-row.bot .avatar {
+	margin: 0 16px 0 0;
+}
+#chat-app .center .content-card .chat #chat-content .message-row.user .avatar {
+	-webkit-box-ordinal-group: 3;
+	-ms-flex-order: 2;
+	order: 2;
+	margin: 0 0 0 16px;
+}
+#chat-app .center .content-card .chat #chat-content .message-row.user .bubble {
+	margin-left: auto;
+	background-color: #E8F5E9;
+	border: 1px solid #DFEBE0;
+	-webkit-box-ordinal-group: 2;
+	-ms-flex-order: 1;
+	order: 1;
+}
+#chat-app .center .content-card .chat #chat-content .message-row .bubble {
+	position: relative;
+	padding: 6px 7px 8px 9px;
+	background-color: #FFF;
+	-webkit-box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+	box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+	border-radius: 6px;
+}
+.chat-avatar {
+	width: 40px;
+	min-width: 40px;
+	height: 40px;
+	line-height: 40px;
+	margin: 0 8px 0 0;
+	border-radius: 50%;
+	font-size: 17px;
+	font-weight: 500;
+	text-align: center;
+	color: #FFFFFF;
+}
+#chat-app .center .content-card .chat .chat-toolbar {
+	min-height: 64px;
+	background-color: #F3F4F5;
+	color: rgba(0, 0, 0, 0.87);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+#chat-app .center .content-card .chat {
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.8)), color-stop(20%, rgba(255, 255, 255, 0.6)), to(rgba(255, 255, 255, 0.8)));
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 20%, rgba(255, 255, 255, 0.8));
+}
+#chat-app .center .content-card .chat #chat-content {
+	background: transparent;
+}
+#chat-app .center .content-card .chat .chat-footer .reply-form md-input-container textarea {
+	overflow: auto;
+	max-height: 80px;
+	-webkit-transition: height 200ms ease;
+	transition: height 200ms ease;
+}
+#chat-app .center .content-card .chat .chat-footer .reply-form .md-button {
+	margin: 0;
+}
+#chat-app .center .content-card .chat .chat-footer .reply-form md-input-container {
+	margin: 0;
+	padding-right: 16px;
+}
+.chat-align-right{
+    text-align: right;
+    float: right;
+}

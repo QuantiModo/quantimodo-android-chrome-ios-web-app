@@ -7,6 +7,7 @@
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
   </author>
+  <engine name="ios" spec="4.4.0" />
   <access origin="https://widget.intercom.io/*"/>
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />

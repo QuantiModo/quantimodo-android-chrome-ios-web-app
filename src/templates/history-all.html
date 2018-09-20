@@ -1,6 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
-    <ion-nav-title ng-if="platform.isMobile">History</ion-nav-title>
-    <ion-nav-title ng-if="!platform.isMobile">{{state.title}}</ion-nav-title>
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>History</ion-nav-title>
      <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
          <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory && (!state.history || !state.history.length)">

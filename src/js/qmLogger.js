@@ -63,7 +63,7 @@ window.qmLog = {
         }
     },
     getLogLevelName: function() {
-        if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
+        //qmService.setUseif(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
         if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
         if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
         if(qmLog.logLevel){return qmLog.logLevel;}
@@ -71,7 +71,8 @@ window.qmLog = {
             qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
         }
         if(qmLog.logLevel){return qmLog.logLevel;}
-        qmLog.setLogLevelName("error"); // I think info logs might be slowing down iOS app so default to error
+        var defaultLevel = (qm.appMode.isDevelopment()) ? "info" : "error";
+        qmLog.setLogLevelName(defaultLevel); // I think info logs might be slowing down iOS app so default to error
         return qmLog.logLevel;
     },
     setAuthDebugEnabled: function (value) {
@@ -83,8 +84,10 @@ window.qmLog = {
     },
     setDebugMode: function (value) {
         if (value) {
+            qm.storage.setItem(qm.items.apiUrl, 'utopia.quantimo.do');
             qmLog.setLogLevelName("debug");
         } else {
+            qm.storage.removeItem(qm.items.apiUrl);
             qmLog.setLogLevelName("info");
         }
         return value;
@@ -113,7 +116,7 @@ window.qmLog = {
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
                 var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                if(qmLog.secretAliases.indexOf(lowerCaseProperty) !== -1){
                     object[propertyName] = "HIDDEN";
                 } else {
                     object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
@@ -121,6 +124,23 @@ window.qmLog = {
             }
         }
         return object;
+    },
+    secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
+    stringContainsSecretAliasWord: function(string){
+        if(!string.toLowerCase){
+            console.error("This is not a string: ", string);
+            return false;
+        }
+        var lowerCase = string.toLowerCase();
+        var censoredString = lowerCase;
+        for (var i = 0; i < qmLog.secretAliases.length; i++) {
+            var secretAlias = qmLog.secretAliases[i];
+            if(lowerCase.indexOf(secretAlias) !== -1){
+                censoredString = qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
+            }
+        }
+        if(censoredString !== lowerCase){return censoredString;}
+        return false;
     },
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
@@ -218,6 +238,13 @@ window.qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
+    errorAndExceptionTestingOrDevelopment: function (name, message, metaData, stackTrace) {
+        message = message || name;
+        name = name || message;
+        qmLog.globalMetaData = qmLog.globalMetaData || null;
+        qmLog.error(name, message, metaData, stackTrace);
+        if(qm.appMode.isTesting() || qm.appMode.isDevelopment()){throw name;}
+    },
     getConsoleLogString: function (logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
@@ -232,6 +259,12 @@ window.qmLog = {
                 console.error("Could not stringify log meta data", error);
             }
         }
+        if(!logString.toLowerCase){
+            console.error("logString not a string: ", logString);
+            return "logString not a string: ";
+        }
+        var censored = qmLog.stringContainsSecretAliasWord(logString);
+        if(censored){logString = censored;}
         if(qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
         return logString;
     },
@@ -453,6 +486,7 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
+    if(qm.platform.browser.isFirefox()){return message;}
     if(message === "undefined"){message = "";}
     if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
     if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}

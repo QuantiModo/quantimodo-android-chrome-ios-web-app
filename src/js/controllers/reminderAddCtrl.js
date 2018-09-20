@@ -48,6 +48,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     if(!$rootScope.user){qmService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...');
         $scope.state.trackingReminder = $stateParams.reminder || $stateParams.trackingReminder || qm.storage.getItem(qm.items.lastReminder) || $scope.state.trackingReminder;
+        if($stateParams.trackingReminderId){
+            $scope.state.trackingReminder = $stateParams;
+            $scope.state.trackingReminder.id = $stateParams.trackingReminderId;
+        }
         $scope.state.savingText = 'Save';
         qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function (variableCategories) {
             $scope.state.variableCategories = variableCategories;
@@ -84,6 +88,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qmService.hideLoader();
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
         setHideDefaultValueField();
+        if($state.current.name !== qmStates.favoriteAdd){setupEditReminder($scope.state.trackingReminder);}  // Needed to set dates
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {

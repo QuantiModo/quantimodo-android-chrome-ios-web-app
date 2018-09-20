@@ -43,9 +43,15 @@
     "oclazyload": "~1.0.4",
     "opbeat-angular": "^3.15.0",
     "pluralize": "^1.2.1",
-    "quantimodo": "5.9.73116",
+    "quantimodo": "5.9.83017",
     "underscore": "^1.9.1",
-    "annyang": "^2.6.1"
+    "annyang": "^2.6.1",
+    "svg-morpheus": "^0.3.2",
+    "compromise": "https://github.com/spencermountain/compromise.git#^11.11.0",
+    "natural": "https://github.com/NaturalNode/natural.git#^1.0.9",
+    "Bravey": "https://github.com/mikepsinn/Bravey.git",
+    "pusher-js": "pusher#^4.3.0",
+    "angular-moment": "^1.2.0"
   },
   "resolutions": {
     "angular": "1.5.9",

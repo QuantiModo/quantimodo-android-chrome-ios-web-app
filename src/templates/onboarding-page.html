@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Get Started</ion-nav-title>
     <div class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
         <div class="middle">
             <div class="inner" style="text-align: center; color: white;">
@@ -41,7 +42,6 @@
                            ng-click="postMeasurement(circlePage, 0)">
                     <i class="ion-close-round"> &nbsp; No &nbsp;</i>
                 </md-button>
-                <br><br>
                 <div>
                     <md-button ng-show="state.showSkipButton && !appSettings.designMode" id="skipButtonWelcome"
                                class="button circle-page-button" style="font-size: 14px;" ng-click="skipOnboarding()">
@@ -61,4 +61,5 @@
             </div>
         </div>
     </div>
+    <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" class="robot-container"></div>
 </ion-view>

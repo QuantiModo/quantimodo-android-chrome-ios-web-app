@@ -93,13 +93,13 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     $scope.$on('$ionicView.afterEnter', function(){
         qm.connectorHelper.getConnectorsFromLocalStorageOrApi();  // Pre-load to speed up login
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
-        if(navigator && navigator.splashscreen) {
-            qmLog.authDebug('ReminderInbox: Hiding splash screen because app is ready');
-            navigator.splashscreen.hide();
-        }
+        qmService.splash.hideSplashScreen();
         if(!qm.stringHelper.isFalsey(qm.urlHelper.getParam('error'))){
             qmLog.error(qm.urlHelper.getParam('error'));
             qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  :D")
+        }
+        if(qm.speech.getSpeechEnabled() && !qm.urlHelper.getParam('loggingIn')){
+            //qm.speech.sayIfNotInRecentStatements("I'm not sure who you are... So while you're logging in... Take that time to ask yourself who YOU... think YOU are on a deeper level.");
         }
     });
     $scope.state.setAuthDebugEnabled = function(){
