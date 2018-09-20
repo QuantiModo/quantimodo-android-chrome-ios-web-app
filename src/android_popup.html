@@ -49,13 +49,13 @@
     </style>
     <script src="cordova.js"></script>
     <!-- build:js scripts/popup-combined-head-libraries.js -->
-      <script src="data/qmStaticData.js"></script>
     <script src="lib/bugsnag/dist/bugsnag.js"></script>
     <script src="lib/quantimodo/quantimodo-web.js"></script>
     <script src="lib/localforage/dist/localforage.js"></script>
      <script src="lib/underscore/underscore-min.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
+      <script src="data/qmStaticData.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
     <script src="js/qmChrome.js"></script>
     <script src="js/popup.js"></script>
     <!-- endbuild -->
