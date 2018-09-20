@@ -1818,6 +1818,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         ;
 }
 function shouldWeMinify(){
+    if(process.env.MINIFY){return true;}
     if (doNotMinify) {
         qmLog.info("Copying src instead of minifying because doNotMinify is true");
         return false;
