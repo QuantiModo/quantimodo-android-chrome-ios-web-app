@@ -1580,6 +1580,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         pusher: {
             subscribe: function(user){
+                if(typeof Pusher === "undefined"){
+                    qmLog.debug("Pusher not defined!");
+                    return;
+                }
                 Pusher.logToConsole = qm.appMode.isDevelopment() || qm.appMode.isDebug();  // Enable pusher logging - don't include this in production
                 var pusher = new Pusher('4e7cd12d82bff45e4976', {cluster: 'us2', encrypted: true});
                 var channel = pusher.subscribe('user-'+user.id);
