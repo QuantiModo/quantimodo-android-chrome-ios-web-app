@@ -1071,8 +1071,16 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-var chromeScripts = ['lib/localforage/dist/localforage.js', 'lib/bugsnag/dist/bugsnag.js', 'lib/quantimodo/quantimodo-web.js',
-    'js/qmLogger.js','js/qmHelpers.js', 'js/qmChrome.js', 'lib/underscore/underscore-min.js'];
+var chromeScripts = [
+    'lib/localforage/dist/localforage.js',
+    'lib/bugsnag/dist/bugsnag.js',
+    'lib/quantimodo/quantimodo-web.js',
+    'js/qmLogger.js',
+    'js/qmHelpers.js',
+    'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
+    'js/qmChrome.js',
+    'lib/underscore/underscore-min.js'
+];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
@@ -1412,7 +1420,7 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else {module.exports = staticData;}';
+    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;}';
     try {
         writeToFile('www/data/qmStaticData.js', string);
     } catch(e){
