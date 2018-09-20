@@ -10,12 +10,12 @@ var document = {};
 var libUrl = getIonicAppBaseUrl()+'lib/';
 console.log("Service worker importing libraries from " + libUrl);
 // Can't use QM SDK in service worker because it uses XHR instead of fetch
-importScripts(getIonicAppBaseUrl()+'data/qmStaticData.js');
 importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
 importScripts(libUrl+'localforage/dist/localforage.js');
 importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
+importScripts(getIonicAppBaseUrl()+'data/qmStaticData.js');
 importScripts(getIonicAppBaseUrl()+'js/qmChrome.js');
 var config = {
     apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
@@ -105,7 +105,8 @@ messaging.setBackgroundMessageHandler(function(payload) {
     showNotification(payload);
 });
 self.addEventListener('push', function(event) {
-    console.log('[Service Worker] Push Received.');
+    console.log('[Service Worker] Push Received.', event);
+    qm.localForage.setItem(qm.items.lastPushData, event);
     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
     try {
         var pushData = event.data.json();
