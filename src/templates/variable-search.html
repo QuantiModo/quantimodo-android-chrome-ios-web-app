@@ -1,6 +1,6 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
+<ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>{{state.title}}</ion-nav-title>
-    <ion-content style="background-color: #f2f2f2">
+    <ion-content>
         <div class="card" >
             <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}</div>
             <label class="item item-input">
@@ -27,7 +27,7 @@
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
-                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
+                <ion-item id="variable-search-result" ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
                     <div>
                         <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i> &nbsp; {{item.displayName}}</p>
                         <small ng-if="item.subtitle">{{item.subtitle}}</small>
@@ -36,7 +36,7 @@
                 </ion-item>
             </ion-list>
             <ion-list ng-if="state.showAddVariableButton && !state.searching">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()"> {{state.addNewVariableButtonText}} </ion-item>
+                <ion-item id="new-variable-button" style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()"> {{state.addNewVariableButtonText}} </ion-item>
             </ion-list>
         </div>
         <div class="list card"  ng-if="state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">

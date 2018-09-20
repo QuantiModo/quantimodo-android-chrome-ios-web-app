@@ -46,7 +46,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     $scope.storeRatingLocally = function(ratingValue){
         $scope.reportedVariableValue = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
         var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(ratingValue);
-        qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+        qm.measurements.addToMeasurementsQueue(primaryOutcomeMeasurement);
         $scope.hidePrimaryOutcomeVariableCard = true;
         $scope.showIntervalCard = true;
     };

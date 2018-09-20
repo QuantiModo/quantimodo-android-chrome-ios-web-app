@@ -1,4 +1,5 @@
-<ion-view ng-controller="StudyCreationCtrl as ctrl" hide-nav-bar="hideNavigationMenu" view-title="Create Study">
+<ion-view ng-controller="StudyCreationCtrl as ctrl" hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Create Study</ion-nav-title>
     <div style=" background-color: {{state.color.backgroundColor}}; text-align: center; color: white; padding: 20px; height: 100%" >
         <div style=" position: relative; top: 50%; transform: translateY(-50%);">
             <div ng-if="!state.study && (!state.effectVariable || !state.causeVariable)">

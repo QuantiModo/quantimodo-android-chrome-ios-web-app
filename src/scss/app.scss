@@ -2,89 +2,29 @@
 @import	'../lib/angular-material/angular-material.scss';
 @import '../lib/angular-material-datetimepicker/css/material-datetimepicker';
 @import '../lib/highcharts-ng/dist/highcharts-ng.css'; // Fixes width issues
-@import 'style';
-@import 'mfb';
-// Partials
+@import 'partials/style';
+@import 'partials/mfb';
+@import 'partials/animated-microphone-search-input';
+@import 'partials/autocomplete';
+@import 'partials/buttons';
+@import 'partials/chat';
+@import 'partials/circle-page';
+@import 'partials/date-picker';
+@import 'partials/equalizer-audio-visualizer';
+@import 'partials/fab-progress';
+@import 'partials/heart';
+@import 'partials/highcharts';
+@import 'partials/history';
+@import 'partials/loading';
+@import 'partials/menu';
+@import 'partials/popup';
+@import 'partials/primary-outcome';
 @import 'partials/reminder-add';
-.row+.row {
-	margin-top: 0;
-	padding-top: 5px;
-}
-.align-right {
-	text-align: right;
-}
-// Dirty hack to fix autocomplete dropdown height on study creation page
-.md-virtual-repeat-container.md-not-found {
-	height: 255.5px;
-}
-// Hack to deal with case when side menu is disabled, expose-aside-when="large" still triggers
-// https://github.com/ionic-team/ionic/issues/2210
-ion-side-menu.menu-disabled {
-    width: auto !important;
-    transform: initial !important;
-}
-ion-side-menu-content.menu-disabled {
-    width: auto !important;
-    transform: initial !important;
-}
-.dtp-btn-cancel {
-    width: 33% !important;
-    min-width: unset !important;
-}
-.dtp-btn-ok {
-    width: 33% !important;
-    min-width: unset !important;
-}
-.autocomplete-custom-template li {
-    border-bottom: 1px solid #ccc;
-    height: auto;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    white-space: normal;
-}
-.autocomplete-custom-template li:last-child {
-    border-bottom-width: 0;
-}
-.autocomplete-custom-template .item-title,
-.autocomplete-custom-template .item-metadata {
-    display: block;
-    line-height: 2;
-}
-.autocomplete-custom-template .item-title md-icon {
-    height: 18px;
-    width: 18px;
-}
-// Fixed truncated header bar titles
-.title.title-center.header-item {
-    left: 49px!important;
-    right: 49px!important;
-}
-// Heart from https://codepen.io/donovanh/pen/dYqxNb:  Add with <div class="heart"></div>
-.heart {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: url(https://cssanimation.rocks/images/posts/steps/heart.png) no-repeat;
-    background-position: 0 0;
-    cursor: pointer;
-    animation: fave-heart 1s steps(28);
-}
-.heart:hover {
-    background-position: -2800px 0;
-    transition: background 1s steps(28);
-}
-@keyframes fave-heart {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: -2800px 0;
-    }
-}
-
-.white-links {
-    a, a:hover, a:active, a:visited { color: white; }
+@import 'partials/slider';
+@import 'partials/splash';
+@import 'partials/status-bar';
+@import 'partials/talking-robot';
+@import 'partials/variable-settings';
+body {
+  background-color: black;
 }

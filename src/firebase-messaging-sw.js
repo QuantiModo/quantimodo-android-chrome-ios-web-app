@@ -38,7 +38,7 @@ function showNotification(pushData) {
         var notificationOptions = {
             actions: [],
             requireInteraction: true,
-            body: "Click here for more options",
+            body: pushData.message || "Click here for more options",
             data: JSON.parse(JSON.stringify(pushData)),
             //dir: NotificationDirection,
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
@@ -47,25 +47,27 @@ function showNotification(pushData) {
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
+            console.log("allActions", qm.allActions);
+            for (var i = 0; i < qm.allActions.length; i++) {
+                notificationOptions.actions[i] = {
+                    action: qm.allActions[i].callback ||  qm.allActions[i].action || qm.allActions[i].functionName,
+                    title: qm.allActions[i].longTitle ||  qm.allActions[i].longTitle ||  qm.allActions[i].text
+                };
+            }
+            var maxVisibleActions = Notification.maxActions;
+            if (maxVisibleActions < 4) {
+                console.log("This notification will only display " + maxVisibleActions   +" actions.");
+            } else {
+                console.log("This notification can display up to " + maxVisibleActions +" actions");
+            }
         } catch (error) {
             console.error("could not parse actions in pushData: ", pushData);
-        }
-        for (var i = 0; i < qm.allActions.length; i++) {
-            notificationOptions.actions[i] = {
-                action: qm.allActions[i].callback,
-                title: qm.allActions[i].longTitle
-            };
-        }
-        var maxVisibleActions = Notification.maxActions;
-        if (maxVisibleActions < 4) {
-            console.log("This notification will only display " + maxVisibleActions   +" actions.");
-        } else {
-            console.log("This notification can display up to " + maxVisibleActions +" actions");
         }
         //event.waitUntil(self.registration.showNotification(title, pushData));
         console.log("Notification options", notificationOptions);
         if(!pushData.title || pushData.title === "undefined"){
-            qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+ JSON.stringify(notificationOptions));
+            qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+
+                JSON.stringify(notificationOptions));
         }
         if(pushData.variableName){
             pushData.title = pushData.variableName; // Exclude "Track" because it gets cut off
@@ -130,9 +132,14 @@ self.addEventListener('notificationclick', function(event) {
     if(event.action === ""){
         qmLog.error("No event action provided! event is: ", null, event);
     }
-    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {return;}
+    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
+        return;
+    }
     var basePath = '/ionic/Modo/www/index.html#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
+    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
+        urlPathToOpen = event.notification.data.url;
+    }
     if(event.action && event.action.indexOf("https://") !== -1){
         var providedUrl = event.action.replace('src', 'www');
         var route = qm.stringHelper.getStringAfter(providedUrl, basePath);

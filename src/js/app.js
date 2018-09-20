@@ -30,11 +30,13 @@ angular.module('starter',
         //'ngOpbeat',
         'angular-web-notification',
         //'ui-iconpicker',
-        'ngFitText'
+        'ngFitText',
+        'ngMdIcons',
+        'angularMoment'
     ]
 )
-.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "qmLogService",
-    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
+.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService",
+    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
     if(!qm.urlHelper.onQMSubDomain()){qm.appsManager.loadPrivateConfigFromJsonFile();}
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
@@ -54,6 +56,10 @@ angular.module('starter',
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
     $rootScope.goToState = function(stateName, stateParameters, ev){
+        if(stateName === 'toggleRobot'){
+            qm.robot.toggle();
+            return;
+        }
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
             /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
@@ -102,12 +108,12 @@ angular.module('starter',
 
     var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
     if (qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') || qm.urlHelper.getParam('refreshUser') || window.designMode) {
-        qmService.intro.setIntroSeen(true, "Url parms have existingUser or introSeen or refreshUser or desingMode");
+        qmService.intro.setIntroSeen(true, "Url parms have existingUser or introSeen or refreshUser or designMode");
         qm.storage.setItem(qm.items.onboarded, true);
     }
 }])
 .config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
-    "$ionicConfigProvider", "AnalyticsProvider",
+    "$ionicConfigProvider", "AnalyticsProvider", "ngMdIconServiceProvider",
     //"$opbeatProvider",
     function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
                  $ionicConfigProvider, AnalyticsProvider
@@ -153,9 +159,11 @@ angular.module('starter',
     var config_resolver = {
         appSettingsResponse: function($q){
             var deferred = $q.defer();
-            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
-                deferred.resolve(appSettings);
-            });
+            if(qm.appMode.isDevelopment()){ // TODO: Faster.  We might want to do this globally at some point
+                deferred.resolve(qm.staticData.appSettings);
+            } else {
+                qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
+            }
             return deferred.promise;
         }
     };
@@ -288,7 +296,7 @@ angular.module('starter',
             }
         })
         .state(qmStates.intro, {
-            cache: true,
+            cache: false,
             url: "/intro",
             params: {
                 doNotRedirect: true,
@@ -1521,19 +1529,26 @@ angular.module('starter',
             url: "/reminder-add/:variableName",
             cache: false,
             params: {
-                variableCategoryName : null,
-                variableName : null,
-                reminder : null,
-                trackingReminder : null,
+                doneState: null,
+                favorite: false,
                 fromState : null,
                 fromUrl : null,
+                ionIcon: ionIcons.reminder,
                 measurement : null,
-                variableObject : null,
-                favorite: false,
-                doneState: null,
+                reminder : null,
                 skipReminderSettingsIfPossible: null,
+                stopTrackingDate: null,
+                startTrackingData: null,
                 title: "Add Reminder",
-                ionIcon: ionIcons.reminder
+                trackingReminder : null,
+                trackingReminderId : null,
+                unitAbbreviatedName: null,
+                unitName: null,
+                unitId: null,
+                variableId : null,
+                variableCategoryName : null,
+                variableName : null,
+                variableObject : null,
             },
             views: {
                 'menuContent': {

@@ -1,0 +1,30 @@
+.equalizer-svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	position:absolute;
+}
+.equalizer-h1{
+	width: 100%;
+	font-family: sans-serif;
+	position:absolute;
+	text-align:center;
+	color:white;
+	font-size: 18px;
+	top: 40%;
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+	-moz-transition: opacity 1s ease-in-out;
+	-webkit-transition: opacity 1s ease-in-out;
+}
+.equalizer-h1 a{
+	color: #48b1f4;
+	text-decoration:none;
+}
+.equalizer-path{
+	stroke-linecap: square;
+	stroke: white;
+	stroke-width: 0.5px;
+}

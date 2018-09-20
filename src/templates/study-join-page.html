@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Join Study">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Join Study</ion-nav-title>
     <div style="background-color: {{state.color.backgroundColor}}; text-align: center; color: white; padding: 15px; height: 100%" >
         <div style="position: relative; top: 50%; transform: translateY(-50%);">
             <div ng-if="!state.study || !state.study.joined">
@@ -22,9 +23,9 @@
                     </button>
                 </div>
             </div>
-            <div ng-if="state.study.joined || state.joining">
+            <div ng-if="(state.study.joined || state.joining) && state.study.causeVariable.trackingInstructionsCard">
                 <div ng-include="'templates/cards/blue-card.html'"
-                     ng-repeat="card in [state.study.causeVariable.trackingInstructionsCard, state.study.effectVariable.trackingInstructionsCard]">
+                     ng-repeat="card in [state.study.causeVariable.trackingInstructionsCard, state.study.effectVariable.trackingInstructionsCard] track by $index">
                 </div>
             </div>
             <button id="goToStudyButton" class="button button-small button-clear button-light" ng-if="state.study" ng-click="goToStudyPageViaStudy(state.study)">
