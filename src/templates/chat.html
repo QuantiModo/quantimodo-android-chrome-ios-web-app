@@ -4,7 +4,7 @@
         <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%; z-index: -1;">
             <div class="splash-grid"></div>
         </div>
-        <canvas id="siri-canvas" style="position: absolute; top: 70%; transform: translateY(-50%); width: 100%;
+        <canvas id="siri-canvas" ng-if="micEnabled" style="position: absolute; top: 70%; transform: translateY(-50%); width: 100%;
             height: 400px; z-index: 30; pointer-events: none; "></canvas>
         <md-list flex>
             <div ng-include="'templates/card.html'" style="width:100%;" ng-repeat="card in state.cards"></div>
@@ -22,7 +22,7 @@
                     <button ng-if="micEnabled" id="mic-off" mfb-button icon="ion-ios-mic-off" label="Stop Listening" ng-click="setMicEnabled(false)"></button>
                     <button ng-if="!micEnabled" id="mic-on" mfb-button icon="ion-ios-mic" label="Start Listening" ng-click="setMicEnabled(true)"></button>
                     <button ng-if="speechEnabled" id="speech-off" mfb-button icon="ion-volume-mute" label="Shut Up" ng-click="setSpeechEnabled(false)"></button>
-                    <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-volume" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
+                    <button ng-if="!speechEnabled" id="speech-on" mfb-button icon="ion-volume-high" label="Enable Freedom of Speech" ng-click="setSpeechEnabled(true)"></button>
                     <button ng-if="!visualizationEnabled" id="turn-visualization-on" mfb-button icon="ion-eye" label="Enable Psychedelic Freak-Out" ng-click="setVisualizationEnabled(true)"></button>
                     <button ng-if="visualizationEnabled" id="turn-visualization-off" mfb-button icon="ion-eye-disabled" label="I'm Having a Seizure" ng-click="setVisualizationEnabled(false)"></button>
                 </nav>
