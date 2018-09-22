@@ -224,7 +224,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug('CANCELLED', null);},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}

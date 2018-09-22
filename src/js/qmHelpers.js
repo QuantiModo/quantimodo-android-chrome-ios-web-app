@@ -3864,7 +3864,7 @@ var qm = {
             }
         },
         deleteByVariableName: function(variableName){
-            qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
+            return qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
         },
         promise: null,
         refreshNotifications: function(successHandler, errorHandler, options) {
@@ -5203,7 +5203,9 @@ var qm = {
             if(!localStorageItemArray){
                 window.qm.qmLog.info('Local storage item ' + localStorageItemName + ' not found! Local storage items: ', qm.storage.getLocalStorageList());
             } else {
-                qm.storage.setItem(localStorageItemName, qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue));
+                var filtered = qm.arrayHelper.deleteFromArrayByProperty(localStorageItemArray, propertyName, propertyValue);
+                qm.storage.setItem(localStorageItemName, filtered);
+                return filtered;
             }
         },
         deleteByPropertyInArray: function (localStorageItemName, propertyName, objectsArray){

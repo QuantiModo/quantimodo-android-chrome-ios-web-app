@@ -128,7 +128,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function() {qmLog.debug('CANCELLED', null);},
-                        buttonClicked: function(index) {
+                        buttonClicked: function(index, button) {
                             qmLog.debug('BUTTON CLICKED', index);
                             var stateParams = {};
                             if(variableCategoryName){stateParams.variableCategoryName = variableCategoryName;}
@@ -1357,7 +1357,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {qmLogService.debug('CANCELLED', null);},
-                    buttonClicked: function(index) {
+                    buttonClicked: function(index, button) {
                         qmLogService.debug('BUTTON CLICKED', null, index);
                         if(index === 0){qmLogService.debug('clicked variable name', null);}
                         if(index === 1){qmService.notifications.editReminderSettingsByNotification(trackingReminderNotification);}
@@ -1539,13 +1539,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var title = "Skip all?";
                 var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
                 function yesCallback() {
+                    var filtered = qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
                     trackingReminderNotification.hide = true;
-                    qmLogService.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
+                    qmLog.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
                     qmService.showInfoToast("Skipping all " + trackingReminderNotification.variableName + " notifications...");
                     var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
-                    //qmService.showInfoToast('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
+                    if(successHandler){successHandler(filtered);}
                     qm.notifications.skipAllTrackingReminderNotifications(params, function(response){
-                            if(successHandler){successHandler(response);}
+                            //if(successHandler){successHandler(response);}
                         }, function(error){
                             if(errorHandler){errorHandler(error);}
                             qmLog.error(error);
