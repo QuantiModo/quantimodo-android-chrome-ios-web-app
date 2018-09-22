@@ -2257,11 +2257,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
             if(button.state){
-                if(button.state === qmStates.reminderAdd){
-                    qmService.reminders.addToRemindersUsingVariableObject(variableObject, {doneState: qmStates.remindersList, skipReminderSettingsIfPossible: true});
-                } else {
-                    qmService.goToState(button.state, stateParams);
-                }
+                qmService.goToState(button.state, stateParams);
                 return true;  // Needed to close action sheet
             }
             if(button.action && qmService.notifications[button.action]){
