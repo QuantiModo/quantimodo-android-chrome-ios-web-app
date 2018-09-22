@@ -35,7 +35,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 ],
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug('CANCELLED', null); },
-                buttonClicked: function(index) {
+                buttonClicked: function(index, button) {
                     if(index === 0){populateStudyList('-statisticalSignificance');}
                     if(index === 1){populateStudyList('-qmScore');}
                     if(index === 2){populateStudyList('correlationCoefficient');}

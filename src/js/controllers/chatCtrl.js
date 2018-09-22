@@ -2,6 +2,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
     function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout) {
         $scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
+        var listAllCards = true;
         $scope.state = {
             cards: [],
             chat: true,
@@ -96,7 +97,15 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'equalizer'){
             $scope.state.bodyCss = "background-color:#333;";
         }
+        function getCards() {
+            qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+                $scope.state.cards = cards;
+            });
+        }
         function getMostRecentCardAndTalk(nextCard, successHandler, errorHandler) {
+            if(listAllCards){
+                getCards();
+            }
             qm.feed.getMostRecentCard(function (mostRecentCard) {
                 qmService.hideLoader();
                 if(nextCard){mostRecentCard = nextCard;}
@@ -106,7 +115,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                         d.setUTCSeconds(mostRecentCard.parameters.trackingReminderNotificationTimeEpoch);
                         mostRecentCard.date = d;
                     }
-                    $scope.state.cards = [mostRecentCard];
+                    if(!listAllCards){
+                        $scope.state.cards = [mostRecentCard];
+                    }
                 });
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 mostRecentCard.followUpAction = function (successToastText) {

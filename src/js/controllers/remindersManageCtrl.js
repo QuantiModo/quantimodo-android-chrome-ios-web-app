@@ -77,7 +77,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 				buttons: actionButtons,
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {qmLogService.debug('CANCELLED', null);},
-				buttonClicked: function(index) {
+				buttonClicked: function(index, button) {
 					qmLogService.debug('BUTTON CLICKED', null, index);
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
@@ -196,7 +196,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {},
-			buttonClicked: function(index) {
+			buttonClicked: function(index, button) {
 				if(index === 0){$scope.edit(trackingReminder);}
 				if(index === 1){qmService.goToState('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
