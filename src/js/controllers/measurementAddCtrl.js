@@ -364,7 +364,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 if(index === 0){qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 1){qmService.goToState('app.charts', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
