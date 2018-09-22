@@ -166,6 +166,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         });
     }
     $scope.safeApply = function(fn) {
+        if(!this.$root){
+            qmLog.error("this.$root is not set!");
+            if(fn && (typeof(fn) === 'function')) {fn();}
+            return;
+        }
         var phase = this.$root.$$phase;
         if(phase === '$apply' || phase === '$digest') {
             if(fn && (typeof(fn) === 'function')) {fn();}
@@ -219,7 +224,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug('CANCELLED', null);},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
@@ -319,6 +324,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return $sce.trustAsHtml(string);
     };
     $rootScope.setMicEnabled = function(value){
+        if($rootScope.micEnabled === value){
+            qmLog.info("micEnabled already set to "+value);
+            return;
+        }
         qmLog.info("$rootScope.setMicEnabled");
         if(value === 'toggle'){value = !qm.mic.getMicEnabled();}
         $timeout(function () {

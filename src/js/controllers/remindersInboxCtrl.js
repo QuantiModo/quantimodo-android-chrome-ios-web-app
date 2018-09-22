@@ -359,9 +359,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	};
     $scope.skipAllForVariable = function(trackingReminderNotification, ev) {
         preventDragAfterAlert(ev);
-    	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (response) {
+    	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (trackingReminderNotifications) {
             hideInboxLoader();
-            $scope.refreshTrackingReminderNotifications();
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         }, function(error){
             hideInboxLoader();
 		});
@@ -395,13 +395,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
-        buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
+        //buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});  // TODO: Why aren't we using the destructive button for this?
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
-			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+			destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug('CANCELLED', null);},
-			buttonClicked: function(index) {
+			buttonClicked: function(index, button) {
 				qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmLogService.debug('clicked variable name', null);}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
@@ -414,7 +414,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
                 if(index === buttonIndex){$scope.skipAllForVariable(trackingReminderNotification);}
                 buttonIndex++;
-                if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
+                if(index === buttonIndex){qmLog.error("How should I handle this button?", {button: button});}
+                //if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
 				return true;
 			},
 			destructiveButtonClicked: function() {

@@ -96,7 +96,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             destructiveText: (connector.connected) ? '<i class="icon ion-trash-a"></i>Disconnect ' : null,
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug('CANCELLED');},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 if(connectorButtons[index].state){
                     qmService.actionSheets.handleVariableActionSheetClick(connectorButtons[index]);
                 } else {
