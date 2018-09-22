@@ -324,6 +324,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return $sce.trustAsHtml(string);
     };
     $rootScope.setMicEnabled = function(value){
+        if($rootScope.micEnabled === value){
+            qmLog.info("micEnabled already set to "+value);
+            return;
+        }
         qmLog.info("$rootScope.setMicEnabled");
         if(value === 'toggle'){value = !qm.mic.getMicEnabled();}
         $timeout(function () {
