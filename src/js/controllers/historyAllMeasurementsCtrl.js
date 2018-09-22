@@ -64,7 +64,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function() { qmLogService.debug('CANCELLED', null); },
-                        buttonClicked: function(index) {
+                        buttonClicked: function(index, button) {
                             if(index === 0){$scope.refreshHistory();}
                             if(index === 1){qmService.goToState(qmStates.settings);}
                             return true;
@@ -181,7 +181,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {qmLogService.debug('CANCELLED', null);},
-				buttonClicked: function(index) {
+				buttonClicked: function(index, button) {
 					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
 					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}
 					if(index === 2) {qmService.goToState('app.historyAll', {variableCategoryName: 'Symptoms'});}
@@ -222,7 +222,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
-			buttonClicked: function(index) {
+			buttonClicked: function(index, button) {
 				qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
 				if(index === 0){$scope.editMeasurement($scope.state.measurement);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});}
