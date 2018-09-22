@@ -166,6 +166,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         });
     }
     $scope.safeApply = function(fn) {
+        if(!this.$root){
+            qmLog.error("this.$root is not set!");
+            if(fn && (typeof(fn) === 'function')) {fn();}
+            return;
+        }
         var phase = this.$root.$$phase;
         if(phase === '$apply' || phase === '$digest') {
             if(fn && (typeof(fn) === 'function')) {fn();}
