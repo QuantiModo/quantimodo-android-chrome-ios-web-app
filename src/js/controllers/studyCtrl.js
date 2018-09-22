@@ -182,7 +182,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null); },
-                buttonClicked: function(index) {
+                buttonClicked: function(index, button) {
                     if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
                     if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }
                     if(index === 2){ $scope.upVote(getStatistics()); }
