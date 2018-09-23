@@ -20,7 +20,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             lastBotMessage: '',
             htmlClick: function(card){
                 if(card.link){
-                    qm.urlHelper.goToUrl(card.link);
+                    //qm.urlHelper.goToUrl(card.link);
                 } else {
                     getMostRecentCardAndTalk();
                 }
