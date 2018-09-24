@@ -5882,7 +5882,11 @@ var qm = {
             qm.studyHelper.getStudiesApiInstance().getStudies(params, callback);
         },
         goToStudyPageJoinPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyJoinUrl(study);},
-        goToStudyPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyUrl(study);}
+        goToStudyPageViaStudy: function(study){
+            var url = qm.studyHelper.getStudyUrl(study);
+            qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
+            window.location.href = url;
+        }
     },
     timeHelper: {
         getUnixTimestampInMilliseconds: function(dateTimeString) {
