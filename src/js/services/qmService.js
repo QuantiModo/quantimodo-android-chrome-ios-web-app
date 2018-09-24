@@ -2257,6 +2257,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var stateParams = {};
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
+            if(button.webhookUrl){
+                var yesCallback = qmService.post(button.webhookUrl, function(response){
+                    if(button.successToastText){qmService.showInfoToast(button.successToastText);}
+                });
+                qmService.showMaterialConfirmationDialog(button.tooltip, button.confirmationText, yesCallback, function(){qmLog.info("Said no");});
+                return true;  // Needed to close action sheet
+            }
             if(button.state){
                 qmService.goToState(button.state, stateParams);
                 return true;  // Needed to close action sheet
@@ -2401,7 +2408,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 actionSheetParams.destructiveButtonClicked = function(response) {
                     qmLog.debug('destructiveButtonClicked', response);
                     card.hide = true;
-                    destructiveButtonClickedFunction();
+                    destructiveButtonClickedFunction(card);
                     return true;
                 };
             }
@@ -2617,7 +2624,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
     };
     qmService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
-        if(!body){throw "Please provide body parameter to qmService.post";}
+        if(!body){
+            body = {};
+            qmLog.warn("No body parameter provided to qmService.post");
+        }
         if(!options){ options = {}; }
         options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
         delete body.stackTrace;
