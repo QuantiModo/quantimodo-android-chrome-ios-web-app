@@ -3878,6 +3878,11 @@ var qm = {
             qm.api.getRequestUrl(route, function(url){
                 // Can't use QM SDK in service worker
                 qm.api.getViaXhrOrFetch(url, function (response) {
+                    if(!response){
+                        qmLog.error("No response from "+url);
+                        if(errorHandler){errorHandler("No response from "+url);}
+                        return;
+                    }
                     if(response.status === 401){
                         qm.chrome.showSignInNotification();
                     } else {
