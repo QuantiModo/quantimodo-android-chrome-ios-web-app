@@ -20,6 +20,12 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             },
             htmlClick: function(card){
                 $scope.state.openActionSheet(card);
+            },
+            refreshFeed: function () {
+                qm.feed.getFeedFromApi({}, function(cards){
+                    $scope.$broadcast('scroll.refreshComplete');
+                    getCards();
+                });
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e) {
@@ -31,11 +37,14 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             if(!qm.getUser()){qmService.login.sendToLoginIfNecessaryAndComeBack(); return;}
             getCards();
         });
+        $rootScope.$on('getCards', function() {
+            qmLogService.info('getCards broadcast received..');
+            getCards();
+        });
         function removeCard(card) {
             card.hide = true;
             qm.feed.deleteCardFromLocalForage(card, function(){getCards();});
         }
-        function refresh(){qm.feed.getFeedFromApi({}, function(cards){getCards();});}
         function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){$scope.state.cards = cards;});}
     }]
 );
