@@ -7,21 +7,31 @@
             <span id="subHeader" class="md-subhead" ng-if="!card.date && card.subHeader">{{card.subHeader}}</span>
             <span id="date" class="md-subhead" ng-if="card.date" am-time-ago="card.date"></span>
         </md-card-header-text>
+        <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:5px; right: 0px;"
+                   ng-click="state.openActionSheet(card)">
+            <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
+        </md-button>
     </md-card-header>
-    <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:15px; right: 5px; position: absolute;" ng-click="state.openActionSheet(card)">
-        <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
-    </md-button>
+
     <img id="image" ng-src="{{card.image}}" class="md-card-image" alt="{{card.title}}" ng-if="card.image">
     <md-card-title id="card" ng-if="card.title || card.subTitle">
         <md-card-title-text id="title-text">
             <span id="title" class="md-headline" ng-if="card.title">{{card.title}}</span>
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
+            <md-button class="md-icon-button" id="more-button-title" ng-if="card.actionSheetButtons" style="top:5px; right: 0;"
+                       ng-click="state.openActionSheet(card)">
+                <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
+            </md-button>
         </md-card-title-text>
     </md-card-title>
     <md-card-content id="content" ng-if="card.content">
         <p> {{card.content}} </p>
     </md-card-content>
-    <md-card-content id="html-content" ng-if="card.htmlContent">
+    <md-card-content id="html-content" ng-if="card.htmlContent" style="top:5px; right: 0; position: relative;">
+        <md-button class="md-icon-button" id="more-button-html" ng-if="card.actionSheetButtons" style="top:5px; right: 0; position: absolute;"
+                   ng-click="state.openActionSheet(card)">
+            <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
+        </md-button>
         <div ng-bind-html="trustAsHtml(card.htmlContent)" ng-click="state.htmlClick(card)"></div>
     </md-card-content>
     <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">

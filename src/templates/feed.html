@@ -1,9 +1,6 @@
 <ion-view hide-nav-bar="false">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
-        <div id="splash-screen" class="splash-wrapper" style="width: 100%; position: absolute; height: 100%; z-index: -1;">
-            <div class="splash-grid"></div>
-        </div>
         <md-list flex>
             <div ng-include="'templates/card.html'" style="width:100%;" ng-repeat="card in state.cards"></div>
         </md-list>
