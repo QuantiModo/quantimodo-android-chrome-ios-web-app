@@ -1,6 +1,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm */
 window.qm.chrome = {
+    allowFocusing: false,
     debugEnabled: true,
     chromeDebug: function () {
         function checkAlarm() {
@@ -48,7 +49,8 @@ window.qm.chrome = {
             qmLog.info("creating popup window", null, windowParams);
             chrome.windows.create(windowParams, function (chromeWindow) {
                 qm.storage.setItem('chromeWindowId', chromeWindow.id);
-                chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
+                var focused = (qm.chrome.allowFocusing) ? windowParams.focused : false;
+                chrome.windows.update(chromeWindow.id, { focused: focused });
             });
         }
         if(windowParams.url.indexOf('.quantimo.do') !== -1 || windowParams.url.indexOf('popup.html') !== -1){
@@ -77,7 +79,7 @@ window.qm.chrome = {
             if (!chrome.runtime.lastError && chromeWindow){
                 if(windowParams.focused){
                     window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. Focusing...', windowParams );
-                    chrome.windows.update(chromeWindowId, {focused: true});
+                    chrome.windows.update(chromeWindowId, {focused: qm.chrome.allowFocusing});
                 } else {
                     window.qmLog.info('qm.chrome.openOrFocusChromePopupWindow: Window already open. NOT focusing...', windowParams );
                 }
@@ -102,7 +104,7 @@ window.qm.chrome = {
         chrome.windows.getCurrent(function (window) {
             console.log("current window", window);
             if(window && window.type === "popup"){
-                chrome.windows.update(window.id, {focused: true});
+                chrome.windows.update(window.id, {focused: qm.chrome.allowFocusing});
             } else {
                 qm.chrome.createPopup(windowParams);
             }
@@ -121,7 +123,7 @@ window.qm.chrome = {
                     console.log("current window", window);
                     if(window.type === "popup"){
                         console.log("Focusing existing popup", window);
-                        chrome.windows.update(window.id, {focused: true});
+                        chrome.windows.update(window.id, {focused: qm.chrome.allowFocusing});
                         return;
                     }
                 }
@@ -205,7 +207,7 @@ window.qm.chrome = {
         console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
     },
     openLoginWindow: function(){
-        var windowParams = { type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
+        var windowParams = { type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: qm.chrome.allowFocusing};
         windowParams.url = "https://" + qm.getClientId() + '.quantimo.do/ionic/Modo/www/index.html#/app/login';
         windowParams.focused = true;
         qm.chrome.openOrFocusChromePopupWindow(windowParams);
@@ -290,7 +292,7 @@ window.qm.chrome = {
         var getChromeRatingNotificationParams = function(trackingReminderNotification){
             if(!trackingReminderNotification){trackingReminderNotification = qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();}
             return { url: qm.notifications.getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
-                left: screen.width - 380, width: 390, height: 110, focused: true};
+                left: screen.width - 380, width: 390, height: 110, focused: qm.chrome.allowFocusing};
         };
         if(trackingReminderNotification){
             window.trackingReminderNotification = trackingReminderNotification;
@@ -328,8 +330,8 @@ if(typeof screen !== "undefined"){
         return parseInt(factor * screen.height);
     }
     qm.chrome.windowParams = {
-        introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-        facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
+        introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: qm.chrome.allowFocusing},
+        facesWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: qm.chrome.allowFocusing},
         fullInboxWindowParams: { url: "index.html#/app/reminders-inbox", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
         compactInboxWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
         inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},

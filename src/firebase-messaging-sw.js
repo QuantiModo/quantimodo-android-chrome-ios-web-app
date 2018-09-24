@@ -39,7 +39,7 @@ function showNotification(pushData) {
         // https://developers.google.com/web/fundamentals/push-notifications/notification-behaviour
         var notificationOptions = {
             actions: [],
-            requireInteraction: true,
+            requireInteraction: false,
             body: pushData.message || "Click here for more options",
             data: JSON.parse(JSON.stringify(pushData)),
             //dir: NotificationDirection,
