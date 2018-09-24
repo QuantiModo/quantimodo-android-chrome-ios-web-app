@@ -36,6 +36,7 @@ function showNotification(pushData) {
         pushData = pushData.data;
     }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
+        // https://developers.google.com/web/fundamentals/push-notifications/notification-behaviour
         var notificationOptions = {
             actions: [],
             requireInteraction: true,
@@ -44,7 +45,8 @@ function showNotification(pushData) {
             //dir: NotificationDirection,
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
-            tag: pushData.title
+            tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
+            silent: true
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
