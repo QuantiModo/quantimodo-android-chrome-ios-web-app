@@ -8,6 +8,7 @@
             <span id="date" class="md-subhead" ng-if="card.date" am-time-ago="card.date"></span>
         </md-card-header-text>
         <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:5px; right: 0px;"
+                   aria-label="More Options"
                    ng-click="state.openActionSheet(card)">
             <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
         </md-button>
@@ -19,6 +20,7 @@
             <span id="title" class="md-headline" ng-if="card.title">{{card.title}}</span>
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
             <md-button class="md-icon-button" id="more-button-title" ng-if="card.actionSheetButtons" style="top:5px; right: 0;"
+                       aria-label="More Options"
                        ng-click="state.openActionSheet(card)">
                 <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
             </md-button>
@@ -29,6 +31,7 @@
     </md-card-content>
     <md-card-content id="html-content" ng-if="card.htmlContent" style="top:5px; right: 0; position: relative;">
         <md-button class="md-icon-button" id="more-button-html" ng-if="card.actionSheetButtons" style="top:5px; right: 0; position: absolute;"
+                   aria-label="More Options"
                    ng-click="state.openActionSheet(card)">
             <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
         </md-button>
