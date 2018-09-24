@@ -2258,9 +2258,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
             if(button.webhookUrl){
-                var yesCallback = qmService.post(button.webhookUrl, function(response){
-                    if(button.successToastText){qmService.showInfoToast(button.successToastText);}
-                });
+                var yesCallback = function(){
+                    qmService.post(button.webhookUrl, function(response){
+                        if(button.successToastText){qmService.showInfoToast(button.successToastText);}
+                    });
+                };
                 qmService.showMaterialConfirmationDialog(button.tooltip, button.confirmationText, yesCallback, function(){qmLog.info("Said no");});
                 return true;  // Needed to close action sheet
             }

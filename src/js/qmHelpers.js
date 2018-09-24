@@ -517,6 +517,7 @@ var qm = {
             })
         },
         getQuantiModoUrl: function (path) {
+            if(path.indexOf("http") === 0){return path;}
             if(typeof path === "undefined") {path = "";}
             return qm.api.getBaseUrl() + "/" + path;
         },
