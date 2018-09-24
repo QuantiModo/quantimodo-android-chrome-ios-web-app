@@ -7176,7 +7176,12 @@ var qm = {
                 return false;
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
-            var serviceWorkerUrl = qm.appsManager.getQuantiModoApiUrl()+'/ionic/Modo/src/firebase-messaging-sw.js';
+            // Failed to register a ServiceWorker: The origin of the provided scriptURL ('https://app.quantimo.do')
+            // does not match the current origin ('https://medimodo.quantimo.do')
+            var serviceWorkerUrl = window.location.origin + '/ionic/Modo/src/firebase-messaging-sw.js';
+            if(window.location.href.indexOf("ionic/Modo") === -1){
+                serviceWorkerUrl = window.location.origin + '/firebase-messaging-sw.js'
+            }
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
