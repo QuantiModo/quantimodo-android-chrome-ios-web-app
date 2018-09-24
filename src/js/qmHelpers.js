@@ -2324,7 +2324,13 @@ var qm = {
                 }
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
-            qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+            if(feedQueue){
+                qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+            } else {
+                qm.localForage.removeItem(qm.items.feedQueue, function(feedQueue){
+                    qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                })
+            }
         },
         fixFeedQueue: function (parameters) {
             if (parameters && parameters[0] && qm.arrayHelper.variableIsArray(parameters[0])) {
@@ -2898,13 +2904,15 @@ var qm = {
         },
         removeItem: function(key, successHandler, errorHandler){
             qm.globalHelper.removeItem(key);
-            localforage.removeItem(key, function (err) {
-                if(err){
-                    if(errorHandler){errorHandler(err);}
-                } else {
-                    if(successHandler){successHandler();}
-                }
-            })
+            qm.localForage.getItem(key, function (data) {
+                localforage.removeItem(key, function (err) {
+                    if(err){
+                        if(errorHandler){errorHandler(err);}
+                    } else {
+                        if(successHandler){successHandler(data);}
+                    }
+                })
+            });
         },
         getWithFilters: function(localStorageItemName, successHandler, errorHandler, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,

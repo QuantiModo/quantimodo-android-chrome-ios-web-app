@@ -389,6 +389,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }, function (error) {
                     qmLog.error('upVote failed!', error);
                 });
+            },
+            skipAll: function(button, card, successHandler){
+                qmService.showBasicLoader();
+                card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(button.parameters, card.parameters);
+                qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
+                    qm.feed.postToFeedEndpointImmediately(card, function(feed){
+                        if(successHandler){successHandler(feed);}
+                        qmService.feed.broadcastGetCards();
+                        qmService.hideLoader();
+                    });
+                });
             }
         },
         charts: {
@@ -970,6 +981,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
                 if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail); }
             },
+        },
+        feed: {
+            broadcastGetCards: function(){
+                if($state.current.name === qmStates.feed){
+                    qmLog.info("Broadcasting broadcastGetCards");
+                    $rootScope.$broadcast('broadcastGetCards');
+                } else {
+                    qmLog.info("NOT broadcasting broadcastGetCards because state is "+$state.current.name);
+                }
+            }
         },
         help: {
             showExplanationsPopup: function(parameterOrPropertyName, ev, modelName, title) {
@@ -2268,6 +2289,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             if(button.state){
                 qmService.goToState(button.state, stateParams);
+                return true;  // Needed to close action sheet
+            }
+            if(button.action && qmService.buttonClickHandlers[button.action]){
+                qmService.buttonClickHandlers[button.action](button, card);
                 return true;  // Needed to close action sheet
             }
             if(button.action && qmService.notifications[button.action]){
