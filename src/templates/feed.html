@@ -1,6 +1,7 @@
 <ion-view hide-nav-bar="false">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
+        <ion-refresher on-refresh="state.refreshFeed()"></ion-refresher>
         <md-list flex>
             <div ng-include="'templates/card.html'" style="width:100%;" ng-repeat="card in state.cards"></div>
         </md-list>
