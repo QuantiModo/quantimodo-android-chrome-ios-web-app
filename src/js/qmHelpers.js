@@ -2306,6 +2306,16 @@ var qm = {
         deleteCardFromLocalForage: function(submittedCard, successHandler, errorHandler){
             qm.localForage.deleteById(qm.items.feed, submittedCard.id, successHandler, errorHandler);
         },
+        deleteCardFromFeedQueue: function(submittedCard, successHandler, errorHandler){
+            qm.localForage.deleteById(qm.items.feedQueue, submittedCard.id, successHandler, errorHandler);
+        },
+        addToFeedAndRemoveFromFeedQueue: function(submittedCard, successHandler, errorHandler){
+            qm.localForage.addToArray(qm.items.feed, submittedCard, function(feedCards){
+                qm.feed.deleteCardFromFeedQueue(submittedCard, function(remainingCards){
+                    if(successHandler){successHandler(feedCards);}
+                }, errorHandler);
+            }, errorHandler);
+        },
         postFeedQueue: function(feedQueue, successHandler, errorHandler){
             qm.localForage.removeItem(qm.items.feedQueue, function(){
                 qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
@@ -2468,7 +2478,10 @@ var qm = {
             }
             return false;
         },
-        recentlyRespondedTo: {}
+        recentlyRespondedTo: {},
+        undoFunction: function(){
+            qmLog.error("Undo function not defined!");
+        }
     },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
