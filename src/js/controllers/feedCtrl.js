@@ -45,6 +45,11 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             card.hide = true;
             qm.feed.deleteCardFromLocalForage(card, function(){getCards();});
         }
-        function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){$scope.state.cards = cards;});}
+        function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+            qmService.hideLoader();
+            $scope.safeApply(function () {
+                $scope.state.cards = cards;
+            });
+        });}
     }]
 );
