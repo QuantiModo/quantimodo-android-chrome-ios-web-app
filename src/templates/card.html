@@ -40,7 +40,7 @@
         <md-button id="{{button.id+'-text-button'}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
                    style="min-width: 0;"
-                   ng-click="state.cardButtonClick(card, button)">
+                   ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
             <span style="color: {{button.color}}" >
                 <i class="icon {{button.ionIcon}}" ng-if="button.ionIcon"></i>
@@ -50,7 +50,7 @@
         <md-button id="button-{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
                    style="min-width: 0; min-height: 0; padding: 1px; line-height: 0; margin: 1px; width: {{90/card.buttons.length}}%"
-                   ng-click="state.cardButtonClick(card, button)">
+                   ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip>{{button.tooltip}}</md-tooltip>
             <img style="max-height: 75px; min-width:0; min-height:0; max-width: 100%;" ng-src="{{button.image}}">
         </md-button>
@@ -59,7 +59,7 @@
         <md-button id="button-secondary-{{button.id}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttonsSecondary"
                    aria-label="{{button.text || button.title || button.id}}"
                    style="min-width: 0;"
-                   ng-click="state.cardButtonClick(card, button)">
+                   ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
             <span style="color: {{button.color}}" >
                 <i class="icon {{button.ionIcon}}" ng-if="button.ionIcon"></i>
@@ -69,13 +69,13 @@
         <md-button id="{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttonsSecondary"
                    aria-label="{{button.text || button.title || button.id}}"
                    style="min-width: 0; min-height: 0; padding: 1px; line-height: 0; margin: 1px; width: {{90/card.buttonsSecondary.length}}%"
-                   ng-click="state.cardButtonClick(card, button)">
+                   ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip>{{button.tooltip}}</md-tooltip>
             <img style="max-height: 75px; min-width:0; min-height:0; max-width: 100%;" ng-src="{{button.image}}">
         </md-button>
     </md-card-actions>
     <md-content ng-if="card.inputFields" ng-repeat="inputField in card.inputFields">
-        <form name="cardForm" ng-submit="state.cardButtonClick(card, inputField.submitButton)" ng-if="inputField.show"
+        <form name="cardForm" ng-submit="state.cardButtonClick(card, inputField.submitButton, $event)" ng-if="inputField.show"
               layout layout-align="center" layout-padding>
             <div layout="row" flex>
                 <span flex="15" style="margin-top: 10px;" ng-if="inputField.labelLeft"> &nbsp {{inputField.labelLeft}}</span>

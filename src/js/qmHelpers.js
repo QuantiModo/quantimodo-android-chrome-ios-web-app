@@ -2311,6 +2311,11 @@ var qm = {
                 qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
             }, function(error){qm.qmLog.error(error);});
         },
+        postCardImmediately: function(card, successHandler, errorHandler){
+            qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
+                qm.feed.postToFeedEndpointImmediately(null, successHandler, errorHandler);
+            }, errorHandler);
+        },
         postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
@@ -5950,6 +5955,19 @@ var qm = {
         }
     },
     trackingReminderNotifications : [],
+    ui: {
+         preventDragAfterAlert: function(ev) {
+            if(!ev){
+                qmLog.debug("No event provided to preventDragAfterAlert");
+                return;
+            }
+            ev.preventDefault();
+            ev.stopPropagation();
+            ev.gesture.stopPropagation();
+            ev.gesture.preventDefault();
+            ev.gesture.stopDetect();
+        }
+    },
     unitHelper: {
         getNonAdvancedUnits: function(){
             var nonAdvancedUnitObjects = [];

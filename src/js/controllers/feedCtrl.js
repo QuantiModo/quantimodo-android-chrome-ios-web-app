@@ -4,19 +4,23 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
             cards: [],
-            cardButtonClick: function(card, button){
-                qmLog.info("card", card);
-                qmLog.info("button", button);
+            cardButtonClick: function(card, button, ev){
+                qmLog.debug("card", card);
+                qmLog.debug("button", button);
+                card.selectedButton = button;
                 if(card.parameters.trackingReminderNotificationId){
-                    card.selectedButton = button;
-                    removeCard(card);
+                    cardHandlers.removeCard(card);
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
                 }
-                qmService.actionSheets.handleCardButtonClick(button, card);
+                if(clickHandlers[button.action]){
+                    clickHandlers[button.action](card, button, ev);
+                } else {
+                    qmService.actionSheets.handleCardButtonClick(button, card);
+                }
             },
             openActionSheet: function (card) {
-                var destructiveButtonClickedFunction = removeCard;
+                var destructiveButtonClickedFunction = cardHandlers.removeCard;
                 qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
             },
             htmlClick: function(card){
@@ -24,8 +28,8 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             },
             refreshFeed: function () {
                 qm.feed.getFeedFromApi({}, function(cards){
-                    $scope.$broadcast('scroll.refreshComplete');
-                    getCards();
+                    hideLoader();
+                    cardHandlers.getCards(cards);
                 });
             }
         };
@@ -36,21 +40,50 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
         });
         $scope.$on('$ionicView.enter', function(e) {
             if(!qm.getUser()){qmService.login.sendToLoginIfNecessaryAndComeBack(); return;}
-            getCards();
+            cardHandlers.getCards();
+            if(!$scope.state.cards){qmService.showBasicLoader();}
         });
         $rootScope.$on('getCards', function() {
             qmLogService.info('getCards broadcast received..');
-            getCards();
+            cardHandlers.getCards();
         });
-        function removeCard(card) {
-            card.hide = true;
-            qm.feed.deleteCardFromLocalForage(card, function(){getCards();});
-        }
-        function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+        var cardHandlers = {
+            addCardsToScope: function(cards){
+                $scope.safeApply(function () {
+                    $scope.state.cards = cards;
+                });
+            },
+            removeCard: function(card) {
+                card.hide = true;
+                qm.feed.deleteCardFromLocalForage(card, function(){
+                    cardHandlers.getCards();
+                });
+            },
+            getCards: function(cards) {
+                if(cards){
+                    cardHandlers.addCardsToScope(cards);
+                    return;
+                }
+                qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+                    hideLoader();
+                    cardHandlers.addCardsToScope(cards);
+                });
+            }
+        };
+        var clickHandlers = {
+            skipAll: function (card, button, ev) {
+                qm.ui.preventDragAfterAlert(ev);
+                qmService.showBasicLoader();
+                qm.feed.postCardImmediately(card, function (cardsFromResponse) {
+                    cardHandlers.getCards(cardsFromResponse);
+                });
+                return true;
+            }
+        };
+        function hideLoader() {
             qmService.hideLoader();
-            $scope.safeApply(function () {
-                $scope.state.cards = cards;
-            });
-        });}
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+        }
     }]
 );
