@@ -28,7 +28,7 @@
     <md-card-content id="content" ng-if="card.content">
         <p> {{card.content}} </p>
     </md-card-content>
-    <md-card-content id="html-content" ng-if="card.htmlContent" style="top:5px; right: 0; position: relative;">
+    <md-card-content id="html-content" ng-if="card.htmlContent" style="top:5px; right: 0; position: relative; max-width: 98%;">
         <md-button class="md-icon-button" id="more-button-html" ng-if="card.actionSheetButtons" style="top:5px; right: 0; position: absolute;"
                    aria-label="More Options"
                    ng-click="state.openActionSheetForCard(card)">

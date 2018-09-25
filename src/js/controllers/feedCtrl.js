@@ -8,13 +8,8 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 qmLog.debug("card", card);
                 qmLog.debug("button", button);
                 card.selectedButton = button;
-                if(card.parameters.trackingReminderNotificationId){
-                    cardHandlers.removeCard(card);
-                } else {
-                    qmLog.error("Not sure how to handle this button", {card: card, button: button});
-                }
                 if(clickHandlers[button.action]){
-                    clickHandlers[button.action](card, button, ev);
+                    clickHandlers[button.action](card, ev);
                 } else {
                     qmService.actionSheets.handleCardButtonClick(button, card);
                 }
@@ -58,6 +53,13 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 qm.feed.deleteCardFromLocalForage(card, function(){
                     cardHandlers.getCards();
                 });
+                qm.feed.undoFunction = function(){
+                    card.hide = false;
+                    var cards = $scope.state.cards.unshift(card);
+                    cardHandlers.addCardsToScope(cards);
+                    qm.feed.addToFeedAndRemoveFromFeedQueue(card);
+                };
+                if(button.successToastText){qmService.showUndoToast(button.successToastText);}
             },
             getCards: function(cards) {
                 if(cards){
@@ -71,12 +73,18 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             }
         };
         var clickHandlers = {
-            skipAll: function (card, button, ev) {
+            skipAll: function (card, ev) {
                 qm.ui.preventDragAfterAlert(ev);
                 qmService.showBasicLoader();
                 qm.feed.postCardImmediately(card, function (cardsFromResponse) {
                     cardHandlers.getCards(cardsFromResponse);
                 });
+                cardHandlers.removeCard(card);
+                return true;
+            },
+            track: function(card) {
+                cardHandlers.removeCard(card);
+                qm.feed.addToFeedQueueAndRemoveFromFeed(card);
                 return true;
             }
         };
