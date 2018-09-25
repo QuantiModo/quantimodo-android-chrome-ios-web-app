@@ -2274,7 +2274,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         },
-        handleCardActionSheetClick: function(button, card) {
+        handleCardButtonClick: function(button, card) {
             var stateParams = {};
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
@@ -2414,7 +2414,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return buttons;
         },
-        openActionSheet: function (card, destructiveButtonClickedFunction) {
+        openActionSheetForCard: function (card, destructiveButtonClickedFunction) {
             qmLog.info("card", card);
             qmLog.info("actionSheetButtons", card.actionSheetButtons);
             card.actionSheetButtons = card.actionSheetButtons.map(function(button){
@@ -2427,7 +2427,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {qmLog.debug('CANCELLED'); return true;},
                 buttonClicked: function(index, button) {
-                    return qmService.actionSheets.handleCardActionSheetClick(button, card);
+                    return qmService.actionSheets.handleCardButtonClick(button, card);
                 }
             };
             if(destructiveButtonClickedFunction){
