@@ -60,7 +60,12 @@ var qmLog = {
     },
     prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');}
 };
-var bugsnag = require("bugsnag");
+var fs = require('fs');
+if(fs.existsSync('../tests/node_modules/bugsnag/lib/bugsnag.js')){
+    var bugsnag = require('../tests/node_modules/bugsnag/lib/bugsnag.js');
+} else {
+    var bugsnag = require("bugsnag");
+}
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 bugsnag.releaseStage = qmLog.getCurrentServerContext();
 process.on('unhandledRejection', function (err) {

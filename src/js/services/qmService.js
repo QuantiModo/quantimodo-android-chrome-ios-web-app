@@ -2059,6 +2059,30 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLogService.error("Could not find state with name: " + stateName);
             }
         },
+        sharing: {
+            shareNativelyOrViaWeb: function(sharingUrl){
+                if (qm.platform.isMobile()){
+                    // this is the complete list of currently supported params you can pass to the plugin (all optional)
+                    var options = {
+                        //message: correlationObject.sharingTitle, // not supported on some apps (Facebook, Instagram)
+                        //subject: correlationObject.sharingTitle, // fi. for email
+                        //files: ['', ''], // an array of filenames either locally or remotely
+                        url: sharingUrl.replace('local.q', 'app.q'),
+                        chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+                    };
+                    var onSuccess = function(result) {
+                        //qmLog.error("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                        qmLog.error("Share to " + result.app + ' completed: ' + result.completed); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+                    };
+                    var onError = function(msg) {
+                        qmLog.error("Sharing failed with message: " + msg);
+                    };
+                    qmService.cordova.getPlugins().socialsharing.shareWithOptions(options, onSuccess, onError);
+                } else {
+                    qmService.openSharingUrl(sharingUrl);
+                }
+            }
+        },
         studyHelper: {
             showShareStudyConfirmation: function (study, sharingUrl, ev){
                 qm.studyHelper.lastStudy = study;
@@ -2275,6 +2299,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         handleCardButtonClick: function(button, card) {
+            card.selectedButton = button;
             var stateParams = {};
             if(button.stateParams){stateParams = button.stateParams;}
             button.state = button.state || button.stateName;
@@ -2295,12 +2320,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.buttonClickHandlers[button.action](button, card);
                 return true;  // Needed to close action sheet
             }
-            if(button.action && qmService.notifications[button.action]){
-                var trackingReminderNotification = card.parameters;
-                trackingReminderNotification = qm.objectHelper.copyPropertiesFromOneObjectToAnother(button.parameters, trackingReminderNotification, true);
-                qmService.notifications[button.action](trackingReminderNotification);
-                return true;  // Needed to close action sheet
+            if(button.action && button.action === "share"){
+                qmService.sharing.shareNativelyOrViaWeb(button.link);
+                return true;
             }
+            if(button.link){
+                qm.urlHelper.openUrlInNewTab(button.link);
+                return true;
+            }
+            qm.feed.addToFeedQueueAndRemoveFromFeed(card);
             return false; // Don't close if clicking top variable name
         },
         handleVariableActionSheetClick: function(button, variableObject) {
