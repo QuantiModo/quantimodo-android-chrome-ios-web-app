@@ -9,7 +9,7 @@
         </md-card-header-text>
         <md-button class="md-icon-button" id="more-button" ng-if="card.actionSheetButtons" style="top:5px; right: 0px;"
                    aria-label="More Options"
-                   ng-click="state.openActionSheet(card)">
+                   ng-click="state.openActionSheetForCard(card)">
             <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
         </md-button>
     </md-card-header>
@@ -20,7 +20,7 @@
             <span id="subTitle" class="md-subhead" ng-if="card.subTitle">{{card.subTitle}}</span>
             <md-button class="md-icon-button" id="more-button-title" ng-if="card.actionSheetButtons" style="top:5px; right: 0;"
                        aria-label="More Options"
-                       ng-click="state.openActionSheet(card)">
+                       ng-click="state.openActionSheetForCard(card)">
                 <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
             </md-button>
         </md-card-title-text>
@@ -31,7 +31,7 @@
     <md-card-content id="html-content" ng-if="card.htmlContent" style="top:5px; right: 0; position: relative;">
         <md-button class="md-icon-button" id="more-button-html" ng-if="card.actionSheetButtons" style="top:5px; right: 0; position: absolute;"
                    aria-label="More Options"
-                   ng-click="state.openActionSheet(card)">
+                   ng-click="state.openActionSheetForCard(card)">
             <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
         </md-button>
         <div ng-bind-html="trustAsHtml(card.htmlContent)" ng-click="state.htmlClick(card)"></div>
@@ -47,9 +47,28 @@
                 <span ng-if="button.text && button.text !== ''"> &nbsp; {{button.text}}</span>
             </span>
         </md-button>
-        <md-button id="{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttons"
+        <md-button id="button-{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
                    style="min-width: 0; min-height: 0; padding: 1px; line-height: 0; margin: 1px; width: {{90/card.buttons.length}}%"
+                   ng-click="state.cardButtonClick(card, button)">
+            <md-tooltip>{{button.tooltip}}</md-tooltip>
+            <img style="max-height: 75px; min-width:0; min-height:0; max-width: 100%;" ng-src="{{button.image}}">
+        </md-button>
+    </md-card-actions>
+    <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttonsSecondary">
+        <md-button id="button-secondary-{{button.id}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttonsSecondary"
+                   aria-label="{{button.text || button.title || button.id}}"
+                   style="min-width: 0;"
+                   ng-click="state.cardButtonClick(card, button)">
+            <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
+            <span style="color: {{button.color}}" >
+                <i class="icon {{button.ionIcon}}" ng-if="button.ionIcon"></i>
+                <span ng-if="button.text && button.text !== ''"> &nbsp; {{button.text}}</span>
+            </span>
+        </md-button>
+        <md-button id="{{button.id}}" ng-if="button.image && !button.ionIcon" ng-repeat="button in card.buttonsSecondary"
+                   aria-label="{{button.text || button.title || button.id}}"
+                   style="min-width: 0; min-height: 0; padding: 1px; line-height: 0; margin: 1px; width: {{90/card.buttonsSecondary.length}}%"
                    ng-click="state.cardButtonClick(card, button)">
             <md-tooltip>{{button.tooltip}}</md-tooltip>
             <img style="max-height: 75px; min-width:0; min-height:0; max-width: 100%;" ng-src="{{button.image}}">
