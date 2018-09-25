@@ -13,10 +13,11 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 } else {
                     qmLog.error("Not sure how to handle this button", {card: card, button: button});
                 }
+                qmService.actionSheets.handleCardButtonClick(button, card);
             },
             openActionSheet: function (card) {
                 var destructiveButtonClickedFunction = removeCard;
-                qmService.actionSheets.openActionSheet(card, destructiveButtonClickedFunction);
+                qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
             },
             htmlClick: function(card){
                 $scope.state.openActionSheet(card);
@@ -45,6 +46,11 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             card.hide = true;
             qm.feed.deleteCardFromLocalForage(card, function(){getCards();});
         }
-        function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){$scope.state.cards = cards;});}
+        function getCards() {qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+            qmService.hideLoader();
+            $scope.safeApply(function () {
+                $scope.state.cards = cards;
+            });
+        });}
     }]
 );
