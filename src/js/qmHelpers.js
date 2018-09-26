@@ -2968,7 +2968,7 @@ var qm = {
             qm.qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0,20)+'...');
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
-                localStorageItemArray = localStorageItemArray.concat(newElementsArray);
+                localStorageItemArray = newElementsArray.concat(localStorageItemArray);
                 localStorageItemArray = localStorageItemArray.filter(function(element){
                     return element !== null;
                 });
