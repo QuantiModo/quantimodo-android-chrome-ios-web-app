@@ -55,11 +55,12 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 });
                 qm.feed.undoFunction = function(){
                     card.hide = false;
-                    var cards = $scope.state.cards.unshift(card);
-                    cardHandlers.addCardsToScope(cards);
-                    qm.feed.addToFeedAndRemoveFromFeedQueue(card);
+                    qm.feed.addToFeedAndRemoveFromFeedQueue(card, cardHandlers.getCards);
                 };
-                if(button.successToastText){qmService.showUndoToast(button.successToastText);}
+                var button = card.selectedButton;
+                if(button.successToastText){
+                    qmService.toast.showUndoToast(button.successToastText, qm.feed.undoFunction);
+                }
             },
             getCards: function(cards) {
                 if(cards){
