@@ -3326,11 +3326,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLog.authDebug("Setting user to: ", user, user);
         qmService.rootScope.setUser(user);
         qm.userHelper.setUser(user);
-        if(!qm.getAppSettings()){
-            qmLog.error("Can't get qm.getAppSettings for some reason!");
-            return;
-        }
-        if(user && !user.stripeActive && qm.getAppSettings() && qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
+        if(user && !user.stripeActive && qm.getAppSettings() &&
+            qm.getAppSettings().additionalSettings.monetizationSettings.advertisingEnabled){
             qmService.adBanner.initialize();
         } else {
             qmLog.info("admob: Not initializing for some reason")
