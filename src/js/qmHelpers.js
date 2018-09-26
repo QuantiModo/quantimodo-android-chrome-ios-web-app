@@ -5755,7 +5755,13 @@ var qm = {
             }
             var causeVariableName = study.causeVariableName || study.causeVariable.name;
             var effectVariableName = study.effectVariableName || study.effectVariable.name;
+            var causeVariableId = study.causeVariableId || study.causeVariable.id;
+            var effectVariableId = study.effectVariableId || study.effectVariable.id;
+            if(params.causeVariableId && params.causeVariableId !== causeVariableId){return false;}
+            if(params.effectVariableId && params.effectVariableId !== effectVariableId){return false;}
+            if(study && !study.studyId){qmLog.error("Study has no id!");}
             if(params.studyId && params.studyId === study.studyId){return true;}
+            if(params.studyId && params.studyId !== study.studyId){return false;}
             if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
             if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
             if(params.type && params.type !== study.type){return false;}
