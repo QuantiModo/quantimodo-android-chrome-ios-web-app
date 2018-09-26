@@ -14,12 +14,9 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                     qmService.actionSheets.handleCardButtonClick(button, card);
                 }
             },
-            openActionSheet: function (card) {
+            openActionSheetForCard: function (card) {
                 var destructiveButtonClickedFunction = cardHandlers.removeCard;
                 qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
-            },
-            htmlClick: function(card){
-                $scope.state.openActionSheet(card);
             },
             refreshFeed: function () {
                 qm.feed.getFeedFromApi({}, function(cards){
