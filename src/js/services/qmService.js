@@ -2325,7 +2325,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return true;
             }
             if(button.link){
-                qm.urlHelper.openUrlInNewTab(button.link);
+                if(button.link.indexOf("http") === 0 && button.link.indexOf(window.location.host) === -1){
+                    qm.urlHelper.openUrlInNewTab(button.link);
+                } else {
+                    qm.urlHelper.openUrl(button.link);
+                }
                 return true;
             }
             qm.feed.addToFeedQueueAndRemoveFromFeed(card);
