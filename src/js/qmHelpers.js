@@ -6144,9 +6144,14 @@ var qm = {
             return keyValuePairsObject;
         },
         openUrlInNewTab: function (url, showLocation) {
+            qmLog.info("openUrlInNewTab: "+url);
             showLocation = showLocation || 'yes';
             //window.open(url, '_blank', 'location='+showLocation);
             window.open(url, '_blank');
+        },
+        openUrl: function (url) {
+            qmLog.info("openUrl: "+url);
+            window.location.href = url;
         },
         getIonicUrlForPath: function(path) {
             return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
