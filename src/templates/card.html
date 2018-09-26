@@ -34,7 +34,7 @@
                    ng-click="state.openActionSheetForCard(card)">
             <i style="font-size: 24px;" class="icon ion-android-more-vertical"></i>
         </md-button>
-        <div ng-bind-html="trustAsHtml(card.htmlContent)" ng-click="state.htmlClick(card)"></div>
+        <div ng-bind-html="trustAsHtml(card.htmlContent)" ng-click="state.openActionSheetForCard(card)"></div>
     </md-card-content>
     <md-card-actions id="actions" layout-align="center center" style="text-align: center;" ng-if="card.buttons">
         <md-button id="{{button.id+'-text-button'}}" ng-if="!button.image || button.ionIcon" ng-repeat="button in card.buttons"
