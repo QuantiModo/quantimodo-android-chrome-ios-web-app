@@ -2583,8 +2583,8 @@ var qm = {
     },
     globalHelper: {
         setStudy: function(study){
-            if(study.studyId){
-                qm.storage.setGlobal(study.studyId, study);
+            if(study.id){
+                qm.storage.setGlobal(study.id, study);
                 return;
             }
             if(!study.causeVariable){
@@ -5731,23 +5731,25 @@ var qm = {
         },
         getCauseVariableId: function($stateParams, $scope, $rootScope){
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['causeVariableId', 'predictorVariableId'], $stateParams, $scope, $rootScope);
-            if(value){return value;}
+            if(value){return parseInt(value);}
             if(qm.studyHelper.lastStudy){
                 var lastStudyOrCorrelation = qm.studyHelper.lastStudy;
-                if(lastStudyOrCorrelation.causeVariableId){return lastStudyOrCorrelation.causeVariableId;}
+                if(lastStudyOrCorrelation.causeVariableId){
+                    return parseInt(lastStudyOrCorrelation.causeVariableId);
+                }
                 if(lastStudyOrCorrelation.causeVariable){
-                    return lastStudyOrCorrelation.causeVariable.variableId || lastStudyOrCorrelation.causeVariable.id;
+                    return parseInt(lastStudyOrCorrelation.causeVariable.variableId || lastStudyOrCorrelation.causeVariable.id);
                 }
             }
         },
         getEffectVariableId: function($stateParams, $scope, $rootScope){
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['effectVariableId', 'outcomeVariableId'], $stateParams, $scope, $rootScope);
-            if(value){return value;}
+            if(value){return parseInt(value);}
             if(qm.studyHelper.lastStudy){
                 var lastStudyOrCorrelation = qm.studyHelper.lastStudy;
-                if(lastStudyOrCorrelation.effectVariableId){return lastStudyOrCorrelation.effectVariableId;}
+                if(lastStudyOrCorrelation.effectVariableId){return parseInt(lastStudyOrCorrelation.effectVariableId);}
                 if(lastStudyOrCorrelation.effectVariable){
-                    return lastStudyOrCorrelation.effectVariable.variableId || lastStudyOrCorrelation.effectVariable.id;
+                    return parseInt(lastStudyOrCorrelation.effectVariable.variableId || lastStudyOrCorrelation.effectVariable.id);
                 }
             }
         },
@@ -5763,9 +5765,9 @@ var qm = {
             var effectVariableId = study.effectVariableId || study.effectVariable.id;
             if(params.causeVariableId && params.causeVariableId !== causeVariableId){return false;}
             if(params.effectVariableId && params.effectVariableId !== effectVariableId){return false;}
-            if(study && !study.studyId){qmLog.error("Study has no id!");}
-            if(params.studyId && params.studyId === study.studyId){return true;}
-            if(params.studyId && params.studyId !== study.studyId){return false;}
+            if(study && !study.id){qmLog.error("Study has no id!");}
+            if(study.id && params.studyId && params.studyId === study.id){return true;}
+            if(study.id && params.studyId && params.studyId !== study.id){return false;}
             if(params.causeVariableName && params.causeVariableName !== causeVariableName){return false;}
             if(params.effectVariableName && params.effectVariableName !== effectVariableName){return false;}
             if(params.type && params.type !== study.type){return false;}
@@ -5825,7 +5827,7 @@ var qm = {
             var effectVariableName = qm.studyHelper.getEffectVariableName(study);
             if(causeVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({causeVariableName: causeVariableName}, url);}
             if(effectVariableName){url = qm.urlHelper.addUrlQueryParamsToUrlString({effectVariableName: effectVariableName}, url);}
-            if(study.studyId){url += "&studyId=" + study.studyId;}
+            if(study.id){url += "&studyId=" + study.id;}
             return url;
         },
         getStudyFromApi: function(params, successHandler, errorHandler){
