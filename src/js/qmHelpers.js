@@ -4087,6 +4087,10 @@ var qm = {
                 return;
             }
             if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+            if(!trackingReminderNotificationsArray[0]){
+                qmLog.error("trackingReminderNotificationsArray[0] is "+trackingReminderNotificationsArray[0],
+                    {trackingReminderNotificationsArray: trackingReminderNotificationsArray});
+            }
             trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
             qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications', successHandler, function(error){
                 qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
@@ -5968,6 +5972,10 @@ var qm = {
             return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
         },
         addTimeZoneOffsetProperty: function(obj){
+            if(!obj){
+                qmLog.error("Nothing provided to addTimeZoneOffsetProperty");
+                return obj;
+            }
             var a = new Date();
             obj.timeZoneOffset = a.getTimezoneOffset();
             return obj;
