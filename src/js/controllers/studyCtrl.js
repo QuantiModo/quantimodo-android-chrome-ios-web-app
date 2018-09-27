@@ -71,7 +71,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if(getCauseVariableId()){requestParams.causeVariableId = getCauseVariableId();}
         if(getEffectVariableId()){requestParams.effectVariableId = getEffectVariableId();}
         if(getStateOrUrlOrRootScopeOrRequestParam("userId")){
-            requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
+            requestParams.userId = parseInt(getStateOrUrlOrRootScopeOrRequestParam("userId"));
         }
         if(getStateOrUrlOrRootScopeOrRequestParam("studyId")){
             requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
