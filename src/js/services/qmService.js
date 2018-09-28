@@ -392,7 +392,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             skipAll: function(button, card, successHandler){
                 qmService.showBasicLoader();
-                card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(button.parameters, card.parameters);
+                card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(button.parameters, card.parameters, false);
                 qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
                     qm.feed.postToFeedEndpointImmediately(card, function(feed){
                         if(successHandler){successHandler(feed);}
@@ -918,7 +918,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 "Tracking Reminder Notification Intent": function(intent){
                     qmLog.info("intent: ", intent);
                     var card = qm.feed.currentCard;
-                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(intent.parameters, card.parameters);
+                    card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(intent.parameters, card.parameters, false);
                     qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
                         if(card.followUpAction){card.followUpAction();}
                     });
@@ -2300,9 +2300,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         handleCardButtonClick: function(button, card) {
             card.selectedButton = button;
-            var stateParams = {};
-            if(button.stateParams){stateParams = button.stateParams;}
-            button.state = button.state || button.stateName;
             if(button.webhookUrl){
                 var yesCallback = function(){
                     qmService.post(button.webhookUrl, function(response){
@@ -2312,7 +2309,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.showMaterialConfirmationDialog(button.tooltip, button.confirmationText, yesCallback, function(){qmLog.info("Said no");});
                 return true;  // Needed to close action sheet
             }
+            button.state = button.state || button.stateName;
             if(button.state){
+                var stateParams = {};
+                if(button.stateParams){stateParams = button.stateParams;}
+                stateParams = qm.objectHelper.copyPropertiesFromOneObjectToAnother(stateParams, card.parameters, false);
+                delete stateParams.id;
                 qmService.goToState(button.state, stateParams);
                 return true;  // Needed to close action sheet
             }
