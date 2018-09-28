@@ -2359,7 +2359,8 @@ var qm = {
             qm.feed.recentlyRespondedTo[submittedCard.id] = submittedCard;
             var parameters = submittedCard.parameters;
             if(submittedCard.selectedButton){
-                parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters, parameters);
+                parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(submittedCard.selectedButton.parameters,
+                    parameters, false);
             }
             if(!parameters){
                 var error = "No submittedCard provided to addToFeedQueueAndRemoveFromFeed!";
@@ -3417,7 +3418,7 @@ var qm = {
                     card.selectedButton = qm.feed.getButtonMatchingPhrase(possiblePhrases);
                     var matchingFilledInputField, responseText;
                     if(card.selectedButton){
-                        card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, true);
+                        card.parameters = qm.objectHelper.copyPropertiesFromOneObjectToAnother(card.selectedButton.parameters, card.parameters, false);
                         responseText = card.selectedButton.successToastText;
                         qm.qmLog.info("selectedButton", card.selectedButton);
                         for (var i = 0; i < unfilledFields.length; i++) {
@@ -4118,14 +4119,14 @@ var qm = {
         }
     },
     objectHelper: {
-        copyPropertiesFromOneObjectToAnother: function(source, destination, skipNulls){
+        copyPropertiesFromOneObjectToAnother: function(source, destinationToOverwrite, copyNulls){
             for (var prop in source) {
                 if (source.hasOwnProperty(prop)) {
-                    if(skipNulls && source[prop] === null){continue;}
-                    destination[prop] = source[prop];
+                    if(!copyNulls && source[prop] === null){continue;}
+                    destinationToOverwrite[prop] = source[prop];
                 }
             }
-            return destination;
+            return destinationToOverwrite;
         },
         isObject: function(a){
             return (!!a) && (a.constructor === Object);
@@ -5891,7 +5892,7 @@ var qm = {
             }
             qm.chartHelper.setChartExportOptionsForAllSubProperties(study);
             if(study.text){  // Hack to make consistent with basic correlations to use same HTML template
-                study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics);
+                study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics, false);
                 delete study.text;
             }
             qm.studyHelper.saveLastStudyToGlobalsAndLocalForage(study);
