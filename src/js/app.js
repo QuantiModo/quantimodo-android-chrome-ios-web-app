@@ -38,6 +38,7 @@ angular.module('starter',
 )
 .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "ngChatEngine",
     function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, ngChatEngine) {
+    if(typeof ChatEngineCore !== "undefined"){
         $rootScope.ChatEngine = ChatEngineCore.create({
             publishKey: 'pub-c-d8599c43-cecf-42ba-a72f-aa3b24653c2b',
             subscribeKey: 'sub-c-6c6c021c-c4e2-11e7-9628-f616d8b03518'
@@ -45,6 +46,7 @@ angular.module('starter',
             debug: true,
             globalChannel: 'chat-engine-angular-simple'
         });
+    }
     if(!qm.urlHelper.onQMSubDomain()){qm.appsManager.loadPrivateConfigFromJsonFile();}
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
@@ -1729,11 +1731,11 @@ angular.module('exceptionOverride', []).factory('$exceptionHandler', function ()
     };
 });
 angular.module('open-chat-framework', [])
-    .service('ngChatEngine', ['$timeout', function($timeout) {
-        this.bind = function(ChatEngine) {
-            // updates angular when anything changes
-            ChatEngine.onAny(function(event, payload) {
-                $timeout(function() {});
-            });
-        }
-    }]);
+.service('ngChatEngine', ['$timeout', function($timeout) {
+    this.bind = function(ChatEngine) {
+        // updates angular when anything changes
+        ChatEngine.onAny(function(event, payload) {
+            $timeout(function() {});
+        });
+    }
+}]);
