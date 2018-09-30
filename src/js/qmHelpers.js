@@ -4080,10 +4080,8 @@ var qm = {
         postNotifications: function(successHandler, errorHandler){
             qm.qmLog.info("Called postTrackingReminderNotificationsDeferred...");
             var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
-            if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){if(successHandler){successHandler();}}
-            //qm.qmLog.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray));
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
-            if(!trackingReminderNotificationsArray){
+            if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
                 if(successHandler){successHandler();}
                 return;
             }
