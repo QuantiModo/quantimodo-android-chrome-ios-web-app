@@ -1145,6 +1145,9 @@ var qm = {
         }
     },
     auth: {
+        getAccessToken: function(){
+            return qm.auth.getAccessTokenFromUrlUserOrStorage();
+        },
         getAndSaveAccessTokenFromCurrentUrl: function(){
             qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
@@ -2913,6 +2916,15 @@ var qm = {
                 return;
             }
             if(!qm.storage.valueIsValid(value)){return false;}
+            if(qm.pouch.enabled){
+                qm.pouch.getDb().upsert(key, function (doc) {
+                    return value;
+                }).then(function (res) {
+                    qmLog.info(res); // success, res is {rev: '1-xxx', updated: true, id: 'myDocId'}
+                }).catch(function (err) {
+                    qmLog.error(err);
+                });
+            }
             localforage.setItem(key, value, function (err) {
                 if(err){
                     if(errorHandler){errorHandler(err);}
@@ -4366,6 +4378,22 @@ var qm = {
                 return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
         }
+    },
+    pouch: {
+        enabled: false,
+        db: null,
+        getDb: function () {
+            if(qm.db && qm.pouch.dbName === qm.auth.getAccessToken()){
+                return qm.db;
+            }
+            if(!qm.auth.getAccessToken()){
+                qm.pouch.dbName = 'public';
+            } else {
+                qm.pouch.dbName = qm.auth.getAccessToken();
+            }
+            return qm.db = new PouchDB('http://localhost:5984/'+qm.pouch.dbName);
+        },
+        dbName: null
     },
     push: {
         getLastPushTimeStampInSeconds: function(){return qm.storage.getItem(qm.items.lastPushTimestamp);},
