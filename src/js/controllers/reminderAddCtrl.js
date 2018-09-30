@@ -83,6 +83,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         } else {
             $scope.goBack();
         }
+        if(typeof $scope.state.trackingReminder.reminderFrequency === "undefined"){
+            $scope.state.trackingReminder.reminderFrequency = 86400;
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLogService.info('ReminderAddCtrl beforeEnter...');
