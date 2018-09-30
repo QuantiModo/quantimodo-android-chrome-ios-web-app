@@ -6620,7 +6620,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
             template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
             template = template + "last Push Received: " + qm.push.getTimeSinceLastPushString() + '\r\n';
-            template = template + "last Push Data: " + qm.stringHelper.prettyJsonStringify(qm.storage.getItem(qm.items.lastPushData)) + '\r\n';
             template = template + "last Local Notification Triggered: " + qm.notifications.getTimeSinceLastLocalNotification() + '\r\n';
             template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
             template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
@@ -6635,6 +6634,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
             template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmLog.globalMetaData.chcpInfo) + '\r\n';
             template = addSnapShotList(template);
+            template = template + "last Push Data: " + qm.stringHelper.prettyJsonStringify(qm.storage.getItem(qm.items.lastPushData)) + '\r\n';
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
                     template = template + "localNotifications: " + qm.stringHelper.prettyJsonStringify(localNotifications) + '\r\n';
