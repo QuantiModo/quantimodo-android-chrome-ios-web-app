@@ -17,7 +17,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
         qm.notifications.postNotifications();
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
-        $rootScope.setMicEnabled(qm.mic.getMicEnabled());
+        $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
@@ -323,12 +323,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
-    $rootScope.setMicEnabled = function(value){
+    $rootScope.setMicAndSpeechEnabled = function(value){
         if($rootScope.micEnabled === value){
             qmLog.info("micEnabled already set to "+value);
             return;
         }
-        qmLog.info("$rootScope.setMicEnabled");
+        qmLog.info("$rootScope.setMicAndSpeechEnabled");
         if(value === 'toggle'){value = !qm.mic.getMicEnabled();}
         $timeout(function () {
             qmService.rootScope.setProperty('micEnabled', value);
