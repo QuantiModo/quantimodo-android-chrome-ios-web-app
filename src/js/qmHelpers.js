@@ -378,13 +378,30 @@ var qm = {
         },
         getBaseUrl: function () {
             if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
+            if(qm.getUser() && qm.getUser().id === 230 && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
                 }
                 return qm.appsManager.getAppSettingsFromMemory().apiUrl;
             }
-            return qm.appsManager.getQuantiModoApiUrl();
+            var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
+            if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+            if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
+            if(!apiUrl){apiUrl = "https://app.quantimo.do";}
+            if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
+            apiUrl = apiUrl.replace("https://https", "https");
+            // Why are we adding a port to the API url?  It breaks localhost:8100
+            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
+                apiUrl += ":" + window.location.port;
+            }
+            return apiUrl;
+        },
+        getApiUrl: function(){
+            return qm.api.getBaseUrl();
         },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qm.api.getRequestUrl(path, function(url){
@@ -407,7 +424,7 @@ var qm = {
         getAppSettingsUrl: function (clientId, callback) {
             function generateUrl(clientId, clientSecret){
                 // Can't use QM SDK in service worker
-                var settingsUrl = qm.appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+                var settingsUrl = qm.api.getBaseUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(clientSecret){settingsUrl += "&clientSecret=" + clientSecret;}
                 if(window.designMode){settingsUrl += '&designMode=true';}
                 window.qm.qmLog.debug('Getting app settings from ' + settingsUrl);
@@ -511,7 +528,7 @@ var qm = {
                     url = addQueryParameter(url, 'platform', qm.platform.getCurrentPlatform());
                     return url;
                 }
-                var url = addGlobalQueryParameters(qm.appsManager.getQuantiModoApiUrl() + "/api/" + path);
+                var url = addGlobalQueryParameters(qm.api.getBaseUrl() + "/api/" + path);
                 qm.qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
@@ -570,23 +587,6 @@ var qm = {
             }
             clientId = qm.storage.getItem(qm.items.builderClientId);
             return clientId;
-        },
-        getQuantiModoApiUrl: function () {
-            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
-            var apiUrl = window.qm.urlHelper.getParam(qm.items.apiUrl);
-            if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
-            if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
-            if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
-            if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
-            if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){return "https://app.quantimo.do";} // Ionic serve
-            if(!apiUrl){apiUrl = "https://app.quantimo.do";}
-            if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
-            apiUrl = apiUrl.replace("https://https", "https");
-            // Why are we adding a port to the API url?  It breaks localhost:8100
-            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
-                apiUrl += ":" + window.location.port;
-            }
-            return apiUrl;
         },
         getClientSecret: function(){
             if(qm.clientSecret){return qm.clientSecret;}
@@ -7273,7 +7273,7 @@ var qm = {
                 return false;
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
-            var serviceWorkerUrl = qm.appsManager.getQuantiModoApiUrl()+'/ionic/Modo/src/firebase-messaging-sw.js';
+            var serviceWorkerUrl = window.location.origin+'/ionic/Modo/src/firebase-messaging-sw.js';
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
