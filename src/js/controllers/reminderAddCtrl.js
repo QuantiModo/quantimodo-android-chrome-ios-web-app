@@ -46,8 +46,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});
     }
     if(!$rootScope.user){qmService.refreshUser();}
-    $scope.$on('$ionicView.beforeEnter', function(){ qmLogService.info('ReminderAddCtrl beforeEnter...');
-        $scope.state.trackingReminder = $stateParams.reminder || $stateParams.trackingReminder || qm.storage.getItem(qm.items.lastReminder) || $scope.state.trackingReminder;
+    $scope.$on('$ionicView.beforeEnter', function(){ qmLog.info('ReminderAddCtrl beforeEnter...');
+        if($stateParams.reminder){$scope.state.trackingReminder = $stateParams.reminder;}
+        if($stateParams.trackingReminder){$scope.state.trackingReminder = $stateParams.trackingReminder;}
         if($stateParams.trackingReminderId){
             $scope.state.trackingReminder = $stateParams;
             $scope.state.trackingReminder.id = $stateParams.trackingReminderId;
