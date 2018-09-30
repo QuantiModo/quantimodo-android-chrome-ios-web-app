@@ -42,7 +42,7 @@
                                    ng-model="state.trackingReminder.unitAbbreviatedName"
                                    ng-change="unitSelected()">
                             <md-option ng-repeat="unit in state.units"
-                                       value="{{unit.abbreviatedName}}" >{{unit.abbreviatedName}}
+                                       value="{{unit.abbreviatedName}}" >{{unit.name}}
                             </md-option>
                         </md-select>
                         <!-- Use native selector popup on mobile -->
