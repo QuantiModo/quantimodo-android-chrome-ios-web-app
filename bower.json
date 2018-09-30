@@ -57,7 +57,8 @@
     "chat-engine-typing-indicator": "https://github.com/pubnub/chat-engine-typing-indicator.git#^0.0.7",
     "chat-engine-random-username": "https://github.com/pubnub/chat-engine-random-username.git#^0.0.5",
     "pouchdb": "^7.0.0",
-    "pouchdb-upsert": "^2.2.0"
+    "pouchdb-upsert": "^2.2.0",
+    "quagga": "^0.12.1"
   },
   "resolutions": {
     "angular": "1.5.9",

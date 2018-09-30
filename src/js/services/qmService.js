@@ -363,6 +363,75 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.barcodeScanner.upcToAttach = null;
                 }
                 return variableObject;
+            },
+            quaggaScan: function(){
+                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+                window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+                function getUserMedia(constraints, success, failure) {
+                    navigator.getUserMedia(constraints, function(stream) {
+                        var videoSrc = (window.URL && window.URL.createObjectURL(stream)) || stream;
+                        success.apply(null, [videoSrc]);
+                    }, failure);
+                }
+
+
+                function initCamera(constraints, video, callback) {
+                    getUserMedia(constraints, function (src) {
+                        video.src = src;
+                        video.addEventListener('loadeddata', function() {
+                            var attempts = 10;
+
+                            function checkVideo() {
+                                if (attempts > 0) {
+                                    if (video.videoWidth > 0 && video.videoHeight > 0) {
+                                        console.log(video.videoWidth + "px x " + video.videoHeight + "px");
+                                        video.play();
+                                        callback();
+                                    } else {
+                                        window.setTimeout(checkVideo, 100);
+                                    }
+                                } else {
+                                    callback('Unable to play video stream.');
+                                }
+                                attempts--;
+                            }
+
+                            checkVideo();
+                        }, false);
+                    }, function(e) {
+                        console.log(e);
+                    });
+                }
+
+                function copyToCanvas(video, ctx) {
+                    ( function frame() {
+                        ctx.drawImage(video, 0, 0);
+                        window.requestAnimationFrame(frame);
+                    }());
+                }
+
+                window.addEventListener('load', function() {
+                    var constraints = {
+                            video: {
+                                mandatory: {
+                                    minWidth: 1280,
+                                    minHeight: 720
+                                }
+                            }
+                        },
+                        video = document.createElement('video'),
+                        canvas = document.createElement('canvas');
+
+                    document.body.appendChild(video);
+                    document.body.appendChild(canvas);
+
+                    initCamera(constraints, video, function() {
+                        canvas.setAttribute('width', video.videoWidth);
+                        canvas.setAttribute('height', video.videoHeight);
+                        copyToCanvas(video, canvas.getContext('2d'));
+                    });
+                }, false);
             }
         },
         buttonClickHandlers: {
@@ -1777,6 +1846,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         querySearch();
                         qmLog.error(userErrorMessage);
                         showVariableList();
+                    }
+                    if(!qm.platform.isMobile()){
+                        qmService.barcodeScanner.quaggaScan();
+                        return;
                     }
                     qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function (variables) {
                         if (variables && variables.length) {
