@@ -2526,6 +2526,7 @@ var qm = {
             if(appSettings){return appSettings;}
             //if(qm.staticData.appSettings){return qm.staticData.appSettings;}
             console.warn("No app settings and no successHandler!"); // qmLog here causes infinite loop
+            appSettings = qm.appsManager.getAppSettingsFromMemory();  // Retry for debugging
             return null;
         }
         qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler);
