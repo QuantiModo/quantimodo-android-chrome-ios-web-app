@@ -66,10 +66,16 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getRequestParams(recalculate) {
         var requestParams = {};
-        requestParams.causeVariableName = getCauseVariableName();
-        requestParams.effectVariableName = getEffectVariableName();
-        requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
-        requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        if(getCauseVariableName()){requestParams.causeVariableName = getCauseVariableName();}
+        if(getEffectVariableName()){requestParams.effectVariableName = getEffectVariableName();}
+        if(getCauseVariableId()){requestParams.causeVariableId = getCauseVariableId();}
+        if(getEffectVariableId()){requestParams.effectVariableId = getEffectVariableId();}
+        if(getStateOrUrlOrRootScopeOrRequestParam("userId")){
+            requestParams.userId = parseInt(getStateOrUrlOrRootScopeOrRequestParam("userId"));
+        }
+        if(getStateOrUrlOrRootScopeOrRequestParam("studyId")){
+            requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        }
         requestParams.includeCharts = true;
         if(recalculate || qm.urlHelper.getParam('recalculate')){requestParams.recalculate = true;}
         return requestParams;
@@ -167,6 +173,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
     function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
+    function getEffectVariableId() {return qm.studyHelper.getEffectVariableId($stateParams, $scope, $rootScope);}
+    function getCauseVariableId() {return qm.studyHelper.getCauseVariableId($stateParams, $scope, $rootScope);}
     function getStudyId() {return qm.studyHelper.getStudyId($stateParams, $scope, $rootScope);}
     function getCauseVariable() {return qm.studyHelper.getCauseVariable($stateParams, $scope, $rootScope);}
     function getEffectVariable() {return qm.studyHelper.getEffectVariable($stateParams, $scope, $rootScope);}
