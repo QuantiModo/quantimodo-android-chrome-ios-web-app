@@ -43,7 +43,7 @@
     "oclazyload": "~1.0.4",
     "opbeat-angular": "^3.15.0",
     "pluralize": "^1.2.1",
-    "quantimodo": "5.9.83017",
+    "quantimodo": "5.9.92713",
     "underscore": "^1.9.1",
     "annyang": "^2.6.1",
     "svg-morpheus": "^0.3.2",
@@ -51,7 +51,14 @@
     "natural": "https://github.com/NaturalNode/natural.git#^1.0.9",
     "Bravey": "https://github.com/mikepsinn/Bravey.git",
     "pusher-js": "pusher#^4.3.0",
-    "angular-moment": "^1.2.0"
+    "angular-moment": "^1.2.0",
+    "chat-engine-online-user-search": "https://github.com/pubnub/chat-engine-online-user-search.git#^0.0.8",
+    "chat-engine": "https://github.com/pubnub/chat-engine.git#^0.9.15",
+    "chat-engine-typing-indicator": "https://github.com/pubnub/chat-engine-typing-indicator.git#^0.0.7",
+    "chat-engine-random-username": "https://github.com/pubnub/chat-engine-random-username.git#^0.0.5",
+    "pouchdb": "^7.0.0",
+    "pouchdb-upsert": "^2.2.0",
+    "quagga": "^0.12.1"
   },
   "resolutions": {
     "angular": "1.5.9",

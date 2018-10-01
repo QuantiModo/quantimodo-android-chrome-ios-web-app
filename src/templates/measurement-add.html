@@ -96,7 +96,7 @@
                                ng-model="state.selectedDate"
                                class="md-input text-right">
                 </label>
-                <label class="item item-input" ng-if="state.measurement.note.indexOf('href=') === -1">
+                <label class="item item-input" ng-if="!state.measurement.note || state.measurement.note.indexOf('href=') === -1">
                     <div class="input-label">Note</div>
                     <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="text-right up-top">
                 </label>

@@ -172,7 +172,6 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.searching = false;
         $scope.$broadcast('scroll.infiniteScrollComplete');
     }
-
     $scope.loadMore = function () {
         qmService.showBlackRingLoader();
         if($scope.state.studiesResponse.studies.length){
