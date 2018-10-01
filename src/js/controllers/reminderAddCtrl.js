@@ -90,15 +90,15 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
         setHideDefaultValueField();
         if($state.current.name !== qmStates.favoriteAdd){setupEditReminder($scope.state.trackingReminder);}  // Needed to set dates
+        qmLog.info("tracking reminder after setup: ", $scope.state.trackingReminder);
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
         $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
-        $scope.state.firstReminderStartTimeEpochTime =
-            qmService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
+        $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
         $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
     } else {
-        qmLogService.error($state.current.name + ': $rootScope.user is not defined!');
+        qmLog.error($state.current.name + ': $rootScope.user is not defined!');
     }
     $scope.openReminderStartTimePicker = function(order) {
         var a = new Date();
@@ -375,7 +375,11 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         $scope.state.trackingReminder.firstDailyReminderTime = null;
         $scope.state.trackingReminder.secondDailyReminderTime = null;
         $scope.state.trackingReminder.thirdDailyReminderTime = null;
-        $scope.state.firstReminderStartTimeLocal = qmService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+        if(trackingReminder.reminderStartTime){
+            $scope.state.firstReminderStartTimeLocal = qmService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+        } else {
+            $scope.state.firstReminderStartTimeLocal = '20:00:00';
+        }
         $scope.state.firstReminderStartTimeEpochTime = qmService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
         $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
         //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
