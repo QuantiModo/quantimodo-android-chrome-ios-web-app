@@ -421,7 +421,8 @@ var qmGulp = {
     },
     getAppHostName: function(){
         if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
-        if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
+        // We can set utopia as env or in the app when necessary because always using it in build process on develop causes too many problems
+        //if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
         return "https://app.quantimo.do";
     },
     getAppIds: function(){
