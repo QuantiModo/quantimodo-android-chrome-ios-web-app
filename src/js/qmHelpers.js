@@ -1243,6 +1243,9 @@ var qm = {
         getAccessTokenFromCurrentUrl: function(){
             qm.qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
+            if(accessTokenFromUrl && accessTokenFromUrl.indexOf("#") !== -1){ // Sometimes #/app/settings gets appended for some reason
+                accessTokenFromUrl = qm.stringHelper.getStringBeforeSubstring('#', accessTokenFromUrl);
+            }
             if(accessTokenFromUrl){
                 qm.qmLog.webAuthDebug("Got access token from url");
             } else {
