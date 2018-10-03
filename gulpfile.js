@@ -1085,7 +1085,7 @@ var chromeScripts = [
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
-    qmGulp.staticData.chromeExtensionManifest = {
+    var chromeManifestObject = qmGulp.staticData.chromeManifestString = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
         'description': qmGulp.getAppSettings().appDescription,
@@ -1122,9 +1122,9 @@ function chromeManifest(outputPath, backgroundScriptArray) {
         }
     };
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
-    var chromeExtensionManifest = JSON.stringify(qmGulp.chromeExtensionManifest, null, 2);
+    var chromeManifestString = JSON.stringify(chromeManifestObject, null, 2);
     qmLog.info("Creating chrome manifest at " + outputPath);
-    writeToFile(outputPath, chromeExtensionManifest);
+    writeToFile(outputPath, chromeManifestString);
 }
 gulp.task('chromeIFrameHtml', [], function () {
     return gulp.src(['src/chrome_default_popup_iframe.html'])
@@ -1168,6 +1168,9 @@ function createProgressiveWebAppManifest(outputPath) {
     writeToFile(outputPath, pwaManifest);
 }
 function writeToFile(filePath, stringContents) {
+    if(!stringContents || stringContents === "undefined" || stringContents === "null"){
+        throw "String contents are " + stringContents;
+    }
     qmLog.info("Writing to " + filePath);
     if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
