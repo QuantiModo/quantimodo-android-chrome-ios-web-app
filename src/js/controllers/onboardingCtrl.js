@@ -1,6 +1,7 @@
 angular.module('starter').controller('OnboardingCtrl',
     ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "$timeout",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService, $timeout) {
+    var speechEnabled = false;
     $scope.state = {
         showSkipButton: false,
         //requireUpgrades: true // Might want to do this at some point
@@ -21,7 +22,10 @@ angular.module('starter').controller('OnboardingCtrl',
         setRequireUpgradesInOnboarding();
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLogService.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
+        qmLog.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
+        if(!speechEnabled){
+            $rootScope.setMicAndSpeechEnabled(false);
+        }
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
         qm.reminderHelper.getNumberOfReminders(function (number) {
             if(number > 5){$scope.state.showSkipButton = true;}
