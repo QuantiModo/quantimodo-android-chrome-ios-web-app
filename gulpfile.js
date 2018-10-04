@@ -2735,7 +2735,7 @@ gulp.task('configureApp', [], function (callback) {
         //'copyMaterialIconsToWww',
         'sass',
         'copySrcToWwwExceptJsLibrariesAndConfigs',
-        //'commentOrUncommentCordovaJs',
+        'commentOrUncommentCordovaJs',
         //'downloadSwaggerJson',
         'getCommonVariables',
         'getConnectors',
