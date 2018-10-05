@@ -1960,7 +1960,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
                     return variables.map( function (variable) {
-                        var variableName = variable.displayName || variable.variableName || variable.name;
+                        var variableName =
+                            //variable.displayName || Don't use this or we can't differentiate Water (mL) from Water (serving)
+                            variable.variableName || variable.name;
                         if(!variableName){
                             qmLog.error("No variable name in convertVariablesToToResultsList");
                             return;
