@@ -324,8 +324,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return $sce.trustAsHtml(string);
     };
     $rootScope.setMicAndSpeechEnabled = function(value){
-        if($rootScope.micEnabled === value){
-            qmLog.info("micEnabled already set to "+value);
+        if($rootScope.micEnabled === value && $rootScope.speechEnabled === value){
+            qmLog.info("micEnabled and speechEnabled already set to "+value);
             return;
         }
         qmLog.info("$rootScope.setMicAndSpeechEnabled");
