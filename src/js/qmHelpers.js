@@ -1243,6 +1243,9 @@ var qm = {
         getAccessTokenFromCurrentUrl: function(){
             qm.qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
+            if(accessTokenFromUrl && accessTokenFromUrl.indexOf("#") !== -1){ // Sometimes #/app/settings gets appended for some reason
+                accessTokenFromUrl = qm.stringHelper.getStringBeforeSubstring('#', accessTokenFromUrl);
+            }
             if(accessTokenFromUrl){
                 qm.qmLog.webAuthDebug("Got access token from url");
             } else {
@@ -7275,6 +7278,9 @@ var qm = {
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
             var serviceWorkerUrl = window.location.origin+'/ionic/Modo/src/firebase-messaging-sw.js';
+            if(window.location.href.indexOf('ionic/Modo') === -1){
+                serviceWorkerUrl = window.location.origin+'/firebase-messaging-sw.js';
+            }
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
