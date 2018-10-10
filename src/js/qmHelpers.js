@@ -5125,7 +5125,7 @@ var qm = {
                 if (studiesCreated) { qm.shares.saveStudiesCreatedToLocalStorage(studiesCreated); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getStudiesCreatedFromApi');
             }
-            qm.studyHelper.getStudiesApiInstance().getStudiesCreated(params, callback);
+            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudiesCreated(params, callback);
         },
         saveStudiesCreatedToLocalStorage: function(studiesCreated){
             if(!studiesCreated){
@@ -5167,7 +5167,7 @@ var qm = {
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
-                qm.studyHelper.getStudiesApiInstance().createStudy(body, params, callback);
+                qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).createStudy(body, params, callback);
             }
             qm.studyHelper.getStudyFromLocalForageOrGlobals(body, function (study) {
                 successHandler(study);
@@ -5185,7 +5185,7 @@ var qm = {
                 if (studiesJoined) { qm.shares.saveStudiesJoinedToLocalStorage(studiesJoined); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getStudiesJoinedFromApi');
             }
-            qm.studyHelper.getStudiesApiInstance().getStudiesJoined(params, callback);
+            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudiesJoined(params, callback);
         },
         saveStudiesJoinedToLocalStorage: function(studiesJoined){
             if(!studiesJoined){
@@ -5226,7 +5226,7 @@ var qm = {
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'joinStudy');
             }
             var params = qm.api.addGlobalParams({});
-            qm.studyHelper.getStudiesApiInstance().joinStudy(body, callback);
+            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).joinStudy(body, callback);
         },
     },
     storage: {
@@ -5684,8 +5684,8 @@ var qm = {
         }
     },
     studyHelper: {
-        getStudiesApiInstance: function(params){
-            qm.api.configureClient(arguments.callee.name);
+        getStudiesApiInstance: function(params, functionName){
+            qm.api.configureClient(functionName);
             var apiInstance = new Quantimodo.StudiesApi();
             apiInstance.apiClient.timeout = 120 * 1000;
             apiInstance.cache = !params || !params.recalculate;
@@ -5878,7 +5878,7 @@ var qm = {
                 var study = qm.studyHelper.processAndSaveStudy(data);
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
             }
-            qm.studyHelper.getStudiesApiInstance(params).getStudy(params, callback);
+            qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name).getStudy(params, callback);
         },
         getStudyFromLocalStorageOrApi: function (params, successHandler, errorHandler){
             if(qm.urlHelper.getParam('aggregated')){params.aggregated = true;}
@@ -5940,7 +5940,7 @@ var qm = {
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
-            qm.studyHelper.getStudiesApiInstance().getStudies(params, callback);
+            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudies(params, callback);
         },
         goToStudyPageJoinPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyJoinUrl(study);},
         goToStudyPageViaStudy: function(study){
