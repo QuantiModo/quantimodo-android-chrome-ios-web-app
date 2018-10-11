@@ -6923,16 +6923,18 @@ var qm = {
                     { audio: true },
                     doAudioStuff,
                     function(error) {
-                        canvas.width = 0;
-                        canvas.height = 0;
-                        qm.qmLog.error('Audio error: ' + error.name);
+                        qm.qmLog.error('Audio error: ' + error.name + " "  + error.message);
+                        if(canvas){
+                            canvas.width = 0;
+                            canvas.height = 0;
+                        }
                     }
                 );
             } else {
                 navigator.mediaDevices.getUserMedia({audio: true})
                     .then(doAudioStuff)
                     .catch(function(error) {
-                        qm.qmLog.error('Audio error: ' + error.name);
+                        qm.qmLog.error('Audio error: ' + error.name + " "  + error.message);
                     });
             }
             // Do the thing
