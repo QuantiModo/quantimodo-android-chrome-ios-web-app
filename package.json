@@ -23,7 +23,7 @@
     "bugsnag": "1.12.2",
     "bugsnag-sourcemaps": "1.0.4",
     "event-stream": "4.0.1",
-    "express": "4.16.3",
+    "express": "4.16.4",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "1.9.1",
     "gulp-change": "1.0.0",
