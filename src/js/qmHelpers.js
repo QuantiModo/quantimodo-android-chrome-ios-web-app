@@ -2218,31 +2218,9 @@ var qm = {
         currentCard: null,
         getMostRecentCard: function(successHandler, errorHandler){
             qm.feed.getFeedFromLocalForageOrApi({}, function(feedCards){
-                qm.localForage.getItem(qm.items.feedQueue, function(queueCards){
-                    var notInQueue = feedCards;
-                    if(queueCards && queueCards.length) {
-                        notInQueue = feedCards.filter(function (feedCard) {
-                            var fromQueue = queueCards.find(function (queueCardParams) {
-                                if(!queueCardParams){
-                                    qm.qmLog.error("empty item in queueCards");
-                                    return false;
-                                }
-                                return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
-                            });
-                            return !fromQueue;
-                        });
-                    }
-                    var currentCard = notInQueue.shift();
-                    if(!currentCard){
-                        errorHandler("No cards not in queue!");
-                        return false;
-                    }
-                    if(qm.feed.recentlyRespondedTo[currentCard.id]){
-                        qm.qmLog.error("Already responded to this card: ", currentCard);
-                    }
-                    qm.feed.saveFeedInLocalForage(notInQueue, function(){
-                        successHandler(currentCard);
-                    }, errorHandler);
+                var currentCard = feedCards.shift();
+                qm.feed.saveFeedInLocalForage(feedCards, function(){
+                    successHandler(currentCard);
                 }, errorHandler);
             }, errorHandler);
         },
@@ -2285,22 +2263,7 @@ var qm = {
             return cards;
         },
         saveFeedInLocalForage: function(feedCards, successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.feedQueue, function(queueCards){
-                var notInQueue = feedCards;
-                if(queueCards) {
-                    notInQueue = feedCards.filter(function (feedCard) {
-                        var fromQueue = queueCards.find(function (queueCardParams) {
-                            if(!queueCardParams){
-                                qm.qmLog.error("empty item in queueCards");
-                                return false;
-                            }
-                            return feedCard.parameters.trackingReminderNotificationId === queueCardParams.trackingReminderNotificationId;
-                        });
-                        return !fromQueue;
-                    });
-                }
-                qm.localForage.setItem(qm.items.feed, notInQueue, successHandler, errorHandler);
-            }, errorHandler);
+            qm.localForage.setItem(qm.items.feed, feedCards, successHandler, errorHandler);
         },
         getFeedFromLocalForageOrApi: function(params, successHandler, errorHandler){
             qm.localForage.getItem(qm.items.feed, function(cards){
