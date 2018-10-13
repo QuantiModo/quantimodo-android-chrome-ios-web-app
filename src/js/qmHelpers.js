@@ -2263,7 +2263,12 @@ var qm = {
                 var cards = qm.feed.handleFeedResponse(data);
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
-            qm.feed.getFeedApiInstance(params).getFeed(params, callback);
+            qm.feed.postFeedQueue(null, function(cards){
+                successHandler(cards);
+            }, function(error){
+                qm.qmLog.error(error);
+                qm.feed.getFeedApiInstance(params).getFeed(params, callback);
+            });
         },
         handleFeedResponse: function(data){
             var cards;
@@ -2323,9 +2328,18 @@ var qm = {
             }, errorHandler);
         },
         postFeedQueue: function(feedQueue, successHandler, errorHandler){
-            qm.localForage.removeItem(qm.items.feedQueue, function(){
-                qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
-            }, function(error){qm.qmLog.error(error);});
+            function post(feedQueue){
+                qm.localForage.removeItem(qm.items.feedQueue, function(){
+                    qm.feed.postToFeedEndpointImmediately(feedQueue, successHandler, errorHandler);
+                }, function(error){qm.qmLog.error(error);});
+            }
+            if(feedQueue){
+                post(feedQueue);
+                return;
+            }
+            qm.localForage.getItem(qm.items.feedQueue, function(feedQueue){
+                post(feedQueue);
+            }, errorHandler);
         },
         postCardImmediately: function(card, successHandler, errorHandler){
             qm.feed.addToFeedQueueAndRemoveFromFeed(card, function(nextCard){
@@ -2349,7 +2363,7 @@ var qm = {
                 qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
             } else {
                 qm.localForage.removeItem(qm.items.feedQueue, function(feedQueue){
-                    qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                    qm.feed.getFeedApiInstance(params).postFeed(feedQueue || [], params, callback);
                 })
             }
         },
