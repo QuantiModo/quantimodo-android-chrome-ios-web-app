@@ -924,8 +924,16 @@ var qm = {
             });
         },
         getWithNameContainingEveryWord: function(searchTerm, array){
+            if(!searchTerm){
+                qm.qmLog.error("No searchTerm provided to getContaining");
+                return array;
+            }
             if(!array){
                 qm.qmLog.error("No array provided to getContaining");
+                return array;
+            }
+            if(typeof searchTerm !== "string"){
+                qm.qmLog.error("searchTerm is not a string!", searchTerm);
                 return array;
             }
             qm.qmLog.info("Called getWithNameContainingEveryWord...");
