@@ -25,11 +25,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
-        if(qm.urlHelper.getParam('studyId')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        } else if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        }
     });
     function setAllStateProperties(study) {
         if(!study){return;}
