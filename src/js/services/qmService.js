@@ -2051,12 +2051,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             previousUrl: null,
             goBack: function (providedStateParams){
                 qmLog.info("goBack: Called goBack with state params: "+JSON.stringify(providedStateParams));
-                if(qmService.stateHelper.previousUrl){
-                    qmLog.info("Going to qmService.stateHelper.previousUrl: "+qmService.stateHelper.previousUrl);
-                    window.location.href = qmService.stateHelper.previousUrl;
-                    qmService.stateHelper.previousUrl = null;
-                    return;
-                }
                 function skipSearchPages() {
                     if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
                         $ionicHistory.removeBackView();
@@ -5304,9 +5298,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.userVariable){userVariable = response.userVariable;}
             qm.userVariables.saveToLocalStorage(userVariable);
             qm.studyHelper.deleteLastStudyFromGlobalsAndLocalForage();
-            if(qmService.stateHelper.previousUrl){
-                qmService.stateHelper.previousUrl = qm.urlHelper.addUrlQueryParamsToUrlString({recalculate: true}, qmService.stateHelper.previousUrl);
-            }
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ', userVariable, null);
             deferred.resolve(userVariable);
