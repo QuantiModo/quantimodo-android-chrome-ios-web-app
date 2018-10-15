@@ -2,10 +2,10 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService) {
     $scope.controller_name = "VariableSearchCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
-    $scope.state = $stateParams;
+    $scope.state = JSON.parse(JSON.stringify($stateParams));
     $scope.state.searching = true;
     $scope.state.variableSearchResults = [];
-    $scope.state.variableSearchParameters = {};
+    if(!$scope.state.variableSearchParameters){$scope.state.variableSearchParameters = {};}
     $scope.state.variableSearchQuery = {name:''};
     if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
@@ -163,7 +163,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         });
     }
     function getVariableSearchParameters(){
-        return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters, $stateParams.variableSearchParameters);
+        return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters, $stateParams.variableSearchParameters, false);
     }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
