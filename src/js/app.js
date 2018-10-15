@@ -425,6 +425,7 @@ angular.module('starter',
         })
         .state(qmStates.measurementAdd, {
             url: "/measurement-add",
+            //cache: false,  TODO: Why was this false?
             cache: true,
             params: {
                 showAds: true,
