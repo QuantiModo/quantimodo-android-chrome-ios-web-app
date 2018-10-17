@@ -214,7 +214,13 @@ var qmLog = {
     if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
 }
-    }
+    },
+    isDebugMode: function() {
+        return qmLog.getLogLevelName() === "debug";
+    },
+    getLogLevelName: function() {
+        return qmLog.logLevel;
+    },
 };
 var fs = require('fs');
 if(fs.existsSync('../tests/node_modules/bugsnag/lib/bugsnag.js')){

@@ -429,12 +429,6 @@ window.qmLog = {
 if(typeof bugsnag !== "undefined"){
     window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
 }
-if(!window.qmUser){
-    if(typeof localStorage !== "undefined"){
-        window.qmUser = localStorage.getItem('user');
-    }
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
-}
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){
     if(!variable || typeof message === "string"){return variable;}

@@ -2577,9 +2577,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("Version number not specified!", "Version number not specified on qm.getAppSettings()");
         }
         urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qm.api.getClientId()));
-        if(window.devCredentials){
-            if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
-            if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
+        if(qm.devCredentials){
+            if(qm.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(qm.devCredentials.username));}
+            if(qm.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(qm.devCredentials.password));}
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -2596,9 +2596,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
         }
         urlParams.clientId = encodeURIComponent(qm.api.getClientId());
-        if(window.devCredentials){
-            if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
-            if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
+        if(qm.devCredentials){
+            if(qm.devCredentials.username){urlParams.log = encodeURIComponent(qm.devCredentials.username);}
+            if(qm.devCredentials.password){urlParams.pwd = encodeURIComponent(qm.devCredentials.password);}
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
