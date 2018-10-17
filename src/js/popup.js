@@ -23,7 +23,7 @@ function setLastValueButtonListeners() {
     document.getElementById('buttonInbox').onclick = inboxButtonClicked;
 }
 function getVariableName() {
-    var variableName = window.qm.urlHelper.getParam('variableName');
+    var variableName = qm.urlHelper.getParam('variableName');
     if(variableName){
         qmLog.debug("Got variableName " + variableName + " from url");
         return variableName;
@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.resizeBy(wDiff, hDiff);
     ratingPopupHeight = window.innerHeight;
     ratingPopupWidth = window.innerWidth;
-    if(window.qm.urlHelper.getParam("trackingReminderNotificationId")){
-        qmPopup.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.qm.urlHelper.getParam('trackingReminderNotificationId'),
-            variableName: window.qm.urlHelper.getParam("variableName"), valence: window.qm.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
+    if(qm.urlHelper.getParam("trackingReminderNotificationId")){
+        qmPopup.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: qm.urlHelper.getParam('trackingReminderNotificationId'),
+            variableName: qm.urlHelper.getParam("variableName"), valence: qm.urlHelper.getParam("valence"), unitAbbreviatedName: '/5'};
     } else {
         qmLog.pushDebug("popup addEventListener: calling getMostRecentUniqueNotificationNotInSyncQueue...");
         qmPopup.trackingReminderNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
