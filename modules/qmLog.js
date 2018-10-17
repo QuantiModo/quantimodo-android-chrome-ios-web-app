@@ -2,7 +2,11 @@ var qmLog = {
     error: function (message, metaData, maxCharacters) {
         metaData = qmLog.addMetaData(metaData);
         console.error(qmLog.obfuscateStringify(message, metaData, maxCharacters));
-        metaData.build_info = qmGulp.buildInfoHelper.getCurrentBuildInfo();
+        metaData.build_info = {
+            builtAt: qmLog.timeHelper.getUnixTimestampInSeconds(),
+            buildServer: qmLog.getCurrentServerContext(),
+            buildLink: qmLog.buildInfoHelper.getBuildLink(),
+        };
         bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
     },
     info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
@@ -67,6 +71,141 @@ var qmLog = {
         if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
         if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
         if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
+    },
+    timeHelper: {
+        getUnixTimestampInSeconds: function(dateTimeString) {
+            if(!dateTimeString){dateTimeString = new Date().getTime();}
+            return Math.round(qmLog.timeHelper.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+        },
+        getUnixTimestampInMilliseconds:function(dateTimeString) {
+            if(!dateTimeString){return new Date().getTime();}
+            return new Date(dateTimeString).getTime();
+        },
+        getTimeSinceString:function(unixTimestamp) {
+            if(!unixTimestamp){return "never";}
+            var secondsAgo = qmLog.timeHelper.secondsAgo(unixTimestamp);
+            if(secondsAgo > 2 * 24 * 60 * 60){return Math.round(secondsAgo/(24 * 60 * 60)) + " days ago";}
+            if(secondsAgo > 2 * 60 * 60){return Math.round(secondsAgo/(60 * 60)) + " hours ago";}
+            if(secondsAgo > 2 * 60){return Math.round(secondsAgo/(60)) + " minutes ago";}
+            return secondsAgo + " seconds ago";
+        },
+        secondsAgo: function(unixTimestamp) {return Math.round((qmLog.timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
+    },
+    buildInfoHelper: {
+        alreadyMinified: function(){
+            if(!qmLog.buildInfoHelper.getPreviousBuildInfo().gitCommitShaHash){return false;}
+            return qmLog.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash === qmLog.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash;
+        },
+        previousBuildInfo: {
+            iosCFBundleVersion: null,
+            builtAt: null,
+            buildServer: null,
+            buildLink: null,
+            versionNumber: null,
+            versionNumbers: null,
+            gitBranch: null,
+            gitCommitShaHash: null
+        },
+        getCurrentBuildInfo: function () {
+            return qmLog.buildInfoHelper.currentBuildInfo = {
+                builtAt: qmLog.timeHelper.getUnixTimestampInSeconds(),
+                buildServer: qmLog.getCurrentServerContext(),
+                buildLink: qmLog.buildInfoHelper.getBuildLink(),
+                gitBranch: qmLog.qmGit.branchName,
+                gitCommitShaHash: qmLog.qmGit.getCurrentGitCommitSha()
+            };
+        },
+        getPreviousBuildInfo: function () {
+            return JSON.parse(fs.readFileSync(paths.www.buildInfo));
+        },
+        writeBuildInfo: function () {
+            var buildInfo = qmLog.buildInfoHelper.getCurrentBuildInfo();
+            qmLog.fileHelper.writeToFile(paths.src.buildInfo, buildInfo);
+            return qmLog.fileHelper.writeToFile(paths.www.buildInfo, buildInfo);
+        },
+        getBuildLink: function() {
+            if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+            if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+            if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
+        }
+    },
+    qmGit: {
+        branchName: null,
+        isMaster: function () {
+            return qmLog.qmGit.branchName === "master"
+        },
+        isDevelop: function () {
+            if(!qmLog.qmGit.branchName){
+                throw "Branch name not set!"
+            }
+            return qmLog.qmGit.branchName === "develop"
+        },
+        isFeature: function () {
+            return qmLog.qmGit.branchName.indexOf("feature") !== -1;
+        },
+        getCurrentGitCommitSha: function () {
+            if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
+            try {
+                return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+            } catch (error) {
+                qmLog.info(error);
+            }
+        },
+        accessToken: process.env.GITHUB_ACCESS_TOKEN,
+        getCommitMessage(callback){
+            var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+            execute(commandForGit, function (error, output) {
+                var commitMessage = output.trim();
+                qmLog.info("Commit: "+ commitMessage);
+                if(callback) {callback(commitMessage);}
+            });
+        },
+        outputCommitMessageAndBranch: function () {
+            qmLog.qmGit.getCommitMessage(function (commitMessage) {
+                qmLog.qmGit.setBranchName(function (branchName) {
+                    qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+                })
+            })
+        },
+        setBranchName: function (callback) {
+            function setBranch(branch, callback) {
+                qmLog.qmGit.branchName = branch.replace('origin/', '');
+                qmLog.info('current git branch: ' + qmLog.qmGit.branchName);
+                if (callback) {callback(qmLog.qmGit.branchName);}
+            }
+            if (qmLog.qmGit.getBranchEnv()){
+                setBranch(qmLog.qmGit.getBranchEnv(), callback);
+                return;
+            }
+            try {
+                git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+                    if(err){qmLog.error(err); return;}
+                    setBranch(branch, callback);
+                });
+            } catch (e) {
+                qmLog.info("Could not set branch name because " + e.message);
+            }
+        },
+        getBranchEnv: function () {
+            function getNameIfNotHead(envName) {
+                if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
+                return false;
+            }
+            if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
+            if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
+            if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
+            if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
+        }
+    },
+    fileHelper: {
+        writeToFile: function(filePath, stringContents) {
+    if(!stringContents || stringContents === "undefined" || stringContents === "null"){
+        throw "String contents are " + stringContents;
+    }
+    qmLog.info("Writing to " + filePath);
+    if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
+    return fs.writeFileSync(filePath, stringContents);
+}
     }
 };
 var fs = require('fs');

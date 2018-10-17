@@ -50,7 +50,7 @@ var qm = {
                 if(window.qmUser.email && window.qmUser.email.toLowerCase().indexOf('test') !== -1){return true;}
                 if(window.qmUser.displayName && window.qmUser.displayName.toLowerCase().indexOf('test') !== -1){return true;}
             }
-            return window.location.href.indexOf("medimodo.heroku") !== -1;
+            return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
         },
         isDevelopment: function(){
             if(window.location.origin.indexOf('http://localhost:') !== -1){return true;}
@@ -60,7 +60,7 @@ var qm = {
             return window.location.origin.indexOf('staging.') !== -1;
         },
         isBuilder: function(){
-            return window.location.href.indexOf('configuration-index.html') !== -1;
+            return qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1;
         },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
@@ -253,7 +253,7 @@ var qm = {
                 //clientId = qm.storage.getItem(qm.items.clientId);
             }
             // DON'T DO THIS
-            // if(!clientId && window.location.href.indexOf('quantimo.do') === -1){
+            // if(!clientId && qm.urlHelper.indexOfCurrentUrl('quantimo.do') === -1){
             //     clientId = "default"; // On mobile
             // }
             if(!qm.clientId){
@@ -306,7 +306,7 @@ var qm = {
             return clientId;
         },
         getClientIdFromAwsPath: function() {
-            var clientId = qm.stringHelper.getStringBetween(window.location.href, 's3.amazonaws.com/', '/dev');
+            var clientId = qm.stringHelper.getStringBetween(qm.urlHelper.getCurrentUrl(), 's3.amazonaws.com/', '/dev');
             return clientId;
         },
         getClientIdFromSubDomain: function(){
@@ -580,7 +580,7 @@ var qm = {
             if(!qm.appMode.isBuilder()){return null;}
             var clientId = qm.urlHelper.getParam('clientId');
             if(clientId){return clientId;}
-            clientId = qm.stringHelper.getStringAfter(window.location.href, 'app/configuration/');
+            clientId = qm.stringHelper.getStringAfter(qm.urlHelper.getCurrentUrl(), 'app/configuration/');
             if(clientId){
                 clientId = qm.stringHelper.getStringBeforeSubstring('?', clientId, clientId);
                 return clientId;
@@ -592,7 +592,7 @@ var qm = {
             if(qm.clientSecret){return qm.clientSecret;}
             if(qm.getAppSettings().clientSecret){return qm.getAppSettings().clientSecret;}
             if(!qm.privateConfig){
-                if(window.location.href.indexOf('quantimo.do') === -1){qm.qmLog.error("No client secret or private config!");}
+                if(qm.urlHelper.indexOfCurrentUrl('quantimo.do') === -1){qm.qmLog.error("No client secret or private config!");}
                 return null;
             }
             if (qm.platform.isIOS()) { return qm.privateConfig.client_secrets.iOS; }
@@ -618,7 +618,7 @@ var qm = {
                     // qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
                     // return;
                 }
-                if(qm.platform.isWeb() && window.location.href.indexOf('.quantimo.do') !== -1){
+                if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
                     qm.appsManager.getAppSettingsFromApi(null, successHandler, function () {
                         qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
                             if(appSettings){qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);}
@@ -700,7 +700,7 @@ var qm = {
                 qm.qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
-            appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+            appSettings.designMode = qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1;
             if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             function successHandler() {
                 qm.localForage.setItem(qm.items.appSettings, appSettings);
@@ -1157,7 +1157,7 @@ var qm = {
             return qm.auth.getAccessTokenFromUrlUserOrStorage();
         },
         getAndSaveAccessTokenFromCurrentUrl: function(){
-            qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl " + qm.urlHelper.getCurrentUrl());
             var accessTokenFromUrl = qm.auth.getAccessTokenFromCurrentUrl();
             if(accessTokenFromUrl){
                 if(!qm.auth.accessTokenIsValid(accessTokenFromUrl)){return null;}
@@ -1249,7 +1249,7 @@ var qm = {
                 {groupingHash: groupingHash}, "error");
         },
         getAccessTokenFromCurrentUrl: function(){
-            qm.qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + window.location.href);
+            qm.qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + qm.urlHelper.getCurrentUrl());
             var accessTokenFromUrl =  (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
             if(accessTokenFromUrl && accessTokenFromUrl.indexOf("#") !== -1){ // Sometimes #/app/settings gets appended for some reason
                 accessTokenFromUrl = qm.stringHelper.getStringBeforeSubstring('#', accessTokenFromUrl);
@@ -1363,8 +1363,8 @@ var qm = {
         logOutOfWebsite: function() {
             //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
             var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
-            if(window.location.href.indexOf('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
-            if(window.location.href.indexOf('.quantimo.do/') === -1){afterLogoutGoToUrl = window.location.href;}
+            if(qm.urlHelper.indexOfCurrentUrl('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
+            if(qm.urlHelper.indexOfCurrentUrl('.quantimo.do/') === -1){afterLogoutGoToUrl = qm.urlHelper.getCurrentUrl();}
             afterLogoutGoToUrl = afterLogoutGoToUrl.replace('settings', 'intro');
             if(qm.platform.isChromeExtension()){afterLogoutGoToUrl = qm.api.getQuantiModoUrl("api/v1/window/close");}
             var logoutUrl = qm.api.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
@@ -1390,7 +1390,7 @@ var qm = {
             return true;
         },
         setAfterLoginGoToUrl: function (afterLoginGoToUrl){
-            if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
+            if(!afterLoginGoToUrl){afterLoginGoToUrl = qm.urlHelper.getCurrentUrl();}
             if(!qm.auth.weShouldSetAfterLoginStateOrUrl(afterLoginGoToUrl)){return false;}
             qm.qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
             qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
@@ -1404,10 +1404,10 @@ var qm = {
                 return;
             }
             qm.qmLog.authDebug('Sending to app.login', null);
-            window.location.href = '#/app/login';
+            qm.urlHelper.goToUrl('#/app/login');
         },
         setAfterLoginGoToUrlAndSendToLogin: function (){
-            if(window.location.href.indexOf('login') !== -1){
+            if(qm.urlHelper.indexOfCurrentUrl('login') !== -1){
                 qm.qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
                 return;
             }
@@ -4257,7 +4257,7 @@ var qm = {
                 }
                 return null;
             }
-            if(qm.urlHelper.getParam(paramName)){return qm.urlHelper.getParam(paramName, window.location.href, true);}
+            if(qm.urlHelper.getParam(paramName)){return qm.urlHelper.getParam(paramName, qm.urlHelper.getCurrentUrl(), true);}
             if($stateParams && $stateParams[paramName]){ return $stateParams[paramName]; }
             if($scope && $scope[paramName]){return $scope[paramName];}
             if($scope && $scope.state && $scope.state[paramName]){return $scope.state[paramName];}
@@ -4280,16 +4280,16 @@ var qm = {
         },
         isWeb: function (){
             var isWeb = false;
-            if(window.location.href.indexOf("https://") === 0){isWeb = true;}
-            if(window.location.href.indexOf("http://") === 0){isWeb = true;}
-            if(window.location.href.indexOf("http://localhost:") === 0){isWeb = true;}
+            if(qm.urlHelper.indexOfCurrentUrl("https://") === 0){isWeb = true;}
+            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0){isWeb = true;}
+            if(qm.urlHelper.indexOfCurrentUrl("http://localhost:") === 0){isWeb = true;}
             return isWeb;
         },
         isWebOrChrome: function () {
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
         },
         isAndroid: function (){
-            if(window.location.href.indexOf('/android_asset/') !== -1){return true;}
+            if(qm.urlHelper.indexOfCurrentUrl('/android_asset/') !== -1){return true;}
             if(typeof ionic !== "undefined"){
                 return ionic.Platform.isAndroid() && !qm.platform.isWeb();
             }
@@ -4330,7 +4330,7 @@ var qm = {
             chromeExtension: "chromeExtension"
         },
         isDevelopmentMode: function(){
-            return window.location.href.indexOf("://localhost:") !== -1;
+            return qm.urlHelper.indexOfCurrentUrl("://localhost:") !== -1;
         },
         isDesignMode: function () {
             return qm.getAppSettings().designMode;
@@ -5927,11 +5927,11 @@ var qm = {
             }
             qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudies(params, callback);
         },
-        goToStudyPageJoinPageViaStudy: function(study){window.location.href = qm.studyHelper.getStudyJoinUrl(study);},
+        goToStudyPageJoinPageViaStudy: function(study){qm.urlHelper.goToUrl(qm.studyHelper.getStudyJoinUrl(study));},
         goToStudyPageViaStudy: function(study){
             var url = qm.studyHelper.getStudyUrl(study);
             qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
-            window.location.href = url;
+            qm.urlHelper.goToUrl(url;
         }
     },
     timeHelper: {
@@ -6182,8 +6182,7 @@ var qm = {
             window.open(url, '_blank');
         },
         openUrl: function (url) {
-            qmLog.info("openUrl: "+url);
-            window.location.href = url;
+            qm.urlHelper.goToUrl(url);
         },
         getIonicUrlForPath: function(path) {
             return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
@@ -6227,11 +6226,11 @@ var qm = {
             return url;
         },
         onQMSubDomain: function () {
-            if(window.location.href.indexOf('https://') !== 0){return false;}
-            return window.location.href.indexOf('.quantimo.do') !== -1;
+            if(qm.urlHelper.indexOfCurrentUrl('https://') !== 0){return false;}
+            return qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1;
         },
         redirectToHttpsIfNecessary: function (){
-            if(window.location.href.indexOf("http://") === 0 && window.location.href.indexOf("http://localhost") === -1){
+            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 && qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
                 location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
             }
         },
@@ -6323,6 +6322,19 @@ var qm = {
         goToUrl: function(url){
             qm.qmLog.info("Going to "+url);
             window.location.href = url;
+        },
+        getCurrentUrl: function(){
+            if(typeof window === "undefined"){
+                return false;
+            }
+            return window.location.href;
+        },
+        indexOfCurrentUrl: function(needle){
+            var currentUrl = qm.urlHelper.getCurrentUrl();
+            if(!currentUrl){
+                return -1;
+            }
+            return currentUrl.indexOf(needle);
         }
     },
     user: null,
@@ -7245,7 +7257,7 @@ var qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
-            if(qm.platform.browser.isFirefox() && window.location.href.indexOf("herokuapp") !== -1){
+            if(qm.platform.browser.isFirefox() && qm.urlHelper.indexOfCurrentUrl("herokuapp") !== -1){
                 qm.qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
                 return false;
             }
@@ -7265,7 +7277,7 @@ var qm = {
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
             var serviceWorkerUrl = window.location.origin+'/ionic/Modo/src/firebase-messaging-sw.js';
-            if(window.location.href.indexOf('ionic/Modo') === -1){
+            if(qm.urlHelper.indexOfCurrentUrl('ionic/Modo') === -1){
                 serviceWorkerUrl = window.location.origin+'/firebase-messaging-sw.js';
             }
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);

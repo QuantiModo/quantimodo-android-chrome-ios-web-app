@@ -1,8 +1,12 @@
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
+var assert = require('assert');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var qm = require('./../src/js/qmHelpers');
 var qmLog = require('./../modules/qmLog');
+qm.staticData = require('./../src/data/qmStaticData');
+qm.nlp = require('./../src/lib/compromise/builds/compromise');
+qm.qmLog = qmLog;
 var qmTests = {
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
@@ -110,7 +114,7 @@ var qmTests = {
             });
         },
         variables: {
-            getHeartRateZone: function () {
+            getHeartRateZone: function (callback) {
                 var requestParams = {
                     excludeLocal: null,
                     includePublic: true,
@@ -118,8 +122,9 @@ var qmTests = {
                     searchPhrase: "heart"
                 };
                 qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                    logDebug('Got ' + self.lastResults.length + ' results matching ', query);
+                    qmLog.info('Got ' + self.lastResults.length + ' results matching ', query);
                     assert(units.length > 5);
+                    if(callback){callback();}
                 });
             }
         }
@@ -143,11 +148,10 @@ gulp.task('ghostInspectorIonicFailed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('tests', function() {
-    var assert = require('assert');
-    qm.staticData = require('./../src/data/qmStaticData');
-    qm.nlp = require('./../src/lib/compromise/builds/compromise');
-    qm.qmLog = qmLog;
     qmTests.tests.variables.getHeartRateZone();
     qmTests.tests.recordMeasurementIntentTest();
     qmTests.tests.getUnitsTest();
+});
+gulp.task('get-heart-rate-zone', function(callback) {
+    qmTests.tests.variables.getHeartRateZone(callback);
 });
