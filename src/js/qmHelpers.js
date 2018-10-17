@@ -6142,7 +6142,8 @@ var qm = {
             //window.history.pushState({ path: url }, '', url);
         },
         getParam: function(parameterName, url, shouldDecode) {
-            if(!url){url = window.location.href;}
+            if(!url){url = qm.urlHelper.getCurrentUrl();}
+            if(!url){return null;}
             if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
             if(url.split('?').length > 1){
                 var queryString = url.split('?')[1];
@@ -6162,7 +6163,7 @@ var qm = {
             return null;
         },
         getQueryParams: function(url){
-            if(!url){url = window.location.href;}
+            if(!url){url = qm.urlHelper.getCurrentUrl();}
             var keyValuePairsObject = {};
             var array = [];
             if(url.split('?').length > 1){
@@ -6207,7 +6208,7 @@ var qm = {
             return qm.urlHelper.getAbsoluteUrlFromRelativePath('default.private_config.json');
         },
         addUrlQueryParamsToUrlString: function (params, url){
-            if(!url){url = window.location.href;}
+            if(!url){url = qm.urlHelper.getCurrentUrl();}
             for (var key in params) {
                 if (params.hasOwnProperty(key)) {
                     if(url.indexOf(key + '=') === -1){
@@ -6231,7 +6232,7 @@ var qm = {
         },
         redirectToHttpsIfNecessary: function (){
             if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 && qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
-                location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+                location.href = 'https:' + qm.urlHelper.getCurrentUrl().substring(window.location.protocol.length);
             }
         },
         getParameterFromEventUrl: function (event, parameterName) {
