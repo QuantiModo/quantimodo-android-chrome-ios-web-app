@@ -5931,7 +5931,7 @@ var qm = {
         goToStudyPageViaStudy: function(study){
             var url = qm.studyHelper.getStudyUrl(study);
             qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
-            qm.urlHelper.goToUrl(url;
+            qm.urlHelper.goToUrl(url);
         }
     },
     timeHelper: {
