@@ -15,6 +15,14 @@ var qmLog = {
             qmLog.info("DEBUG: " + message, object, maxCharacters);
         }
     },
+    authDebug: function(name, message, errorSpecificMetaData) {
+        name = "Auth Debug: " + name;
+        qmLog.debug(name, message, errorSpecificMetaData);
+    },
+    webAuthDebug: function(name, message, errorSpecificMetaData) {
+        name = "Web Auth Debug: " + name;
+        qmLog.debug(name, message, errorSpecificMetaData);
+    },
     logErrorAndThrowException: function (message, object) {
         qmLog.error(message, object);
         throw message;
