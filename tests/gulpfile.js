@@ -108,6 +108,20 @@ var qmTests = {
                 }
                 qmTests.tests.executeTests(tests, callback, startUrl);
             });
+        },
+        variables: {
+            getHeartRateZone: function () {
+                var requestParams = {
+                    excludeLocal: null,
+                    includePublic: true,
+                    minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
+                    searchPhrase: "heart"
+                };
+                qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                    logDebug('Got ' + self.lastResults.length + ' results matching ', query);
+                    assert(units.length > 5);
+                });
+            }
         }
     }
 };
@@ -133,6 +147,7 @@ gulp.task('tests', function() {
     qm.staticData = require('./../src/data/qmStaticData');
     qm.nlp = require('./../src/lib/compromise/builds/compromise');
     qm.qmLog = qmLog;
+    qmTests.tests.variables.getHeartRateZone();
     qmTests.tests.recordMeasurementIntentTest();
     qmTests.tests.getUnitsTest();
 });
