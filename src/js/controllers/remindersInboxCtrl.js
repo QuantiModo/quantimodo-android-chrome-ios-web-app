@@ -225,19 +225,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         qmService.notifications.trackAll(body, modifiedReminderValue, ev);
         getTrackingReminderNotifications();
     }
-    function preventDragAfterAlert(ev) {
-		if(!ev){
-			qmLog.debug("No event provided to preventDragAfterAlert");
-			return;
-		}
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.gesture.stopPropagation();
-        ev.gesture.preventDefault();
-        ev.gesture.stopDetect();
-    }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
-        preventDragAfterAlert(ev);
+        qm.ui.preventDragAfterAlert(ev);
         var title = "Record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
         var textContent = "Do you want to record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
@@ -358,7 +347,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
 	};
     $scope.skipAllForVariable = function(trackingReminderNotification, ev) {
-        preventDragAfterAlert(ev);
+        qm.ui.preventDragAfterAlert(ev);
     	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (trackingReminderNotifications) {
             hideInboxLoader();
             getFilteredTrackingReminderNotificationsFromLocalStorage();
