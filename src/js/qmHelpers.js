@@ -952,6 +952,10 @@ var qm = {
             var filterBy = searchTerm.split(/\s+/);
             return array.filter(function(item){
                 var name = item.name || item.variableName;
+                if(!name){
+                    qmLog.error("No name on: "+JSON.stringify(item));
+                    return false;
+                }
                 name = name.toLowerCase();
                 var result = filterBy.every(function (word){
                     var exists = name.indexOf(word);

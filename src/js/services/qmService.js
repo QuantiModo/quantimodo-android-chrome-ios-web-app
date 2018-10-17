@@ -1916,10 +1916,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                     if(query === self.lastApiQuery && self.lastResults){
                         logDebug("Why are we researching with the same query?", query);
-                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
+                        deferred.resolve(self.lastResults);
                         return deferred.promise;
                     }
-                    dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                    if(query && query.indexOf("Not seeing") !== -1){
+                        self.searchPhrase = query = self.lastApiQuery;
+                        self.dialogParameters.excludeLocal = true;
+                    }
+                    if(self.dialogParameters.excludeLocal){
+                        dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                    }
                     if(query && query !== ""){
                         dialogParameters.requestParams.searchPhrase = query;
                         self.lastApiQuery = query;
@@ -1927,10 +1933,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(query === "" && dialogParameters.requestParams.searchPhrase){delete dialogParameters.requestParams.searchPhrase;} // This happens after clicking x clear button
                     logDebug("getFromLocalStorageOrApi in querySearch with params: "+JSON.stringify(dialogParameters.requestParams), query);
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
-                        self.lastResults = variables;
-                        logDebug('Got ' + self.lastResults.length + ' results matching ', query);
+                        logDebug('Got ' + variables.length + ' results matching ', query);
                         showVariableList();
-                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
+                        var list = convertVariablesToToResultsList(variables);
+                        if(!dialogParameters.requestParams.excludeLocal){
+                            list.push({
+                                value: "search-more",
+                                name: "Not seeing what you're looking for?",
+                                variable: "Search for more...",
+                                ionIcon: ionIcons.search,
+                                subtitle: "Search for more..."
+                            });
+                        }
+                        self.lastResults = list;
+                        deferred.resolve(list);
                         if(variables && variables.length){
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(variables);}
                         } else {
@@ -1942,6 +1958,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function searchTextChange(text) { logDebug('Text changed to ' + text+ " in querySearch"); }
                 function selectedItemChange(item) {
                     if(!item){return;}
+                    if(item.value === "search-more" && !dialogParameters.requestParams.excludeLocal){
+                        self.selectedItem = null;
+                        //dialogParameters.requestParams.excludeLocal = true;
+                        //querySearch(self.searchText);
+                        return;
+                    }
                     self.selectedItem = item;
                     self.buttonText = "Select " + item.variable.name;
                     if(self.barcode){
@@ -1959,12 +1981,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                  */
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
-                    return variables.map( function (variable) {
+                    var list = variables.map( function (variable) {
                         var variableName =
                             //variable.displayName || Don't use this or we can't differentiate Water (mL) from Water (serving)
                             variable.variableName || variable.name;
                         if(!variableName){
-                            qmLog.error("No variable name in convertVariablesToToResultsList");
+                            qmLog.error("No variable name in convertVariablesToToResultsList: "+JSON.stringify(variable));
                             return;
                         }
                         return {
@@ -1975,6 +1997,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             subtitle: variable.subtitle
                         };
                     });
+                    return list;
                 }
                 querySearch();
             };
