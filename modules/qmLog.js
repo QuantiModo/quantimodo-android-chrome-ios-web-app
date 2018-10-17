@@ -7,7 +7,7 @@ var qmLog = {
     },
     info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
-        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
+        if(qmLog.isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
             qmLog.info("DEBUG: " + message, object, maxCharacters);
         }
     },
@@ -19,8 +19,8 @@ var qmLog = {
         metaData = metaData || {};
         metaData.environment = qmLog.obfuscateSecrets(process.env);
         metaData.subsystem = { name: qmLog.getCurrentServerContext() };
-        metaData.client_id = QUANTIMODO_CLIENT_ID;
-        metaData.build_link = qmGulp.buildInfoHelper.getBuildLink();
+        metaData.client_id = qmLog.getClientId();
+        metaData.build_link = qmLog.getBuildLink();
         return metaData;
     },
     obfuscateStringify: function(message, object, maxCharacters) {
@@ -58,7 +58,16 @@ var qmLog = {
         if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
         return process.env.HOSTNAME;
     },
-    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');}
+    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
+    isTruthy: function(value){return value && value !== "false"; },
+    getClientId: function(){
+        return process.env.QUANTIMODO_CLIENT_ID;
+    },
+    getBuildLink: function() {
+        if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+        if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+        if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
+    }
 };
 var fs = require('fs');
 if(fs.existsSync('../tests/node_modules/bugsnag/lib/bugsnag.js')){
