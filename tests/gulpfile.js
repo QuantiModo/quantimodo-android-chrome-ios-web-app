@@ -9,7 +9,7 @@ qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
 qm.nlp = require('compromise');
 qm.qmLog = qmLog;
-qm.qmLog.setLogLevel('debug');
+qm.qmLog.setLogLevelName('debug');
 var qmTests = {
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
