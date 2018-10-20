@@ -221,6 +221,14 @@ var qmLog = {
     getLogLevelName: function() {
         return qmLog.logLevel;
     },
+    setLogLevelName: function(value){
+        if(qmLog.logLevel === value){return;}
+        qmLog.logLevel = value;
+        if(typeof localStorage !== "undefined"){
+            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+        }
+    },
+
 };
 var fs = require('fs');
 if(fs.existsSync('../tests/node_modules/bugsnag/lib/bugsnag.js')){
