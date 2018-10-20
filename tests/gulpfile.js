@@ -7,8 +7,9 @@ var qm = require('./../src/js/qmHelpers');
 var qmLog = require('./../modules/qmLog');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
-qm.nlp = require('./../src/lib/compromise/builds/compromise');
+qm.nlp = require('compromise');
 qm.qmLog = qmLog;
+qm.qmLog.setLogLevelName('debug');
 var qmTests = {
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
@@ -151,7 +152,7 @@ gulp.task('ghostInspectorIonicFailed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('tests', function() {
-    qmTests.tests.variables.getHeartRateZone();
+    qmTests.tests.userVariables.getHeartRateZone();
     qmTests.tests.recordMeasurementIntentTest();
     qmTests.tests.getUnitsTest();
 });
