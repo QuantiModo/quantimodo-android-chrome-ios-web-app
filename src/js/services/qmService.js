@@ -7122,8 +7122,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, 2000);
     };
     qmService.switchToPatient = function(patientUser){
+        if(!patientUser.accessToken){
+            qmLog.error("No access token for patientUser!");
+        }
         if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
-        qmService.rootScope.setProperty('physicianUser', $rootScope.user);
+        qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
+        qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
