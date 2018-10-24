@@ -19,8 +19,9 @@
             <form ng-submit="$event.preventDefault()">
                 <p id="variable-search-help-text" ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
                 <!--Why disable cache? It causes lots of pointless searches? md-no-cache="true"-->
+                <!--We have to disable cache so that "Not seeing.." is replaced with "Create new variable" if not found in API-->
                 <md-autocomplete id="variable-search-box"
-                        md-no-cache="false"
+                        md-no-cache="true"
                         md-selected-item="ctrl.selectedItem"
                         md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
                         md-search-text="ctrl.searchText"
