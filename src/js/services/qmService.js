@@ -7145,7 +7145,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qm.storage.setItem(qm.items.physicianUser, null);
-        qmService.rootScope.setProperty('physicianUser', null);
+        qmService.rootScope.setProperty(qm.items.physicianUser, null);
         qmService.rootScope.setUser(physicianUser);
         qmService.goToDefaultState();
         qmService.showInfoToast("Switched back to your account");
