@@ -2840,6 +2840,10 @@ var qm = {
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
+            if(!arrayToSave || !arrayToSave.length){
+                qmLog.error("Noting provided to saveWithUniqueId for "+key);
+                if(successHandler){successHandler();}
+            }
             qm.qmLog.info("saving " + key + " with unique id");
             qm.localForage.getItem(key, function(existingData) {
                 if(!existingData){existingData = [];}
