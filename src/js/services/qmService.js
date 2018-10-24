@@ -1944,6 +1944,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 ionIcon: ionIcons.search,
                                 subtitle: "Search for more..."
                             });
+                        } else if (!list.length) {
+                            list.push({
+                                value: "create-new-variable",
+                                name: "Create "+query+" variable",
+                                variable: {name: query},
+                                ionIcon: ionIcons.plus,
+                                subtitle: null
+                            });
                         }
                         self.lastResults = list;
                         deferred.resolve(list);
@@ -1962,6 +1970,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         self.selectedItem = null;
                         //dialogParameters.requestParams.excludeLocal = true;
                         //querySearch(self.searchText);
+                        return;
+                    }
+                    if(item.value === "create-new-variable"){
+                        createNewVariable(item.variable.name);
                         return;
                     }
                     self.selectedItem = item;
