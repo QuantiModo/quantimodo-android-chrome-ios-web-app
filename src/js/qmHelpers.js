@@ -2774,6 +2774,7 @@ var qm = {
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
+        physicianUser: 'patientUser',
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
