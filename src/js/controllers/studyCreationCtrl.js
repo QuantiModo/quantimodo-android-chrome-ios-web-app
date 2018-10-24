@@ -86,7 +86,8 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         qm.studiesCreated.createStudy(body, function (study) {
             qmService.hideLoader();
             if(body.type === 'individual'){
-                qmService.goToState(qmStates.study, {study: study});
+                body.study = study;
+                qmService.goToState(qmStates.study, body);
             } else {
                 $scope.state.study = study;
             }
