@@ -1148,6 +1148,9 @@ var qm = {
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     found = false;
                     for (var j = 0; j < replacementElementArray.length; j++){
+                        if(!replacementElementArray[j].id){
+                            throw "No id on replacementElementArray item: " +JSON.stringify(replacementElementArray[j]);
+                        }
                         if(replacementElementArray[j].id &&
                             localStorageItemArray[i].id === replacementElementArray[j].id){
                             found = true;
