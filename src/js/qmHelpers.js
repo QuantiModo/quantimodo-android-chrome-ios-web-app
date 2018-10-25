@@ -7385,6 +7385,15 @@ var qm = {
         scrollToTop: function(){
             $("html, body").animate({ scrollTop: 0 }, "slow");
             return false;
+        },
+        isSmallHeight: function(){
+            return qm.windowHelper.getWindowHeight() < 1000;
+        },
+        getWindowHeight: function(){
+            var h = window.innerHeight
+                || document.documentElement.clientHeight
+                || document.body.clientHeight;
+            return h;
         }
     }
 };
