@@ -2022,7 +2022,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: false,
-                fullscreen: qm.platform.isMobile(),
+                fullscreen: qm.platform.isMobile() || qm.windowHelper.isSmallHeight(),
                 locals: {dialogParameters: dialogParameters}
             }).then(function(variable) {
                 successHandler(variable);
