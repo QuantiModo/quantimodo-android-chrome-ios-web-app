@@ -719,6 +719,7 @@ var qm = {
                 return appSettings;
             }
             if(qm.appMode.isBuilder()){return successHandler();}  // Don't need to mess with app settings refresh in builder
+            qm.storage.setItem(qm.items.appSettings, appSettings);
             qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
                 for (var propertyName in buildInfo) {
                     if( buildInfo.hasOwnProperty(propertyName) ) {
