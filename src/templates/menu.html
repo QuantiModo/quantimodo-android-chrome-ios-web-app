@@ -18,6 +18,8 @@
                             <img class="menu-avatar" id="patientAvatarRight" ng-src="{{user.avatar}}"></a>
                         <button id="switch-button-right" class="button button-icon ion-arrow-swap"></button>
                     </div>
+                    <button id="menu-mic-button" class="button button-icon ion-mic-a" ng-if="platform.isWeb"
+                            ng-click="goToState('app.chat')"></button>
                     <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
                         <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>

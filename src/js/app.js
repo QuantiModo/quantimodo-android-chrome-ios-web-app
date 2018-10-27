@@ -425,7 +425,8 @@ angular.module('starter',
         })
         .state(qmStates.measurementAdd, {
             url: "/measurement-add",
-            cache: false,
+            //cache: false,  TODO: Why was this false?
+            cache: true,
             params: {
                 showAds: true,
                 trackingReminder: null,
@@ -1062,6 +1063,7 @@ angular.module('starter',
                 showAds: true,
                 causeVariableName: null,
                 effectVariableName: null,
+                type: null,
                 refresh: null,
                 study: null,
                 title: "Study",
@@ -1080,6 +1082,7 @@ angular.module('starter',
             params: {
                 causeVariableName: null,
                 effectVariableName: null,
+                type: null,
                 study: null,
                 title: "Join Study",
                 ionIcon: ionIcons.study
@@ -1098,6 +1101,7 @@ angular.module('starter',
                 showAds: true,
                 causeVariable: null,
                 effectVariable: null,
+                type: null,
                 study: null,
                 title: "Create Study",
                 ionIcon: ionIcons.study

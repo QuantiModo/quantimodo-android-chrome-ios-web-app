@@ -12,7 +12,7 @@
         <div ng-hide="hideNavigationMenu" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
         <div>
             <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" class="robot-container" style="margin-bottom: 80px; left: calc(50% - 80px);"></div>
-            <form layout="row" style="padding: 20px 20px 0; bottom: 0; position: absolute; z-index: 40; background-color: white; width: 100%;"
+            <form layout="row" style="padding: 20px 20px 0; bottom: 0; position: absolute; z-index: 10; background-color: white; width: 100%;"
                   ng-submit="state.userReply(state.userInputString)" autocomplete="off">
                 <md-input-container flex layout-align="center" style="margin-right: 50px;" layout-fill>
                     <label style="color: black;">{{state.lastBotMessage}}</label>

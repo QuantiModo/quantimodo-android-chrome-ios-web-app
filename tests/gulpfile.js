@@ -1,8 +1,15 @@
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
+var assert = require('assert');
+var localforage = require('./../src/lib/localforage/dist/localforage');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var qm = require('./../src/js/qmHelpers');
 var qmLog = require('./../modules/qmLog');
+qm.Quantimodo = require('quantimodo');
+qm.staticData = require('./../src/data/qmStaticData');
+qm.nlp = require('compromise');
+qm.qmLog = qmLog;
+qm.qmLog.setLogLevelName('debug');
 var qmTests = {
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
@@ -108,6 +115,22 @@ var qmTests = {
                 }
                 qmTests.tests.executeTests(tests, callback, startUrl);
             });
+        },
+        userVariables: {
+            getHeartRateZone: function (callback) {
+                qm.storage.setItem(qm.items.accessToken, process.env.QUANTIMODO_ACCESS_TOKEN);
+                var requestParams = {
+                    excludeLocal: null,
+                    includePublic: true,
+                    minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
+                    searchPhrase: "heart"
+                };
+                qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                    qmLog.info('Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
+                    assert(variables.length > 5);
+                    if(callback){callback();}
+                });
+            }
         }
     }
 };
@@ -129,10 +152,10 @@ gulp.task('ghostInspectorIonicFailed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
 gulp.task('tests', function() {
-    var assert = require('assert');
-    qm.staticData = require('./../src/data/qmStaticData');
-    qm.nlp = require('./../src/lib/compromise/builds/compromise');
-    qm.qmLog = qmLog;
+    qmTests.tests.userVariables.getHeartRateZone();
     qmTests.tests.recordMeasurementIntentTest();
     qmTests.tests.getUnitsTest();
+});
+gulp.task('get-heart-rate-zone', function(callback) {
+    qmTests.tests.userVariables.getHeartRateZone(callback);
 });

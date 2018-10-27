@@ -2,11 +2,10 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService) {
     $scope.controller_name = "VariableSearchCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
-    $scope.state = $stateParams;
+    $scope.state = JSON.parse(JSON.stringify($stateParams));
     $scope.state.searching = true;
     $scope.state.variableSearchResults = [];
-    $scope.state.variableSearchParameters = {};
-    //$scope.state.variableSearchParameters = {};  DON'T OVERWRITE $stateParams.variableSearchParameters
+    if(!$scope.state.variableSearchParameters){$scope.state.variableSearchParameters = {};}
     $scope.state.variableSearchQuery = {name:''};
     if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
@@ -14,12 +13,12 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLog.info($state.current.name + ' beforeEnter...');
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        $scope.state.variableSearchParameters.variableCategoryName = qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        $scope.state.variableSearchParameters.variableCategoryName = getVariableCategoryName();
         //$scope.showBarcodeScanner = $rootScope.platform.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName, ['Anything', 'Foods', 'Treatments']));
-        if ($scope.state.variableSearchParameters.variableCategoryName) {
-            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
-            $scope.state.noVariablesFoundCard.title = 'No ' + $scope.state.variableSearchParameters.variableCategoryName + ' Found';
+        if (getVariableCategoryName()) {
+            $scope.state.variableSearchPlaceholderText = "Search for a " + getPluralVariableCategoryName().toLowerCase() + " here...";
+            $scope.state.title = "Select " + getPluralVariableCategoryName();
+            $scope.state.noVariablesFoundCard.title = 'No ' + getVariableCategoryName() + ' Found';
         }
         setHelpText();
     });
@@ -163,13 +162,17 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.searching = false;
         });
     }
+    function getVariableSearchParameters(){
+        return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters, $stateParams.variableSearchParameters, false);
+    }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
-        qmLog.info($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
+        var params = getVariableSearchParameters();
+        qmLog.info($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name + " with params: " + JSON.stringify(params));
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
+            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, params)
                 .then(function(variables){
                     variableSearchSuccessHandler(variables, successHandler, errorHandler);
                 });
@@ -178,11 +181,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         }
     };
     var populateCommonVariables = function(){
-        if(!$scope.state.variableSearchParameters.includePublic) {return;}
+        if(!getVariableSearchParameters().includePublic) {return;}
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        var params = JSON.parse(JSON.stringify($scope.state.variableSearchParameters));
+        var params = JSON.parse(JSON.stringify(getVariableSearchParameters()));
         params.commonOnly = true;
         qmService.getCommonVariablesDeferred(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
@@ -199,18 +202,18 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qm.userVariables.getFromLocalStorageOrApi($scope.state.variableSearchParameters, function (userVariables) {
+        qm.userVariables.getFromLocalStorageOrApi(getVariableSearchParameters(), function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     if($scope.state.variableSearchResults){userVariables = $scope.state.variableSearchResults.concat(userVariables);}
                     addVariablesToScope(userVariables);
                 }
             } else {
-                if(!$scope.state.variableSearchParameters.includePublic){
+                if(!getVariableSearchParameters().includePublic){
                     $scope.state.noVariablesFoundCard.show = true;
                     $scope.state.searching = false;
                 }
-                if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
+                if($scope.state.variableSearchResults.length < 1 && getVariableSearchParameters().includePublic){populateCommonVariables();}
             }
         }, function (error) {qmLog.error(error);});
     };
@@ -218,8 +221,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         var variableObject = {};
         variableObject = qmService.barcodeScanner.addUpcToVariableObject(variableObject);
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($scope.state.variableSearchParameters.variableCategoryName){
-            variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;
+        if(getVariableCategoryName()){
+            variableObject.variableCategoryName = getVariableCategoryName();
         }
         qmLog.info($state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject));
         if ($scope.state.nextState) {
@@ -252,11 +255,35 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
                 "Inflammatory Pain analysis would include Back Pain measurements as well.";
         }
-        if(!$scope.state.helpText && $scope.state.variableSearchParameters.variableCategoryName && $rootScope.variableCategories[$scope.state.variableSearchParameters.variableCategoryName].variableCategoryNameSingular){
-            $scope.state.helpText = 'Enter a ' + $rootScope.variableCategories[$scope.state.variableSearchParameters.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
-                ' in the search box or select one from the list below.';
+        var singularCategoryName = getSingularVariableCategoryName();
+        if(!$scope.state.helpText && singularCategoryName){
+            $scope.state.helpText = 'Enter a ' + singularCategoryName.toLowerCase() + ' in the search box or select one from the list below.';
         }
         if(!$scope.state.helpText){$scope.state.helpText = 'Enter a variable in the search box or select one from the list below.';}
+    }
+    function getSingularVariableCategoryName() {
+        var variableCategory = getVariableCategory();
+        if(variableCategory && variableCategory.variableCategoryNameSingular){
+            return variableCategory.variableCategoryNameSingular;
+        }
+        return null;
+    }
+    function getVariableCategory() {
+        var variableCategoryName = getVariableCategoryName();
+        if(variableCategoryName && $rootScope.variableCategories[variableCategoryName]){
+            return $rootScope.variableCategories[variableCategoryName];
+        }
+        return null;
+    }
+    function getVariableCategoryName() {
+        var params = getVariableSearchParameters();
+        if(params.variableCategoryName){
+            return params.variableCategoryName;
+        }
+        return qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+    }
+    function getPluralVariableCategoryName() {
+        return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));
     }
     var checkNameExists = function (item) {
         if(!item.name){
@@ -296,7 +323,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     };
     // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
     $scope.scanBarcode = function () {
-        qmService.barcodeScanner.scanBarcode($scope.state.variableSearchParameters, variableSearchSuccessHandler, function (error) {
+        var params = getVariableSearchParameters();
+        qmService.barcodeScanner.scanBarcode(params, variableSearchSuccessHandler, function (error) {
             qmLog.error(error);
         });
     }

@@ -54,6 +54,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug('$ionicView.enter ' + $state.current.name);
         qmService.hideLoader();
+        qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
@@ -183,6 +184,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmLog.info('selected unit: ' + unitAbbreviatedName);
             $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
             $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
+            qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
         }
         setupValueFieldType(unitAbbreviatedName, valence);
     }
@@ -314,6 +316,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.state.title = "Edit Measurement";
         $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
         $scope.state.measurement = measurementObject;
+        qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
         $scope.state.measurementIsSetup = true;
         setupUnit($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.valence);
         if ($scope.state.measurement.variable) { $scope.state.measurement.variableName = $scope.state.measurement.variable; }
