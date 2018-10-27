@@ -60,7 +60,7 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     if(window.notificationsSyncQueue){
         qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
         qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, qm.notifications.closePopup,
-            1000); // 300 is too fast
+            5000); // 300 is too fast
     } else {
         qm.notifications.closePopup();
     }
