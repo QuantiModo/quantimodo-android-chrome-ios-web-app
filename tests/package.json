@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "gulp": "3.9.1",
-    "bugsnag": "1.12.2"
+    "bugsnag": "1.12.2",
+    "quantimodo": "5.9.81814",
+    "compromise": "^11.12.1"
   },
   "eslintConfig": {
     "env": {

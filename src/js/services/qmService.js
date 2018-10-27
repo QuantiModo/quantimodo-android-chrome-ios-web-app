@@ -1916,10 +1916,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     self.notFoundText = "No variables found. Please try another wording or contact mike@quantimo.do.";
                     if(query === self.lastApiQuery && self.lastResults){
                         logDebug("Why are we researching with the same query?", query);
-                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
+                        deferred.resolve(self.lastResults);
                         return deferred.promise;
                     }
-                    dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                    if(query && query.indexOf("Not seeing") !== -1){
+                        self.searchPhrase = query = self.lastApiQuery;
+                        self.dialogParameters.excludeLocal = true;
+                    }
+                    if(self.dialogParameters.excludeLocal){
+                        dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                    }
                     if(query && query !== ""){
                         dialogParameters.requestParams.searchPhrase = query;
                         self.lastApiQuery = query;
@@ -1927,10 +1933,28 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(query === "" && dialogParameters.requestParams.searchPhrase){delete dialogParameters.requestParams.searchPhrase;} // This happens after clicking x clear button
                     logDebug("getFromLocalStorageOrApi in querySearch with params: "+JSON.stringify(dialogParameters.requestParams), query);
                     qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
-                        self.lastResults = variables;
-                        logDebug('Got ' + self.lastResults.length + ' results matching ', query);
+                        logDebug('Got ' + variables.length + ' results matching ', query);
                         showVariableList();
-                        deferred.resolve(convertVariablesToToResultsList(self.lastResults));
+                        var list = convertVariablesToToResultsList(variables);
+                        if(!dialogParameters.requestParams.excludeLocal){
+                            list.push({
+                                value: "search-more",
+                                name: "Not seeing what you're looking for?",
+                                variable: "Search for more...",
+                                ionIcon: ionIcons.search,
+                                subtitle: "Search for more..."
+                            });
+                        } else if (!list.length) {
+                            list.push({
+                                value: "create-new-variable",
+                                name: "Create "+query+" variable",
+                                variable: {name: query},
+                                ionIcon: ionIcons.plus,
+                                subtitle: null
+                            });
+                        }
+                        self.lastResults = list;
+                        deferred.resolve(list);
                         if(variables && variables.length){
                             if(variableSearchSuccessHandler){variableSearchSuccessHandler(variables);}
                         } else {
@@ -1942,6 +1966,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 function searchTextChange(text) { logDebug('Text changed to ' + text+ " in querySearch"); }
                 function selectedItemChange(item) {
                     if(!item){return;}
+                    if(item.value === "search-more" && !dialogParameters.requestParams.excludeLocal){
+                        self.selectedItem = null;
+                        //dialogParameters.requestParams.excludeLocal = true;
+                        //querySearch(self.searchText);
+                        return;
+                    }
+                    if(item.value === "create-new-variable"){
+                        createNewVariable(item.variable.name);
+                        return;
+                    }
                     self.selectedItem = item;
                     self.buttonText = "Select " + item.variable.name;
                     if(self.barcode){
@@ -1959,12 +1993,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                  */
                 function convertVariablesToToResultsList(variables) {
                     if(!variables || !variables[0]){ return []; }
-                    return variables.map( function (variable) {
+                    var list = variables.map( function (variable) {
                         var variableName =
                             //variable.displayName || Don't use this or we can't differentiate Water (mL) from Water (serving)
                             variable.variableName || variable.name;
                         if(!variableName){
-                            qmLog.error("No variable name in convertVariablesToToResultsList");
+                            qmLog.error("No variable name in convertVariablesToToResultsList: "+JSON.stringify(variable));
                             return;
                         }
                         return {
@@ -1975,6 +2009,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             subtitle: variable.subtitle
                         };
                     });
+                    return list;
                 }
                 querySearch();
             };
@@ -1987,7 +2022,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: false,
-                fullscreen: qm.platform.isMobile(),
+                fullscreen: qm.platform.isMobile() || qm.windowHelper.isSmallHeight(),
                 locals: {dialogParameters: dialogParameters}
             }).then(function(variable) {
                 successHandler(variable);
@@ -2051,12 +2086,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             previousUrl: null,
             goBack: function (providedStateParams){
                 qmLog.info("goBack: Called goBack with state params: "+JSON.stringify(providedStateParams));
-                if(qmService.stateHelper.previousUrl){
-                    qmLog.info("Going to qmService.stateHelper.previousUrl: "+qmService.stateHelper.previousUrl);
-                    window.location.href = qmService.stateHelper.previousUrl;
-                    qmService.stateHelper.previousUrl = null;
-                    return;
-                }
                 function skipSearchPages() {
                     if (stateId.toLowerCase().indexOf('search') !== -1) { // Skip search pages
                         $ionicHistory.removeBackView();
@@ -2583,9 +2612,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug("Version number not specified!", "Version number not specified on qm.getAppSettings()");
         }
         urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qm.api.getClientId()));
-        if(window.devCredentials){
-            if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
-            if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
+        if(qm.devCredentials){
+            if(qm.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(qm.devCredentials.username));}
+            if(qm.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(qm.devCredentials.password));}
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -2602,9 +2631,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
         }
         urlParams.clientId = encodeURIComponent(qm.api.getClientId());
-        if(window.devCredentials){
-            if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
-            if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
+        if(qm.devCredentials){
+            if(qm.devCredentials.username){urlParams.log = encodeURIComponent(qm.devCredentials.username);}
+            if(qm.devCredentials.password){urlParams.pwd = encodeURIComponent(qm.devCredentials.password);}
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -3183,12 +3212,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     function getDefaultState() {
         if(window.designMode){return qmStates.configuration;}
         /** @namespace qm.getAppSettings().appDesign.defaultState */
-        if(qm.getAppSettings() && qm.getAppSettings().appDesign.defaultState){return qm.getAppSettings().appDesign.defaultState;}
+        var appSettings = qm.getAppSettings();
+        if(appSettings && appSettings.appDesign.defaultState){return appSettings.appDesign.defaultState;}
         return qmStates.remindersInbox;
     }
     qmService.goToDefaultState = function(params, options){
-        qmLogService.info('Called goToDefaultState: ' + getDefaultState());
-        qmService.goToState(getDefaultState(), params, options);
+        var defaultState = getDefaultState();
+        qmLogService.info('Called goToDefaultState: ' + defaultState);
+        qmService.goToState(defaultState, params, options);
     };
     qmService.goToVariableSettingsByObject = function(variableObject){
         qmService.goToState(qmStates.variableSettingsVariableName, {variableObject: variableObject});
@@ -5302,9 +5333,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.userVariable){userVariable = response.userVariable;}
             qm.userVariables.saveToLocalStorage(userVariable);
             qm.studyHelper.deleteLastStudyFromGlobalsAndLocalForage();
-            if(qmService.stateHelper.previousUrl){
-                qmService.stateHelper.previousUrl = qm.urlHelper.addUrlQueryParamsToUrlString({recalculate: true}, qmService.stateHelper.previousUrl);
-            }
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ', userVariable, null);
             deferred.resolve(userVariable);
@@ -7106,8 +7134,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }, 2000);
     };
     qmService.switchToPatient = function(patientUser){
+        if(!patientUser.accessToken){
+            qmLog.error("No access token for patientUser!");
+        }
         if(!$rootScope.switchBackToPhysician){$rootScope.switchBackToPhysician = qmService.switchBackToPhysician;}
-        qmService.rootScope.setProperty('physicianUser', $rootScope.user);
+        qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
+        qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
         qmService.showBlackRingLoader();
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
@@ -7125,7 +7157,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.completelyResetAppState();
         qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qm.storage.setItem(qm.items.physicianUser, null);
-        qmService.rootScope.setProperty('physicianUser', null);
+        qmService.rootScope.setProperty(qm.items.physicianUser, null);
         qmService.rootScope.setUser(physicianUser);
         qmService.goToDefaultState();
         qmService.showInfoToast("Switched back to your account");

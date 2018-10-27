@@ -25,11 +25,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
-        if(qm.urlHelper.getParam('studyId')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        } else if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        }
     });
     function setAllStateProperties(study) {
         if(!study){return;}
@@ -56,7 +51,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if($stateParams.study){ return $stateParams.study;}
     }
     function getStateOrUrlOrRootScopeOrRequestParam(paramName) {
-        if(window.qm.urlHelper.getParam(paramName)){return window.qm.urlHelper.getParam(paramName, window.location.href, true);}
+        if(qm.urlHelper.getParam(paramName)){return qm.urlHelper.getParam(paramName, window.location.href, true);}
         if($stateParams[paramName]){ return $stateParams[paramName]; }
         if($scope.state.requestParams && $scope.state.requestParams[paramName]){return $scope.state.requestParams[paramName];}
         return null;
