@@ -49,9 +49,9 @@ var qm = {
             return typeof window !== "undefined";
         },
         isTesting: function(){
-            if(qm.qmUser){
-                if(qm.qmUser.email && qm.qmUser.email.toLowerCase().indexOf('test') !== -1){return true;}
-                if(qm.qmUser.displayName && qm.qmUser.displayName.toLowerCase().indexOf('test') !== -1){return true;}
+
+            if(qm.userHelper.isTestUser()){
+                return true;
             }
             return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
         },
@@ -512,7 +512,7 @@ var qm = {
                         if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
                         return url + "&" + name + "=" + value;
                     }
-                    if (qm.auth.getAccessTokenFromUrlUserOrStorage(user)) {
+                    if (qm.auth.getAccessTokenFromUrlUserOrStorage()) {
                         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
                     } else {
                         qm.qmLog.error('No access token!');
@@ -1198,8 +1198,7 @@ var qm = {
                 qm.storage.setItem(qm.items.accessToken, accessToken);
             }
         },
-        getAccessTokenFromUrlUserOrStorage: function(user) {
-            if(user){qm.qmUser = user;}
+        getAccessTokenFromUrlUserOrStorage: function() {
             if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
                 return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             }
@@ -6374,40 +6373,47 @@ var qm = {
             apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
         },
         getUserFromLocalStorage: function(successHandler){
-            if(!qm.qmUser) {qm.qmUser = qm.storage.getItem(qm.items.user);}
+            var user = qm.storage.getItem(qm.items.user);
             function checkUserId(user) {
                 if(user && user.ID){
                     user.id = user.ID;
                     user = qm.objectHelper.snakeToCamelCaseProperties(user);
                 }
                 if(user && !user.id){
-                    console.error("No user id in ", qmUser);  // Don't use qm.qmLog.error to avoid infinite loop
+                    console.error("No user id in ", user);  // Don't use qm.qmLog.error to avoid infinite loop
                     qm.userHelper.setUser(null);
                     return null;
                 }
                 return user;
             }
             if(!successHandler) {
-                if(!qm.qmUser){qm.qmLog.debug("We do not have a user in local storage!");}
-                return checkUserId(qm.qmUser);
+                if(!user){
+                    qm.qmLog.debug("We do not have a user in local storage!");
+                    return false;
+                }
+                return checkUserId(user);
             }
-            if(qm.qmUser){
-                successHandler(checkUserId(qm.qmUser));
+            if(user){
+                successHandler(checkUserId(user));
                 return
             }
             qm.localForage.getItem(qm.items.user, function(user){
-                qm.qmUser = user;
                 successHandler(checkUserId(user));
             });
         },
-        isTestUser: function(){return qm.qmUser && qm.qmUser.displayName.indexOf('test') !== -1 && qm.qmUser.id !== 230;},
+        isTestUser: function(){
+            var user = qm.globalHelper.getItem(qm.items.user); // Can't use qm.getUser() because of recursion
+            if(!user){return false;}
+            if(user.email && user.email.toLowerCase().indexOf('test') !== -1){return true;}
+            if(user.displayName && user.displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            return false;
+        },
         setUser: function(user){
             if(user && user.data && user.data.user){user = user.data.user;}
-            qm.qmUser = user;
             qm.storage.setItem(qm.items.user, user);
             qm.localForage.setItem(qm.items.user, user);
             if(!user){return;}
-            qm.qmLog.debug(qm.qmUser.displayName + ' is logged in.');
+            qm.qmLog.debug(user.displayName + ' is logged in.');
             if(qm.urlHelper.getParam('doNotRemember')){return;}
             qm.qmLog.setupUserVoice();
             if(!user.accessToken){
