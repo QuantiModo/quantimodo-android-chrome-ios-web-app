@@ -49,10 +49,9 @@ var qm = {
             return typeof window !== "undefined";
         },
         isTesting: function(){
-            var user = qm.getUser();
-            if(user){
-                if(user.email && user.email.toLowerCase().indexOf('test') !== -1){return true;}
-                if(user.displayName && user.displayName.toLowerCase().indexOf('test') !== -1){return true;}
+
+            if(qm.userHelper.isTestUser()){
+                return true;
             }
             return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
         },
@@ -6402,7 +6401,13 @@ var qm = {
                 successHandler(checkUserId(user));
             });
         },
-        isTestUser: function(){return qm.getUser() && qm.getUser().displayName.indexOf('test') !== -1 && qm.getUser().id !== 230;},
+        isTestUser: function(){
+            var user = qm.globalHelper.getItem(qm.items.user); // Can't use qm.getUser() because of recursion
+            if(!user){return false;}
+            if(user.email && user.email.toLowerCase().indexOf('test') !== -1){return true;}
+            if(user.displayName && user.displayName.toLowerCase().indexOf('test') !== -1){return true;}
+            return false;
+        },
         setUser: function(user){
             if(user && user.data && user.data.user){user = user.data.user;}
             qm.storage.setItem(qm.items.user, user);
