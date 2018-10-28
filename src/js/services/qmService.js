@@ -3451,7 +3451,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.pusher.subscribe(user);
         if(qm.urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationStartIfEnabled();
-        qmLog.setupBugsnag();
+        qmLog.setupBugsnag(user);
         setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
         if(qm.storage.getItem(qm.items.deviceTokenOnServer)){
             qmLogService.debug('This token is already on the server: ' + qm.storage.getItem(qm.items.deviceTokenOnServer));
@@ -6763,7 +6763,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
     };
     qmService.logEventToGA = function(category, action, label, value, nonInteraction, customDimension, customMetric){
-        if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
+        if(!label){label = (qm.getUser()) ? qm.getUser().id : "NotLoggedIn";}
         if(typeof nonInteraction === "undefined"){nonInteraction = true;}
         Analytics.trackEvent(category, action, label, value, nonInteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };

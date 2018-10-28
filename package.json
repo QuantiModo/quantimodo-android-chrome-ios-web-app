@@ -9,7 +9,7 @@
   "devDependencies": {
     "angular-mocks": "1.7.5",
     "ghost-inspector": "3.0.0",
-    "jasmine-core": "3.2.1",
+    "jasmine-core": "3.3.0",
     "karma": "2.0.5",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.2",
@@ -53,7 +53,7 @@
     "gulp-typescript": "2.14.1",
     "gulp-uglify": "3.0.1",
     "gulp-unzip": "1.0.0",
-    "gulp-useref": "3.1.5",
+    "gulp-useref": "3.1.6",
     "gulp-util": "3.0.8",
     "gulp-watch": "5.0.1",
     "gulp-zip": "3.2.0",
