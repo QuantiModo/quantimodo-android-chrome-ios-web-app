@@ -470,7 +470,7 @@ angular.module('starter',
         })
         .state(qmStates.variableSettings, {
             url: "/variable-settings",
-            cache: false,
+            cache: true,
             params: {
                 showAds: true,
                 reminder : null,
