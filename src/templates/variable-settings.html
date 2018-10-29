@@ -70,13 +70,13 @@
                         Joined Duplicates &nbsp; <i class="icon ion-help-circled"></i>
                     </span>
                 </div>
-                <md-contact-chips ng-model="state.variableObject.joinedUserTagVariables" name="joinedVariable" ng-click="openJoinVariableSearchDialog()"
+                <md-contact-chips ng-model="state.variableObject.joinedUserTagVariables" name="joinedVariable" ng-click="state.openJoinVariableSearchDialog()"
                           ng-show="state.variableObject.joinedUserTagVariables && state.variableObject.joinedUserTagVariables.length"
                                   md-contact-name="name"
                                   md-contact-image="pngUrl"
                           md-on-remove="deleteJoinedVariable($chip)"  md-on-select="deleteJoined($chip)">
                 </md-contact-chips>
-                <md-button class="button button-outline button-block icon-left ion-link button-positive" ng-click="openJoinVariableSearchDialog()">
+                <md-button class="button button-outline button-block icon-left ion-link button-positive" ng-click="state.openJoinVariableSearchDialog()">
                     Join a Duplicate Variable
                 </md-button>
                 <div ng-if="state.variableObject.joinedCommonTagVariables && state.variableObject.joinedCommonTagVariables.length">
@@ -160,13 +160,13 @@
                 </div>
                 <md-contact-chips ng-model="state.variableObject.ingredientUserTagVariables"
                     name="ingredientUserTagVariables"
-                    ng-click="openIngredientVariableSearchDialog()"
+                    ng-click="state.openIngredientVariableSearchDialog()"
                     ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
                     md-contact-name="tagDisplayText"
                     md-contact-image="pngUrl"
                     md-on-remove="deleteTagVariable($chip)"  md-on-select="editTag($chip)">
                 </md-contact-chips>
-                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="openIngredientVariableSearchDialog()">
+                <md-button class="button button-outline button-block icon-left ion-pricetag button-positive" ng-click="state.openIngredientVariableSearchDialog()">
                     Add an Ingredient
                 </md-button>
                 <div ng-if="state.variableObject.ingredientCommonTagVariables && state.variableObject.ingredientCommonTagVariables.length">
@@ -187,14 +187,14 @@
                         Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
                     </span>
                 </div>
-                <md-contact-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="openIngredientOfVariableSearchDialog()"
+                <md-contact-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable" ng-click="state.openIngredientOfVariableSearchDialog()"
                           ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
                           md-contact-name="tagDisplayText"
                           md-contact-image="pngUrl"
                           md-on-remove="deleteTaggedVariable($chip)"  md-on-select="editTagged($chip)">>
                 </md-contact-chips>
                 <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
-                           ng-click="openIngredientOfVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
+                           ng-click="state.openIngredientOfVariableSearchDialog()">Add variable containing {{state.variableObject.name}}
                 </md-button>
                 <div ng-if="state.variableObject.ingredientOfCommonTagVariables && state.variableObject.ingredientOfCommonTagVariables.length">
                     <div class="item item-divider ng-binding">

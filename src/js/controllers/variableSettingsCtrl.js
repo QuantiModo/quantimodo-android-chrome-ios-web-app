@@ -131,7 +131,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         openTagVariableSearchDialog(e, requestParams, dialogParameters);
     };
     $scope.state.openIngredientVariableSearchDialog = function(e){
-        dialogParameters.conversionFactor = 1;
+        dialogParameters.conversionFactor = null;
         dialogParameters.title = 'Add an ingredient';
         dialogParameters.helpText = "Search for an ingredient " +
             "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
