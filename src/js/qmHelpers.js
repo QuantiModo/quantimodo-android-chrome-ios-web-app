@@ -1153,7 +1153,7 @@ var qm = {
                            throw key+" replacementElementArray item is string: " +replacementElementArray[j];
                         }
                         if(!replacementElementArray[j].id){
-                            qm.qmLog.warn("No id on "+key+" replacementElementArray item: " +JSON.stringify(replacementElementArray[j]);
+                            qm.qmLog.warn("No id on "+key+" replacementElementArray item: " +JSON.stringify(replacementElementArray[j]));
                         }
                         if(replacementElementArray[j].id &&
                             localStorageItemArray[i].id === replacementElementArray[j].id){
