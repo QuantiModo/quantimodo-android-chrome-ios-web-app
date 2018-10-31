@@ -383,9 +383,8 @@ var qm = {
             }
         },
         getBaseUrl: function () {
-            if(!qm.appMode.isBrowser()){return "https://app.quantimo.do";}
             if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
-            if(qm.getUser() && qm.getUser().id === 230 && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
+            if(!qm.appMode.isBrowser()){return "https://app.quantimo.do";}
             if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
                 if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
                     qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
