@@ -1140,7 +1140,7 @@ var qm = {
             }
             return elementsToKeep;
         },
-        addToOrReplaceByIdAndMoveToFront: function(localStorageItemArray, replacementElementArray){
+        addToOrReplaceByIdAndMoveToFront: function(localStorageItemArray, replacementElementArray, key){
             if(!(replacementElementArray instanceof Array)){replacementElementArray = [replacementElementArray];}
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
@@ -1149,8 +1149,11 @@ var qm = {
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     found = false;
                     for (var j = 0; j < replacementElementArray.length; j++){
+                        if(typeof replacementElementArray[j] === "string"){
+                           throw key+" replacementElementArray item is string: " +replacementElementArray[j];
+                        }
                         if(!replacementElementArray[j].id){
-                            throw "No id on replacementElementArray item: " +JSON.stringify(replacementElementArray[j]);
+                            qm.qmLog.warn("No id on "+key+" replacementElementArray item: " +JSON.stringify(replacementElementArray[j]));
                         }
                         if(replacementElementArray[j].id &&
                             localStorageItemArray[i].id === replacementElementArray[j].id){
@@ -2981,7 +2984,7 @@ var qm = {
                 JSON.stringify(replacementElementArray).substring(0,20)+'...');
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
-                var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
+                var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray, localStorageItemName);
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){successHandler(elementsToKeep);}
             }, function(error){
@@ -5383,7 +5386,7 @@ var qm = {
                 JSON.stringify(replacementElementArray).substring(0,20)+'...');
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var localStorageItemArray = qm.storage.getItem(localStorageItemName);
-            var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray);
+            var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray, localStorageItemName);
             qm.storage.setItem(localStorageItemName, elementsToKeep);
             return elementsToKeep;
         },
