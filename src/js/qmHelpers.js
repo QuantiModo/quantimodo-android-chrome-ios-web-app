@@ -646,7 +646,7 @@ var qm = {
         getAppSettingsFromMemory: function(){
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
             if(appSettings){return appSettings;}
-            if(!qm.appMode.isBrowser()){
+            if(!qm.appMode.isBrowser() || qm.platform.isChromeExtension()){
                 return qm.staticData.appSettings;
             }
             return false;
