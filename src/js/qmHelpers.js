@@ -383,16 +383,14 @@ var qm = {
             }
         },
         getBaseUrl: function () {
-            if(qm.appMode.isDebug() && qm.platform.isMobile()){return "https://utopia.quantimo.do";}
-            if(!qm.appMode.isBrowser()){return "https://app.quantimo.do";}
-            if(qm.appsManager.getAppSettingsFromMemory() && qm.appsManager.getAppSettingsFromMemory().apiUrl){
-                if(qm.appsManager.getAppSettingsFromMemory().apiUrl.indexOf('https://') === -1){
-                    qm.appsManager.getAppSettingsFromMemory().apiUrl = "https://" + qm.appsManager.getAppSettingsFromMemory().apiUrl;
-                }
-                return qm.appsManager.getAppSettingsFromMemory().apiUrl;
-            }
             var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
+            if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(!apiUrl){
+                var appSettings = qm.appsManager.getAppSettingsFromMemory();
+                if(appSettings && appSettings.apiUrl){apiUrl = appSettings.apiUrl;}
+            }
+            if(!apiUrl && !qm.appMode.isBrowser()){apiUrl = "https://app.quantimo.do";}
             if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
             if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
             if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
