@@ -8,7 +8,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     var goBack = function () {
         qmService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
-            qmService.goToState($stateParams.fromState, {});
+            qmService.goToState($stateParams.fromState, $stateParams.fromStateParams);
         } else {
             $scope.goBack();
         }
@@ -40,7 +40,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             goBack();
         });
     };
-
     function addTaggedToTagVariable() {
         $scope.stateParams.userTaggedVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
         $scope.stateParams.userTaggedVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
@@ -55,7 +54,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         $scope.stateParams.userTagVariableObject.userTaggedVariables.push(userTaggedVariableObject);
         qm.userVariables.saveToLocalStorage($scope.stateParams.userTagVariableObject);
     }
-
     function addTagToTaggedVariable() {
         $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
         $scope.stateParams.userTagVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
@@ -70,7 +68,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         $scope.stateParams.userTaggedVariableObject.userTagVariables.push(userTagVariableObject);
         qm.userVariables.saveToLocalStorage($scope.stateParams.userTaggedVariableObject);
     }
-
     $scope.done = function(){
         if(!$scope.stateParams.tagConversionFactor){$scope.stateParams.tagConversionFactor = 1;}
         var userTagData = {
@@ -100,7 +97,6 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         if(debug && qm.appMode.isDevelopment()){setDebugVariables();}
         qmLogService.debug($state.current.name + ': beforeEnter', null);
     });
-
     function setDebugVariables() {
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
