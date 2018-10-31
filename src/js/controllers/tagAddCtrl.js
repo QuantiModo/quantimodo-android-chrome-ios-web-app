@@ -8,6 +8,8 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     var goBack = function () {
         qmService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
+            // We stored update variable in local storage so this will force us to get it from there when we get back to the variable settings page
+            delete $stateParams.fromStateParams.variableObject;
             qmService.goToState($stateParams.fromState, $stateParams.fromStateParams);
         } else {
             $scope.goBack();
@@ -79,7 +81,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         addTagToTaggedVariable();
         qmService.showBlackRingLoader();
         qmService.postUserTagDeferred(userTagData).then(function (response) {
-            qmLog.info(response);
+            qmLog.info("postUserTagDeferred: ", response);
             goBack();
         }, function (error) {
             qmLogService.error(error);
