@@ -202,6 +202,7 @@ angular.module('starter',
         "chartSearch": "app.chartSearch",
         "chat": "app.chat",
         "configuration": "app.configuration",
+        "users": "app.users",
         "configurationClientId": "app.configurationClientId",
         "contact": "app.contact",
         "dataSharing": "app.dataSharing",
@@ -1367,6 +1368,20 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "../../app-configuration/templates/configuration.html",
+                    controller: 'ConfigurationCtrl'
+                }
+            }
+        })
+        .state(qmStates.users, {
+            cache: true,
+            url: "/users",
+            params: {
+                title: "Users",
+                ionIcon: ionIcons.androidPeople
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "../../app-configuration/templates/users.html",
                     controller: 'ConfigurationCtrl'
                 }
             }
