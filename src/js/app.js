@@ -169,11 +169,7 @@ angular.module('starter',
     var config_resolver = {
         appSettingsResponse: function($q){
             var deferred = $q.defer();
-            if(qm.appMode.isDevelopment()){ // TODO: Faster.  We might want to do this globally at some point
-                deferred.resolve(qm.staticData.appSettings);
-            } else {
-                qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
-            }
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
             return deferred.promise;
         }
     };
