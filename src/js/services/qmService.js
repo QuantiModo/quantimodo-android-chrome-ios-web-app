@@ -6643,15 +6643,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.processAndSaveAppSettings = function(appSettings, callback){
         qmLog.debug("processAndSaveAppSettings for " + appSettings.clientId, null, appSettings);
         appSettings.doctorRobotAlias = qm.appsManager.getDoctorRobotoAlias(appSettings);
-        function changeFavicon(){
+        function changeFavicon(appSettings){
             /** @namespace $rootScope.appSettings.additionalSettings.appImages.favicon */
-            if(!qm.getAppSettings().favicon){return;}
+            if(appSettings.favicon){return;}
             //noinspection JSAnnotator
             document.head || (document.head = document.getElementsByTagName('head')[0]);
             var link = document.createElement('link'), oldLink = document.getElementById('dynamic-favicon');
             link.id = 'dynamic-favicon';
             link.rel = 'shortcut icon';
-            link.href = $rootScope.appSettings.additionalSettings.appImages.favicon;
+            link.href = appSettings.additionalSettings.appImages.favicon;
             if (oldLink) {document.head.removeChild(oldLink);}
             document.head.appendChild(link);
         }
@@ -6662,7 +6662,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         // Need to apply immediately before rendering or nav bar color is not set for some reason
         $rootScope.appSettings = appSettings;
         qmLogService.debug('appSettings.clientId is ' + appSettings.clientId);
-        changeFavicon();
+        changeFavicon(appSettings);
     };
     qmService.initializeApplication = function(appSettings){
         qmLog.info("Initializing application...");

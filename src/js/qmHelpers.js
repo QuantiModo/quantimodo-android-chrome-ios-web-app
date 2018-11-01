@@ -234,7 +234,7 @@ var qm = {
             }
             return urlParams;
         },
-        getClientId: function(successHandler){
+        getClientIdFromBuilderQueryOrSubDomain: function(){
             if(qm.appsManager.getBuilderClientId()){
                 return qm.clientId = qm.appsManager.getBuilderClientId();
             }
@@ -244,6 +244,10 @@ var qm = {
             if(!qm.clientId){
                 qm.clientId = qm.api.getClientIdFromSubDomain();
             }
+            return qm.clientId;
+        },
+        getClientId: function(successHandler){
+            qm.clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
             if(!qm.clientId && qm.getAppSettings()){
                 qm.clientId =  qm.getAppSettings().clientId;
             }
@@ -642,10 +646,14 @@ var qm = {
         },
         getAppSettingsFromMemory: function(){
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
-            if(appSettings){return appSettings;}
-            if(!qm.appMode.isBrowser() || qm.platform.isChromeExtension()){
-                return qm.staticData.appSettings;
+            if(appSettings){
+                if(qm.platform.isMobileOrChromeExtension()){return appSettings;}
+                var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
+                if(!clientId || clientId === appSettings.clientId){
+                    return appSettings;
+                }
             }
+            if(qm.platform.isMobileOrChromeExtension()){return qm.staticData.appSettings;}
             return false;
         },
         getAppSettingsFromApi: function (clientId, successHandler, errorHandler) {
@@ -4290,6 +4298,9 @@ var qm = {
         }
     },
     platform: {
+        isMobileOrChromeExtension: function (){
+            return qm.platform.isMobile() || qm.platform.isChromeExtension();
+        },
         isChromeExtension: function (){
             if(qm.platform.isMobile()){return false;}
             if(typeof chrome === "undefined"){return false;}
