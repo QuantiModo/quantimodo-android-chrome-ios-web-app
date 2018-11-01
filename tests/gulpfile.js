@@ -7,7 +7,7 @@ var qm = require('./../src/js/qmHelpers');
 var qmLog = require('./../modules/qmLog');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
-qm.nlp = require('compromise');
+qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName('debug');
 var qmTests = {
