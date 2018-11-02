@@ -6755,6 +6755,8 @@ var qm = {
                             var limit = 100;
                             if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
                             qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
+                        } else {
+                            if(successHandler){successHandler(userVariables);}
                         }
                     });
                 }
