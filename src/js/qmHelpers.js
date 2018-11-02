@@ -45,17 +45,18 @@ var qm = {
         }
     },
     appMode: {
+        mode: null,
         isBrowser: function(){
             return typeof window !== "undefined";
         },
         isTesting: function(){
-
-            if(qm.userHelper.isTestUser()){
-                return true;
-            }
-            return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
+            if(qm.appMode.mode === 'testing'){return true;}
+            if(qm.userHelper.isTestUser()){return true;}
+            var result = qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
+            return result;
         },
         isDevelopment: function(){
+            if(qm.appMode.mode === 'development'){return true;}
             if(!qm.platform.getWindow()){return false;}
             if(window.location.origin.indexOf('http://localhost:') !== -1){return true;}
             return window.location.origin.indexOf('local.quantimo.do') !== -1;
@@ -82,6 +83,7 @@ var qm = {
         trackingReminderNotificationsPast: "v1/trackingReminderNotifications/past"
     },
     api: {
+        requestLog: [],
         registerHelpers: function(){
             qm.Quantimodo.TrackingReminderNotification.prototype.track = function (trackAll, successHandler, errorHandler) {
                 qm.notifications.trackNotification(this, trackAll, successHandler, errorHandler);
@@ -109,6 +111,7 @@ var qm = {
                 return false;
             }
             qm.qmLog.info("API Request: " + functionName);
+            qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName});
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
@@ -1079,6 +1082,10 @@ var qm = {
             return a;
         },
         filterByRequestParams: function(array, requestParams) {
+            if(!array){
+                qm.qmLog.error("Nothing provided to filterByRequestParams");
+                return array;
+            }
             if(!requestParams){
                 qm.qmLog.info("No requestParams provided to filterByRequestParams");
                 return array;
@@ -2995,9 +3002,17 @@ var qm = {
             });
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams, successHandler, errorHandler) {
-            qm.localForage.getItem(localStorageItemName, function (data) {
-                data = qm.arrayHelper.filterByRequestParams(data, requestParams);
-                successHandler(data);
+            qm.localForage.getItem(localStorageItemName, function (unfiltered) {
+                if(!unfiltered){
+                    successHandler(unfiltered);
+                    return;
+                }
+                var filtered = qm.arrayHelper.filterByRequestParams(unfiltered, requestParams);
+                if(!filtered && qm.appMode.isTesting()){
+                    filtered = qm.arrayHelper.filterByRequestParams(unfiltered, requestParams);
+                    qm.qmLog.info("Nothing after filter");
+                }
+                successHandler(filtered);
             }, function (error) {
                 if(errorHandler){errorHandler(error);}
             });
@@ -6482,7 +6497,7 @@ var qm = {
             if(!user){return;}
             qm.qmLog.debug(user.displayName + ' is logged in.');
             if(qm.urlHelper.getParam('doNotRemember')){return;}
-            qm.qmLog.setupUserVoice();
+            if(!qm.platform.isBackEnd()){qm.qmLog.setupUserVoice();}
             if(!user.accessToken){
                 qm.qmLog.error("User does not have access token!", null, {userToSave: user});
             } else {
@@ -6525,9 +6540,9 @@ var qm = {
             } else {   // Can't use QM SDK in service worker because it uses XHR instead of fetch
                 qm.api.configureClient(arguments.callee.name);
                 var apiInstance = new qm.Quantimodo.UserApi();
-                function userSdkCallback(error, data, response) {
-                    qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserFromApi');
-                    userSuccessHandler(data);
+                function userSdkCallback(error, user, response) {
+                    if(user){userSuccessHandler(user);}
+                    qm.api.generalResponseHandler(error, user, response, successHandler, errorHandler, params, 'getUserFromApi');
                 }
                 var params = qm.api.addGlobalParams({});
                 //params.includeAuthorizedClients = true;  // To big for $rootScope!
@@ -6834,7 +6849,7 @@ var qm = {
         },
         defaultVariableSort: function (variables) {
             if(!variables){
-                qm.qmLog.info("no variables provided to putManualTrackingFirst");
+                qm.qmLog.info("no variables provided to defaultVariableSort");
                 return null;
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
