@@ -4471,7 +4471,11 @@ var qm = {
             qm.api.configureClient(arguments.callee.name);
             var apiInstance = new qm.Quantimodo.RemindersApi();
             function callback(error, trackingReminders, response) {
-                if (trackingReminders) {qm.reminderHelper.saveToLocalStorage(trackingReminders, qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables); }
+                if (trackingReminders) {
+                    qm.reminderHelper.saveToLocalStorage(trackingReminders, function(){
+                        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
+                    });
+                }
                 qm.api.generalResponseHandler(error, trackingReminders, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
             }
             params = qm.api.addGlobalParams(params);
