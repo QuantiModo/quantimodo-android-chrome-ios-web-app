@@ -25,7 +25,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.$on('$ionicView.enter', function(e) {
         qmLog.info($state.current.name + ' enter...');
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
-        populateUserVariables();
+        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables(function(userVariables){
+            populateUserVariables();
+        }, function(){
+            populateUserVariables();
+        });
         //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
