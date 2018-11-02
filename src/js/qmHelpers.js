@@ -4439,21 +4439,36 @@ var qm = {
     reminderHelper: {
         getNumberOfReminders: function(callback){
             var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            if(!callback){return number;}
             if(number){
                 callback(number);
-                return;
+                return number;
             }
             qm.reminderHelper.getTrackingRemindersFromApi({}, function () {
                 number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
                 callback(number);
             });
         },
+        getNumberOfVariablesWithLocalReminders: function(callback){
+            var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            var number = 0;
+            if(reminders){
+                var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
+                number = unique.length;
+            }
+            if(callback){callback(number);}
+            return number;
+        },
         getTrackingRemindersFromApi: function(params, successHandler, errorHandler){
             qm.api.configureClient(arguments.callee.name);
             var apiInstance = new qm.Quantimodo.RemindersApi();
-            function callback(error, data, response) {
-                if (data) { qm.reminderHelper.saveToLocalStorage(data); }
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
+            function callback(error, trackingReminders, response) {
+                if (trackingReminders) {
+                    qm.reminderHelper.saveToLocalStorage(trackingReminders, function(){
+                        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
+                    });
+                }
+                qm.api.generalResponseHandler(error, trackingReminders, response, successHandler, errorHandler, params, 'getTrackingRemindersFromApi');
             }
             params = qm.api.addGlobalParams(params);
             apiInstance.getTrackingReminders(params, callback);
@@ -4479,7 +4494,7 @@ var qm = {
             }
             return mostFrequentReminderIntervalInSeconds;
         },
-        saveToLocalStorage: function(trackingReminders){
+        saveToLocalStorage: function(trackingReminders, successHandler){
             trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
             var sizeInKb = qm.arrayHelper.getSizeInKiloBytes(trackingReminders);
             if(sizeInKb > 2000){
@@ -4488,6 +4503,7 @@ var qm = {
             var mostFrequentReminderIntervalInSeconds = qm.reminderHelper.getMostFrequentReminderIntervalInSeconds(trackingReminders);
             qm.storage.setItem(qm.items.mostFrequentReminderIntervalInSeconds, mostFrequentReminderIntervalInSeconds);
             qm.storage.setItem(qm.items.trackingReminders, trackingReminders);
+            if(successHandler){successHandler(trackingReminders);}
         },
         removeArchivedReminders: function(allReminders){
             var activeReminders = qm.reminderHelper.getActive(allReminders);
@@ -6686,9 +6702,9 @@ var qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
-                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
-                successHandler(data);
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (userVariables) {
+                if(!requestParams.sort){userVariables = qm.variablesHelper.defaultVariableSort(userVariables);}
+                successHandler(userVariables);
             }, function (error) {
                 qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
@@ -6725,16 +6741,20 @@ var qm = {
                 });
             });
         },
-        refreshIfNumberOfRemindersGreaterThanUserVariables: function(){
+        refreshIfNumberOfRemindersGreaterThanUserVariables: function(successHandler, errorHandler){
             if(!qm.getUser()){
                 qm.qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
                 return;
             }
-            qm.reminderHelper.getNumberOfReminders(function (number) {
-                if(number){
+            qm.reminderHelper.getNumberOfVariablesWithLocalReminders(function (numberOfVariablesWithReminders) {
+                if(numberOfVariablesWithReminders){
                     qm.userVariables.getFromLocalStorage({}, function (userVariables) {
-                        if(!userVariables || userVariables.length < number){
-                            qm.userVariables.getFromApi({limit: number + 1});
+                        var numberOfLocalVariables = 0;
+                        if(userVariables){numberOfLocalVariables = userVariables.length;}
+                        if(numberOfVariablesWithReminders && numberOfLocalVariables < numberOfVariablesWithReminders){
+                            var limit = 100;
+                            if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
+                            qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
                         }
                     });
                 }

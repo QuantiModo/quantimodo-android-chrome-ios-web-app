@@ -163,7 +163,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         });
     }
     function getVariableSearchParameters(){
-        return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters, $stateParams.variableSearchParameters, false);
+        var scope = $scope.state.variableSearchParameters;
+        var state = $stateParams.variableSearchParameters;
+        return qm.objectHelper.copyPropertiesFromOneObjectToAnother(scope, state, false);
     }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
@@ -202,7 +204,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qm.userVariables.getFromLocalStorageOrApi(getVariableSearchParameters(), function (userVariables) {
+        var params = getVariableSearchParameters();
+        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     if($scope.state.variableSearchResults){userVariables = $scope.state.variableSearchResults.concat(userVariables);}
