@@ -1098,7 +1098,6 @@ var qm = {
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
             var lessThanPropertyValue = null;
-            var log = [];
             var filterPropertyValues = [];
             var filterPropertyNames = [];
             for (var key in requestParams) {
@@ -1112,15 +1111,11 @@ var qm = {
                     greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     greaterThanPropertyName = key;
                 } else {
-                    if (value === false && key === "manualTracking") { return; }
-                    if (value === null || value === "" || value === "Anything") { return; }
-                    if (excludedFilterParams.indexOf(key) !== -1) {
-                        return;
-                    } else if (allowedFilterParams.indexOf(key) === -1) {
-                        qm.qmLog.error(key + " is not in allowed filter params");
-                    } else {
-                        qm.qmLog.info("filtering by " + key);
-                    }
+                    if (value === false && key === "manualTracking") { continue; }
+                    if (value === null || value === "" || value === "Anything") { continue; }
+                    if (excludedFilterParams.indexOf(key) !== -1) {continue;}
+                    if (allowedFilterParams.indexOf(key) === -1) {qm.qmLog.error(key + " is not in allowed filter params");}
+                    qm.qmLog.info("filtering by " + key);
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
                 }
