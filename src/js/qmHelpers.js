@@ -250,7 +250,7 @@ var qm = {
         },
         getClientId: function(successHandler){
             qm.clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
-            if(typeof process !== "undefined" && typeof process.env.QUANTIMODO_CLIENT_ID !== "undefined"){
+            if(qm.platform.isBackEnd() && typeof process.env.QUANTIMODO_CLIENT_ID !== "undefined"){
                 return process.env.QUANTIMODO_CLIENT_ID;
             }
             if(!qm.clientId && qm.getAppSettings()){
@@ -1094,7 +1094,8 @@ var qm = {
             var log = [];
             var filterPropertyValues = [];
             var filterPropertyNames = [];
-            angular.forEach(requestParams, function(value, key) {
+            for (var key in requestParams) {
+                var value = requestParams[key];
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
                     lessThanPropertyValue = Number(lessThanPropertyValue);
@@ -1116,7 +1117,7 @@ var qm = {
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
                 }
-            }, log);
+            }
             var results = qm.arrayHelper.filterByPropertyOrSize(array, null, null, lessThanPropertyName, lessThanPropertyValue,
                 greaterThanPropertyName, greaterThanPropertyValue);
             if(results){
@@ -2853,6 +2854,7 @@ var qm = {
     },
     localForage: {
         clear: function () {
+            if(qm.platform.isBackEnd()){return false;}
             qm.qmLog.info("Clearing localforage!");
             localforage.clear();
         },
@@ -2861,7 +2863,7 @@ var qm = {
                 arrayToSave = [arrayToSave];
             }
             if(!arrayToSave || !arrayToSave.length){
-                qmLog.error("Noting provided to saveWithUniqueId for "+key);
+                qm.qmLog.error("Noting provided to saveWithUniqueId for "+key);
                 if(successHandler){successHandler();}
             }
             qm.qmLog.info("saving " + key + " with unique id");
@@ -2914,7 +2916,11 @@ var qm = {
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
                 successHandler(fromGlobals);
-                return
+                return fromGlobals;
+            }
+            if(qm.platform.isBackEnd()){
+                if(successHandler){successHandler(fromGlobals);}
+                return fromGlobals;
             }
             if(typeof localforage === "undefined"){
                 var error = "localforage not defined so can't get " + key + "!";
@@ -2936,6 +2942,10 @@ var qm = {
             if(!qm.storage.valueIsValid(value)){return false;}
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
             qm.globalHelper.setItem(key, value);
+            if(qm.platform.isBackEnd()){
+                if(successHandler){successHandler(value);}
+                return value;
+            }
             if(typeof localforage === "undefined"){
                 var errorMessage = "local storage is undefined so can't set " + key;
                 qm.qmLog.error(errorMessage);
@@ -2964,6 +2974,10 @@ var qm = {
         },
         removeItem: function(key, successHandler, errorHandler){
             qm.globalHelper.removeItem(key);
+            if(qm.platform.isBackEnd()){
+                if(successHandler){successHandler();}
+                return;
+            }
             qm.localForage.getItem(key, function (data) {
                 localforage.removeItem(key, function (err) {
                     if(err){
@@ -6862,7 +6876,10 @@ var qm = {
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
             function getValue(object){
-                return object.lastSelectedAt || object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+                if(object.lastSelectedAt){
+                    return object.lastSelectedAt;
+                }
+                return object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
             }
             variables.sort(function(a, b) {
                 var aValue = getValue(a);
