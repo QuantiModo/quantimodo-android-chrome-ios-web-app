@@ -1984,7 +1984,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     $scope.variable = item.variable;
                     item.variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();
-                    qm.userVariables.saveToLocalStorage(item.variable);
+                    qm.variablesHelper.setLastSelectedAtAndSave(item.variable);
                     logDebug('Item changed to ' + item.variable.name+ " in querySearch");
                     self.finish();
                 }
@@ -2281,7 +2281,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
                             qmLogService.debug('postTrackingRemindersToApi response: ', response);
                             if(response && response.data){
-                                if(response.data.userVariables){qm.userVariables.saveToLocalStorage(response.data.userVariables);}
+                                if(response.data.userVariables){qm.variablesHelper.saveToLocalStorage(response.data.userVariables);}
                                 if(!response.data.trackingReminders){
                                     qmLogService.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
                                 } else if(!response.data.trackingReminders.length){
@@ -3082,9 +3082,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.postUserTag(tagData, function(response){
             /** @namespace response.data.userTaggedVariable */
-            qm.userVariables.saveToLocalStorage(response.data.userTaggedVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTaggedVariable);
             /** @namespace response.data.userTagVariable */
-            qm.userVariables.saveToLocalStorage(response.data.userTagVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTagVariable);
             deferred.resolve(response);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -3097,8 +3097,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         qmService.postVariableJoin(tagData, function(response){
             /** @namespace response.data.currentVariable */
-            qm.userVariables.saveToLocalStorage(response.data.currentVariable);
-            qm.userVariables.saveToLocalStorage(response.data.joinedVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.currentVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -3115,8 +3115,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
                 return;
             }
-            qm.userVariables.saveToLocalStorage(response.data.currentVariable);
-            qm.userVariables.saveToLocalStorage(response.data.joinedVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.currentVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.joinedVariable);
             deferred.resolve(response.data.currentVariable);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -3132,8 +3132,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
                 return;
             }
-            qm.userVariables.saveToLocalStorage(response.data.userTaggedVariable);
-            qm.userVariables.saveToLocalStorage(response.data.userTagVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTaggedVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTagVariable);
             deferred.resolve(response.data);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -3602,7 +3602,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         qmService.postMeasurementsToApi(parsedMeasurementsQueue, function (response) {
             if(response && response.data && response.data.userVariables){
-                qm.userVariables.saveToLocalStorage(response.data.userVariables);
+                qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
             }
             qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(parsedMeasurementsQueue);  // Save these for history page
             qm.storage.setItem(qm.items.measurementsQueue, []);
@@ -3750,7 +3750,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(response.success) {
                 qmLogService.debug('qmService.postMeasurementsToApi success: ', response);
                 if(response && response.data && response.data.userVariables){
-                    qm.userVariables.saveToLocalStorage(response.data.userVariables);
+                    qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                 }
                 deferred.resolve();
             } else {deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");}
@@ -3795,7 +3795,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.postMeasurementsToApi(measurementSets, function(response){
             if(response.success) {
                 if(response && response.data && response.data.userVariables){
-                    qm.userVariables.saveToLocalStorage(response.data.userVariables);
+                    qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                 }
                 qmLogService.debug('qmService.postMeasurementsToApi success: ', response, null);
                 deferred.resolve(response);
@@ -5331,7 +5331,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var userVariable;
             if(response.userVariables){userVariable = response.userVariables[0];}
             if(response.userVariable){userVariable = response.userVariable;}
-            qm.userVariables.saveToLocalStorage(userVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(userVariable);
             qm.studyHelper.deleteLastStudyFromGlobalsAndLocalForage();
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             qmLogService.debug('qmService.postUserVariableDeferred: success: ', userVariable, null);
@@ -5343,7 +5343,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var deferred = $q.defer();
         var body = {variableId: variableId};
         qmService.resetUserVariable(body, function(response) {
-            qm.userVariables.saveToLocalStorage(response.data.userVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
             deferred.resolve(response.data.userVariable);
         }, function(error){  deferred.reject(error); });
         return deferred.promise;
@@ -5715,7 +5715,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.postMeasurementsToApi(measurementSets, function (response) {
                 qmLogService.debug( 'posted weather measurements');
                 if(response && response.data && response.data.userVariables){
-                    qm.userVariables.saveToLocalStorage(response.data.userVariables);
+                    qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                 }
                 qmService.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
             }, function (error) {qmLogService.error('could not post weather measurements: ', error);});
