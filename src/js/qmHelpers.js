@@ -6724,6 +6724,11 @@ var qm = {
             });
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+            if(!qm.getUser()){
+                qm.qmLog.error("No user to get user variables!");
+                qm.commonVariablesHelper.getFromLocalStorage(requestParams, successHandler, errorHandler);
+                return;
+            }
             if(!requestParams){requestParams = {};}
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (userVariables) {
                 if(!requestParams.sort){userVariables = qm.variablesHelper.defaultVariableSort(userVariables);}
