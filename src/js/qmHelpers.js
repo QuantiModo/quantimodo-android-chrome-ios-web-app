@@ -2871,12 +2871,7 @@ var qm = {
                 if(!existingData){existingData = [];}
                 for (var i = 0; i < arrayToSave.length; i++) {
                     var newObjectToSave = arrayToSave[i];
-                    var existingObjectToReplace = existingData.find(function( obj ) {
-                        return obj.id === newObjectToSave.id;
-                    });
-                    if(existingObjectToReplace && existingObjectToReplace.lastSelectedAt){
-                        newObjectToSave.lastSelectedAt = existingObjectToReplace.lastSelectedAt;
-                    }
+                    //newObjectToSave.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds(); // Can't do this her because we do this for all API results we ever get
                     existingData = existingData.filter(function( obj ) {
                         return obj.id !== newObjectToSave.id;
                     });
@@ -5329,7 +5324,7 @@ var qm = {
                 userVariable.lastValue = lastValue;
                 userVariable.lastValueInUserUnit = lastValue;
             }
-            qm.userVariables.saveToLocalStorage(userVariable);
+            qm.variablesHelper.setLastSelectedAtAndSave(userVariable);
             return userVariable;
         },
         setTrackingReminderNotifications: function(notifications){
@@ -6587,7 +6582,7 @@ var qm = {
             qm.api.configureClient(arguments.callee.name);
             var apiInstance = new qm.Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                if (data) { qm.commonVariablesHelper.saveToLocalStorage(data); }
+                if (data) { qm.variablesHelper.saveToLocalStorage(data); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
@@ -6598,20 +6593,6 @@ var qm = {
             }, function(error){
                 qm.qmLog.error(error);
             });
-        },
-        saveToLocalStorage: function(commonVariables){
-            if(!commonVariables){
-                qm.qmLog.error("No commonVariables provided to saveToLocalStorage");
-                return;
-            }
-            commonVariables = qm.arrayHelper.convertToArrayIfNecessary(commonVariables);
-            var definitelyCommonVariables = [];
-            for (var i = 0; i < commonVariables.length; i++) {
-                if(!commonVariables[i].userId){
-                    definitelyCommonVariables.push(commonVariables[i]);
-                }
-            }
-            qm.localForage.saveWithUniqueId(qm.items.commonVariables, definitelyCommonVariables);
         },
         getCommonVariablesFromJsonFile: function (requestParams, successHandler, errorHandler) {
             var commonVariables = qm.staticData.commonVariables;
@@ -6676,24 +6657,6 @@ var qm = {
         }
     },
     userVariables: {
-        saveToLocalStorage: function(variables){
-            if(!variables){
-                qm.qmLog.error("No variables provided to userVariables.saveToLocalStorage");
-                return;
-            }
-            variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
-            var definitelyUserVariables = [];
-            var commonVariables = [];
-            for (var i = 0; i < variables.length; i++) {
-                if(variables[i].userId){
-                    definitelyUserVariables.push(variables[i]);
-                } else {
-                    commonVariables.push(variables[i]);
-                }
-            }
-            qm.localForage.saveWithUniqueId(qm.items.userVariables, definitelyUserVariables);
-            if(commonVariables.length){qm.localForage.saveWithUniqueId(qm.items.commonVariables, commonVariables);}
-        },
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
@@ -6712,7 +6675,7 @@ var qm = {
             qm.api.configureClient(cacheKey);
             var apiInstance = new qm.Quantimodo.VariablesApi();
             function callback(error, data, response) {
-                if (data) { qm.userVariables.saveToLocalStorage(data); }
+                if (data) { qm.variablesHelper.saveToLocalStorage(data); }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
             apiInstance.getVariables(params, callback);
@@ -6721,7 +6684,7 @@ var qm = {
             if(!params){params = {};}
             params.name = variableName;
             qm.userVariables.getFromApi(params, function (userVariables) {
-                qm.userVariables.saveToLocalStorage(userVariables);
+                qm.variablesHelper.saveToLocalStorage(userVariables);
                 successHandler(userVariables[0]);
             }, errorHandler)
         },
@@ -6923,7 +6886,30 @@ var qm = {
                 }
             }
             return variables;
-        }
+        },
+        setLastSelectedAtAndSave: function(variable){
+            variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
+            qm.variablesHelper.saveToLocalStorage(variable);
+        },
+        saveToLocalStorage: function(variables){
+            if(!variables){
+                qm.qmLog.error("No variables provided to variablesHelper.saveToLocalStorage");
+                return;
+            }
+            variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
+            var userVariables = [];
+            var commonVariables = [];
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                if(variable.userId && variable.userId === qm.getUser().id){
+                    userVariables.push(variable);
+                } else {
+                    commonVariables.push(variable);
+                }
+            }
+            if(userVariables.length){qm.localForage.saveWithUniqueId(qm.items.userVariables, userVariables);}
+            if(commonVariables.length){qm.localForage.saveWithUniqueId(qm.items.commonVariables, commonVariables);}
+        },
     },
     variableCategoryHelper: {
         getVariableCategoriesFromApi: function (successHandler, errorHandler) {
