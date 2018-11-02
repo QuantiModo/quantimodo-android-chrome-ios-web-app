@@ -4451,8 +4451,11 @@ var qm = {
         },
         getNumberOfVariablesWithReminders: function(callback){
             var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
-            var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
-            var number = unique.length;
+            var number = 0;
+            if(reminders){
+                var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
+                number = unique.length;
+            }
             if(!callback){return number;}
             if(number){
                 callback(number);
