@@ -56,10 +56,12 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
         },
         isDevelopment: function(){
+            if(!qm.platform.getWindow()){return false;}
             if(window.location.origin.indexOf('http://localhost:') !== -1){return true;}
             return window.location.origin.indexOf('local.quantimo.do') !== -1;
         },
         isStaging: function(){
+            if(!qm.platform.getWindow()){return false;}
             return window.location.origin.indexOf('staging.') !== -1;
         },
         isBuilder: function(){
@@ -248,6 +250,9 @@ var qm = {
         },
         getClientId: function(successHandler){
             qm.clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
+            if(typeof process !== "undefined" && typeof process.env.QUANTIMODO_CLIENT_ID !== "undefined"){
+                return process.env.QUANTIMODO_CLIENT_ID;
+            }
             if(!qm.clientId && qm.getAppSettings()){
                 qm.clientId =  qm.getAppSettings().clientId;
             }
@@ -319,6 +324,7 @@ var qm = {
             return clientId;
         },
         getClientIdFromSubDomain: function(){
+            if(!qm.platform.getWindow()){return false;}
             if(!qm.appMode.isBrowser()){return null;}
             if(window.location.hostname.indexOf('.quantimo.do') === -1){return null;}
             if(qm.appMode.isBuilder()){return null;}
@@ -403,7 +409,7 @@ var qm = {
             if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
             apiUrl = apiUrl.replace("https://https", "https");
             // Why are we adding a port to the API url?  It breaks localhost:8100
-            if(window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
+            if(typeof window !== "undefined" && window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
                 apiUrl += ":" + window.location.port;
             }
             return apiUrl;
@@ -434,6 +440,7 @@ var qm = {
                 // Can't use QM SDK in service worker
                 var settingsUrl = qm.api.getBaseUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(clientSecret){settingsUrl += "&clientSecret=" + clientSecret;}
+                if(!qm.platform.getWindow()){return false;}
                 if(window.designMode){settingsUrl += '&designMode=true';}
                 qm.qmLog.debug('Getting app settings from ' + settingsUrl);
                 return settingsUrl;
@@ -647,13 +654,13 @@ var qm = {
         getAppSettingsFromMemory: function(){
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
             if(appSettings){
-                if(qm.platform.isMobileOrChromeExtension()){return appSettings;}
+                if(qm.platform.isBackEndMobileOrChromeExtension()){return appSettings;}
                 var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
                 if(!clientId || clientId === appSettings.clientId){
                     return appSettings;
                 }
             }
-            if(qm.platform.isMobileOrChromeExtension()){return qm.staticData.appSettings;}
+            if(qm.platform.isBackEndMobileOrChromeExtension()){return qm.staticData.appSettings;}
             return false;
         },
         getAppSettingsFromApi: function (clientId, successHandler, errorHandler) {
@@ -1326,6 +1333,7 @@ var qm = {
             return url;
         },
         openBrowserWindowAndGetParameterFromRedirect: function(url, redirectUrl, parameterName, successHandler, ref) {
+            if(!qm.platform.getWindow()){return false;}
             redirectUrl = redirectUrl || qm.auth.getRedirectUri();
             qm.qmLog.authDebug('Going to try logging in by opening new tab at url ' + url);
             ref = ref || window.open(url, '_blank');
@@ -1387,6 +1395,7 @@ var qm = {
             qm.auth.logOutOfWebsite();
         },
         logOutOfWebsite: function() {
+            if(!qm.platform.getWindow()){return false;}
             //var afterLogoutGoToUrl = qm.api.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro');
             var afterLogoutGoToUrl = qm.urlHelper.getIonicUrlForPath('intro');
             if(qm.urlHelper.indexOfCurrentUrl('/src/') !== -1){afterLogoutGoToUrl = afterLogoutGoToUrl.replace('/www/', '/src/');}
@@ -3253,6 +3262,7 @@ var qm = {
                 }
             }
             if(!micEnabled){
+                if(!qm.platform.getWindow()){return false;}
                 if (window.streamReference) {
                     window.streamReference.getAudioTracks().forEach(function(track) {
                         track.stop();
@@ -3722,8 +3732,8 @@ var qm = {
             }
             for (var i = 0; i < uniqueRatingNotifications.length; i++) {
                 var notification = uniqueRatingNotifications[i];
-                if(!window.notificationsSyncQueue ||
-                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                if(!qm.notificationsSyncQueue ||
+                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, qm.notificationsSyncQueue)){
                     qm.qmLog.info("Got uniqueRatingNotification not in sync queue: " + notification.variableName, null, notification);
                     var hoursAgo = qm.timeHelper.hoursAgo(notification.trackingReminderNotificationTimeEpoch);
                     if(hoursAgo < 24) {
@@ -3745,8 +3755,8 @@ var qm = {
             }
             for (var i = 0; i < uniqueNotifications.length; i++) {
                 var notification = uniqueNotifications[i];
-                if(!window.notificationsSyncQueue ||
-                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, window.notificationsSyncQueue)){
+                if(!qm.notificationsSyncQueue ||
+                    !qm.arrayHelper.arrayHasItemWithSpecificPropertyValue('variableName', notification.variableName, qm.notificationsSyncQueue)){
                     qm.qmLog.info("Got uniqueNotification not in sync queue: " + notification.variableName);
                     return notification;
                 }
@@ -4011,6 +4021,7 @@ var qm = {
             return url;
         },
         closePopup: function() {
+            if(!qm.platform.getWindow()){return false;}
             qm.qmLog.info('closing popup');
             qm.notifications.clearNotifications();
             window.close();
@@ -4298,8 +4309,18 @@ var qm = {
         }
     },
     platform: {
+        getWindow: function(){
+            if(typeof window === "undefined"){return false;}
+            return window;
+        },
         isMobileOrChromeExtension: function (){
             return qm.platform.isMobile() || qm.platform.isChromeExtension();
+        },
+        isBackEnd: function(){
+            return typeof window === "undefined";
+        },
+        isBackEndMobileOrChromeExtension: function (){
+            return qm.platform.isMobile() || qm.platform.isChromeExtension() || qm.platform.isBackEnd();
         },
         isChromeExtension: function (){
             if(qm.platform.isMobile()){return false;}
@@ -4384,21 +4405,26 @@ var qm = {
                 return typeof InstallTrigger !== 'undefined';
             },
             isChrome: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return !!window.chrome && !!window.chrome.webstore;
             },
             isEdge: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return !qm.platform.browser.isIE() && !!window.StyleMedia;
             },
             isIE: function () {
                 return /*@cc_on!@*/!!document.documentMode;
             },
             isSafari: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
             },
             isOpera: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
             },
             isBlink: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
         }
@@ -4691,6 +4717,7 @@ var qm = {
     serviceWorker: false,
     speech: {
         alreadySpeaking: function(text){
+            if(!qm.platform.getWindow()){return false;}
             if(window.speechSynthesis && window.speechSynthesis.speaking){
                 qm.qmLog.info("already speaking so not going to say "+text);
                 return true;
@@ -4885,6 +4912,7 @@ var qm = {
                     qm.qmLog.info("speechSynthesis.resume not implemented on mobile yet");
                     return;
                 }
+                if(!qm.platform.getWindow()){return false;}
                 window.speechSynthesis.resume();
                 qm.speech.timeoutResumeInfinity = setTimeout(resumeInfinity, 3000);
             }
@@ -6228,6 +6256,7 @@ var qm = {
             return keyValuePairsObject;
         },
         openUrlInNewTab: function (url, showLocation) {
+            if(!qm.platform.getWindow()){return false;}
             qm.qmLog.info("openUrlInNewTab: "+url);
             showLocation = showLocation || 'yes';
             //window.open(url, '_blank', 'location='+showLocation);
@@ -6240,6 +6269,7 @@ var qm = {
             return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
         },
         getIonicAppBaseUrl: function (){
+            if(!qm.platform.getWindow()){return false;}
             var url = window.location.origin + window.location.pathname;
             url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
@@ -6282,6 +6312,7 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1;
         },
         redirectToHttpsIfNecessary: function (){
+            if(!qm.platform.getWindow()){return false;}
             if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 && qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
                 location.href = 'https:' + qm.urlHelper.getCurrentUrl().substring(window.location.protocol.length);
             }
@@ -6369,16 +6400,16 @@ var qm = {
             return pathWithQuery.split("?")[0];
         },
         getBaseAppUrl: function(){
+            if(!qm.platform.getWindow()){return false;}
             return window.location.origin + window.location.pathname;
         },
         goToUrl: function(url){
+            if(!qm.platform.getWindow()){return false;}
             qm.qmLog.info("Going to "+url);
             window.location.href = url;
         },
         getCurrentUrl: function(){
-            if(typeof window === "undefined"){
-                return false;
-            }
+            if(!qm.platform.getWindow()){return false;}
             return window.location.href;
         },
         indexOfCurrentUrl: function(needle){
@@ -7003,6 +7034,7 @@ var qm = {
             }
             // Do the thing
             function doAudioStuff(mediaStream){
+                if(!qm.platform.getWindow()){return false;}
                 window.streamReference = mediaStream;
                 analyser = audioCtx.createAnalyser();
                 analyser.smoothingTimeConstant = 0.97;
@@ -7030,6 +7062,7 @@ var qm = {
                 w, h, w2, h2, h3, h4; // Canvas sizes
             //if(zIndex !== null){canvas.style.zIndex = zIndex;}
             function setCanvasSizes() {
+                if(!qm.platform.getWindow()){return false;}
                 w = canvas.width = window.innerWidth,
                     h = canvas.height = window.innerHeight,
                     w2 = w/2,
@@ -7067,6 +7100,7 @@ var qm = {
                 }
                 requestAnimationFrame(animate);
             }
+            if(!qm.platform.getWindow()){return false;}
             window.addEventListener('resize',function(){
                 setCanvasSizes();
             });
@@ -7135,6 +7169,7 @@ var qm = {
              * the analyser and start the visualization.
              */
             function onStream(mediaStream) {
+                if(!qm.platform.getWindow()){return false;}
                 window.streamReference = mediaStream;
                 var input = context.createMediaStreamSource(mediaStream);
                 input.connect(analyser);
@@ -7262,6 +7297,7 @@ var qm = {
             var path;
             var report = 0;
             var soundAllowed = function (stream) {
+                if(!qm.platform.getWindow()){return false;}
                 //Audio stops listening in FF without // window.persistAudioStream = stream;
                 //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
                 //https://support.mozilla.org/en-US/questions/984179
@@ -7324,6 +7360,7 @@ var qm = {
             return qm.firebase;
         },
         registerServiceWorker: function () {
+            if(!qm.platform.getWindow()){return false;}
             if(qm.platform.browser.isFirefox() && qm.urlHelper.indexOfCurrentUrl("herokuapp") !== -1){
                 qm.qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
                 return false;
@@ -7430,6 +7467,7 @@ var qm = {
             return qm.windowHelper.getWindowHeight() < 1000;
         },
         getWindowHeight: function(){
+            if(!qm.platform.getWindow()){return false;}
             var h = window.innerHeight
                 || document.documentElement.clientHeight
                 || document.body.clientHeight;
