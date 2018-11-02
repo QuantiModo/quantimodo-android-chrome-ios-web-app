@@ -4439,12 +4439,28 @@ var qm = {
     reminderHelper: {
         getNumberOfReminders: function(callback){
             var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+            if(!callback){return number;}
             if(number){
                 callback(number);
-                return;
+                return number;
             }
             qm.reminderHelper.getTrackingRemindersFromApi({}, function () {
                 number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+                callback(number);
+            });
+        },
+        getNumberOfVariablesWithReminders: function(callback){
+            var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
+            var number = unique.length;
+            if(!callback){return number;}
+            if(number){
+                callback(number);
+                return number;
+            }
+            qm.reminderHelper.getTrackingRemindersFromApi({}, function (reminders) {
+                var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
+                var number = unique.length;
                 callback(number);
             });
         },
@@ -6686,9 +6702,13 @@ var qm = {
         },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!requestParams){requestParams = {};}
-            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (data) {
-                if(!requestParams.sort){data = qm.variablesHelper.defaultVariableSort(data);}
-                successHandler(data);
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function (userVariables) {
+                qm.reminderHelper.getNumberOfVariablesWithReminders(function (numberOfReminders) {
+                    var numberOfVariables = userVariables.length;
+                    if(numberOfReminders > numberOfVariables){qm.qmLog.error("More reminders than variables!");}
+                });
+                if(!requestParams.sort){userVariables = qm.variablesHelper.defaultVariableSort(userVariables);}
+                successHandler(userVariables);
             }, function (error) {
                 qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
