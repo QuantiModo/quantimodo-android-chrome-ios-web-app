@@ -130,7 +130,7 @@ var qmTests = {
                         searchPhrase: "car"
                     };
                     qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                        qmLog.info('=== Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
+                        qmLog.info('=== Got ' + variables.length + ' variables matching '+requestParams.searchPhrase);
                         qm.assert.doesNotHaveUserId(variables);
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                         assert(variables.length > 5);
