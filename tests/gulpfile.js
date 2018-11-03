@@ -1,8 +1,10 @@
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
-var assert = require('assert');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
+var assert = require('assert');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
+var runSequence = require('../node_modules/run-sequence').use(gulp);
+
 var qm = require('./../src/js/qmHelpers');
 qm.appMode.mode = 'testing';
 var qmLog = require('./../src/js/qmLogger');
@@ -185,15 +187,7 @@ gulp.task('ionic-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
-gulp.task('tests', function(callback) {
-    runSequence(
-        'clean-folders',
-        'clone-repos',
-        function (error) {
-            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
-            callback(error);
-        });
-});
+
 gulp.task('test-get-common-variable', function(callback) {
     qmTests.tests.commonVariables.getCar(callback);
 });
@@ -202,4 +196,14 @@ gulp.task('test-record-measurement-intent', function(callback) {
 });
 gulp.task('test-get-units', function(callback) {
     qmTests.tests.getUnitsTest(callback);
+});
+gulp.task('tests', function(callback) {
+    runSequence(
+        'test-get-common-variable',
+        'test-record-measurement-intent',
+        'test-get-units',
+        function (error) {
+            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            callback(error);
+        });
 });

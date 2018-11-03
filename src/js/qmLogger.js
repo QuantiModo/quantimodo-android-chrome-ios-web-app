@@ -267,6 +267,17 @@ var qmLog = {
             console.info(consoleMessage);
         }
     },
+    logProperties: function(message, object){
+        message = message.toUpperCase();
+        message += ": "
+        var properties = [];
+        for(var key in object){
+            if(!object.hasOwnProperty(key)){continue;}
+            properties.push(key);
+        }
+        message += properties.join(', ');
+        qmLog.info(message);
+    },
     green: function(message){
         qmLog.colorfulLog(message, 'green');
     },
