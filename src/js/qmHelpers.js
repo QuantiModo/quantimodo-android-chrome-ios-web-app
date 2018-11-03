@@ -6597,50 +6597,21 @@ var qm = {
             }
             apiInstance.getVariables(params, callback);
         },
-        putCommonVariablesInLocalStorageUsingApi: function(successHandler){
-            qm.commonVariablesHelper.getCommonVariablesFromApi({limit: 50}, function(commonVariables){
-                if(successHandler){successHandler(commonVariables);}
-            }, function(error){
-                qm.qmLog.error(error);
-            });
-        },
-        getCommonVariablesFromJsonFile: function (requestParams, successHandler, errorHandler) {
-            var commonVariables = qm.staticData.commonVariables;
-            commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
-            if(commonVariables && commonVariables.length){
-                successHandler(commonVariables);
-            } else {
-                var message = "No CommonVariablesFromJsonFile found matching params" + JSON.stringify(requestParams);
-                qm.qmLog.info(message);
-                if(errorHandler){errorHandler(message);}
-            }
-        },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
                 qm.qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
                 return;
             }
             if(!requestParams){requestParams = {};}
-            var commonVariables;
-            function getFromLocalForage(fromJson){
-                qm.localForage.getElementsWithRequestParams(qm.items.commonVariables, requestParams, function (fromLocalForage) {
-                    if(!fromLocalForage){
-                        commonVariables = fromJson;
-                    } else if(fromJson){
-                        commonVariables = fromLocalForage.concat(fromJson);
-                    }
-                    if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
-                    successHandler(commonVariables);
-                }, function (error) {
-                    qm.qmLog.error(error);
-                    if(errorHandler){errorHandler(error);}
-                });
-            }
-            qm.commonVariablesHelper.getCommonVariablesFromJsonFile(requestParams, function (commonVariables) {
-                getFromLocalForage(commonVariables);
+            qm.localForage.getItem(qm.items.commonVariables, function (commonVariables) {
+                if(!commonVariables){commonVariables = [];}
+                if(qm.staticData.commonVariables){commonVariables = commonVariables.concat(qm.staticData.commonVariables);}
+                commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
+                if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
+                successHandler(commonVariables);
             }, function (error) {
-                qm.qmLog.info(error);
-                getFromLocalForage();
+                qm.qmLog.error(error);
+                if(errorHandler){errorHandler(error);}
             });
         },
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
@@ -6656,14 +6627,6 @@ var qm = {
                     if(errorHandler){errorHandler(error);}
                 });
             }, errorHandler);
-        },
-        refreshIfNecessary: function(){
-            //putCommonVariablesInLocalStorageUsingJsonFile();
-            qm.commonVariablesHelper.getFromLocalStorage({}, function (commonVariables) {
-                if(!commonVariables || !commonVariables.length){
-                    qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi();
-                }
-            });
         }
     },
     userVariables: {

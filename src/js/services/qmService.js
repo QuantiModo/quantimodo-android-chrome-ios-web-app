@@ -5369,16 +5369,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         });
         return deferred.promise;
     };
-    qmService.getCommonVariablesDeferred = function(params, successHandler, errorHandler){
-        var commonVariables = qm.storage.getElementsWithRequestParams(qm.items.commonVariables, params);
-        if(!commonVariables || !commonVariables.length){
-            qm.commonVariablesHelper.putCommonVariablesInLocalStorageUsingApi(function (commonVariables) {
-                successHandler(commonVariables);
-            });
-        } else {
-            successHandler(commonVariables);
-        }
-    };
     qmService.scheduleSingleMostFrequentLocalNotification = function(activeTrackingReminders) {
         if(!qm.platform.isMobile() && !qm.platform.isChromeExtension()){return;}
         if(!qm.getUser()){ qmLog.pushDebug('No user for scheduleSingleMostFrequentLocalNotification'); return;}
@@ -6670,7 +6660,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.processAndSaveAppSettings(appSettings);
         qmService.switchBackToPhysician();
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
-        qm.commonVariablesHelper.refreshIfNecessary();
         qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
         qmService.backgroundGeolocationStartIfEnabled();
         qmLog.setupBugsnag();

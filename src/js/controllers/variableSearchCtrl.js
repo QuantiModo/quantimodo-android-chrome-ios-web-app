@@ -191,7 +191,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
         var params = JSON.parse(JSON.stringify(getVariableSearchParameters()));
         params.commonOnly = true;
-        qmService.getCommonVariablesDeferred(params, function (commonVariables) {
+        qm.commonVariablesHelper.getFromLocalStorageOrApi(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     if($scope.state.variableSearchResults){commonVariables = $scope.state.variableSearchResults.concat(commonVariables);}
