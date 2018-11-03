@@ -6578,25 +6578,6 @@ var qm = {
         }
     },
     commonVariablesHelper: {
-        getCommonVariablesFromApi: function(params, successHandler, errorHandler){
-            params = qm.api.addGlobalParams(params);
-            if(!params.sort || params.sort.indexOf('latestMeasurementTime') !== -1){params.sort = '-numberOfUserVariables';}
-            params.commonOnly = true;
-            if(!params.limit){params.limit = 50;}
-            var cacheKey = 'getCommonVariablesFromApi';
-            var cachedData = qm.api.cacheGet(params, cacheKey);
-            if(cachedData && successHandler){
-                //successHandler(cachedData);
-                //return;
-            }
-            qm.api.configureClient(arguments.callee.name);
-            var apiInstance = new qm.Quantimodo.VariablesApi();
-            function callback(error, data, response) {
-                if (data) { qm.variablesHelper.saveToLocalStorage(data); }
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
-            }
-            apiInstance.getVariables(params, callback);
-        },
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
             if(!successHandler){
                 qm.qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
@@ -6613,20 +6594,6 @@ var qm = {
                 qm.qmLog.error(error);
                 if(errorHandler){errorHandler(error);}
             });
-        },
-        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
-            qm.commonVariablesHelper.getFromLocalStorage(params, function(variables){
-                if(variables && variables.length){
-                    if(successHandler){successHandler(variables);}
-                    return;
-                }
-                qm.commonVariablesHelper.getCommonVariablesFromApi(params, function (variables) {
-                    if(successHandler){successHandler(variables);}
-                }, function (error) {
-                    qm.qmLog.error(error);
-                    if(errorHandler){errorHandler(error);}
-                });
-            }, errorHandler);
         }
     },
     userVariables: {
@@ -6763,19 +6730,15 @@ var qm = {
             }
             function getFromApi(localVariables) {
                 qm.userVariables.getFromApi(requestParams, function (variables) {
-                    if(localVariables && variables.length < localVariables.length){
-                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});
-                    }
+                    if(localVariables && variables.length < localVariables.length){qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});}
                     sortUpdateSubtitlesAndReturnVariables(variables);
                 }, function (error) {
                     qm.qmLog.error(error);
                     if(errorHandler){
-                        if(typeof errorHandler !== "function") {
-                            qm.qmLog.error("errorHandler is not a function! It is: ", errorHandler);
-                        }
+                        if(typeof errorHandler !== "function") {qm.qmLog.error("errorHandler is not a function! It is: ", errorHandler);}
                         errorHandler(error);
                     }
-                })
+                });
             }
             if(requestParams.excludeLocal){ // excludeLocal is necessary for complex filtering like tag searches
                 getFromApi();
