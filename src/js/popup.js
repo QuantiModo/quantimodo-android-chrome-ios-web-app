@@ -57,9 +57,9 @@ function hidePopupPostNotificationsDeleteLocalAndClosePopup() {
     qmLog.pushDebug('popup: hidePopupPostNotificationsDeleteLocalAndClosePopup...');
     hidePopup();
     //showLoader();
-    if(window.notificationsSyncQueue){
-        qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', window.notificationsSyncQueue);
-        qm.notifications.postTrackingReminderNotifications(window.notificationsSyncQueue, qm.notifications.closePopup,
+    if(qm.notificationsSyncQueue){
+        qm.storage.deleteByPropertyInArray(qm.items.trackingReminderNotifications, 'variableName', qm.notificationsSyncQueue);
+        qm.notifications.postTrackingReminderNotifications(qm.notificationsSyncQueue, qm.notifications.closePopup,
             5000); // 300 is too fast
     } else {
         qm.notifications.closePopup();
@@ -86,9 +86,9 @@ var onFaceButtonClicked = function() {
 };
 function addToSyncQueueAndCloseOrUpdateQuestion() {
     qmLog.pushDebug('popup: addToSyncQueueAndCloseOrUpdateQuestion...');
-    if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
+    if(!qm.notificationsSyncQueue){qm.notificationsSyncQueue = [];}
     if(qmPopup.trackingReminderNotification){
-        window.notificationsSyncQueue.push(qmPopup.trackingReminderNotification);
+        qm.notificationsSyncQueue.push(qmPopup.trackingReminderNotification);
         if(qmPopup.trackingReminderNotification.id){
             qm.notifications.deleteById(qmPopup.trackingReminderNotification.id);
         } else {
@@ -99,10 +99,10 @@ function addToSyncQueueAndCloseOrUpdateQuestion() {
     if(!qmPopup.trackingReminderNotification){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: getMostRecentUniqueNotificationNotInSyncQueue returned nothing...');
     }
-    if(window.notificationsSyncQueue.length > 10){
+    if(qm.notificationsSyncQueue.length > 10){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: notificationsSyncQueue.length > 10 so posting and closing popup...');
     }
-    if(qmPopup.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
+    if(qmPopup.trackingReminderNotification && qm.notificationsSyncQueue.length < 10){
         qmLog.pushDebug('popup addToSyncQueueAndCloseOrUpdateQuestion: Calling updateQuestion for ' +
             qmPopup.trackingReminderNotification.variableName + '..');
         updateQuestion(qmPopup.trackingReminderNotification.variableName);

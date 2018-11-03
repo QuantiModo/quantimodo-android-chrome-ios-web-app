@@ -1,13 +1,13 @@
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 var assert = require('assert');
-var localforage = require('./../src/lib/localforage/dist/localforage');
+//var localforage = require('./../src/lib/localforage/dist/localforage');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var qm = require('./../src/js/qmHelpers');
 var qmLog = require('./../modules/qmLog');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
-qm.nlp = require('compromise');
+qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName('debug');
 var qmTests = {

@@ -8,6 +8,8 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     var goBack = function () {
         qmService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
+            // We stored update variable in local storage so this will force us to get it from there when we get back to the variable settings page
+            delete $stateParams.fromStateParams.variableObject;
             qmService.goToState($stateParams.fromState, $stateParams.fromStateParams);
         } else {
             $scope.goBack();
@@ -32,7 +34,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                     return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
-        qm.userVariables.saveToLocalStorage(variableObject);
+        qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
@@ -52,7 +54,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         }
         var userTaggedVariableObject = JSON.parse(JSON.stringify($scope.stateParams.userTaggedVariableObject));  // Avoid TypeError: Converting circular structure to JSON
         $scope.stateParams.userTagVariableObject.userTaggedVariables.push(userTaggedVariableObject);
-        qm.userVariables.saveToLocalStorage($scope.stateParams.userTagVariableObject);
+        qm.variablesHelper.setLastSelectedAtAndSave($scope.stateParams.userTagVariableObject);
     }
     function addTagToTaggedVariable() {
         $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
@@ -66,7 +68,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         }
         var userTagVariableObject = JSON.parse(JSON.stringify($scope.stateParams.userTagVariableObject));  // Avoid TypeError: Converting circular structure to JSON
         $scope.stateParams.userTaggedVariableObject.userTagVariables.push(userTagVariableObject);
-        qm.userVariables.saveToLocalStorage($scope.stateParams.userTaggedVariableObject);
+        qm.variablesHelper.setLastSelectedAtAndSave($scope.stateParams.userTaggedVariableObject);
     }
     $scope.done = function(){
         if(!$scope.stateParams.tagConversionFactor){$scope.stateParams.tagConversionFactor = 1;}
@@ -79,7 +81,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         addTagToTaggedVariable();
         qmService.showBlackRingLoader();
         qmService.postUserTagDeferred(userTagData).then(function (response) {
-            qmLog.info(response);
+            qmLog.info("postUserTagDeferred: ", response);
             goBack();
         }, function (error) {
             qmLogService.error(error);

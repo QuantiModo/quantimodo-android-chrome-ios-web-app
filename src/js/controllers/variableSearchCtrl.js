@@ -25,7 +25,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.$on('$ionicView.enter', function(e) {
         qmLog.info($state.current.name + ' enter...');
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
-        populateUserVariables();
+        qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables(function(userVariables){
+            populateUserVariables();
+        }, function(){
+            populateUserVariables();
+        });
         //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
@@ -45,9 +49,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     $scope.selectVariable = function(variableObject) {
         variableObject = qmService.barcodeScanner.addUpcToVariableObject(variableObject);
         qmLog.info($state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
-        variableObject.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
-        if(variableObject.lastValue !== null){qm.userVariables.saveToLocalStorage(variableObject);}
-        qm.userVariables.saveToLocalStorage(variableObject);
+        qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
         $scope.state.variableSearchQuery.name = '';
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
@@ -163,7 +165,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         });
     }
     function getVariableSearchParameters(){
-        return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters, $stateParams.variableSearchParameters, false);
+        var scope = $scope.state.variableSearchParameters;
+        var state = $stateParams.variableSearchParameters;
+        return qm.objectHelper.copyPropertiesFromOneObjectToAnother(scope, state, false);
     }
     $scope.onVariableSearch = function(successHandler, errorHandler){
         $scope.state.noVariablesFoundCard.show = false;
@@ -187,7 +191,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
         var params = JSON.parse(JSON.stringify(getVariableSearchParameters()));
         params.commonOnly = true;
-        qmService.getCommonVariablesDeferred(params, function (commonVariables) {
+        qm.commonVariablesHelper.getFromLocalStorageOrApi(params, function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     if($scope.state.variableSearchResults){commonVariables = $scope.state.variableSearchResults.concat(commonVariables);}
@@ -202,7 +206,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qm.userVariables.getFromLocalStorageOrApi(getVariableSearchParameters(), function (userVariables) {
+        var params = getVariableSearchParameters();
+        qm.userVariables.getFromLocalStorageOrApi(params, function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     if($scope.state.variableSearchResults){userVariables = $scope.state.variableSearchResults.concat(userVariables);}
