@@ -6799,23 +6799,23 @@ var qm = {
                     " (excludeLocal is necessary for complex filtering like tag searches)");
                 return;
             }
-            qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
-                var localCount = localVariables.length;
-                if(localVariables && localCount >= min){
-                    sortUpdateSubtitlesAndReturnVariables(localVariables);
-                    return;
-                }
-                // Using reminders in variable searches creates duplicates and lots of problems
-                // var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage(requestParams);
-                // if(reminders && reminders.length  > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest) {
-                //     sortAndReturnVariables(reminders);
-                //     return;
-                // }
-                getFromApi(localVariables, "only " + localCount +
-                    " local user or common variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is " + min);
-            }, function(error){
-                getFromApi(null, "error getting local user and common variables: "+error);
-            });
+            if(requestParams.includePublic){
+                qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
+                    var localCount = localVariables.length;
+                    if(localVariables && localCount >= min){
+                        sortUpdateSubtitlesAndReturnVariables(localVariables);
+                        return;
+                    }
+                    getFromApi(localVariables, "only " + localCount +
+                        " local user or common variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is " + min);
+                }, function(error){
+                    getFromApi(null, "error getting local user and common variables: "+error);
+                });
+            } else {
+                qm.userVariables.getFromLocalStorageOrApi(requestParams, function(userVariables){
+                    sortUpdateSubtitlesAndReturnVariables(userVariables);
+                }, errorHandler);
+            }
         },
         putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
             if(!variables){
@@ -6855,10 +6855,6 @@ var qm = {
             requestParams = requestParams || {};
             qm.userVariables.getFromLocalStorage(requestParams, function(userVariables){
                 userVariables = userVariables || [];
-                if(!requestParams.includePublic){
-                    successHandler(userVariables);
-                    return;
-                }
                 qm.commonVariablesHelper.getFromLocalStorage(requestParams, function (commonVariables) {
                     commonVariables = commonVariables || [];
                     var both = userVariables.concat(commonVariables);
