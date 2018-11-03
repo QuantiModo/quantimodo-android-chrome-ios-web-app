@@ -6767,10 +6767,13 @@ var qm = {
     variablesHelper: {
         getFromLocalStorageOrApi: function (requestParams, successHandler, errorHandler){
             requestParams = requestParams || {};
-            if(!requestParams.searchPhrase || requestParams.searchPhrase === ""){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 20;}
-            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 2){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 3;}
-            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
-            if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
+            var search = requestParams.searchPhrase;
+            var min = requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest;
+            if(!search || search === ""){min = 20;}
+            if(search && search.length > 2){min = 4;}
+            if(search && search.length > 3){min = 2;}
+            if(search && search.length > 4){min = 1;}
+            if(requestParams.id || requestParams.name){min = 1;}
             function sortUpdateSubtitlesAndReturnVariables(variables) {
                 if(!requestParams.sort){
                     variables = qm.variablesHelper.defaultVariableSort(variables);
@@ -6780,9 +6783,9 @@ var qm = {
             }
             function getFromApi(localVariables, reason) {
                 requestParams.reason = reason;
-                qm.userVariables.getFromApi(requestParams, function (variables) {
-                    if(localVariables && variables.length < localVariables.length){qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});}
-                    sortUpdateSubtitlesAndReturnVariables(variables);
+                qm.userVariables.getFromApi(requestParams, function (variablesFromApi) {
+                    if(localVariables && variablesFromApi.length < localVariables.length){qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variablesFromApi});}
+                    sortUpdateSubtitlesAndReturnVariables(variablesFromApi);
                 }, function (error) {
                     qm.qmLog.error(error);
                     if(errorHandler){
@@ -6791,14 +6794,14 @@ var qm = {
                     }
                 });
             }
-            if(requestParams.excludeLocal){ // excludeLocal is necessary for complex filtering like tag searches
-                getFromApi();
+            if(requestParams.excludeLocal){
+                getFromApi(null, requestParams, "excludeLocal is " + requestParams.excludeLocal +
+                    " (excludeLocal is necessary for complex filtering like tag searches)");
                 return;
             }
             qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
-                var min = requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest;
                 var localCount = localVariables.length;
-                if(localVariables && localCount > min){
+                if(localVariables && localCount >= min){
                     sortUpdateSubtitlesAndReturnVariables(localVariables);
                     return;
                 }
@@ -6808,10 +6811,10 @@ var qm = {
                 //     sortAndReturnVariables(reminders);
                 //     return;
                 // }
-                getFromApi(localVariables,
-                    "only "+localCount+" local variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is "+min);
-            }, function(){
-                getFromApi({});
+                getFromApi(localVariables, "only " + localCount +
+                    " local user or common variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is " + min);
+            }, function(error){
+                getFromApi(null, "error getting local user and common variables: "+error);
             });
         },
         putManualTrackingFirst: function (variables) { // Don't think we need to do this anymore since we sort by number of reminders maybe?
