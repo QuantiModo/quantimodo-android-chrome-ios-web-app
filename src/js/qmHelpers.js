@@ -970,7 +970,7 @@ var qm = {
             return array.filter(function(item){
                 var name = item.name || item.variableName;
                 if(!name){
-                    qmLog.error("No name on: "+JSON.stringify(item));
+                    qm.qmLog.error("No name on: "+JSON.stringify(item));
                     return false;
                 }
                 name = name.toLowerCase();
@@ -1192,6 +1192,36 @@ var qm = {
             if(qm.arrayHelper.variableIsArray(possibleArray)){return possibleArray[0];}
             return possibleArray;
         }
+    },
+    assert: {
+        doesNotHaveProperty: function(array, propertyName){
+            if(typeof array !== "Array"){array = [array];}
+            for (var i = 0; i < array.length; i++) {
+                var item = array[i];
+                if(item[propertyName]){
+                    qm.qmLog.itemAndThrowException(item, "should not have "+propertyName+" ("+item[propertyName]+")")
+                }
+            }
+        },
+        doesNotHaveUserId: function(item){
+            qm.assert.doesNotHaveProperty(item, 'userId');
+        },
+        variables: {
+            descendingOrder: function (variables, property) {
+                qm.qmLog.variables(variables, property);
+                qm.assert.descendingOrder(variables, property)
+            }
+        },
+        descendingOrder: function(array, property){
+            var lastValue = array[0][property];
+            for (var i = 0; i < array.length; i++) {
+                var qmElement = array[i];
+                var currentValue = qmElement[property];
+                if(currentValue > lastValue){
+                    throw "current "+property+" "+currentValue+" is greater than last value "+lastValue;
+                }
+            }
+        },
     },
     auth: {
         getAccessToken: function(){

@@ -5,7 +5,8 @@ var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var qm = require('./../src/js/qmHelpers');
 qm.appMode.mode = 'testing';
-var qmLog = require('./../modules/qmLog');
+var qmLog = require('./../src/js/qmLogger');
+qmLog.qm = qm;
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
 qm.nlp = require('./../src/lib/compromise');
@@ -129,17 +130,21 @@ var qmTests = {
                         searchPhrase: "car"
                     };
                     qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                        qmLog.info('Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
+                        qmLog.info('=== Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
+                        qm.assert.doesNotHaveUserId(variables);
+                        qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                         assert(variables.length > 5);
                         var variable5 = variables[4];
                         var time = qm.timeHelper.getUnixTimestampInSeconds();
                         qm.variablesHelper.setLastSelectedAtAndSave(variable5);
                         qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id}, function(variables){
+                            qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                             var lastSelectedAt = variables[0].lastSelectedAt;
                             if(lastSelectedAt < time){
                                 throw "Should have gotten "+variable5.name+" but got "+variables[0].name;
                             }
                             qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                                qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                                 var variable1 = variables[0];
                                 assert(variable1.lastSelectedAt === time);
                                 assert(variable1.variableId === variable5.variableId);

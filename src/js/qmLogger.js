@@ -9,7 +9,7 @@
 // — home for dependencies in Webpack bundle
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
-window.qmLog = {
+var qmLog = {
     name: null,
     setName: function(name, message) {
         if(name && name.response && name.response.body){
@@ -17,7 +17,7 @@ window.qmLog = {
             qmLog.name = body.errorMessage || body.message || JSON.stringify(body);
         }
         qmLog.name = name || message;
-        if(qm.platform.isMobile()){qmLog.name = "QM: " + name;} // Use for filtering in LogCat
+        if(qmLog.qm.platform.isMobile()){qmLog.name = "QM: " + name;} // Use for filtering in LogCat
     },
     message: null,
     setMessage: function(name, message) {
@@ -26,7 +26,7 @@ window.qmLog = {
         } else {
             qmLog.message = message || name;
         }
-        if(qm.platform.isMobile() && qmLog.isDebugMode()){qmLog.message = addCallerFunctionToMessage(qmLog.message || "");}
+        if(qmLog.qm.platform.isMobile() && qmLog.isDebugMode()){qmLog.message = addCallerFunctionToMessage(qmLog.message || "");}
         return qmLog.message;
     },
     globalMetaData : {
@@ -59,38 +59,75 @@ window.qmLog = {
         if(qmLog.logLevel === value){return;}
         qmLog.logLevel = value;
         if(typeof localStorage !== "undefined"){
-            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+            localStorage.setItem(qmLog.qm.items.logLevel, value); // Can't use qmLog.qm.storage because of recursion issue
         }
     },
     getLogLevelName: function() {
         //qmService.setUseif(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
-        if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
-        if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
+        if(qmLog.qm.urlHelper.getParam('debug') || qmLog.qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
+        if(qmLog.qm.urlHelper.getParam(qmLog.qm.items.logLevel)){qmLog.setLogLevelName(qmLog.qm.urlHelper.getParam(qmLog.qm.items.logLevel));}
         if(qmLog.logLevel){return qmLog.logLevel;}
         if(typeof localStorage !== "undefined"){
-            qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+            qmLog.logLevel = localStorage.getItem(qmLog.qm.items.logLevel);  // Can't use qmLog.qm.storage because of recursion issue
         }
         if(qmLog.logLevel){return qmLog.logLevel;}
-        var defaultLevel = (qm.appMode.isDevelopment()) ? "info" : "error";
+        var defaultLevel = (qmLog.qm.appMode.isDevelopment()) ? "info" : "error";
         qmLog.setLogLevelName(defaultLevel); // I think info logs might be slowing down iOS app so default to error
         return qmLog.logLevel;
     },
     setAuthDebugEnabled: function (value) {
         qmLog.authDebugEnabled = value;
         if(qmLog.authDebugEnabled && window.localStorage){
-            qm.storage.setItem('authDebugEnabled', value);
+            qmLog.qm.storage.setItem('authDebugEnabled', value);
         }
         return qmLog.authDebugEnabled;
     },
     setDebugMode: function (value) {
         if (value) {
-            qm.storage.setItem(qm.items.apiUrl, 'utopia.quantimo.do');
+            qmLog.qm.storage.setItem(qmLog.qm.items.apiUrl, 'utopia.quantimo.do');
             qmLog.setLogLevelName("debug");
         } else {
-            qm.storage.removeItem(qm.items.apiUrl);
+            qmLog.qm.storage.removeItem(qmLog.qm.items.apiUrl);
             qmLog.setLogLevelName("info");
         }
         return value;
+    },
+    itemAndThrowException: function(item, message){
+        qmLog.itemProperties(item);
+        throw message;
+    },
+    itemProperties: function(item, propertiesToLog, message){
+        var string = '';
+        if(item.name){string = item.name+": ";}
+        for (var i = 0; i < propertiesToLog.length; i++) {
+            var property = propertiesToLog[i];
+            var value = item[property];
+            string += property+" "+value+", ";
+        }
+        if(message){string += message;}
+        qmLog.qm.qmLog.info(string);
+    },
+    arrayValues: function(array, propertiesToLog, message){
+        if(typeof array !== "Array"){array = [array];}
+        for (var j = 0; j < array.length; j++) {
+            var item = array[j];
+            qmLog.itemProperties(item, propertiesToLog, message);
+        }
+    },
+    variables: function(variables, propertiesToLog){
+        if(typeof propertiesToLog !== "Array"){propertiesToLog = [propertiesToLog];}
+        propertiesToLog = [
+            //'name',
+            'userId'].concat(propertiesToLog);
+        propertiesToLog.push('lastSelected');
+        propertiesToLog = propertiesToLog.filter(function (propertyToLog) {
+            return propertyToLog !== 'lastSelectedAt';
+        });
+        for (var j = 0; j < variables.length; j++) {
+            var variable = variables[j];
+            variable.lastSelected = qmLog.qm.timeHelper.getTimeSinceString(variable.lastSelectedAt);
+        }
+        qmLog.arrayValues(variables, propertiesToLog);
     },
     isDebugMode: function() {
         return qmLog.getLogLevelName() === "debug";
@@ -136,7 +173,7 @@ window.qmLog = {
         for (var i = 0; i < qmLog.secretAliases.length; i++) {
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
+                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
             }
         }
         if(censoredString !== lowerCase){return censoredString;}
@@ -149,7 +186,7 @@ window.qmLog = {
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
         function bugsnagNotify(name, message, errorSpecificMetaData, logLevel, stackTrace){
             if(typeof bugsnagClient === "undefined") {
-                if (!qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', errorSpecificMetaData);}
+                if (!qmLog.qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', errorSpecificMetaData);}
                 return;
             }
             var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
@@ -178,6 +215,7 @@ window.qmLog = {
         }
     },
     getAuthDebugEnabled: function(message){
+        if(qmLog.qm.platform.isBackEnd()){return false;}
         if(message.indexOf("cloudtestlabaccounts") !== -1){ // Keeps spamming bugsnag
             return qmLog.setAuthDebugEnabled(false);
         }
@@ -192,14 +230,14 @@ window.qmLog = {
     authDebug: function(name, message, errorSpecificMetaData) {
         if(!qmLog.getAuthDebugEnabled(name)){return;}
         name = "Auth Debug: " + name;
-        if(qm.platform.isMobile()){
+        if(qmLog.qm.platform.isMobile()){
             qmLog.error(name, message, errorSpecificMetaData);
         } else {
             qmLog.info(name, message, errorSpecificMetaData);
         }
     },
     webAuthDebug: function(name, message, errorSpecificMetaData) {
-        if(!qm.platform.isMobile()){qmLog.authDebug(name, message, errorSpecificMetaData);}
+        if(!qmLog.qm.platform.isMobile()){qmLog.authDebug(name, message, errorSpecificMetaData);}
     },
     warn: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
@@ -232,7 +270,7 @@ window.qmLog = {
         message = message || name;
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;
-        if(qm.appMode.isTesting()){
+        if(qmLog.qm.appMode.isTesting()){
             qmLog.info(name, message, metaData, stackTrace);
         } else {
             qmLog.error(name, message, metaData, stackTrace);
@@ -243,17 +281,17 @@ window.qmLog = {
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;
         qmLog.error(name, message, metaData, stackTrace);
-        if(qm.appMode.isTesting() || qm.appMode.isDevelopment()){throw name;}
+        if(qmLog.qm.appMode.isTesting() || qmLog.qm.appMode.isDevelopment()){throw name;}
     },
     getConsoleLogString: function (logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
         if(qmLog.message && logString !== qmLog.message){logString = logString + ": " + qmLog.message;}
-        if(qm.platform.isMobileOrTesting() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
+        if(qmLog.qm.platform.isMobileOrTesting() && qmLog.isDebugMode()){logString = addCallerFunctionToMessage(logString);}
         if(qmLog.stackTrace){logString = logString + ". stackTrace: " + qmLog.stackTrace;}
-        if(errorSpecificMetaData && qm.platform.isMobileOrTesting()){ // Meta object is already logged nicely in browser console
+        if(errorSpecificMetaData && qmLog.qm.platform.isMobileOrTesting()){ // Meta object is already logged nicely in browser console
             try {
                 if(qmLog.isDebugMode()){  // stringifyCircularObject might be too resource intensive
-                    logString = logString + ". metaData: " + qm.stringHelper.stringifyCircularObject(errorSpecificMetaData);
+                    logString = logString + ". metaData: " + qmLog.qm.stringHelper.stringifyCircularObject(errorSpecificMetaData);
                 }
             } catch (error) {
                 console.error("Could not stringify log meta data", error);
@@ -265,7 +303,7 @@ window.qmLog = {
         }
         var censored = qmLog.stringContainsSecretAliasWord(logString);
         if(censored){logString = censored;}
-        if(qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
+        if(qmLog.qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
         return logString;
     },
     shouldWeLog: function(providedLogLevelName) {
@@ -280,7 +318,7 @@ window.qmLog = {
                 return parts[1];
             }
             var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-            if(qm.getUser()){url = qm.urlHelper.addUrlQueryParamsToUrlString({userEmail: qm.getUser().email}, url);}
+            if(qmLog.qm.getUser()){url = qmLog.qm.urlHelper.addUrlQueryParamsToUrlString({userEmail: qmLog.qm.getUser().email}, url);}
             return url;
         }
         function cordovaPluginsAvailable() {
@@ -302,17 +340,17 @@ window.qmLog = {
             "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
         };
         qmLog.globalMetaData.push_data = {
-            "deviceTokenOnServer": qm.storage.getItem(qm.items.deviceTokenOnServer),
-            "deviceTokenToSync": qm.storage.getItem(qm.items.deviceTokenToSync),
-            "last_push": window.qm.push.getTimeSinceLastPushString(),
-            "push enabled": qm.push.enabled(),
-            "draw over apps enabled": qm.storage.getItem(qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
-            "last popup": qm.notifications.getTimeSinceLastPopupString()
+            "deviceTokenOnServer": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenOnServer),
+            "deviceTokenToSync": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenToSync),
+            "last_push": window.qmLog.qm.push.getTimeSinceLastPushString(),
+            "push enabled": qmLog.qm.push.enabled(),
+            "draw over apps enabled": qmLog.qm.storage.getItem(qmLog.qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
+            "last popup": qmLog.qm.notifications.getTimeSinceLastPopupString()
         };
-        if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = window.qm.storage.getLocalStorageList();} // Too slow to do for every error
-        if(qm.getAppSettings()){
-            qmLog.globalMetaData.build_server = qm.getAppSettings().buildServer;
-            qmLog.globalMetaData.build_link = qm.getAppSettings().buildLink;
+        if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = window.qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
+        if(qmLog.qm.getAppSettings()){
+            qmLog.globalMetaData.build_server = qmLog.qm.getAppSettings().buildServer;
+            qmLog.globalMetaData.build_link = qmLog.qm.getAppSettings().buildLink;
         }
         qmLog.globalMetaData.test_app_url = getTestUrl();
         qmLog.globalMetaData.window_location_href = window.location.href;
@@ -330,36 +368,36 @@ window.qmLog = {
             console.error('API ERROR URL ' + qmLog.globalMetaData.test_api_url, qmLog.globalMetaData);
             delete qmLog.globalMetaData.apiResponse;
         }
-        qmLog.globalMetaData.local_notifications = qm.storage.getItem(qm.items.scheduledLocalNotifications);
+        qmLog.globalMetaData.local_notifications = qmLog.qm.storage.getItem(qmLog.qm.items.scheduledLocalNotifications);
         if(typeof ionic !== "undefined"){
             qmLog.globalMetaData.platform = ionic.Platform.platform();
             qmLog.globalMetaData.platformVersion = ionic.Platform.version();
         }
-        if(qm.getAppSettings()){qmLog.globalMetaData.appDisplayName = qm.getAppSettings().appDisplayName;}
+        if(qmLog.qm.getAppSettings()){qmLog.globalMetaData.appDisplayName = qmLog.qm.getAppSettings().appDisplayName;}
         return qmLog.globalMetaData;
     },
     setupIntercom: function() {
         window.intercomSettings = {
             app_id: "uwtx2m33",
-            name: qm.userHelper.getUserFromLocalStorage().displayName,
-            email: qm.userHelper.getUserFromLocalStorage().email,
-            user_id: qm.userHelper.getUserFromLocalStorage().id,
-            app_name: qm.getAppSettings().appDisplayName,
-            app_version: qm.getAppSettings().versionNumber,
-            platform: qm.platform.getCurrentPlatform()
+            name: qmLog.qm.userHelper.getUserFromLocalStorage().displayName,
+            email: qmLog.qm.userHelper.getUserFromLocalStorage().email,
+            user_id: qmLog.qm.userHelper.getUserFromLocalStorage().id,
+            app_name: qmLog.qm.getAppSettings().appDisplayName,
+            app_version: qmLog.qm.getAppSettings().versionNumber,
+            platform: qmLog.qm.platform.getCurrentPlatform()
         };
     },
     setupUserVoice: function() {
         if (typeof UserVoice !== "undefined") {
             UserVoice.push(['identify', {
-                email: qm.getUser().email, // User’s email address
-                name: qm.getUser().displayName, // User’s real name
-                created_at: window.qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
-                id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
-                type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
+                email: qmLog.qm.getUser().email, // User’s email address
+                name: qmLog.qm.getUser().displayName, // User’s real name
+                created_at: window.qmLog.qm.timeHelper.getUnixTimestampInSeconds(qmLog.qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
+                id: qmLog.qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
+                type: qmLog.qm.getSourceName() + ' User (Subscribed: ' + qmLog.qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
                 account: {
                     //id: 123, // Optional: associate multiple users with a single account
-                    name: qm.getSourceName() + ' v' + qm.getAppSettings().versionNumber, // Account name
+                    name: qmLog.qm.getSourceName() + ' v' + qmLog.qm.getAppSettings().versionNumber, // Account name
                     //created_at: 1364406966, // Unix timestamp for the date the account was created
                     //monthly_rate: 9.99, // Decimal; monthly rate of the account
                     //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -372,7 +410,7 @@ window.qmLog = {
         if (typeof bugsnag !== "undefined") {
             var options = {
                 apiKey: "ae7bc49d1285848342342bb5c321a2cf",
-                releaseStage: qm.appMode.getAppMode(),
+                releaseStage: qmLog.qm.appMode.getAppMode(),
                 //notifyReleaseStages: [ 'staging', 'production' ],
                 metaData: qmLog.getGlobalMetaData(),
                 beforeSend: function (report) {}
@@ -380,10 +418,10 @@ window.qmLog = {
             if(user){
                 options.user = qmLog.obfuscateSecrets(user);
             }
-            if(qm.getAppSettings()){options.appVersion = qm.getAppSettings().androidVersionCode;}
+            if(qmLog.qm.getAppSettings()){options.appVersion = qmLog.qm.getAppSettings().androidVersionCode;}
             window.bugsnagClient = bugsnag(options);
         } else {
-            if(!qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
+            if(!qmLog.qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
         }
     },
     getStackTrace: function() {
@@ -408,6 +446,15 @@ window.qmLog = {
         "info": 3,
         "debug": 4
     },
+    stringifyIfNecessary: function(variable){
+        if(!variable || typeof message === "string"){return variable;}
+        try {
+            return JSON.stringify(variable);
+        } catch (error) {
+            console.error("Could not stringify", variable);
+            return "Could not stringify";
+        }
+    },
     addGlobalMetaDataAndLog: function(name, message, errorSpecificMetaData, stacktrace) {
         var i = 0;
         var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stacktrace);
@@ -417,7 +464,7 @@ window.qmLog = {
             if (combinedMetaData.hasOwnProperty(propertyName)) {
                 if(combinedMetaData[propertyName]){
                     i++;
-                    console.log(propertyName + ": " + window.stringifyIfNecessary(combinedMetaData[propertyName]));
+                    console.log(propertyName + ": " + qmLog.stringifyIfNecessary(combinedMetaData[propertyName]));
                     if(i > 10){
                         break;
                     }
@@ -425,19 +472,6 @@ window.qmLog = {
             }
         }
         return combinedMetaData;
-    }
-};
-if(typeof bugsnag !== "undefined"){
-    window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
-}
-window.isTruthy = function(value){return value && value !== "false"; };
-window.stringifyIfNecessary = function(variable){
-    if(!variable || typeof message === "string"){return variable;}
-    try {
-        return JSON.stringify(variable);
-    } catch (error) {
-        console.error("Could not stringify", variable);
-        return "Could not stringify";
     }
 };
 function getCalleeFunction() {
@@ -481,10 +515,16 @@ function getCallerFunctionName() {
     return null;
 }
 function addCallerFunctionToMessage(message) {
-    if(qm.platform.browser.isFirefox()){return message;}
+    if(qmLog.qm.platform.browser.isFirefox()){return message;}
     if(message === "undefined"){message = "";}
     if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
     if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
     return message;
+}
+if(typeof window !== "undefined"){
+    if(typeof bugsnag !== "undefined"){window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");}
+    window.qmLog = qmLog;
+} else {
+    module.exports = qmLog;
 }
 
