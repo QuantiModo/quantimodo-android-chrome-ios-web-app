@@ -99,9 +99,10 @@ var qm = {
                 };
             };
         },
-        configureClient: function (functionName, errorHandler, minimumSecondsBetweenRequests, blockRequests) {
-            minimumSecondsBetweenRequests = minimumSecondsBetweenRequests || 1;
-            blockRequests = blockRequests || true;
+        configureClient: function (functionName, errorHandler, requestParams) {
+            requestParams = requestParams || {};
+            var minimumSecondsBetweenRequests = requestParams.minimumSecondsBetweenRequests || 1;
+            var blockRequests = requestParams.blockRequests || true;
             if(functionName && !qm.api.canWeMakeRequestYet('GET', functionName, {minimumSecondsBetweenRequests: 1, blockRequests: blockRequests})){
                 if(errorHandler){
                     errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
@@ -110,7 +111,10 @@ var qm = {
                 }
                 return false;
             }
-            qm.qmLog.info("API Request: " + functionName);
+            var message = "API Request: " + functionName;
+            if(requestParams.reason){message += " because " + requestParams.reason;}
+            delete requestParams.reason;
+            qm.qmLog.info(message, requestParams);
             qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName});
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
@@ -1556,7 +1560,7 @@ var qm = {
                     qm.qmLog.error("Could not get connectors from API...");
                 }
             }
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.ConnectorsApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getConnectorsFromApi');
@@ -1633,7 +1637,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.AnalyticsApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAggregatedCorrelationsFromApi');
@@ -1647,7 +1651,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.AnalyticsApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, qm.items.userCorrelations);
@@ -2320,7 +2324,7 @@ var qm = {
             }, errorHandler);
         },
         getFeedApiInstance: function(params){
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.FeedApi();
             apiInstance.cache = !params || !params.noCache;
             return apiInstance;
@@ -2331,7 +2335,7 @@ var qm = {
         getFeedFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getFeed';
-            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            if(!qm.api.configureClient(cacheKey, errorHandler, params)){return false;}
             function callback(error, data, response) {
                 var cards = qm.feed.handleFeedResponse(data);
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
@@ -2407,7 +2411,7 @@ var qm = {
         postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
-            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            if(!qm.api.configureClient(cacheKey, errorHandler, params)){return false;}
             function callback(error, data, response) {
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
@@ -3100,7 +3104,7 @@ var qm = {
                 //successHandler(cachedData);
                 //return;
             }
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.MeasurementsApi();
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
@@ -4554,7 +4558,7 @@ var qm = {
             return number;
         },
         getTrackingRemindersFromApi: function(params, successHandler, errorHandler){
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.RemindersApi();
             function callback(error, trackingReminders, response) {
                 if (trackingReminders) {
@@ -5147,7 +5151,7 @@ var qm = {
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, body);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response) {
                 var authorizedClients = data.authorizedClients || data;
@@ -5159,7 +5163,7 @@ var qm = {
         },
         getAuthorizedClientsFromApi: function(successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response) {
                 var authorizedClients = data.authorizedClients || data;
@@ -5815,7 +5819,7 @@ var qm = {
     },
     studyHelper: {
         getStudiesApiInstance: function(params, functionName){
-            qm.api.configureClient(functionName);
+            qm.api.configureClient(functionName, null, params);
             var apiInstance = new qm.Quantimodo.StudiesApi();
             apiInstance.apiClient.timeout = 120 * 1000;
             apiInstance.cache = !params || !params.recalculate;
@@ -6003,7 +6007,7 @@ var qm = {
                 errorHandler("No study params provided!");
                 return;
             }
-            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            if(!qm.api.configureClient(cacheKey, errorHandler, params)){return false;}
             function callback(error, data, response) {
                 var study = qm.studyHelper.processAndSaveStudy(data);
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
@@ -6066,7 +6070,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            if(!qm.api.configureClient(cacheKey, errorHandler)){return false;}
+            if(!qm.api.configureClient(cacheKey, errorHandler, params)){return false;}
             function callback(error, data, response) {
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
@@ -6489,7 +6493,7 @@ var qm = {
     user: null,
     userHelper: {
         deleteUserAccount: function(reason, successHandler){
-            qm.api.configureClient(arguments.callee.name);
+            qm.api.configureClient(arguments.callee.name, null, {reason: reason});
             var apiInstance = new qm.Quantimodo.UserApi();
             function callback(error, data, response) {
                 qm.api.responseHandler(error, data, response, successHandler);
@@ -6656,7 +6660,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(cacheKey);
+            qm.api.configureClient(cacheKey, null, params);
             var apiInstance = new qm.Quantimodo.VariablesApi();
             function callback(error, data, response) {
                 if (data) { qm.variablesHelper.saveToLocalStorage(data); }
@@ -6774,7 +6778,8 @@ var qm = {
                 variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
                 if(successHandler){successHandler(variables);}
             }
-            function getFromApi(localVariables) {
+            function getFromApi(localVariables, reason) {
+                requestParams.reason = reason;
                 qm.userVariables.getFromApi(requestParams, function (variables) {
                     if(localVariables && variables.length < localVariables.length){qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {local: localVariables, api: variables});}
                     sortUpdateSubtitlesAndReturnVariables(variables);
@@ -6791,7 +6796,9 @@ var qm = {
                 return;
             }
             qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
-                if(localVariables && localVariables.length > requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest){
+                var min = requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest;
+                var localCount = localVariables.length;
+                if(localVariables && localCount > min){
                     sortUpdateSubtitlesAndReturnVariables(localVariables);
                     return;
                 }
@@ -6801,7 +6808,8 @@ var qm = {
                 //     sortAndReturnVariables(reminders);
                 //     return;
                 // }
-                getFromApi(localVariables);
+                getFromApi(localVariables,
+                    "only "+localCount+" local variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is "+min);
             }, function(){
                 getFromApi({});
             });

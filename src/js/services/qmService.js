@@ -2951,7 +2951,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //successHandler(cachedData);
             //return;
         }
-        if(!qm.api.configureClient('getMeasurementsDailyFromApi', errorHandler)){return false;}
+        if(!qm.api.configureClient('getMeasurementsDailyFromApi', errorHandler, params)){return false;}
         var apiInstance = new Quantimodo.MeasurementsApi();
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsDailyFromApi');
@@ -3049,7 +3049,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
         var functionName = "getTrackingReminderNotificationsFromApi";
         qmLogService.debug(functionName, null, params, qmLog.getStackTrace());
-        if(!qm.api.configureClient(functionName, errorHandler)){return false;}
+        if(!qm.api.configureClient(functionName, errorHandler, params)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, trackingReminderNotifications, response) {
             if(trackingReminderNotifications && trackingReminderNotifications.length){
@@ -3146,7 +3146,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         return deferred.promise;
     };
     qmService.getUserTags = function(params, successHandler, errorHandler){
-        if(!qm.api.configureClient('getUserTags', errorHandler)){return false;}
+        if(!qm.api.configureClient('getUserTags', errorHandler, params)){return false;}
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserTags');
@@ -4380,7 +4380,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLogService.error(error);
             deferred.reject(error);
         };
-        if(!qm.api.configureClient('getCurrentTrackingReminderNotificationsFromApi', errorHandler)){return false;}
+        if(!qm.api.configureClient('getCurrentTrackingReminderNotificationsFromApi', errorHandler, params)){return false;}
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
             qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCurrentTrackingReminderNotificationsFromApi');
