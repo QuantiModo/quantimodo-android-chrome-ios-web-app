@@ -6512,37 +6512,41 @@ var qm = {
             }
             return true;
         },
+        getUserViaXhrOrFetch: function (userSuccessHandler, errorHandler) {
+            qm.api.getRequestUrl('api/v1/user', function (url) {
+                qm.api.getViaXhrOrFetch(url, function (user) {
+                    userSuccessHandler(user);
+                }, errorHandler)
+            });
+        },
+        getUserViaSdk: function(userSuccessHandler, errorHandler){
+            qm.api.configureClient(arguments.callee.name);
+            var apiInstance = new qm.Quantimodo.UserApi();
+            //params.includeAuthorizedClients = true;  // To big for $rootScope!
+            //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
+            var params = qm.api.addGlobalParams({});
+            apiInstance.getUser(params, function(error, user, response) {
+                qm.api.generalResponseHandler(error, user, response, function(){
+                    if(user){userSuccessHandler(user);}
+                }, errorHandler, params, 'getUserFromApi');
+            });
+        },
         getUserFromApi: function(successHandler, errorHandler){
             qm.qmLog.info("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if (userFromApi && typeof userFromApi.displayName !== "undefined") {
                     qm.qmLog.info("Got user from API...");
                     qm.userHelper.setUser(userFromApi);
-                    if(successHandler){successHandler(userFromApi);}
+                    if(successHandler){successHandler(userFromApi);} // Already done below
                 } else {
                     qm.qmLog.info("Could not get user from API...");
-                    if(qm.platform.isChromeExtension()){
-                        qm.chrome.openLoginWindow();
-                    }
+                    if(qm.platform.isChromeExtension()){qm.chrome.openLoginWindow();}
                 }
             }
             if(typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.api.getRequestUrl('api/v1/user', function(url){
-                    qm.api.getViaXhrOrFetch(url, function (user) {
-                        userSuccessHandler(user);
-                    }, errorHandler)
-                });
+                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler);
             } else {   // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.api.configureClient(arguments.callee.name);
-                var apiInstance = new qm.Quantimodo.UserApi();
-                function userSdkCallback(error, user, response) {
-                    if(user){userSuccessHandler(user);}
-                    qm.api.generalResponseHandler(error, user, response, successHandler, errorHandler, params, 'getUserFromApi');
-                }
-                var params = qm.api.addGlobalParams({});
-                //params.includeAuthorizedClients = true;  // To big for $rootScope!
-                //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
-                apiInstance.getUser(params, userSdkCallback);
+                qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler);
             }
         },
         getUserFromLocalStorageOrApi: function (successHandler, errorHandler) {
