@@ -1194,17 +1194,27 @@ var qm = {
         }
     },
     assert: {
+        count: function(expected, array){
+            if(array.length !== expected){
+                throw "Array length should be "+expected+" but is "+array.length;
+            }
+        },
         doesNotHaveProperty: function(array, propertyName){
             if(typeof array !== "Array"){array = [array];}
             for (var i = 0; i < array.length; i++) {
                 var item = array[i];
-                if(item[propertyName]){
+                if(typeof item[propertyName] !== "undefined"){
                     qm.qmLog.itemAndThrowException(item, "should not have "+propertyName+" ("+item[propertyName]+")")
                 }
             }
         },
         doesNotHaveUserId: function(item){
             qm.assert.doesNotHaveProperty(item, 'userId');
+        },
+        equals: function(expected, actual, message){
+            if(expected !== actual){
+                throw message + " expected "+expected+" but got "+actual;
+            }
         },
         variables: {
             descendingOrder: function (variables, property) {
@@ -1222,6 +1232,11 @@ var qm = {
                 }
             }
         },
+        isNull: function(value, name){
+            if(value !== null){
+                throw name+" should be null but is "+JSON.stringify(value);
+            }
+        }
     },
     auth: {
         getAccessToken: function(){
@@ -6753,7 +6768,9 @@ var qm = {
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 3){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;}
             if(requestParams.searchPhrase && requestParams.searchPhrase.length > 4){requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 0;}
             function sortUpdateSubtitlesAndReturnVariables(variables) {
-                if(!requestParams.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                if(!requestParams.sort){
+                    variables = qm.variablesHelper.defaultVariableSort(variables);
+                }
                 variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
                 if(successHandler){successHandler(variables);}
             }
@@ -6858,8 +6875,13 @@ var qm = {
             return variables;
         },
         setLastSelectedAtAndSave: function(variable){
-            variable.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds();  // Do this so it's at the top of the list
+            var timestamp = qm.timeHelper.getUnixTimestampInSeconds();
+            variable.lastSelectedAt = timestamp;  // Do this so it's at the top of the list
             qm.variablesHelper.saveToLocalStorage(variable);
+            if(!variable.userId){
+                var gottenVariable = qm.staticData.commonVariables[0];
+                qm.assert.equals(timestamp, gottenVariable.lastSelectedAt);
+            }
         },
         saveToLocalStorage: function(variables){
             if(!variables){

@@ -76,6 +76,7 @@ var qmLog = {
         return qmLog.logLevel;
     },
     setAuthDebugEnabled: function (value) {
+        if(!qmLog.qm.platform.getWindow()){return false;}
         qmLog.authDebugEnabled = value;
         if(qmLog.authDebugEnabled && window.localStorage){
             qmLog.qm.storage.setItem('authDebugEnabled', value);
@@ -200,6 +201,7 @@ var qmLog = {
         //if(window.qmLog.mobileDebug){alert(name + ": " + message);}
     },
     pushDebug: function(name, message, errorSpecificMetaData, stackTrace) {
+        if(!qmLog.qm.platform.getWindow()){return false;}
         //qmLog.pushDebugEnabled = true;
         if(!qmLog.pushDebugEnabled){
             qmLog.pushDebugEnabled = window.location.href.indexOf("pushDebugEnabled") !== -1;
@@ -314,6 +316,7 @@ var qmLog = {
     getGlobalMetaData: function() {
         function getTestUrl() {
             function getCurrentRoute() {
+                if(!qmLog.qm.platform.getWindow()){return false;}
                 var parts = window.location.href.split("#/app");
                 return parts[1];
             }
@@ -325,36 +328,40 @@ var qmLog = {
             if(typeof cordova === "undefined"){return false;}
             return typeof cordova.plugins !== "undefined";
         }
-        qmLog.globalMetaData.installed_plugins = {
-            "Analytics": (typeof Analytics !== "undefined") ? "installed" : "not installed",
-            "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined") ? "installed" : "not installed",
-            "cordova.plugins.notification": (cordovaPluginsAvailable() && typeof cordova.plugins.notification !== "undefined") ? "installed" : "not installed",
-            "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
-            "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus)  ? "installed" : "not installed",
-            "window.overApps": (cordovaPluginsAvailable() && typeof window.overApps !== "undefined") ? "installed" : "not installed",
-            "inAppPurchase": (typeof window.inAppPurchase !== "undefined") ? "installed" : "not installed",
-            "ionic": (typeof ionic !== "undefined") ? "installed" : "not installed",
-            "ionicDeploy": (typeof $ionicDeploy !== "undefined") ? "installed" : "not installed",
-            "PushNotification": (typeof PushNotification !== "undefined") ? "installed" : "not installed",
-            "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed",
-            "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
-        };
+        if(qmLog.qm.platform.getWindow()){
+            qmLog.globalMetaData.installed_plugins = {
+                "Analytics": (typeof Analytics !== "undefined") ? "installed" : "not installed",
+                "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined") ? "installed" : "not installed",
+                "cordova.plugins.notification": (cordovaPluginsAvailable() && typeof cordova.plugins.notification !== "undefined") ? "installed" : "not installed",
+                "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
+                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus)  ? "installed" : "not installed",
+                "window.overApps": (cordovaPluginsAvailable() && typeof window.overApps !== "undefined") ? "installed" : "not installed",
+                "inAppPurchase": (typeof window.inAppPurchase !== "undefined") ? "installed" : "not installed",
+                "ionic": (typeof ionic !== "undefined") ? "installed" : "not installed",
+                "ionicDeploy": (typeof $ionicDeploy !== "undefined") ? "installed" : "not installed",
+                "PushNotification": (typeof PushNotification !== "undefined") ? "installed" : "not installed",
+                "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed",
+                "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
+            };
+        }
         qmLog.globalMetaData.push_data = {
             "deviceTokenOnServer": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenOnServer),
             "deviceTokenToSync": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenToSync),
-            "last_push": window.qmLog.qm.push.getTimeSinceLastPushString(),
+            "last_push": qmLog.qm.push.getTimeSinceLastPushString(),
             "push enabled": qmLog.qm.push.enabled(),
             "draw over apps enabled": qmLog.qm.storage.getItem(qmLog.qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
             "last popup": qmLog.qm.notifications.getTimeSinceLastPopupString()
         };
-        if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = window.qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
+        if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
         if(qmLog.qm.getAppSettings()){
             qmLog.globalMetaData.build_server = qmLog.qm.getAppSettings().buildServer;
             qmLog.globalMetaData.build_link = qmLog.qm.getAppSettings().buildLink;
         }
         qmLog.globalMetaData.test_app_url = getTestUrl();
-        qmLog.globalMetaData.window_location_href = window.location.href;
-        qmLog.globalMetaData.window_location_origin = window.location.origin;
+        if(qmLog.qm.platform.getWindow()){
+            qmLog.globalMetaData.window_location_href = window.location.href;
+            qmLog.globalMetaData.window_location_origin = window.location.origin;
+        }
         function addQueryParameter(url, name, value){
             if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
             return url + "&" + name + "=" + value;
@@ -377,6 +384,7 @@ var qmLog = {
         return qmLog.globalMetaData;
     },
     setupIntercom: function() {
+        if(!qmLog.qm.platform.getWindow()){return false;}
         window.intercomSettings = {
             app_id: "uwtx2m33",
             name: qmLog.qm.userHelper.getUserFromLocalStorage().displayName,
@@ -392,7 +400,7 @@ var qmLog = {
             UserVoice.push(['identify', {
                 email: qmLog.qm.getUser().email, // User’s email address
                 name: qmLog.qm.getUser().displayName, // User’s real name
-                created_at: window.qmLog.qm.timeHelper.getUnixTimestampInSeconds(qmLog.qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
+                created_at: qmLog.qm.timeHelper.getUnixTimestampInSeconds(qmLog.qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
                 id: qmLog.qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
                 type: qmLog.qm.getSourceName() + ' User (Subscribed: ' + qmLog.qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
                 account: {
@@ -419,7 +427,7 @@ var qmLog = {
                 options.user = qmLog.obfuscateSecrets(user);
             }
             if(qmLog.qm.getAppSettings()){options.appVersion = qmLog.qm.getAppSettings().androidVersionCode;}
-            window.bugsnagClient = bugsnag(options);
+            if(qmLog.qm.platform.getWindow()){window.bugsnagClient = bugsnag(options);}
         } else {
             if(!qmLog.qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
         }
@@ -517,8 +525,12 @@ function getCallerFunctionName() {
 function addCallerFunctionToMessage(message) {
     if(qmLog.qm.platform.browser.isFirefox()){return message;}
     if(message === "undefined"){message = "";}
-    if(getCalleeFunctionName()){message = "callee " + getCalleeFunctionName() + ": " + message || "";}
-    if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message || "";}
+    var caller = getCallerFunctionName();
+    var callee = getCalleeFunctionName();
+    if(!callee && !caller){return message;}
+    if(caller === callee){return callee + ": " + message || "";}
+    if(callee){message = "callee " + callee + ": " + message || "";}
+    if(caller){message = "Caller " + caller + " called " + message || "";}
     return message;
 }
 if(typeof window !== "undefined"){
