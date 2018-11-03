@@ -3022,7 +3022,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     };
     qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler) {
         qmService.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
-        qmService.storage.deleteByProperty(qm.items.commonVariables, 'variableName', variableName);
         qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
     };
     qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
