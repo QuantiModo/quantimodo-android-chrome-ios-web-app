@@ -35,7 +35,7 @@ angular.module('starter').factory('qmLogService', ["$state", "$q", "$rootScope",
         name = name || message;
         metaData = metaData || null;
         if(message && message.message){message = message.message;}
-        message = window.stringifyIfNecessary(message);
+        message = qmLog.stringifyIfNecessary(message);
         message = addStateNameToMessage(message);
         window.qmLog.error(name, message, metaData, stackTrace);
     };
