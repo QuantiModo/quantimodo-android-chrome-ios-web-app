@@ -527,4 +527,5 @@ if(typeof window !== "undefined"){
 } else {
     module.exports = qmLog;
 }
+if(typeof qm !== "undefined"){qmLog.qm = qm;}
 
