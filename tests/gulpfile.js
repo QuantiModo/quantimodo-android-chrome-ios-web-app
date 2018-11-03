@@ -4,6 +4,7 @@ var assert = require('assert');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var qm = require('./../src/js/qmHelpers');
+qm.appMode.mode = 'testing';
 var qmLog = require('./../modules/qmLog');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
@@ -119,35 +120,59 @@ var qmTests = {
         userVariables: {
             getHeartRateZone: function (callback) {
                 qm.storage.setItem(qm.items.accessToken, process.env.QUANTIMODO_ACCESS_TOKEN);
-                var requestParams = {
-                    excludeLocal: null,
-                    includePublic: true,
-                    minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
-                    searchPhrase: "heart"
-                };
-                qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                    qmLog.info('Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
-                    assert(variables.length > 5);
-                    if(callback){callback();}
+                qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+                    if(!qm.getUser()){throw "No user!"}
+                    var requestParams = {
+                        excludeLocal: null,
+                        includePublic: true,
+                        minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
+                        searchPhrase: "car"
+                    };
+                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                        qmLog.info('Got ' + variables.length + ' user variables matching '+requestParams.searchPhrase);
+                        assert(variables.length > 5);
+                        var variable5 = variables[4];
+                        var time = qm.timeHelper.getUnixTimestampInSeconds();
+                        qm.variablesHelper.setLastSelectedAtAndSave(variable5);
+                        qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id}, function(variables){
+                            var lastSelectedAt = variables[0].lastSelectedAt;
+                            if(lastSelectedAt < time){
+                                throw "Should have gotten "+variable5.name+" but got "+variables[0].name;
+                            }
+                            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                                var variable1 = variables[0];
+                                assert(variable1.lastSelectedAt === time);
+                                assert(variable1.variableId === variable5.variableId);
+                                assert(qm.api.requestLog.length === 1);
+                                if(callback){callback();}
+                            });
+                        }, function(error){
+                            qm.qmLog.error(error);
+                        });
+                    });
                 });
-            }
+            },
         }
     }
 };
-gulp.task('ghostInspectorOAuthDisabledUtopia', function (callback) {
+gulp.task('oauth-disabled-utopia', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
 });
-gulp.task('ghostInspectorOAuthDisabledStaging', function (callback) {
+gulp.task('oauth-disabled-staging', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
-gulp.task('ghostInspectorOAuthDisabledStagingFailed', function (callback) {
+gulp.task('oauth-disabled-staging-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
-gulp.task('ghostInspectorIonic', function (callback) {
+gulp.task('api-staging-failed', function (callback) {
+    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
+    qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
+});
+gulp.task('ionic-gi', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
 });
-gulp.task('ghostInspectorIonicFailed', function (callback) {
+gulp.task('ionic-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
