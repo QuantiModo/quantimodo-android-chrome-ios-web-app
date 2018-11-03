@@ -845,13 +845,14 @@ var qm = {
             return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
         },
         concatenateUniqueId: function (preferred, secondary) {
-            var a = preferred.concat(secondary);
-            for (var i = 0; i < a.length; ++i) {
-                for (var j = i + 1; j < a.length; ++j) {
-                    if (a[i].id === a[j].id)
-                        a.splice(j--, 1);
-                }
+            for (var i = 0; i < preferred.length; ++i) {
+                var preferredItem = preferred[i];
+                secondary = secondary.filter(function(secondaryItem){
+                    return secondaryItem.id !== preferredItem.id;
+                })
             }
+            var combined = preferred.concat(secondary);
+            return combined;
         },
         convertToArrayIfNecessary: function(variable){
             if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
@@ -994,6 +995,9 @@ var qm = {
                 if(haystack[i] === needle) return true;
             }
             return false;
+        },
+        mergeWithUniqueId: function(replacements, existingArray){
+            return qm.arrayHelper.concatenateUniqueId(replacements, existingArray);
         },
         replaceElementInArrayById: function (array, replacementElement) {
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
@@ -5607,10 +5611,8 @@ var qm = {
         },
         clearStorageExceptForUnitsAndCommonVariables: function(){
             qm.qmLog.info('Clearing local storage!');
-            var commonVariables = qm.storage.getItem(qm.items.commonVariables);
             var units = qm.storage.getItem(qm.items.units);
             qm.storage.clear();
-            qm.storage.setItem(qm.items.commonVariables, commonVariables);
             qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
         }
@@ -6584,16 +6586,9 @@ var qm = {
                 return;
             }
             if(!requestParams){requestParams = {};}
-            qm.localForage.getItem(qm.items.commonVariables, function (commonVariables) {
-                if(!commonVariables){commonVariables = [];}
-                if(qm.staticData.commonVariables){commonVariables = commonVariables.concat(qm.staticData.commonVariables);}
-                commonVariables = qm.arrayHelper.filterByRequestParams(commonVariables, requestParams);
-                if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
-                successHandler(commonVariables);
-            }, function (error) {
-                qm.qmLog.error(error);
-                if(errorHandler){errorHandler(error);}
-            });
+            var commonVariables = qm.arrayHelper.filterByRequestParams(qm.staticData.commonVariables, requestParams);
+            if(!requestParams.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
+            successHandler(commonVariables);
         }
     },
     userVariables: {
@@ -6849,7 +6844,9 @@ var qm = {
                 }
             }
             if(userVariables.length){qm.localForage.saveWithUniqueId(qm.items.userVariables, userVariables);}
-            if(commonVariables.length){qm.localForage.saveWithUniqueId(qm.items.commonVariables, commonVariables);}
+            if(commonVariables.length){
+                qm.staticData.commonVariables = qm.arrayHelper.mergeWithUniqueId(commonVariables, qm.staticData.commonVariables);
+            }
         },
     },
     variableCategoryHelper: {
