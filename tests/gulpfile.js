@@ -135,18 +135,19 @@ var qmTests = {
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                         assert(variables.length > 5);
                         var variable5 = variables[4];
-                        var time = qm.timeHelper.getUnixTimestampInSeconds();
+                        var timestamp = qm.timeHelper.getUnixTimestampInSeconds();
                         qm.variablesHelper.setLastSelectedAtAndSave(variable5);
+                        var userVariables = qm.globalHelper.getItem(qm.items.userVariables);
+                        qm.assert.isNull(userVariables, qm.items.userVariables);
                         qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id}, function(variables){
+                            qm.assert.doesNotHaveProperty(variables, 'userId');
                             qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
-                            var lastSelectedAt = variables[0].lastSelectedAt;
-                            if(lastSelectedAt < time){
-                                throw "Should have gotten "+variable5.name+" but got "+variables[0].name;
-                            }
+                            qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt');
+                            qm.assert.equals(variable5.name, variables[0].name, 'name');
                             qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
                                 qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                                 var variable1 = variables[0];
-                                assert(variable1.lastSelectedAt === time);
+                                assert(variable1.lastSelectedAt === timestamp);
                                 assert(variable1.variableId === variable5.variableId);
                                 assert(qm.api.requestLog.length === 1);
                                 if(callback){callback();}
