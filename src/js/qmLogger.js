@@ -166,7 +166,9 @@ var qmLog = {
     secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
     stringContainsSecretAliasWord: function(string){
         if(!string.toLowerCase){
-            console.error("This is not a string: ", string);
+            var consoleMessage = "This is not a string: ";
+            if(qmLog.color){consoleMessage = qmLog.color.red(consoleMessage);}
+            console.error(consoleMessage, string);
             return false;
         }
         var lowerCase = string.toLowerCase();
@@ -183,7 +185,9 @@ var qmLog = {
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
-        console.error(qmLog.getConsoleLogString("ERROR", errorSpecificMetaData), errorSpecificMetaData);
+        var consoleMessage = qmLog.getConsoleLogString("ERROR", errorSpecificMetaData);
+        if(qmLog.color){consoleMessage = qmLog.color.red(consoleMessage);}
+        console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
         function bugsnagNotify(name, message, errorSpecificMetaData, logLevel, stackTrace){
             if(typeof bugsnagClient === "undefined") {
@@ -244,20 +248,36 @@ var qmLog = {
     warn: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("warn")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
+        var consoleMessage = qmLog.getConsoleLogString("WARNING", errorSpecificMetaData);
+        if(qmLog.color){consoleMessage = qmLog.color.yellow(consoleMessage);}
         if(errorSpecificMetaData){
-            console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData), errorSpecificMetaData);
+            console.warn(consoleMessage, errorSpecificMetaData);
         } else {
-            console.warn(qmLog.getConsoleLogString("WARNING", errorSpecificMetaData));
+            console.warn(consoleMessage);
         }
     },
     info: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("info")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
+        var consoleMessage = qmLog.getConsoleLogString("INFO", errorSpecificMetaData);
+        if(qmLog.color){consoleMessage = qmLog.color.blue(consoleMessage);}
         if(errorSpecificMetaData){
-            console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData), errorSpecificMetaData);
+            console.info(consoleMessage, errorSpecificMetaData);
         } else {
-            console.info(qmLog.getConsoleLogString("INFO", errorSpecificMetaData));
+            console.info(consoleMessage);
         }
+    },
+    green: function(message){
+        qmLog.colorfulLog(message, 'green');
+    },
+    red: function(message){
+        qmLog.colorfulLog(message, 'red');
+    },
+    yellow: function(message){
+        qmLog.colorfulLog(message, 'yellow');
+    },
+    colorfulLog: function(message, color){
+        console.log(qmLog.color[color](message)); // Nest styles of the same type even (color, underline, background)
     },
     debug: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("debug")){return;}
@@ -372,7 +392,9 @@ var qmLog = {
             if(request.header.Authorization){
                 qmLog.globalMetaData.test_api_url = addQueryParameter(qmLog.globalMetaData.test_api_url, "access_token", request.header.Authorization.replace("Bearer ", ""));
             }
-            console.error('API ERROR URL ' + qmLog.globalMetaData.test_api_url, qmLog.globalMetaData);
+            var consoleMessage = 'API ERROR URL ' + qmLog.globalMetaData.test_api_url;
+            if(qmLog.color){consoleMessage = qmLog.color.red(consoleMessage);}
+            console.error(consoleMessage, qmLog.globalMetaData);
             delete qmLog.globalMetaData.apiResponse;
         }
         qmLog.globalMetaData.local_notifications = qmLog.qm.storage.getItem(qmLog.qm.items.scheduledLocalNotifications);
