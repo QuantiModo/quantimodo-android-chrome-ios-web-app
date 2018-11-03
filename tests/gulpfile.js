@@ -7,6 +7,7 @@ var qm = require('./../src/js/qmHelpers');
 qm.appMode.mode = 'testing';
 var qmLog = require('./../src/js/qmLogger');
 qmLog.qm = qm;
+qmLog.color = require('ansi-colors');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
 qm.nlp = require('./../src/lib/compromise');
@@ -14,7 +15,7 @@ qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName('debug');
 var qmTests = {
     tests: {
-        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters){
+        checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
             var intents = qm.staticData.dialogAgent.intents;
             var entities = qm.staticData.dialogAgent.entities;
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
@@ -46,25 +47,27 @@ var qmTests = {
                 assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
                 assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
             }
+            if(callback){callback();}
         },
-        getUnitsTest: function(){
+        getUnitsTest: function(callback){
             var units = qm.unitHelper.getAllUnits();
             console.log(units);
             assert(units.length > 5);
+            if(callback){callback();}
         },
-        rememberIntentTest: function(){
+        rememberIntentTest: function(callback){
             var userInput = "Remember where my keys are";
             var expectedIntentName = 'Remember Intent';
             var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"};
             var expectedParameters = {memoryQuestion: 'where my keys are'};
-            qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
+            qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, callback);
         },
-        recordMeasurementIntentTest: function(){
+        recordMeasurementIntentTest: function(callback){
             var userInput = "Record 1 Overall Mood";
             var expectedIntentName = 'Record Measurement Intent';
             var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"};
             var expectedParameters = {variableName: 'Overall Mood', value: 1};
-            qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters);
+            qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, callback);
         },
         executeTests: function(tests, callback, startUrl){
             var options = {};
@@ -118,8 +121,8 @@ var qmTests = {
                 qmTests.tests.executeTests(tests, callback, startUrl);
             });
         },
-        userVariables: {
-            getHeartRateZone: function (callback) {
+        commonVariables: {
+            getCar: function (callback) {
                 qm.storage.setItem(qm.items.accessToken, process.env.QUANTIMODO_ACCESS_TOKEN);
                 qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
                     if(!qm.getUser()){throw "No user!"}
@@ -139,7 +142,7 @@ var qmTests = {
                         qm.variablesHelper.setLastSelectedAtAndSave(variable5);
                         var userVariables = qm.globalHelper.getItem(qm.items.userVariables);
                         qm.assert.isNull(userVariables, qm.items.userVariables);
-                        qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id}, function(variables){
+                        qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
                             qm.assert.doesNotHaveProperty(variables, 'userId');
                             qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                             qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt');
@@ -182,11 +185,21 @@ gulp.task('ionic-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
 });
-gulp.task('tests', function() {
-    qmTests.tests.userVariables.getHeartRateZone();
-    qmTests.tests.recordMeasurementIntentTest();
-    qmTests.tests.getUnitsTest();
+gulp.task('tests', function(callback) {
+    runSequence(
+        'clean-folders',
+        'clone-repos',
+        function (error) {
+            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            callback(error);
+        });
 });
-gulp.task('get-heart-rate-zone', function(callback) {
-    qmTests.tests.userVariables.getHeartRateZone(callback);
+gulp.task('test-get-common-variable', function(callback) {
+    qmTests.tests.commonVariables.getCar(callback);
+});
+gulp.task('test-record-measurement-intent', function(callback) {
+    qmTests.tests.recordMeasurementIntentTest(callback);
+});
+gulp.task('test-get-units', function(callback) {
+    qmTests.tests.getUnitsTest(callback);
 });
