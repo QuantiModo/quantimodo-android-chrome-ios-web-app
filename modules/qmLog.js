@@ -9,6 +9,9 @@ var qmLog = {
         };
         bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
     },
+    errorAndExceptionTestingOrDevelopment(message, metaData, maxCharacters){
+        throw message;
+    },
     info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
     debug: function (message, object, maxCharacters) {
         if(qmLog.isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){

@@ -169,11 +169,7 @@ angular.module('starter',
     var config_resolver = {
         appSettingsResponse: function($q){
             var deferred = $q.defer();
-            if(qm.appMode.isDevelopment()){ // TODO: Faster.  We might want to do this globally at some point
-                deferred.resolve(qm.staticData.appSettings);
-            } else {
-                qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
-            }
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
             return deferred.promise;
         }
     };
@@ -202,6 +198,7 @@ angular.module('starter',
         "chartSearch": "app.chartSearch",
         "chat": "app.chat",
         "configuration": "app.configuration",
+        "users": "app.users",
         "configurationClientId": "app.configurationClientId",
         "contact": "app.contact",
         "dataSharing": "app.dataSharing",
@@ -1367,6 +1364,20 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "../../app-configuration/templates/configuration.html",
+                    controller: 'ConfigurationCtrl'
+                }
+            }
+        })
+        .state(qmStates.users, {
+            cache: true,
+            url: "/users",
+            params: {
+                title: "Users",
+                ionIcon: ionIcons.androidPeople
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "../../app-configuration/templates/users.html",
                     controller: 'ConfigurationCtrl'
                 }
             }

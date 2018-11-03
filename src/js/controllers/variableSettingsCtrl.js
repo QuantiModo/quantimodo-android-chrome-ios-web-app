@@ -387,7 +387,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     };
     $scope.refreshUserVariable = function (hideLoader) {
         var refresh = true;
-        if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){ $scope.state.variableObject = null; }
+        if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){
+            $scope.state.variableObject = null;
+        }
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
         qm.userVariables.getByName(variableName, params, refresh, function(variableObject){
