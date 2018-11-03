@@ -2,6 +2,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
     function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout) {
         $scope.controller_name = "ChatCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
+        var listAllCards = false;
         $scope.state = {
             cards: [],
             chat: true,
@@ -19,7 +20,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             lastBotMessage: '',
             htmlClick: function(card){
                 if(card.link){
-                    qm.urlHelper.goToUrl(card.link);
+                    //qm.urlHelper.goToUrl(card.link);
                 } else {
                     getMostRecentCardAndTalk();
                 }
@@ -40,14 +41,16 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                         getMostRecentCardAndTalk();
                     });
                 } else {
-                    qmLog.error("Not sure how to handle this button", {card: card, button: button});
+                    qmService.actionSheets.handleCardButtonClick(button, card);
                 }
             },
-            openActionSheet: function (card) {
-                qmService.actionSheets.openActionSheet(card, getMostRecentCardAndTalk);
-            }
+            openActionSheetForCard: function (card) {
+                var destructiveButtonClickedFunction = cardHandlers.removeCard;
+                qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
+            },
         };
         $scope.$on('$ionicView.beforeEnter', function(e) {
+            $rootScope.setMicAndSpeechEnabled(true);
             qmLog.debug('beforeEnter state ' + $state.current.name);
             qmService.showBasicLoader();
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
@@ -76,6 +79,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             qmService.pusher.stateSpecificMessageHandler = botReply;
             //qm.dialogFlow.apiAiPrepare();
         });
+        $scope.$on('$ionicView.beforeLeave', function(e) {
+            $rootScope.setMicAndSpeechEnabled(false);
+        });
         function handleSwipe($event, $target) {
             qmLog.info("onSwipe $event", $event);
             qmLog.info("onSwipe $target", $target);
@@ -96,7 +102,15 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         if($scope.state.visualizationType === 'equalizer'){
             $scope.state.bodyCss = "background-color:#333;";
         }
+        function getCards() {
+            qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+                $scope.state.cards = cards;
+            });
+        }
         function getMostRecentCardAndTalk(nextCard, successHandler, errorHandler) {
+            if(listAllCards){
+                getCards();
+            }
             qm.feed.getMostRecentCard(function (mostRecentCard) {
                 qmService.hideLoader();
                 if(nextCard){mostRecentCard = nextCard;}
@@ -106,7 +120,9 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                         d.setUTCSeconds(mostRecentCard.parameters.trackingReminderNotificationTimeEpoch);
                         mostRecentCard.date = d;
                     }
-                    $scope.state.cards = [mostRecentCard];
+                    if(!listAllCards){
+                        $scope.state.cards = [mostRecentCard];
+                    }
                 });
                 //$scope.$apply(function () { $scope.state.cards = [card]; });// Not sure why this is necessary
                 mostRecentCard.followUpAction = function (successToastText) {
@@ -156,5 +172,57 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 $scope.state.lastBotMessage = "One moment please...";
             });
         };
+        var cardHandlers = {
+            addCardsToScope: function(cards){
+                $scope.safeApply(function () {
+                    $scope.state.cards = cards;
+                });
+            },
+            removeCard: function(card) {
+                card.hide = true;
+                qm.feed.deleteCardFromLocalForage(card, function(){
+                    cardHandlers.getCards();
+                });
+                qm.feed.undoFunction = function(){
+                    card.hide = false;
+                    qm.feed.addToFeedAndRemoveFromFeedQueue(card, cardHandlers.getCards);
+                };
+                var button = card.selectedButton;
+                if(button.successToastText){
+                    qmService.toast.showUndoToast(button.successToastText, qm.feed.undoFunction);
+                }
+            },
+            getCards: function(cards) {
+                if(cards){
+                    cardHandlers.addCardsToScope(cards);
+                    return;
+                }
+                qm.feed.getFeedFromLocalForageOrApi({}, function(cards){
+                    hideLoader();
+                    cardHandlers.addCardsToScope(cards);
+                });
+            }
+        };
+        var clickHandlers = {
+            skipAll: function (card, ev) {
+                qm.ui.preventDragAfterAlert(ev);
+                qmService.showBasicLoader();
+                qm.feed.postCardImmediately(card, function (cardsFromResponse) {
+                    cardHandlers.getCards(cardsFromResponse);
+                });
+                cardHandlers.removeCard(card);
+                return true;
+            },
+            track: function(card) {
+                cardHandlers.removeCard(card);
+                qm.feed.addToFeedQueueAndRemoveFromFeed(card);
+                return true;
+            }
+        };
+        function hideLoader() {
+            qmService.hideLoader();
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+        }
     }]
 );

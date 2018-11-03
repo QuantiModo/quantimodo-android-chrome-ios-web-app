@@ -63,7 +63,7 @@ window.qmLog = {
         }
     },
     getLogLevelName: function() {
-        if(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
+        //qmService.setUseif(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
         if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){qmLog.setLogLevelName("debug");}
         if(qm.urlHelper.getParam(qm.items.logLevel)){qmLog.setLogLevelName(qm.urlHelper.getParam(qm.items.logLevel));}
         if(qmLog.logLevel){return qmLog.logLevel;}
@@ -368,17 +368,18 @@ window.qmLog = {
             }]);
         }
     },
-    setupBugsnag: function(){
+    setupBugsnag: function(user){
         if (typeof bugsnag !== "undefined") {
             var options = {
                 apiKey: "ae7bc49d1285848342342bb5c321a2cf",
                 releaseStage: qm.appMode.getAppMode(),
                 //notifyReleaseStages: [ 'staging', 'production' ],
                 metaData: qmLog.getGlobalMetaData(),
-                user: qmLog.obfuscateSecrets(qm.userHelper.getUserFromLocalStorage()),
                 beforeSend: function (report) {}
             };
-            if(qm.getUser()){options.user = qmLog.obfuscateSecrets(qm.getUser());}
+            if(user){
+                options.user = qmLog.obfuscateSecrets(user);
+            }
             if(qm.getAppSettings()){options.appVersion = qm.getAppSettings().androidVersionCode;}
             window.bugsnagClient = bugsnag(options);
         } else {
@@ -428,12 +429,6 @@ window.qmLog = {
 };
 if(typeof bugsnag !== "undefined"){
     window.bugsnagClient = bugsnag("ae7bc49d1285848342342bb5c321a2cf");
-}
-if(!window.qmUser){
-    if(typeof localStorage !== "undefined"){
-        window.qmUser = localStorage.getItem('user');
-    }
-    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 window.isTruthy = function(value){return value && value !== "false"; };
 window.stringifyIfNecessary = function(variable){

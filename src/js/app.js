@@ -32,11 +32,21 @@ angular.module('starter',
         //'ui-iconpicker',
         'ngFitText',
         'ngMdIcons',
-        'angularMoment'
+        'angularMoment',
+        'open-chat-framework'
     ]
 )
-.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService",
-    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
+.run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "ngChatEngine",
+    function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, ngChatEngine) {
+    if(typeof ChatEngineCore !== "undefined"){
+        $rootScope.ChatEngine = ChatEngineCore.create({
+            publishKey: 'pub-c-d8599c43-cecf-42ba-a72f-aa3b24653c2b',
+            subscribeKey: 'sub-c-6c6c021c-c4e2-11e7-9628-f616d8b03518'
+        }, {
+            debug: true,
+            globalChannel: 'chat-engine-angular-simple'
+        });
+    }
     if(!qm.urlHelper.onQMSubDomain()){qm.appsManager.loadPrivateConfigFromJsonFile();}
     qmService.showBlackRingLoader();
     if(qm.urlHelper.getParam('logout')){qm.storage.clear(); qmService.setUser(null);}
@@ -159,11 +169,7 @@ angular.module('starter',
     var config_resolver = {
         appSettingsResponse: function($q){
             var deferred = $q.defer();
-            if(qm.appMode.isDevelopment()){ // TODO: Faster.  We might want to do this globally at some point
-                deferred.resolve(qm.staticData.appSettings);
-            } else {
-                qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
-            }
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){deferred.resolve(appSettings);});
             return deferred.promise;
         }
     };
@@ -192,12 +198,14 @@ angular.module('starter',
         "chartSearch": "app.chartSearch",
         "chat": "app.chat",
         "configuration": "app.configuration",
+        "users": "app.users",
         "configurationClientId": "app.configurationClientId",
         "contact": "app.contact",
         "dataSharing": "app.dataSharing",
         "favoriteAdd": "app.favoriteAdd",
         "favorites": "app.favorites",
         "favoriteSearch": "app.favoriteSearch",
+        "feed": "app.feed",
         "feedback": "app.feedback",
         "help": "app.help",
         "history": "app.history",
@@ -414,7 +422,8 @@ angular.module('starter',
         })
         .state(qmStates.measurementAdd, {
             url: "/measurement-add",
-            cache: false,
+            //cache: false,  TODO: Why was this false?
+            cache: true,
             params: {
                 showAds: true,
                 trackingReminder: null,
@@ -458,7 +467,7 @@ angular.module('starter',
         })
         .state(qmStates.variableSettings, {
             url: "/variable-settings",
-            cache: false,
+            cache: true,
             params: {
                 showAds: true,
                 reminder : null,
@@ -1051,6 +1060,7 @@ angular.module('starter',
                 showAds: true,
                 causeVariableName: null,
                 effectVariableName: null,
+                type: null,
                 refresh: null,
                 study: null,
                 title: "Study",
@@ -1069,6 +1079,7 @@ angular.module('starter',
             params: {
                 causeVariableName: null,
                 effectVariableName: null,
+                type: null,
                 study: null,
                 title: "Join Study",
                 ionIcon: ionIcons.study
@@ -1087,6 +1098,7 @@ angular.module('starter',
                 showAds: true,
                 causeVariable: null,
                 effectVariable: null,
+                type: null,
                 study: null,
                 title: "Create Study",
                 ionIcon: ionIcons.study
@@ -1352,6 +1364,20 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "../../app-configuration/templates/configuration.html",
+                    controller: 'ConfigurationCtrl'
+                }
+            }
+        })
+        .state(qmStates.users, {
+            cache: true,
+            url: "/users",
+            params: {
+                title: "Users",
+                ionIcon: ionIcons.androidPeople
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "../../app-configuration/templates/users.html",
                     controller: 'ConfigurationCtrl'
                 }
             }
@@ -1625,6 +1651,20 @@ angular.module('starter',
                 }
             }
         })
+        .state(qmStates.feed, {
+            url: "/feed",
+            cache: true,
+            params: {
+                title: "Talk to Dr. Modo",
+                ionIcon: ionIcons.chatbox
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/feed.html",
+                    controller: 'FeedCtrl'
+                }
+            }
+        })
         .state(qmStates.favoriteAdd, {
             url: "/favorite-add",
             cache: false,
@@ -1705,3 +1745,12 @@ angular.module('exceptionOverride', []).factory('$exceptionHandler', function ()
         }
     };
 });
+angular.module('open-chat-framework', [])
+.service('ngChatEngine', ['$timeout', function($timeout) {
+    this.bind = function(ChatEngine) {
+        // updates angular when anything changes
+        ChatEngine.onAny(function(event, payload) {
+            $timeout(function() {});
+        });
+    }
+}]);

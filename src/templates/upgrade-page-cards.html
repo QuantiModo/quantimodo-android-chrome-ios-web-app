@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Upgrade</ion-nav-title>
     <ion-content  ng-class="{ isBrowserView : platform.isWeb == true } "><br>
         <md-card ng-if="platform.isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
             <md-card-title>

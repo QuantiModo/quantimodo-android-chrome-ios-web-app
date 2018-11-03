@@ -25,11 +25,6 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     });
     $scope.$on("$ionicView.afterEnter", function() {
         qm.loaders.robots();
-        if(qm.urlHelper.getParam('studyId')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        } else if(qm.urlHelper.getParam('causeVariableName') && qm.urlHelper.getParam('effectVariableName')){
-            qmService.stateHelper.previousUrl = window.location.href;
-        }
     });
     function setAllStateProperties(study) {
         if(!study){return;}
@@ -56,7 +51,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         if($stateParams.study){ return $stateParams.study;}
     }
     function getStateOrUrlOrRootScopeOrRequestParam(paramName) {
-        if(window.qm.urlHelper.getParam(paramName)){return window.qm.urlHelper.getParam(paramName, window.location.href, true);}
+        if(qm.urlHelper.getParam(paramName)){return qm.urlHelper.getParam(paramName, window.location.href, true);}
         if($stateParams[paramName]){ return $stateParams[paramName]; }
         if($scope.state.requestParams && $scope.state.requestParams[paramName]){return $scope.state.requestParams[paramName];}
         return null;
@@ -66,10 +61,16 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getRequestParams(recalculate) {
         var requestParams = {};
-        requestParams.causeVariableName = getCauseVariableName();
-        requestParams.effectVariableName = getEffectVariableName();
-        requestParams.userId = getStateOrUrlOrRootScopeOrRequestParam("userId");
-        requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        if(getCauseVariableName()){requestParams.causeVariableName = getCauseVariableName();}
+        if(getEffectVariableName()){requestParams.effectVariableName = getEffectVariableName();}
+        if(getCauseVariableId()){requestParams.causeVariableId = getCauseVariableId();}
+        if(getEffectVariableId()){requestParams.effectVariableId = getEffectVariableId();}
+        if(getStateOrUrlOrRootScopeOrRequestParam("userId")){
+            requestParams.userId = parseInt(getStateOrUrlOrRootScopeOrRequestParam("userId"));
+        }
+        if(getStateOrUrlOrRootScopeOrRequestParam("studyId")){
+            requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+        }
         requestParams.includeCharts = true;
         if(recalculate || qm.urlHelper.getParam('recalculate')){requestParams.recalculate = true;}
         return requestParams;
@@ -167,6 +168,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
     }
     function getEffectVariableName() {return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);}
     function getCauseVariableName() {return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);}
+    function getEffectVariableId() {return qm.studyHelper.getEffectVariableId($stateParams, $scope, $rootScope);}
+    function getCauseVariableId() {return qm.studyHelper.getCauseVariableId($stateParams, $scope, $rootScope);}
     function getStudyId() {return qm.studyHelper.getStudyId($stateParams, $scope, $rootScope);}
     function getCauseVariable() {return qm.studyHelper.getCauseVariable($stateParams, $scope, $rootScope);}
     function getEffectVariable() {return qm.studyHelper.getEffectVariable($stateParams, $scope, $rootScope);}
@@ -182,7 +185,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null); },
-                buttonClicked: function(index) {
+                buttonClicked: function(index, button) {
                     if(index === 0){ qmService.goToVariableSettingsByObject(getCauseVariable()); }
                     if(index === 1){ qmService.goToVariableSettingsByObject(getEffectVariable()); }
                     if(index === 2){ $scope.upVote(getStatistics()); }

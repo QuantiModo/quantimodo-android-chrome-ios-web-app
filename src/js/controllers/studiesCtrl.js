@@ -35,7 +35,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 ],
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug('CANCELLED', null); },
-                buttonClicked: function(index) {
+                buttonClicked: function(index, button) {
                     if(index === 0){populateStudyList('-statisticalSignificance');}
                     if(index === 1){populateStudyList('-qmScore');}
                     if(index === 2){populateStudyList('correlationCoefficient');}
@@ -71,7 +71,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         setTitle();
         populateStudyList();
     });
-    function populateStudyList(newSortParam) {
+    function populateStudyList(newSortParam, refresh) {
         if(newSortParam){
             $scope.state.studiesResponse.studies = [];
             qmLogService.debug('Sort by ' + newSortParam);
@@ -80,6 +80,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.searching = true;
         var params = $scope.state.requestParams;
         params.open = getOpenParam();
+        if(refresh){params.refresh = refresh;}
         params.created = getCreatedParam();
         params.limit = 10;
         qmLog.info('Getting studies with params ' + JSON.stringify(params));
@@ -171,7 +172,6 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.searching = false;
         $scope.$broadcast('scroll.infiniteScrollComplete');
     }
-
     $scope.loadMore = function () {
         qmService.showBlackRingLoader();
         if($scope.state.studiesResponse.studies.length){
@@ -181,7 +181,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
     };
     $scope.refreshList = function () {
         $scope.state.requestParams.offset = 0;
-        populateStudyList();
+        populateStudyList(null, true);
     };
     $scope.openStore = function(name){
         qmLogService.debug('open store for ', null, name); // make url

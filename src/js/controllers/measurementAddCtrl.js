@@ -54,6 +54,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
     $scope.$on('$ionicView.enter', function(e) {
         qmLogService.debug('$ionicView.enter ' + $state.current.name);
         qmService.hideLoader();
+        qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
@@ -183,6 +184,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmLog.info('selected unit: ' + unitAbbreviatedName);
             $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
             $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
+            qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
         }
         setupValueFieldType(unitAbbreviatedName, valence);
     }
@@ -314,6 +316,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.state.title = "Edit Measurement";
         $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
         $scope.state.measurement = measurementObject;
+        qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
         $scope.state.measurementIsSetup = true;
         setupUnit($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.valence);
         if ($scope.state.measurement.variable) { $scope.state.measurement.variableName = $scope.state.measurement.variable; }
@@ -364,7 +367,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 if(index === 0){qmService.goToState('app.reminderAdd', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 1){qmService.goToState('app.charts', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}
                 if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $scope.state.variableObject, variableName: $scope.state.variableObject.name});}

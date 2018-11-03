@@ -104,12 +104,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
     }
     $scope.$on('$ionicView.afterEnter', function(){
-        $scope.showRobot = true;
+        $scope.showRobot = (!qm.platform.isMobile());
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
         qmService.splash.hideSplashScreen();
-        $scope.state.robotClick = $scope.myIntro.next;
+        qm.robot.onRobotClick = $scope.myIntro.next;
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
     $scope.$on('$ionicView.beforeLeave', function(){

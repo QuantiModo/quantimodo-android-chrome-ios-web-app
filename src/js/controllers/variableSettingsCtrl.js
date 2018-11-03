@@ -65,7 +65,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { qmLogService.debug('CANCELLED', null); },
-                buttonClicked: function(index) {
+                buttonClicked: function(index, button) {
                     if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: variableObject, variableName: variableObject.name});}
                     if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: variableObject, variableName: variableObject.name});}
                     if(index === 2) {qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
@@ -131,7 +131,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         openTagVariableSearchDialog(e, requestParams, dialogParameters);
     };
     $scope.state.openIngredientVariableSearchDialog = function(e){
-        dialogParameters.conversionFactor = 1;
+        dialogParameters.conversionFactor = null;
         dialogParameters.title = 'Add an ingredient';
         dialogParameters.helpText = "Search for an ingredient " +
             "that you'd like to tag " + $scope.state.variableObject.name.toUpperCase() + " with.  Then " +
@@ -387,7 +387,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     };
     $scope.refreshUserVariable = function (hideLoader) {
         var refresh = true;
-        if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){ $scope.state.variableObject = null; }
+        if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){
+            $scope.state.variableObject = null;
+        }
         if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
         qm.userVariables.getByName(variableName, params, refresh, function(variableObject){

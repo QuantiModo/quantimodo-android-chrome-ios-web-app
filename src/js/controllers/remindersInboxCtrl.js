@@ -44,7 +44,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	});
 	$scope.$on('$ionicView.enter', function(e) {
         qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
-        $scope.defaultHelpCards = qmService.setupHelpCards();
+        $scope.defaultHelpCards = qmService.setupHelpCards($rootScope.appSettings);
         readHelpCards();
         getTrackingReminderNotifications();
         //getFavorites();  Not sure why we need to do this here?
@@ -171,7 +171,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 				});
 		}
     }
-	var getFallbackInboxContent = function () {
+	var getFallbackInboxContentIfNecessary = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
             if(getVariableCategoryName()){
                 qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
@@ -212,7 +212,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			$scope.trackingReminderNotifications.shift();
         }
         closeWindowIfNecessary();
-        getFallbackInboxContent();
 		return trackingReminderNotification;
 	};
 	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
@@ -226,19 +225,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         qmService.notifications.trackAll(body, modifiedReminderValue, ev);
         getTrackingReminderNotifications();
     }
-    function preventDragAfterAlert(ev) {
-		if(!ev){
-			qmLog.debug("No event provided to preventDragAfterAlert");
-			return;
-		}
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.gesture.stopPropagation();
-        ev.gesture.preventDefault();
-        ev.gesture.stopDetect();
-    }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
-        preventDragAfterAlert(ev);
+        qm.ui.preventDragAfterAlert(ev);
         var title = "Record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
         var textContent = "Do you want to record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
@@ -290,7 +278,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 			qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
-            if(!$scope.state.numberOfDisplayedNotifications){getFallbackInboxContent();}  // TODO: Why was this commented?
 		}
 	};
 	var hideInboxLoader = function(){
@@ -304,10 +291,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 			.then(function (trackingReminderNotifications) {
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 				$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-				getFallbackInboxContent();
+				getFallbackInboxContentIfNecessary();
 				hideInboxLoader();
 			}, function(error){
-				getFallbackInboxContent();
+				getFallbackInboxContentIfNecessary();
 				qmLogService.error(error);
 				hideInboxLoader();
 				qmLogService.error('failed to get reminder notifications!');
@@ -333,9 +320,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
             hideInboxLoader();
 			getTrackingReminderNotifications();
-			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
+			if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContentIfNecessary();}
 		}, function (error) {
-            if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContent();}
+            if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){getFallbackInboxContentIfNecessary();}
 			qmLog.info('$scope.refreshTrackingReminderNotifications: ', error);
 			hideInboxLoader();
 		});
@@ -360,10 +347,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
 	};
     $scope.skipAllForVariable = function(trackingReminderNotification, ev) {
-        preventDragAfterAlert(ev);
-    	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (response) {
+        qm.ui.preventDragAfterAlert(ev);
+    	qmService.notifications.skipAllForVariable(trackingReminderNotification, function (trackingReminderNotifications) {
             hideInboxLoader();
-            $scope.refreshTrackingReminderNotifications();
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         }, function(error){
             hideInboxLoader();
 		});
@@ -397,13 +384,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
-        buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
+        //buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});  // TODO: Why aren't we using the destructive button for this?
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
-			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+			destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {qmLogService.debug('CANCELLED', null);},
-			buttonClicked: function(index) {
+			buttonClicked: function(index, button) {
 				qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmLogService.debug('clicked variable name', null);}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
@@ -416,7 +403,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
                 if(index === buttonIndex){$scope.skipAllForVariable(trackingReminderNotification);}
                 buttonIndex++;
-                if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
+                if(index === buttonIndex){qmLog.error("How should I handle this button?", {button: button});}
+                //if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
 				return true;
 			},
 			destructiveButtonClicked: function() {

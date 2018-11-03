@@ -17,7 +17,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
         qm.notifications.postNotifications();
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
-        $rootScope.setMicEnabled(qm.mic.getMicEnabled());
+        $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
+    });
+    $scope.$on('$ionicView.beforeLeave', function (e) {
+        qmService.stateHelper.previousUrl = window.location.href;
     });
     $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
     $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
@@ -166,6 +169,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         });
     }
     $scope.safeApply = function(fn) {
+        if(!this.$root){
+            qmLog.error("this.$root is not set!");
+            if(fn && (typeof(fn) === 'function')) {fn();}
+            return;
+        }
         var phase = this.$root.$$phase;
         if(phase === '$apply' || phase === '$digest') {
             if(fn && (typeof(fn) === 'function')) {fn();}
@@ -219,7 +227,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {qmLogService.debug('CANCELLED', null);},
-            buttonClicked: function(index) {
+            buttonClicked: function(index, button) {
                 qmLogService.debug('BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
@@ -318,8 +326,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
-    $rootScope.setMicEnabled = function(value){
-        qmLog.info("$rootScope.setMicEnabled");
+    $rootScope.setMicAndSpeechEnabled = function(value){
+        if($rootScope.micEnabled === value && $rootScope.speechEnabled === value){
+            qmLog.info("micEnabled and speechEnabled already set to "+value);
+            return;
+        }
+        qmLog.info("$rootScope.setMicAndSpeechEnabled");
         if(value === 'toggle'){value = !qm.mic.getMicEnabled();}
         $timeout(function () {
             qmService.rootScope.setProperty('micEnabled', value);
