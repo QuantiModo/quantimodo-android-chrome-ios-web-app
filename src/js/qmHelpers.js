@@ -2170,7 +2170,7 @@ var qm = {
             var parsed = doc.out('tags');
             var number = doc.values().out();
             if(number){number = parseFloat(number);}
-            qm.qmLog.info(parsed);
+            qm.qmLog.info(intent.name + " tags: ", parsed);
             var parameters = intent.responses[0].parameters;
             intent.unfilledParameters = {};
             intent.unfilledTriggerPhrases = {};
@@ -2296,7 +2296,7 @@ var qm = {
                     }
                 }
             });
-            console.log("matchedEntities", matchedEntities);
+            qm.qmLog.logProperties("matchedEntities", matchedEntities);
             return matchedEntities;
         },
         intentFulfillment: {
