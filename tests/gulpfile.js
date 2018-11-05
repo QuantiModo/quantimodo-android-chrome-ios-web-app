@@ -78,7 +78,7 @@ var qmTests = {
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
-            qmLog.info("Check progress at " + testUrl);
+            qmLog.info("Check progress at " + testUrl +" ");
             GhostInspector.executeTest(test._id, options, function (err, results, passing) {
                 if (err) return console.log('Error: ' + err);
                 console.log(passing === true ? 'Passed' : 'Failed');
