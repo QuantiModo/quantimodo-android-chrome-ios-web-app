@@ -71,8 +71,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
         //qmLogService.debug("Entering state " + $state.current.name);
         if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
-        if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
-        if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
+        var firstSlide = $rootScope.appSettings.appDesign.intro.active[0];
+        if(firstSlide.color.backgroundColor){$scope.myIntro.backgroundColor = firstSlide.color.backgroundColor;}
+        if(firstSlide.backgroundColor){$scope.myIntro.backgroundColor = firstSlide.backgroundColor;}
+        if(firstSlide.textColor){$scope.myIntro.textColor = firstSlide.textColor;}
         if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
             qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + qm.getAppSettings().appDesign.defaultState, null);
             qmService.goToDefaultState();
