@@ -15,6 +15,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         setSpeechEnabled: function(value){
             $scope.state.speechEnabled = value;
             qmService.rootScope.setProperty('speechEnabled', value);
+            $scope.showRobot = value;  // For some reason rootScope.showRobot doesn't work
             qm.speech.setSpeechEnabled(value);
             if(value){readMachinesOfLovingGrace();} else {$scope.myIntro.ready = true;}
         }
