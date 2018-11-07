@@ -1427,7 +1427,7 @@ function writeStaticDataFile(){
     var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+
         '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
         ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
-        'qm.stateNames = staticData.stateNames;';
+        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}';
     try {
         writeToFile('www/data/qmStaticData.js', string);
     } catch(e){
