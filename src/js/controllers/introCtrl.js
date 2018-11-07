@@ -33,9 +33,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                     // Called to navigate to the main app
                     if(qm.auth.sendToLogin()){ return; }
                     if(qm.platform.isDesignMode()){
-                        qmService.goToState(qmStates.configuration);
+                        qmService.goToState(qm.stateNames.configuration);
                     } else {
-                        qmService.goToState(qmStates.onboarding);
+                        qmService.goToState(qm.stateNames.onboarding);
                     }
                 }
                 var message = "Now let's create a mathematical model of YOU!  ";

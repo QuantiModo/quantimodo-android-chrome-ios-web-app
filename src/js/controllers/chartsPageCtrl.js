@@ -5,6 +5,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {title: "Charts"};
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name);
+        qm.urlHelper.addUrlParamsToObject($scope.state);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         $scope.variableName = getVariableName();
         $scope.state.title = qmService.getTruncatedVariableName(getVariableName());
@@ -78,7 +79,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     };
     $scope.recordMeasurementButtonClick = function() {
         qmLog.info("Going to record measurement for "+JSON.stringify($scope.state.variableObject));
-        qmService.goToState(qmStates.measurementAdd, {variableObject: $scope.state.variableObject, fromState: $state.current.name});
+        qmService.goToState(qm.stateNames.measurementAdd, {variableObject: $scope.state.variableObject, fromState: $state.current.name});
     };
     $scope.editSettingsButtonClick = function() {qmService.goToVariableSettingsByObject($scope.state.variableObject);};
     $scope.shareCharts = function(variableObject, sharingUrl, ev){

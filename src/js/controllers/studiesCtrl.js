@@ -44,7 +44,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                     if(index === 5){populateStudyList('pValue');}
                     if(index === 6){populateStudyList('-optimalPearsonProduct');}
                     if(index === 7){$scope.refreshList();}
-                    if(index === 8){qmService.goToState(qmStates.settings);}
+                    if(index === 8){qmService.goToState(qm.stateNames.settings);}
                     return true;
                 }
             });
@@ -220,7 +220,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
-            qmService.goToState(window.qmStates.help);
+            qmService.goToState(window.qm.stateNames.help);
             $mdDialog.cancel();
         };
         self.cancel = function() { $mdDialog.cancel(); };

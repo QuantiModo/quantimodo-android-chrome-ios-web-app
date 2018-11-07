@@ -4801,7 +4801,7 @@ var qm = {
             var commands = {
                 'record a measurement': function() {
                     qm.qmLog.info("said "+ arguments.callee.toString());
-                    qmService.goToState(qmStates.measurementAddSearch)
+                    qmService.goToState(qm.stateNames.measurementAddSearch)
                 },
             };
             qm.mic.addCommands(commands);
@@ -6272,7 +6272,12 @@ var qm = {
         }
     },
     urlHelper: {
-        addUrlParmsToCurrentUrl: function insertParam(key, value) {
+        addUrlParamsToObject: function(state){
+            var params = qm.urlHelper.getQueryParams();
+            state = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, state, false);
+            return state;
+        },
+        addUrlParamsToCurrentUrl: function insertParam(key, value) {
             qm.qmLog.error("This adds params before hash"); // TODO: Fix me
             key = encodeURI(key); value = encodeURI(value);
             var kvp = document.location.search.substr(1).split('&');
