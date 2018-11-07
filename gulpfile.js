@@ -2626,7 +2626,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'useWhiteIcon',
         'ionicResourcesIos',
         'copyIconsToWwwImg',
-        'chcp-config',
+        'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
@@ -2655,7 +2655,7 @@ gulp.task('build-ios-app', function (callback) {
         'useWhiteIcon',
         'ionicResourcesIos',
         'copyIconsToWwwImg',
-        'chcp-config',
+        'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
         'cordova-plugin-rm-cordova-plugin-console',
@@ -3135,7 +3135,7 @@ function getCHCPContentPath(){
 function getCHCPContentUrl(){
     return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + qmGulp.getClientId() + "/" + getCHCPContentPath();
 }
-gulp.task('chcp-config', ['getAppConfigs'], function (callback) {
+gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
     /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
     qmGulp.staticData.chcp = {
         "name": qmGulp.getAppDisplayName(),
@@ -3198,7 +3198,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'chcp-config',
+        'chcp-config-login-build',
         'chcp-build',
         'copyAndroidLicenses',
         'bowerInstall',
@@ -3294,19 +3294,18 @@ gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
     runSequence(
         'configureApp',
-        'chcp-config',
+        'chcp-config-login-build',
         'chcp-build',
         'chcp-deploy-if-dev-or-master',
         callback);
 });
 gulp.task('chcp-config-and-deploy-staging', [], function (callback) {
-    qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
+    //qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
     qmGulp.buildSettings.setDoNotMinify(true);
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
     runSequence(
         //'configureApp',
-        'chcp-config',
-        'chcp-build',
+        'chcp-config-login-build',
         'chcp-deploy',
         callback);
 });
