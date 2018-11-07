@@ -49,8 +49,8 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             qmLog.info("Going to next slide");
             if(!index && index !== 0){index = $scope.myIntro.slideIndex;}
             qmService.intro.setIntroSeen(true, "User clicked next in intro");
-            var intro = $rootScope.appSettings.appDesign.intro.active;
-            if(index === intro.length - 1){
+            var introSlides = $rootScope.appSettings.appDesign.intro.active;
+            if(index === introSlides.length - 1){
                 $scope.myIntro.startApp();
             } else {
                 $ionicSlideBoxDelegate.next();
@@ -63,27 +63,60 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             $scope.myIntro.slideIndex = index;
             if(index > 0 ){qm.splash.text.hide();}
             readSlide();
-            slide = $rootScope.appSettings.appDesign.intro.active[index];
-            if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = slide.backgroundColor;}
-            if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = slide.textColor;}
+            setColorsFromSlide(introSlides()[index]);
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
         //qmLogService.debug("Entering state " + $state.current.name);
         if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
-        var firstSlide = $rootScope.appSettings.appDesign.intro.active[0];
-        if(firstSlide.color.backgroundColor){$scope.myIntro.backgroundColor = firstSlide.color.backgroundColor;}
-        if(firstSlide.backgroundColor){$scope.myIntro.backgroundColor = firstSlide.backgroundColor;}
-        if(firstSlide.textColor){$scope.myIntro.textColor = firstSlide.textColor;}
+        makeBackgroundTransparentIfUsingFuturisticBackground();
+        setColorsFromSlide(introSlides()[0]);
         if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
-            qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + qm.getAppSettings().appDesign.defaultState, null);
+            qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' +
+                qm.getAppSettings().appDesign.defaultState, null);
             qmService.goToDefaultState();
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
         }
         if(!qm.speech.getSpeechAvailable()){$scope.state.setSpeechEnabled(false);}
     });
+    $scope.$on('$ionicView.afterEnter', function(){
+        $scope.showRobot = (!qm.platform.isMobile());
+        qmService.hideLoader();
+        qmService.navBar.hideNavigationMenu();
+        qm.splash.text.show();
+        qmService.splash.hideSplashScreen();
+        qm.robot.onRobotClick = $scope.myIntro.next;
+        qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
+    });
+    $scope.$on('$ionicView.beforeLeave', function(){
+        qm.music.fadeOut();
+    });
+    function makeBackgroundTransparentIfUsingFuturisticBackground() {
+        if(useFuturisticBackground() !== false){
+            var slides = introSlides();
+            slides.forEach(function (slide) {
+                slide.color.backgroundColor = 'transparent';
+            })
+        }
+    }
+    function introSettings() {return $rootScope.appSettings.appDesign.intro;}
+    function introSlides() {return introSettings().active;}
+    function useFuturisticBackground() {return introSettings().futuristicBackground;}
+    function setColorsFromSlide(slide) {
+        if(useFuturisticBackground()){
+            if (slide.color.backgroundColor) {
+                $scope.myIntro.backgroundColor = slide.color.backgroundColor;
+            }
+            if (slide.backgroundColor) {
+                $scope.myIntro.backgroundColor = slide.backgroundColor;
+            }
+        }
+        if (slide.textColor) {
+            $scope.myIntro.textColor = slide.textColor;
+        }
+    }
     function readSlide() {
         //qm.visualizer.hide();
         //qm.mic.setMicEnabled(false);
@@ -104,20 +137,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         slide.bodyText = null;
     }
     function getSlide(){
-        return $rootScope.appSettings.appDesign.intro.active[$scope.myIntro.slideIndex];
+        return introSlides()[$scope.myIntro.slideIndex];
     }
-    $scope.$on('$ionicView.afterEnter', function(){
-        $scope.showRobot = (!qm.platform.isMobile());
-        qmService.hideLoader();
-        qmService.navBar.hideNavigationMenu();
-        qm.splash.text.show();
-        qmService.splash.hideSplashScreen();
-        qm.robot.onRobotClick = $scope.myIntro.next;
-        qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
-    });
-    $scope.$on('$ionicView.beforeLeave', function(){
-        qm.music.fadeOut();
-    });
+
     function readMachinesOfLovingGrace() {
         qm.robot.showRobot();
         qm.mic.setMicEnabled(true);
