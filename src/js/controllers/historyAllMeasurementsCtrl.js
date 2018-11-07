@@ -66,7 +66,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         cancel: function() { qmLogService.debug('CANCELLED', null); },
                         buttonClicked: function(index, button) {
                             if(index === 0){$scope.refreshHistory();}
-                            if(index === 1){qmService.goToState(qmStates.settings);}
+                            if(index === 1){qmService.goToState(qm.stateNames.settings);}
                             return true;
                         }
                     });

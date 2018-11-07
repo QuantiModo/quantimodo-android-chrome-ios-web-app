@@ -35,13 +35,13 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
     };
     function setOutcomeVariable(variable) {
         $scope.state.effectVariable = variable;
-        //qm.urlHelper.addUrlParmsToCurrentUrl('effectVariableName', variable.name);  // Doesn't work
+        //qm.urlHelper.addUrlParamsToCurrentUrl('effectVariableName', variable.name);  // Doesn't work
         qmLogService.debug('Selected outcome ' + variable.name);
         showTypesExplanation();
     }
     function setPredictorVariable(variable) {
         $scope.state.causeVariable = variable;
-        //qm.urlHelper.addUrlParmsToCurrentUrl('causeVariableName', variable.name);  // Doesn't work
+        //qm.urlHelper.addUrlParamsToCurrentUrl('causeVariableName', variable.name);  // Doesn't work
         qmLogService.debug('Selected predictor ' + variable.name);
         showTypesExplanation();
     }
@@ -87,7 +87,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.hideLoader();
             if(body.type === 'individual'){
                 body.study = study;
-                qmService.goToState(qmStates.study, body);
+                qmService.goToState(qm.stateNames.study, body);
             } else {
                 $scope.state.study = study;
             }
