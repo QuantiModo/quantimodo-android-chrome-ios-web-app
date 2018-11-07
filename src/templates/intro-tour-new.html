@@ -14,7 +14,7 @@
     </div>
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" style="z-index: 2;">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready"
-                   style="display: flex; flex-direction: column; justify-content: center;">
+                   style="display: flex; flex-direction: column; justify-content: center; background-color: {{circlePage.color.backgroundColor}};">
             <div ng-show="!circlePage" ng-include="'templates/splash-logo.html'" style="z-index: 3;"></div>
             <div ng-show="circlePage" ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
             <div class="button-bar" style="max-height: 80px;" >
