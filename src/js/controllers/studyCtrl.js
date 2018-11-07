@@ -158,7 +158,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
             if(recalculate || qm.urlHelper.getParam('recalculate')){$scope.state.requestParams.recalculate = true;}
-            if(!$scope.state.study){qmService.goToState(qmStates.studyCreation);}
+            if(!$scope.state.study){qmService.goToState(qm.stateNames.studyCreation);}
         }
         if(recalculate){
             qm.studyHelper.getStudyFromApi(getRequestParams(recalculate), function (study) {successHandler(study);}, function (error) {errorHandler(error);});
@@ -238,7 +238,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         self.unitName = explanations[dialogParameters.propertyToUpdate].unitName;
         self.getHelp = function(){
             if(self.helpText && !self.showHelp){return self.showHelp = true;}
-            qmService.goToState(window.qmStates.help);
+            qmService.goToState(window.qm.stateNames.help);
             $mdDialog.cancel();
         };
         self.cancel = function() {

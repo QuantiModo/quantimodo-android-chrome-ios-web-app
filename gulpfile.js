@@ -1424,7 +1424,10 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+ '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;}';
+    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+
+        '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
+        ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
+        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}';
     try {
         writeToFile('www/data/qmStaticData.js', string);
     } catch(e){

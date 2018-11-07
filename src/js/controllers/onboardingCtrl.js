@@ -13,7 +13,7 @@ angular.module('starter').controller('OnboardingCtrl',
         setRequireUpgradesInOnboarding();
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qm.stateNames.onboarding)){ return; }
         if(!qm.getUser()){qmLog.debug("No user in onboarding!")}
         qmService.setupOnboardingPages();
         qmService.hideLoader();
@@ -53,7 +53,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToState('app.import');
     };
     $scope.goToUpgradePage = function () {
-        qmService.backButtonState = qmStates.onboarding;
+        qmService.backButtonState = qm.stateNames.onboarding;
         qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {
@@ -81,7 +81,7 @@ angular.module('starter').controller('OnboardingCtrl',
         // if(!$rootScope.user){
         //     $rootScope.appSettings.appDesign.onboarding.active = null;
         //     qm.storage.removeItem('onboardingPages');
-        //     qmService.goToState(qmStates.onboarding);
+        //     qmService.goToState(qm.stateNames.onboarding);
         //     return;
         // }
         //$scope.goToReminderSearch($scope.circlePage.variableCategoryName);

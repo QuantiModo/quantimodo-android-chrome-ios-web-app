@@ -12,6 +12,7 @@ qmLog.qm = qm;
 qmLog.color = require('ansi-colors');
 qm.Quantimodo = require('quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
+qm.stateNames = qm.staticData.stateNames;
 qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName('debug');
