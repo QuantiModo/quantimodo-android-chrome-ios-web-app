@@ -1628,6 +1628,16 @@ var qm = {
             return connectors;
         }
     },
+    cookieHelper: {
+        getCookie: function(name){
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        },
+        getGACookie: function(){
+            return qm.cookieHelper.getCookie('_gid');
+        }
+    },
     correlations: {
         getAggregatedCorrelationsFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
