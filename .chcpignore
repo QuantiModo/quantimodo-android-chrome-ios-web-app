@@ -8,3 +8,7 @@ default.config.json
 www/img/icons/*
 **/www/img/icons/*
 node_modules/
+lib/lib/clmtrackr/
+lib/highcharts/
+lib/angular-material/
+lib/chat-engine/

@@ -293,6 +293,11 @@ var qmGit = {
             setBranch(qmGit.getBranchEnv(), callback);
             return;
         }
+        if(process.env.BUILDPACK_LOG_FILE){
+            console.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
+            setBranch("feature", callback);
+            return;
+        }
         try {
             git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
                 if(err){qmLog.error(err); return;}
@@ -351,6 +356,44 @@ function setVersionNumbers() {
 setVersionNumbers();
 var qmGulp = {
     chcp: {
+        loginBuildAndDeploy: function(callback){
+            qmGulp.chcp.loginAndBuild(function(){
+                qmGulp.chcp.outputCordovaHcpJson();
+                qmLog.info("For some reason, you have to run cordova-hcp deploy manually in the console instead of in gulp task");
+                callback();
+                process.exit(0);
+                //execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+            });
+        },
+        loginAndBuild: function(callback){
+            /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
+            qmGulp.staticData.chcp = {
+                "name": qmGulp.getAppDisplayName(),
+                "s3bucket": "qm-cordova-hot-code-push",
+                "s3region": "us-east-1",
+                "s3prefix": qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/",
+                "ios_identifier": qmGulp.getAppIds().appleId,
+                "android_identifier": qmGulp.getAppIdentifier(),
+                "update": "start",
+                "content_url": qmGulp.chcp.getContentUrl()
+            };
+            writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
+                if(err) {return qmLog.error(err);}
+                var chcpBuildOptions = {
+                    "dev": {"config-file": qmGulp.chcp.getChcpJsonUrl("dev")},
+                    "production": {"config-file": qmGulp.chcp.getChcpJsonUrl("production")},
+                    "QA": {"config-file": qmGulp.chcp.getChcpJsonUrl("qa")}
+                };
+                return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
+                    if(err) {return qmLog.error(err);}
+                    qmGulp.chcp.chcpLogin(function(err){
+                        if(err) {return qmLog.error(err);}
+                        qmGulp.chcp.outputCordovaHcpJson();
+                        execute("cordova-hcp build", callback);
+                    });
+                });
+            });
+        },
         outputCordovaHcpJson: function() {
             outputFileContents('cordova-hcp.json');
         },
@@ -518,6 +561,7 @@ var qmGulp = {
             return "quantimodo";
         }
     },
+    //server: {isHeroku: function(){return process.env.BUILDPACK_LOG_FILE !== null;}},  Not sure why this breaks gulp?
     staticData: {
         commonVariables: null,
         units: null,
@@ -722,7 +766,7 @@ function uploadToS3(filePath) {
     });
 }
 function execute(command, callback, suppressErrors, lotsOfOutput) {
-    qmLog.debug('executing ' + command);
+    qmLog.info('executing ' + command);
     if(lotsOfOutput){
         var arguments = command.split(" ");
         var program = arguments.shift();
@@ -855,6 +899,7 @@ function fastlaneSupply(track, callback) {
         callback);
 }
 function setVersionNumbersInWidget(parsedXmlFile) {
+    /** @namespace parsedXmlFile.widget */
     parsedXmlFile.widget.$.version = versionNumbers.ionicApp;
     parsedXmlFile.widget.$['ios-CFBundleVersion'] = versionNumbers.iosCFBundleVersion;
     parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
@@ -1030,7 +1075,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getContentUrl()+'/chcp.json'}}];
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
@@ -2422,7 +2467,8 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
         return;
     }
-    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    var url = qmGulp.chcp.getContentUrl() + '/';
     replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
 });
@@ -3244,33 +3290,7 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/manifest.json']);
 });
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
-    /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
-    qmGulp.staticData.chcp = {
-        "name": qmGulp.getAppDisplayName(),
-        "s3bucket": "qm-cordova-hot-code-push",
-        "s3region": "us-east-1",
-        "s3prefix": qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/",
-        "ios_identifier": qmGulp.getAppIds().appleId,
-        "android_identifier": qmGulp.getAppIdentifier(),
-        "update": "start",
-        "content_url": qmGulp.chcp.getContentUrl()
-    };
-    writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
-        if(err) {return qmLog.error(err);}
-        var chcpBuildOptions = {
-            "dev": {"config-file": qmGulp.chcp.getContentUrl("dev")+"/www/chcp.json"},
-            "production": {"config-file": qmGulp.chcp.getContentUrl("production")+"/www/chcp.json"},
-            "QA": {"config-file": qmGulp.chcp.getContentUrl("qa")+"/www/chcp.json"}
-        };
-        return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
-            if(err) {return qmLog.error(err);}
-            qmGulp.chcp.chcpLogin(function(err){
-                if(err) {return qmLog.error(err);}
-                qmGulp.chcp.outputCordovaHcpJson();
-                execute("cordova-hcp build", callback);
-            });
-        });
-    });
+    qmGulp.chcp.loginAndBuild(callback);
 });
 gulp.task('chcp-BuildDeploy', [], function (callback) {
     execute("cordova-hcp build && cordova-hcp deploy", callback);
@@ -3323,15 +3343,11 @@ gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
         'chcp-deploy-if-dev-or-master',
         callback);
 });
-gulp.task('chcp-config-and-deploy-staging', [], function (callback) {
-    //qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
+gulp.task('chcp-config-and-deploy-staging', ['getAppConfigs'], function (callback) {
+    qmGulp.chcp.releaseStagePath = "dev";
+    qmGulp.chcp.appPath = "web";
     qmGulp.buildSettings.setDoNotMinify(true);
-    qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
-    runSequence(
-        //'configureApp',
-        'chcp-config-login-build',
-        'chcp-deploy',
-        callback);
+    qmGulp.chcp.loginBuildAndDeploy(callback);
 });
 gulp.task('ios-sim-fix', [], function (callback) {
     execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
