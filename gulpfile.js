@@ -375,9 +375,9 @@ var qmGulp = {
             if(qmGulp.buildSettings.buildDebug()){path = "dev";}
             return path;
         },
-        baseS3Path: null,
+        appPath: null,
         getAppPath: function(){
-            if(qmGulp.chcp.baseS3Path){return qmGulp.chcp.baseS3Path;}
+            if(qmGulp.chcp.appPath){return qmGulp.chcp.appPath;}
             return qmGulp.getClientId();
         },
         chcpCleanConfigFiles: function(){
