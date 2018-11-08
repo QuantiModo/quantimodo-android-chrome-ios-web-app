@@ -668,7 +668,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             webConnect: function (connector, ev, additionalParams) {
                 additionalParams = additionalParams || {};
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                if(qm.platform.isChromeExtension() || additionalParams.popup){
+                var isIframe = qm.windowHelper.isInIframe();
+                var usePopup = false;
+                if(qm.platform.isChromeExtension()){usePopup = true;}
+                if(isIframe && connector.name.indexOf('google') !== -1){usePopup = true;}
+                if(usePopup){
                     qmService.connectors.webConnectViaPopup(connector, ev, additionalParams);
                 } else {  // Can't use popup if logging in because it's hard to get the access token from a separate window
                     qmService.connectors.webConnectViaRedirect(connector, ev, additionalParams);
@@ -3854,6 +3858,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
         platform.isChromeExtension = qm.platform.isChromeExtension();
         platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
+        platform.isIframe = qm.windowHelper.isInIframe();
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         qmLog.info("Platform: ", platform);
