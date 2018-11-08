@@ -139,7 +139,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     function getSlide(){
         return introSlides()[$scope.myIntro.slideIndex];
     }
-
     function readMachinesOfLovingGrace() {
         qm.robot.showRobot();
         qm.mic.setMicEnabled(true);
