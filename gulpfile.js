@@ -556,7 +556,7 @@ var qmGulp = {
         isProduction: function () {
             return qmGulp.releaseService.getReleaseStage() === 'production';
         },
-        getReleaseStageSubDomain: function(){
+        getGHPagesSubDomain: function(){
             if(qmGulp.releaseService.isStaging()){return "qm-staging";}
             return "quantimodo";
         }
@@ -1609,9 +1609,6 @@ gulp.task('deleteNodeModules', function () {
 });
 gulp.task('deleteWwwPrivateConfig', function () {
     return cleanFiles([paths.www.defaultPrivateConfig])
-});
-gulp.task('delete-chcp-login', function () {
-    return cleanFiles([paths.chcpLogin])
 });
 gulp.task('deleteWwwIcons', function () {
     return cleanFiles(['www/img/icons/*']);
@@ -2731,7 +2728,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'ios-sim-fix',
         'ionic-build-ios',
         //'chcp-deploy-if-dev-or-master', // Let's only do this on Android builds
-        //'delete-chcp-login',
+        //'chcp-delete-login',
         //'fastlaneBetaIos',
         callback);
 });
@@ -2760,7 +2757,7 @@ gulp.task('build-ios-app', function (callback) {
         'ios-sim-fix',
         'ionic-build-ios',
         //'chcp-deploy-if-dev-or-master',  // Let's only do this on Android builds
-        //'delete-chcp-login',
+        //'chcp-delete-login',
         'fastlaneBetaIos',
         callback);
 });
@@ -3261,7 +3258,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
         'chcp-deploy-if-dev-or-master', // This should cover iOS as well (except mooodimodoapp)
-        'delete-chcp-login',
+        'chcp-delete-login',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
         //'outputCombinedApkVersionCode',
@@ -3297,6 +3294,9 @@ gulp.task('chcp-BuildDeploy', [], function (callback) {
 });
 gulp.task('chcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
+});
+gulp.task('chcp-delete-login', function () {
+    return cleanFiles([paths.chcpLogin])
 });
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
@@ -3343,9 +3343,15 @@ gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
         'chcp-deploy-if-dev-or-master',
         callback);
 });
-gulp.task('chcp-config-and-deploy-staging', ['getAppConfigs'], function (callback) {
-    qmGulp.chcp.releaseStagePath = "dev";
+gulp.task('chcp-config-and-deploy-web', ['getAppConfigs'], function (callback) {
     qmGulp.chcp.appPath = "web";
+    if(qmGulp.releaseService.isStaging()){
+        qmGulp.chcp.releaseStagePath = "dev";
+    } else if (qmGulp.releaseService.isProduction()){
+        qmGulp.chcp.releaseStagePath = "production";
+    } else {
+        qmGulp.chcp.releaseStagePath = "qa";
+    }
     qmGulp.buildSettings.setDoNotMinify(true);
     qmGulp.chcp.loginBuildAndDeploy(callback);
 });
