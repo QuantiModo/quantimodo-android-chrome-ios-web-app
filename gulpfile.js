@@ -197,7 +197,20 @@ var qmLog = {
         if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
         if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
         if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
+        message = qmLog.obfuscateString(message);
         return message;
+    },
+    obfuscateString: function(string){
+        var env = process.env;
+        for (var propertyName in env) {
+            if (env.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    string = string.replace(env[propertyName], '[SECURE]');
+                }
+            }
+        }
+        return string;
     },
     obfuscateSecrets: function(object){
         if(typeof object !== 'object'){return object;}
