@@ -75,7 +75,7 @@
     "superagent": "3.8.3",
     "sw-precache": "5.2.1",
     "taco-team-build": "0.2.5",
-    "time-require": "^0.1.2",
+    "time-require": "0.1.2",
     "vinyl-source-stream": "2.0.0",
     "xcode": "1.0.0",
     "xml2js": "0.4.19",
