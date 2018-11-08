@@ -2494,9 +2494,17 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [
     if(!buildingFor.web()){
         qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
         return;
+    } else {
+        qmLog.info("buildingFor web");
     }
     if(!qmGulp.releaseService.isProduction() && !qmGulp.releaseService.isStaging()){
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
+        return;
+    } else {
+        qmLog.info("release stage is "+qmGulp.releaseService.getReleaseStage());
+    }
+    if(process.env.BUILDPACK_LOG_FILE){
+        qmLog.info("Not replacing relative urls because building for Heroku");
         return;
     }
     //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
