@@ -2626,7 +2626,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'useWhiteIcon',
         'ionicResourcesIos',
         'copyIconsToWwwImg',
-        'cordova-hcp-config',
+        'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
@@ -2634,7 +2634,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
-        //'cordova-hcp-deploy', // Let's only do this on Android builds
+        //'chcp-deploy-if-dev-or-master', // Let's only do this on Android builds
         //'delete-chcp-login',
         //'fastlaneBetaIos',
         callback);
@@ -2655,7 +2655,7 @@ gulp.task('build-ios-app', function (callback) {
         'useWhiteIcon',
         'ionicResourcesIos',
         'copyIconsToWwwImg',
-        'cordova-hcp-config',
+        'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
         'cordova-plugin-rm-cordova-plugin-console',
@@ -2663,7 +2663,7 @@ gulp.task('build-ios-app', function (callback) {
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
-        //'cordova-hcp-deploy',  // Let's only do this on Android builds
+        //'chcp-deploy-if-dev-or-master',  // Let's only do this on Android builds
         //'delete-chcp-login',
         'fastlaneBetaIos',
         callback);
@@ -3101,7 +3101,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
-        'cordova-hcp-clean-config-files',
+        'chcp-clean-config-files',
         'prepareRepositoryForAndroidWithoutCleaning',
         callback);
 });
@@ -3135,12 +3135,7 @@ function getCHCPContentPath(){
 function getCHCPContentUrl(){
     return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + qmGulp.getClientId() + "/" + getCHCPContentPath();
 }
-gulp.task('cordova-hcp-config', ['getAppConfigs'], function (callback) {
-    if(false && buildingFor.web()){
-        qmLog.info("Not using cordova-hcp on web builds");
-        callback();
-        return;
-    }
+gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
     /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
     qmGulp.staticData.chcp = {
         "name": qmGulp.getAppDisplayName(),
@@ -3179,7 +3174,7 @@ function chcpLogin(callback){
     var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
     return writeToFileWithCallback(paths.chcpLogin, string, callback);
 }
-gulp.task('cordova-hcp-BuildDeploy', [], function (callback) {
+gulp.task('chcp-BuildDeploy', [], function (callback) {
     execute("cordova-hcp build && cordova-hcp deploy", callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
@@ -3203,8 +3198,8 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
         'uncommentCordovaJsInIndexHtml',
-        'cordova-hcp-config',
-        'cordova-hcp-build',
+        'chcp-config-login-build',
+        'chcp-build',
         'copyAndroidLicenses',
         'bowerInstall',
         'configureApp',
@@ -3221,7 +3216,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicInfo',
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
-        'cordova-hcp-deploy', // This should cover iOS as well (except mooodimodoapp)
+        'chcp-deploy-if-dev-or-master', // This should cover iOS as well (except mooodimodoapp)
         'delete-chcp-login',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
@@ -3250,13 +3245,13 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/img/icons/*',
         'www/manifest.json']);
 });
-gulp.task('cordova-hcp-build', [], function (callback) {
+gulp.task('chcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
 function chcpCleanConfigFiles(){
     return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
 }
-gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
+gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
@@ -3271,33 +3266,47 @@ gulp.task('cordova-hcp-install-local-dev-plugin', ['copyOverrideFiles'], functio
             }, false, false);
         }, false, false);
 });
-gulp.task('cordova-hcp-clean-config-files', [], function () {
+gulp.task('chcp-clean-config-files', [], function () {
     return chcpCleanConfigFiles();
 });
-gulp.task('cordova-hcp-deploy', ['cordova-hcp-login'], function (callback) {
+gulp.task('chcp-deploy-if-dev-or-master', ['chcp-login'], function (callback) {
     if(!qmGit.isDevelop() && !qmGit.isMaster()){
-        qmLog.info("Not doing cordova-hcp-deploy because not on develop or master");
+        qmLog.info("Not doing chcp-deploy because not on develop or master");
         callback();
         return;
     }
     outputCordovaHcpJson();
+    execute("chcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+});
+gulp.task('chcp-deploy', ['chcp-login'], function (callback) {
+    outputCordovaHcpJson();
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
-gulp.task('cordova-hcp-login', [], function (callback) {
+gulp.task('chcp-login', [], function (callback) {
     chcpLogin(callback);
 });
 gulp.task('ios-sim-fix', [], function (callback) {
     execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
-gulp.task('cordova-hcp-dev-config-and-deploy-medimodo', [], function (callback) {
+gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
     qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
     qmGulp.buildSettings.setDoNotMinify(true);
     qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
     runSequence(
         'configureApp',
-        'cordova-hcp-config',
-        'cordova-hcp-build',
-        'cordova-hcp-deploy',
+        'chcp-config-login-build',
+        'chcp-build',
+        'chcp-deploy-if-dev-or-master',
+        callback);
+});
+gulp.task('chcp-config-and-deploy-staging', [], function (callback) {
+    //qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
+    qmGulp.buildSettings.setDoNotMinify(true);
+    qmLog.info("Update content_url in cordova-hcp.json to production, dev, or qa and run `cordova-hcp deploy` after this");
+    runSequence(
+        //'configureApp',
+        'chcp-config-login-build',
+        'chcp-deploy',
         callback);
 });
 gulp.task('generate-service-worker', function(callback) {
