@@ -110,26 +110,20 @@ var argv = require('yargs').argv;
 var change = require('gulp-change');
 var clean = require('gulp-rimraf');
 var cordovaBuild = require('taco-team-build');
-var csso = require('gulp-csso');
 var concat = require('gulp-concat');
 var defaultRequestOptions = {strictSSL: false};
 var exec = require('child_process').exec;
 var fs = require('fs');
-var git = require('gulp-git');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var inquirer = require('inquirer');
 var parseString = require('xml2js').parseString;
 var q = require('q');
 var rename = require('gulp-rename');
 var replace = require('gulp-string-replace');
-var request = require('request');
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
-var uglify      = require('gulp-uglify');
-var unzip = require('gulp-unzip');
 var zip = require('gulp-zip');
-var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
+var s3Options = {accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY};
 var qmLog = {
     error: function (message, metaData, maxCharacters) {
         metaData = qmLog.addMetaData(metaData);
@@ -260,6 +254,7 @@ var qmGit = {
         })
     },
     setBranchName: function (callback) {
+        var git = require('gulp-git');
         function setBranch(branch, callback) {
             qmGit.branchName = branch.replace('origin/', '');
             qmLog.info('current git branch: ' + qmGit.branchName);
@@ -722,6 +717,7 @@ function checkAwsEnvs() {
     return true;
 }
 function uploadToS3(filePath) {
+    var s3 = require('gulp-s3-upload')(s3Options);
     if(!checkAwsEnvs()){return;}
     fs.stat(filePath, function (err, stat) {
         if (!err) {
@@ -816,6 +812,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function zipAndUploadToS3(folderPath, zipFileName) {
+    var s3 = require('gulp-s3-upload')(s3Options);
     if(!checkAwsEnvs()){return;}
     var s3Path = getS3RelativePath(folderPath + '.zip');
     qmLog.info("Zipping " + folderPath + " to " + s3Path);
@@ -984,6 +981,7 @@ function getFileNameFromUrl(url) {
     return url.split('/').pop();
 }
 function downloadEncryptedFile(url, outputFileName) {
+    var request = require('request');
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
     var downloadUrl = qmGulp.getAppHostName() + '/api/v2/download?client_id=' + QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     qmLog.info("Downloading " + downloadUrl + ' to ' + decryptedFilename);
@@ -991,6 +989,7 @@ function downloadEncryptedFile(url, outputFileName) {
         .pipe(fs.createWriteStream(outputFileName));
 }
 function unzipFile(pathToZipFile, pathToOutputFolder) {
+    var unzip = require('gulp-unzip');
     qmLog.info("Unzipping " + pathToZipFile + " to " + pathToOutputFolder);
     return gulp.src(pathToZipFile)
         .pipe(unzip())
@@ -1291,6 +1290,7 @@ function downloadFile(url, filename, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function downloadAndUnzipFile(url, destinationFolder) {
+    var unzip = require('gulp-unzip');
     qmLog.info("Downloading  " + url + " and uzipping to " + destinationFolder);
     var downloadStream = require('gulp-download-stream');
     return downloadStream(url)
@@ -1525,6 +1525,7 @@ gulp.task('staticDataFile', ['getAppConfigs'], function () {
 });
 function getConstantsFromApiAndWriteToJson(type, urlPath){
     var jeditor = require('gulp-json-editor');
+    var request = require('request');
     var source = require('vinyl-source-stream');
     var streamify = require('gulp-streamify');
     if(!urlPath){urlPath = type;}
@@ -1609,6 +1610,7 @@ gulp.task('deleteWwwIcons', function () {
     return cleanFiles(['www/img/icons/*']);
 });
 gulp.task('getDevAccessTokenFromUserInput', [], function () {
+    var inquirer = require('inquirer');
     var deferred = q.defer();
     if(devCredentials.accessToken){
         process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken;
@@ -1636,6 +1638,7 @@ gulp.task('devSetup', [], function (callback) {
         callback);
 });
 gulp.task('getClientIdFromUserInput', function () {
+    var inquirer = require('inquirer');
     var deferred = q.defer();
     inquirer.prompt([{
         type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + getAppsListUrl() + ": "
@@ -1647,6 +1650,7 @@ gulp.task('getClientIdFromUserInput', function () {
 });
 var updatedVersion = '';
 gulp.task('getUpdatedVersion', ['getClientIdFromUserInput'], function () {
+    var inquirer = require('inquirer');
     var deferred = q.defer();
     inquirer.prompt([{
         type: 'confirm', name: 'updatedVersion', 'default': false,
@@ -1680,6 +1684,7 @@ gulp.task('openChromeAuthorizationPage', ['zipChromeApp'], function () {
 });
 var code = '';
 gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], function () {
+    var inquirer = require('inquirer');
     var deferred = q.defer();
     setTimeout(function () {
         qmLog.info('Starting getChromeAuthorizationCode');
@@ -1746,6 +1751,7 @@ gulp.task("upload-combined-debug-apk-to-s3", function() {
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
+    var request = require('request');
     var deferred = q.defer();
     var source = fs.createReadStream('./chromeApps/zips/' + QUANTIMODO_CLIENT_ID + '.zip');
     // upload the package
@@ -1779,6 +1785,7 @@ gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
 });
 var shouldPublish = true;
 gulp.task('shouldPublish', ['uploadChromeApp'], function () {
+    var inquirer = require('inquirer');
     var deferred = q.defer();
     inquirer.prompt([{
         type: 'confirm',
@@ -1798,6 +1805,7 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function () {
     return deferred.promise;
 });
 gulp.task('publishToGoogleAppStore', ['shouldPublish'], function () {
+    var request = require('request');
     var deferred = q.defer();
     // upload the package
     var options = {
@@ -1877,12 +1885,14 @@ gulp.task('ng-annotate', [], function() {
         .pipe(gulp.dest('www/js'));
 });
 function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
+    var csso = require('gulp-csso');
     var ifElse = require('gulp-if-else');
     var lazypipe = require('lazypipe');
     var filter = require('gulp-filter');
     var rev = require('gulp-rev');
     var revReplace = require('gulp-rev-replace');
     var sourcemaps = require('gulp-sourcemaps');
+    var uglify      = require('gulp-uglify');
     var useref = require('gulp-useref');
     qmLog.info("Running minify-js-generate-css-and-index-html for "+sourceIndexFileName);
     var jsFilter = filter("**/*.js", { restore: true });
@@ -1993,6 +2003,7 @@ gulp.task('upload-source-maps', [], function(callback) {
 });
 var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
+    var uglify      = require('gulp-uglify');
     if(qmGulp.buildSettings.getDoNotMinify()){cb(); return;}
     pump([
         gulp.src('src/js/**/*.js'),
@@ -2153,6 +2164,7 @@ gulp.task('cordovaPlatformVersionAndroid', function (callback) {
     execute(command, callback);
 });
 gulp.task('downloadGradle', function () {
+    var request = require('request');
     return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
         .pipe(fs.createWriteStream('gradle-2.14.1-bin.zip'));
 });
@@ -2465,11 +2477,11 @@ gulp.task('makeIosAppSimplified', function (callback) {
 gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
     if(!buildingFor.web()){
         qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
-        //return;
+        return;
     }
     if(!qmGulp.releaseService.isProduction() && !qmGulp.releaseService.isStaging()){
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
-        //return;
+        return;
     }
     //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
     var url = qmGulp.chcp.getContentUrl() + '/';
@@ -2632,6 +2644,7 @@ gulp.task('copyConfigsToSrc', [], function () {
 });
 var chromeBackgroundJsFilename = 'qmChromeBackground.js';
 gulp.task('chromeBackgroundJS', [], function () {
+    var uglify      = require('gulp-uglify');
     var base = './src/';
     var chromeScriptsWithBase = [];
     for (var i = 0; i < chromeScripts.length; i++) {
@@ -2999,12 +3012,14 @@ gulp.task('_build-all-chrome', function (callback) {
         callback);
 });
 gulp.task('downloadQmAmazonJs', function (callback) {
+    var git = require('gulp-git');
     git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', function (err) {
         if (err) {qmLog.info(err);}
         callback();
     });
 });
 gulp.task('clone-ios-build-repo', function (callback) {
+    var git = require('gulp-git');
     git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-ios-build', function (err) {
         if (err) {qmLog.info(err);}
         callback();
@@ -3379,6 +3394,7 @@ gulp.task('generate-service-worker', function(callback) {
     }, callback);
 });
 function changeOriginRemote(remoteUrl, callback){
+    var git = require('gulp-git');
     git.removeRemote('origin', function (err) {
         if (err) {qmLog.info(err);}
         git.addRemote('origin', remoteUrl, function (err) {
