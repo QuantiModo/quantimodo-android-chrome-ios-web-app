@@ -294,8 +294,8 @@ var qmGit = {
             return;
         }
         if(qmGulp.server.isHeroku()){
-            qmLog.info("Setting brach to FEATURE because on Heroku and we can't access git repo data");
-            return setBranch("feature");
+            qmLog.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
+            return setBranch("feature", callback);
         }
         try {
             git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
