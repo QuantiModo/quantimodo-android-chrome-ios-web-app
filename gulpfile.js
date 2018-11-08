@@ -337,6 +337,40 @@ function setVersionNumbers() {
 }
 setVersionNumbers();
 var qmGulp = {
+    chcp: {
+        outputCordovaHcpJson: function() {
+            outputFileContents('cordova-hcp.json');
+        },
+        chcpLogin: function (callback){
+            if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
+            /** @namespace process.env.AWS_ACCESS_KEY_ID */
+            /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
+            var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
+            return writeToFileWithCallback(paths.chcpLogin, string, callback);
+        },
+        s3HostName: "https://qm-cordova-hot-code-push.s3.amazonaws.com/",
+        getContentUrl: function(releaseStage){
+            releaseStage = releaseStage || qmGulp.chcp.getReleaseStagePath();
+            return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+        },
+        releaseStagePath: null,
+        getReleaseStagePath: function () {
+            if(qmGulp.chcp.releaseStagePath){return qmGulp.chcp.releaseStagePath;}
+            var path = "dev";
+            if(qmGit.isMaster()){path = "production";}
+            if(qmGit.isDevelop()){path = "qa";}
+            if(qmGulp.buildSettings.buildDebug()){path = "dev";}
+            return path;
+        },
+        baseS3Path: null,
+        getAppPath: function(){
+            if(qmGulp.chcp.baseS3Path){return qmGulp.chcp.baseS3Path;}
+            return qmGulp.getClientId();
+        },
+        chcpCleanConfigFiles: function(){
+            return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
+        }
+    },
     client: {
         getClientId: function () {
             if(QUANTIMODO_CLIENT_ID){return QUANTIMODO_CLIENT_ID;}
@@ -980,7 +1014,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()+'/chcp.json'}}];
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getContentUrl()+'/chcp.json'}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
@@ -3125,58 +3159,6 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-function getCHCPContentPath(){
-    var path = "dev";
-    if(qmGit.isMaster()){path = "production";}
-    if(qmGit.isDevelop()){path = "qa";}
-    if(qmGulp.buildSettings.buildDebug()){path = "dev";}
-    return path;
-}
-function getCHCPContentUrl(){
-    return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + qmGulp.getClientId() + "/" + getCHCPContentPath();
-}
-gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
-    /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
-    qmGulp.staticData.chcp = {
-        "name": qmGulp.getAppDisplayName(),
-        "s3bucket": "qm-cordova-hot-code-push",
-        "s3region": "us-east-1",
-        "s3prefix": qmGulp.getClientId() + "/"+getCHCPContentPath()+"/",
-        "ios_identifier": qmGulp.getAppIds().appleId,
-        "android_identifier": qmGulp.getAppIdentifier(),
-        "update": "start",
-        "content_url": getCHCPContentUrl()
-    };
-    writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
-        if(err) {return qmLog.error(err);}
-        var chcpBuildOptions = {
-            "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/dev/www/chcp.json"},
-            "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/production/www/chcp.json"},
-            "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/qa/chcp.json"}
-        };
-        return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
-            if(err) {return qmLog.error(err);}
-            chcpLogin(function(err){
-                if(err) {return qmLog.error(err);}
-                outputCordovaHcpJson();
-                execute("cordova-hcp build", callback);
-            });
-        });
-    });
-});
-function outputCordovaHcpJson() {
-    outputFileContents('cordova-hcp.json');
-}
-function chcpLogin(callback){
-    if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
-    /** @namespace process.env.AWS_ACCESS_KEY_ID */
-    /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
-    var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
-    return writeToFileWithCallback(paths.chcpLogin, string, callback);
-}
-gulp.task('chcp-BuildDeploy', [], function (callback) {
-    execute("cordova-hcp build && cordova-hcp deploy", callback);
-});
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     buildingFor.platform = qmPlatform.android;
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
@@ -3245,17 +3227,46 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/img/icons/*',
         'www/manifest.json']);
 });
+gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
+    /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
+    qmGulp.staticData.chcp = {
+        "name": qmGulp.getAppDisplayName(),
+        "s3bucket": "qm-cordova-hot-code-push",
+        "s3region": "us-east-1",
+        "s3prefix": qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/",
+        "ios_identifier": qmGulp.getAppIds().appleId,
+        "android_identifier": qmGulp.getAppIdentifier(),
+        "update": "start",
+        "content_url": qmGulp.chcp.getContentUrl()
+    };
+    writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
+        if(err) {return qmLog.error(err);}
+        var chcpBuildOptions = {
+            "dev": {"config-file": qmGulp.chcp.getContentUrl("dev")+"/www/chcp.json"},
+            "production": {"config-file": qmGulp.chcp.getContentUrl("production")+"/www/chcp.json"},
+            "QA": {"config-file": qmGulp.chcp.getContentUrl("qa")+"/www/chcp.json"}
+        };
+        return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
+            if(err) {return qmLog.error(err);}
+            qmGulp.chcp.chcpLogin(function(err){
+                if(err) {return qmLog.error(err);}
+                qmGulp.chcp.outputCordovaHcpJson();
+                execute("cordova-hcp build", callback);
+            });
+        });
+    });
+});
+gulp.task('chcp-BuildDeploy', [], function (callback) {
+    execute("cordova-hcp build && cordova-hcp deploy", callback);
+});
 gulp.task('chcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
-function chcpCleanConfigFiles(){
-    return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
-}
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
-    chcpCleanConfigFiles();
+    qmGulp.chcp.chcpCleanConfigFiles();
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save",
         function () {
             execute("gulp copyOverrideFiles", function () {
@@ -3267,7 +3278,7 @@ gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (call
         }, false, false);
 });
 gulp.task('chcp-clean-config-files', [], function () {
-    return chcpCleanConfigFiles();
+    return qmGulp.chcp.chcpCleanConfigFiles();
 });
 gulp.task('chcp-deploy-if-dev-or-master', ['chcp-login'], function (callback) {
     if(!qmGit.isDevelop() && !qmGit.isMaster()){
@@ -3275,18 +3286,15 @@ gulp.task('chcp-deploy-if-dev-or-master', ['chcp-login'], function (callback) {
         callback();
         return;
     }
-    outputCordovaHcpJson();
+    qmGulp.chcp.outputCordovaHcpJson();
     execute("chcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('chcp-deploy', ['chcp-login'], function (callback) {
-    outputCordovaHcpJson();
+    qmGulp.chcp.outputCordovaHcpJson();
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('chcp-login', [], function (callback) {
-    chcpLogin(callback);
-});
-gulp.task('ios-sim-fix', [], function (callback) {
-    execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
+    qmGulp.chcp.chcpLogin(callback);
 });
 gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
     qmGulp.client.setClientId(qmGulp.client.clientIds.medimodo);
@@ -3308,6 +3316,9 @@ gulp.task('chcp-config-and-deploy-staging', [], function (callback) {
         'chcp-config-login-build',
         'chcp-deploy',
         callback);
+});
+gulp.task('ios-sim-fix', [], function (callback) {
+    execute("cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim", callback);
 });
 gulp.task('generate-service-worker', function(callback) {
     var swPreCache = require('sw-precache');
