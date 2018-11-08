@@ -337,6 +337,30 @@ function setVersionNumbers() {
 }
 setVersionNumbers();
 var qmGulp = {
+    chcp: {
+        s3HostName: "https://qm-cordova-hot-code-push.s3.amazonaws.com/",
+        getContentUrl: function(releaseStage){
+            releaseStage = releaseStage || qmGulp.chcp.getReleaseStagePath();
+            return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+        },
+        releaseStagePath: null,
+        getReleaseStagePath: function () {
+            if(qmGulp.chcp.releaseStagePath){return qmGulp.chcp.releaseStagePath;}
+            var path = "dev";
+            if(qmGit.isMaster()){path = "production";}
+            if(qmGit.isDevelop()){path = "qa";}
+            if(qmGulp.buildSettings.buildDebug()){path = "dev";}
+            return path;
+        },
+        baseS3Path: null,
+        getAppPath: function(){
+            if(qmGulp.chcp.baseS3Path){return qmGulp.chcp.baseS3Path;}
+            return qmGulp.getClientId();
+        },
+        chcpCleanConfigFiles: function(){
+            return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
+        }
+    },
     client: {
         getClientId: function () {
             if(QUANTIMODO_CLIENT_ID){return QUANTIMODO_CLIENT_ID;}
@@ -980,7 +1004,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": getCHCPContentUrl()+'/chcp.json'}}];
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getContentUrl()+'/chcp.json'}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
@@ -3125,34 +3149,24 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         'buildAndroidApp',
         callback);
 });
-function getCHCPContentPath(){
-    var path = "dev";
-    if(qmGit.isMaster()){path = "production";}
-    if(qmGit.isDevelop()){path = "qa";}
-    if(qmGulp.buildSettings.buildDebug()){path = "dev";}
-    return path;
-}
-function getCHCPContentUrl(){
-    return "https://qm-cordova-hot-code-push.s3.amazonaws.com/" + qmGulp.getClientId() + "/" + getCHCPContentPath();
-}
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
     /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
     qmGulp.staticData.chcp = {
         "name": qmGulp.getAppDisplayName(),
         "s3bucket": "qm-cordova-hot-code-push",
         "s3region": "us-east-1",
-        "s3prefix": qmGulp.getClientId() + "/"+getCHCPContentPath()+"/",
+        "s3prefix": qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/",
         "ios_identifier": qmGulp.getAppIds().appleId,
         "android_identifier": qmGulp.getAppIdentifier(),
         "update": "start",
-        "content_url": getCHCPContentUrl()
+        "content_url": qmGulp.chcp.getContentUrl()
     };
     writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
         if(err) {return qmLog.error(err);}
         var chcpBuildOptions = {
-            "dev": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/dev/www/chcp.json"},
-            "production": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/production/www/chcp.json"},
-            "QA": {"config-file": "http://qm-cordova-hot-code-push.s3.amazonaws.com/"+qmGulp.getClientId()+"/qa/chcp.json"}
+            "dev": {"config-file": qmGulp.chcp.getContentUrl("dev")+"/www/chcp.json"},
+            "production": {"config-file": qmGulp.chcp.getContentUrl("production")+"/www/chcp.json"},
+            "QA": {"config-file": qmGulp.chcp.getContentUrl("qa")+"/www/chcp.json"}
         };
         return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
             if(err) {return qmLog.error(err);}
@@ -3248,14 +3262,11 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
 gulp.task('chcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
-function chcpCleanConfigFiles(){
-    return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
-}
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
-    chcpCleanConfigFiles();
+    qmGulp.chcp.chcpCleanConfigFiles();
     execute("cordova plugin add https://github.com/apility/cordova-hot-code-push-local-dev-addon#646064d0b5ca100cd24f7bba177cc9c8111a6c81 --save",
         function () {
             execute("gulp copyOverrideFiles", function () {
