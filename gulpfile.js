@@ -295,7 +295,8 @@ var qmGit = {
         }
         if(qmGulp.server.isHeroku()){
             qmLog.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
-            return setBranch("feature", callback);
+            setBranch("feature", callback);
+            return;
         }
         try {
             git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
