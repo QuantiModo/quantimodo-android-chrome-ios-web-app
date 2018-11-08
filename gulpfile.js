@@ -375,9 +375,9 @@ var qmGulp = {
             writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
                 if(err) {return qmLog.error(err);}
                 var chcpBuildOptions = {
-                    "dev": {"config-file": qmGulp.chcp.getContentUrl("dev")+"/www/chcp.json"},
-                    "production": {"config-file": qmGulp.chcp.getContentUrl("production")+"/www/chcp.json"},
-                    "QA": {"config-file": qmGulp.chcp.getContentUrl("qa")+"/www/chcp.json"}
+                    "dev": {"config-file": qmGulp.chcp.getChcpJsonUrl("dev")},
+                    "production": {"config-file": qmGulp.chcp.getChcpJsonUrl("production")},
+                    "QA": {"config-file": qmGulp.chcp.getChcpJsonUrl("qa")}
                 };
                 return writeToFileWithCallback('chcpbuild.options', qmLog.prettyJSONStringify(chcpBuildOptions), function(err){
                     if(err) {return qmLog.error(err);}
@@ -403,6 +403,9 @@ var qmGulp = {
         getContentUrl: function(releaseStage){
             releaseStage = releaseStage || qmGulp.chcp.getReleaseStagePath();
             return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+        },
+        getChcpJsonUrl: function(releaseStage){
+            return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json"
         },
         releaseStagePath: null,
         getReleaseStagePath: function () {
@@ -1065,7 +1068,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getContentUrl()+'/chcp.json'}}];
+            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
@@ -2457,7 +2460,8 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
         return;
     }
-    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    var url = qmGulp.chcp.getContentUrl() + '/';
     replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
 });
