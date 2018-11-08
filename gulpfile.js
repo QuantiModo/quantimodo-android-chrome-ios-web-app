@@ -293,8 +293,8 @@ var qmGit = {
             setBranch(qmGit.getBranchEnv(), callback);
             return;
         }
-        if(qmGulp.server.isHeroku()){
-            qmLog.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
+        if(process.env.BUILDPACK_LOG_FILE){
+            console.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
             setBranch("feature", callback);
             return;
         }
@@ -561,11 +561,7 @@ var qmGulp = {
             return "quantimodo";
         }
     },
-    server: {
-        isHeroku: function(){
-            return process.env.BUILDPACK_LOG_FILE !== null;
-        }
-    },
+    //server: {isHeroku: function(){return process.env.BUILDPACK_LOG_FILE !== null;}},  Not sure why this breaks gulp?
     staticData: {
         commonVariables: null,
         units: null,
