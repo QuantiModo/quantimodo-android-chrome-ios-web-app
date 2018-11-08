@@ -564,7 +564,7 @@ var qmGulp = {
         isHeroku: function(){
             return process.env.BUILDPACK_LOG_FILE !== null;
         }
-    }
+    },
     staticData: {
         commonVariables: null,
         units: null,
@@ -902,6 +902,7 @@ function fastlaneSupply(track, callback) {
         callback);
 }
 function setVersionNumbersInWidget(parsedXmlFile) {
+    /** @namespace parsedXmlFile.widget */
     parsedXmlFile.widget.$.version = versionNumbers.ionicApp;
     parsedXmlFile.widget.$['ios-CFBundleVersion'] = versionNumbers.iosCFBundleVersion;
     parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
