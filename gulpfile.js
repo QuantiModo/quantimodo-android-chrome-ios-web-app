@@ -2494,18 +2494,38 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [
     if(!buildingFor.web()){
         qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
         return;
+    } else {
+        qmLog.info("buildingFor web");
     }
     if(!qmGulp.releaseService.isProduction() && !qmGulp.releaseService.isStaging()){
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
         return;
+    } else {
+        qmLog.info("release stage is "+qmGulp.releaseService.getReleaseStage());
+    }
+    if(process.env.BUILDPACK_LOG_FILE){
+        qmLog.info("Not replacing relative urls because building for Heroku");
+        return;
     }
     //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
     var url = qmGulp.chcp.getContentUrl() + '/';
-    replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
-    replaceTextInFiles(['www/index.html'], 'src="lib', 'src="'+url+'lib');
-    replaceTextInFiles(['www/index.html'], 'href="css', 'href="'+url+'css');
-    replaceTextInFiles(['www/index.html'], 'href="lib', 'href="'+url+'lib');
-    return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
+    // replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
+    // replaceTextInFiles(['www/index.html'], 'src="lib', 'src="'+url+'lib');
+    // replaceTextInFiles(['www/index.html'], 'href="css', 'href="'+url+'css');
+    // replaceTextInFiles(['www/index.html'], 'href="lib', 'href="'+url+'lib');
+    // return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
+    var options = {
+        logs: {
+            enabled: true,
+            notReplaced: true
+        }
+    };
+    return gulp.src(['www/index.html'], {base: '.'})
+        .pipe(replace('src="scripts', 'src="'+url+'scripts', options))
+        .pipe(replace('src="lib', 'src="'+url+'lib', options))
+        .pipe(replace('href="css', 'href="'+url+'css', options))
+        .pipe(replace('href="lib', 'href="'+url+'lib', options))
+        .pipe(gulp.dest('./'));
 });
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
