@@ -366,6 +366,9 @@ var qmGulp = {
             releaseStage = releaseStage || qmGulp.chcp.getReleaseStagePath();
             return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;
         },
+        getChcpJsonUrl: function(releaseStage){
+            return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json"
+        },
         releaseStagePath: null,
         getReleaseStagePath: function () {
             if(qmGulp.chcp.releaseStagePath){return qmGulp.chcp.releaseStagePath;}
