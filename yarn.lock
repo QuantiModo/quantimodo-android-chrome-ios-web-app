@@ -9251,7 +9251,7 @@ tildify@^1.0.0:
   dependencies:
     os-homedir "^1.0.0"
 
-time-require@^0.1.2:
+time-require@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/time-require/-/time-require-0.1.2.tgz#f9e12cb370fc2605e11404582ba54ef5ca2b2d98"
   dependencies:
