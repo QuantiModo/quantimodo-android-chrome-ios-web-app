@@ -200,12 +200,18 @@ var qmLog = {
         message = qmLog.obfuscateString(message);
         return message;
     },
+    isSecretWord: function(propertyName){
+        var lowerCaseProperty = propertyName.toLowerCase();
+        return lowerCaseProperty.indexOf('secret') !== -1 ||
+            lowerCaseProperty.indexOf('password') !== -1 ||
+            lowerCaseProperty.indexOf('key') !== -1 ||
+            lowerCaseProperty.indexOf('token') !== -1;
+    },
     obfuscateString: function(string){
         var env = process.env;
         for (var propertyName in env) {
             if (env.hasOwnProperty(propertyName)) {
-                var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                if(qmLog.isSecretWord(propertyName)){
                     string = string.replace(env[propertyName], '[SECURE]');
                 }
             }
@@ -217,9 +223,8 @@ var qmLog = {
         object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
-                var lowerCaseProperty = propertyName.toLowerCase();
-                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
-                    object[propertyName] = "HIDDEN";
+                if(qmLog.isSecretWord(propertyName)){
+                    object[propertyName] = "[SECURE]";
                 } else {
                     object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
                 }
@@ -423,6 +428,7 @@ var qmGulp = {
         },
         appPath: null,
         getAppPath: function(){
+            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "web";}
             if(qmGulp.chcp.appPath){return qmGulp.chcp.appPath;}
             return qmGulp.getClientId();
         },
