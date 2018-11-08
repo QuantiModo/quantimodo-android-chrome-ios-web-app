@@ -280,6 +280,10 @@ var qmGit = {
             setBranch(qmGit.getBranchEnv(), callback);
             return;
         }
+        if(qmGulp.server.isHeroku()){
+            qmLog.info("Setting brach to FEATURE because on Heroku and we can't access git repo data");
+            return setBranch("feature");
+        }
         try {
             git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
                 if(err){qmLog.error(err); return;}
@@ -500,6 +504,11 @@ var qmGulp = {
         getReleaseStageSubDomain: function(){
             if(qmGulp.releaseService.isStaging()){return "qm-staging";}
             return "quantimodo";
+        }
+    },
+    server: {
+        isHeroku: function(){
+            return process.env.BUILDPACK_LOG_FILE !== null;
         }
     },
     staticData: {
