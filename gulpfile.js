@@ -217,17 +217,21 @@ bugsnag.onBeforeNotify(function (notification) {
 });
 var qmGit = {
     branchName: null,
+    getBranchName: function(){
+        if(qmGit.branchName){return qmGit.branchName;}
+        qmLog.info("Branch name not set!");
+        return null
+    },
     isMaster: function () {
-        return qmGit.branchName === "master"
+        if(!qmGit.getBranchName()){throw "Branch name not set!"}
+        return qmGit.getBranchName() === "master"
     },
     isDevelop: function () {
-        if(!qmGit.branchName){
-            throw "Branch name not set!"
-        }
-        return qmGit.branchName === "develop"
+        if(!qmGit.getBranchName()){throw "Branch name not set!"}
+        return qmGit.getBranchName() === "develop"
     },
     isFeature: function () {
-        return qmGit.branchName.indexOf("feature") !== -1;
+        return qmGit.getBranchName().indexOf("feature") !== -1;
     },
     getCurrentGitCommitSha: function () {
         if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
@@ -248,17 +252,22 @@ var qmGit = {
     },
     outputCommitMessageAndBranch: function () {
         qmGit.getCommitMessage(function (commitMessage) {
-            qmGit.setBranchName(function (branchName) {
-                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+            qmGit.setBranchName(function () {
+                qmLog.info("===== Building " + commitMessage + " on "+ qmGit.getBranchName() + " =====");
             })
         })
     },
     setBranchName: function (callback) {
+        if(qmGit.branchName){
+            qmLog.info("branchName already set to "+qmGit.branchName);
+            if (callback) {callback();}
+            return;
+        }
         var git = require('gulp-git');
         function setBranch(branch, callback) {
             qmGit.branchName = branch.replace('origin/', '');
             qmLog.info('current git branch: ' + qmGit.branchName);
-            if (callback) {callback(qmGit.branchName);}
+            if (callback) {callback();}
         }
         if (qmGit.getBranchEnv()){
             setBranch(qmGit.getBranchEnv(), callback);
@@ -387,8 +396,8 @@ var qmGulp = {
         getReleaseStagePath: function () {
             if(qmGulp.chcp.releaseStagePath){return qmGulp.chcp.releaseStagePath;}
             var path = "dev";
-            if(qmGit.isMaster()){path = "production";}
-            if(qmGit.isDevelop()){path = "qa";}
+            if(qmGit.getBranchName() && qmGit.isMaster()){path = "production";}
+            if(qmGit.getBranchName() && qmGit.isDevelop()){path = "qa";}
             if(qmGulp.buildSettings.buildDebug()){path = "dev";}
             return path;
         },
@@ -459,7 +468,7 @@ var qmGulp = {
                 buildLink: qmGulp.buildInfoHelper.getBuildLink(),
                 versionNumber: versionNumbers.ionicApp,
                 versionNumbers: versionNumbers,
-                gitBranch: qmGit.branchName,
+                gitBranch: qmGit.getBranchName(),
                 gitCommitShaHash: qmGit.getCurrentGitCommitSha()
             };
         },
@@ -514,7 +523,7 @@ var qmGulp = {
     releaseService: {
         getReleaseStage: function () {
             if(!process.env.RELEASE_STAGE){
-                qmLog.error("No RELEASE_STAGE set!  Assuming development");
+                qmLog.info("No RELEASE_STAGE set!  Assuming development");
                 return 'development';
             }
             return process.env.RELEASE_STAGE;
@@ -617,8 +626,9 @@ function setClientId(callback) {
         qmLog.info('Stripped apps/ and now client id is ' + QUANTIMODO_CLIENT_ID);
     }
     if (!QUANTIMODO_CLIENT_ID) {
-        qmGit.setBranchName(function (branch) {
-            branch = branch.replace('apps/', '');
+        qmGit.setBranchName(function () {
+            var fullBranchName = qmGit.getBranchName();
+            branch = fullBranchName.replace('apps/', '');
             if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
                     qmLog.info('Setting QUANTIMODO_CLIENT_ID using branch name ' + branch);
@@ -1845,6 +1855,9 @@ gulp.task('git-check', function (done) {
     }
     done();
 });
+gulp.task('git-set-branch-name', function (callback) {
+    qmGit.setBranchName(callback);
+});
 gulp.task('deleteIOSApp', function () {
     var deferred = q.defer();
     execute('ionic platform rm ios', function (error) {
@@ -2474,7 +2487,10 @@ gulp.task('makeIosAppSimplified', function (callback) {
         'addDeploymentTarget',
         callback);
 });
-gulp.task('replaceRelativePathsWithAbsolutePaths', function () {
+gulp.task('replaceRelativePathsWithAbsolutePaths', [
+        'getAppConfigs',
+        'git-set-branch-name'
+    ], function () {
     if(!buildingFor.web()){
         qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
         return;
