@@ -673,6 +673,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(qm.platform.isChromeExtension()){usePopup = true;}
                 if(isIframe && connector.name.indexOf('google') !== -1){usePopup = true;}
                 if(usePopup){
+                    qmService.pusher.loginRedirectionSubscribe();
                     qmService.connectors.webConnectViaPopup(connector, ev, additionalParams);
                 } else {  // Can't use popup if logging in because it's hard to get the access token from a separate window
                     qmService.connectors.webConnectViaRedirect(connector, ev, additionalParams);
@@ -1678,6 +1679,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         pusher: {
+            loginRedirectionSubscribe: function(){
+                var channelName = qm.cookieHelper.getGACookie();
+                if(!channelName){
+                    qmLog.error("Could not get channelName from user or GA id!");
+                    return false;
+                }
+                if(typeof Pusher === "undefined"){
+                    qmLog.error("Pusher not defined!");
+                    return;
+                }
+                Pusher.logToConsole = qm.appMode.isDevelopment() || qm.appMode.isDebug();  // Enable pusher logging - don't include this in production
+                var pusher = new Pusher('4e7cd12d82bff45e4976', {cluster: 'us2', encrypted: true});
+                var channel = pusher.subscribe(channelName);
+                channel.bind('user', function(user) {
+                    qmService.setUserInLocalStorageBugsnagIntercomPush(user);
+                    pusher.disconnect();
+                });
+            },
             subscribe: function(user){
                 if(typeof Pusher === "undefined"){
                     qmLog.debug("Pusher not defined!");
@@ -3451,7 +3470,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
         qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:', null, user);
         qmService.setUser(user);
-        qmService.pusher.subscribe(user);
+        //qmService.pusher.subscribe(user); // Too many connections exceeds daily limit of 100 and they're required for iFrame login
         if(qm.urlHelper.getParam('doNotRemember')){return;}
         qmService.backgroundGeolocationStartIfEnabled();
         qmLog.setupBugsnag(user);
