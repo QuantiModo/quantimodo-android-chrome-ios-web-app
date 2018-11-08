@@ -7,3 +7,4 @@ www/manifest.json
 default.config.json
 www/img/icons/*
 **/www/img/icons/*
+node_modules/
