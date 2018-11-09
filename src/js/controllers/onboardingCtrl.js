@@ -20,10 +20,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.navBar.hideNavigationMenu();
         setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         setRequireUpgradesInOnboarding();
-        if(!speechEnabled){
-            $rootScope.setMicAndSpeechEnabled(false);
-            qmService.robot.hideRobot();
-        }
+        if(!speechEnabled){$rootScope.setMicAndSpeechEnabled(false, true);}
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLog.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
