@@ -3386,7 +3386,7 @@ gulp.task('chcp-deploy-if-dev-or-master', ['chcp-login'], function (callback) {
         return;
     }
     qmGulp.chcp.outputCordovaHcpJson();
-    execute("chcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+    execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('chcp-deploy', ['chcp-login'], function (callback) {
     qmGulp.chcp.outputCordovaHcpJson();
