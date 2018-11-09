@@ -3870,7 +3870,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isIOS = qm.platform.isIOS();
         platform.isAndroid = qm.platform.isAndroid();
         platform.isWindowsPhone = ionic.Platform.isWindowsPhone() && !platform.isWeb;
-        platform.isChrome = window.chrome ? true : false;
+        platform.isChrome = !!window.chrome;
         platform.currentPlatform = qm.platform.getCurrentPlatform();
         platform.currentPlatformVersion = ionic.Platform.version();
         platform.isMobile = qm.platform.isMobile();
@@ -3881,22 +3881,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         qmLog.info("Platform: ", platform);
-    };
-    qmService.getProtocol = function () {
-        if (typeof ionic !== "undefined") {
-            var currentPlatform = ionic.Platform.platform();
-            if(currentPlatform.indexOf('win') > -1){return 'ms-appx-web';}
-        }
-        return 'https';
-    };
-    // returns bool
-    // if a string starts with substring
-    qmService.startsWith = function (fullString, search) {
-        if(!fullString){
-            qmLogService.error('fullString not provided to qmService.startsWith');
-            return false;
-        }
-        return fullString.slice(0, search.length) === search;
     };
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
