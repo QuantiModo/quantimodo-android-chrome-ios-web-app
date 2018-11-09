@@ -668,7 +668,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             webConnect: function (connector, ev, additionalParams) {
                 additionalParams = additionalParams || {};
                 if(!$rootScope.platform.isWeb && !$rootScope.platform.isChromeExtension){return false;}
-                var isIframe = qm.windowHelper.isInIframe();
+                var isIframe = qm.windowHelper.isIframe();
                 var usePopup = false;
                 if(qm.platform.isChromeExtension()){usePopup = true;}
                 if(isIframe && connector.name.indexOf('google') !== -1){usePopup = true;}
@@ -3877,7 +3877,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         platform.isWindows = window.location.href.indexOf('ms-appx') > -1;
         platform.isChromeExtension = qm.platform.isChromeExtension();
         platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
-        platform.isIframe = qm.windowHelper.isInIframe();
+        platform.isIframe = qm.windowHelper.isIframe();
         qmService.localNotificationsEnabled = platform.isChromeExtension;
         qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
         qmLog.info("Platform: ", platform);
