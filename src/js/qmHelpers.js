@@ -6285,6 +6285,25 @@ var qm = {
         }
     },
     urlHelper: {
+        addUrlQueryParamsToUrlString: function (params, url){
+            if(!url){url = qm.urlHelper.getCurrentUrl();}
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    if(url.indexOf(key + '=') === -1){
+                        if(params[key] === null){
+                            console.error("Not adding null param "+key);  // Don't use qm.qmLog here because it's called by the logger -> infitnite loop
+                            continue;
+                        }
+                        if(url.indexOf('?') === -1){
+                            url = url + "?" + key + "=" + encodeURIComponent(params[key]);
+                        } else {
+                            url = url + "&" + key + "=" + encodeURIComponent(params[key]);
+                        }
+                    }
+                }
+            }
+            return url;
+        },
         addUrlParamsToObject: function(state){
             var params = qm.urlHelper.getQueryParams();
             state = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, state, false);
@@ -6375,25 +6394,6 @@ var qm = {
         },
         getPrivateConfigJsonUrl: function(){
             return qm.urlHelper.getAbsoluteUrlFromRelativePath('default.private_config.json');
-        },
-        addUrlQueryParamsToUrlString: function (params, url){
-            if(!url){url = qm.urlHelper.getCurrentUrl();}
-            for (var key in params) {
-                if (params.hasOwnProperty(key)) {
-                    if(url.indexOf(key + '=') === -1){
-                        if(params[key] === null){
-                            console.error("Not adding null param "+key);  // Don't use qm.qmLog here because it's called by the logger -> infitnite loop
-                            continue;
-                        }
-                        if(url.indexOf('?') === -1){
-                            url = url + "?" + key + "=" + encodeURIComponent(params[key]);
-                        } else {
-                            url = url + "&" + key + "=" + encodeURIComponent(params[key]);
-                        }
-                    }
-                }
-            }
-            return url;
         },
         onQMSubDomain: function () {
             if(qm.urlHelper.indexOfCurrentUrl('https://') !== 0){return false;}
