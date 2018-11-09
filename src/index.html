@@ -77,6 +77,15 @@
     <script src="js/controllers/feedCtrl.js"></script>
     <script src="js/directives.js"></script>
       <!-- endbuild -->
+    <script>
+        if (typeof qm === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                document.write(unescape("%3Cscript src='https://quantimod.quantimo.do/fallback-scripts/combined-head-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>
     <script src="cordova.js"></script>   <!-- cordova script (this will be a 404 during development) -->
 <!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
           moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
@@ -136,7 +145,15 @@
     <!--<script src='https://app.quantimo.do/api/v1/connect.js'></script>-->
     <!-- I think we're already including UserVoice in the JavaScript <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>-->
     <!-- endbuild -->
-
+    <script>
+        if (typeof Pusher === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                document.write(unescape("%3Cscript src='https://quantimod.quantimo.do/fallback-scripts/combined-body-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>
     <script src="https://js.stripe.com/v3/"></script>
     <!-- Load Facebook SDK for JavaScript -->
 <!--    <div id="fb-root"></div>
