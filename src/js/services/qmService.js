@@ -650,6 +650,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     return;
                 }
+                url = qm.urlHelper.addUrlQueryParamsToUrlString({popup: true}, url);
                 //url = connector.connectInstructions.url;  // TODO: Should we just send to the /connect endpoint above and let API redirect?
                 var ref = window.open(url,'', "width=600,height=800");
                 if(!ref){
