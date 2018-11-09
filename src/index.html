@@ -82,7 +82,8 @@
             console.error("Scripts didn't load!");
             var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
             if (!isTesting) {
-                document.write(unescape("%3Cscript src='https://quantimod.quantimo.do/fallback-scripts/combined-head-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-head-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
             }
         }
     </script>
@@ -149,7 +150,8 @@
             console.error("Scripts didn't load!");
             var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
             if (!isTesting) {
-                document.write(unescape("%3Cscript src='https://quantimod.quantimo.do/fallback-scripts/combined-body-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-body-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
             }
         }
     </script>
