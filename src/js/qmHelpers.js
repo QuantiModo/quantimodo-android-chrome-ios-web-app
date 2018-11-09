@@ -3361,7 +3361,7 @@ var qm = {
         },
         getMicrophoneAvailable: function(){
             if(qm.mic.microphoneAvailable !== null){return qm.mic.microphoneAvailable;}
-            if(qm.windowHelper.isInIframe()){
+            if(qm.windowHelper.isIframe()){
                 return qm.mic.microphoneAvailable = qm.mic.micEnabled = false;
             }
             if(typeof annyang === "undefined"){
@@ -7495,7 +7495,7 @@ var qm = {
                 || document.body.clientHeight;
             return h;
         },
-        isInIframe: function(){
+        isIframe: function(){
             return window !== window.top;
         }
     }

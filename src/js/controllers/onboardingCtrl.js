@@ -20,6 +20,10 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.navBar.hideNavigationMenu();
         setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         setRequireUpgradesInOnboarding();
+        if(!speechEnabled){
+            $rootScope.setMicAndSpeechEnabled(false);
+            qmService.robot.hideRobot();
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLog.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
@@ -112,6 +116,10 @@ angular.module('starter').controller('OnboardingCtrl',
         qm.storage.removeItem('onboardingPages');
     };
     function askQuestion(circlePage) {
+        if(!speechEnabled){
+            qmLog.debug("Speech disabled");
+            return false;
+        }
         qm.speech.askYesNoQuestion(circlePage.bodyText, function () {
             if(circlePage.addButtonText){
                 $scope.goToReminderSearchFromOnboarding();
