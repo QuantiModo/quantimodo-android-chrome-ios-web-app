@@ -2105,6 +2105,18 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(successHandler){successHandler(variableObject);}
                     $rootScope.goToState(qm.stateNames.measurementAdd, {variableObject: variableObject, doneState: "false"}); // false must have quotes
                 }, null, ev);
+            },
+            variableNameStateParamSearch: function(menuItem, ev, successHandler){
+                qmService.showVariableSearchDialog({
+                    title: "Select Variable",
+                    helpText: "You Can Select a Default Variable for this Page",
+                    requestParams: {includePublic: true}
+                }, function (selectedVariable) {
+                    if(successHandler){successHandler(selectedVariable);}
+                    menuItem.params.variableName = selectedVariable.name;
+                    menuItem.icon = selectedVariable.ionIcon;
+                    menuItem.title = selectedVariable.displayName;
+                }, null, ev);
             }
         },
         stateHelper: {
