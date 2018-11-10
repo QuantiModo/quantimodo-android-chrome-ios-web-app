@@ -1591,8 +1591,12 @@ gulp.task('unzipChromeExtension', function () {
 });
 gulp.task('sass', function (done) {
     var minifyCss = require('gulp-minify-css');
+    var textToReplace = '../fonts/ionicons';
+    var replacementText = '../lib/ionic/fonts/ionicons';
+    // Fix wrong fonts/ionicons in ionic.css in https://github.com/webpack-contrib/css-loader/issues/121
     gulp.src('./src/scss/app.scss')  // Can't use "return" because gulp doesn't know whether to respect that or the "done" callback
         .pipe(sass({errLogToConsole: true}))
+        .pipe(replace(textToReplace, replacementText, {}))
         .pipe(gulp.dest('./src/css/'))
         .pipe(minifyCss({keepSpecialComments: 0}))
         .pipe(rename({extname: '.min.css'}))
@@ -2893,10 +2897,10 @@ gulp.task('configureApp', [], function (callback) {
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         'commentOrUncommentCordovaJs',
         //'downloadSwaggerJson',
-        'getCommonVariables',
+        //'getCommonVariables', // This is in staticData now
         'getConnectors',
-        'getUnits',
-        'getVariableCategories',
+        //'getUnits', // This is in staticData now
+        //'getVariableCategories',  // This is in staticData now
         'getAppConfigs',
         'buildInfo',
         'uncommentBugsnagInIndexHtml',
