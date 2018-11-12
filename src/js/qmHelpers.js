@@ -5680,6 +5680,9 @@ var qm = {
         }
     },
     stringHelper: {
+        capitalizeFirstLetter: function(string){
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
         stripHtmlTags: function(strInputCode){
             if(!strInputCode){
                 qm.qmLog.error("Nothing provided to stripHtmlTags");
