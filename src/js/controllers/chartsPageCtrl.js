@@ -45,6 +45,20 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             qmService.hideLoader();
         }
     }
+    function removeHiddenCharts(variableObject) {
+        var clonedVariable = JSON.parse(JSON.stringify(variableObject));
+        var charts = clonedVariable.charts;
+        for(var property in charts){
+            if(charts.hasOwnProperty(property)){
+                var hideParamName = 'hide'+qm.stringHelper.capitalizeFirstLetter(property);
+                var shouldHide = qmService.stateHelper.getValueFromScopeStateParamsOrUrl(hideParamName, $scope, $stateParams);
+                if(shouldHide){
+                    delete charts[property];
+                }
+            }
+        }
+        return clonedVariable;
+    }
     function getCharts(refresh) {
         qm.userVariables.getByName(getVariableName(), {includeCharts: true}, refresh, function (variableObject) {
             qmLog.info("Got variable " + variableObject.name);
@@ -55,7 +69,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                     return;
                 }
             }
-            $scope.state.variableObject = variableObject;
+            $scope.state.variableObject = removeHiddenCharts(variableObject);
             if(variableObject){
                 qmLog.info("Setting action sheet with variable " + variableObject.name);
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet() {
