@@ -20,7 +20,7 @@
                     </div>
                     <button id="menu-mic-button" class="button button-icon ion-mic-a" ng-if="platform.isWeb && !platform.isIframe"
                             ng-click="goToState('app.chat')"></button>
-                    <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
+                    <a ng-if="popOutUrl" href="{{popOutUrl}}" target="_blank">
                         <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>
                     <a  id="navBarAvatar" href="#/app/settings" ng-if="!physicianUser && user && user.avatar && !platform.isMobile" class="button button-clear" >

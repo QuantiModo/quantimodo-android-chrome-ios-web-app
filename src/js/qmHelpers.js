@@ -424,6 +424,12 @@ var qm = {
         getApiUrl: function(){
             return qm.api.getBaseUrl();
         },
+        getApiUrlWithoutProtocol: function(){
+            var url =  qm.api.getBaseUrl();
+            url = url.replace('https://', '');
+            url = url.replace('http://', '');
+            return url;
+        },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qm.api.getRequestUrl(path, function(url){
                 qm.qmLog.info("Making POST request to " + url);

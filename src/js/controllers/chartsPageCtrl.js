@@ -51,7 +51,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         for(var property in charts){
             if(charts.hasOwnProperty(property)){
                 var hideParamName = 'hide'+qm.stringHelper.capitalizeFirstLetter(property);
-                var shouldHide = qm.stateHelper.getValueFromScopeStateParamsOrUrl(hideParamName, $scope, $stateParams);
+                var shouldHide = qmService.stateHelper.getValueFromScopeStateParamsOrUrl(hideParamName, $scope, $stateParams);
                 if(shouldHide){
                     delete charts[property];
                 }
