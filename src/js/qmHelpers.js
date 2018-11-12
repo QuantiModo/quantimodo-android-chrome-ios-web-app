@@ -424,6 +424,12 @@ var qm = {
         getApiUrl: function(){
             return qm.api.getBaseUrl();
         },
+        getApiUrlWithoutProtocol: function(){
+            var url =  qm.api.getBaseUrl();
+            url = url.replace('https://', '');
+            url = url.replace('http://', '');
+            return url;
+        },
         postToQuantiModo: function (body, path, successHandler, errorHandler) {
             qm.api.getRequestUrl(path, function(url){
                 qm.qmLog.info("Making POST request to " + url);
@@ -5681,6 +5687,9 @@ var qm = {
         }
     },
     stringHelper: {
+        capitalizeFirstLetter: function(string){
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
         stripHtmlTags: function(strInputCode){
             if(!strInputCode){
                 qm.qmLog.error("Nothing provided to stripHtmlTags");
