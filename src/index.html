@@ -88,6 +88,7 @@
         }
     </script>
     <script src="cordova.js"></script>   <!-- cordova script (this will be a 404 during development) -->
+    <script src="https://wchat.freshchat.com/js/widget.js"></script>
 <!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
           moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
       </script>-->
@@ -172,5 +173,11 @@
          attribution=setup_tool
          page_id="348407735253769">
     </div>-->
+    <script>
+        window.fcWidget.init({
+            token: "c76171b8-cf2e-4fdd-81f3-6cd409d59153",
+            host: "https://wchat.freshchat.com"
+        });
+    </script>
   </body>
 </html>
