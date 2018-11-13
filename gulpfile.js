@@ -93,7 +93,8 @@ var paths = {
         icons: "src/img/icons",
         firebase: "src/lib/firebase/**/*",
         js: "src/js/*.js",
-        serviceWorker: "src/firebase-messaging-sw.js"
+        serviceWorker: "src/firebase-messaging-sw.js",
+        staticData: 'src/data/qmStaticData.js'
     },
     www: {
         devCredentials: "www/dev-credentials.json",
@@ -102,7 +103,8 @@ var paths = {
         defaultPrivateConfig: "www/default.private_config.json",
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
-        js: "www/js/"
+        js: "www/js/",
+        staticData: 'src/data/qmStaticData.js'
     },
     chcpLogin: '.chcplogin'
 };
@@ -447,10 +449,25 @@ var qmGulp = {
     },
     buildInfoHelper: {
         alreadyMinified: function(){
-            if(!qmGulp.buildInfoHelper.getPreviousBuildInfo().gitCommitShaHash){return false;}
-            return qmGulp.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash === qmGulp.buildInfoHelper.getCurrentBuildInfo().gitCommitShaHash;
+            var previousSha = qmGulp.buildInfoHelper.getPreviousBuildSha();
+            if(!previousSha){
+                qmLog.error("Could not get previous git commit SHA!");
+                return false;
+            }
+            var currentSha = qmGit.getCurrentGitCommitSha();
+            if(!currentSha){
+                qmLog.error("Could not get current git commit SHA!");
+                return false;
+            }
+            var alreadyMinified = previousSha === currentSha;
+            if(!alreadyMinified){
+                qmLog.info("Current and previous commit don't match so we need to minify again");
+            } else {
+                qmLog.info("No need to minify again because current and previous commit SHA's match");
+            }
+            return alreadyMinified;
         },
-        previousBuildInfo: {
+        buildInfo: {
             iosCFBundleVersion: null,
             builtAt: null,
             buildServer: null,
@@ -459,6 +476,11 @@ var qmGulp = {
             versionNumbers: null,
             gitBranch: null,
             gitCommitShaHash: null
+        },
+        getPreviousBuildSha: function(){
+            var previousBuildInfo = qmGulp.buildInfoHelper.getPreviousBuildInfo();
+            if(!previousBuildInfo){return false;}
+            return previousBuildInfo.gitCommitShaHash;
         },
         getCurrentBuildInfo: function () {
             return qmGulp.buildInfoHelper.currentBuildInfo = {
@@ -473,8 +495,14 @@ var qmGulp = {
             };
         },
         getPreviousBuildInfo: function () {
-            return JSON.parse(fs.readFileSync(paths.www.buildInfo));
+            var previousStaticData = fs.readFileSync(paths.www.staticData);
+            if(!previousStaticData){
+                qmLog.info("No previous staticData file at "+paths.www.staticData);
+                return qmGulp.buildInfoHelper.previousBuildInfo = false;
+            }
+            return qmGulp.buildInfoHelper.previousBuildInfo = previousStaticData.buildInfo;
         },
+        previousBuildInfo: null,
         writeBuildInfo: function () {
             var buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
             writeToFile(paths.src.buildInfo, buildInfo);
@@ -1275,7 +1303,10 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFile(filePath, stringContents, callback);
 }
-gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
+gulp.task('createSuccessFile', function () {
+    writeToFile('lastCommitBuilt', qmGit.getCurrentGitCommitSha());
+    return fs.writeFileSync('success');
+});
 gulp.task('deleteSuccessFile', function () {
     if(buildingFor.ios()){
         qmLog.info("Deleting success file messes up iOS build or so I'm told by my previous comments...");
@@ -1524,11 +1555,11 @@ function writeStaticDataFile(){
         ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
         'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}';
     try {
-        writeToFile('www/data/qmStaticData.js', string);
+        writeToFile(paths.www.staticData, string);
     } catch(e){
         qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
     }
-    return writeToFile('src/data/qmStaticData.js', string);
+    return writeToFile(paths.src.staticData, string);
 }
 gulp.task('staticDataFile', ['getAppConfigs'], function () {
     return writeStaticDataFile();
@@ -2878,6 +2909,11 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 // Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     qmLog.info('gulp configureAppAfterNpmInstall');
+    if(qmGulp.buildInfoHelper.alreadyMinified()){
+        qmLog.info("Not configuring app because already built this commit");
+        callback();
+        return;
+    }
     if(!buildingFor.web()){
         qmLog.info("Not configuring app after yarn install because we're building for mobile");
         callback();
@@ -2919,9 +2955,9 @@ gulp.task('configureApp', [], function (callback) {
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
-        'createSuccessFile',
-        'verifyExistenceOfBuildInfo',
         'replaceRelativePathsWithAbsolutePaths',
+        'verifyExistenceOfBuildInfo',
+        'createSuccessFile',
         callback);
 });
 gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
