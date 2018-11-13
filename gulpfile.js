@@ -2011,8 +2011,11 @@ gulp.task('upload-source-maps', [], function(callback) {
             qmLog.info("Upload options", options);
             var bugsnagSourceMaps = require('bugsnag-sourcemaps');
             bugsnagSourceMaps.upload(options, function(err) {
-                if (err) {throw new Error('Could not upload source map for ' + file + " because " + err.message);}
-                console.log(file+ ' source map uploaded successfully');
+                if (err) {
+                    qmLog.error('Could not upload source map for ' + file + " because " + err.message);
+                } else {
+                    console.log(file+ ' source map uploaded successfully');
+                }
             });
         });
         callback();
