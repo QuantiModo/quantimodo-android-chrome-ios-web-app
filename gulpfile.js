@@ -461,9 +461,11 @@ var qmGulp = {
             }
             var alreadyMinified = previousSha === currentSha;
             if(!alreadyMinified){
-                qmLog.info("Current and previous commit don't match so we need to minify again");
+                qmLog.info("current sha " + currentSha + " and previous commit SHA " + previousSha +
+                    " don't match so we need to minify again");
             } else {
-                qmLog.info("No need to minify again because current and previous commit SHA's match");
+                qmLog.info("No need to minify again because current sha " + currentSha + " and previous commit SHA " +
+                    previousSha + " match");
             }
             return alreadyMinified;
         },
@@ -495,12 +497,12 @@ var qmGulp = {
             };
         },
         getPreviousBuildInfo: function () {
-            var previousStaticData = fs.readFileSync(paths.www.staticData);
-            if(!previousStaticData){
-                qmLog.info("No previous staticData file at "+paths.www.staticData);
+            var previousBuildInfo = readFile(paths.src.buildInfo);
+            if(!previousBuildInfo){
+                qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
                 return qmGulp.buildInfoHelper.previousBuildInfo = false;
             }
-            return qmGulp.buildInfoHelper.previousBuildInfo = previousStaticData.buildInfo;
+            return qmGulp.buildInfoHelper.previousBuildInfo = previousBuildInfo;
         },
         previousBuildInfo: null,
         writeBuildInfo: function () {
@@ -686,7 +688,12 @@ function readDevCredentials(){
     }
 }
 function readFile(path){
-    return JSON.parse(fs.readFileSync(path));
+    try {
+        return JSON.parse(fs.readFileSync(path));
+    } catch (e) {
+        qmLog.error("Could not read "+path);
+        return false;
+    }
 }
 function outputFileContents(path){
     qmLog.info(path+": "+fs.readFileSync(path))
