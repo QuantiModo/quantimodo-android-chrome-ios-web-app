@@ -92,9 +92,9 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "postinstall": "echo 'Done installing package.json dependencies!  Run bower install --allow-root --quiet && gulp configureAppAfterNpmInstall now!'",
+    "postinstall": "echo 'Done installing Ionic package.json dependencies!  Run bower install --allow-root --quiet && gulp configureAppAfterNpmInstall now!'",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
-    "heroku-postbuild": "echo Done installing package.json dependencies && bower install --allow-root --quiet && gulp configureAppAfterNpmInstall"
+    "heroku-postbuild": "echo Done installing Ionic package.json dependencies && bower install --allow-root --quiet && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
