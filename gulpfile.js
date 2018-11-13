@@ -2877,6 +2877,10 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 });
 // Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
+    if(process.env.SKIP_CONFIGURE_APP_AFTER_NPM_INSTALL){
+        qmLog.info("SKIP_CONFIGURE_APP_AFTER_NPM_INSTALL");
+        return;
+    }
     qmLog.info('gulp configureAppAfterNpmInstall');
     if(!buildingFor.web()){
         qmLog.info("Not configuring app after yarn install because we're building for mobile");
