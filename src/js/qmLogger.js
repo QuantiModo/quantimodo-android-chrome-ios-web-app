@@ -447,6 +447,23 @@ var qmLog = {
             }]);
         }
     },
+    setupFreshChat: function(user) {
+        /** @namespace window.fcWidget */
+        if (typeof window.fcWidget !== "undefined") {
+            // Make sure fcWidget.init is included before setting these values
+            // To set unique user id in your system when it is available
+            window.fcWidget.setExternalId(user.loginName);
+            // To set user name
+            window.fcWidget.user.setFirstName(user.firstName);
+            // To set user email
+            window.fcWidget.user.setEmail(user.email);
+            // To set user properties
+            window.fcWidget.user.setProperties({
+                plan: "Estate",                 // meta property 1
+                status: "Active"                // meta property 2
+            });
+        }
+    },
     setupBugsnag: function(user){
         if (typeof bugsnag !== "undefined") {
             var options = {
