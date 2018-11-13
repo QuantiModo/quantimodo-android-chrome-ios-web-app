@@ -5674,6 +5674,7 @@ var qm = {
         getElementsWithRequestParams: function(localStorageItemName, requestParams) {
             qm.qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
             var array = qm.storage.getItem(localStorageItemName);
+            if(!array){return array;}
             array = qm.arrayHelper.filterByRequestParams(array, requestParams);
             return array;
         },
