@@ -26,6 +26,6 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "postinstall": "echo 'Done with npm install!'"
+    "postinstall": "echo 'Done with npm install for tests folder!'"
   }
 }
