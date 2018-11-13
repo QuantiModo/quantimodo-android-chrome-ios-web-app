@@ -6570,7 +6570,10 @@ var qm = {
             if(!user){return;}
             qm.qmLog.debug(user.displayName + ' is logged in.');
             if(qm.urlHelper.getParam('doNotRemember')){return;}
-            if(!qm.platform.isBackEnd()){qm.qmLog.setupUserVoice();}
+            if(!qm.platform.isBackEnd()){
+                qm.qmLog.setupUserVoice();
+                qm.qmLog.setupFreshChat(user);
+            }
             if(!user.accessToken){
                 qm.qmLog.error("User does not have access token!", null, {userToSave: user});
             } else {
