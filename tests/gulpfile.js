@@ -177,6 +177,16 @@ gulp.task('oauth-disabled-staging-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
+gulp.task('oauth-disabled-failed', function (callback) {
+    var url = process.env.APP_HOST_NAME;
+    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
+    qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, url+'/api/v2/auth/login');
+});
+gulp.task('api-failed', function (callback) {
+    var url = process.env.APP_HOST_NAME;
+    qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
+    qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, url+'/api/v2/auth/login');
+});
 gulp.task('api-staging-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
