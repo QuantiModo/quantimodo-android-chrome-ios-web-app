@@ -104,6 +104,7 @@ var paths = {
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
         js: "www/js/",
+        scripts: "www/scripts/",
         staticData: 'src/data/qmStaticData.js'
     },
     chcpLogin: '.chcplogin'
@@ -172,6 +173,7 @@ var qmLog = {
         return lowerCaseProperty.indexOf('secret') !== -1 ||
             lowerCaseProperty.indexOf('password') !== -1 ||
             lowerCaseProperty.indexOf('key') !== -1 ||
+            lowerCaseProperty.indexOf('database') !== -1 ||
             lowerCaseProperty.indexOf('token') !== -1;
     },
     obfuscateString: function(string){
@@ -449,6 +451,16 @@ var qmGulp = {
     },
     buildInfoHelper: {
         alreadyMinified: function(){
+            try {
+                var files = fs.readdirSync(paths.www.scripts);
+            } catch (e) {
+                qmLog.info("No scripts folder so we need to minify");
+                return false;
+            }
+            if (!files.length) {
+                qmLog.info("Scripts folder is empty so we need to minify");
+                return false;
+            }
             var previousSha = qmGulp.buildInfoHelper.getPreviousBuildSha();
             if(!previousSha){
                 qmLog.error("Could not get previous git commit SHA!");
@@ -1196,7 +1208,7 @@ gulp.task('scripts', function () {
                 out: 'appBundle.js',
                 target: 'es5'
             }))
-            .pipe(gulp.dest('www/scripts'));
+            .pipe(gulp.dest(paths.www.scripts));
     }
 });
 var chromeScripts = [
@@ -2024,7 +2036,7 @@ var serviceWorkerAndLibraries = [
     'src/js/qmChrome.js',
 ];
 gulp.task('upload-source-maps', [], function(callback) {
-    fs.readdir('www/scripts', function (err, files) {
+    fs.readdir(paths.www.scripts, function (err, files) {
         if(!files){
             qmLog.info("No source maps to upload");
             callback();
@@ -2037,8 +2049,8 @@ gulp.task('upload-source-maps', [], function(callback) {
                 appVersion: versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
                 //codeBundleId: '1.0-123', // optional (react-native only)
                 minifiedUrl: '*'+file, // supports wildcards
-                sourceMap: 'www/scripts/'+file+'.map', // file path of the source map on the current machine
-                minifiedFile: 'www/scripts/'+file, // file path of the minified file on the current machine
+                sourceMap: paths.www.scripts + '/'+file+'.map', // file path of the source map on the current machine
+                minifiedFile: paths.www.scripts + '/'+file, // file path of the minified file on the current machine
                 uploadSources: true,
                 overwrite: true, // whether you want to overwrite previously uploaded source maps
                 // sources: {
@@ -2673,7 +2685,7 @@ gulp.task('cleanChromeBuildFolder', [], function () {
 });
 gulp.task('cleanCombinedFiles', [], function () {
     qmLog.info("Running cleanCombinedFiles...");
-    return cleanFiles(['www/css/combined*', 'www/scripts/combined*', 'www/scripts/*combined-*']);
+    return cleanFiles(['www/css/combined*', paths.www.scripts + '/combined*', paths.www.scripts + '/*combined-*']);
 });
 gulp.task('cleanBuildFolder', [], function () {
     qmLog.info("Cleaning build folder...");
