@@ -172,6 +172,7 @@ var qmLog = {
         return lowerCaseProperty.indexOf('secret') !== -1 ||
             lowerCaseProperty.indexOf('password') !== -1 ||
             lowerCaseProperty.indexOf('key') !== -1 ||
+            lowerCaseProperty.indexOf('database') !== -1 ||
             lowerCaseProperty.indexOf('token') !== -1;
     },
     obfuscateString: function(string){
