@@ -451,7 +451,12 @@ var qmGulp = {
     },
     buildInfoHelper: {
         alreadyMinified: function(){
-            var files = fs.readdirSync(paths.www.scripts);
+            try {
+                var files = fs.readdirSync(paths.www.scripts);
+            } catch (e) {
+                qmLog.info("No scripts folder so we need to minify");
+                return false;
+            }
             if (!files.length) {
                 qmLog.info("Scripts folder is empty so we need to minify");
                 return false;
