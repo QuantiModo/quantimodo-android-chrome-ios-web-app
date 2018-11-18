@@ -1003,7 +1003,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         },
         email: {
             updateEmailAndExecuteCallback: function (callback){
-                if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
+                var $scope = {};
+                if($rootScope.user.email){
+                    $scope.data = {
+                        email: $rootScope.user.email
+                    };
+                }
                 var myPopup = $ionicPopup.show({
                     template: '<label class="item item-input">' +
                     '<i class="icon ion-email placeholder-icon"></i>' +
