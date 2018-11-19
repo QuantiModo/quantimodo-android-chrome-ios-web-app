@@ -843,8 +843,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             },
             updateCallback: function(error, data) {
+                qmLog.globalMetaData = qmLog.globalMetaData || {};
+                qmLog.globalMetaData.chcpInfo = qmLog.globalMetaData.chcpInfo || {};
                 if(error){qmLog.globalMetaData.chcpInfo.error = error;}
-                if(data){qmLog.globalMetaData.chcpInfo.data = data;}
+                if(data){
+                    qmLog.globalMetaData.chcpInfo.data = data;
+                }
                 if (error) {
                     qmService.deploy.chcpError("CHCP updateCallback ERROR: ", {error: error, data: data});
                 } else {
@@ -6612,6 +6616,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //POST sessionTokenObject as-is to your server for step 2.
                 qmService.post('api/v3/quantimodo/connect/finish', [], sessionTokenObject, function (response) {
                     console.log(response);
+                    if(!response.data){
+                        qmLog.error("No data from api/v3/quantimodo/connect/finish response: ", response);
+                        return;
+                    }
                     qmService.rootScope.setUser(response.data.user);
                 });
                 // Include code here to refresh the page.
