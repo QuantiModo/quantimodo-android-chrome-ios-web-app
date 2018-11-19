@@ -4382,15 +4382,15 @@ var qm = {
             var value = eachRecursive(obj);
             return value;
         },
-        removeObjectAndArrayProperties: function(object){
-            object = JSON.parse(JSON.stringify(object));
+        removeObjectAndArrayProperties: function(obj){
+            obj = JSON.parse(JSON.stringify(obj));
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     if(Array.isArray(obj[prop])){delete obj[prop];}
                     if(typeof obj[prop] === 'object' && obj[prop] !== null){delete obj[prop];}
                 }
             }
-            return object;
+            return obj;
         },
         removeObjectAndArrayPropertiesForArray: function (arr) {
             for(var i = 0; i<arr.length; i++){
