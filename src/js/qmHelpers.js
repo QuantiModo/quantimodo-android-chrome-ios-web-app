@@ -4093,6 +4093,8 @@ var qm = {
                     qm.qmLog.pushDebug("postTrackingReminderNotifications response ", JSON.stringify(response), response);
                 }
             }
+            // Get rid of card objects, available unit array and variable category object to decrease size of body
+            trackingReminderNotifications = qm.objectHelper.removeObjectAndArrayPropertiesForArray(trackingReminderNotifications);
             qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
             if(timeout){
                 setTimeout(function () {
@@ -4379,6 +4381,22 @@ var qm = {
             }
             var value = eachRecursive(obj);
             return value;
+        },
+        removeObjectAndArrayProperties: function(object){
+            object = JSON.parse(JSON.stringify(object));
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    if(Array.isArray(obj[prop])){delete obj[prop];}
+                    if(typeof obj[prop] === 'object' && obj[prop] !== null){delete obj[prop];}
+                }
+            }
+            return object;
+        },
+        removeObjectAndArrayPropertiesForArray: function (arr) {
+            for(var i = 0; i<arr.length; i++){
+                arr[i] = qm.objectHelper.removeObjectAndArrayProperties(arr[i]);
+            }
+            return arr;
         }
     },
     parameterHelper: {

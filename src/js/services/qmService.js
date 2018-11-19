@@ -3096,6 +3096,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmLogService.info('posting' + trackingRemindersArray.length + " Tracking Reminders To Api");
         if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
         trackingRemindersArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
+        // Get rid of card objects, available unit array and variable category object to decrease size of body
+        trackingRemindersArray = qm.objectHelper.removeObjectAndArrayPropertiesForArray(trackingRemindersArray);
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
     };
     qmService.postStudy = function(body, successHandler, errorHandler){
