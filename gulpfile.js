@@ -413,7 +413,7 @@ var qmGulp = {
             return qmGulp.getClientId();
         },
         getS3Prefix: function(){
-            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "ionic/Modo/www";}
+            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "ionic/Modo/www/";}
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
         },
         getS3Bucket: function(){
