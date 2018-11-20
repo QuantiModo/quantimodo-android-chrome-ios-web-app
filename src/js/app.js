@@ -198,19 +198,14 @@ angular.module('starter',
        $stateProvider.state(state.name, state);
     });
     function setFallbackRoute() {
-        if (!qm.storage.getItem(qm.items.introSeen)) {
-            //console.debug("Intro not seen so setting default route to intro");
+        if(qm.appMode.isBuilder()){
+            $urlRouterProvider.otherwise('/app/configuration');
+        } else if (!qm.storage.getItem(qm.items.introSeen)) {
             $urlRouterProvider.otherwise('/app/intro');
         } else if (!qm.storage.getItem(qm.items.onboarded)) {
-            //console.debug("Not onboarded so setting default route to onboarding");
             $urlRouterProvider.otherwise('/app/onboarding');
         } else {
-            //console.debug("Intro seen so setting default route to inbox");
-            if (qm.appMode.isBuilder()) {
-                $urlRouterProvider.otherwise('/app/configuration');
-            } else {
-                $urlRouterProvider.otherwise('/app/reminders-inbox');
-            }
+            $urlRouterProvider.otherwise('/app/reminders-inbox');
         }
     }
     setFallbackRoute();
