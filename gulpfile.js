@@ -16,6 +16,7 @@ var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var qmPlatform = {
     buildingFor: null,
+    buildingForWeb: function(){return qmPlatform.buildingFor === qmPlatform.web;},
     setBuildingFor: function(platform){
         qmPlatform.buildingFor = platform;
     },
@@ -416,7 +417,7 @@ var qmGulp = {
             return qmGulp.getClientId();
         },
         getS3Prefix: function(){
-            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "ionic/Modo/www/";}
+            if(qmPlatform.buildingForWeb()){return "ionic/Modo/www/";}
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
         },
         getS3Bucket: function(){
