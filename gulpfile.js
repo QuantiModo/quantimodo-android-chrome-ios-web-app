@@ -14,8 +14,12 @@ var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
-var platformCurrentlyBuildingFor;
 var qmPlatform = {
+    buildingFor: null,
+    buildingForWeb: function(){return qmPlatform.buildingFor === qmPlatform.web;},
+    setBuildingFor: function(platform){
+        qmPlatform.buildingFor = platform;
+    },
     isOSX: function(){
         return process.platform === 'darwin';
     },
@@ -26,7 +30,7 @@ var qmPlatform = {
         return !qmPlatform.isOSX() && !qmPlatform.isLinux();
     },
     getPlatform: function(){
-        if(platformCurrentlyBuildingFor){return platformCurrentlyBuildingFor;}
+        if(qmPlatform.buildingFor){return qmPlatform.buildingFor;}
         if(qmPlatform.isOSX()){return qmPlatform.ios;}
         if(qmPlatform.isWindows()){return qmPlatform.android;}
         return qmPlatform.web;
@@ -392,7 +396,7 @@ var qmGulp = {
             return"https://"+qmGulp.chcp.getS3Bucket()+".s3.amazonaws.com/";
         },
         getContentUrl: function(releaseStage){
-            if(releaseStage){return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;}
+            if(releaseStage){return qmGulp.chcp.getS3HostName() + qmGulp.chcp.getAppPath() + "/" + releaseStage;}
             return qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
         },
         getChcpJsonUrl: function(releaseStage){
@@ -413,7 +417,7 @@ var qmGulp = {
             return qmGulp.getClientId();
         },
         getS3Prefix: function(){
-            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "ionic/Modo/www/";}
+            if(qmPlatform.buildingForWeb()){return "ionic/Modo/www/";}
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
         },
         getS3Bucket: function(){
@@ -1112,7 +1116,6 @@ function outputPluginVersionNumber(folderName) {
     }
 }
 function generateConfigXmlFromTemplate(callback) {
-    //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
     var configXmlPath = 'config-template-shared.xml';
     var xml = fs.readFileSync(configXmlPath, 'utf8');
     /** @namespace qm.getAppSettings().additionalSettings.appIds.googleReversedClientId */
@@ -2833,7 +2836,7 @@ gulp.task('write-build-json', [], function () {
     return writeBuildJson();
 });
 gulp.task('build-ios-app-without-cleaning', function (callback) {
-    platformCurrentlyBuildingFor = 'ios';
+    qmPlatform.setBuildingFor(qmPlatform.ios);
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
         'ionicInfo',
@@ -2860,7 +2863,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         callback);
 });
 gulp.task('build-ios-app', function (callback) {
-    platformCurrentlyBuildingFor = 'ios';
+    qmPlatform.setBuildingFor(qmPlatform.ios);
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
         'ionicInfo',
@@ -2889,7 +2892,7 @@ gulp.task('build-ios-app', function (callback) {
         callback);
 });
 gulp.task('prepare-ios-app', function (callback) {
-    platformCurrentlyBuildingFor = 'ios';
+    qmPlatform.setBuildingFor(qmPlatform.ios);
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
         'platform-remove-ios',
@@ -2910,7 +2913,7 @@ gulp.task('prepare-ios-app', function (callback) {
         callback);
 });
 gulp.task('prepare-ios-app-without-cleaning', function (callback) {
-    platformCurrentlyBuildingFor = 'ios';
+    qmPlatform.setBuildingFor(qmPlatform.ios);
     console.warn("If you get `Error: Cannot read property ‘replace’ of undefined`, run the ionic command with --verbose and `cd platforms/ios/cordova && rm -rf node_modules/ios-sim && npm install ios-sim`");
     runSequence(
         'ionicInfo',
@@ -3321,7 +3324,7 @@ gulp.task('resizeIcons', function (callback) {
         callback);
 });
 gulp.task('prepareRepositoryForAndroid', function (callback) {
-    platformCurrentlyBuildingFor = 'android';
+    qmPlatform.setBuildingFor(qmPlatform.android);
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         'setAppEnvs',
@@ -3335,7 +3338,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
 gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
     if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!";}
     console.log("ANDROID_HOME is " + process.env.ANDROID_HOME);
-    platformCurrentlyBuildingFor = 'android';
+    qmPlatform.setBuildingFor(qmPlatform.android);
     runSequence(
         'setAppEnvs',
         'uncommentCordovaJsInIndexHtml',
@@ -3479,14 +3482,8 @@ gulp.task('chcp-dev-config-and-deploy-medimodo', [], function (callback) {
         callback);
 });
 gulp.task('chcp-config-and-deploy-web', ['getAppConfigs'], function (callback) {
-    qmGulp.chcp.appPath = "web";
-    if(qmGulp.releaseService.isStaging()){
-        qmGulp.chcp.releaseStagePath = "dev";
-    } else if (qmGulp.releaseService.isProduction()){
-        qmGulp.chcp.releaseStagePath = "production";
-    } else {
-        qmGulp.chcp.releaseStagePath = "qa";
-    }
+    qmGulp.chcp.releaseStagePath = "";
+    qmPlatform.setBuildingFor(qmPlatform.web);
     qmGulp.buildSettings.setDoNotMinify(true);
     qmGulp.chcp.loginBuildAndDeploy(callback);
 });
