@@ -353,9 +353,9 @@ var qmGulp = {
             /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
             qmGulp.staticData.chcp = {
                 "name": qmGulp.getAppDisplayName(),
-                "s3bucket": "qm-cordova-hot-code-push",
+                "s3bucket": qmGulp.chcp.getS3Bucket(),
                 "s3region": "us-east-1",
-                "s3prefix": qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/",
+                "s3prefix": qmGulp.chcp.getS3Prefix(),
                 "ios_identifier": qmGulp.getAppIds().appleId,
                 "android_identifier": qmGulp.getAppIdentifier(),
                 "update": "start",
@@ -388,10 +388,12 @@ var qmGulp = {
             var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
             return writeToFileWithCallback(paths.chcpLogin, string, callback);
         },
-        s3HostName: "https://qm-cordova-hot-code-push.s3.amazonaws.com/",
+        getS3HostName: function(){
+            return"https://"+qmGulp.chcp.getS3Bucket()+".s3.amazonaws.com/";
+        },
         getContentUrl: function(releaseStage){
-            releaseStage = releaseStage || qmGulp.chcp.getReleaseStagePath();
-            return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+            if(releaseStage){return qmGulp.chcp.s3HostName + qmGulp.chcp.getAppPath() + "/" + releaseStage;}
+            return qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
         },
         getChcpJsonUrl: function(releaseStage){
             return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json"
@@ -407,9 +409,17 @@ var qmGulp = {
         },
         appPath: null,
         getAppPath: function(){
-            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "web";}
             if(qmGulp.chcp.appPath){return qmGulp.chcp.appPath;}
             return qmGulp.getClientId();
+        },
+        getS3Prefix: function(){
+            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-') !== -1){return "ionic/Modo/www";}
+            return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
+        },
+        getS3Bucket: function(){
+            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-staging') !== -1){return "qm-staging.quantimo.do";}
+            if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-production') !== -1){return "quantimodo.quantimo.do";}
+            return "qm-cordova-hot-code-push";
         },
         chcpCleanConfigFiles: function(){
             return cleanFiles(['chcpbuild.options', '.chcpenv', 'cordova-hcp.json', 'www/chcp.json', 'src/chcp.json', 'src/chcp.manifest']);
