@@ -15,10 +15,53 @@ var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var qmPlatform = {
-    buildingFor: null,
-    buildingForWeb: function(){return qmPlatform.buildingFor === qmPlatform.web;},
+    buildingFor: {
+        getPlatformBuildingFor: function(){
+            if(qmPlatform.buildingFor.android()){return 'android';}
+            if(qmPlatform.buildingFor.ios()){return 'ios';}
+            if(qmPlatform.buildingFor.chrome()){return 'chrome';}
+            if(qmPlatform.buildingFor.web()){return 'web';}
+            qmLog.error("What platform are we building for?");
+            return null;
+        },
+        setChrome: function(){
+            qmPlatform.buildingFor.platform = qmPlatform.chrome;
+        },
+        setAndroid: function(){
+            qmPlatform.buildingFor.platform = qmPlatform.android;
+        },
+        setWeb: function(){
+            qmPlatform.buildingFor.platform = qmPlatform.web;
+        },
+        setIOS: function(){
+            qmPlatform.buildingFor.platform = qmPlatform.ios;
+        },
+        platform: null,
+        web: function () {
+            return !qmPlatform.buildingFor.android() && !qmPlatform.buildingFor.ios() && !qmPlatform.buildingFor.chrome();
+        },
+        android: function () {
+            if (qmPlatform.buildingFor.platform === 'android'){ return true; }
+            if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
+            if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
+            return process.env.BUILD_ANDROID;
+        },
+        ios: function () {
+            if (qmPlatform.buildingFor.platform === qmPlatform.ios){ return true; }
+            if (process.env.BUDDYBUILD_SCHEME) {return true;}
+            if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
+            return process.env.BUILD_IOS;
+        },
+        chrome: function () {
+            if (qmPlatform.buildingFor.platform === qmPlatform.chrome){ return true; }
+            return process.env.BUILD_CHROME;
+        },
+        mobile: function () {
+            return qmPlatform.buildingFor.android() || qmPlatform.buildingFor.ios()
+        }
+    },
     setBuildingFor: function(platform){
-        qmPlatform.buildingFor = platform;
+        qmPlatform.buildingFor.platform = platform;
     },
     isOSX: function(){
         return process.platform === 'darwin';
@@ -417,7 +460,7 @@ var qmGulp = {
             return qmGulp.getClientId();
         },
         getS3Prefix: function(){
-            if(qmPlatform.buildingForWeb()){return "ionic/Modo/www/";}
+            if(qmPlatform.buildingFor.web()){return "ionic/Modo/www/";}
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
         },
         getS3Bucket: function(){
@@ -455,7 +498,7 @@ var qmGulp = {
                 qmLog.info("BUILD_DEBUG or DEBUG_BUILD is true");
                 return true;
             }
-            if(buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
+            if(qmPlatform.buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
             if(!qmGit.isMaster()){
                 qmLog.info("Not on master so buildDebug is true");
                 return true;
@@ -611,51 +654,6 @@ var qmGulp = {
         buildInfo: null,
         configXml: null,
         chromeExtensionManifest: null
-    }
-};
-var buildingFor = {
-    getPlatformBuildingFor: function(){
-        if(buildingFor.android()){return 'android';}
-        if(buildingFor.ios()){return 'ios';}
-        if(buildingFor.chrome()){return 'chrome';}
-        if(buildingFor.web()){return 'web';}
-        qmLog.error("What platform are we building for?");
-        return null;
-    },
-    setChrome: function(){
-        buildingFor.platform = qmPlatform.chrome;
-    },
-    setAndroid: function(){
-        buildingFor.platform = qmPlatform.android;
-    },
-    setWeb: function(){
-        buildingFor.platform = qmPlatform.web;
-    },
-    setIOS: function(){
-        buildingFor.platform = qmPlatform.ios;
-    },
-    platform: null,
-    web: function () {
-        return !buildingFor.android() && !buildingFor.ios() && !buildingFor.chrome();
-    },
-    android: function () {
-        if (buildingFor.platform === 'android'){ return true; }
-        if (process.env.BUDDYBUILD_SECURE_FILES) { return true; }
-        if (process.env.TRAVIS_OS_NAME === "osx") { return false; }
-        return process.env.BUILD_ANDROID;
-    },
-    ios: function () {
-        if (buildingFor.platform === qmPlatform.ios){ return true; }
-        if (process.env.BUDDYBUILD_SCHEME) {return true;}
-        if (process.env.TRAVIS_OS_NAME === "osx") { return true; }
-        return process.env.BUILD_IOS;
-    },
-    chrome: function () {
-        if (buildingFor.platform === qmPlatform.chrome){ return true; }
-        return process.env.BUILD_CHROME;
-    },
-    mobile: function () {
-        return buildingFor.android() || buildingFor.ios()
     }
 };
 var Quantimodo = require('quantimodo');
@@ -1340,7 +1338,7 @@ gulp.task('createSuccessFile', function () {
     return fs.writeFileSync('success');
 });
 gulp.task('deleteSuccessFile', function () {
-    if(buildingFor.ios()){
+    if(qmPlatform.buildingFor.ios()){
         qmLog.info("Deleting success file messes up iOS build or so I'm told by my previous comments...");
         return;
     }
@@ -1492,7 +1490,7 @@ gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
 });
 function writeBuildJson(){
     var buildJson = {};
-    if(buildingFor.android()){
+    if(qmPlatform.buildingFor.android()){
         buildJson.android = {
             "release": {
                 "keystore":"quantimodo.keystore",
@@ -1503,7 +1501,7 @@ function writeBuildJson(){
             }
         };
     }
-    if(buildingFor.ios()){
+    if(qmPlatform.buildingFor.ios()){
         buildJson.ios = {
             "debug": {
                 "developmentTeam": "YD2FK7S2S5"
@@ -1982,7 +1980,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         //sourceRoot: "src/lib/",
         includeContent: true // https://github.com/gulp-sourcemaps/gulp-sourcemaps#write-options
     };
-    var renameForCacheBusting = buildingFor.web();
+    var renameForCacheBusting = qmPlatform.buildingFor.web();
     if (renameForCacheBusting) {
         qmLog.info("Renaming minified files for cache busting");
     } else {
@@ -2561,15 +2559,15 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [
         'getAppConfigs',
         'git-set-branch-name'
     ], function () {
-    if(!buildingFor.web()){
-        qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+buildingFor.getPlatformBuildingFor());
-        return;
+    if(!qmPlatform.buildingFor.web()){
+        qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+qmPlatform.buildingFor.getPlatformBuildingFor());
+        //return;
     } else {
         qmLog.info("buildingFor web");
     }
     if(!qmGulp.releaseService.isProduction() && !qmGulp.releaseService.isStaging()){
         qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
-        return;
+        //return;
     } else {
         qmLog.info("release stage is "+qmGulp.releaseService.getReleaseStage());
     }
@@ -2946,7 +2944,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
         callback();
         return;
     }
-    if(!buildingFor.web()){
+    if(!qmPlatform.buildingFor.web()){
         qmLog.info("Not configuring app after yarn install because we're building for mobile");
         callback();
         return;
@@ -3004,7 +3002,7 @@ gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
-    buildingFor.setChrome();
+    qmPlatform.buildingFor.setChrome();
     if(!qmGulp.getAppStatus().buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because qm.getAppStatus().buildEnabled.chromeExtension is " +
             qmGulp.getAppStatus().buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -3021,7 +3019,7 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (callback) {
-    buildingFor.setChrome();
+    qmPlatform.buildingFor.setChrome();
     if(!qmGulp.getAppStatus().buildEnabled.chromeExtension){
         qmLog.error("Not building chrome extension because qm.getAppStatus().buildEnabled.chromeExtension is " +
             qmGulp.getAppStatus().buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
@@ -3048,14 +3046,14 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         callback);
 });
 gulp.task('prepareMoodiModoIos', function (callback) {
-    buildingFor.platform = 'ios';
+    qmPlatform.buildingFor.platform = 'ios';
     runSequence(
         'setMoodiModoEnvs',
         'prepare-ios-app',
         callback);
 });
 gulp.task('prepareMediModoIos', function (callback) {
-    buildingFor.platform = 'ios';
+    qmPlatform.buildingFor.platform = 'ios';
     runSequence(
         'setMediModoEnvs',
         'prepare-ios-app',
@@ -3070,7 +3068,7 @@ gulp.task('buildQuantiModo', function (callback) {
         callback);
 });
 gulp.task('buildQuantiModoIOS', function (callback) {
-    buildingFor.platform = 'ios';
+    qmPlatform.buildingFor.platform = 'ios';
     console.warn("Run `ionic platform add ios` and `ionic build ios` manually after this");
     runSequence(
         'setQuantiModoEnvs',
@@ -3356,7 +3354,7 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
-    buildingFor.platform = qmPlatform.android;
+    qmPlatform.buildingFor.platform = qmPlatform.android;
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
     if(!qmGulp.getMonetizationSettings().playPublicLicenseKey.value && qmGulp.getMonetizationSettings().subscriptionsEnabled.value){
