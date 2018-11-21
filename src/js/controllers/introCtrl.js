@@ -82,7 +82,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         if(!qm.speech.getSpeechAvailable()){$scope.state.setSpeechEnabled(false);}
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        $scope.showRobot = (!qm.platform.isMobile());
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
