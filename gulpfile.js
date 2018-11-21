@@ -151,7 +151,7 @@ var paths = {
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
         js: "www/js/",
-        scripts: "www/scripts/",
+        scripts: "www/scripts",
         staticData: 'src/data/qmStaticData.js'
     },
     chcpLogin: '.chcplogin'
@@ -402,11 +402,11 @@ var qmGulp = {
                 "name": qmGulp.getAppDisplayName(),
                 "s3bucket": qmGulp.chcp.getS3Bucket(),
                 "s3region": "us-east-1",
-                "s3prefix": qmGulp.chcp.getS3Prefix(),
+                "s3prefix": qmGulp.chcp.getS3Prefix()+'/',
                 "ios_identifier": qmGulp.getAppIds().appleId,
                 "android_identifier": qmGulp.getAppIdentifier(),
                 "update": "start",
-                "content_url": qmGulp.chcp.getContentUrl()
+                "content_url": qmGulp.chcp.getContentUrl()+'/'
             };
             writeToFileWithCallback('cordova-hcp.json', qmLog.prettyJSONStringify(qmGulp.staticData.chcp), function(err){
                 if(err) {return qmLog.error(err);}
@@ -436,11 +436,16 @@ var qmGulp = {
             return writeToFileWithCallback(paths.chcpLogin, string, callback);
         },
         getS3HostName: function(){
-            return"https://"+qmGulp.chcp.getS3Bucket()+".s3.amazonaws.com/";
+            return "https://"+qmGulp.chcp.getS3Bucket()+".s3.amazonaws.com/";
         },
         getContentUrl: function(releaseStage){
-            if(releaseStage){return qmGulp.chcp.getS3HostName() + qmGulp.chcp.getAppPath() + "/" + releaseStage;}
-            return qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
+            if(releaseStage){
+                var url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+            } else {
+                var url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
+            }
+            qmLog.info("ContentUrl is " + url);
+            return url;
         },
         getChcpJsonUrl: function(releaseStage){
             return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json"
@@ -460,8 +465,8 @@ var qmGulp = {
             return qmGulp.getClientId();
         },
         getS3Prefix: function(){
-            if(qmPlatform.buildingFor.web()){return "ionic/Modo/www/";}
-            return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath()+"/";
+            if(qmPlatform.buildingFor.web()){return "ionic/Modo/www";}
+            return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath();
         },
         getS3Bucket: function(){
             if(process.env.PWD && process.env.PWD.indexOf('workspace/DEPLOY-staging') !== -1){return "qm-staging.quantimo.do";}
@@ -638,7 +643,9 @@ var qmGulp = {
         },
         getGHPagesSubDomain: function(){
             if(qmGulp.releaseService.isStaging()){return "qm-staging";}
-            return "quantimodo";
+            if(qmGulp.releaseService.isProduction()){return "quantimodo";}
+            qmLog.error("No RELEASE_STAGE set!  Assuming GHPagesSubDomain qm-dev");
+            return "qm-dev";
         }
     },
     //server: {isHeroku: function(){return process.env.BUILDPACK_LOG_FILE !== null;}},  Not sure why this breaks gulp?
