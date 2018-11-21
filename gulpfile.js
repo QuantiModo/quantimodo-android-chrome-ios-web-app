@@ -438,10 +438,11 @@ var qmGulp = {
             return "https://"+qmGulp.chcp.getS3Bucket()+".s3.amazonaws.com/";
         },
         getContentUrl: function(releaseStage){
+            var url;
             if(releaseStage){
-                var url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getAppPath() + "/" + releaseStage;
+                url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getAppPath() + "/" + releaseStage;
             } else {
-                var url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
+                url = qmGulp.chcp.getS3HostName() + qmGulp.chcp.getS3Prefix();
             }
             qmLog.info("ContentUrl is " + url);
             return url;
