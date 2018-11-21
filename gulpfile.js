@@ -2582,7 +2582,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [
         return;
     }
     var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
-    var url = qmGulp.chcp.getContentUrl() + '/';
+    //var url = qmGulp.chcp.getContentUrl() + '/';
     // replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     // replaceTextInFiles(['www/index.html'], 'src="lib', 'src="'+url+'lib');
     // replaceTextInFiles(['www/index.html'], 'href="css', 'href="'+url+'css');
