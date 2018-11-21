@@ -2561,39 +2561,14 @@ gulp.task('makeIosAppSimplified', function (callback) {
         'addDeploymentTarget',
         callback);
 });
-gulp.task('replaceRelativePathsWithAbsolutePaths', [
-        'getAppConfigs',
-        'git-set-branch-name'
-    ], function () {
-    if(!qmPlatform.buildingFor.web()){
-        qmLog.info("Not replacing relative urls with Github hosted ones because building for: "+qmPlatform.buildingFor.getPlatformBuildingFor());
-        //return;
-    } else {
-        qmLog.info("buildingFor web");
-    }
+gulp.task('replaceRelativePathsWithAbsolutePaths', [], function () {
     if(!qmGulp.releaseService.isProduction() && !qmGulp.releaseService.isStaging()){
-        qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: "+qmGulp.releaseService.getReleaseStage());
-        //return;
-    } else {
-        qmLog.info("release stage is "+qmGulp.releaseService.getReleaseStage());
-    }
-    if(process.env.BUILDPACK_LOG_FILE){
-        qmLog.info("Not replacing relative urls because building for Heroku");
+        qmLog.info("Not replacing relative urls with Github hosted ones because release stage is: " + qmGulp.releaseService.getReleaseStage());
         return;
     }
+    qmLog.info("release stage is " + qmGulp.releaseService.getReleaseStage());
     var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
-    //var url = qmGulp.chcp.getContentUrl() + '/';
-    // replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
-    // replaceTextInFiles(['www/index.html'], 'src="lib', 'src="'+url+'lib');
-    // replaceTextInFiles(['www/index.html'], 'href="css', 'href="'+url+'css');
-    // replaceTextInFiles(['www/index.html'], 'href="lib', 'href="'+url+'lib');
-    // return replaceTextInFiles(['scripts/*'], 'templateUrl: "templates', 'templateUrl: "'+url+'templates');
-    var options = {
-        logs: {
-            enabled: true,
-            notReplaced: true
-        }
-    };
+    var options = {logs: {enabled: true, notReplaced: true}};
     return gulp.src(['www/index.html'], {base: '.'})
         .pipe(replace('src="scripts', 'src="'+url+'scripts', options))
         .pipe(replace('src="lib', 'src="'+url+'lib', options))
@@ -2991,7 +2966,6 @@ gulp.task('configureApp', [], function (callback) {
         'copyIconsToWwwImg',
         'copyServiceWorkerAndLibraries',
         'setVersionNumberInFiles',
-        'replaceRelativePathsWithAbsolutePaths',
         'verifyExistenceOfBuildInfo',
         'createSuccessFile',
         callback);
