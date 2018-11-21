@@ -83,7 +83,6 @@ var qmPlatform = {
     web: 'web',
     chrome: 'chrome'
 };
-var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 // Setup platforms to build that are supported on current hardware
 // See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
 //var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
@@ -641,7 +640,7 @@ var qmGulp = {
         isProduction: function () {
             return qmGulp.releaseService.getReleaseStage() === 'production';
         },
-        getGHPagesSubDomain: function(){
+        getReleaseStageSubDomain: function(){
             if(qmGulp.releaseService.isStaging()){return "qm-staging";}
             if(qmGulp.releaseService.isProduction()){return "quantimodo";}
             qmLog.error("No RELEASE_STAGE set!  Assuming GHPagesSubDomain qm-dev");
@@ -2582,7 +2581,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [
         qmLog.info("Not replacing relative urls because building for Heroku");
         return;
     }
-    //var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
     var url = qmGulp.chcp.getContentUrl() + '/';
     // replaceTextInFiles(['www/index.html'], 'src="scripts', 'src="'+url+'scripts');
     // replaceTextInFiles(['www/index.html'], 'src="lib', 'src="'+url+'lib');
