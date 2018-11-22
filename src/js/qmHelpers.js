@@ -6404,6 +6404,7 @@ var qm = {
         getIonicAppBaseUrl: function (){
             if(!qm.platform.getWindow()){return false;}
             var url = window.location.origin + window.location.pathname;
+            url = qm.stringHelper.getStringBeforeSubstring('#', url);
             url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
             url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
@@ -7431,10 +7432,7 @@ var qm = {
                 return false;
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
-            var serviceWorkerUrl = window.location.origin+'/ionic/Modo/src/firebase-messaging-sw.js';
-            if(qm.urlHelper.indexOfCurrentUrl('ionic/Modo') === -1){
-                serviceWorkerUrl = window.location.origin+'/firebase-messaging-sw.js';
-            }
+            var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl()+'firebase-messaging-sw.js';
             qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
