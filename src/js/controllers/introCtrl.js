@@ -91,6 +91,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
+        qm.robot.onRobotClick = null;
     });
     function makeBackgroundTransparentIfUsingFuturisticBackground() {
         if(useFuturisticBackground() !== false){
