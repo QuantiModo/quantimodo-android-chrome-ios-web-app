@@ -363,17 +363,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qm.visualizer.setVisualizationEnabled(value);
     };
     $scope.robotClick = function(){
-        function toggleSpeechAndMicEnabled(){
-            if($rootScope.speechEnabled){
-                $rootScope.setMicAndSpeechEnabled(false);
-            } else {
-                $rootScope.setMicAndSpeechEnabled(true);
-            }
-        }
-        if($state.current.name === qm.stateNames.onboarding){
-            toggleSpeechAndMicEnabled();
-        } else if($state.current.name === qm.stateNames.chat){
+        if(qm.robot.onRobotClick){
             qm.robot.onRobotClick();
+        } else if($state.current.name === qm.stateNames.chat){
+            qmService.robot.toggleSpeechAndMicEnabled();
         } else {
             qmService.goToState(qm.stateNames.chat);
         }

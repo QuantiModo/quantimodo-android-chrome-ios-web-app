@@ -2860,7 +2860,7 @@ var qm = {
         memories: 'memories',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         micEnabled: 'micEnabled',
-        microphoneAvailable: 'microphoneAvailable',
+        micAvailable: 'micAvailable',
         notificationInterval: 'notificationInterval',
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
@@ -3319,10 +3319,10 @@ var qm = {
         microphoneDisabled: false,
         onMicEnabled: function(){qm.qmLog.info("Called onMicEnabled");},
         onMicDisabled: function(){qm.qmLog.info("Called onMicDisabled");},
-        microphoneAvailable: null,
+        micAvailable: null,
         getMicEnabled: function(){
             if(qm.mic.microphoneDisabled){return false;}
-            if(!qm.mic.getMicrophoneAvailable()){return qm.mic.setMicEnabled(false);}
+            if(!qm.mic.getMicAvailable()){return qm.mic.setMicEnabled(false);}
             return qm.storage.getItem(qm.items.micEnabled);
         },
         setMicEnabled: function(micEnabled){
@@ -3363,16 +3363,16 @@ var qm = {
             }
             return qm.storage.setItem(qm.items.micEnabled, micEnabled);
         },
-        getMicrophoneAvailable: function(){
-            if(qm.mic.microphoneAvailable !== null){return qm.mic.microphoneAvailable;}
+        getMicAvailable: function(){
+            if(qm.mic.micAvailable !== null){return qm.mic.micAvailable;}
             if(qm.windowHelper.isIframe()){
-                return qm.mic.microphoneAvailable = qm.mic.micEnabled = false;
+                return qm.mic.micAvailable = qm.mic.micEnabled = false;
             }
             if(typeof annyang === "undefined"){
                 if(!qm.appMode.isTesting()){qm.qmLog.error("Microphone not available!");}
-                return qm.mic.microphoneAvailable = qm.mic.micEnabled = false;
+                return qm.mic.micAvailable = qm.mic.micEnabled = false;
             }
-            return qm.mic.microphoneAvailable = true;
+            return qm.mic.micAvailable = true;
         },
         toggleListening: function(){
             if(qm.mic.listening){
