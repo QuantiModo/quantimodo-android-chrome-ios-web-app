@@ -1300,7 +1300,11 @@ gulp.task('chromeManifestInSrcFolder', ['getAppConfigs'], function () {
     chromeManifest('src/manifest.json', chromeScripts);
 });
 gulp.task('createProgressiveWebAppManifestInSrcFolder', ['getAppConfigs'], function () {
-    createProgressiveWebAppManifest('src/manifest.json');
+    if(!qmPlatform.buildingFor.web()){
+        qmLog.info("Don't need PWA manifest.json because not building for web");
+        return;
+    }
+    return createProgressiveWebAppManifest('src/manifest.json');
 });
 function createProgressiveWebAppManifest(outputPath) {
     outputPath = outputPath || paths.src + '/manifest.json';
@@ -1312,8 +1316,8 @@ function createProgressiveWebAppManifest(outputPath) {
         "start_url": "index.html",
         "display": "standalone",
         "icons": [{
-            "src": "img/icons/icon.png",
-            "sizes": "512x512",
+            "src": "img/icons/icon_512.png",
+            "sizes": "5121x512",
             "type": "image/png"
         }],
         "background_color": "#FF9800",
@@ -1322,7 +1326,7 @@ function createProgressiveWebAppManifest(outputPath) {
     };
     pwaManifest = JSON.stringify(pwaManifest, null, 2);
     qmLog.info("Creating ProgressiveWebApp manifest at " + outputPath);
-    writeToFile(outputPath, pwaManifest);
+    return writeToFile(outputPath, pwaManifest);
 }
 function writeToFile(filePath, stringContents) {
     if(!stringContents || stringContents === "undefined" || stringContents === "null"){
@@ -2945,6 +2949,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
+        'createProgressiveWebAppManifestInSrcFolder'
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         'commentOrUncommentCordovaJs',
         //'downloadSwaggerJson',
@@ -3291,15 +3296,20 @@ gulp.task('ionicRunAndroid', [], function (callback) {
 gulp.task('ionicEmulateAndroid', [], function (callback) {
     execute('ionic emulate android', callback);
 });
-gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
 gulp.task('resizeIcon48', [], function (callback) { return resizeIcon(callback, 48); });
 gulp.task('resizeIcon128', [], function (callback) { return resizeIcon(callback, 128); });
+gulp.task('resizeIcon192', [], function (callback) { return resizeIcon(callback, 192); });
+gulp.task('resizeIcon512', [], function (callback) { return resizeIcon(callback, 192); });
+gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcons', function (callback) {
-    runSequence('resizeIcon700',
+    runSequence(
         'resizeIcon16',
         'resizeIcon48',
         'resizeIcon128',
+        'resizeIcon192',
+        'resizeIcon512',
+        'resizeIcon700',
         callback);
 });
 gulp.task('prepareRepositoryForAndroid', function (callback) {
