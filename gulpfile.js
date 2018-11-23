@@ -2949,7 +2949,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         //'copyMaterialIconsToWww',
         'sass',
-        'createProgressiveWebAppManifestInSrcFolder'
+        'createProgressiveWebAppManifestInSrcFolder',
         'copySrcToWwwExceptJsLibrariesAndConfigs',
         'commentOrUncommentCordovaJs',
         //'downloadSwaggerJson',
