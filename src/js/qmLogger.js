@@ -51,7 +51,7 @@ var qmLog = {
     populateReport: function(name, message, metaData, stacktrace){
         qmLog.setName(name, message);
         qmLog.setMessage(name, message);
-        qmLog.stacktrace = stacktrace | null;
+        qmLog.stacktrace = stacktrace || null;
     },
     mobileDebug: null,
     logLevel: null,
@@ -109,14 +109,14 @@ var qmLog = {
         qmLog.qm.qmLog.info(string);
     },
     arrayValues: function(array, propertiesToLog, message){
-        if(typeof array !== "Array"){array = [array];}
+        if(array.isArray()){array = [array];}
         for (var j = 0; j < array.length; j++) {
             var item = array[j];
             qmLog.itemProperties(item, propertiesToLog, message);
         }
     },
     variables: function(variables, propertiesToLog){
-        if(typeof propertiesToLog !== "Array"){propertiesToLog = [propertiesToLog];}
+        if(propertiesToLog.isArray()){propertiesToLog = [propertiesToLog];}
         propertiesToLog = [
             //'name',
             'userId'].concat(propertiesToLog);
@@ -144,11 +144,7 @@ var qmLog = {
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            if(typeof Bugsnag !== "undefined"){
-                bugsnagClient.notify("Could not decouple object to obfuscate secrets: " + error ,
-                    "object = JSON.parse(JSON.stringify(object))", {problem_object: object}, "error");
-            }
-            //window.qmLog.error(error, object); // Avoid infinite recursion
+            console.error(error, object); // Avoid infinite recursion
             return {};
         }
         for (var propertyName in object) {
@@ -182,6 +178,18 @@ var qmLog = {
         if(censoredString !== lowerCase){return censoredString;}
         return false;
     },
+    bugsnagNotify: function(name, message, errorSpecificMetaData, logLevel, stackTrace){
+        if(typeof bugsnagClient === "undefined") {
+            if (!qmLog.qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', errorSpecificMetaData);}
+            return;
+        }
+        var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
+        if(!name){name = "No error name provided";}
+        if(!message){message = "No error message provided";}
+        if(typeof name !== "string"){name = message;}
+        if(typeof message !== "string"){message = JSON.stringify(message);}
+        bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
+    },
     error: function (name, message, errorSpecificMetaData, stackTrace) {
         if(!qmLog.shouldWeLog("error")){return;}
         qmLog.populateReport(name, message, errorSpecificMetaData, stackTrace);
@@ -189,19 +197,7 @@ var qmLog = {
         if(qmLog.color){consoleMessage = qmLog.color.red(consoleMessage);}
         console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
-        function bugsnagNotify(name, message, errorSpecificMetaData, logLevel, stackTrace){
-            if(typeof bugsnagClient === "undefined") {
-                if (!qmLog.qm.appMode.isDevelopment()) {console.error('bugsnagClient not defined', errorSpecificMetaData);}
-                return;
-            }
-            var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
-            if(!name){name = "No error name provided";}
-            if(!message){message = "No error message provided";}
-            if(typeof name !== "string"){name = message;}
-            if(typeof message !== "string"){message = JSON.stringify(message);}
-            bugsnagClient.notify({ name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
-        }
-        bugsnagNotify(qmLog.name, qmLog.message, errorSpecificMetaData, "error", qmLog.stackTrace);
+        qmLog.bugsnagNotify(qmLog.name, qmLog.message, errorSpecificMetaData, "error", qmLog.stackTrace);
         //if(window.qmLog.mobileDebug){alert(name + ": " + message);}
     },
     pushDebug: function(name, message, errorSpecificMetaData, stackTrace) {
@@ -226,7 +222,7 @@ var qmLog = {
             return qmLog.setAuthDebugEnabled(false);
         }
         if(!qmLog.authDebugEnabled && window.location.href.indexOf("authDebug") !== -1){
-            return qmLog.setAuthDebugEnabled(true)
+            return qmLog.setAuthDebugEnabled(true);
         }
         if(qmLog.authDebugEnabled === null && window.localStorage){
             qmLog.authDebugEnabled = localStorage.getItem('authDebugEnabled');
@@ -269,7 +265,7 @@ var qmLog = {
     },
     logProperties: function(message, object){
         message = message.toUpperCase();
-        message += ": "
+        message += ": ";
         var properties = [];
         for(var key in object){
             if(!object.hasOwnProperty(key)){continue;}
