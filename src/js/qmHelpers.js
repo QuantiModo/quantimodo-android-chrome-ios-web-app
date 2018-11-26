@@ -175,7 +175,7 @@ var qm = {
             if(error && error.message){errorMessage += error.message + ' ';}
             if(response && response.error &&  response.error.message){errorMessage += response.error.message + ' ';}
             if(response && response.body && response.body.errorMessage){errorMessage += response.body.errorMessage + ' ';}
-            if(response && response.body && response.body.error && response.body.error.message){errorMessage += response.body.error.message + ' ';;}
+            if(response && response.body && response.body.error && response.body.error.message){errorMessage += response.body.error.message + ' ';}
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
@@ -1115,6 +1115,7 @@ var qm = {
             var filterPropertyValues = [];
             var filterPropertyNames = [];
             for (var key in requestParams) {
+                if(!requestParams.hasOwnProperty(key)){continue;}
                 var value = requestParams[key];
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
