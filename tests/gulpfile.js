@@ -1,8 +1,8 @@
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
-var assert = require('assert');
-var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
-var gulp = require('gulp');
+var assert = require('./../node_modules/assert');
+var GhostInspector = require('./../node_modules/ghost-inspector')(process.env.GI_API_KEY);
+var gulp = require('./../node_modules/gulp');
 var runSequence = require('../node_modules/run-sequence').use(gulp);
 
 var qm = require('./../src/js/qmHelpers');
@@ -10,7 +10,7 @@ qm.appMode.mode = 'testing';
 var qmLog = require('./../src/js/qmLogger');
 qmLog.qm = qm;
 qmLog.color = require('ansi-colors');
-qm.Quantimodo = require('quantimodo');
+qm.Quantimodo = require('./../node_modules/quantimodo');
 qm.staticData = require('./../src/data/qmStaticData');
 qm.stateNames = qm.staticData.stateNames;
 qm.nlp = require('./../src/lib/compromise');
@@ -75,6 +75,7 @@ var qmTests = {
         executeTests: function(tests, callback, startUrl){
             var options = {};
             if(startUrl){options.startUrl = startUrl;}
+            if(process.env.API_URL){options.apiUrl = process.env.API_URL;}
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
