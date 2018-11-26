@@ -760,11 +760,8 @@ function convertFilePathToPropertyName(filePath) {
     propertyName = convertToCamelCase(propertyName);
     return propertyName;
 }
-function getS3RelativePath(relative_filename) {
+function getS3AppUploadsRelativePath(relative_filename) {
     return  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-}
-function getS3Url(relative_filename) {
-    return s3BaseUrl + getS3RelativePath(relative_filename);
 }
 function uploadBuildToS3(filePath) {
     if(qmGulp.getAppSettings().apiUrl === "local.quantimo.do"){
@@ -772,7 +769,8 @@ function uploadBuildToS3(filePath) {
         return;
     }
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
-    qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = getS3Url(filePath);
+    qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] =
+        'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
     /** @namespace qm.getAppSettings().appStatus.buildStatus */
     qmGulp.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
     return uploadToS3(filePath);
@@ -802,7 +800,7 @@ function uploadToS3(filePath) {
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
                 keyTransform: function(relative_filename) {
-                    return getS3RelativePath(filePath);
+                    return getS3AppUploadsRelativePath(filePath);
                 }
             }, {
                 maxRetries: 5,
@@ -890,7 +888,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
 function zipAndUploadToS3(folderPath, zipFileName) {
     var s3 = require('gulp-s3-upload')(s3Options);
     if(!checkAwsEnvs()){return;}
-    var s3Path = getS3RelativePath(folderPath + '.zip');
+    var s3Path = getS3AppUploadsRelativePath(folderPath + '.zip');
     qmLog.info("Zipping " + folderPath + " to " + s3Path);
     qmLog.debug('If this fails, make sure there are no symlinks.');
     return gulp.src([folderPath + '/**/*'])
