@@ -15,9 +15,10 @@ qm.staticData = require('./../src/data/qmStaticData');
 qm.stateNames = qm.staticData.stateNames;
 qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
-qm.qmLog.setLogLevelName('debug');
+qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info');
 var qmTests = {
     getStartUrl: function(){
+        if(process.env.START_URL){return process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
         return 'https://medimodo.herokuapp.com';
     },
@@ -58,7 +59,7 @@ var qmTests = {
         },
         getUnitsTest: function(callback){
             var units = qm.unitHelper.getAllUnits();
-            console.log(units);
+            qmLog.debug("units:", units);
             assert(units.length > 5);
             if(callback){callback();}
         },
@@ -231,4 +232,25 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
             if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
             callback(error);
         });
+});
+gulp.task('trigger-jenkins', function() {
+    var options = {
+        uri: 'http://auto:'+process.env.JENKINS_TOKEN+'@quantimodo2.asuscomm.com:8082',
+        qs: {token: 'ionic-test', cause: 'Netflify Deploy', API_URL: 'app.quantimo.do', START_URL: process.env.DEPLOY_PRIME_URL},
+        headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
+        json: true, // Automatically parses the JSON string in the response
+        strictSSL: false,
+        method: "POST"
+    };
+    var rp = require('request-promise');
+    qmLog.info('Making '+options.method+' request to ' + options.uri);
+    qmLog.debug(options.uri, options, 280);
+    return rp(options).then(function (response) {
+        qmLog.info("Successful response from " + options.uri);
+        qmLog.debug(options.uri + " response", response);
+        if(typeof successHandler !== "undefined"){successHandler(response);}
+    }).catch(function (err) {
+        qmLog.error(err, options);
+        throw err;
+    });
 });
