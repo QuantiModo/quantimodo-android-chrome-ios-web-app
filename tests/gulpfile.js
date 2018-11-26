@@ -195,10 +195,10 @@ gulp.task('api-staging-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
-gulp.task('ionic-gi', function (callback) {
+gulp.task('gi-all', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
-gulp.task('ionic-failed', function (callback) {
+gulp.task('gi-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
@@ -211,11 +211,21 @@ gulp.task('test-record-measurement-intent', function(callback) {
 gulp.task('test-get-units', function(callback) {
     qmTests.tests.getUnitsTest(callback);
 });
-gulp.task('tests', function(callback) {
+gulp.task('unit-tests', function(callback) {
     runSequence(
         'test-get-common-variable',
         'test-record-measurement-intent',
         'test-get-units',
+        function (error) {
+            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            callback(error);
+        });
+});
+gulp.task('unit-gi-failed-gi-all', function(callback) {
+    runSequence(
+        'unit-tests',
+        'gi-failed',
+        'gi-all',
         function (error) {
             if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
             callback(error);
