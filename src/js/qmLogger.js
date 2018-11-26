@@ -18,6 +18,7 @@ var qmLog = {
         }
         qmLog.name = name || message;
         if(qmLog.qm.platform.isMobile()){qmLog.name = "QM: " + name;} // Use for filtering in LogCat
+        qmLog.name = qmLog.replaceSecretValuesInString(qmLog.name);
     },
     message: null,
     setMessage: function(name, message) {
@@ -27,6 +28,7 @@ var qmLog = {
             qmLog.message = message || name;
         }
         if(qmLog.qm.platform.isMobile() && qmLog.isDebugMode()){qmLog.message = addCallerFunctionToMessage(qmLog.message || "");}
+        qmLog.message = qmLog.replaceSecretValuesInString(qmLog.message);
         return qmLog.message;
     },
     globalMetaData : {
@@ -142,6 +144,37 @@ var qmLog = {
     setMobileDebug: function (value) {
         qmLog.mobileDebug = value;
     },
+    replaceSecretValuesInString: function(string){
+        if(typeof string !== 'string'){return string;}
+        var secretValues = qmLog.getSecretValues();
+        for (var i = 0; i < secretValues.length; i++) {
+            var secretValue = secretValues[i];
+            string = string.replace(secretValue, '[SECURE]');
+        }
+        return string;
+    },
+    stringIsSecretAlias: function(stringToCheck){
+        var lowerCaseString = stringToCheck.toLowerCase();
+        for (var i = 0; i < qmLog.secretAliases.length; i++) {
+            var secretSubString = qmLog.secretAliases[i];
+            if(lowerCaseString.indexOf(secretSubString) !== -1){
+               return true;
+            }
+        }
+        return false;
+    },
+    getSecretValues: function(){
+        var secretValues = [];
+        if(typeof process === "undefined" || typeof process.env === "undefined"){return secretValues;}
+        for (var propertyName in process.env) {
+            if (!process.env.hasOwnProperty(propertyName)) {continue;}
+            if(qmLog.stringIsSecretAlias(propertyName)){
+                secretValues.push(process.env[propertyName]);
+            }
+
+        }
+        return secretValues;
+    },
     obfuscateSecrets: function(object){
         if(typeof object !== 'object'){return object;}
         try {
@@ -152,9 +185,8 @@ var qmLog = {
         }
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
-                var lowerCaseProperty = propertyName.toLowerCase();
-                if(qmLog.secretAliases.indexOf(lowerCaseProperty) !== -1){
-                    object[propertyName] = "HIDDEN";
+                if(qmLog.stringIsSecretAlias(propertyName)){
+                    object[propertyName] = "[SECURE]";
                 } else {
                     object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
                 }
@@ -336,6 +368,7 @@ var qmLog = {
         var censored = qmLog.stringContainsSecretAliasWord(logString);
         if(censored){logString = censored;}
         if(qmLog.qm.platform.isMobileOrTesting()){logString = logLevel + ": " + logString;}
+        logString = qmLog.replaceSecretValuesInString(logString);
         return logString;
     },
     shouldWeLog: function(providedLogLevelName) {

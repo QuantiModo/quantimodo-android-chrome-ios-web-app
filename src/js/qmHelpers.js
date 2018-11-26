@@ -1231,7 +1231,9 @@ var qm = {
         },
         variables: {
             descendingOrder: function (variables, property) {
-                qm.qmLog.variables(variables, property);
+                if(qm.appMode.isDebug()){
+                    qm.qmLog.variables(variables, property);
+                }
                 qm.assert.descendingOrder(variables, property)
             }
         },
