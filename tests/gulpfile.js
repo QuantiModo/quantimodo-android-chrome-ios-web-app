@@ -4,7 +4,6 @@ var assert = require('assert');
 var GhostInspector = require('ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('gulp');
 var runSequence = require('../node_modules/run-sequence').use(gulp);
-
 var qm = require('./../src/js/qmHelpers');
 qm.appMode.mode = 'testing';
 var qmLog = require('./../src/js/qmLogger');
@@ -17,6 +16,10 @@ qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName('debug');
 var qmTests = {
+    getStartUrl: function(){
+        if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
+        return 'https://medimodo.herokuapp.com';
+    },
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
             var intents = qm.staticData.dialogAgent.intents;
@@ -74,7 +77,8 @@ var qmTests = {
         },
         executeTests: function(tests, callback, startUrl){
             var options = {};
-            if(startUrl){options.startUrl = startUrl;}
+            startUrl = startUrl || qmTests.getStartUrl();
+            options.startUrl = startUrl;
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
@@ -192,13 +196,12 @@ gulp.task('api-staging-failed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('ionic-gi', function (callback) {
-    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback, 'https://medimodo.herokuapp.com');
+    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('ionic-failed', function (callback) {
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
-    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback, 'https://medimodo.herokuapp.com');
+    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
-
 gulp.task('test-get-common-variable', function(callback) {
     qmTests.tests.commonVariables.getCar(callback);
 });
