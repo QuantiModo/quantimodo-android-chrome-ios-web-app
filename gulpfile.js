@@ -497,7 +497,7 @@ var qmGulp = {
         doNotMinify: null,
         weShouldMinify: function(){
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
-            if(isTruthy(process.env.MINIFY)){return true;}
+            if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
             if(isTruthy(process.env.DO_NOT_MINIFY)){return false;}
             if(qmGulp.buildSettings.buildDebug()){
                 qmLog.info("Copying src instead of minifying because qm.buildSettings.buildDebug returns true");
