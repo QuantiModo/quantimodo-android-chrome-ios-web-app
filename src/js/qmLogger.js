@@ -109,14 +109,17 @@ var qmLog = {
         qmLog.qm.qmLog.info(string);
     },
     arrayValues: function(array, propertiesToLog, message){
-        if(array.isArray()){array = [array];}
+        if(!array.isArray()){array = [array];}
         for (var j = 0; j < array.length; j++) {
             var item = array[j];
             qmLog.itemProperties(item, propertiesToLog, message);
         }
     },
     variables: function(variables, propertiesToLog){
-        if(propertiesToLog.isArray()){propertiesToLog = [propertiesToLog];}
+        if(!propertiesToLog){
+            return;
+        }
+        if(!propertiesToLog.isArray()){propertiesToLog = [propertiesToLog];}
         propertiesToLog = [
             //'name',
             'userId'].concat(propertiesToLog);
