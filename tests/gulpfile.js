@@ -235,8 +235,15 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
 });
 gulp.task('trigger-jenkins', function() {
     var options = {
-        uri: 'http://auto:'+process.env.JENKINS_TOKEN+'@quantimodo2.asuscomm.com:8082',
-        qs: {token: 'ionic-test', cause: 'Netflify Deploy', API_URL: 'app.quantimo.do', START_URL: process.env.DEPLOY_PRIME_URL},
+        uri: 'http://auto:'+process.env.JENKINS_TOKEN+'@quantimodo2.asuscomm.com:8082/view/Ionic/job/ionic-gulp/buildWithParameters?token=ionic-test',
+        qs: {
+            API_URL: 'app.quantimo.do',
+            cause: 'Netflify Deploy',
+            START_URL: process.env.DEPLOY_PRIME_URL,
+            SUB_FOLDER: 'tests',
+            TASK_NAME: 'unit-gi-failed-gi-all',
+            token: 'ionic-test',
+        },
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true, // Automatically parses the JSON string in the response
         strictSSL: false,
