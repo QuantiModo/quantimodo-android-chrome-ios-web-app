@@ -515,10 +515,8 @@ var qmGulp = {
                 return true;
             }
             if(qmPlatform.buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
-            if(!qmGit.isMaster()){
-                qmLog.info("Not on master so buildDebug is true");
-                return true;
-            }
+            // Always building debug when not on master causes unexpected results.  Just use BUILD_DEBUG env if necessary
+            //if(!qmGit.isMaster()){ qmLog.info("Not on master so buildDebug is true"); return true; }
             return false;
         }
     },
