@@ -56,7 +56,7 @@ var qmPlatform = {
             return process.env.BUILD_CHROME;
         },
         mobile: function () {
-            return qmPlatform.buildingFor.android() || qmPlatform.buildingFor.ios()
+            return qmPlatform.buildingFor.android() || qmPlatform.buildingFor.ios();
         }
     },
     setBuildingFor: function(platform){
@@ -269,15 +269,15 @@ var qmGit = {
     getBranchName: function(){
         if(qmGit.branchName){return qmGit.branchName;}
         qmLog.info("Branch name not set!");
-        return null
+        return null;
     },
     isMaster: function () {
-        if(!qmGit.getBranchName()){throw "Branch name not set!"}
-        return qmGit.getBranchName() === "master"
+        if(!qmGit.getBranchName()){throw "Branch name not set!";}
+        return qmGit.getBranchName() === "master";
     },
     isDevelop: function () {
-        if(!qmGit.getBranchName()){throw "Branch name not set!"}
-        return qmGit.getBranchName() === "develop"
+        if(!qmGit.getBranchName()){throw "Branch name not set!";}
+        return qmGit.getBranchName() === "develop";
     },
     isFeature: function () {
         return qmGit.getBranchName().indexOf("feature") !== -1;
@@ -285,13 +285,13 @@ var qmGit = {
     getCurrentGitCommitSha: function () {
         if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
         try {
-            return require('child_process').execSync('git rev-parse HEAD').toString().trim()
+            return require('child_process').execSync('git rev-parse HEAD').toString().trim();
         } catch (error) {
             qmLog.info(error);
         }
     },
     accessToken: process.env.GITHUB_ACCESS_TOKEN,
-    getCommitMessage(callback){
+    getCommitMessage: function(callback){
         var commandForGit = 'git log -1 HEAD --pretty=format:%s';
         execute(commandForGit, function (error, output) {
             var commitMessage = output.trim();
@@ -303,8 +303,8 @@ var qmGit = {
         qmGit.getCommitMessage(function (commitMessage) {
             qmGit.setBranchName(function () {
                 qmLog.info("===== Building " + commitMessage + " on "+ qmGit.getBranchName() + " =====");
-            })
-        })
+            });
+        });
     },
     setBranchName: function (callback) {
         if(qmGit.branchName){
@@ -447,7 +447,7 @@ var qmGulp = {
             return url;
         },
         getChcpJsonUrl: function(releaseStage){
-            return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json"
+            return qmGulp.chcp.getContentUrl(releaseStage)+"/chcp.json";
         },
         releaseStagePath: null,
         getReleaseStagePath: function () {
@@ -522,12 +522,12 @@ var qmGulp = {
         alreadyMinified: function(){
             try {
                 var files = fs.readdirSync(paths.www.scripts);
+                if (!files.length) {
+                    qmLog.info("Scripts folder is empty so we need to minify");
+                    return false;
+                }
             } catch (e) {
                 qmLog.info("No scripts folder so we need to minify");
-                return false;
-            }
-            if (!files.length) {
-                qmLog.info("Scripts folder is empty so we need to minify");
                 return false;
             }
             var previousSha = qmGulp.buildInfoHelper.getPreviousBuildSha();
@@ -566,7 +566,7 @@ var qmGulp = {
             return previousBuildInfo.gitCommitShaHash;
         },
         getCurrentBuildInfo: function () {
-            return qmGulp.buildInfoHelper.currentBuildInfo = {
+            qmGulp.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
                 builtAt: timeHelper.getUnixTimestampInSeconds(),
                 buildServer: qmLog.getCurrentServerContext(),
@@ -576,14 +576,17 @@ var qmGulp = {
                 gitBranch: qmGit.getBranchName(),
                 gitCommitShaHash: qmGit.getCurrentGitCommitSha()
             };
+            return qmGulp.buildInfoHelper.currentBuildInfo;
         },
         getPreviousBuildInfo: function () {
             var previousBuildInfo = readFile(paths.src.buildInfo);
             if(!previousBuildInfo){
                 qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
-                return qmGulp.buildInfoHelper.previousBuildInfo = false;
+                qmGulp.buildInfoHelper.previousBuildInfo = false;
+            } else {
+                qmGulp.buildInfoHelper.previousBuildInfo = previousBuildInfo;
             }
-            return qmGulp.buildInfoHelper.previousBuildInfo = previousBuildInfo;
+            return qmGulp.buildInfoHelper.previousBuildInfo;
         },
         previousBuildInfo: null,
         writeBuildInfo: function () {
@@ -671,8 +674,9 @@ var qmGulp = {
     }
 };
 var Quantimodo = require('quantimodo');
+/** @namespace Quantimodo.ApiClient */
 var defaultClient = Quantimodo.ApiClient.instance;
-var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
+var quantimodo_oauth2 = defaultClient.authentications.quantimodo_oauth2;
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 qmGit.outputCommitMessageAndBranch();
@@ -696,7 +700,7 @@ function setClientId(callback) {
     if (!QUANTIMODO_CLIENT_ID) {
         qmGit.setBranchName(function () {
             var fullBranchName = qmGit.getBranchName();
-            branch = fullBranchName.replace('apps/', '');
+            var branch = fullBranchName.replace('apps/', '');
             if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
                     qmLog.info('Setting QUANTIMODO_CLIENT_ID using branch name ' + branch);
@@ -734,7 +738,7 @@ function readFile(path){
     }
 }
 function outputFileContents(path){
-    qmLog.info(path+": "+fs.readFileSync(path))
+    qmLog.info(path+": "+fs.readFileSync(path));
 }
 function validateJsonFile(filePath) {
     try{
@@ -823,9 +827,9 @@ function execute(command, callback, suppressErrors, lotsOfOutput) {
     var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
     qmLog.info('executing ' + command);
     if(lotsOfOutput){
-        var arguments = command.split(" ");
-        var program = arguments.shift();
-        var ps = spawn(program, arguments);
+        var args = command.split(" ");
+        var program = args.shift();
+        var ps = spawn(program, args);
         ps.on('exit', function (code, signal) {
             qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
             if(callback){callback();}
@@ -1456,8 +1460,8 @@ function writeDefaultConfigJson(path) {
 }
 function writePrivateConfigs(path) {
     if (!qmGulp.staticData.privateConfig && devCredentials.accessToken) {
-        qmLog.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '
-            + getAppsListUrl() + ' ' + qmGulp.getAdditionalSettings().companyEmail +
+        qmLog.error("Could not get privateConfig! " + ' Please double check your available client ids at ' +
+            getAppsListUrl() + ' ' + qmGulp.getAdditionalSettings().companyEmail +
             " and ask them to make you a collaborator at " + getAppsListUrl() + " and run gulp devSetup again.");
     }
     /** @namespace response.privateConfig */
@@ -1695,7 +1699,7 @@ gulp.task('deleteNodeModules', function () {
     return cleanFolder('node_modules');
 });
 gulp.task('deleteWwwPrivateConfig', function () {
-    return cleanFiles([paths.www.defaultPrivateConfig])
+    return cleanFiles([paths.www.defaultPrivateConfig]);
 });
 gulp.task('deleteWwwIcons', function () {
     return cleanFiles(['www/img/icons/*']);
@@ -1793,6 +1797,7 @@ gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], functio
 var access_token = '';
 gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function () {
     var deferred = q.defer();
+    var request = require('request');
     var options = {
         method: 'POST',
         url: 'https://accounts.google.com/o/oauth2/token',
@@ -1807,7 +1812,7 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
     request(options, function (error, message, response) {
         if (error) {
             qmLog.error('ERROR: Failed to generate the access code', error);
-            defer.reject();
+            deferred.reject();
         } else {
             response = JSON.parse(response);
             access_token = response.access_token;
@@ -3231,7 +3236,7 @@ function buildAndroidDebug(callback){
         execute(getCordovaBuildCommand('debug', 'android'), callback);
     } catch (e) {
         if(e.message.indexOf("not find gradle wrapper") !== -1){
-            qmLog.error("Download Android SDK tools package from https://dl.google.com/android/repository/tools_r25.2.3-windows.zip  and copy e to Android\\sdk ")
+            qmLog.error("Download Android SDK tools package from https://dl.google.com/android/repository/tools_r25.2.3-windows.zip  and copy e to Android\\sdk ");
         } else {
             throw e;
         }
@@ -3416,7 +3421,7 @@ gulp.task('chcp-build', [], function (callback) {
     execute("cordova-hcp build", callback);
 });
 gulp.task('chcp-delete-login', function () {
-    return cleanFiles([paths.chcpLogin])
+    return cleanFiles([paths.chcpLogin]);
 });
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
     console.log("After this, run cordova-hcp server and cordova run android in new window");
@@ -3503,14 +3508,14 @@ gulp.task('add-client-remote', function(callback) {
     setClientId(function () {
         var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + QUANTIMODO_CLIENT_ID + ".git";
         qmLog.info("Deploying to "+ remoteUrl);
-        changeOriginRemote(remoteUrl, callback)
+        changeOriginRemote(remoteUrl, callback);
     });
 });
 gulp.task('reset-remote', function(callback) {
     setClientId(function () {
         var remoteUrl ="https://" + qmGit.accessToken + "@github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
         qmLog.info("Resetting remote to "+ remoteUrl);
-        changeOriginRemote(remoteUrl, callback)
+        changeOriginRemote(remoteUrl, callback);
     });
 });
 gulp.task('_update-remote-and-deploy-to-github-pages', ['getAppConfigs'], function(callback) {
@@ -3836,7 +3841,7 @@ gulp.task('merge-dialogflow-export', function() {
     }
     var intentsPath = agentPath + '/intents';
     var intentFiles = fs.readdirSync(intentsPath);
-    for (var i = 0; i < intentFiles.length; i++) {
+    for (i = 0; i < intentFiles.length; i++) {
         var intentFileName = intentFiles[i];
         if(intentFileName.indexOf('usersays') !== -1){continue;}
         var intentName = intentFileName.replace('.json', '');
@@ -3845,12 +3850,11 @@ gulp.task('merge-dialogflow-export', function() {
         var userSaysPath = intentsPath+'/'+intentName+'_usersays_en.json';
         try {
             var userSays = JSON.parse(fs.readFileSync(userSaysPath));
+            var userSaysString = JSON.stringify(userSays);
+            agent.intents[intentName].userSays = JSON.parse(userSaysString);
+            writeToFile(intentPath, agent.intents[intentName]);
         } catch (error) {
             qmLog.error(error);
-            continue;
         }
-        var userSaysString = JSON.stringify(userSays);
-        agent.intents[intentName].userSays = JSON.parse(userSaysString);
-        writeToFile(intentPath, agent.intents[intentName]);
     }
 });
