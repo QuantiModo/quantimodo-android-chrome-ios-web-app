@@ -9,7 +9,6 @@ var androidX86ReleaseApkName = 'android-x86-release';
 /** @namespace process.env.BUILD_DEBUG */
 /** @namespace process.env.DO_NOT_MINIFY */
 function isTruthy(value) {return (value && value !== "false");}
-var doNotMinify = isTruthy(process.env.DO_NOT_MINIFY);
 //var buildPath = './build';  Can't use . because => Updated .......  app_uploads/quantimodo/./build/quantimodo-chrome-extension.zip
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
@@ -491,11 +490,19 @@ var qmGulp = {
         }
     },
     buildSettings: {
-        getDoNotMinify: function(){
-            return doNotMinify;
+        doNotMinify: null,
+        weShouldMinify: function(){
+            if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
+            if(isTruthy(process.env.MINIFY)){return true;}
+            if(isTruthy(process.env.DO_NOT_MINIFY)){return false;}
+            if(qmGulp.buildSettings.buildDebug()){
+                qmLog.info("Copying src instead of minifying because qm.buildSettings.buildDebug returns true");
+                return false;
+            }
+            return true;
         },
-        setDoNotMinify(value){
-            doNotMinify = value;
+        setDoNotMinify: function(value){
+            qmGulp.buildSettings.doNotMinify = value;
         },
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
@@ -2026,24 +2033,12 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'))
         ;
 }
-function shouldWeMinify(){
-    if(isTruthy(process.env.MINIFY)){return true;}
-    if (doNotMinify) {
-        qmLog.info("Copying src instead of minifying because doNotMinify is true");
-        return false;
-    }
-    if(qmGulp.buildSettings.buildDebug()){
-        qmLog.info("Copying src instead of minifying because qm.buildSettings.buildDebug returns true");
-        return false;
-    }
-    return true;
-}
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
-    if(!shouldWeMinify()){return copyFiles('src/**/*', 'www', []);}
+    if(!qmGulp.buildSettings.weShouldMinify()){return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
-    if (!shouldWeMinify()) {return copyFiles('src/**/*', 'www', []);}
+    if (!qmGulp.buildSettings.weShouldMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
 var serviceWorkerAndLibraries = [
@@ -2094,7 +2089,7 @@ gulp.task('upload-source-maps', [], function(callback) {
 var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
     var uglify      = require('gulp-uglify');
-    if(qmGulp.buildSettings.getDoNotMinify()){cb(); return;}
+    if(!qmGulp.buildSettings.weShouldMinify()){cb(); return;}
     pump([
         gulp.src('src/js/**/*.js'),
         uglify(),
@@ -2714,7 +2709,7 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
-    if(!qmGulp.buildSettings.getDoNotMinify()){
+    if(!qmGulp.buildSettings.weShouldMinify()){
         return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
             '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon',
             '!src/chcp*',
