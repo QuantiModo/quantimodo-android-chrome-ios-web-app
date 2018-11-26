@@ -9,6 +9,7 @@
 // — home for dependencies in Webpack bundle
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
+var qm = require("./qmHelpers");
 var qmLog = {
     name: null,
     setName: function(name, message) {
