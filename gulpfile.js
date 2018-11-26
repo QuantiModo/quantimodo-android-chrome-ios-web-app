@@ -455,7 +455,11 @@ var qmGulp = {
             var path = "dev";
             if(qmGit.getBranchName() && qmGit.isMaster()){path = "production";}
             if(qmGit.getBranchName() && qmGit.isDevelop()){path = "qa";}
-            if(qmGulp.buildSettings.buildDebug()){path = "dev";}
+            if(qmGulp.buildSettings.buildDebug()){
+                qmLog.info("qmGulp.buildSettings.buildDebug returns true so using ReleaseStagePath dev");
+                path = "dev";
+            }
+            qmLog.info("CHCP ReleaseStagePath: " + path);
             return path;
         },
         appPath: null,
