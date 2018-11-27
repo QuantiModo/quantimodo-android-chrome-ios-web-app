@@ -20,6 +20,7 @@ var qmTests = {
     testParams: {},
     setTestParams: function(params){
         qmTests.testParams = params;
+        qmLog.info("test params: ", params);
     },
     getTestParams: function(){
         if(typeof qmTests.testParams === 'string'){
