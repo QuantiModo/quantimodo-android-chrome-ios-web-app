@@ -17,10 +17,17 @@ qm.nlp = require('./../src/lib/compromise');
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info');
 var qmTests = {
+    params: {},
     getStartUrl: function(){
+        if(qmTests.params.START_URL){return qmTests.params.START_URL;}
         if(process.env.START_URL){return process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
         return 'https://medimodo.herokuapp.com';
+    },
+    getApiUrl: function(){
+        if(qmTests.params.API_URL){return qmTests.params.API_URL;}
+        if(process.env.API_URL){return process.env.API_URL;}
+        return 'app.quantimo.do';
     },
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
@@ -80,7 +87,7 @@ var qmTests = {
         executeTests: function(tests, callback, startUrl){
             var options = {};
             options.startUrl = startUrl || qmTests.getStartUrl();
-            if(process.env.API_URL){options.apiUrl = process.env.API_URL;}
+            options.apiUrl = qmTests.getApiUrl();
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
@@ -174,46 +181,58 @@ var qmTests = {
     }
 };
 gulp.task('oauth-disabled-utopia', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-staging', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-staging-failed', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-failed', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     var url = process.env.APP_HOST_NAME;
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, url+'/api/v2/auth/login');
 });
 gulp.task('api-failed', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     var url = process.env.APP_HOST_NAME;
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, url+'/api/v2/auth/login');
 });
 gulp.task('api-staging-failed', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('gi-all', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
+    if(this._params){qmTests.params = this._params;}
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
 gulp.task('test-get-common-variable', function(callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.commonVariables.getCar(callback);
 });
 gulp.task('test-record-measurement-intent', function(callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.recordMeasurementIntentTest(callback);
 });
 gulp.task('test-get-units', function(callback) {
+    if(this._params){qmTests.params = this._params;}
     qmTests.tests.getUnitsTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
+    if(this._params){qmTests.params = this._params;}
     runSequence(
         'test-get-common-variable',
         'test-record-measurement-intent',
@@ -224,6 +243,7 @@ gulp.task('unit-tests', function(callback) {
         });
 });
 gulp.task('unit-gi-failed-gi-all', function(callback) {
+    if(this._params){qmTests.params = this._params;}
     runSequence(
         'unit-tests',
         'gi-failed',
@@ -234,6 +254,7 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
         });
 });
 gulp.task('trigger-jenkins', function() {
+    if(this._params){qmTests.params = this._params;}
     var options = {
         uri: 'http://auto:'+process.env.JENKINS_TOKEN+'@quantimodo2.asuscomm.com:8082/view/Ionic/job/ionic-gulp/buildWithParameters?token=ionic-test',
         qs: {
