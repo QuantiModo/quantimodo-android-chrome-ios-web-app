@@ -133,7 +133,6 @@ var paths = {
     src:{
         buildInfo: "src/build-info.json",
         devCredentials: "src/dev-credentials.json",
-        defaultConfig: "src/default.config.json",
         defaultPrivateConfig: "src/default.private_config.json",
         icons: "src/img/icons",
         firebase: "src/lib/firebase/**/*",
@@ -143,7 +142,6 @@ var paths = {
     },
     www: {
         devCredentials: "www/dev-credentials.json",
-        defaultConfig: "www/default.config.json",
         buildInfo: "www/build-info.json",
         defaultPrivateConfig: "www/default.private_config.json",
         icons: "www/img/icons",
@@ -1447,8 +1445,6 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
             }
         }
         addBuildInfoToAppSettings();
-        writeDefaultConfigJson('src');
-        writeDefaultConfigJson('www');
         writePrivateConfigs('www'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         writePrivateConfigs('src'); // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         qmLog.info("Got app settings for " + qmGulp.getAppDisplayName() + ". You can change your app settings at " + getAppEditUrl());
@@ -1457,9 +1453,6 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     return makeApiRequest(options, successHandler);
 });
-function writeDefaultConfigJson(path) {
-    writeToFile(path + "/default.config.json", qmLog.prettyJSONStringify(qmGulp.getAppSettings()));
-}
 function writePrivateConfigs(path) {
     if (!qmGulp.staticData.privateConfig && devCredentials.accessToken) {
         qmLog.error("Could not get privateConfig! " + ' Please double check your available client ids at ' +
@@ -1477,14 +1470,6 @@ function writePrivateConfigs(path) {
         qmLog.error("No private config provided!  User will not be able to use OAuth login!");
     }
 }
-gulp.task('chromeDefaultConfigJson', ['getAppConfigs'], function () {
-    //writePrivateConfigs(chromeExtensionBuildPath);
-    writeDefaultConfigJson(chromeExtensionBuildPath);
-});
-gulp.task('defaultConfigJsonToSrc', ['getAppConfigs'], function () {
-    //writePrivateConfigs('src');
-    writeDefaultConfigJson('src');
-});
 var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
     /** @namespace buildSettings.androidReleaseKeystoreFile */
@@ -2717,7 +2702,7 @@ gulp.task('copyMaterialIconsToWww', [], function () {
 });
 gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
     if(!qmGulp.buildSettings.weShouldMinify()){
-        return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/default.config.json', '!src/private_configs',
+        return copyFiles('src/**/*', 'www', ['!src/lib', '!src/lib/**', '!src/configs', '!src/private_configs',
             '!src/default.private_config.json', '!src/index.html', '!src/configuration-index.html', '!src/js', '!src/qm-amazon',
             '!src/chcp*',
         ]);
@@ -2728,9 +2713,6 @@ gulp.task('_copy-src-to-www', [], function () {
 });
 gulp.task('_copy-src-js-to-www', [], function () {
     return copyFiles('src/js/**/*', 'www/js');
-});
-gulp.task('copyConfigsToSrc', [], function () {
-    return copyFiles('default.config.json', 'src', []);
 });
 var chromeBackgroundJsFilename = 'qmChromeBackground.js';
 gulp.task('chromeBackgroundJS', [], function () {
@@ -2984,7 +2966,6 @@ gulp.task('_chrome-in-src', ['getAppConfigs'], function (callback) {
     }
     runSequence(
         'chromeManifestInSrcFolder',
-        'defaultConfigJsonToSrc',
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {

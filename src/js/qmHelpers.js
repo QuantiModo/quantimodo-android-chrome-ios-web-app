@@ -311,12 +311,6 @@ var qm = {
                         qm.qmLog.error("Error! ", error);
                     }, ["QuantiModoClientId", "QuantiModoClientSecret"]);
             }
-            qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
-                if(appSettings){
-                    qm.clientId = appSettings.clientId;
-                    successHandler(qm.clientId);
-                }
-            });
         },
         getClientIdFromQueryParameters: function() {
             if(!qm.appMode.isBrowser()){return null;}
@@ -645,25 +639,17 @@ var qm = {
                     qm.appsManager.processAndSaveAppSettings(appSettings[0], successHandler);
                     return;
                 }
-                if(appSettings){
-                    // qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
-                    // return;
-                }
                 if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler, function () {
-                        qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
-                            if(appSettings){qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);}
-                        })
+                    qm.appsManager.getAppSettingsFromApi(null, successHandler, function (appSettings) {
+                        if(appSettings){qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);}
                     });
                     return;
                 }
-                qm.appsManager.getAppSettingsFromDefaultConfigJson(function (appSettings) {
-                    if(appSettings){
-                        qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
-                        return;
-                    }
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler);
-                })
+                if(appSettings){
+                    qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
+                    return;
+                }
+                qm.appsManager.getAppSettingsFromApi(null, successHandler);
             });
         },
         getAppSettingsFromMemory: function(){
@@ -699,18 +685,7 @@ var qm = {
                 }, errorHandler)
             });
         },
-        getAppSettingsFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('default.config.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
-                if(parsedResponse){
-                    qm.qmLog.debug('Got appSettings from default.config.json', null, parsedResponse);
-                    qm.appsManager.processAndSaveAppSettings(parsedResponse);
-                }
-                callback(parsedResponse);
-            }, function () {
-                qm.qmLog.error("Could not get appSettings from default.config.json");
-            });
-        },
-        loadBuildInfoFromDefaultConfigJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
+        loadBuildInfoFromJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
             if(qm.buildInfo){callback(qm.buildInfo);}
             qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('build-info.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
                 if(parsedResponse){
@@ -747,7 +722,7 @@ var qm = {
             }
             if(qm.appMode.isBuilder()){return successHandler();}  // Don't need to mess with app settings refresh in builder
             qm.storage.setItem(qm.items.appSettings, appSettings);
-            qm.appsManager.loadBuildInfoFromDefaultConfigJson(function (buildInfo) {
+            qm.appsManager.loadBuildInfoFromJson(function (buildInfo) {
                 for (var propertyName in buildInfo) {
                     if( buildInfo.hasOwnProperty(propertyName) ) {
                         appSettings[propertyName] = buildInfo[propertyName];
