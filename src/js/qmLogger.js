@@ -407,7 +407,6 @@ var qmLog = {
                 "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
             };
         }
-        qmLog.globalMetaData.api = qm.api.requestLog;
         qmLog.globalMetaData.notifications = {
             "deviceTokenOnServer": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenOnServer),
             "deviceTokenToSync": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenToSync),
@@ -425,10 +424,9 @@ var qmLog = {
             browser: qm.platform.browser.get()
         };
         if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
+        qmLog.globalMetaData.api = {log: qm.api.requestLog};
         if(qmLog.qm.getAppSettings()){
-            qmLog.globalMetaData.client = {
-                client_id:  qm.api.getClientId()
-            };
+            qmLog.globalMetaData.api.client_id = qm.api.getClientId();
             qmLog.globalMetaData.build = {
                 build_server: qmLog.qm.getAppSettings().buildServer,
                 build_link: qmLog.qm.getAppSettings().buildLink,
@@ -448,14 +446,14 @@ var qmLog = {
             var request = qmLog.globalMetaData.apiResponse.req;
             qmLog.globalMetaData.test_api_url = request.method + " " + request.url;
             if(request.header.Authorization){
-                qmLog.globalMetaData.test_api_url = addQueryParameter(qmLog.globalMetaData.test_api_url, "access_token", request.header.Authorization.replace("Bearer ", ""));
+                qmLog.globalMetaData.test_api_url = addQueryParameter(qmLog.globalMetaData.test_api_url, "access_token",
+                    request.header.Authorization.replace("Bearer ", ""));
             }
             var consoleMessage = 'API ERROR URL ' + qmLog.globalMetaData.test_api_url;
             if(qmLog.color){consoleMessage = qmLog.color.red(consoleMessage);}
             console.error(consoleMessage, qmLog.globalMetaData);
             delete qmLog.globalMetaData.apiResponse;
         }
-        qmLog.globalMetaData.local_notifications = qmLog.qm.storage.getItem(qmLog.qm.items.scheduledLocalNotifications);
         if(typeof ionic !== "undefined"){
             qmLog.globalMetaData.platform = ionic.Platform.platform();
             qmLog.globalMetaData.platformVersion = ionic.Platform.version();
