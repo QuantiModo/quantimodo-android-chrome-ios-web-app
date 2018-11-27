@@ -30,14 +30,21 @@ var qmTests = {
     },
     getStartUrl: function(){
         var params = qmTests.getTestParams();
+        if(params.startUrl){return params.startUrl;}
         if(params.deploy_ssl_url){return params.deploy_ssl_url;}
         if(params.START_URL){return params.START_URL;}
         if(process.env.START_URL){return process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
         return 'https://medimodo.herokuapp.com';
     },
+    getSha: function(){
+        var params = qmTests.getTestParams();
+        if(params.commit_ref){return params.commit_ref;}
+        if(params.sha){return params.sha;}
+    },
     getStatusesUrl: function(){
         var params = qmTests.getTestParams();
+        if(params.statuses_url){return params.statuses_url;}
         if(params.commit_url){
             var url = params.commit_url;
             url = url.replace('github.com', 'api.github.com/repos');
@@ -111,8 +118,7 @@ var qmTests = {
             var options = {};
             options.startUrl = startUrl || qmTests.getStartUrl();
             options.apiUrl = qmTests.getApiUrl();
-            var params = qmTests.getTestParams();
-            if(params.commit_ref){options.sha = params.commit_ref;}
+            if(qmTests.getSha()){options.sha = qmTests.getSha();}
             if(qmTests.getStatusesUrl()){options.statuses_url = qmTests.getStatusesUrl();}
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
@@ -238,7 +244,8 @@ gulp.task('api-staging-failed', function (callback) {
 });
 gulp.task('gi-all', function (callback) {
     qmTests.setTestParams(this._params);
-    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
+    qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
+    //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
     qmTests.setTestParams(this._params);
@@ -279,6 +286,37 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
             callback(error);
         });
 });
+var qmReq = {
+    postToGhostInspector: function(testOrSuite, callback){
+        var options = {
+            uri: "https://api.ghostinspector.com/v1/"+testOrSuite+"/execute/?apiKey="+process.env.GI_API_KEY,
+            body: {
+                repository: {
+                    statuses_url: qmTests.getStatusesUrl()
+                },
+                sha: qmTests.getSha()
+            },
+            qs: {
+                apiUrl: 'app.quantimo.do',
+                startUrl: qmTests.getStartUrl()
+            },
+            headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
+            json: true, // Automatically parses the JSON string in the response
+            strictSSL: false,
+            method: "POST"
+        };
+        var rp = require('request-promise');
+        qmLog.info('Making '+options.method+' request to ' + options.uri);
+        return rp(options).then(function (response) {
+            qmLog.info("Successful response from " + options.uri);
+            qmLog.debug(options.uri + " response", response);
+            if(callback){callback();}
+        }).catch(function (err) {
+            qmLog.error(err, options);
+            throw err;
+        });
+    }
+};
 gulp.task('trigger-jenkins', function() {
     qmTests.setTestParams(this._params);
     var options = {
