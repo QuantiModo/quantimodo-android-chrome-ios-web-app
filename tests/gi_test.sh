@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && export TEST_FOLDER=`dirname ${SCRIPT_PATH}`
-cd TEST_FOLDER && cd .. && export IONIC=${PWD}
+cd ${TEST_FOLDER} && cd .. && export IONIC=${PWD}
 if [[ -z "$START_URL" ]]
 then
     START_URL=https://medimodo.herokuapp.com/
