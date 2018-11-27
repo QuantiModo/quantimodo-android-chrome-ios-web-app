@@ -66,9 +66,9 @@ var qm = {
             return window.location.origin.indexOf('staging.') !== -1;
         },
         isBuilder: function(){
-            var isBuilder = qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1;
-            if(!isBuilder){isBuilder = qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1}
-            return isBuilder;
+            return window.designMode ||
+                qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
+                qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
@@ -738,7 +738,7 @@ var qm = {
                 qm.qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
-            appSettings.designMode = qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1;
+            appSettings.designMode = qm.appMode.isBuilder();;
             if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             function successHandler() {
                 qm.localForage.setItem(qm.items.appSettings, appSettings);
