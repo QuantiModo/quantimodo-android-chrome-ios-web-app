@@ -3695,9 +3695,9 @@ gulp-download@0.0.1:
     request-progress latest
     through latest
 
-gulp-endpoint@markbirbeck/gulp-endpoint:
+gulp-endpoint@mikepsinn/gulp-endpoint:
   version "1.1.0"
-  resolved "https://codeload.github.com/markbirbeck/gulp-endpoint/tar.gz/dfff2b09f45dedbf572e712908e1418d7cf28451"
+  resolved "https://codeload.github.com/mikepsinn/gulp-endpoint/tar.gz/ed7afdd7db324a3e69d34c01368e156c6795c092"
   dependencies:
     cors "^2.7.1"
     event-stream "^3.3.1"
