@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && export TEST_FOLDER=`dirname ${SCRIPT_PATH}`
+cd TEST_FOLDER && cd .. && export IONIC=${PWD}
 if [[ -z "$START_URL" ]]
 then
     START_URL=https://medimodo.herokuapp.com/
     echo "No START_URL specified so falling back to $START_URL"
-    git push git@heroku.com:medimodo.git master -ff
+    cd ${IONIC} && git push git@heroku.com:medimodo.git master -ff
 else
     echo "Using START_URL env $START_URL"
 fi
@@ -33,9 +35,10 @@ if [[ -z "$SUITE_ID" ]]
        GI_MIDDLE_URL_FRAGMENT=suites/$SUITE_ID
 fi
 export FULL_GI_URL=${GI_BASE_URL}${GI_MIDDLE_URL_FRAGMENT}${GI_URL_QUERY_STRING}
-echo "curl "${FULL_GI_URL}" > ghostinspector.json"
-curl "${FULL_GI_URL}" > ghostinspector.json
-php ghostinspector_parser.php
+set -x
+cd ${TEST_FOLDER} && curl "${FULL_GI_URL}" > ghostinspector.json
+cd ${TEST_FOLDER} && php ghostinspector_parser.php
+set +x
 if [[ -e ghostinspector.json ]]
     then
         exit 1;
