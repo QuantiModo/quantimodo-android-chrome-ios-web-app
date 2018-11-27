@@ -344,10 +344,10 @@ var qm = {
             }
             var subDomain = getSubDomain();
             subDomain = subDomain.replace('qm-', '');
+            if(subDomain === 'web' || subDomain === 'staging-web'){return null;}
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
-                qm.qmLog.debug('Using client id ' + clientIdFromAppConfigName +
-                    ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
+                qm.qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
                 return clientIdFromAppConfigName;
             }
             qm.qmLog.debug('Using subDomain as client id: ' + subDomain);
