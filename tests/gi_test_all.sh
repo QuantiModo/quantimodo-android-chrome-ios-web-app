@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 export GI_API_KEY=f5b531ccd55da08abf35fadabd7b7b04f3d64312
-set +x
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && export TEST_FOLDER=`dirname ${SCRIPT_PATH}`
-cd TEST_FOLDER && cd .. && export IONIC=${PWD}
+set -x
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+export TEST_FOLDER=`dirname ${SCRIPT_PATH}`
+cd TEST_FOLDER
+cd .. && export IONIC=${PWD}
 if [[ -z "$START_URL" ]]
   then
     START_URL=https://medimodo.herokuapp.com/
