@@ -6724,42 +6724,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     qmService.sendBugReport = function() {
         qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
+        qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         function addAppInformationToTemplate(template, callback){
-            function addSnapShotList(template) {
-                if(typeof $ionicDeploy !== "undefined"){
-                    $ionicPlatform.ready(function () {
-                        var snapshotList;
-                        $ionicDeploy.getSnapshots().then(function (snapshots) {
-                            for (var i = 0; i < snapshots.length; i++) {
-                                snapshotList = snapshotList + '\r\n' + snapshots[i];
-                            }
-                            template = template + '\r\n' + "Snapshots: " + snapshotList;
-                        });
-                    });
-                }
-                return template;
-            }
-            if(qm.storage.getItem(qm.items.deviceTokenOnServer)){template = template + '\r\n' + "deviceTokenOnServer: " + qm.storage.getItem(qm.items.deviceTokenOnServer) + '\r\n' + '\r\n';}
-            if(qm.storage.getItem(qm.items.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qm.storage.getItem(qm.items.deviceTokenToSync) + '\r\n' + '\r\n';}
-            qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
-            template = template + "Built " + qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt) + '\r\n';
-            template = template + "user.pushNotificationsEnabled: " + qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled + '\r\n';
-            template = template + "last Push Received: " + qm.push.getTimeSinceLastPushString() + '\r\n';
-            template = template + "last Local Notification Triggered: " + qm.notifications.getTimeSinceLastLocalNotification() + '\r\n';
-            template = template + "drawOverAppsPopupEnabled: " + qm.storage.getItem(qm.items.drawOverAppsPopupEnabled) + '\r\n';
-            template = template + "last popup: " + qm.notifications.getTimeSinceLastPopupString() + '\r\n';
-            template = template + "QuantiModo Client ID: " + qm.api.getClientId() + '\r\n';
-            template = template + "Platform: " + $rootScope.platform.currentPlatform + '\r\n';
+            var after = new Date(qm.timeHelper.getUnixTimestampInMilliseconds() - 10 * 60 * 1000);
+            var before = new Date(qm.timeHelper.getUnixTimestampInMilliseconds() + 5 * 60 * 1000);
+            var url = 'https://app.bugsnag.com/quantimodo/ionic/errors?filters[event.since][0]='+after.toISOString()+
+                '&filters[event.before][0]='+before.toISOString();
+            template = template + "Internal Debug Info: " + url + '\r\n';
             template = template + "User ID: " + $rootScope.user.id + '\r\n';
             template = template + "User Email: " + $rootScope.user.email + '\r\n';
-            //template = template + "App Settings: " + prettyJsonStringify(qm.getAppSettings()) + '\r\n';
-            template = template + "inAppPurchase installed: " + (typeof window.inAppPurchase !== "undefined") + '\r\n';
-            template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
-            var splashInstalled = (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined") ? "installed" : "not installed";
-            template = template + "Splashscreen plugin: " + splashInstalled + '\r\n';
-            template = template + "Cordova Hot Code Push: " + qm.stringHelper.prettyJsonStringify(qmLog.globalMetaData.chcpInfo) + '\r\n';
-            template = addSnapShotList(template);
-            template = template + "last Push Data: " + qm.stringHelper.prettyJsonStringify(qm.storage.getItem(qm.items.lastPushData)) + '\r\n';
             if(qmService.localNotifications.localNotificationsPluginInstalled()){
                 qmService.localNotifications.getAllLocalScheduled(function (localNotifications) {
                     template = template + "localNotifications: " + qm.stringHelper.prettyJsonStringify(localNotifications) + '\r\n';

@@ -392,7 +392,7 @@ var qmLog = {
             return typeof cordova.plugins !== "undefined";
         }
         if(qmLog.qm.platform.getWindow()){
-            qmLog.globalMetaData.installed_plugins = {
+            qmLog.globalMetaData.plugins = {
                 "Analytics": (typeof Analytics !== "undefined") ? "installed" : "not installed",
                 "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined") ? "installed" : "not installed",
                 "cordova.plugins.notification": (cordovaPluginsAvailable() && typeof cordova.plugins.notification !== "undefined") ? "installed" : "not installed",
@@ -407,18 +407,33 @@ var qmLog = {
                 "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
             };
         }
-        qmLog.globalMetaData.push_data = {
+        qmLog.globalMetaData.api = qm.api.requestLog;
+        qmLog.globalMetaData.notifications = {
             "deviceTokenOnServer": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenOnServer),
             "deviceTokenToSync": qmLog.qm.storage.getItem(qmLog.qm.items.deviceTokenToSync),
-            "last_push": qmLog.qm.push.getTimeSinceLastPushString(),
+            "time since last push": qmLog.qm.push.getTimeSinceLastPushString(),
             "push enabled": qmLog.qm.push.enabled(),
             "draw over apps enabled": qmLog.qm.storage.getItem(qmLog.qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
-            "last popup": qmLog.qm.notifications.getTimeSinceLastPopupString()
+            "last popup": qmLog.qm.notifications.getTimeSinceLastPopupString(),
+            'last push data': qm.storage.getItem(qm.items.lastPushData),
+            'last Local Notification Triggered': qm.notifications.getTimeSinceLastLocalNotification(),
+            'drawOverAppsPopupEnabled': qm.storage.getItem(qm.items.drawOverAppsPopupEnabled),
+            scheduled_local_notifications: qmLog.qm.storage.getItem(qmLog.qm.items.scheduledLocalNotifications),
+        };
+        qmLog.globalMetaData.platform = {
+            'platform': qm.platform.getCurrentPlatform(),
+            browser: qm.platform.browser.get()
         };
         if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
         if(qmLog.qm.getAppSettings()){
-            qmLog.globalMetaData.build_server = qmLog.qm.getAppSettings().buildServer;
-            qmLog.globalMetaData.build_link = qmLog.qm.getAppSettings().buildLink;
+            qmLog.globalMetaData.client = {
+                client_id:  qm.api.getClientId()
+            };
+            qmLog.globalMetaData.build = {
+                build_server: qmLog.qm.getAppSettings().buildServer,
+                build_link: qmLog.qm.getAppSettings().buildLink,
+                build_at: qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt),
+            };
         }
         qmLog.globalMetaData.test_app_url = getTestUrl();
         if(qmLog.qm.platform.getWindow()){
