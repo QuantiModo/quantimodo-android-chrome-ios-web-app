@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 export GI_API_KEY=f5b531ccd55da08abf35fadabd7b7b04f3d64312
 set +x
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && export QM_IONIC=`dirname ${SCRIPT_PATH}`
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && export TEST_FOLDER=`dirname ${SCRIPT_PATH}`
+cd TEST_FOLDER && cd .. && export IONIC=${PWD}
 if [[ -z "$START_URL" ]]
   then
     START_URL=https://medimodo.herokuapp.com/
@@ -13,7 +14,7 @@ if [[ "$START_URL" = *"medimodo.herokuapp.com"* ]]; then
     echo "=== Check build progress at https://dashboard.heroku.com/apps/medimodo/activity ==="
     #git push git@heroku.com:medimodo.git master -ff || true;  # Doesn't work on Jenkins for some reason
     #git push heroku master -f || true;  # Doesn't work on Jenkins for some reason
-    git push git@heroku.com:medimodo.git HEAD:master -f;
+    cd ${IONIC} && git push git@heroku.com:medimodo.git HEAD:master -f;
     EXIT_CODE=$?
     echo "git push exit code was $EXIT_CODE"
     # $? now contains the exit code of the preceding echo
@@ -32,11 +33,10 @@ else
     echo "Using CLIENT_ID $CLIENT_ID"
 fi
 echo "===== BRANCH: ${GIT_BRANCH} ====="
-export COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "===== COMMIT: $COMMIT_MESSAGE ====="
-set -x
+cd ${IONIC} && export COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "===== COMMIT: $COMMIT_MESSAGE =====" && set -x
 export SUITE_ID=56f5b92519d90d942760ea96  # Ionic
 URL="https://api.ghostinspector.com/v1/suites/${SUITE_ID}/execute/?startUrl=${START_URL}&clientId=${CLIENT_ID}&apiKey=${GI_API_KEY}&commit="$(git rev-parse HEAD)
-curl "${URL}" > ghostinspector.json
+cd ${TEST_FOLDER} && curl "${URL}" > ghostinspector.json
 echo "=== Check progress at https://app.ghostinspector.com/suites/56f5b92519d90d942760ea96 ==="
 php ghostinspector_parser.php
 set -x
