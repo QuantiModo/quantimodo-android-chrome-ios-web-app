@@ -1019,10 +1019,10 @@ function getAppEditUrl() {
     return getAppsListUrl() + '?clientId=' + qmGulp.getClientId();
 }
 function getAppsListUrl() {
-    return 'https://app.quantimo.do/ionic/Modo/www/configuration-index.html#/app/configuration';
+    return 'https://builder.quantimo.do/#/app/configuration';
 }
 function getAppDesignerUrl() {
-    return qmGulp.getAppHostName() + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + qmGulp.getClientId();
+    return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientId();
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
