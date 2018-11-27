@@ -3364,6 +3364,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     outputPluginVersionNumber('de.appplant.cordova.plugin.local-notification');
     //outputPluginVersionNumber('cordova-plugin-local-notifications');
     runSequence(
+        'google-services-json',
         'uncommentCordovaJsInIndexHtml',
         'chcp-config-login-build',
         'chcp-build',
