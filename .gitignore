@@ -123,3 +123,4 @@ src/build-info.json
 !/src/css/study.css
 src/data/qmStaticData.js
 src/data/apiai/
+/lastCommitBuilt
