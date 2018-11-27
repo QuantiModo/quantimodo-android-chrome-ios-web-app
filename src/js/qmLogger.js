@@ -424,7 +424,7 @@ var qmLog = {
             browser: qm.platform.browser.get()
         };
         if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
-        qmLog.globalMetaData.api = {log: qm.api.requestLog};
+        qmLog.globalMetaData.api = {log: qm.api.requestLog, ApiUrl: qm.api.getApiUrl()};
         if(qmLog.qm.getAppSettings()){
             qmLog.globalMetaData.api.client_id = qm.api.getClientId();
             qmLog.globalMetaData.build = {
