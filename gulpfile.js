@@ -801,7 +801,11 @@ function uploadToS3(filePath) {
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
                 keyTransform: function(relative_filename) {
-                    return getS3AppUploadsRelativePath(filePath);
+                    var S3AppUploadsRelativePath = getS3AppUploadsRelativePath(filePath);
+                    if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
+                        S3AppUploadsRelativePath = S3AppUploadsRelativePath.replace('.apk', versionNumbers.buildVersionNumber+'.apk');
+                    }
+                    return S3AppUploadsRelativePath;
                 }
             }, {
                 maxRetries: 5,
