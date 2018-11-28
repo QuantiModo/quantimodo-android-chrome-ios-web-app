@@ -653,15 +653,9 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
-            var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
-            if(appSettings){
-                if(qm.platform.isBackEndMobileOrChromeExtension()){return appSettings;}
-                var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
-                if(!clientId || clientId === appSettings.clientId){
-                    return appSettings;
-                }
-            }
-            if(qm.platform.isBackEndMobileOrChromeExtension()){return qm.staticData.appSettings;}
+            var appSettings = qm.globalHelper.getItem(qm.items.appSettings) || qm.staticData.appSettings;
+            var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
+            if(!clientId || clientId === appSettings.clientId){return appSettings;}
             return false;
         },
         getAppSettingsFromApi: function (clientId, successHandler, errorHandler) {
