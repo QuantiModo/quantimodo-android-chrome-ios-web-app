@@ -66,6 +66,7 @@ var qm = {
             return window.location.origin.indexOf('staging.') !== -1;
         },
         isBuilder: function(){
+            if(typeof window === "undefined"){return false;}
             return window.designMode ||
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
