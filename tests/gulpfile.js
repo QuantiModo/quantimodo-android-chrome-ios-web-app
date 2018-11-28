@@ -11,13 +11,18 @@ var qmLog = require('./../src/js/qmLogger');
 qmLog.qm = qm;
 qmLog.color = require('ansi-colors');
 qm.Quantimodo = require('./../node_modules/quantimodo');
-qm.staticData = require('./../src/data/qmStaticData');
-qm.stateNames = qm.staticData.stateNames;
-qm.nlp = require('./../src/lib/compromise');
+qm.staticData = false;
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info');
 var qmTests = {
     testParams: {},
+    getStaticData: function(){
+        if(qm.staticData){return qm.staticData;}
+        qm.staticData = require('./../src/data/qmStaticData');
+        qm.stateNames = qm.staticData.stateNames;
+        qm.nlp = require('./../src/lib/compromise');
+        return qm.staticData;
+    },
     setTestParams: function(params){
         qmTests.testParams = params;
         qmLog.info("test params: ", params);
@@ -61,8 +66,8 @@ var qmTests = {
     },
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
-            var intents = qm.staticData.dialogAgent.intents;
-            var entities = qm.staticData.dialogAgent.entities;
+            var intents = qmTests.getStaticData().dialogAgent.intents;
+            var entities = qmTests.getStaticData().dialogAgent.entities;
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             for (var expectedEntityName in expectedEntities) {
                 if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
@@ -253,18 +258,22 @@ gulp.task('gi-failed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
 gulp.task('test-get-common-variable', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.commonVariables.getCar(callback);
 });
 gulp.task('test-record-measurement-intent', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.recordMeasurementIntentTest(callback);
 });
 gulp.task('test-get-units', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.getUnitsTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     runSequence(
         'test-get-common-variable',
