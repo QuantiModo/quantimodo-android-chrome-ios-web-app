@@ -1,7 +1,7 @@
 if(!process.env.GI_API_KEY){throw "Please set GI_API_KEY env from https://app.ghostinspector.com/account"}
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
-var assert = require('./../node_modules/assert');
+var assert = require('./../node_modules/power-assert');
 var GhostInspector = require('./../node_modules/ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('./../node_modules/gulp');
 var runSequence = require('../node_modules/run-sequence').use(gulp);
