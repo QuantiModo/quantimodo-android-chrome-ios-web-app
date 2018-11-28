@@ -35,22 +35,22 @@ var qmTests = {
     },
     getStartUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.startUrl){return params.startUrl;}
-        if(params.deploy_ssl_url){return params.deploy_ssl_url;}
-        if(params.START_URL){return params.START_URL;}
+        if(params && params.startUrl){return params.startUrl;}
+        if(params && params.deploy_ssl_url){return params.deploy_ssl_url;}
+        if(params && params.START_URL){return params.START_URL;}
         if(process.env.START_URL){return process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
         return 'https://medimodo.herokuapp.com';
     },
     getSha: function(){
         var params = qmTests.getTestParams();
-        if(params.commit_ref){return params.commit_ref;}
-        if(params.sha){return params.sha;}
+        if(params && params.commit_ref){return params.commit_ref;}
+        if(params && params.sha){return params.sha;}
     },
     getStatusesUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.statuses_url){return params.statuses_url;}
-        if(params.commit_url){
+        if(params && params.statuses_url){return params.statuses_url;}
+        if(params && params.commit_url){
             var url = params.commit_url;
             url = url.replace('github.com', 'api.github.com/repos');
             url = url.replace('commit', 'statuses');
@@ -60,9 +60,9 @@ var qmTests = {
     },
     getApiUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.API_URL){return params.API_URL;}
+        if(params && params.API_URL){return params.API_URL;}
         if(process.env.API_URL){return process.env.API_URL;}
-        return 'app.quantimo.do';
+        return 'api.quantimo.do';
     },
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
