@@ -198,7 +198,7 @@ angular.module('starter',
         var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
         if(isBuilderState && !isBuilderMode){return;}
         if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
-            state.views.menuContent.templateUrl =  state.views.menuContent.templateUrl.replace('templates', 'builder-templates');
+            state.views.menuContent.templateUrl =  state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
         }
         $stateProvider.state(state.name, state);
     });
@@ -216,7 +216,13 @@ angular.module('starter',
     setFallbackRoute();
 }])
 .component("mdFabProgress", {
-    template: "<md-button class='md-fab' ng-click='$ctrl.onClick()' ng-class=\"{'is-done': $ctrl.done}\"><md-icon ng-if='!done' class=\"ion-checkmark\" md-font-icon=\"ion-checkmark\"></md-icon><md-icon ng-if='done' class=\"ion-upload\" md-font-icon=\"ion-upload\"></md-icon></md-button><md-progress-circular ng-class=\"{'is-active': $ctrl.active}\" value='{{$ctrl.value}}' md-mode='determinate' md-diameter='68'></md-progress-circular>",
+    template:
+        "<md-button class='md-fab' ng-click='$ctrl.onClick()' ng-class=\"{'is-done': $ctrl.done}\">" +
+            "<md-icon ng-if='!done' class=\"ion-checkmark\" md-font-icon=\"ion-checkmark\"></md-icon>" +
+            "<md-icon ng-if='done' class=\"ion-upload\" md-font-icon=\"ion-upload\"></md-icon>" +
+        "</md-button>" +
+        "<md-progress-circular ng-class=\"{'is-active': $ctrl.active}\" value='{{$ctrl.value}}' md-mode='determinate' md-diameter='68'>" +
+        "</md-progress-circular>",
     bindings: {
         "icon": "<",
         "iconDone": "<",
@@ -238,7 +244,7 @@ angular.module('starter',
             if (newValue >= 100) {
                 that.done = true;
                 that.active = false;
-            } else if (newValue == 0) {
+            } else if (newValue === 0) {
                 that.done = false;
                 that.active = false;
             } else if (!that.active) {
@@ -257,9 +263,10 @@ angular.module('exceptionOverride', []).factory('$exceptionHandler', function ()
 });
 angular.module('open-chat-framework', [])
 .service('ngChatEngine', ['$timeout', function($timeout) {
-    this.bind = function(ChatEngine) {
-        // updates angular when anything changes
+    this.bind = function(ChatEngine) { // updates angular when anything changes
         ChatEngine.onAny(function(event, payload) {
+            console.log('event', event);
+            console.log('payload', payload);
             $timeout(function() {});
         });
     }
