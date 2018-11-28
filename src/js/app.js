@@ -115,7 +115,7 @@ angular.module('starter',
         window.qmLog.debug('registerBackButtonAction: Closing the app');
         ionic.Platform.exitApp();
     }, 100);
-    var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
+    //var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
     if (qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') || qm.urlHelper.getParam('refreshUser') || window.designMode) {
         qmService.intro.setIntroSeen(true, "Url params have existingUser or introSeen or refreshUser or designMode");
         qm.storage.setItem(qm.items.onboarded, true);
