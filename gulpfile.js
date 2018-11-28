@@ -153,22 +153,12 @@ var paths = {
     chcpLogin: '.chcplogin'
 };
 var argv = require('yargs').argv;
-var change = require('gulp-change');
-var clean = require('gulp-rimraf');
-var cordovaBuild = require('taco-team-build');
-var concat = require('gulp-concat');
 var defaultRequestOptions = {strictSSL: false};
-var exec = require('child_process').exec;
 var fs = require('fs');
 var gulp = require('gulp');
-var gutil = require('gulp-util');
-var parseString = require('xml2js').parseString;
 var q = require('q');
-var rename = require('gulp-rename');
 var replace = require('gulp-string-replace');
 var runSequence = require('run-sequence');
-var sass = require('gulp-sass');
-var zip = require('gulp-zip');
 var s3Options = {accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY};
 var qmLog = {
     error: function (message, metaData, maxCharacters) {
@@ -824,6 +814,7 @@ function uploadToS3(filePath) {
     });
 }
 function execute(command, callback, suppressErrors, lotsOfOutput) {
+    var exec = require('child_process').exec;
     var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
     qmLog.info('executing ' + command);
     if(lotsOfOutput){
@@ -890,6 +881,7 @@ function ionicUpload(callback) {
     });
 }
 function zipAFolder(folderPath, zipFileName, destinationFolder) {
+    var zip = require('gulp-zip');
     qmLog.info("Zipping " + folderPath + " to " + destinationFolder + '/' + zipFileName);
     qmLog.debug('If this fails, make sure there are no symlinks.');
     return gulp.src([folderPath + '/**/*'])
@@ -897,6 +889,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function zipAndUploadToS3(folderPath, zipFileName) {
+    var zip = require('gulp-zip');
     var s3 = require('gulp-s3-upload')(s3Options);
     if(!checkAwsEnvs()){return;}
     var s3Path = getS3AppUploadsRelativePath(folderPath + '.zip');
@@ -1114,6 +1107,7 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     return parsedXmlFile;
 }
 function outputPluginVersionNumber(folderName) {
+    var parseString = require('xml2js').parseString;
     var pluginXmlPath = 'plugins/' + folderName + '/plugin.xml';
     try {
         var xml = fs.readFileSync(pluginXmlPath, 'utf8');
@@ -1130,6 +1124,7 @@ function outputPluginVersionNumber(folderName) {
     }
 }
 function generateConfigXmlFromTemplate(callback) {
+    var parseString = require('xml2js').parseString;
     var configXmlPath = 'config-template-shared.xml';
     var xml = fs.readFileSync(configXmlPath, 'utf8');
     /** @namespace qm.getAppSettings().additionalSettings.appIds.googleReversedClientId */
@@ -1175,6 +1170,7 @@ gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {
+    var cordovaBuild = require('taco-team-build');
     var es = require('event-stream');
     qmLog.info("Be sure to setup your system following the instructions at http://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/#tacoteambuild");
     return cordovaBuild.buildProject(platformsToBuild, buildArgs)
@@ -1191,6 +1187,7 @@ gulp.task('build', ['scripts', 'sass'], function () {
 });
 // Build Android, copy the results back to bin folder
 gulp.task('build-android', ['scripts', 'sass'], function () {
+    var cordovaBuild = require('taco-team-build');
     return cordovaBuild.buildProject('android', buildArgs)
         .then(function () {
             return gulp.src(buildPaths.apk).pipe(gulp.dest(buildPaths.binApk));
@@ -1198,6 +1195,7 @@ gulp.task('build-android', ['scripts', 'sass'], function () {
 });
 // Build iOS, copy the results back to bin folder
 gulp.task('build-ios', ['scripts', 'sass'], function () {
+    var cordovaBuild = require('taco-team-build');
     return cordovaBuild.buildProject('ios', buildArgs)
         .then(function () {
             // ** NOTE: Package not required in recent versions of Cordova
@@ -1209,6 +1207,7 @@ gulp.task('build-ios', ['scripts', 'sass'], function () {
 });
 // Build Windows, copy the results back to bin folder
 gulp.task('build-win', ['scripts', 'sass'], function () {
+    var cordovaBuild = require('taco-team-build');
     return cordovaBuild.buildProject('windows', buildArgs)
         .then(function () {
             return gulp.src(buildPaths.appx).pipe(gulp.dest(buildPaths.binAppx));
@@ -1374,6 +1373,7 @@ gulp.task('saveDevCredentials', ['setClientId'], function () {
     return writeToFile(paths.src.devCredentials, JSON.stringify(devCredentials));
 });
 function downloadFile(url, filename, destinationFolder) {
+    var rename = require('gulp-rename');
     qmLog.info("Downloading  " + url + " to " + destinationFolder + "/" + filename);
     var downloadStream = require('gulp-download-stream');
     return downloadStream(url)
@@ -1658,6 +1658,8 @@ gulp.task('unzipChromeExtension', function () {
     return unzipFile(getPathToChromeExtensionZip(), getPathToUnzippedChromeExtension());
 });
 gulp.task('sass', function (done) {
+    var sass = require('gulp-sass');
+    var rename = require('gulp-rename');
     var minifyCss = require('gulp-minify-css');
     var textToReplace = '../fonts/ionicons';
     var replacementText = '../lib/ionic/fonts/ionicons';
@@ -1676,6 +1678,7 @@ gulp.task('watch', function () {
     gulp.watch(paths.sass, ['sass']);
 });
 gulp.task('install', ['git-check'], function () {
+    var gutil = require('gulp-util');
     var bower = require('bower');
     return bower.commands.install().on('log', function (data) {gutil.log('bower', gutil.colors.cyan(data.id), data.message);});
 });
@@ -1753,6 +1756,7 @@ gulp.task('copyWwwFolderToChromeApp', ['getUpdatedVersion'], function () {
     return copyFiles('www/**/*', 'chromeApps/' + QUANTIMODO_CLIENT_ID + '/www');
 });
 gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function () {
+    var zip = require('gulp-zip');
     return gulp.src(['chromeApps/' + QUANTIMODO_CLIENT_ID + '/**/*'])
         .pipe(zip(QUANTIMODO_CLIENT_ID + '.zip'))
         .pipe(gulp.dest('chromeApps/zips'));
@@ -1916,6 +1920,7 @@ gulp.task('publishToGoogleAppStore', ['shouldPublish'], function () {
 });
 gulp.task('chrome', ['publishToGoogleAppStore'], function () {qmLog.info('Enjoy your day!');});
 gulp.task('git-check', function (done) {
+    var gutil = require('gulp-util');
     var sh = require('shelljs');
     if (!sh.which('git')) {
         qmLog.info(
@@ -2420,6 +2425,7 @@ gulp.task('fixResourcesPlist', function () {
     return deferred.promise;
 });
 gulp.task('addPodfile', function () {
+    var change = require('gulp-change');
     var deferred = q.defer();
     if (!qmGulp.getAppDisplayName()) {deferred.reject('Please export appSettings.appDisplayName');}
     var addBugsnagToPodfile = function () {
@@ -2466,6 +2472,7 @@ gulp.task('addPodfile', function () {
     return deferred.promise;
 });
 gulp.task('addInheritedToOtherLinkerFlags', function () {
+    var change = require('gulp-change');
     return gulp.src('./platforms/ios/' + qmGulp.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, 'OTHER_LDFLAGS = (\n\t\t\t\t\t"$(inherited)",');
@@ -2473,6 +2480,7 @@ gulp.task('addInheritedToOtherLinkerFlags', function () {
         .pipe(gulp.dest('./platforms/ios/' + qmGulp.getAppDisplayName() + '.xcodeproj/'));
 });
 gulp.task('addDeploymentTarget', function () {
+    var change = require('gulp-change');
     return gulp.src('./platforms/ios/' + qmGulp.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             if (content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1) {
@@ -2503,6 +2511,7 @@ gulp.task('installPods', ['addPodfile'], function () {
     return deferred.promise;
 });
 gulp.task('addBugsnagInObjC', function () {
+    var change = require('gulp-change');
     return gulp.src('./platforms/ios/' + qmGulp.getAppDisplayName() + '/Classes/AppDelegate.m')
         .pipe(change(function (content) {
             if (content.indexOf('Bugsnag') !== -1) {
@@ -2518,6 +2527,7 @@ gulp.task('addBugsnagInObjC', function () {
         .pipe(gulp.dest('./platforms/ios/' + qmGulp.getAppDisplayName() + '/Classes/'));
 });
 gulp.task('enableBitCode', function () {
+    var change = require('gulp-change');
     return gulp.src('./platforms/ios/' + qmGulp.getAppDisplayName() + '.xcodeproj/project.pbxproj')
         .pipe(change(function (content) {
             return content.replace(/FRAMEWORK_SEARCH_PATHS(\s*)?=(\s*)?\(/g, 'ENABLE_BITCODE = NO;\n\t\t\t\tFRAMEWORK_SEARCH_PATHS = (');
@@ -2655,10 +2665,12 @@ gulp.task('cleanPlatforms', [], function () {
     return cleanFolder('platforms');
 });
 function cleanFiles(filesArray) {
+    var clean = require('gulp-rimraf');
     qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
     return gulp.src(filesArray, {read: false}).pipe(clean());
 }
 function cleanFolder(folderPath) {
+    var clean = require('gulp-rimraf');
     qmLog.info("Cleaning " + folderPath + " folder...");
     return gulp.src(folderPath + '/*', {read: false}).pipe(clean());
 }
@@ -2717,6 +2729,7 @@ gulp.task('_copy-src-js-to-www', [], function () {
 var chromeBackgroundJsFilename = 'qmChromeBackground.js';
 gulp.task('chromeBackgroundJS', [], function () {
     var uglify      = require('gulp-uglify');
+    var concat = require('gulp-concat');
     var base = './src/';
     var chromeScriptsWithBase = [];
     for (var i = 0; i < chromeScripts.length; i++) {
@@ -3796,6 +3809,7 @@ gulp.task('google-services-json', [], function() {
     return writeToFile('google-services.json', string);
 });
 gulp.task('rename-adsense', [], function () {
+    var rename = require('gulp-rename');
     qmLog.info("Renaming adsense because of Ad-Block");
     return gulp.src("./src/lib/angular-google-adsense/dist/angular-google-adsense.min.js")
         .pipe(rename("custom-lib/aga.js"))
