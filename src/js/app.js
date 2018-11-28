@@ -197,6 +197,9 @@ angular.module('starter',
         if(state.name === 'app'){state.resolve = config_resolver;}
         var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
         if(isBuilderState && !isBuilderMode){return;}
+        if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
+            state.views.menuContent.templateUrl =  state.views.menuContent.templateUrl.replace('templates', 'builder-templates');
+        }
         $stateProvider.state(state.name, state);
     });
     function setFallbackRoute() {
