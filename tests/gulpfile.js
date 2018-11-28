@@ -1,7 +1,7 @@
 if(!process.env.GI_API_KEY){throw "Please set GI_API_KEY env from https://app.ghostinspector.com/account"}
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
-var assert = require('./../node_modules/assert');
+var assert = require('./../node_modules/power-assert');
 var GhostInspector = require('./../node_modules/ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('./../node_modules/gulp');
 var runSequence = require('../node_modules/run-sequence').use(gulp);
@@ -11,13 +11,18 @@ var qmLog = require('./../src/js/qmLogger');
 qmLog.qm = qm;
 qmLog.color = require('ansi-colors');
 qm.Quantimodo = require('./../node_modules/quantimodo');
-qm.staticData = require('./../src/data/qmStaticData');
-qm.stateNames = qm.staticData.stateNames;
-qm.nlp = require('./../src/lib/compromise');
+qm.staticData = false;
 qm.qmLog = qmLog;
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info');
 var qmTests = {
     testParams: {},
+    getStaticData: function(){
+        if(qm.staticData){return qm.staticData;}
+        qm.staticData = require('./../src/data/qmStaticData');
+        qm.stateNames = qm.staticData.stateNames;
+        qm.nlp = require('./../src/lib/compromise');
+        return qm.staticData;
+    },
     setTestParams: function(params){
         qmTests.testParams = params;
         qmLog.info("test params: ", params);
@@ -30,22 +35,22 @@ var qmTests = {
     },
     getStartUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.startUrl){return params.startUrl;}
-        if(params.deploy_ssl_url){return params.deploy_ssl_url;}
-        if(params.START_URL){return params.START_URL;}
+        if(params && params.startUrl){return params.startUrl;}
+        if(params && params.deploy_ssl_url){return params.deploy_ssl_url;}
+        if(params && params.START_URL){return params.START_URL;}
         if(process.env.START_URL){return process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
         return 'https://medimodo.herokuapp.com';
     },
     getSha: function(){
         var params = qmTests.getTestParams();
-        if(params.commit_ref){return params.commit_ref;}
-        if(params.sha){return params.sha;}
+        if(params && params.commit_ref){return params.commit_ref;}
+        if(params && params.sha){return params.sha;}
     },
     getStatusesUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.statuses_url){return params.statuses_url;}
-        if(params.commit_url){
+        if(params && params.statuses_url){return params.statuses_url;}
+        if(params && params.commit_url){
             var url = params.commit_url;
             url = url.replace('github.com', 'api.github.com/repos');
             url = url.replace('commit', 'statuses');
@@ -55,14 +60,14 @@ var qmTests = {
     },
     getApiUrl: function(){
         var params = qmTests.getTestParams();
-        if(params.API_URL){return params.API_URL;}
+        if(params && params.API_URL){return params.API_URL;}
         if(process.env.API_URL){return process.env.API_URL;}
-        return 'app.quantimo.do';
+        return 'api.quantimo.do';
     },
     tests: {
         checkIntent: function(userInput, expectedIntentName, expectedEntities, expectedParameters, callback){
-            var intents = qm.staticData.dialogAgent.intents;
-            var entities = qm.staticData.dialogAgent.entities;
+            var intents = qmTests.getStaticData().dialogAgent.intents;
+            var entities = qmTests.getStaticData().dialogAgent.entities;
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             for (var expectedEntityName in expectedEntities) {
                 if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
@@ -253,18 +258,22 @@ gulp.task('gi-failed', function (callback) {
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
 gulp.task('test-get-common-variable', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.commonVariables.getCar(callback);
 });
 gulp.task('test-record-measurement-intent', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.recordMeasurementIntentTest(callback);
 });
 gulp.task('test-get-units', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.getUnitsTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
+    qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     runSequence(
         'test-get-common-variable',
