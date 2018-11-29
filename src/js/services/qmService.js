@@ -3511,7 +3511,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.trackingReminders.syncTrackingReminders();
         qm.userVariables.getFromLocalStorageOrApi();
     };
-    qmService.refreshUser = function(force){
+    qmService.refreshUser = function(force, params){
         var deferred = $q.defer();
         if(qm.urlHelper.getParam('logout') && !force){
             qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
@@ -3523,7 +3523,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ', user);
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
-        }, function(error){deferred.reject(error);});
+        }, function(error){deferred.reject(error);}, params);
         return deferred.promise;
     };
     qmService.refreshUserEmailPreferencesDeferred = function(params, successHandler, errorHandler){
