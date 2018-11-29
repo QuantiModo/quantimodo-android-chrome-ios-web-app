@@ -491,6 +491,7 @@ var qmGulp = {
     buildSettings: {
         doNotMinify: null,
         weShouldMinify: function(){
+            if(!qmPlatform.buildingFor.web()){return false;}
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
             if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
             if(isTruthy(process.env.DO_NOT_MINIFY)){return false;}
@@ -3379,9 +3380,9 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     runSequence(
         'google-services-json',
         'uncommentCordovaJsInIndexHtml',
-        'chcp-config-login-build',  // Do this early to allow time to complete before chcp-deploy is run below
         'copyAndroidLicenses',
         'bowerInstall',
+        '_copy-src-to-www', // Do this so un-minified libraries are available, but before configureApp so we don't overwrite anything
         'configureApp',
         'copyAppResources',
         'generateConfigXmlFromTemplate',
@@ -3392,6 +3393,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicResourcesAndroid',
         'copyAndroidResources',
         'copyIconsToWwwImg',
+        'chcp-config-login-build',  // Must be done after all www files are present, but do this early enough to allow time to complete before chcp-deploy is run below
         'reinstallDrawOverAppsPlugin',
         'ionicInfo',
         'checkDrawOverAppsPlugin',
