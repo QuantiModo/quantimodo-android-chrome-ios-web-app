@@ -5422,8 +5422,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             notificationSettings.text = "Open reminder inbox";
             notificationSettings.sound = null;
             qmLog.pushDebug('scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification', notificationSettings);
-            if ($rootScope.platform.isAndroid) {notificationSettings.icon = 'ic_stat_icon_bw';}
-            if ($rootScope.platform.isIOS) {
+            if (qm.platform.isAndroid()) {notificationSettings.icon = 'ic_stat_icon_bw';}
+            if (qm.platform.isIOS()) {
                 notificationSettings.sound = "file://sound/silent.ogg";
                 var everyString = 'minute';
                 if (notificationSettings.every > 1) {everyString = 'hour';}
