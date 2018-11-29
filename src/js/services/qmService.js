@@ -2918,7 +2918,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function logApiError(status, request, data, options) {
         var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
-        if (data && data.error && typeof data.error === "string") {errorName = data.error;}
+        if (data && data.error) {
+            if (typeof data.error === "string") {
+                errorName += ': ' + data.error;
+            } else if (data.error.message) {
+                errorName += ': ' + data.error.message;
+            }
+        }
         var metaData = {
             debugApiUrl: getDebugApiUrlFromRequest(request),
             appUrl: window.location.href,
