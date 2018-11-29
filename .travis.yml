@@ -3,8 +3,8 @@ branches:
    #- master
    #- develop
    #- /^renovate.*$/
-  except:
-    - /^feature.*$/
+#  except:
+#    - /^feature.*$/
 matrix:
   include:
 #  - env: PLATFORM=ios-11.0
@@ -43,10 +43,10 @@ matrix:
     - android-sdk-license-.+
     - google-gdk-license-.+
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
-- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
-- rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
   - bundler
@@ -55,26 +55,30 @@ cache:
   - $HOME/Library/Caches/Yarn/v1/
   - $HOME/.cache/yarn/v1/
 before_install:
-- echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
-- bundle install
-- bundle update
-- export LANG=en_US.UTF-8
-- nvm install 8
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
-- yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
+  - echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
+  - bundle install
+  - bundle update
+  - export LANG=en_US.UTF-8
+  - nvm install 8
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
+  - yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
 script:
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
-- yarn install
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
-#- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
+  - yarn install
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning && cd tests && gulp chcp-qa-unit-gi-failed-gi-all; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning && cd tests && gulp chcp-production-unit-gi-failed-gi-all; fi
+  ### FEATURES
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _build-qm-android && cd tests && gulp chcp-dev-unit-gi-failed-gi-all; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp _build-qm-android && cd tests && gulp chcp-dev-unit-gi-failed-gi-all; fi
+  #- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
+  #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
   - JAVA_HOME=/usr/lib/jvm/java-8-oracle
 notifications:
-    webhooks: https://www.travisbuddy.com/
+  webhooks: 'https://www.travisbuddy.com/'
     email:
         recipients:
             - mike@quantimo.do
