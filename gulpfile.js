@@ -582,6 +582,8 @@ var qmGulp = {
         writeBuildInfo: function () {
             var buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
             writeToFile(paths.src.buildInfo, buildInfo);
+            writeToFile('www/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
+            writeToFile('src/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
             return writeToFile(paths.www.buildInfo, buildInfo);
         },
         getBuildLink: function() {
