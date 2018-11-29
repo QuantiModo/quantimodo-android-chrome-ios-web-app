@@ -132,9 +132,7 @@ var qmTests = {
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
             GhostInspector.executeTest(test._id, options, function (err, results, passing) {
-                if (err) return console.log('Error: ' + err);
-                console.log(passing === true ? 'Passed' : 'Failed');
-                //qmLog.info("results", results, 1000);
+                if (err) throw test.name + " Error: " + err;
                 if(!passing){
                     for (var i = 0; i < results.console.length; i++) {
                         var logObject = results.console[i];
@@ -145,6 +143,7 @@ var qmTests = {
                     }
                     throw test.name + " failed: " + testUrl;
                 }
+                console.log(test.name + ' ' + ' passed! :D');
                 if (tests && tests.length) {
                     qmTests.tests.executeTests(tests, callback, startUrl);
                 } else if (callback) {
