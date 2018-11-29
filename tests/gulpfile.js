@@ -36,12 +36,14 @@ var qmTests = {
     startUrl: null,
     getStartUrl: function(){
         var params = qmTests.getTestParams();
-        if(params && params.startUrl){return params.startUrl;}
-        if(params && params.deploy_ssl_url){return params.deploy_ssl_url;}
-        if(params && params.START_URL){return params.START_URL;}
-        if(process.env.START_URL){return process.env.START_URL;}
-        if(process.env.DEPLOY_PRIME_URL){return process.env.DEPLOY_PRIME_URL;}
-        return 'https://medimodo.herokuapp.com';
+        var startUrl = 'https://medimodo.herokuapp.com';
+        if(params && params.startUrl){startUrl = params.startUrl;}
+        if(params && params.deploy_ssl_url){startUrl = params.deploy_ssl_url;}
+        if(params && params.START_URL){startUrl = params.START_URL;}
+        if(process.env.START_URL){startUrl = process.env.START_URL;}
+        if(process.env.DEPLOY_PRIME_URL){startUrl = process.env.DEPLOY_PRIME_URL;}
+        if(startUrl.indexOf('https') === -1){startUrl = "https://"+startUrl;}
+        return startUrl;
     },
     getSha: function(){
         var params = qmTests.getTestParams();
