@@ -67,13 +67,17 @@ script:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
   - yarn install
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp buildAndroidAfterCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source tests/wait_for_deploy_and_test.sh; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source tests/test_chcp.sh; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
+
   #- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
   #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
