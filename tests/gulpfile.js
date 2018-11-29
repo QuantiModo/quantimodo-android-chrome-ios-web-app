@@ -33,6 +33,7 @@ var qmTests = {
         }
         return qmTests.testParams;
     },
+    startUrl: null,
     getStartUrl: function(){
         var params = qmTests.getTestParams();
         if(params && params.startUrl){return params.startUrl;}
@@ -280,7 +281,8 @@ gulp.task('unit-tests', function(callback) {
         'test-record-measurement-intent',
         'test-get-units',
         function (error) {
-            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
         });
 });
@@ -291,7 +293,41 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
         'gi-failed',
         'gi-all',
         function (error) {
-            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-dev-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/dev/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-qa-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/qa/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-production-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/production/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
         });
 });
