@@ -2102,7 +2102,7 @@ gulp.task('uglify-error-debugging', function (cb) {
     pump([
         gulp.src('src/js/**/*.js'),
         uglify(),
-        gulp.dest('./dist/')
+        gulp.dest('./tmp/')
     ], cb);
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
