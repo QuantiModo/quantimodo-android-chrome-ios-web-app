@@ -127,7 +127,7 @@ var qmTests = {
             if(qmTests.getStatusesUrl()){options.statuses_url = qmTests.getStatusesUrl();}
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
-            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
+            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
             GhostInspector.executeTest(test._id, options, function (err, results, passing) {
