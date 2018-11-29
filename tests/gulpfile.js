@@ -25,7 +25,7 @@ var qmTests = {
     },
     setTestParams: function(params){
         qmTests.testParams = params;
-        qmLog.info("test params: ", params);
+        qmLog.debug("Setting test params: " + JSON.stringify(params));
     },
     getTestParams: function(){
         if(typeof qmTests.testParams === 'string'){
@@ -342,7 +342,7 @@ var qmReq = {
                 sha: qmTests.getSha()
             },
             qs: {
-                apiUrl: 'app.quantimo.do',
+                apiUrl: qmTests.getApiUrl(),
                 startUrl: qmTests.getStartUrl()
             },
             headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
@@ -351,7 +351,7 @@ var qmReq = {
             method: "POST"
         };
         var rp = require('request-promise');
-        qmLog.info('Check progress at https://app.ghostinspector.com/' + testOrSuite);
+        qmLog.info('Testing '+qmTests.getStartUrl() +'. Check progress at https://app.ghostinspector.com/' + testOrSuite);
         return rp(options).then(function (response) {
             qmLog.info("Successful response from " + options.uri);
             qmLog.debug(options.uri + " response", response);
