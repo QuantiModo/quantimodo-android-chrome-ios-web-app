@@ -491,6 +491,7 @@ var qmGulp = {
     buildSettings: {
         doNotMinify: null,
         weShouldMinify: function(){
+            if(!qmPlatform.buildingFor.web()){return false;}
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
             if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
             if(isTruthy(process.env.DO_NOT_MINIFY)){return false;}
