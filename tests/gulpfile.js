@@ -25,7 +25,7 @@ var qmTests = {
     },
     setTestParams: function(params){
         qmTests.testParams = params;
-        qmLog.info("test params: ", params);
+        qmLog.debug("Setting test params: " + JSON.stringify(params));
     },
     getTestParams: function(){
         if(typeof qmTests.testParams === 'string'){
@@ -33,6 +33,7 @@ var qmTests = {
         }
         return qmTests.testParams;
     },
+    startUrl: null,
     getStartUrl: function(){
         var params = qmTests.getTestParams();
         if(params && params.startUrl){return params.startUrl;}
@@ -127,7 +128,7 @@ var qmTests = {
             if(qmTests.getStatusesUrl()){options.statuses_url = qmTests.getStatusesUrl();}
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
-            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on '+ startUrl +'...');
+            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
             GhostInspector.executeTest(test._id, options, function (err, results, passing) {
@@ -280,7 +281,8 @@ gulp.task('unit-tests', function(callback) {
         'test-record-measurement-intent',
         'test-get-units',
         function (error) {
-            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
         });
 });
@@ -291,7 +293,41 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
         'gi-failed',
         'gi-all',
         function (error) {
-            if (error) {qmLog.error(error.message);} else {qmLog.green('TESTS FINISHED SUCCESSFULLY');}
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-dev-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/dev/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-qa-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/qa/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
+            callback(error);
+        });
+});
+gulp.task('chcp-production-unit-gi-failed-gi-all', function(callback) {
+    qmTests.setTestParams(this._params);
+    qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/production/';
+    runSequence(
+        'unit-gi-failed-gi-all',
+        function (error) {
+            if (error) {throw error.message;}
+            qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
         });
 });
@@ -306,7 +342,7 @@ var qmReq = {
                 sha: qmTests.getSha()
             },
             qs: {
-                apiUrl: 'app.quantimo.do',
+                apiUrl: qmTests.getApiUrl(),
                 startUrl: qmTests.getStartUrl()
             },
             headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
@@ -315,7 +351,7 @@ var qmReq = {
             method: "POST"
         };
         var rp = require('request-promise');
-        qmLog.info('Check progress at https://app.ghostinspector.com/' + testOrSuite);
+        qmLog.info('Testing '+qmTests.getStartUrl() +'. Check progress at https://app.ghostinspector.com/' + testOrSuite);
         return rp(options).then(function (response) {
             qmLog.info("Successful response from " + options.uri);
             qmLog.debug(options.uri + " response", response);
