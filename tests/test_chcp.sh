@@ -7,5 +7,6 @@ if [[ ${GIT_BRANCH} == *"feature"* ]]; then SUB_DOMAIN=dev; fi
 if [[ ${GIT_BRANCH} == *"renovate"* ]]; then SUB_DOMAIN=dev; fi
 if [[ ${GIT_BRANCH} == *"develop"* ]]; then SUB_DOMAIN=qa; fi
 if [[ ${GIT_BRANCH} == *"master"* ]]; then SUB_DOMAIN=production; fi
-export START_URL=${START_URL:-https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/${SUB_DOMAIN}/index.html}
+export START_URL=https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/${SUB_DOMAIN}/index.html
+export COMMIT_URL=https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/${SUB_DOMAIN}/data/commits/${GIT_COMMIT}
 source ${TEST_FOLDER}/wait_for_deploy_and_test.sh
