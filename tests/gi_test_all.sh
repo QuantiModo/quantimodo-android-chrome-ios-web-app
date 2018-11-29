@@ -13,6 +13,7 @@ if [[ -z "$CLIENT_ID" ]]; then CLIENT_ID=oauth_test_client && echo "No CLIENT_ID
 echo "===== BRANCH: ${GIT_BRANCH} ====="
 cd ${IONIC} && export COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "===== COMMIT: $COMMIT_MESSAGE =====" && set -x
 export SUITE_ID=56f5b92519d90d942760ea96  # Ionic
+set -e && cd ${TEST_FOLDER} && gulp gi-failed
 URL="https://api.ghostinspector.com/v1/suites/${SUITE_ID}/execute/?startUrl=${START_URL}&clientId=${CLIENT_ID}&apiKey=${GI_API_KEY}&commit="$(git rev-parse HEAD)
 cd ${TEST_FOLDER} && curl "${URL}" > ghostinspector.json
 echo "=== Check progress at https://app.ghostinspector.com/suites/56f5b92519d90d942760ea96 ==="
