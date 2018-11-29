@@ -373,13 +373,13 @@ function setVersionNumbers() {
 setVersionNumbers();
 var qmGulp = {
     chcp: {
-        loginBuildAndDeploy: function(callback){
+        loginBuildAndDeploy: function(callback){ // DOESN'T WORK
+            // loginAndBuild doesn't complete soon enough for ordova-hcp deploy to work.
+            // Have to use in sequence buildAndroidApp task to provide necessary delay
             qmGulp.chcp.loginAndBuild(function(){
                 qmGulp.chcp.outputCordovaHcpJson();
                 qmLog.info("For some reason, you have to run cordova-hcp deploy manually in the console instead of in gulp task");
-                callback();
-                process.exit(0);
-                //execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
+                execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
             });
         },
         loginAndBuild: function(callback){
@@ -3379,7 +3379,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     runSequence(
         'google-services-json',
         'uncommentCordovaJsInIndexHtml',
-        'chcp-config-login-build',
+        'chcp-config-login-build',  // Do this early to allow time to complete before chcp-deploy is run below
         'copyAndroidLicenses',
         'bowerInstall',
         'configureApp',
@@ -3447,8 +3447,9 @@ gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (call
 gulp.task('chcp-clean-config-files', [], function () {
     return qmGulp.chcp.chcpCleanConfigFiles();
 });
-gulp.task('chcp-deploy', ['chcp-config-login-build'], function (callback) {
+gulp.task('chcp-deploy', ['getAppConfigs'], function (callback) {
     qmGulp.chcp.outputCordovaHcpJson();
+    //qmGulp.chcp.loginBuildAndDeploy(callback);  // Have to build early in sequence to allow time for completion during other build steps so files are ready for deploy
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
 });
 gulp.task('ios-sim-fix', [], function (callback) {
