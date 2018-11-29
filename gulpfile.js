@@ -491,7 +491,7 @@ var qmGulp = {
     buildSettings: {
         doNotMinify: null,
         weShouldMinify: function(){
-            if(!qmPlatform.buildingFor.web()){return false;}
+            //if(!qmPlatform.buildingFor.web()){return false;}  We need to minify on mobile or the app contains huge lib folder and CHCP sync is slow!
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
             if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
             if(isTruthy(process.env.DO_NOT_MINIFY)){return false;}
@@ -1042,7 +1042,8 @@ function writeToXmlFile(outputFilePath, parsedXmlFile, callback) {
         if (error) {
             qmLog.error('ERROR: error writing to xml file', error);
         } else {
-            qmLog.info('Successfully wrote the xml file: ' + updatedXml);
+            qmLog.info('Successfully wrote the xml file: ' + outputFilePath);
+            qmLog.debug('Successfully wrote the xml file: ' + updatedXml);
             if(callback){callback();}
         }
     });
@@ -1289,7 +1290,11 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'https://*.intercom.io/*',
             'https://*.googleapis.com/*',
             'https://*.google-analytics.com/*',
-            'webRequest', 'webRequestBlocking', 'http://www.amazon.com/*', 'https://www.amazon.com/*', 'http://www.amazon.ca/*', 'https://www.amazon.ca/*', 'http://www.amazon.co.uk/*', 'https://www.amazon.co.uk/*', 'http://www.amazon.de/*', 'https://www.amazon.de/*', 'http://www.amazon.es/*', 'https://www.amazon.es/*', 'http://www.amazon.fr/*', 'https://www.amazon.fr/*', 'http://www.amazon.it/*', 'https://www.amazon.it/*', 'http://www.amazon.co.jp/*', 'https://www.amazon.co.jp/*', 'http://www.amazon.cn/*', 'https://www.amazon.cn/*'
+            'webRequest', 'webRequestBlocking',
+            'http://www.amazon.com/*',
+            'https://www.amazon.com/*',
+            'http://www.amazon.ca/*',
+            'https://www.amazon.ca/*', 'http://www.amazon.co.uk/*', 'https://www.amazon.co.uk/*', 'http://www.amazon.de/*', 'https://www.amazon.de/*', 'http://www.amazon.es/*', 'https://www.amazon.es/*', 'http://www.amazon.fr/*', 'https://www.amazon.fr/*', 'http://www.amazon.it/*', 'https://www.amazon.it/*', 'http://www.amazon.co.jp/*', 'https://www.amazon.co.jp/*', 'http://www.amazon.cn/*', 'https://www.amazon.cn/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
@@ -1539,13 +1544,6 @@ gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
     return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "debug.keystore");
-});
-gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
-    /** @namespace buildSettings.androidMaifestJsonFile */
-    if(!buildSettings.androidMaifestJsonFile){
-        qmLog.error("Please add your Android manifest.json at " + getAppEditUrl() + " to enable Google Play Store subscriptions");
-    }
-    return downloadEncryptedFile(buildSettings.androidMaifestJsonFile, "www/manifest.json");
 });
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
@@ -2052,7 +2050,7 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     if (!qmGulp.buildSettings.weShouldMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
 });
-var serviceWorkerAndLibraries = [
+var serviceWorkerFirebaseLocalForage = [
     paths.src.serviceWorker,
     'src/lib/firebase/firebase-app.js',
     'src/lib/firebase/firebase-messaging.js',
@@ -2767,22 +2765,19 @@ gulp.task('chromeBackgroundJS', [], function () {
 gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
-gulp.task('copyIconsToWwwImg', [], function () {
-    return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.www.icons);
+gulp.task('copy-www-img-to-src', [], function () {
+    return copyFiles('www/img/*', 'src/img/');
 });
 gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
 });
-gulp.task('copyServiceWorkerAndLibraries', [], function () {
-    return gulp.src( serviceWorkerAndLibraries, { base: './src' } )
+gulp.task('copyServiceWorkerFirebaseLocalForage', [], function () {
+    return gulp.src( serviceWorkerFirebaseLocalForage, { base: './src' } )
         .pipe( gulp.dest( './www' ));
 });
 gulp.task('copyOverrideFiles', [], function () {
     return gulp.src( ['overrides/**/*'], { base: './overrides' } )
         .pipe( gulp.dest( '.' ));
-});
-gulp.task('copyIconsToSrcImg', [], function () {
-    return copyFiles('apps/' + QUANTIMODO_CLIENT_ID + '/resources/icon*.png', paths.src.icons);
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -2849,7 +2844,6 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'removeTransparentPsd',
         'useWhiteIcon',
         'ionicResourcesIos',
-        'copyIconsToWwwImg',
         'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
@@ -2877,7 +2871,6 @@ gulp.task('build-ios-app', function (callback) {
         'removeTransparentPsd',
         'useWhiteIcon',
         'ionicResourcesIos',
-        'copyIconsToWwwImg',
         'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
@@ -2904,7 +2897,6 @@ gulp.task('prepare-ios-app', function (callback) {
         'removeTransparentPsd',
         'useWhiteIcon',
         'ionicResourcesIos',
-        'copyIconsToWwwImg',
         'write-build-json',
         'googleServicesPList',
         'cordova-plugin-rm-cordova-plugin-console',
@@ -2924,7 +2916,6 @@ gulp.task('prepare-ios-app-without-cleaning', function (callback) {
         'removeTransparentPsd',
         'useWhiteIcon',
         'ionicResourcesIos',
-        'copyIconsToWwwImg',
         'write-build-json',
         callback);
 });
@@ -2984,8 +2975,7 @@ gulp.task('configureApp', [], function (callback) {
         'downloadIcon',
         'resizeIcons',
         'downloadSplashScreen',
-        'copyIconsToWwwImg',
-        'copyServiceWorkerAndLibraries',
+        'copyServiceWorkerFirebaseLocalForage',
         'setVersionNumberInFiles',
         'verifyExistenceOfBuildInfo',
         'createSuccessFile',
@@ -3285,7 +3275,6 @@ gulp.task('_copy-src-and-emulate-android', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         '_copy-src-to-www',
-        //'copySrcToAndroidWww',
         'ionicEmulateAndroid',
         callback);
 });
@@ -3293,7 +3282,6 @@ gulp.task('_copy-src-and-run-android', function (callback) {
     runSequence(
         'uncommentCordovaJsInIndexHtml',
         '_copy-src-to-www',
-        //'copySrcToAndroidWww',
         'ionicRunAndroid',
         callback);
 });
@@ -3382,7 +3370,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'copyAndroidLicenses',
         'bowerInstall',
-        '_copy-src-to-www', // Do this so un-minified libraries are available, but before configureApp so we don't overwrite anything
+        'copySrcToWwwExceptJsLibrariesAndConfigs', // Don't copy entire lib because it makes the app and chcp sync huge!
         'configureApp',
         'copyAppResources',
         'generateConfigXmlFromTemplate',
@@ -3392,7 +3380,6 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'downloadAndroidReleaseKeystore',
         'ionicResourcesAndroid',
         'copyAndroidResources',
-        'copyIconsToWwwImg',
         'chcp-config-login-build',  // Must be done after all www files are present, but do this early enough to allow time to complete before chcp-deploy is run below
         'reinstallDrawOverAppsPlugin',
         'ionicInfo',
