@@ -2817,8 +2817,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.error(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                     } else {
                         if (data.error) {
-                            generalApiErrorHandler(data, status, headers, request, options);
-                            if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                            var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                            if (requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
                         }
                         qmService.navBar.setOfflineConnectionErrorShowing(false);
                         if(data.message){ qmLogService.debug(data.message, null, options.stackTrace); }
@@ -2826,8 +2826,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 })
                 .error(function (data, status, headers) {
-                    generalApiErrorHandler(data, status, headers, request, options);
-                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                    var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
                 }, onRequestFailed);
         });
     };
@@ -2888,8 +2888,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     successHandler(data);
                     return;
                 }
-                generalApiErrorHandler(data, status, headers, request, options);
-                if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                if(requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
             });
         }, requestSpecificErrorHandler);
     };
@@ -2918,10 +2918,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function logApiError(status, request, data, options) {
         var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
+        var userErrorMessage;
         if (data && data.error) {
             if (typeof data.error === "string") {
+                userErrorMessage = data.error;
                 errorName += ': ' + data.error;
             } else if (data.error.message) {
+                userErrorMessage = data.error.message;
                 errorName += ': ' + data.error.message;
             }
         }
@@ -2942,6 +2945,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         qmLogService.error(errorName, metaData, options.stackTrace);
+        return userErrorMessage;
     }
     function getPathWithoutQuery(request) {
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
@@ -2958,7 +2962,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showOfflineError(options, request);
             return;
         }
-        logApiError(status, request, data, options);
+        return logApiError(status, request, data, options);
     }
     function getDebugApiUrlFromRequest(request){
         var debugUrl = request.method + " " + request.url;
