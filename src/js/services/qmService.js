@@ -2817,8 +2817,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.error(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                     } else {
                         if (data.error) {
-                            generalApiErrorHandler(data, status, headers, request, options);
-                            if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                            var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                            if (requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
                         }
                         qmService.navBar.setOfflineConnectionErrorShowing(false);
                         if(data.message){ qmLogService.debug(data.message, null, options.stackTrace); }
@@ -2826,8 +2826,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 })
                 .error(function (data, status, headers) {
-                    generalApiErrorHandler(data, status, headers, request, options);
-                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                    var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                    if (requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
                 }, onRequestFailed);
         });
     };
@@ -2888,8 +2888,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     successHandler(data);
                     return;
                 }
-                generalApiErrorHandler(data, status, headers, request, options);
-                if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
+                var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
+                if(requestSpecificErrorHandler){requestSpecificErrorHandler(userErrorMessage);}
             });
         }, requestSpecificErrorHandler);
     };
@@ -2918,7 +2918,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
     }
     function logApiError(status, request, data, options) {
         var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
-        if (data && data.error && typeof data.error === "string") {errorName = data.error;}
+        var userErrorMessage;
+        if (data && data.error) {
+            if (typeof data.error === "string") {
+                userErrorMessage = data.error;
+                errorName += ': ' + data.error;
+            } else if (data.error.message) {
+                userErrorMessage = data.error.message;
+                errorName += ': ' + data.error.message;
+            }
+        }
         var metaData = {
             debugApiUrl: getDebugApiUrlFromRequest(request),
             appUrl: window.location.href,
@@ -2936,6 +2945,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         }
         qmLogService.error(errorName, metaData, options.stackTrace);
+        return userErrorMessage;
     }
     function getPathWithoutQuery(request) {
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
@@ -2952,7 +2962,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showOfflineError(options, request);
             return;
         }
-        logApiError(status, request, data, options);
+        return logApiError(status, request, data, options);
     }
     function getDebugApiUrlFromRequest(request){
         var debugUrl = request.method + " " + request.url;
@@ -5422,8 +5432,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             notificationSettings.text = "Open reminder inbox";
             notificationSettings.sound = null;
             qmLog.pushDebug('scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification', notificationSettings);
-            if ($rootScope.platform.isAndroid) {notificationSettings.icon = 'ic_stat_icon_bw';}
-            if ($rootScope.platform.isIOS) {
+            if (qm.platform.isAndroid()) {notificationSettings.icon = 'ic_stat_icon_bw';}
+            if (qm.platform.isIOS()) {
                 notificationSettings.sound = "file://sound/silent.ogg";
                 var everyString = 'minute';
                 if (notificationSettings.every > 1) {everyString = 'hour';}
