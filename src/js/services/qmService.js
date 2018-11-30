@@ -1358,9 +1358,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
                     if(!menuItem.subMenu){
                         menuItem.href = '#/app' + menuItem.url;
-                        if(params && params.variableCategoryName){
+                        if(params && params.variableCategoryName && menuItem.href.indexOf('-category') === -1){
                             menuItem.href += "-category/" + params.variableCategoryName;
-                            delete(params.variableCategoryName);
+                            //delete(params.variableCategoryName);
                         }
                         menuItem.href += qm.urlHelper.convertObjectToQueryString(params);
                         menuItem.href = menuItem.href.replace('app/app', 'app');
