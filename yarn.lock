@@ -209,10 +209,6 @@ ansi-red@^0.1.1:
   dependencies:
     ansi-wrap "0.1.0"
 
-ansi-regex@*:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.0.0.tgz#70de791edf021404c3fd615aa89118ae0432e5a9"
-
 ansi-regex@^0.2.0, ansi-regex@^0.2.1:
   version "0.2.1"
   resolved "http://registry.npmjs.org/ansi-regex/-/ansi-regex-0.2.1.tgz#0d8e946967a3d8143f93e24e298525fc1b2235f9"
@@ -2489,7 +2485,7 @@ event-stream@3.3.4:
     stream-combiner "~0.0.4"
     through "~2.3.1"
 
-event-stream@^3.1.7, event-stream@^3.3.1:
+event-stream@^3.3.1:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-3.3.5.tgz#e5dd8989543630d94c6cf4d657120341fa31636b"
   dependencies:
@@ -3500,11 +3496,11 @@ gulp-angular-templatecache@2.2.5:
     lodash.template "^4.4.0"
     through2 "^2.0.3"
 
-gulp-change@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-change/-/gulp-change-1.0.0.tgz#8a759fe1bbe25344ed164e740e99313b15cce639"
+gulp-change@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/gulp-change/-/gulp-change-1.0.2.tgz#1105124c40564a293ee2e885dde62de46629ce8e"
   dependencies:
-    event-stream "^3.1.7"
+    event-stream "^4.0.1"
 
 gulp-concat@2.6.1, gulp-concat@^2.6.1:
   version "2.6.1"
@@ -4288,7 +4284,7 @@ import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
 
-imurmurhash@*, imurmurhash@^0.1.4:
+imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
 
