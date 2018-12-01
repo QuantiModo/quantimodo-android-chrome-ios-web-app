@@ -332,12 +332,7 @@ var qm = {
             if(!qm.appMode.isBrowser()){return null;}
             if(window.location.hostname.indexOf('.quantimo.do') === -1){return null;}
             if(qm.appMode.isBuilder()){return null;}
-            function getSubDomain(){
-                var full = window.location.host;
-                var parts = full.split('.');
-                return parts[0].toLowerCase();
-            }
-            var subDomain = getSubDomain();
+            var subDomain = qm.urlHelper.getSubDomain();
             subDomain = subDomain.replace('qm-', '');
             if(subDomain === 'web' || subDomain === 'staging-web'){return null;}
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
@@ -6508,6 +6503,11 @@ var qm = {
                 return -1;
             }
             return currentUrl.indexOf(needle);
+        },
+        getSubDomain: function () {
+            var full = window.location.host;
+            var parts = full.split('.');
+            return parts[0].toLowerCase();
         }
     },
     user: null,
