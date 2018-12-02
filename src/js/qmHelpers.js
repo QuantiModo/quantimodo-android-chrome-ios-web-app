@@ -5729,10 +5729,11 @@ var qm = {
             console.log(between[1] + " is between " + firstString + " and " + secondString + " in " +  string);
             return between[1];
         },
-        getStringAfter: function(fullString, substring){
+        getStringAfter: function(fullString, substring, defaultResponse){
             var array = fullString.split(substring);
             if(array[1]){return array[1];}
-            return null;
+            defaultResponse = defaultResponse || null;
+            return defaultResponse;
         },
         truncateIfGreaterThan: function (string, maxCharacters) {
             if(string.length > maxCharacters){
