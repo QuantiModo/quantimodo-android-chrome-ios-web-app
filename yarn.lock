@@ -1472,9 +1472,9 @@ compression@^1.6.0:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-compromise@11.12.3:
-  version "11.12.3"
-  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.12.3.tgz#dfdc15c6dc978d1d229ec0265b388468ed69bb01"
+compromise@11.12.4:
+  version "11.12.4"
+  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.12.4.tgz#f2c6ac011f9d5bfe8ea1483bd1880747daaad76e"
   dependencies:
     efrt-unpack "2.0.3"
 
