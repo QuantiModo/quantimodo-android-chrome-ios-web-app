@@ -352,7 +352,8 @@ var qmReq = {
             method: "POST"
         };
         var rp = require('request-promise');
-        qmLog.info('Testing '+qmTests.getStartUrl() +'. Check progress at https://app.ghostinspector.com/' + testOrSuite);
+        qmLog.info('=== Testing '+qmTests.getStartUrl() +' ===');
+        qmLog.info('=== Check progress at https://app.ghostinspector.com/' + testOrSuite + " ===");
         return rp(options).then(function (response) {
             qmLog.info("Successful response from " + options.uri);
             qmLog.debug(options.uri + " response", response);
