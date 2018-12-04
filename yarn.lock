@@ -986,16 +986,16 @@ bufferstreams@^1.1.0:
   dependencies:
     readable-stream "^2.0.2"
 
-bugsnag-sourcemaps@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.0.4.tgz#5b49c98edf2f931cf881dc22177cda8db8534371"
+bugsnag-sourcemaps@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.0.5.tgz#310b0ac7dfcdbc964ffae9945d886e2c5fc11260"
   dependencies:
     graceful-fs "^4.1.11"
     listr "^0.12.0"
     meow "^3.7.0"
-    rc "^1.2.1"
+    rc "^1.2.8"
     read-pkg-up "^2.0.0"
-    request "^2.79.0"
+    request "^2.88.0"
 
 bugsnag@2.4.3:
   version "2.4.3"
@@ -7411,7 +7411,7 @@ raw-body@2.3.3, raw-body@^2.2.0:
     iconv-lite "0.4.23"
     unpipe "1.0.0"
 
-rc@^1.0.1, rc@^1.1.6, rc@^1.2.1, rc@^1.2.7:
+rc@^1.0.1, rc@^1.1.6, rc@^1.2.7, rc@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
   dependencies:
@@ -7886,7 +7886,7 @@ request@2.9.x:
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
 
-request@^2.0.0, request@^2.74.0, request@^2.79.0, request@^2.81.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@latest:
+request@^2.0.0, request@^2.74.0, request@^2.81.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@latest:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   dependencies:
