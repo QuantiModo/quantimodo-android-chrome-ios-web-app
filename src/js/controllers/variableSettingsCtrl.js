@@ -6,7 +6,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.state = {variableObject: null};
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
-        qmService.login.sendToLoginIfNecessaryAndComeBack();
+        qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in "+$state.current.name);
         qmService.navBar.showNavigationMenu();
         if(qmService.variableIdToGetOnReturnToSettings){
             getUserVariableWithTags(qmService.variableIdToGetOnReturnToSettings);

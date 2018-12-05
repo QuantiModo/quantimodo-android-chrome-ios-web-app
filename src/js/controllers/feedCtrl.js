@@ -31,7 +31,7 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
         });
         $scope.$on('$ionicView.enter', function(e) {
-            if(!qm.getUser()){qmService.login.sendToLoginIfNecessaryAndComeBack(); return;}
+            if(!qm.getUser()){qmService.login.sendToLoginIfNecessaryAndComeBack("No user in "+$state.current.name); return;}
             cardHandlers.getCards();
             if(!$scope.state.cards){qmService.showBasicLoader();}
         });
