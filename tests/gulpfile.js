@@ -125,12 +125,16 @@ var qmTests = {
             var expectedParameters = {variableName: 'Overall Mood', value: 1};
             qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, callback);
         },
-        executeTests: function(tests, callback, startUrl){
+        getOptions: function(startUrl){
             var options = {};
             options.startUrl = startUrl || qmTests.getStartUrl();
             options.apiUrl = qmTests.getApiUrl();
             if(qmTests.getSha()){options.sha = qmTests.getSha();}
             if(qmTests.getStatusesUrl()){options.statuses_url = qmTests.getStatusesUrl();}
+            return options;
+        },
+        executeTests: function(tests, callback, startUrl){
+            var options = qmTests.tests.getOptions(startUrl);
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
@@ -156,28 +160,57 @@ var qmTests = {
                 }
             });
         },
-        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
-            GhostInspector.getSuiteTests(suiteId, function (err, tests) {
+        executeSuite: function(suiteId, callback, startUrl){
+            var options = qmTests.tests.getOptions(startUrl);
+            qmLog.info('Testing suite on startUrl '+ options.startUrl +'...');
+            var testUrl = "https://app.ghostinspector.com/suites/"+suiteId;
+            qmLog.info("Check progress at " + testUrl +" ");
+            GhostInspector.executeSuite(suiteId, options, function (err, results, passing) {
                 if (err) return console.log('Error: ' + err);
-                if(failedOnly){
-                    var failedTests = tests.filter(function(test){
-                        return !test.passing;
-                    });
-                    if(!failedTests || !failedTests.length){
-                        qmLog.info("No failed tests!");
-                        if(callback){callback();}
-                        return;
-                    } else {
-                        tests = failedTests;
+                console.log(passing === true ? 'Passed' : 'Failed');
+                console.log(results);
+                if (err) throw test.name + " Error: " + err;
+                if(!passing){
+                    for (var i = 0; i < results.console.length; i++) {
+                        var logObject = results.console[i];
+                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
+                            console.error(logObject.output);
+                            console.error(logObject.url);
+                        }
                     }
+                    console.error(test.name + " failed: " + testUrl);
+                    process.exit(1);
                 }
-                for (var i = 0; i < tests.length; i++) {
-                    var test = tests[i];
-                    var passFail = (test.passing) ? 'passed' : 'failed';
-                    qmLog.info(test.name + " recently " + passFail);
-                }
-                qmTests.tests.executeTests(tests, callback, startUrl);
+                console.log(test.name + ' ' + ' passed! :D');
+                callback();
             });
+        },
+        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
+            if(!failedOnly){
+                qmTests.tests.executeSuite(suiteId, callback, startUrl);
+            } else {
+                GhostInspector.getSuiteTests(suiteId, function (err, tests) {
+                    if (err) return console.log('Error: ' + err);
+                    if(failedOnly){
+                        var failedTests = tests.filter(function(test){
+                            return !test.passing;
+                        });
+                        if(!failedTests || !failedTests.length){
+                            qmLog.info("No failed tests!");
+                            if(callback){callback();}
+                            return;
+                        } else {
+                            tests = failedTests;
+                        }
+                    }
+                    for (var i = 0; i < tests.length; i++) {
+                        var test = tests[i];
+                        var passFail = (test.passing) ? 'passed' : 'failed';
+                        qmLog.info(test.name + " recently " + passFail);
+                    }
+                    qmTests.tests.executeTests(tests, callback, startUrl);
+                });
+            }
         },
         commonVariables: {
             getCar: function (callback) {
@@ -254,8 +287,8 @@ gulp.task('api-staging-failed', function (callback) {
 });
 gulp.task('gi-all', function (callback) {
     qmTests.setTestParams(this._params);
-    //qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
-    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
+    qmTests.tests.executeSuite('56f5b92519d90d942760ea96', callback);
+    //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
     qmTests.setTestParams(this._params);
