@@ -1349,7 +1349,8 @@ function createProgressiveWebAppManifest(outputPath) {
         }],
         "background_color": "#FF9800",
         "theme_color": "#FF9800",
-        "gcm_sender_id": "1052648855194"
+        //"gcm_sender_id": "1052648855194",  // This is the actual QM id but FB says change your web app manifest's 'gcm_sender_id' value to '103953800507' to use Firebase messaging.
+        "gcm_sender_id": "103953800507"
     };
     pwaManifest = JSON.stringify(pwaManifest, null, 2);
     qmLog.info("Creating ProgressiveWebApp manifest at " + outputPath);
