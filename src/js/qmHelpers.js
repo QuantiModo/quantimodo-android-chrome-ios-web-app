@@ -334,7 +334,7 @@ var qm = {
             if(qm.appMode.isBuilder()){return null;}
             var subDomain = qm.urlHelper.getSubDomain();
             subDomain = subDomain.replace('qm-', '');
-            if(subDomain === 'web' || subDomain === 'staging-web'){return null;}
+            if(subDomain === 'web' || subDomain === 'staging-web' || subDomain === 'dev-web'){return null;}
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
                 qm.qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
@@ -699,12 +699,18 @@ var qm = {
             }
         },
         processAndSaveAppSettings: function(appSettings, callback){
+            if(typeof appSettings === "string"){
+                qm.qmLog.error(appSettings);
+                return false;
+            }
             if(!appSettings){
                 qm.qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
-            appSettings.designMode = qm.appMode.isBuilder();;
-            if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+            appSettings.designMode = qm.appMode.isBuilder();
+            if(!appSettings.appDesign){
+                qmLog.error("No appDesign property!", appSettings);
+            } else if (!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             function successHandler() {
                 qm.localForage.setItem(qm.items.appSettings, appSettings);
                 if(callback){callback(appSettings);}
