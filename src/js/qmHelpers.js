@@ -6781,23 +6781,27 @@ var qm = {
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(successHandler, errorHandler){
             if(!qm.getUser()){
-                qm.qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                var message = "No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables";
+                qm.qmLog.info(message);
+                if(errorHandler){errorHandler(message);}
                 return;
             }
             qm.reminderHelper.getNumberOfVariablesWithLocalReminders(function (numberOfVariablesWithReminders) {
-                if(numberOfVariablesWithReminders){
-                    qm.userVariables.getFromLocalStorage({}, function (userVariables) {
-                        var numberOfLocalVariables = 0;
-                        if(userVariables){numberOfLocalVariables = userVariables.length;}
-                        if(numberOfVariablesWithReminders && numberOfLocalVariables < numberOfVariablesWithReminders){
-                            var limit = 100;
-                            if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
-                            qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
-                        } else {
-                            if(successHandler){successHandler(userVariables);}
-                        }
-                    });
+                if(!numberOfVariablesWithReminders){
+                    if(successHandler){successHandler();}
+                    return;
                 }
+                qm.userVariables.getFromLocalStorage({}, function (userVariables) {
+                    var numberOfLocalVariables = 0;
+                    if(userVariables){numberOfLocalVariables = userVariables.length;}
+                    if(numberOfVariablesWithReminders && numberOfLocalVariables < numberOfVariablesWithReminders){
+                        var limit = 100;
+                        if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
+                        qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
+                    } else {
+                        if(successHandler){successHandler(userVariables);}
+                    }
+                });
             })
         }
     },
