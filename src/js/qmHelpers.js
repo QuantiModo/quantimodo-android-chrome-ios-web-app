@@ -114,15 +114,16 @@ var qm = {
                 }
                 return false;
             }
-            var message = "API Request: " + functionName;
-            if(requestParams.reason){message += " because " + requestParams.reason;}
-            delete requestParams.reason;
-            qm.qmLog.info(message, requestParams);
-            qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName});
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
             quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            var message = "API Request to "+qm.api.getBaseUrl()+" for " + functionName;
+            if(requestParams.reason){message += " because " + requestParams.reason;}
+            if(qm.qmLog.isDebugMode()){message += ' with token: '+qm.auth.getAccessTokenFromUrlUserOrStorage();}
+            delete requestParams.reason;
+            qm.qmLog.info(message, requestParams);
+            qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName, message: message});
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
@@ -393,6 +394,7 @@ var qm = {
         },
         getBaseUrl: function () {
             var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
+            if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, apiUrl);}
             if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
             if(!apiUrl){
