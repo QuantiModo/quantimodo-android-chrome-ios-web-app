@@ -145,6 +145,7 @@ var qmLog = {
         qmLog.mobileDebug = value;
     },
     replaceSecretValuesInString: function(string){
+        if(qmLog.isDebugMode()){return string;}
         if(typeof string !== 'string'){return string;}
         var secretValues = qmLog.getSecretValues();
         for (var i = 0; i < secretValues.length; i++) {
@@ -176,6 +177,7 @@ var qmLog = {
         return secretValues;
     },
     obfuscateSecrets: function(object){
+        if(qmLog.isDebugMode()){return object;}
         if(typeof object !== 'object'){return object;}
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
@@ -265,8 +267,11 @@ var qmLog = {
         return qmLog.authDebugEnabled;
     },
     authDebug: function(name, message, errorSpecificMetaData) {
-        if(!qmLog.getAuthDebugEnabled(name)){return;}
         name = "Auth Debug: " + name;
+        if(!qmLog.getAuthDebugEnabled(name)){
+            qmLog.debug(name, message, errorSpecificMetaData);
+            return;
+        }
         if(qmLog.qm.platform.isMobile()){
             qmLog.error(name, message, errorSpecificMetaData);
         } else {
