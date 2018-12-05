@@ -183,6 +183,10 @@ ansi-colors@1.1.0, ansi-colors@^1.0.1, ansi-colors@^1.1.0:
   dependencies:
     ansi-wrap "^0.1.0"
 
+ansi-colors@^3.0.5:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.2.tgz#e49349137dbeb6d381b91e607c189915e53265ba"
+
 ansi-cyan@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ansi-cyan/-/ansi-cyan-0.1.1.tgz#538ae528af8982f28ae30d86f2f17456d2609873"
@@ -986,16 +990,16 @@ bufferstreams@^1.1.0:
   dependencies:
     readable-stream "^2.0.2"
 
-bugsnag-sourcemaps@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.0.4.tgz#5b49c98edf2f931cf881dc22177cda8db8534371"
+bugsnag-sourcemaps@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.0.5.tgz#310b0ac7dfcdbc964ffae9945d886e2c5fc11260"
   dependencies:
     graceful-fs "^4.1.11"
     listr "^0.12.0"
     meow "^3.7.0"
-    rc "^1.2.1"
+    rc "^1.2.8"
     read-pkg-up "^2.0.0"
-    request "^2.79.0"
+    request "^2.88.0"
 
 bugsnag@2.4.3:
   version "2.4.3"
@@ -3785,16 +3789,16 @@ gulp-string-replace@1.1.2:
     replacestream "^4.0.3"
     through2 "^2.0.3"
 
-gulp-typescript@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/gulp-typescript/-/gulp-typescript-4.0.2.tgz#80bb9e376e7aa87b763a6ad5fe054a5d078da1e6"
+gulp-typescript@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-typescript/-/gulp-typescript-5.0.0.tgz#aac065a88bca95d1f960d4934a307feed2d091f8"
   dependencies:
-    ansi-colors "^1.0.1"
-    plugin-error "^0.1.2"
-    source-map "^0.6.1"
-    through2 "^2.0.3"
+    ansi-colors "^3.0.5"
+    plugin-error "^1.0.1"
+    source-map "^0.7.3"
+    through2 "^3.0.0"
     vinyl "^2.1.0"
-    vinyl-fs "^3.0.0"
+    vinyl-fs "^3.0.3"
 
 gulp-uglify@3.0.1:
   version "3.0.1"
@@ -7411,7 +7415,7 @@ raw-body@2.3.3, raw-body@^2.2.0:
     iconv-lite "0.4.23"
     unpipe "1.0.0"
 
-rc@^1.0.1, rc@^1.1.6, rc@^1.2.1, rc@^1.2.7:
+rc@^1.0.1, rc@^1.1.6, rc@^1.2.7, rc@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
   dependencies:
@@ -7886,7 +7890,7 @@ request@2.9.x:
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
 
-request@^2.0.0, request@^2.74.0, request@^2.79.0, request@^2.81.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@latest:
+request@^2.0.0, request@^2.74.0, request@^2.81.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@latest:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   dependencies:
@@ -8500,6 +8504,10 @@ source-map@^0.5.1, source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.3:
 source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
+source-map@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
 
 source-map@~0.3.0:
   version "0.3.0"
@@ -9561,7 +9569,7 @@ vinyl-fs@^2.2.1:
     vali-date "^1.0.0"
     vinyl "^1.0.0"
 
-vinyl-fs@^3.0.0, vinyl-fs@^3.0.3:
+vinyl-fs@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/vinyl-fs/-/vinyl-fs-3.0.3.tgz#c85849405f67428feabbbd5c5dbdd64f47d31bc7"
   dependencies:
