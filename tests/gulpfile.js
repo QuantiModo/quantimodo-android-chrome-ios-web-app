@@ -1,6 +1,7 @@
 if(!process.env.GI_API_KEY){throw "Please set GI_API_KEY env from https://app.ghostinspector.com/account"}
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
+var argv = require('./../node_modules/yargs').argv;
 var assert = require('./../node_modules/power-assert');
 var GhostInspector = require('./../node_modules/ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('./../node_modules/gulp');
@@ -42,6 +43,7 @@ var qmTests = {
         if(params && params.START_URL){startUrl = params.START_URL;}
         if(process.env.START_URL){startUrl = process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){startUrl = process.env.DEPLOY_PRIME_URL;}
+        if(argv.startUrl){startUrl = argv.startUrl;}
         if(startUrl.indexOf('https') === -1){startUrl = "https://"+startUrl;}
         return startUrl;
     },
@@ -65,6 +67,7 @@ var qmTests = {
         var params = qmTests.getTestParams();
         if(params && params.API_URL){return params.API_URL;}
         if(process.env.API_URL){return process.env.API_URL;}
+        if(argv.apiUrl){return argv.apiUrl;}
         return 'api.quantimo.do';
     },
     tests: {
@@ -215,7 +218,7 @@ var qmTests = {
                         });
                     });
                 });
-            },
+            }
         }
     }
 };
@@ -251,8 +254,8 @@ gulp.task('api-staging-failed', function (callback) {
 });
 gulp.task('gi-all', function (callback) {
     qmTests.setTestParams(this._params);
-    qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
-    //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
+    //qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
+    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
     qmTests.setTestParams(this._params);
