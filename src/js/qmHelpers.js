@@ -1254,16 +1254,20 @@ var qm = {
             }
         },
         getAccessTokenFromUrlUserOrStorage: function() {
-            if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
-                return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
+            var accessToken = qm.auth.getAndSaveAccessTokenFromCurrentUrl();
+            if(accessToken){
+                qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned "+accessToken);
+                return accessToken;
             }
-            var accessToken;
-            if(qm.userHelper.getUserFromLocalStorage() && qm.userHelper.getUserFromLocalStorage().accessToken){
+            if(qm.userHelper.getUserFromLocalStorage()){
                 accessToken = qm.userHelper.getUserFromLocalStorage().accessToken;
-                if(!qm.auth.accessTokenIsValid(accessToken)){
-                    qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
-                } else {
-                    return accessToken;
+                if(accessToken){
+                    if(!qm.auth.accessTokenIsValid(accessToken)){
+                        qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
+                    } else {
+                        qmLog.info("getUserFromLocalStorage().accessToken returned "+accessToken);
+                        return accessToken;
+                    }
                 }
             }
             accessToken = qm.storage.getItem(qm.items.accessToken);
@@ -1271,6 +1275,7 @@ var qm = {
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qm.qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
                 } else {
+                    qmLog.info("qm.storage.getItem(qm.items.accessToken)returned "+accessToken);
                     return accessToken;
                 }
             }
