@@ -254,8 +254,8 @@ gulp.task('api-staging-failed', function (callback) {
 });
 gulp.task('gi-all', function (callback) {
     qmTests.setTestParams(this._params);
-    qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
-    //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
+    //qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
+    qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
     qmTests.setTestParams(this._params);
