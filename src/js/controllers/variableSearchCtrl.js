@@ -167,6 +167,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
     }
     function getVariableSearchParameters(){
         var scope = $scope.state.variableSearchParameters;
+        // $stateParams.variableSearchParameters.searchPhrase is getting populated somehow and is not being updated
+        if($scope.state.variableSearchQuery.name){delete $stateParams.variableSearchParameters.searchPhrase;}
         var state = $stateParams.variableSearchParameters;
         return qm.objectHelper.copyPropertiesFromOneObjectToAnother(scope, state, false);
     }
