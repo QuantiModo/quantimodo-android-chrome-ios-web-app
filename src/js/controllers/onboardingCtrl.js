@@ -13,13 +13,14 @@ angular.module('starter').controller('OnboardingCtrl',
         setRequireUpgradesInOnboarding();
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qmStates.onboarding)){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qm.stateNames.onboarding)){ return; }
         if(!qm.getUser()){qmLog.debug("No user in onboarding!")}
         qmService.setupOnboardingPages();
         qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         setCirclePage($rootScope.appSettings.appDesign.onboarding.active[0]);
         setRequireUpgradesInOnboarding();
+        if(!speechEnabled){$rootScope.setMicAndSpeechEnabled(false, true);}
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmLog.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
@@ -53,7 +54,7 @@ angular.module('starter').controller('OnboardingCtrl',
         qmService.goToState('app.import');
     };
     $scope.goToUpgradePage = function () {
-        qmService.backButtonState = qmStates.onboarding;
+        qmService.backButtonState = qm.stateNames.onboarding;
         qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {
@@ -81,7 +82,7 @@ angular.module('starter').controller('OnboardingCtrl',
         // if(!$rootScope.user){
         //     $rootScope.appSettings.appDesign.onboarding.active = null;
         //     qm.storage.removeItem('onboardingPages');
-        //     qmService.goToState(qmStates.onboarding);
+        //     qmService.goToState(qm.stateNames.onboarding);
         //     return;
         // }
         //$scope.goToReminderSearch($scope.circlePage.variableCategoryName);
@@ -112,6 +113,10 @@ angular.module('starter').controller('OnboardingCtrl',
         qm.storage.removeItem('onboardingPages');
     };
     function askQuestion(circlePage) {
+        if(!speechEnabled){
+            qmLog.debug("Speech disabled");
+            return false;
+        }
         qm.speech.askYesNoQuestion(circlePage.bodyText, function () {
             if(circlePage.addButtonText){
                 $scope.goToReminderSearchFromOnboarding();

@@ -326,7 +326,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trustAsHtml = function(string) {
         return $sce.trustAsHtml(string);
     };
-    $rootScope.setMicAndSpeechEnabled = function(value){
+    $rootScope.setMicAndSpeechEnabled = function(value, hideRobot){
         if($rootScope.micEnabled === value && $rootScope.speechEnabled === value){
             qmLog.info("micEnabled and speechEnabled already set to "+value);
             return;
@@ -338,7 +338,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qm.mic.setMicEnabled(value);
             qm.speech.setSpeechEnabled(value);
             if(value === false){
-                //qm.robot.hideRobot();
+                if(hideRobot){  // We might want to just mute without hiding sometimes and leave it there to enable later
+                    qm.robot.hideRobot();
+                }
                 qm.visualizer.hideVisualizer();
                 qm.mic.onMicDisabled();
             }
@@ -361,10 +363,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qm.visualizer.setVisualizationEnabled(value);
     };
     $scope.robotClick = function(){
-        if($state.current.name === qmStates.chat){
+        if(qm.robot.onRobotClick){
             qm.robot.onRobotClick();
+        } else if($state.current.name === qm.stateNames.chat){
+            qmService.robot.toggleSpeechAndMicEnabled();
         } else {
-            qmService.goToState(qmStates.chat);
+            qmService.goToState(qm.stateNames.chat);
         }
     };
 }]);

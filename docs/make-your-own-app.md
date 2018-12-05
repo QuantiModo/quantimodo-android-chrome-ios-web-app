@@ -1,5 +1,5 @@
 1. Choose a name for your app.  
-1. Create your free account and app in the [Developer Portal](https://app.quantimo.do/builder) to get a 
+1. Create your free account and app in the [Developer Portal](https://builder.quantimo.do) to get a 
 `client id` and `client secret`.  You can use `http://localhost:8100` as the redirect if you don't know what to enter there. 
 1. Replace `your_quantimodo_client_id_here` and `YourAppDisplayNameHere` with your app name within `www/default.config.json`. 
 (This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour, 

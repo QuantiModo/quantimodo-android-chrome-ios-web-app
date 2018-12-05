@@ -28,3 +28,7 @@
 body {
   background-color: black;
 }
+#fc_frame, #fc_frame.fc-widget-normal {
+  left: 15px !important;     // FreshChat on left to avoid FAB overlap
+  z-index: 104 !important;  // Don't cover toasts
+}
