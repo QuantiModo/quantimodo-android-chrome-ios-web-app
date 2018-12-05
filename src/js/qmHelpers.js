@@ -7520,10 +7520,8 @@ var qm = {
         }
     }
 };
-if(typeof qmLog !== "undefined"){
-    qm.qmLog = qmLog;
-    qmLog.qm = qm;
-}
+if(typeof qmLog !== "undefined"){qm.qmLog = qmLog; qmLog.qm = qm;}
+if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qmLog;}
 if(typeof nlp !== "undefined"){qm.nlp = nlp;}
 if(typeof Quantimodo !== "undefined"){qm.Quantimodo = Quantimodo;}
 if(typeof window !== "undefined"){  window.qm = qm; qm.urlHelper.redirectToHttpsIfNecessary();} else {module.exports = qm;}
