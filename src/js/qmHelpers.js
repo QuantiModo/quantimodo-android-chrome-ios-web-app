@@ -711,7 +711,7 @@ var qm = {
             }
             appSettings.designMode = qm.appMode.isBuilder();
             if(!appSettings.appDesign){
-                qmLog.error("No appDesign property!", appSettings);
+                qm.qmLog.error("No appDesign property!", appSettings);
             } else if (!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             function successHandler() {
                 qm.localForage.setItem(qm.items.appSettings, appSettings);
@@ -1256,7 +1256,7 @@ var qm = {
         getAccessTokenFromUrlUserOrStorage: function() {
             var accessToken = qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             if(accessToken){
-                qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned "+accessToken);
+                qm.qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned "+accessToken);
                 return accessToken;
             }
             if(qm.userHelper.getUserFromLocalStorage()){
@@ -1265,7 +1265,7 @@ var qm = {
                     if(!qm.auth.accessTokenIsValid(accessToken)){
                         qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
                     } else {
-                        qmLog.info("getUserFromLocalStorage().accessToken returned "+accessToken);
+                        qm.qmLog.info("getUserFromLocalStorage().accessToken returned "+accessToken);
                         return accessToken;
                     }
                 }
@@ -1275,7 +1275,7 @@ var qm = {
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qm.qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
                 } else {
-                    qmLog.info("qm.storage.getItem(qm.items.accessToken)returned "+accessToken);
+                    qm.qmLog.info("qm.storage.getItem(qm.items.accessToken)returned "+accessToken);
                     return accessToken;
                 }
             }
@@ -7521,7 +7521,7 @@ var qm = {
     }
 };
 if(typeof qmLog !== "undefined"){qm.qmLog = qmLog; qmLog.qm = qm;}
-if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qmLog;}
+//if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qm.qmLog;}  // Need to use qm.qmLog so it's available in node.js modules
 if(typeof nlp !== "undefined"){qm.nlp = nlp;}
 if(typeof Quantimodo !== "undefined"){qm.Quantimodo = Quantimodo;}
 if(typeof window !== "undefined"){  window.qm = qm; qm.urlHelper.redirectToHttpsIfNecessary();} else {module.exports = qm;}
