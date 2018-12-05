@@ -1,85 +1,95 @@
-branches:
-  #only:
-   #- master
-   #- develop
-   #- /^renovate.*$/
-  except:
-    - /^feature.*$/
+#branches:
+#  #only:
+#  #- master
+#  #- develop
+#  #- /^renovate.*$/
+#  except:
+#    - /^feature.*$/
 matrix:
   include:
-#  - env: PLATFORM=ios-11.0
-#    os: osx
-#    osx_image: xcode8.3
-#    language: node_js
-#    node_js: '4.2'
-#    rvm:
-#      - 2.2.5
-  - env: PLATFORM=android-25
-    os: linux
-    sudo: false
-    language: android
-    jdk: oraclejdk8
-    android:
-      components:
-      - tools
-      - platform-tools
-      - tools
-      - build-tools-26.0.0
-      - android-25
-      - extra-google-google_play_services
-      - extra-google-m2repository
-      - extra-android-m2repository
-    addons:
-      apt:
-        sources:
-        - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
-          key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
-        packages:
-        - yarn
-        - jq
-        - imagemagick
-    licenses:
-    - android-sdk-preview-license-.+
-    - android-sdk-license-.+
-    - google-gdk-license-.+
+    #  - env: PLATFORM=ios-11.0
+    #    os: osx
+    #    osx_image: xcode8.3
+    #    language: node_js
+    #    node_js: '4.2'
+    #    rvm:
+    #      - 2.2.5
+    - env: PLATFORM=android-25
+      os: linux
+      sudo: false
+      language: android
+      jdk: oraclejdk8
+      android:
+        components:
+          - tools
+          - platform-tools
+          - tools
+          - build-tools-26.0.0
+          - android-25
+          - extra-google-google_play_services
+          - extra-google-m2repository
+          - extra-android-m2repository
+      addons:
+        apt:
+          sources:
+            - sourceline: deb https://dl.yarnpkg.com/debian/ stable main
+              key_url: https://dl.yarnpkg.com/debian/pubkey.gpg
+          packages:
+            - yarn
+            - jq
+            - imagemagick
+      licenses:
+        - android-sdk-preview-license-.+
+        - android-sdk-license-.+
+        - google-gdk-license-.+
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
-- rm -rf $HOME/.gradle/caches/3.5/fileHashes/
-- rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -rf $HOME/.gradle/caches/3.5/fileHashes/
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - bundler
-  - $HOME/.gradle/caches/
-  #- $HOME/.gradle/wrapper/ # I think this causes Exception in thread "main" java.io.FileNotFoundException: /home/travis/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3-all.zip (Permission denied)
-  - $HOME/Library/Caches/Yarn/v1/
-  - $HOME/.cache/yarn/v1/
+    - bundler
+    - $HOME/.gradle/caches/
+    #- $HOME/.gradle/wrapper/ # I think this causes Exception in thread "main" java.io.FileNotFoundException: /home/travis/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3-all.zip (Permission denied)
+    - $HOME/Library/Caches/Yarn/v1/
+    - $HOME/.cache/yarn/v1/
 before_install:
-- echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
-- bundle install
-- bundle update
-- export LANG=en_US.UTF-8
-- nvm install 8
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
-- yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
+  - echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
+  - bundle install
+  - bundle update
+  - export LANG=en_US.UTF-8
+  - nvm install 8
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
+  - yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
 script:
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
-- yarn install
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
-#- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
+  - yarn install
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp buildAndroidAfterCleaning; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then source tests/test_chcp.sh; fi
+
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
+
+  #- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
+  #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
-  - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    - JAVA_HOME=/usr/lib/jvm/java-8-oracle
 notifications:
-    webhooks: https://www.travisbuddy.com/
-    email:
-        recipients:
-            - mike@quantimo.do
-        on_success: never
-        on_failure: always
+  webhooks: https://www.travisbuddy.com/
+  email:
+    recipients:
+      - mike@quantimo.do
+    on_success: never
+    on_failure: always
 #deploy:
 #  provider: releases
 #  api_key:

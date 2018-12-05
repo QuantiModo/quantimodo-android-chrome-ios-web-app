@@ -5,10 +5,10 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
       <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
 <!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
-    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' *.quantimo.do data: https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;">
+    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' *.quantimo.do qm-cordova-hot-code-push.s3.amazonaws.com data: https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;">
     <title></title>
     <link href="css/app.css" rel="stylesheet">
-    <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
+    <!-- Delete me sometime <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
@@ -34,7 +34,7 @@
     <script src="js/ionIcons.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
-      <script src="data/qmStaticData.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
+    <script src="data/qmStaticData.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
     <script src="js/qmChrome.js"></script>
     <script src="js/app.js"></script>
     <script src="js/services/qmLogService.js"></script>
@@ -77,7 +77,18 @@
     <script src="js/controllers/feedCtrl.js"></script>
     <script src="js/directives.js"></script>
       <!-- endbuild -->
-    <script src="cordova.js"></script>   <!-- cordova script (this will be a 404 during development) -->
+    <script>
+        if (typeof qm === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-head-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>
+    <!-- cordova.js placeholder -->   <!-- cordova script (this will be a 404 during development) -->
+    <script src="https://wchat.freshchat.com/js/widget.js"></script>
 <!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
           moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
       </script>-->
@@ -121,22 +132,32 @@
     <script src="lib/ngFitText/dist/ng-FitText.min.js"></script>
     <script src="lib/underscore/underscore-min.js"></script>
     <script src="lib/annyang/dist/annyang.min.js"></script>
+    <script src="lib/pusher-js/dist/web/pusher.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/speechkitt.min.js"></script>-->
     <script src="lib/svg-morpheus/compile/minified/svg-morpheus.js"></script>
     <script src="lib/angular-material-icons/angular-material-icons.min.js"></script>
+    <script src="lib/compromise/builds/compromise.js"></script>
+    <script src="lib/chat-engine/dist/chat-engine.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="lib/pouchdb-upsert/dist/pouchdb.upsert.js"></script>
+    <script src="lib/quagga/dist/quagga.js"></script>
     <!--<script src="js/responsivevoice.js"></script>-->
     <!--<script src='https://connect.humanapi.co/connect.js'></script>-->
     <!--<script src='https://app.quantimo.do/api/v1/connect.js'></script>-->
     <!-- I think we're already including UserVoice in the JavaScript <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>-->
     <!-- endbuild -->
+    <script>
+        if (typeof Pusher === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-body-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>
+    <script src="lib/Bravey/build/bravey.js"></script> <!-- Bravey produces errors when minified for some reason -->
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="lib/compromise/builds/compromise.js"></script>
-    <script src="lib/Bravey/build/bravey.js"></script>
-    <script src="lib/chat-engine/dist/chat-engine.js"></script>
-    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="lib/pouchdb-upsert/dist/pouchdb.upsert.js"></script>
-    <script src="lib/quagga/dist/quagga.js"></script>
-    <!--<script src="lib/pusher-js/dist/web/pusher.js"></script>-->
     <!-- Load Facebook SDK for JavaScript -->
 <!--    <div id="fb-root"></div>
     <script>(function(d, s, id) {
@@ -152,5 +173,11 @@
          attribution=setup_tool
          page_id="348407735253769">
     </div>-->
+    <script>
+        window.fcWidget.init({
+            token: "c76171b8-cf2e-4fdd-81f3-6cd409d59153",
+            host: "https://wchat.freshchat.com"
+        });
+    </script>
   </body>
 </html>
