@@ -160,7 +160,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
             $scope.state.variableSearchResults = variables;
-            qmLog.info('variable search results', null, variables);
+            var count = (variables) ? variables.length : 0;
+            qmLog.info(count+ ' variable search results from '+$scope.state.variableSearchQuery.name +" search");
             $scope.state.searching = false;
         });
     }
