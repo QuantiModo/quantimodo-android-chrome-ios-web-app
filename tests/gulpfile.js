@@ -168,8 +168,7 @@ var qmTests = {
             GhostInspector.executeSuite(suiteId, options, function (err, results, passing) {
                 if (err) return console.log('Error: ' + err);
                 console.log(passing === true ? 'Passed' : 'Failed');
-                console.log(results);
-                if (err) throw test.name + " Error: " + err;
+                if (err) throw testUrl + " Error: " + err;
                 if(!passing){
                     for (var i = 0; i < results.console.length; i++) {
                         var logObject = results.console[i];
@@ -178,10 +177,10 @@ var qmTests = {
                             console.error(logObject.url);
                         }
                     }
-                    console.error(test.name + " failed: " + testUrl);
+                    console.error(testUrl + " failed: " + testUrl);
                     process.exit(1);
                 }
-                console.log(test.name + ' ' + ' passed! :D');
+                console.log(testUrl + ' ' + ' passed! :D');
                 callback();
             });
         },
