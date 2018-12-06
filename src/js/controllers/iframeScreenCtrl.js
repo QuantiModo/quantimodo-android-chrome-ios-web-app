@@ -57,7 +57,7 @@ angular.module('starter')
         qmService.hideLoader();
     }, function(){
         qmLogService.debug('iframeScreen: No access token. Need to log in.', null);
-        qmService.login.sendToLoginIfNecessaryAndComeBack();
+        qmService.login.sendToLoginIfNecessaryAndComeBack("No access token or user in "+$state.current.name);
         qmService.hideLoader();
     });
 }]);

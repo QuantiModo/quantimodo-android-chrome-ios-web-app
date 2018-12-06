@@ -13,7 +13,7 @@ angular.module('starter').controller('OnboardingCtrl',
         setRequireUpgradesInOnboarding();
         qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         qmService.navBar.hideNavigationMenu();
-        if(qmService.login.sendToLoginIfNecessaryAndComeBack(qm.stateNames.onboarding)){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack("No user in "+$state.current.name, qm.stateNames.onboarding)){ return; }
         if(!qm.getUser()){qmLog.debug("No user in onboarding!")}
         qmService.setupOnboardingPages();
         qmService.hideLoader();
