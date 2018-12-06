@@ -3524,7 +3524,7 @@ gulp-angular-templatecache@2.2.5:
     lodash.template "^4.4.0"
     through2 "^2.0.3"
 
-gulp-cdnizer@^2.0.1:
+gulp-cdnizer@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/gulp-cdnizer/-/gulp-cdnizer-2.0.1.tgz#401c159ab0ec94dc57bf0fed27fbbdb23744f754"
   dependencies:
