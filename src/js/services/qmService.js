@@ -262,7 +262,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                 if(errorMessage){
                     if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
-                        qm.auth.setAfterLoginGoToUrlAndSendToLogin();
+                        qm.auth.setAfterLoginGoToUrlAndSendToLogin(title + ": "+errorMessage);
                     } else {
                         qmService.showMaterialAlert(title, errorMessage);
                     }
@@ -1126,13 +1126,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         login: {
-            completelyResetAppStateAndSendToLogin: function(comeBackAfterLogin){
-                qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin', null);
+            completelyResetAppStateAndSendToLogin: function(reason){
+                qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin');
                 if(comeBackAfterLogin){qm.auth.setAfterLoginGoToUrl();}
                 qmService.completelyResetAppState();
-                qm.auth.sendToLogin();
+                qm.auth.sendToLogin(reason);
             },
-            sendToLoginIfNecessaryAndComeBack: function(afterLoginGoToState, afterLoginGoToUrl){
+            sendToLoginIfNecessaryAndComeBack: function(reason, afterLoginGoToState, afterLoginGoToUrl){
                 qmLog.authDebug('Called qmService.login.sendToLoginIfNecessaryAndComeBack');
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
@@ -1143,7 +1143,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         qm.auth.setAfterLoginGoToUrl(afterLoginGoToUrl);
                     }
-                    qm.auth.sendToLogin();
+                    qm.auth.sendToLogin(reason);
                     return true;
                 }
                 return false;
@@ -3385,7 +3385,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401 || (response.text && response.text.indexOf('expired') !== -1)){
             qmService.auth.handleExpiredAccessTokenResponse(response.body);
-            if(!options || !options.doNotSendToLogin){qm.auth.setAfterLoginGoToUrlAndSendToLogin();}
+            if(!options || !options.doNotSendToLogin){qm.auth.setAfterLoginGoToUrlAndSendToLogin("401 response from "+JSON.stringify(response));}
         } else {
             var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
             qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);

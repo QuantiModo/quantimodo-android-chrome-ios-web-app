@@ -58,7 +58,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.variableCategories = variableCategories;
         });
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        qmService.login.sendToLoginIfNecessaryAndComeBack();
+        qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in "+$state.current.name);
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($scope.state.trackingReminder && $scope.state.trackingReminder.variableCategoryName){ $stateParams.variableCategoryName = $scope.state.trackingReminder.variableCategoryName; }
         $scope.stateParams = $stateParams;

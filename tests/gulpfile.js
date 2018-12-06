@@ -1,6 +1,7 @@
 if(!process.env.GI_API_KEY){throw "Please set GI_API_KEY env from https://app.ghostinspector.com/account"}
 console.info("Using GI_API_KEY starting with "+process.env.GI_API_KEY.substr(0, 4)+'...');
 //var localforage = require('./../src/lib/localforage/dist/localforage');
+var argv = require('./../node_modules/yargs').argv;
 var assert = require('./../node_modules/power-assert');
 var GhostInspector = require('./../node_modules/ghost-inspector')(process.env.GI_API_KEY);
 var gulp = require('./../node_modules/gulp');
@@ -42,6 +43,7 @@ var qmTests = {
         if(params && params.START_URL){startUrl = params.START_URL;}
         if(process.env.START_URL){startUrl = process.env.START_URL;}
         if(process.env.DEPLOY_PRIME_URL){startUrl = process.env.DEPLOY_PRIME_URL;}
+        if(argv.startUrl){startUrl = argv.startUrl;}
         if(startUrl.indexOf('https') === -1){startUrl = "https://"+startUrl;}
         return startUrl;
     },
@@ -65,6 +67,7 @@ var qmTests = {
         var params = qmTests.getTestParams();
         if(params && params.API_URL){return params.API_URL;}
         if(process.env.API_URL){return process.env.API_URL;}
+        if(argv.apiUrl){return argv.apiUrl;}
         return 'api.quantimo.do';
     },
     tests: {
@@ -122,28 +125,25 @@ var qmTests = {
             var expectedParameters = {variableName: 'Overall Mood', value: 1};
             qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, callback);
         },
-        executeTests: function(tests, callback, startUrl){
+        getOptions: function(startUrl){
             var options = {};
             options.startUrl = startUrl || qmTests.getStartUrl();
             options.apiUrl = qmTests.getApiUrl();
             if(qmTests.getSha()){options.sha = qmTests.getSha();}
             if(qmTests.getStatusesUrl()){options.statuses_url = qmTests.getStatusesUrl();}
+            return options;
+        },
+        executeTests: function(tests, callback, startUrl){
+            var options = qmTests.tests.getOptions(startUrl);
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
-            GhostInspector.executeTest(test._id, options, function (err, results, passing) {
+            GhostInspector.executeTest(test._id, options, function (err, testResults, passing) {
                 if (err) throw test.name + " Error: " + err;
                 if(!passing){
-                    for (var i = 0; i < results.console.length; i++) {
-                        var logObject = results.console[i];
-                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
-                            console.error(logObject.output);
-                            console.error(logObject.url);
-                        }
-                    }
-                    throw test.name + " failed: " + testUrl;
+                    qmTests.outputErrorsForTest(testResults);
                 }
                 console.log(test.name + ' ' + ' passed! :D');
                 if (tests && tests.length) {
@@ -153,28 +153,50 @@ var qmTests = {
                 }
             });
         },
-        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
-            GhostInspector.getSuiteTests(suiteId, function (err, tests) {
-                if (err) return console.log('Error: ' + err);
-                if(failedOnly){
-                    var failedTests = tests.filter(function(test){
-                        return !test.passing;
-                    });
-                    if(!failedTests || !failedTests.length){
-                        qmLog.info("No failed tests!");
-                        if(callback){callback();}
-                        return;
-                    } else {
-                        tests = failedTests;
+        executeSuite: function(suiteId, callback, startUrl){
+            var options = qmTests.tests.getOptions(startUrl);
+            console.info('Testing suite on startUrl '+ options.startUrl +'...');
+            var suiteUrl = "https://app.ghostinspector.com/suites/"+suiteId;
+            console.info("Check progress at " + suiteUrl +" ");
+            GhostInspector.executeSuite(suiteId, options, function (err, suiteResults, passing) {
+                if (err) throw suiteUrl + " Error: " + err;
+                console.log(passing === true ? 'Passed' : 'Failed');
+                if(!passing){
+                    for(var i = 0; i < suiteResults.length; i++){
+                        var testResults = suiteResults[i];
+                        qmTests.outputErrorsForTest(testResults);
                     }
                 }
-                for (var i = 0; i < tests.length; i++) {
-                    var test = tests[i];
-                    var passFail = (test.passing) ? 'passed' : 'failed';
-                    qmLog.info(test.name + " recently " + passFail);
-                }
-                qmTests.tests.executeTests(tests, callback, startUrl);
+                console.log(suiteUrl + ' ' + ' passed! :D');
+                callback();
             });
+        },
+        getSuiteTestsAndExecute: function(suiteId, failedOnly, callback, startUrl){
+            if(!failedOnly){
+                qmTests.tests.executeSuite(suiteId, callback, startUrl);
+            } else {
+                GhostInspector.getSuiteTests(suiteId, function (err, tests) {
+                    if (err) return console.log('Error: ' + err);
+                    if(failedOnly){
+                        var failedTests = tests.filter(function(test){
+                            return !test.passing;
+                        });
+                        if(!failedTests || !failedTests.length){
+                            qmLog.info("No failed tests!");
+                            if(callback){callback();}
+                            return;
+                        } else {
+                            tests = failedTests;
+                        }
+                    }
+                    for (var i = 0; i < tests.length; i++) {
+                        var test = tests[i];
+                        var passFail = (test.passing) ? 'passed' : 'failed';
+                        qmLog.info(test.name + " recently " + passFail);
+                    }
+                    qmTests.tests.executeTests(tests, callback, startUrl);
+                });
+            }
         },
         commonVariables: {
             getCar: function (callback) {
@@ -215,8 +237,28 @@ var qmTests = {
                         });
                     });
                 });
-            },
+            }
         }
+    },
+    logBugsnagLink: function(suite, start, end){
+        var query = "filters[event.since][0]="+
+            start + "&filters[error.status][0]=open&filters[event.before][0]="+
+            end +"&sort=last_seen";
+        console.error(suite.toUpperCase()+" errors: https://app.bugsnag.com/quantimodo/"+suite+"/errors?"+ query);
+    },
+    outputErrorsForTest: function(testResults){
+        var name = testResults.testName || testResults.name;
+        console.error(name + " FAILED: https://app.ghostinspector.com/results/" + testResults._id);
+        qmTests.logBugsnagLink('ionic', testResults.dateExecutionStarted, testResults.dateExecutionFinished);
+        qmTests.logBugsnagLink('slim-api', testResults.dateExecutionStarted, testResults.dateExecutionFinished);
+        console.error("=== CONSOLE ERRORS ====");
+        for (var i = 0; i < testResults.console.length; i++) {
+            var logObject = testResults.console[i];
+            if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
+                console.error(logObject.output + " at "+ logObject.url);
+            }
+        }
+        process.exit(1);
     }
 };
 gulp.task('oauth-disabled-utopia', function (callback) {
@@ -251,7 +293,7 @@ gulp.task('api-staging-failed', function (callback) {
 });
 gulp.task('gi-all', function (callback) {
     qmTests.setTestParams(this._params);
-    qmReq.postToGhostInspector('suites/56f5b92519d90d942760ea96', callback);
+    qmTests.tests.executeSuite('56f5b92519d90d942760ea96', callback);
     //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {

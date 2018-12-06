@@ -114,15 +114,16 @@ var qm = {
                 }
                 return false;
             }
-            var message = "API Request: " + functionName;
-            if(requestParams.reason){message += " because " + requestParams.reason;}
-            delete requestParams.reason;
-            qm.qmLog.info(message, requestParams);
-            qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName});
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
             quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            var message = "API Request to "+qm.api.getBaseUrl()+" for " + functionName;
+            if(requestParams.reason){message += " because " + requestParams.reason;}
+            if(qm.qmLog.isDebugMode()){message += ' with token: '+qm.auth.getAccessTokenFromUrlUserOrStorage();}
+            delete requestParams.reason;
+            qm.qmLog.info(message, requestParams);
+            qm.api.requestLog.push({time: qm.timeHelper.getCurrentLocalDateAndTime(), name: functionName, message: message});
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
@@ -334,7 +335,7 @@ var qm = {
             if(qm.appMode.isBuilder()){return null;}
             var subDomain = qm.urlHelper.getSubDomain();
             subDomain = subDomain.replace('qm-', '');
-            if(subDomain === 'web' || subDomain === 'staging-web'){return null;}
+            if(subDomain === 'web' || subDomain === 'staging-web' || subDomain === 'dev-web'){return null;}
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
                 qm.qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
@@ -393,6 +394,7 @@ var qm = {
         },
         getBaseUrl: function () {
             var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
+            if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, apiUrl);}
             if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
             if(!apiUrl){
@@ -699,12 +701,18 @@ var qm = {
             }
         },
         processAndSaveAppSettings: function(appSettings, callback){
+            if(typeof appSettings === "string"){
+                qm.qmLog.error(appSettings);
+                return false;
+            }
             if(!appSettings){
                 qm.qmLog.error("Nothing given to processAndSaveAppSettings!");
                 return false;
             }
-            appSettings.designMode = qm.appMode.isBuilder();;
-            if(!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+            appSettings.designMode = qm.appMode.isBuilder();
+            if(!appSettings.appDesign){
+                qm.qmLog.error("No appDesign property!", appSettings);
+            } else if (!appSettings.appDesign.ionNavBarClass){ appSettings.appDesign.ionNavBarClass = "bar-positive"; }
             function successHandler() {
                 qm.localForage.setItem(qm.items.appSettings, appSettings);
                 if(callback){callback(appSettings);}
@@ -1246,16 +1254,20 @@ var qm = {
             }
         },
         getAccessTokenFromUrlUserOrStorage: function() {
-            if(qm.auth.getAndSaveAccessTokenFromCurrentUrl()){
-                return qm.auth.getAndSaveAccessTokenFromCurrentUrl();
+            var accessToken = qm.auth.getAndSaveAccessTokenFromCurrentUrl();
+            if(accessToken){
+                qm.qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned "+accessToken);
+                return accessToken;
             }
-            var accessToken;
-            if(qm.userHelper.getUserFromLocalStorage() && qm.userHelper.getUserFromLocalStorage().accessToken){
+            if(qm.userHelper.getUserFromLocalStorage()){
                 accessToken = qm.userHelper.getUserFromLocalStorage().accessToken;
-                if(!qm.auth.accessTokenIsValid(accessToken)){
-                    qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
-                } else {
-                    return accessToken;
+                if(accessToken){
+                    if(!qm.auth.accessTokenIsValid(accessToken)){
+                        qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: "+ accessToken);
+                    } else {
+                        qm.qmLog.info("getUserFromLocalStorage().accessToken returned "+accessToken);
+                        return accessToken;
+                    }
                 }
             }
             accessToken = qm.storage.getItem(qm.items.accessToken);
@@ -1263,6 +1275,7 @@ var qm = {
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qm.qmLog.error("accessTokenFromUrl is invalid: "+ accessToken);
                 } else {
+                    qm.qmLog.info("qm.storage.getItem(qm.items.accessToken)returned "+accessToken);
                     return accessToken;
                 }
             }
@@ -1462,24 +1475,26 @@ var qm = {
             qm.qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
             qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
         },
-        sendToLogin: function () {
-            if(qm.urlHelper.getParam('access_token')){
+        sendToLogin: function (reason) {
+            qm.qmLog.info("Sending to login because "+reason);
+            var urlToken = qm.urlHelper.getParam('access_token');
+            if(urlToken){
                 if(!qm.auth.getAccessTokenFromCurrentUrl()){
                     qm.qmLog.error("Not detecting snake case access_token", {}, qm.qmLog.getStackTrace());
                 }
-                qm.qmLog.error("Why are we sending to login if we have an access token?", {}, qm.qmLog.getStackTrace());
+                qm.qmLog.error("Sending to login even though we have an url access token ("+urlToken+") because " + reason ,
+                    {}, qm.qmLog.getStackTrace());
                 return;
             }
-            qm.qmLog.authDebug('Sending to app.login', null);
-            qm.urlHelper.goToUrl('#/app/login');
+            qm.urlHelper.goToUrl('#/app/login', reason);
         },
-        setAfterLoginGoToUrlAndSendToLogin: function (){
+        setAfterLoginGoToUrlAndSendToLogin: function (reason){
             if(qm.urlHelper.indexOfCurrentUrl('login') !== -1){
                 qm.qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
                 return;
             }
             qm.auth.setAfterLoginGoToUrl();
-            qm.auth.sendToLogin();
+            qm.auth.sendToLogin(reason);
         },
         handle401Response: function(request, options, headers) {
             options = options || {};
@@ -1488,7 +1503,7 @@ var qm = {
                 JSON.stringify(request), null, options.stackTrace);
             qm.qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
-            qm.auth.setAfterLoginGoToUrlAndSendToLogin();
+            qm.auth.setAfterLoginGoToUrlAndSendToLogin("got 401 response from "+JSON.stringify(request));
         }
     },
     buildInfo: {},
@@ -6489,9 +6504,9 @@ var qm = {
             if(!qm.platform.getWindow()){return false;}
             return window.location.origin + window.location.pathname;
         },
-        goToUrl: function(url){
+        goToUrl: function(url, reason){
             if(!qm.platform.getWindow()){return false;}
-            qm.qmLog.info("Going to "+url);
+            qm.qmLog.info("Going to "+url+" because "+reason);
             window.location.href = url;
         },
         getCurrentUrl: function(){
@@ -6768,23 +6783,27 @@ var qm = {
         },
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(successHandler, errorHandler){
             if(!qm.getUser()){
-                qm.qmLog.info("No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables");
+                var message = "No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables";
+                qm.qmLog.info(message);
+                if(errorHandler){errorHandler(message);}
                 return;
             }
             qm.reminderHelper.getNumberOfVariablesWithLocalReminders(function (numberOfVariablesWithReminders) {
-                if(numberOfVariablesWithReminders){
-                    qm.userVariables.getFromLocalStorage({}, function (userVariables) {
-                        var numberOfLocalVariables = 0;
-                        if(userVariables){numberOfLocalVariables = userVariables.length;}
-                        if(numberOfVariablesWithReminders && numberOfLocalVariables < numberOfVariablesWithReminders){
-                            var limit = 100;
-                            if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
-                            qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
-                        } else {
-                            if(successHandler){successHandler(userVariables);}
-                        }
-                    });
+                if(!numberOfVariablesWithReminders){
+                    if(successHandler){successHandler();}
+                    return;
                 }
+                qm.userVariables.getFromLocalStorage({}, function (userVariables) {
+                    var numberOfLocalVariables = 0;
+                    if(userVariables){numberOfLocalVariables = userVariables.length;}
+                    if(numberOfVariablesWithReminders && numberOfLocalVariables < numberOfVariablesWithReminders){
+                        var limit = 100;
+                        if(numberOfVariablesWithReminders > limit){limit = numberOfVariablesWithReminders + 1;}
+                        qm.userVariables.getFromApi({limit: limit}, successHandler, errorHandler);
+                    } else {
+                        if(successHandler){successHandler(userVariables);}
+                    }
+                });
             })
         }
     },
@@ -7503,10 +7522,8 @@ var qm = {
         }
     }
 };
-if(typeof qmLog !== "undefined"){
-    qm.qmLog = qmLog;
-    qmLog.qm = qm;
-}
+if(typeof qmLog !== "undefined"){qm.qmLog = qmLog; qmLog.qm = qm;}
+//if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qm.qmLog;}  // Need to use qm.qmLog so it's available in node.js modules
 if(typeof nlp !== "undefined"){qm.nlp = nlp;}
 if(typeof Quantimodo !== "undefined"){qm.Quantimodo = Quantimodo;}
 if(typeof window !== "undefined"){  window.qm = qm; qm.urlHelper.redirectToHttpsIfNecessary();} else {module.exports = qm;}
