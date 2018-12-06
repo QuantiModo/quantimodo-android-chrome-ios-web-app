@@ -1475,24 +1475,26 @@ var qm = {
             qm.qmLog.debug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
             qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
         },
-        sendToLogin: function () {
-            if(qm.urlHelper.getParam('access_token')){
+        sendToLogin: function (reason) {
+            qm.qmLog.info("Sending to login because "+reason);
+            var urlToken = qm.urlHelper.getParam('access_token');
+            if(urlToken){
                 if(!qm.auth.getAccessTokenFromCurrentUrl()){
                     qm.qmLog.error("Not detecting snake case access_token", {}, qm.qmLog.getStackTrace());
                 }
-                qm.qmLog.error("Why are we sending to login if we have an access token?", {}, qm.qmLog.getStackTrace());
+                qm.qmLog.error("Sending to login even though we have an url access token ("+urlToken+") because " + reason ,
+                    {}, qm.qmLog.getStackTrace());
                 return;
             }
-            qm.qmLog.authDebug('Sending to app.login', null);
-            qm.urlHelper.goToUrl('#/app/login');
+            qm.urlHelper.goToUrl('#/app/login', reason);
         },
-        setAfterLoginGoToUrlAndSendToLogin: function (){
+        setAfterLoginGoToUrlAndSendToLogin: function (reason){
             if(qm.urlHelper.indexOfCurrentUrl('login') !== -1){
                 qm.qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
                 return;
             }
             qm.auth.setAfterLoginGoToUrl();
-            qm.auth.sendToLogin();
+            qm.auth.sendToLogin(reason);
         },
         handle401Response: function(request, options, headers) {
             options = options || {};
@@ -1501,7 +1503,7 @@ var qm = {
                 JSON.stringify(request), null, options.stackTrace);
             qm.qmLog.debug('HEADERS: ', headers, options.stackTrace);
             qm.auth.deleteAllAccessTokens();
-            qm.auth.setAfterLoginGoToUrlAndSendToLogin();
+            qm.auth.setAfterLoginGoToUrlAndSendToLogin("got 401 response from "+JSON.stringify(request));
         }
     },
     buildInfo: {},
@@ -6502,9 +6504,9 @@ var qm = {
             if(!qm.platform.getWindow()){return false;}
             return window.location.origin + window.location.pathname;
         },
-        goToUrl: function(url){
+        goToUrl: function(url, reason){
             if(!qm.platform.getWindow()){return false;}
-            qm.qmLog.info("Going to "+url);
+            qm.qmLog.info("Going to "+url+" because "+reason);
             window.location.href = url;
         },
         getCurrentUrl: function(){
