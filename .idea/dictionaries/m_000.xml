@@ -9,6 +9,9 @@
       <w>chcpbuild</w>
       <w>cordova</w>
       <w>cortana</w>
+      <w>customerchat</w>
+      <w>datetimepicker</w>
+      <w>endbuild</w>
       <w>envs</w>
       <w>falsey</w>
       <w>fastlane</w>
@@ -18,7 +21,9 @@
       <w>heroku</w>
       <w>hhmmss</w>
       <w>highchart</w>
+      <w>highstock</w>
       <w>iframe</w>
+      <w>jssdk</w>
       <w>medi</w>
       <w>medimodo</w>
       <w>minified</w>
@@ -26,12 +31,16 @@
       <w>moodi</w>
       <w>onboarded</w>
       <w>onboarding</w>
+      <w>pouchdb</w>
+      <w>quagga</w>
       <w>quantimo</w>
       <w>quantimodo</w>
       <w>siri</w>
       <w>splashscreen</w>
+      <w>timepicker</w>
       <w>truthy</w>
       <w>uglify</w>
+      <w>upsert</w>
       <w>webhook</w>
       <w>xwalk</w>
     </words>
