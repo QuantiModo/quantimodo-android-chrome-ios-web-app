@@ -140,17 +140,10 @@ var qmTests = {
             qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
-            GhostInspector.executeTest(test._id, options, function (err, results, passing) {
+            GhostInspector.executeTest(test._id, options, function (err, testResults, passing) {
                 if (err) throw test.name + " Error: " + err;
                 if(!passing){
-                    for (var i = 0; i < results.console.length; i++) {
-                        var logObject = results.console[i];
-                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
-                            console.error(logObject.output);
-                            console.error(logObject.url);
-                        }
-                    }
-                    throw test.name + " failed: " + testUrl;
+                    qmTests.outputErrorsForTest(testResults);
                 }
                 console.log(test.name + ' ' + ' passed! :D');
                 if (tests && tests.length) {
@@ -162,25 +155,19 @@ var qmTests = {
         },
         executeSuite: function(suiteId, callback, startUrl){
             var options = qmTests.tests.getOptions(startUrl);
-            qmLog.info('Testing suite on startUrl '+ options.startUrl +'...');
-            var testUrl = "https://app.ghostinspector.com/suites/"+suiteId;
-            qmLog.info("Check progress at " + testUrl +" ");
-            GhostInspector.executeSuite(suiteId, options, function (err, results, passing) {
-                if (err) return console.log('Error: ' + err);
+            console.info('Testing suite on startUrl '+ options.startUrl +'...');
+            var suiteUrl = "https://app.ghostinspector.com/suites/"+suiteId;
+            console.info("Check progress at " + suiteUrl +" ");
+            GhostInspector.executeSuite(suiteId, options, function (err, suiteResults, passing) {
+                if (err) throw suiteUrl + " Error: " + err;
                 console.log(passing === true ? 'Passed' : 'Failed');
-                if (err) throw testUrl + " Error: " + err;
                 if(!passing){
-                    for (var i = 0; i < results.console.length; i++) {
-                        var logObject = results.console[i];
-                        if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
-                            console.error(logObject.output);
-                            console.error(logObject.url);
-                        }
+                    for(var i = 0; i < suiteResults.length; i++){
+                        var testResults = suiteResults[i];
+                        qmTests.outputErrorsForTest(testResults);
                     }
-                    console.error(testUrl + " failed: " + testUrl);
-                    process.exit(1);
                 }
-                console.log(testUrl + ' ' + ' passed! :D');
+                console.log(suiteUrl + ' ' + ' passed! :D');
                 callback();
             });
         },
@@ -252,6 +239,26 @@ var qmTests = {
                 });
             }
         }
+    },
+    logBugsnagLink: function(suite, start, end){
+        var query = "filters[event.since][0]="+
+            start + "&filters[error.status][0]=open&filters[event.before][0]="+
+            end +"&sort=last_seen";
+        console.error(suite.toUpperCase()+" errors: https://app.bugsnag.com/quantimodo/"+suite+"/errors?"+ query);
+    },
+    outputErrorsForTest: function(testResults){
+        var name = testResults.testName || testResults.name;
+        console.error(name + " FAILED: https://app.ghostinspector.com/results/" + testResults._id);
+        qmTests.logBugsnagLink('ionic', testResults.dateExecutionStarted, testResults.dateExecutionFinished);
+        qmTests.logBugsnagLink('slim-api', testResults.dateExecutionStarted, testResults.dateExecutionFinished);
+        console.error("=== CONSOLE ERRORS ====");
+        for (var i = 0; i < testResults.console.length; i++) {
+            var logObject = testResults.console[i];
+            if(logObject.error || logObject.output.toLowerCase().indexOf("error") !== -1){
+                console.error(logObject.output + " at "+ logObject.url);
+            }
+        }
+        process.exit(1);
     }
 };
 gulp.task('oauth-disabled-utopia', function (callback) {
