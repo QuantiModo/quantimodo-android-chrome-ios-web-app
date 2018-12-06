@@ -36,7 +36,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
 		$scope.loading = true;
-        if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in "+$state.current.name)){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
         if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
