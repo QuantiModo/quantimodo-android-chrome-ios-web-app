@@ -30,7 +30,6 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         }, function(){
             populateUserVariables();
         });
-        //populateCommonVariables();
         setHelpText();
         qmService.hideLoader();
         var upcTest = false;
@@ -160,12 +159,15 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
             $scope.state.variableSearchResults = variables;
-            qmLog.info('variable search results', null, variables);
+            var count = (variables) ? variables.length : 0;
+            qmLog.info(count+ ' variable search results from '+$scope.state.variableSearchQuery.name +" search");
             $scope.state.searching = false;
         });
     }
     function getVariableSearchParameters(){
         var scope = $scope.state.variableSearchParameters;
+        // $stateParams.variableSearchParameters.searchPhrase is getting populated somehow and is not being updated
+        if($scope.state.variableSearchQuery.name){delete $stateParams.variableSearchParameters.searchPhrase;}
         var state = $stateParams.variableSearchParameters;
         return qm.objectHelper.copyPropertiesFromOneObjectToAnother(scope, state, false);
     }
@@ -184,24 +186,6 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             populateUserVariables();
         }
     };
-    var populateCommonVariables = function(){
-        if(!getVariableSearchParameters().includePublic) {return;}
-        if($scope.state.variableSearchQuery.name.length > 2){return;}
-        $scope.state.showAddVariableButton = false;
-        if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        var params = JSON.parse(JSON.stringify(getVariableSearchParameters()));
-        params.commonOnly = true;
-        qm.commonVariablesHelper.getFromLocalStorageOrApi(params, function (commonVariables) {
-            if(commonVariables && commonVariables.length > 0){
-                if($scope.state.variableSearchQuery.name.length < 3) {
-                    if($scope.state.variableSearchResults){commonVariables = $scope.state.variableSearchResults.concat(commonVariables);}
-                    addVariablesToScope(commonVariables)
-                }
-            }
-        }, function (error) {
-            qmLog.error(error);
-        });
-    };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
@@ -214,11 +198,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     addVariablesToScope(userVariables);
                 }
             } else {
-                if(!getVariableSearchParameters().includePublic){
-                    $scope.state.noVariablesFoundCard.show = true;
-                    $scope.state.searching = false;
-                }
-                if($scope.state.variableSearchResults.length < 1 && getVariableSearchParameters().includePublic){populateCommonVariables();}
+                $scope.state.noVariablesFoundCard.show = true;
+                $scope.state.searching = false;
             }
         }, function (error) {qmLog.error(error);});
     };

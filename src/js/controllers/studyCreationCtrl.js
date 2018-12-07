@@ -11,7 +11,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         typesDescription: ""
     };
     $scope.$on('$ionicView.beforeEnter', function(){
-        if(!qm.getUser()){qm.auth.setAfterLoginGoToUrlAndSendToLogin();}
+        if(!qm.getUser()){qm.auth.setAfterLoginGoToUrlAndSendToLogin("no user in study creation state beforeEnter");}
         if($stateParams.causeVariable){$scope.state.causeVariable = $stateParams.causeVariable;}
         if($stateParams.effectVariable){$scope.state.effectVariable = $stateParams.effectVariable;}
         qm.apiHelper.getPropertyDescription('StudyCreationBody', 'type', function (description) {

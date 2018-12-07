@@ -29,11 +29,11 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
 			return;
 		}
 		if(!$rootScope.user){
-            qmService.login.sendToLoginIfNecessaryAndComeBack();
+            qmService.login.sendToLoginIfNecessaryAndComeBack("No $rootScope.user in "+$state.current.name);
 		}
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
-    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.login.completelyResetAppStateAndSendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(reason){qmService.login.completelyResetAppStateAndSendToLogin(reason);};
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you."+

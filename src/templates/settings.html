@@ -6,7 +6,7 @@
             <a class="item"><i class="icon ion-ios-color-wand"></i> &nbsp; {{appSettings.appDisplayName}} Plus</a>
         </div>
         <div id="logout" class="list card">
-            <a href="" ng-show="!user" ng-click="completelyResetAppStateAndSendToLogin()" class="item ">
+            <a href="" ng-show="!user" ng-click="completelyResetAppStateAndSendToLogin('clicked sign in in settings page')" class="item ">
               Account <p>Tap to sign in</p>
             </a>
             <a id="userName" href="" ng-show="user" ng-click="logout($event)" class="item ">

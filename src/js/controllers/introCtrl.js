@@ -31,7 +31,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             if($state.current.name.indexOf('intro') !== -1){
                 function goToLoginConfigurationOrOnboarding(){
                     // Called to navigate to the main app
-                    if(qm.auth.sendToLogin()){ return; }
+                    if(qm.auth.sendToLogin("Intro has completed")){ return; }
                     if(qm.platform.isDesignMode()){
                         qmService.goToState(qm.stateNames.configuration);
                     } else {
