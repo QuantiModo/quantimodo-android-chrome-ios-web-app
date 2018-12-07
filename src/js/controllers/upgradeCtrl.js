@@ -24,7 +24,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     ];
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.setFilterBarSearchIcon(false);
-        if(qmService.login.sendToLoginIfNecessaryAndComeBack()){ return; }
+        if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in "+$state.current.name)){ return; }
         if(qm.platform.isChromeExtension()){chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'}); window.close(); return;}
         $scope.state.features = qmService.getPlanFeatureCards();
         $rootScope.upgradeFooterText = null;

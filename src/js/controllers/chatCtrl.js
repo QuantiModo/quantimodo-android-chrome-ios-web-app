@@ -60,7 +60,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
         });
         $scope.$on('$ionicView.afterEnter', function(e) {
             if(!qm.getUser()){
-                qmService.login.sendToLoginIfNecessaryAndComeBack();
+                qmService.login.sendToLoginIfNecessaryAndComeBack("No user in "+$state.current.name);
                 return;
             }
             //qm.speech.deepThought(notification);

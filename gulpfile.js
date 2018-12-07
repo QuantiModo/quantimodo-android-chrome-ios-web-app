@@ -1349,7 +1349,8 @@ function createProgressiveWebAppManifest(outputPath) {
         }],
         "background_color": "#FF9800",
         "theme_color": "#FF9800",
-        "gcm_sender_id": "1052648855194"
+        //"gcm_sender_id": "1052648855194",  // This is the actual QM id but FB says change your web app manifest's 'gcm_sender_id' value to '103953800507' to use Firebase messaging.
+        "gcm_sender_id": "103953800507"
     };
     pwaManifest = JSON.stringify(pwaManifest, null, 2);
     qmLog.info("Creating ProgressiveWebApp manifest at " + outputPath);
@@ -2049,6 +2050,58 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     if (!qmGulp.buildSettings.weShouldMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
+});
+gulp.task('cdnizer', [], function() {
+    // I think this is pointless because Ntlify and Coudflare already act as CDN"s
+    var cdnizer = require("gulp-cdnizer");
+    return gulp.src("./src/index.html")
+        .pipe(cdnizer([
+            'google:angular',          // for most libraries, that's all you'll need to do!
+            'google:jquery',
+            'google:bugsnag',
+            'google:localforage',
+            'google:ionic',
+            'google:ng-cordova',
+            'google:ocLazyLoad',
+            'google:moment',
+            'google:angular-moment',
+            'google:highstock',
+            'google:highcharts-ng',
+            'google:ionic-datepicker',
+            'google:ionic-timepicker',
+            'google:pluralize',
+            'google:angular-clipboard',
+            'google:angular-google-analytics',
+            'google:angular-material-datetimepicker',
+            'google:angular-wikipedia-api-factory',
+            'google:angular-aria',
+            'google:angular-animate',
+            'google:angular-material',
+            'google:angular-cache',
+            'google:angular-messages',
+            'google:ng-material-floating-button',
+            'google:d3',
+            'google:d3-cloud',
+            'google:angular-d3-word-cloud',
+            'google:gsap',
+            'google:ng-file-upload',
+            'google:simple-web-notification',
+            'google:angular-web-notification',
+            'google:firebase',
+            'google:ngFitText',
+            'google:underscore',
+            'google:annyang',
+            'google:pusher-js',
+            'google:svg-morpheus',
+            'google:angular-material-icons',
+            'google:compromise',
+            'google:chat-engine',
+            'google:pouchdb',
+            'google:pouchdb-upsert',
+            'google:quagga',
+            'google:Bravey',
+        ]))
+        .pipe(gulp.dest("./www"));
 });
 var serviceWorkerFirebaseLocalForage = [
     paths.src.serviceWorker,
@@ -2945,7 +2998,6 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
         'configureApp',
         //'deleteWwwPrivateConfig',  // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         callback);
-
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(

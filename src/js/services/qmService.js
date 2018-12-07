@@ -198,14 +198,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         auth: {
-            deleteAllAccessTokens: function () {
+            deleteAllAccessTokens: function (reason) {
                 if($rootScope.user){$rootScope.user.accessToken = null;}
-                qm.auth.deleteAllAccessTokens();
+                qm.auth.deleteAllAccessTokens(reason);
             },
             handleExpiredAccessTokenResponse: function (responseBody) {
                 if(responseBody && qm.objectHelper.objectContainsString(responseBody, 'expired')){
                     qmService.rootScope.setUser(null);
-                    qmService.auth.deleteAllAccessTokens();
+                    qmService.auth.deleteAllAccessTokens("Got expired access token response");
                 }
             },
             socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
@@ -245,10 +245,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             },
-            completelyResetAppStateAndLogout: function(){
+            completelyResetAppStateAndLogout: function(reason){
                 qmService.showBlackRingLoader(60);
                 qm.auth.logout();
-                qmService.completelyResetAppState();
+                qmService.completelyResetAppState(reason);
                 saveDeviceTokenToSyncWhenWeLogInAgain();
                 //qmService.goToState(qm.stateNames.intro);
                 if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
@@ -262,7 +262,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                 if(errorMessage){
                     if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
-                        qm.auth.setAfterLoginGoToUrlAndSendToLogin();
+                        qm.auth.setAfterLoginGoToUrlAndSendToLogin(title + ": "+errorMessage);
                     } else {
                         qmService.showMaterialAlert(title, errorMessage);
                     }
@@ -1126,13 +1126,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         login: {
-            completelyResetAppStateAndSendToLogin: function(comeBackAfterLogin){
-                qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin', null);
-                if(comeBackAfterLogin){qm.auth.setAfterLoginGoToUrl();}
-                qmService.completelyResetAppState();
-                qm.auth.sendToLogin();
+            completelyResetAppStateAndSendToLogin: function(reason){
+                qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin');
+                qmService.completelyResetAppState(reason);
+                qm.auth.sendToLogin(reason);
             },
-            sendToLoginIfNecessaryAndComeBack: function(afterLoginGoToState, afterLoginGoToUrl){
+            sendToLoginIfNecessaryAndComeBack: function(reason, afterLoginGoToState, afterLoginGoToUrl){
                 qmLog.authDebug('Called qmService.login.sendToLoginIfNecessaryAndComeBack');
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
@@ -1143,7 +1142,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     } else {
                         qm.auth.setAfterLoginGoToUrl(afterLoginGoToUrl);
                     }
-                    qm.auth.sendToLogin();
+                    qm.auth.sendToLogin(reason);
                     return true;
                 }
                 return false;
@@ -1154,8 +1153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
             },
             getAfterLoginState: function(){
-                var afterLoginGoToState = qm.storage.getItem(qm.items.afterLoginGoToState);
-                return afterLoginGoToState;
+                return qm.storage.getItem(qm.items.afterLoginGoToState);
             },
             deleteAfterLoginState: function(){
                 $timeout(function () {  // Wait 10 seconds in case it's called again too quick and sends to default state
@@ -1195,8 +1193,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 if(sendToAfterLoginGoToUrlIfNecessary()) {return true;}
                 if(sendToAfterLoginStateIfNecessary()) {return true;}
-                if(sendToDefaultStateIfNecessary()) {return true;}
-                return false;
+                return sendToDefaultStateIfNecessary();
             }
         },
         measurements: {
@@ -3385,7 +3382,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         if(!response){return qmLogService.error("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401 || (response.text && response.text.indexOf('expired') !== -1)){
             qmService.auth.handleExpiredAccessTokenResponse(response.body);
-            if(!options || !options.doNotSendToLogin){qm.auth.setAfterLoginGoToUrlAndSendToLogin();}
+            if(!options || !options.doNotSendToLogin){qm.auth.setAfterLoginGoToUrlAndSendToLogin("401 response from "+JSON.stringify(response));}
         } else {
             var errorMessage = (response.error && response.error.message) ? response.error.message : error.message;
             qmLogService.error(errorMessage, error.stack, {apiResponse: response}, error.stack);
@@ -3543,7 +3540,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             errorHandler(error);
         });
     };
-    qmService.completelyResetAppState = function(){
+    qmService.completelyResetAppState = function(reason){
         qmService.rootScope.setUser(null);
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
@@ -3551,7 +3548,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
-        qmService.auth.deleteAllAccessTokens();
+        qmService.auth.deleteAllAccessTokens(reason);
     };
     qmService.updateUserSettingsDeferred = function(params){
         if($rootScope.physicianUser || qm.storage.getItem(qm.items.physicianUser)){return false;} // Let's restrict settings updates to users
@@ -7146,7 +7143,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
         qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
         qmService.showBlackRingLoader();
-        qmService.completelyResetAppState();
+        qmService.completelyResetAppState("switching back to patient");
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
         qm.storage.setItem(qm.items.physicianUser, $rootScope.physicianUser);
         qmService.goToState(qm.stateNames.historyAll);
@@ -7159,7 +7156,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var physicianUser = JSON.parse(JSON.stringify(qm.storage.getItem(qm.items.physicianUser)));
         qmService.showBlackRingLoader();
-        qmService.completelyResetAppState();
+        qmService.completelyResetAppState("switching back to physician");
         qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qm.storage.setItem(qm.items.physicianUser, null);
         qmService.rootScope.setProperty(qm.items.physicianUser, null);
