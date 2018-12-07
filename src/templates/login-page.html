@@ -21,11 +21,11 @@
                                     &nbsp Facebook Login &nbsp
                                 </md-button>
                                 <md-button id="signUpButton" class="md-raised md-primary icon icon-left ion-email"
-                                           style="background: #2d2d2d;" ng-click="state.registrationForm = {}">
+                                           style="background: #2d2d2d;" ng-click="state.socialLogin('quantimodo', $event, {register: true})">
                                     &nbsp Email Sign Up &nbsp
                                 </md-button>
                                 <md-button id="signInButton" class="md-raised md-primary icon icon-left ion-email" style="background: #2d2d2d;"
-                                           ng-click="state.loginForm = {}">
+                                           ng-click="state.socialLogin('quantimodo', $event, {register: false})">
                                     &nbsp Email Login &nbsp
                                 </md-button>
                             </div>
