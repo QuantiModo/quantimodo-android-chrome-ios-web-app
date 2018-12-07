@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Get Started</ion-nav-title>
-    <div class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
+    <div ng-if="!state.registrationForm && !state.loginForm" class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
         <div class="middle">
             <div class="inner">
                 <div style="text-align: center; color: white; padding: 30px; height: 100%" >
@@ -32,6 +32,60 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div id="registrationForm" ng-if="state.registrationForm" class="container" style="padding-top: 20px;">
+        <div layout="column" layout-align="center center" layout-fill="layout-fill">
+            <div layout="column" class="loginBox md-whiteframe-z1">
+                <form name="loginForm">
+                    <md-content layout="column" class="md-padding">
+                        <md-input-container>
+                            <label>Username</label>
+                            <input required type="text" ng-model="loginModel.username" name="username" />
+                            <div ng-messages="loginForm.username.$error">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input required type="password" ng-model="loginModel.password" name="password" />
+                            <div ng-messages="loginForm.password.$error" role="alert">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+                        <md-button type="submit" class="md-raised md-primary">Sign Up</md-button>
+                        <md-button href="" md-no-ink>Forgot Password</md-button>
+                        <md-button ng-click="state.loginForm = state.registrationForm; state.registrationForm = false;" md-no-ink>Already have an account?</md-button>
+                    </md-content>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="loginForm" ng-if="state.loginForm" class="container">
+        <div layout="column" layout-align="center center" layout-fill="layout-fill">
+            <div layout="column" class="loginBox md-whiteframe-z1">
+                <form name="loginForm">
+                    <md-content layout="column" class="md-padding">
+                        <md-input-container>
+                            <label>Username</label>
+                            <input required type="text" ng-model="loginModel.username" name="username" />
+                            <div ng-messages="loginForm.username.$error">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input required type="password" ng-model="loginModel.password" name="password" />
+                            <div ng-messages="loginForm.password.$error" role="alert">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+                        <md-button type="submit" class="md-raised md-primary">Login</md-button>
+                        <md-button href="" md-no-ink>Forgot Password</md-button>
+                        <md-button ng-click="state.registrationForm = state.loginForm; state.loginForm = false;"  md-no-ink>Sign Up</md-button>
+                    </md-content>
+                </form>
             </div>
         </div>
     </div>
