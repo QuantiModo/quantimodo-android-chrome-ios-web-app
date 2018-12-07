@@ -2,6 +2,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
         $scope.state = {
+            useLocalUserNamePasswordForms: false,  // Temporarily disabled until complete
             loading: false,
             alreadyRetried: false,
             showRetry: false,
@@ -24,6 +25,10 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             }
         };
     $scope.state.socialLogin = function(connectorName, ev, additionalParams) {
+        if(connectorName === 'quantimodo' && $scope.state.useLocalUserNamePasswordForms){
+            if(additionalParams.register){$scope.state.registrationForm = {};} else {$scope.state.loginForm = {};}
+            return;
+        }
         // qmService.createDefaultReminders();  TODO:  Do this at appropriate time. Maybe on the back end during user creation?
         loginTimeout();
         qmService.auth.socialLogin(connectorName, ev, additionalParams, function (response) {
