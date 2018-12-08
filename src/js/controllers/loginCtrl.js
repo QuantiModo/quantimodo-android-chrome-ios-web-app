@@ -1,8 +1,34 @@
 angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector",
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog) {
-    $scope.state = { loading: false, alreadyRetried: false, showRetry: false};
+        $scope.state = {
+            useLocalUserNamePasswordForms: false,  // Temporarily disabled until complete
+            loading: false,
+            alreadyRetried: false,
+            showRetry: false,
+            registrationForm: false,
+            loginForm: false,
+            tryToGetUser: function(force) {
+                var params = $scope.state.registrationForm || $scope.state.loginForm;
+                qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
+                console.info("Trying to get user");
+                qmService.refreshUser(force, params).then(function () {
+                    console.info("Got user");
+                    qmService.hideLoader();
+                    leaveIfLoggedIn();
+                }, function (error) {
+                    console.info("Could not get user! error: "+error);
+                    //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
+                    qmService.hideLoader();  // Hides login loader too early
+                    leaveIfLoggedIn();
+                });
+            }
+        };
     $scope.state.socialLogin = function(connectorName, ev, additionalParams) {
+        if(connectorName === 'quantimodo' && $scope.state.useLocalUserNamePasswordForms){
+            if(additionalParams.register){$scope.state.registrationForm = {};} else {$scope.state.loginForm = {};}
+            return;
+        }
         // qmService.createDefaultReminders();  TODO:  Do this at appropriate time. Maybe on the back end during user creation?
         loginTimeout();
         qmService.auth.socialLogin(connectorName, ev, additionalParams, function (response) {
@@ -61,20 +87,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             if(!qm.getUser()){handleLoginError("timed out");} else {handleLoginSuccess();}
         }, duration * 1000);
     };
-    function tryToGetUser() {
-        qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
-        console.info("Trying to get user");
-        qmService.refreshUser().then(function () {
-            console.info("Got user");
-            qmService.hideLoader();
-            leaveIfLoggedIn();
-        }, function (error) {
-            console.info("Could not get user! error: "+error);
-            //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
-            qmService.hideLoader();  // Hides login loader too early
-            leaveIfLoggedIn();
-        });
-    }
+
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLog.authDebug('beforeEnter in state ' + $state.current.name);
         leaveIfLoggedIn();
@@ -82,7 +95,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             loginTimeout();
         } else {
             qmLog.authDebug('refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token');
-            tryToGetUser();
+            $scope.state.tryToGetUser(false);
         }
     });
     $scope.$on('$ionicView.enter', function(){

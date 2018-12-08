@@ -187,12 +187,12 @@ var qm = {
             if(!response){return qm.qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                 {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});}
             if(errorMessage.toLowerCase().indexOf('expired') !== -1){
-                qm.auth.deleteAllAccessTokens();
+                qm.auth.deleteAllAccessTokens("errorMessage is "+errorMessage);
                 qm.userHelper.setUser(null);
             }
             if(response.status === 401){
                 if(!options || !options.doNotSendToLogin){qm.qmLog.info("Not authenticated!");}
-                qm.auth.handle401Response(response.request, options, response.headers)
+                qm.auth.handle401Response(response, options)
             } else {
                 qm.qmLog.error(errorMessage, null, {error: error, apiResponse: response});
             }
@@ -1339,8 +1339,8 @@ var qm = {
             }
             return accessTokenFromUrl;
         },
-        deleteAllAccessTokens: function(){
-            qm.qmLog.info("deleteAllAccessTokens...");
+        deleteAllAccessTokens: function(reason){
+            qm.qmLog.info("deleteAllAccessTokens because: "+reason);
             qm.storage.removeItem('accessToken');
             if(qm.userHelper.getUserFromLocalStorage()){
                 qm.userHelper.getUserFromLocalStorage().accessToken = null;
@@ -1434,8 +1434,8 @@ var qm = {
             qm.qmLog.authDebug("getAccessTokenFromUrl: returning this access token: " + qm.auth.accessTokenFromUrl);
             return qm.auth.accessTokenFromUrl;
         },
-        logout: function() {
-            qm.auth.deleteAllAccessTokens();
+        logout: function(reason) {
+            qm.auth.deleteAllAccessTokens(reason);
             qm.auth.deleteAllCookies();
             qm.auth.logOutOfWebsite();
         },
@@ -1496,14 +1496,12 @@ var qm = {
             qm.auth.setAfterLoginGoToUrl();
             qm.auth.sendToLogin(reason);
         },
-        handle401Response: function(request, options, headers) {
+        handle401Response: function(response, options) {
             options = options || {};
             if(options && options.doNotSendToLogin){return;}
-            qm.qmLog.debug('generalApiErrorHandler: Sending to login because we got 401 with request ' +
-                JSON.stringify(request), null, options.stackTrace);
-            qm.qmLog.debug('HEADERS: ', headers, options.stackTrace);
-            qm.auth.deleteAllAccessTokens();
-            qm.auth.setAfterLoginGoToUrlAndSendToLogin("got 401 response from "+JSON.stringify(request));
+            var reason = 'we got this 401 response: ' + JSON.stringify(response);
+            qm.auth.deleteAllAccessTokens(reason);
+            qm.auth.setAfterLoginGoToUrlAndSendToLogin(reason);
         }
     },
     buildInfo: {},
