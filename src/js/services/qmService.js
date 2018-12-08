@@ -198,14 +198,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         auth: {
-            deleteAllAccessTokens: function () {
+            deleteAllAccessTokens: function (reason) {
                 if($rootScope.user){$rootScope.user.accessToken = null;}
-                qm.auth.deleteAllAccessTokens();
+                qm.auth.deleteAllAccessTokens(reason);
             },
             handleExpiredAccessTokenResponse: function (responseBody) {
                 if(responseBody && qm.objectHelper.objectContainsString(responseBody, 'expired')){
                     qmService.rootScope.setUser(null);
-                    qmService.auth.deleteAllAccessTokens();
+                    qmService.auth.deleteAllAccessTokens("Got expired access token response");
                 }
             },
             socialLogin: function (connectorName, ev, additionalParams, successHandler, errorHandler) {
@@ -245,10 +245,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             },
-            completelyResetAppStateAndLogout: function(){
+            completelyResetAppStateAndLogout: function(reason){
                 qmService.showBlackRingLoader(60);
                 qm.auth.logout();
-                qmService.completelyResetAppState();
+                qmService.completelyResetAppState(reason);
                 saveDeviceTokenToSyncWhenWeLogInAgain();
                 //qmService.goToState(qm.stateNames.intro);
                 if(qm.platform.isMobile() || qm.platform.isChromeExtension()){
@@ -1128,8 +1128,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         login: {
             completelyResetAppStateAndSendToLogin: function(reason){
                 qmLogService.debug('called qmService.login.completelyResetAppStateAndSendToLogin');
-                if(comeBackAfterLogin){qm.auth.setAfterLoginGoToUrl();}
-                qmService.completelyResetAppState();
+                qmService.completelyResetAppState(reason);
                 qm.auth.sendToLogin(reason);
             },
             sendToLoginIfNecessaryAndComeBack: function(reason, afterLoginGoToState, afterLoginGoToUrl){
@@ -1154,8 +1153,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
             },
             getAfterLoginState: function(){
-                var afterLoginGoToState = qm.storage.getItem(qm.items.afterLoginGoToState);
-                return afterLoginGoToState;
+                return qm.storage.getItem(qm.items.afterLoginGoToState);
             },
             deleteAfterLoginState: function(){
                 $timeout(function () {  // Wait 10 seconds in case it's called again too quick and sends to default state
@@ -1195,8 +1193,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 if(sendToAfterLoginGoToUrlIfNecessary()) {return true;}
                 if(sendToAfterLoginStateIfNecessary()) {return true;}
-                if(sendToDefaultStateIfNecessary()) {return true;}
-                return false;
+                return sendToDefaultStateIfNecessary();
             }
         },
         measurements: {
@@ -3521,7 +3518,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.trackingReminders.syncTrackingReminders();
         qm.userVariables.getFromLocalStorageOrApi();
     };
-    qmService.refreshUser = function(force){
+    qmService.refreshUser = function(force, params){
         var deferred = $q.defer();
         if(qm.urlHelper.getParam('logout') && !force){
             qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
@@ -3533,7 +3530,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ', user);
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
-        }, function(error){deferred.reject(error);});
+        }, function(error){deferred.reject(error);}, params);
         return deferred.promise;
     };
     qmService.refreshUserEmailPreferencesDeferred = function(params, successHandler, errorHandler){
@@ -3543,7 +3540,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             errorHandler(error);
         });
     };
-    qmService.completelyResetAppState = function(){
+    qmService.completelyResetAppState = function(reason){
         qmService.rootScope.setUser(null);
         // Getting token so we can post as the new user if they log in again
         qmService.deleteDeviceTokenFromServer();
@@ -3551,7 +3548,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.cancelAllNotifications();
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
-        qmService.auth.deleteAllAccessTokens();
+        qmService.auth.deleteAllAccessTokens(reason);
     };
     qmService.updateUserSettingsDeferred = function(params){
         if($rootScope.physicianUser || qm.storage.getItem(qm.items.physicianUser)){return false;} // Let's restrict settings updates to users
@@ -7146,7 +7143,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
         qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
         qmService.showBlackRingLoader();
-        qmService.completelyResetAppState();
+        qmService.completelyResetAppState("switching back to patient");
         qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
         qm.storage.setItem(qm.items.physicianUser, $rootScope.physicianUser);
         qmService.goToState(qm.stateNames.historyAll);
@@ -7159,7 +7156,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         var physicianUser = JSON.parse(JSON.stringify(qm.storage.getItem(qm.items.physicianUser)));
         qmService.showBlackRingLoader();
-        qmService.completelyResetAppState();
+        qmService.completelyResetAppState("switching back to physician");
         qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
         qm.storage.setItem(qm.items.physicianUser, null);
         qmService.rootScope.setProperty(qm.items.physicianUser, null);
