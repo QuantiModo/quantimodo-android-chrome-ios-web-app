@@ -126,3 +126,4 @@ src/data/apiai/
 /lastCommitBuilt
 src/data/commits/
 tmp/
+sh.exe.stackdump

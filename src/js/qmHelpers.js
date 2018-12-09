@@ -2673,21 +2673,20 @@ var qm = {
             if(!stringContents){
                 throw filePath + " stringContents not provided to writeToFileWithCallback";
             }
-            qmLog.info("Writing to " + filePath);
+            qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
             return fs.writeFile(filePath, stringContents, callback);
         },
         outputFileContents: function(path){
-            qmLog.info(path+": "+fs.readFileSync(path));
+            qm.qmLog.info(path+": "+fs.readFileSync(path));
         },
         cleanFiles: function(filesArray) {
-            var clean = require('./src/ionic/node_modules/gulp-rimraf');
-            qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
-            return gulp.src(filesArray, {read: false}).pipe(clean());
+            qm.qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
+            return qm.gulp.src(filesArray, {read: false}).pipe(qm.clean());
         },
         writeToFile: function(filePath, stringContents) {
             filePath = './' + filePath;
-            qmLog.info("Writing to " + filePath);
+            qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = qm.stringHelper.prettyJSONStringify(stringContents);}
             return fs.writeFileSync(filePath, stringContents);
         },
@@ -2699,8 +2698,8 @@ var qm = {
                 srcArray.push('!' + excludedFolder);
                 srcArray.push('!' + excludedFolder + '/**');
             }
-            return gulp.src(srcArray)
-                .pipe(gulp.dest(destinationPath));
+            return qm.gulp.src(srcArray)
+                .pipe(qm.gulp.dest(destinationPath));
         }
     },
     functionHelper: {
@@ -2803,19 +2802,19 @@ var qm = {
     gitHelper: {
         branchName: null,
         getBranchName: function(){
-            if(qmGit.branchName || !qm.appMode.isBackEnd()){
-                return qmGit.branchName;
+            if(qm.gitHelper.branchName || !qm.appMode.isBackEnd()){
+                return qm.gitHelper.branchName;
             }
             return process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH;
         },
         isMaster: function(){
-            return qmGit.getBranchName() === "master";
+            return qm.gitHelper.getBranchName() === "master";
         },
         isDevelop: function(){
-            return qmGit.getBranchName() === "develop";
+            return qm.gitHelper.getBranchName() === "develop";
         },
         isFeature: function(){
-            return qmGit.getBranchName().indexOf("feature") !== -1;
+            return qm.gitHelper.getBranchName().indexOf("feature") !== -1;
         },
         getCurrentGitCommitSha: function(){
             if(qm.appMode.isBackEnd() && process.env.SOURCE_VERSION){
@@ -2824,49 +2823,49 @@ var qm = {
             try{
                 return require('child_process').execSync('git rev-parse HEAD').toString().trim();
             }catch (error){
-                qmLog.info(error);
+                qm.qmLog.info(error);
             }
         },
         getCommitMessage: function(callback){
             var commandForGit = 'git log -1 HEAD --pretty=format:%s';
             qm.nodeHelper.execute(commandForGit, function(error, output){
                 var commitMessage = output.trim();
-                qmLog.info("Commit: " + commitMessage);
+                qm.qmLog.info("Commit: " + commitMessage);
                 if(callback){
                     callback(commitMessage);
                 }
             });
         },
         outputCommitMessageAndBranch: function(){
-            qmGit.getCommitMessage(function(commitMessage){
-                qmGit.setBranchName(function(branchName){
-                    qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
+            qm.gitHelper.getCommitMessage(function(commitMessage){
+                qm.gitHelper.setBranchName(function(branchName){
+                    qm.qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
                 });
             });
         },
         setBranchName: function(callback){
             function setBranch(branch, callback){
-                qmGit.branchName = branch.replace('origin/', '');
-                qmLog.info('current git branch: ' + qmGit.branchName);
+                qm.gitHelper.branchName = branch.replace('origin/', '');
+                qm.qmLog.info('current git branch: ' + qm.gitHelper.branchName);
                 if(callback){
-                    callback(qmGit.branchName);
+                    callback(qm.gitHelper.branchName);
                 }
             }
-            if(qmGit.branchName){
-                setBranch(qmGit.branchName, callback);
+            if(qm.gitHelper.branchName){
+                setBranch(qm.gitHelper.branchName, callback);
                 return;
             }
             try{
                 var git = require('./src/ionic/node_modules/gulp-git');
                 git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
                     if(err){
-                        qmLog.error(err);
+                        qm.qmLog.error(err);
                         return;
                     }
                     setBranch(branch, callback);
                 });
             }catch (e){
-                qmLog.info("Could not set branch name because " + e.message);
+                qm.qmLog.info("Could not set branch name because " + e.message);
             }
         },
         getReleaseStage: function(){
@@ -2885,14 +2884,14 @@ var qm = {
             if(process.env.HOSTNAME.indexOf("production") !== -1){
                 return "production";
             }
-            qmLog.error("Could not determine release stage!");
+            qm.qmLog.error("Could not determine release stage!");
         },
         releaseStage: {
             isProduction: function(){
-                return qmGit.getReleaseStage() === "production";
+                return qm.gitHelper.getReleaseStage() === "production";
             },
             isStaging: function(){
-                return qmGit.getReleaseStage() === "staging";
+                return qm.gitHelper.getReleaseStage() === "staging";
             }
         },
     },
@@ -3943,23 +3942,23 @@ var qm = {
     },
     nodeHelper: {
         execute: function(command, callback, suppressErrors, lotsOfOutput) {
-            qmLog.debug('executing ' + command);
+            qm.qmLog.debug('executing ' + command);
             if(lotsOfOutput){
                 var args = command.split(" ");
                 var program = args.shift();
                 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
                 var ps = spawn(program, args);
                 ps.on('exit', function (code, signal) {
-                    qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
+                    qm.qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
                     if(callback){callback();}
                 });
-                ps.stdout.on('data', function (data) {qmLog.info(command + ' stdout: ' + data);});
-                ps.stderr.on('data', function (data) {qmLog.error(command + '  stderr: ' + data);});
-                ps.on('close', function (code) {if (code !== 0) {qmLog.error(command + ' process exited with code ' + code);}});
+                ps.stdout.on('data', function (data) {qm.qmLog.info(command + ' stdout: ' + data);});
+                ps.stderr.on('data', function (data) {qm.qmLog.error(command + '  stderr: ' + data);});
+                ps.on('close', function (code) {if (code !== 0) {qm.qmLog.error(command + ' process exited with code ' + code);}});
             } else {
                 var exec = require('child_process').exec;
                 var my_child_process = exec(command, function (error, stdout, stderr) {
-                    if (error !== null) {if (suppressErrors) {qmLog.info('ERROR: exec ' + error);} else {qmLog.error('ERROR: exec ' + error);}}
+                    if (error !== null) {if (suppressErrors) {qm.qmLog.info('ERROR: exec ' + error);} else {qm.qmLog.error('ERROR: exec ' + error);}}
                     callback(error, stdout);
                 });
                 my_child_process.stdout.pipe(process.stdout);
