@@ -1268,9 +1268,25 @@ var qm = {
         doesNotHaveUserId: function(item){
             qm.assert.doesNotHaveProperty(item, 'userId');
         },
+        throwTestException: function(testMessage, customMessage){
+            if(customMessage){customMessage = ': ' +customMessage;} else {customMessage = '';}
+            var combinedMessage = testMessage + customMessage;
+            console.error("FAILED: "+combinedMessage+"\n");
+            var e = new Error(combinedMessage);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Gulp', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Object.runAllTestsForType', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringAfter('Object.throwTestException', combinedMessage, e.stack);
+            throw e;
+        },
         equals: function(expected, actual, message){
             if(expected !== actual){
-                throw message + " expected "+expected+" but got "+actual;
+                qm.assert.throwTestException("Expected "+expected+" but got "+actual, message);
+            }
+        },
+        doesNotEqual: function(expected, actual, message){
+            message = message || qm.assert.doesNotEqual.caller;
+            if(expected === actual){
+                qm.assert.throwTestException("Actual value "+actual+" should not equal "+expected, message);
             }
         },
         variables: {
@@ -1579,7 +1595,14 @@ var qm = {
         menu: {
             moveMenuItemDown: function(menuItems, oldIndex){
                 var newIndex = oldIndex + 1;
-                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, old_index, newIndex);
+                if(newIndex > menuItems.length){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+                return menuItems;
+            },
+            moveMenuItemUp: function(menuItems, oldIndex){
+                var newIndex = oldIndex - 1;
+                if(newIndex < 0){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
                 return menuItems;
             }
         }
@@ -4992,6 +5015,12 @@ var qm = {
             });
         }
     },
+    menu: {
+        getMenu: function(){
+            var appSettings = qm.getAppSettings();
+            return appSettings.appDesign.menu.active;
+        }
+    },
     qmLog: function(){return qmLog;},
     robot: {
         showing: false,
@@ -5961,13 +5990,11 @@ var qm = {
                 return defaultValue;
             }
         },
-        getStringBeforeSubstring: function(needle, haystack){
+        getStringBeforeSubstring: function(needle, haystack, defaultResponse){
+            defaultResponse = defaultResponse || haystack;
             var i = haystack.indexOf(needle);
-            if(i > 0) {
-                return  haystack.slice(0, i);
-            } else {
-                return haystack;
-            }
+            if(i > 0) {return haystack.slice(0, i);}
+            return defaultResponse;
         },
         toCamelCase: function(string) {
             string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -6341,6 +6368,29 @@ var qm = {
             var url = qm.studyHelper.getStudyUrl(study);
             qm.qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
             qm.urlHelper.goToUrl(url);
+        }
+    },
+    tests: {
+        menu: {
+            testMoveMenuItemDown: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+                qm.assert.equals(original[0].id, reordered[1].id);
+            },
+            testMoveFirstMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.equals(original[0].id, reordered[0].id);
+            },
+            testMoveMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
+                qm.assert.equals(original[1].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+            },
         }
     },
     timeHelper: {
