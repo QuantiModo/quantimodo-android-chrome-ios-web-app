@@ -125,3 +125,4 @@ src/data/qmStaticData.js
 src/data/apiai/
 /lastCommitBuilt
 src/data/commits/
+tmp/
