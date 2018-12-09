@@ -80,6 +80,9 @@ var qm = {
             if(qm.appMode.isDevelopment()){env = "development";}
             if(qm.appMode.isTesting()){env = "testing";}
             return env;
+        },
+        isBackEnd: function(){
+            return qm.platform.isBackEnd();
         }
     },
     apiPaths: {
@@ -815,7 +818,7 @@ var qm = {
                 qm.qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
                 return false;
             }
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 var obj = array[i];
                 if(obj[propertyName] && obj[propertyName] === propertyValue){
                     return true;
@@ -827,10 +830,12 @@ var qm = {
             return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
         },
         removeItemsWithDifferentName: function(arrayOfObjects, queryTerm){
-            return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+            return arrayOfObjects.filter(function(obj){
+                return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;
+            });
         },
-        concatenateUniqueId: function (preferred, secondary) {
-            for (var i = 0; i < preferred.length; ++i) {
+        concatenateUniqueId: function(preferred, secondary){
+            for(var i = 0; i < preferred.length; ++i){
                 var preferredItem = preferred[i];
                 secondary = secondary.filter(function(secondaryItem){
                     return secondaryItem.id !== preferredItem.id;
@@ -840,46 +845,52 @@ var qm = {
             return combined;
         },
         convertToArrayIfNecessary: function(variable){
-            if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
+            if(!qm.arrayHelper.variableIsArray(variable)){
+                variable = [variable];
+            }
             return variable;
         },
-        convertObjectToArray: function (object) {
+        convertObjectToArray: function(object){
             if(!object){
                 qm.qmLog.info(object + " provided to convertObjectToArray");
                 return object;
             }
-            if(qm.arrayHelper.variableIsArray(object)){return object;}
-            return Object.keys(object).map(function(key) {
+            if(qm.arrayHelper.variableIsArray(object)){
+                return object;
+            }
+            return Object.keys(object).map(function(key){
                 return object[key];
             });
         },
         deleteById: function(id, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj.id !== id;
             });
             return array;
         },
         deleteByProperty: function(propertyName, value, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj[propertyName] !== value;
             });
             return array;
         },
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
-            return unfilteredElementArray.filter(function( obj ) {
+            return unfilteredElementArray.filter(function(obj){
                 if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
                     return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
-                } else {
+                }else{
                     return filterPropertyValue === obj[filterPropertyName];
                 }
             });
         },
         filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
                                          lessThanPropertyName, lessThanPropertyValue,
-                                         greaterThanPropertyName, greaterThanPropertyValue) {
-            if(!matchingElements){return null;}
+                                         greaterThanPropertyName, greaterThanPropertyValue){
+            if(!matchingElements){
+                return null;
+            }
             if(matchingElements.length){
-                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined"){
                     qm.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist');
                 }
                 if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
@@ -893,19 +904,19 @@ var qm = {
                 matchingElements = qm.arrayHelper.filterByProperty(filterPropertyName, filterPropertyValue, matchingElements);
             }
             if(lessThanPropertyName && typeof lessThanPropertyValue !== "undefined"){
-                matchingElements = matchingElements.filter(function( obj ) {
+                matchingElements = matchingElements.filter(function(obj){
                     return obj[lessThanPropertyName] < lessThanPropertyValue;
                 });
             }
             if(greaterThanPropertyName && typeof greaterThanPropertyValue !== "undefined"){
-                matchingElements = matchingElements.filter(function( obj ) {
+                matchingElements = matchingElements.filter(function(obj){
                     return obj[greaterThanPropertyName] > greaterThanPropertyValue;
                 });
             }
             return matchingElements;
         },
         getByProperty: function(propertyName, value, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj[propertyName] === value;
             });
             return array;
@@ -917,7 +928,7 @@ var qm = {
             }
             searchTerm = searchTerm.toLowerCase();
             var matches = [];
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 if(JSON.stringify(array[i]).toLowerCase().indexOf(searchTerm) > -1){
                     matches.push(array[i]);
                 }
@@ -955,28 +966,34 @@ var qm = {
             return array.filter(function(item){
                 var name = item.name || item.variableName;
                 if(!name){
-                    qm.qmLog.error("No name on: "+JSON.stringify(item));
+                    qm.qmLog.error("No name on: " + JSON.stringify(item));
                     return false;
                 }
                 name = name.toLowerCase();
-                var result = filterBy.every(function (word){
+                var result = filterBy.every(function(word){
                     var exists = name.indexOf(word);
-                    if(exists !== -1){return true;}
+                    if(exists !== -1){
+                        return true;
+                    }
                     if(item.synonyms && item.synonyms.length){
                         var synonyms = JSON.stringify(item.synonyms).toLowerCase();
-                        if(synonyms.indexOf(word) !== -1){return true;}
+                        if(synonyms.indexOf(word) !== -1){
+                            return true;
+                        }
                     }
                     if(item.alias){
                         var alias = item.alias.toLowerCase();
-                        if(alias.indexOf(word) !== -1){return true;}
+                        if(alias.indexOf(word) !== -1){
+                            return true;
+                        }
                     }
                 });
                 return result;
             });
         },
-        inArray: function(needle, haystack) {
+        inArray: function(needle, haystack){
             var length = haystack.length;
-            for(var i = 0; i < length; i++) {
+            for(var i = 0; i < length; i++){
                 if(haystack[i] === needle) return true;
             }
             return false;
@@ -984,7 +1001,7 @@ var qm = {
         mergeWithUniqueId: function(replacements, existingArray){
             return qm.arrayHelper.concatenateUniqueId(replacements, existingArray);
         },
-        replaceElementInArrayById: function (array, replacementElement) {
+        replaceElementInArrayById: function(array, replacementElement){
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
         },
         removeLastItem: function(array){
@@ -1011,31 +1028,37 @@ var qm = {
                 qm.qmLog.error("Removing only element from single item array!");
                 return [];
             }
-            while (qm.arrayHelper.getSizeInKiloBytes(array) > maxKb) {
+            while(qm.arrayHelper.getSizeInKiloBytes(array) > maxKb){
                 qm.arrayHelper.removeLastItem(array);
             }
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName){
-            qm.qmLog.info("Sorting by "+propertyName+"...");
+            qm.qmLog.info("Sorting by " + propertyName + "...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qm.qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
             }
-            if(arrayToSort.length < 2){return arrayToSort;}
+            if(arrayToSort.length < 2){
+                return arrayToSort;
+            }
             if(propertyName.indexOf('-') > -1){
-                arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
-            } else {
-                arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
+                arrayToSort.sort(function(a, b){
+                    return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
+                });
+            }else{
+                arrayToSort.sort(function(a, b){
+                    return a[propertyName] - b[propertyName];
+                });
             }
             return arrayToSort;
         },
-        unsetNullProperties: function (array) {
+        unsetNullProperties: function(array){
             if(!array){
                 qm.qmLog.error("Nothing provided to unsetNullProperties");
                 return null;
             }
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 array[i] = qm.objectHelper.unsetNullProperties(array[i]);
             }
             return array;
@@ -1046,31 +1069,41 @@ var qm = {
                 return false;
             }
             var isAnArray = Array.isArray(variable);
-            if(isAnArray){return true;}
+            if(isAnArray){
+                return true;
+            }
             var constructorArray = variable.constructor === Array;
-            if(constructorArray){return true;}
+            if(constructorArray){
+                return true;
+            }
             var instanceOfArray = variable instanceof Array;
-            if(instanceOfArray){return true;}
+            if(instanceOfArray){
+                return true;
+            }
             return Object.prototype.toString.call(variable) === '[object Array]';
         },
-        removeArrayElementsWithDuplicateIds: function(array) {
-            if(!array){return array;}
+        removeArrayElementsWithDuplicateIds: function(array){
+            if(!array){
+                return array;
+            }
             var a = array.concat();
-            for(var i = 0; i < a.length; i++) {
-                for(var j = i + 1; j < a.length; j++) {
-                    if(!a[i]){qm.qmLog.error('a[i] not defined!');}
+            for(var i = 0; i < a.length; i++){
+                for(var j = i + 1; j < a.length; j++){
+                    if(!a[i]){
+                        qm.qmLog.error('a[i] not defined!');
+                    }
                     if(!a[j]){
                         qm.qmLog.error('a[j] not defined!');
                         return a;
                     }
-                    if(a[i].id === a[j].id) {
+                    if(a[i].id === a[j].id){
                         a.splice(j--, 1);
                     }
                 }
             }
             return a;
         },
-        filterByRequestParams: function(array, requestParams) {
+        filterByRequestParams: function(array, requestParams){
             if(!array){
                 qm.qmLog.error("Nothing provided to filterByRequestParams");
                 return array;
@@ -1089,22 +1122,32 @@ var qm = {
             var lessThanPropertyValue = null;
             var filterPropertyValues = [];
             var filterPropertyNames = [];
-            for (var key in requestParams) {
-                if(!requestParams.hasOwnProperty(key)){continue;}
+            for(var key in requestParams){
+                if(!requestParams.hasOwnProperty(key)){
+                    continue;
+                }
                 var value = requestParams[key];
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
                     lessThanPropertyValue = Number(lessThanPropertyValue);
                     lessThanPropertyName = key;
-                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                }else if(typeof value === "string" && value.indexOf('(gt)') !== -1){
                     greaterThanPropertyValue = value.replace('(gt)', "");
                     greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     greaterThanPropertyName = key;
-                } else {
-                    if (value === false && key === "manualTracking") { continue; }
-                    if (value === null || value === "" || value === "Anything") { continue; }
-                    if (excludedFilterParams.indexOf(key) !== -1) {continue;}
-                    if (allowedFilterParams.indexOf(key) === -1) {qm.qmLog.error(key + " is not in allowed filter params");}
+                }else{
+                    if(value === false && key === "manualTracking"){
+                        continue;
+                    }
+                    if(value === null || value === "" || value === "Anything"){
+                        continue;
+                    }
+                    if(excludedFilterParams.indexOf(key) !== -1){
+                        continue;
+                    }
+                    if(allowedFilterParams.indexOf(key) === -1){
+                        qm.qmLog.error(key + " is not in allowed filter params");
+                    }
                     qm.qmLog.info("filtering by " + key);
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
@@ -1117,67 +1160,95 @@ var qm = {
                     results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
-            if(!results){return null;}
+            if(!results){
+                return null;
+            }
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
                 results = qm.arrayHelper.getWithNameContainingEveryWord(requestParams.searchPhrase, results);
             }
-            if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
+            if(requestParams && requestParams.sort){
+                results = qm.arrayHelper.sortByProperty(results, requestParams.sort);
+            }
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
             return results;
         },
-        getUnique: function(array, propertyName) {
+        getUnique: function(array, propertyName){
             if(!propertyName){
-                function onlyUnique(value, index, self) {return self.indexOf(value) === index;}
-                return array.filter( onlyUnique );
+                function onlyUnique(value, index, self){
+                    return self.indexOf(value) === index;
+                }
+                return array.filter(onlyUnique);
             }
             var flags = [], output = [], l = array.length, i;
-            for( i=0; i<l; i++) {
-                if(flags[array[i][propertyName]]) {continue;}
+            for(i = 0; i < l; i++){
+                if(flags[array[i][propertyName]]){
+                    continue;
+                }
                 flags[array[i][propertyName]] = true;
                 output.push(array[i]);
             }
             return output;
         },
-        deleteFromArrayByProperty: function(localStorageItemArray, propertyName, propertyValue) {
+        deleteFromArrayByProperty: function(localStorageItemArray, propertyName, propertyValue){
             var elementsToKeep = [];
             for(var i = 0; i < localStorageItemArray.length; i++){
-                if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
+                if(localStorageItemArray[i][propertyName] !== propertyValue){
+                    elementsToKeep.push(localStorageItemArray[i]);
+                }
             }
             return elementsToKeep;
         },
         addToOrReplaceByIdAndMoveToFront: function(localStorageItemArray, replacementElementArray, key){
-            if(!(replacementElementArray instanceof Array)){replacementElementArray = [replacementElementArray];}
+            if(!(replacementElementArray instanceof Array)){
+                replacementElementArray = [replacementElementArray];
+            }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
             var found = false;
             if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     found = false;
-                    for (var j = 0; j < replacementElementArray.length; j++){
+                    for(var j = 0; j < replacementElementArray.length; j++){
                         if(typeof replacementElementArray[j] === "string"){
-                           throw key+" replacementElementArray item is string: " +replacementElementArray[j];
+                            throw key + " replacementElementArray item is string: " + replacementElementArray[j];
                         }
                         if(!replacementElementArray[j].id){
-                            qm.qmLog.warn("No id on "+key+" replacementElementArray item: " +JSON.stringify(replacementElementArray[j]));
+                            qm.qmLog.warn("No id on " + key + " replacementElementArray item: " + JSON.stringify(replacementElementArray[j]));
                         }
                         if(replacementElementArray[j].id &&
                             localStorageItemArray[i].id === replacementElementArray[j].id){
                             found = true;
                         }
                     }
-                    if(!found){elementsToKeep.push(localStorageItemArray[i]);}
+                    if(!found){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
                 }
             }
             return elementsToKeep;
         },
-        getSizeInKiloBytes: function(string) {
-            if(typeof value !== "string"){string = JSON.stringify(string);}
-            return Math.round(string.length*16/(8*1024));
+        getSizeInKiloBytes: function(string){
+            if(typeof value !== "string"){
+                string = JSON.stringify(string);
+            }
+            return Math.round(string.length * 16 / (8 * 1024));
         },
         getFirstElementIfArray: function(possibleArray){
-            if(qm.arrayHelper.variableIsArray(possibleArray)){return possibleArray[0];}
+            if(qm.arrayHelper.variableIsArray(possibleArray)){
+                return possibleArray[0];
+            }
             return possibleArray;
-        }
+        },
+        moveElementOfArray: function(arr, old_index, new_index){
+            if(new_index >= arr.length){
+                var k = new_index - arr.length + 1;
+                while(k--){
+                    arr.push(undefined);
+                }
+            }
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr; // for testing
+        },
     },
     assert: {
         count: function(expected, array){
@@ -1506,8 +1577,10 @@ var qm = {
     },
     builder: {
         menu: {
-            moveMenuItemDown: function(appSettings){
-
+            moveMenuItemDown: function(menuItems, oldIndex){
+                var newIndex = oldIndex + 1;
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, old_index, newIndex);
+                return menuItems;
             }
         }
     },
@@ -2707,68 +2780,88 @@ var qm = {
     gitHelper: {
         branchName: null,
         getBranchName: function(){
-            if(qmGit.branchName){return qmGit.branchName;}
+            if(qmGit.branchName || !qm.appMode.isBackEnd()){
+                return qmGit.branchName;
+            }
             return process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH;
         },
-        isMaster: function () {
+        isMaster: function(){
             return qmGit.getBranchName() === "master";
         },
-        isDevelop: function () {
+        isDevelop: function(){
             return qmGit.getBranchName() === "develop";
         },
-        isFeature: function () {
+        isFeature: function(){
             return qmGit.getBranchName().indexOf("feature") !== -1;
         },
-        getCurrentGitCommitSha: function () {
-            if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
-            try {
+        getCurrentGitCommitSha: function(){
+            if(qm.appMode.isBackEnd() && process.env.SOURCE_VERSION){
+                return process.env.SOURCE_VERSION;
+            }
+            try{
                 return require('child_process').execSync('git rev-parse HEAD').toString().trim();
-            } catch (error) {
+            }catch (error){
                 qmLog.info(error);
             }
         },
-        accessToken: process.env.GITHUB_ACCESS_TOKEN,
         getCommitMessage: function(callback){
             var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-            qm.nodeHelper.execute(commandForGit, function (error, output) {
+            qm.nodeHelper.execute(commandForGit, function(error, output){
                 var commitMessage = output.trim();
-                qmLog.info("Commit: "+ commitMessage);
-                if(callback) {callback(commitMessage);}
+                qmLog.info("Commit: " + commitMessage);
+                if(callback){
+                    callback(commitMessage);
+                }
             });
         },
-        outputCommitMessageAndBranch: function () {
-            qmGit.getCommitMessage(function (commitMessage) {
-                qmGit.setBranchName(function (branchName) {
-                    qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+        outputCommitMessageAndBranch: function(){
+            qmGit.getCommitMessage(function(commitMessage){
+                qmGit.setBranchName(function(branchName){
+                    qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
                 });
             });
         },
-        setBranchName: function(callback) {
-            function setBranch(branch, callback) {
+        setBranchName: function(callback){
+            function setBranch(branch, callback){
                 qmGit.branchName = branch.replace('origin/', '');
                 qmLog.info('current git branch: ' + qmGit.branchName);
-                if (callback) {callback(qmGit.branchName);}
+                if(callback){
+                    callback(qmGit.branchName);
+                }
             }
-            if (qmGit.branchName){
+            if(qmGit.branchName){
                 setBranch(qmGit.branchName, callback);
                 return;
             }
-            try {
+            try{
                 var git = require('./src/ionic/node_modules/gulp-git');
-                git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-                    if(err){qmLog.error(err); return;}
+                git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
+                    if(err){
+                        qmLog.error(err);
+                        return;
+                    }
                     setBranch(branch, callback);
                 });
-            } catch (e) {
+            }catch (e){
                 qmLog.info("Could not set branch name because " + e.message);
             }
         },
-        getReleaseStage: function() {
-            if(!process.env.HOSTNAME){return "local";}
-            if(process.env.HOSTNAME.indexOf("local") !== -1){return "local";}
-            if(process.env.HOSTNAME.indexOf("staging") !== -1){return "staging";}
-            if(process.env.HOSTNAME.indexOf("app") !== -1){return "production";}
-            if(process.env.HOSTNAME.indexOf("production") !== -1){return "production";}
+        getReleaseStage: function(){
+            if(!process.env.HOSTNAME){
+                return "local";
+            }
+            if(process.env.HOSTNAME.indexOf("local") !== -1){
+                return "local";
+            }
+            if(process.env.HOSTNAME.indexOf("staging") !== -1){
+                return "staging";
+            }
+            if(process.env.HOSTNAME.indexOf("app") !== -1){
+                return "production";
+            }
+            if(process.env.HOSTNAME.indexOf("production") !== -1){
+                return "production";
+            }
             qmLog.error("Could not determine release stage!");
         },
         releaseStage: {
