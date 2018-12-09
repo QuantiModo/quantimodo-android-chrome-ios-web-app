@@ -400,6 +400,7 @@ var qm = {
             if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, apiUrl);}
             if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(qm.appMode.isBrowser() && window.location.host.indexOf('dev-') === 0){return "https://local.quantimo.do";}
             if(!apiUrl){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
                 if(appSettings && appSettings.apiUrl){apiUrl = appSettings.apiUrl;}

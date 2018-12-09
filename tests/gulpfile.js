@@ -332,7 +332,7 @@ gulp.task('test-get-units', function(callback) {
 gulp.task('unit-tests', function(callback) {
     qmTests.getStaticData();
     qmTests.setTestParams(this._params);
-    qmTests.runAllTestsForType('menu', callback);
+    qmTests.runAllTestsForType('menu');
     runSequence(
         'test-get-common-variable',
         'test-record-measurement-intent',
