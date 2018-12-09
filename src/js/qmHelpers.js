@@ -4742,7 +4742,7 @@ var qm = {
         },
         browser: {
             get: function(){
-                if(qm.platform.browser.isChrome()){return "chrome";}
+                if(qm.platform.browser.isChromeBrowser()){return "chrome";}
                 if(qm.platform.browser.isFirefox()){return "firefox";}
                 if(qm.platform.browser.isEdge()){return "edge";}
                 if(qm.platform.browser.isIE()){return "ie";}
@@ -4753,9 +4753,9 @@ var qm = {
             isFirefox: function(){
                 return typeof InstallTrigger !== 'undefined';
             },
-            isChrome: function () {
+            isChromeBrowser: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return !!window.chrome && !!window.chrome.webstore;
+                return typeof window.chrome !== "undefined"
             },
             isEdge: function () {
                 if(!qm.platform.getWindow()){return false;}
@@ -4774,7 +4774,7 @@ var qm = {
             },
             isBlink: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
+                return (qm.platform.browser.isChromeBrowser() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
         }
     },
@@ -5137,7 +5137,7 @@ var qm = {
             }
             qm.qmLog.info("speechSynthesis is available");
             var isWebBrowser = qm.platform.isWeb();
-            var isChromeBrowser = qm.platform.browser.isChrome();
+            var isChromeBrowser = qm.platform.browser.isChromeBrowser();
             if(isWebBrowser && !isChromeBrowser){
                 if(!qm.appMode.isTesting()){
                     qm.qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
