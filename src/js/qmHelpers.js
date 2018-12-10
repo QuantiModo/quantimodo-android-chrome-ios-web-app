@@ -1284,10 +1284,19 @@ var qm = {
                 qm.assert.throwTestException("Expected "+expected+" but got "+actual, message);
             }
         },
+        contains: function(expected, actual, message){
+            if(actual.indexOf(expected) === -1){
+                qm.assert.throwTestException("Expected to contain "+expected+" but got "+actual, message);
+            }
+        },
         doesNotEqual: function(expected, actual, message){
-            message = message || qm.assert.doesNotEqual.caller;
             if(expected === actual){
                 qm.assert.throwTestException("Actual value "+actual+" should not equal "+expected, message);
+            }
+        },
+        doesNotContain: function(expected, actual, message){
+            if(actual.indexOf(expected) !== -1){
+                qm.assert.throwTestException("Actual value "+actual+" should not contain "+expected, message);
             }
         },
         variables: {
@@ -1593,20 +1602,6 @@ var qm = {
         }
     },
     builder: {
-        menu: {
-            moveMenuItemDown: function(menuItems, oldIndex){
-                var newIndex = oldIndex + 1;
-                if(newIndex > menuItems.length){return menuItems;}
-                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
-                return menuItems;
-            },
-            moveMenuItemUp: function(menuItems, oldIndex){
-                var newIndex = oldIndex - 1;
-                if(newIndex < 0){return menuItems;}
-                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
-                return menuItems;
-            }
-        }
     },
     buildInfo: {},
     chartHelper: {
@@ -3025,12 +3020,6 @@ var qm = {
                 }
                 qm.api.responseHandler(error, data, response);
             });
-        },
-        getIntegrationJsEmbedCodeForClient: function(clientId, callback){
-            if(qm.integration.integrationJs){
-                return callback(qm.integration.integrationJs.replace('CLIENT_ID', clientId));
-            }
-            qm.integration.getIntegrationJsWithoutClientId(clientId, callback);
         }
     },
     items: {
@@ -3486,6 +3475,171 @@ var qm = {
             }, function(error){
                 qm.qmLog.error(error);
             });
+        }
+    },
+    menu: {
+        getMenu: function(){
+            var appSettings = qm.getAppSettings();
+            return appSettings.appDesign.menu.active;
+        },
+        onStateChange: function(menuItem){
+            menuItem = qm.menu.setParams(menuItem);
+            menuItem = qm.menu.onParameterChange(menuItem);
+            return menuItem;
+        },
+        setHref: function(menuItem){
+            menuItem = qm.menu.replacePlaceHoldersInHref(menuItem);
+            menuItem = qm.menu.addStateParamsToHrefQuery(menuItem);
+            return menuItem;
+        },
+        onParameterChange: function(menuItem){
+            menuItem = qm.menu.setHref(menuItem);
+            menuItem = qm.menu.setId(menuItem);
+            menuItem = qm.menu.setTitle(menuItem);
+            menuItem = qm.menu.setIonIcon(menuItem);
+            return menuItem;
+        },
+        setTitle: function(menuItem){
+            if(menuItem.params.title){
+                menuItem.title = menuItem.params.title;
+                if(menuItem.params.variableCategoryName){
+                    menuItem.title = menuItem.params.variableCategoryName + " " + menuItem.params.title;
+                }
+                if(menuItem.params.variableName){
+                    menuItem.title = menuItem.params.variableName + " " + menuItem.params.title;
+                }
+            }
+            return menuItem;
+        },
+        setIonIcon: function(menuItem){
+            if(menuItem.params.variableCategoryName){
+                var category = qm.variableCategoryHelper.getVariableCategory(menuItem.params.variableCategoryName);
+                if(category && category.ionIcon){
+                    menuItem.params.ionIcon = category.ionIcon;
+                }
+            }
+            return menuItem;
+        },
+        setId: function(menuItem){
+            function convertStringToId(string) {
+                string = decodeURIComponent(string);
+                return string.replace('#/app/', '')
+                    .replace('/', '-')
+                    .replace('?', '')
+                    .replace('&', '-')
+                    .replace('=', '-')
+                    .replace(' ', '-')
+                    .toLowerCase();
+            }
+            if(menuItem.href){
+                var id = qm.stringHelper.getStringBeforeSubstring('?', menuItem.href, menuItem.href);
+                menuItem.id = convertStringToId(id);
+            } else {
+                menuItem.id = convertStringToId(menuItem.title);
+            }
+            return menuItem;
+        },
+        replacePlaceHoldersInHref: function(menuItem){
+            menuItem.href = "#/app" + menuItem.url;
+            for(var propertyName in menuItem.params){
+                if(!menuItem.params.hasOwnProperty(propertyName)){continue;}
+                if(!menuItem.params[propertyName]){continue;}
+                menuItem.href = menuItem.href.replace(':'+propertyName, encodeURIComponent(menuItem.params[propertyName]));
+            }
+            return menuItem;
+        },
+        addStateParamsToHrefQuery: function(menuItem){
+            menuItem.href = qm.urlHelper.addUrlQueryParamsToUrlString(menuItem.params, menuItem.href);
+            return menuItem;
+        },
+        setParams: function(menuItem){
+            if(!menuItem.stateName){
+                qm.qmLog.info("No stateName so can't update", menuItem, menuItem);
+                return menuItem;
+            }
+            qm.qmLog.info("changed state to "+menuItem.stateName);
+            var newState = qm.staticData.states.find(function(state){
+                return state.name === menuItem.stateName;
+            });
+            menuItem = qm.objectHelper.copyPropertiesFromOneObjectToAnother(newState, menuItem, true);
+            for (var prop in newState) {
+                if (newState.hasOwnProperty(prop)) {menuItem[prop] = newState[prop];}
+            }
+            return menuItem;
+        },
+        moveMenuItemDown: function(menuItems, oldIndex){
+            var newIndex = oldIndex + 1;
+            if(newIndex > menuItems.length){return menuItems;}
+            menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+            return menuItems;
+        },
+        moveMenuItemUp: function(menuItems, oldIndex){
+            var newIndex = oldIndex - 1;
+            if(newIndex < 0){return menuItems;}
+            menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+            return menuItems;
+        },
+        updateHrefAndIdInMenuItemBasedOnStateName: function(menuItem) {
+            function addUrlToMenuItem(menuItem){
+                if(menuItem.url){return menuItem;}
+                if(menuItem.stateName){
+                    menuItem.url = qm.menu.getUrlFromStateName(menuItem.stateName);
+                    if(menuItem.url){return menuItem;}
+                }
+                if(menuItem.href){
+                    for(var i = 0; i < qm.staticData.states.length; i++){
+                        if(menuItem.href.indexOf(qm.staticData.states[i].url) !== -1){
+                            menuItem.url = qm.staticData.states[i].url;
+                        }
+                    }
+                }
+                return menuItem;
+            }
+            menuItem = addUrlToMenuItem(menuItem);
+            menuItem = qm.menu.convertQueryStringToParams(menuItem);
+            menuItem = qm.menu.convertUrlAndParamsToHref(menuItem);
+            menuItem = qm.menu.addMenuId(menuItem);
+            delete menuItem.url;
+            return menuItem;
+        },
+        convertUrlAndParamsToHref: function(menuItem) {
+            var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
+            if(!menuItem.subMenu){
+                menuItem.href = '#/app' + menuItem.url;
+                if(params && params.variableCategoryName && menuItem.href.indexOf('-category') === -1){
+                    menuItem.href += "-category/" + params.variableCategoryName;
+                    //delete(params.variableCategoryName);
+                }
+                menuItem.href += qm.urlHelper.convertObjectToQueryString(params);
+                menuItem.href = menuItem.href.replace('app/app', 'app');
+            }
+            qm.qmLog.debug('convertUrlAndParamsToHref ', menuItem, menuItem);
+            return menuItem;
+        },
+        convertQueryStringToParams: function(menuItem){
+            if(!menuItem.href){
+                qm.qmLog.debug('No menuItem.href for ', menuItem, null);
+                return menuItem;
+            }
+            if(menuItem.href && !menuItem.params){
+                menuItem.params = qm.urlHelper.getQueryParams(menuItem.href);
+            }
+            menuItem.href = qm.urlHelper.stripQueryString(menuItem.href);
+            if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
+                menuItem.params.variableCategoryName = qm.urlHelper.getStringAfterLastSlash(menuItem.href).replace('?', '');
+            }
+            if(menuItem.params && menuItem.params.variableCategoryName){
+                if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
+                if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
+                if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
+            }
+            return menuItem;
+        },
+        getUrlFromStateName: function(stateName){
+            for(var i = 0; i < qm.staticData.states.length; i++){
+                if(qm.staticData.states[i].name === stateName){ return qm.staticData.states[i].url; }
+            }
+            qm.qmLog.error("Could not find state with name: " + stateName);
         }
     },
     mic: {
@@ -5015,13 +5169,6 @@ var qm = {
             });
         }
     },
-    menu: {
-        getMenu: function(){
-            var appSettings = qm.getAppSettings();
-            return appSettings.appDesign.menu.active;
-        }
-    },
-    qmLog: function(){return qmLog;},
     robot: {
         showing: false,
         openMouth: function(){
@@ -5990,10 +6137,10 @@ var qm = {
                 return defaultValue;
             }
         },
-        getStringBeforeSubstring: function(needle, haystack, defaultResponse){
-            defaultResponse = defaultResponse || haystack;
-            var i = haystack.indexOf(needle);
-            if(i > 0) {return haystack.slice(0, i);}
+        getStringBeforeSubstring: function(substring, fullString, defaultResponse){
+            defaultResponse = defaultResponse || fullString;
+            var i = fullString.indexOf(substring);
+            if(i > 0) {return fullString.slice(0, i);}
             return defaultResponse;
         },
         toCamelCase: function(string) {
@@ -6374,23 +6521,101 @@ var qm = {
         menu: {
             testMoveMenuItemDown: function(){
                 var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.builder.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
+                var reordered = qm.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
                 qm.assert.doesNotEqual(original[0].id, reordered[0].id);
                 qm.assert.doesNotEqual(original[1].id, reordered[1].id);
                 qm.assert.equals(original[0].id, reordered[1].id);
             },
             testMoveFirstMenuItemUp: function(){
                 var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
+                var reordered = qm.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
                 qm.assert.equals(original[0].id, reordered[0].id);
             },
             testMoveMenuItemUp: function(){
                 var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
+                var reordered = qm.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
                 qm.assert.equals(original[1].id, reordered[0].id);
                 qm.assert.doesNotEqual(original[0].id, reordered[0].id);
                 qm.assert.doesNotEqual(original[1].id, reordered[1].id);
             },
+            testChangeVariableCategory: function () {
+                var before = {
+                    "stateName": "app.historyAllCategory",
+                    "href": "#/app/history-all-category/Physical+Activity",
+                    "url": "/history-all-category/:variableCategoryName",
+                    "icon": "ion-ios-body-outline",
+                    "subMenu": null,
+                    "params": {
+                        "showAds": true,
+                        "variableCategoryName": null,
+                        "updatedMeasurementHistory": null,
+                        "refresh": null,
+                        "title": "History",
+                        "ionIcon": "ion-ios-list-outline"
+                    },
+                    "title": "Activity History",
+                    "id": "history-all-category-physical-activity",
+                    "showSubMenu": true,
+                    "$$hashKey": "object:3482",
+                    "cache": true,
+                    "views": {
+                        "menuContent": {
+                            "templateUrl": "templates/history-all.html",
+                            "controller": "historyAllMeasurementsCtrl"
+                        }
+                    },
+                    "name": "app.historyAllCategory"
+                };
+                before.params.variableCategoryName = "Nutrients";
+                var updated = qm.menu.onParameterChange(JSON.parse(JSON.stringify(before)));
+                qm.assert.contains("Nutrients", updated.href);
+                qm.assert.equals("history-all-category-nutrients", updated.id);
+                qm.assert.equals("Nutrients History", updated.title);
+                qm.assert.doesNotContain(":variableCategory", updated.href);
+                return updated;
+            },
+            testChangeState: function () {
+                var before = {
+                    "stateName": "app.historyAllCategory",
+                    "href": "#/app/history-all-category/Physical+Activity",
+                    "url": "/history-all-category/:variableCategoryName",
+                    "icon": "ion-ios-body-outline",
+                    "subMenu": null,
+                    "params": {
+                        "showAds": true,
+                        "variableCategoryName": null,
+                        "updatedMeasurementHistory": null,
+                        "refresh": null,
+                        "title": "History",
+                        "ionIcon": "ion-ios-list-outline"
+                    },
+                    "title": "Activity History",
+                    "id": "history-all-category-physical-activity",
+                    "showSubMenu": true,
+                    "$$hashKey": "object:3482",
+                    "cache": true,
+                    "views": {
+                        "menuContent": {
+                            "templateUrl": "templates/history-all.html",
+                            "controller": "historyAllMeasurementsCtrl"
+                        }
+                    },
+                    "name": "app.historyAllCategory"
+                };
+                before.stateName = qm.staticData.stateNames.charts;
+                var updated = qm.menu.onStateChange(JSON.parse(JSON.stringify(before)));
+                qm.assert.contains("charts", updated.href);
+                qm.assert.contains("charts", updated.id);
+                qm.assert.equals("Charts", updated.title);
+                qm.assert.doesNotContain(":variableCategory", updated.href);
+                updated.params.variableName = "Overall Mood";
+                updated = qm.menu.onStateChange(JSON.parse(JSON.stringify(before)));
+                qm.assert.contains("Overall", updated.href);
+                qm.assert.equals("charts-overall-mood", updated.id);
+                qm.assert.equals("Overall Mood Charts", updated.title);
+                qm.assert.doesNotContain(":variableName", updated.href);
+                return updated;
+            }
         }
     },
     timeHelper: {
@@ -6584,6 +6809,8 @@ var qm = {
     urlHelper: {
         addUrlQueryParamsToUrlString: function (params, url){
             if(!url){url = qm.urlHelper.getCurrentUrl();}
+            var previousParams = qm.urlHelper.getQueryParams(url); // Avoid duplicates
+            params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, previousParams, false);
             for (var key in params) {
                 if (params.hasOwnProperty(key)) {
                     if(url.indexOf(key + '=') === -1){
@@ -7705,7 +7932,7 @@ var qm = {
                 qm.qmLog.debug("Not registering service worker because not on Web");
                 return false;
             }
-            if(!qm.appMode.isBuilder()){
+            if(qm.appMode.isBuilder()){
                 qm.qmLog.debug("Not registering service worker because appMode isBuilder");
                 return false;
             }
@@ -7809,7 +8036,8 @@ var qm = {
         isIframe: function(){
             return window !== window.top;
         }
-    }
+    },
+    qmLog: function(){return qm.qmLog;},
 };
 if(typeof qmLog !== "undefined"){qm.qmLog = qmLog; qmLog.qm = qm;}
 //if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qm.qmLog;}  // Need to use qm.qmLog so it's available in node.js modules
