@@ -79,7 +79,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         } else {
             //qmLogService.debug($state.current.name + ' initializing...');
         }
-        if(!qm.speech.getSpeechAvailable()){$scope.state.setSpeechEnabled(false);}
+        if(!qm.speech.getSpeechAvailable() || useFuturisticBackground() === false){
+            $scope.state.setSpeechEnabled(false);
+        }
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
