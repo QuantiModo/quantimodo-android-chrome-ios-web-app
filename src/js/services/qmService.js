@@ -1239,63 +1239,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         },
         menu: {
-            stateName: {
-                addStateNamesToBothMenus: function(menus){
-                    menus.active = qmService.menu.stateName.addStateNamesToOneMenu(menus.active);
-                    if(menus.custom){menus.custom = qmService.menu.stateName.addStateNamesToOneMenu(menus.custom);}
-                    return menus;
-                },
-                addStateNamesToOneMenu: function(menu){
-                    for(var i =0; i < menu.length; i++){
-                        menu[i] = qmService.menu.stateName.addStateNameToMenuItem(menu[i]);
-                        if(menu[i].subMenu){
-                            for(var j =0; j < menu[i].subMenu.length; j++){
-                                menu[i].subMenu[j] = qmService.menu.stateName.addStateNameToMenuItem(menu[i].subMenu[j]);
-                            }
-                        }
-                    }
-                    return menu;
-                },
-                addStateNameToMenuItem: function(menuItem){
-                    function stripQueryString(pathWithQuery) {
-                        if(!pathWithQuery){ return pathWithQuery; }
-                        if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
-                        return pathWithQuery.split("?")[0];
-                    }
-                    function convertUrlToLowerCaseStateName(menuItem){
-                        if(!menuItem.url){
-                            qmLogService.debug('no url to convert in ', menuItem, null);
-                            return menuItem;
-                        }
-                        return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
-                    }
-                    if(menuItem.stateName){return menuItem;}
-                    if(!menuItem.url && !menuItem.href){return menuItem;}
-                    if(!menuItem.url && menuItem.href){
-                        menuItem.url = menuItem.href.replace('#/app/', '');
-                        menuItem.url = qm.stringHelper.getStringBeforeSubstring('/', menuItem.url);
-                        menuItem.url = '/'+ menuItem.url;
-                        if(menuItem.params && menuItem.params.variableCategoryName && menuItem.url.indexOf('category') !== -1){
-                            //menuItem.url = menuItem.url + '/:variableCategoryName';
-                        }
-                    }
-                    for(var i = 0; i < allStates.length; i++){
-                        var currentUrl = allStates[i].url.replace('/:variableCategoryName', '');
-                        currentUrl = currentUrl.replace('/:variableName', '');
-                        if(currentUrl === menuItem.url){
-                            menuItem.stateName = allStates[i].name;
-                            break;
-                        }
-                        var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
-                        if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
-                            menuItem.stateName = allStates[i].name;
-                            break;
-                        }
-                    }
-                    if(!menuItem.stateName){ qmLogService.debug('no state name for ', menuItem); }
-                    return menuItem;
-                }
-            },
             href: {
                 updateHrefAndIdInMenuItemBasedOnStateName: function(menuItem) {
                     if(!menuItem.stateName){
@@ -1330,26 +1273,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     menuItem = addMenuId(menuItem);
                     delete menuItem.url;
                     return menuItem;
-                },
-                addHrefAndIdToBothMenus: function(menus){
-                    menus.active = qmService.menu.addHrefAndIdToSingleMenuType(menus.active);
-                    menus.custom = qmService.menu.addHrefAndIdToSingleMenuType(menus.custom);
-                    return menus;
-                },
-                addHrefAndIdToSingleMenuType: function (menu){
-                    if(!menu){
-                        qmLogService.debug('No menu given to convertHrefInSingleMenuType', null);
-                        return;
-                    }
-                    for(var i =0; i < menu.length; i++){
-                        menu[i] = qmService.menu.href.updateHrefAndIdInMenuItemBasedOnStateName(menu[i]);
-                        if(menu[i].subMenu){
-                            for(var j =0; j < menu[i].subMenu.length; j++){
-                                menu[i].subMenu[j] = qmService.menu.href.updateHrefAndIdInMenuItemBasedOnStateName(menu[i].subMenu[j]);
-                            }
-                        }
-                    }
-                    return menu;
                 },
                 convertUrlAndParamsToHref: function(menuItem) {
                     var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
@@ -6685,7 +6608,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             document.head.appendChild(link);
         }
         appSettings = qmService.subscriptions.setUpgradeDisabledIfOnAndroidWithoutKey(appSettings);
-        appSettings.appDesign.menu = qmService.menu.stateName.addStateNamesToBothMenus(appSettings.appDesign.menu);
         qm.appsManager.processAndSaveAppSettings(appSettings, callback);
         //qmService.rootScope.setProperty('appSettings', qm.getAppSettings());
         // Need to apply immediately before rendering or nav bar color is not set for some reason
