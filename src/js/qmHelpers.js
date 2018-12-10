@@ -6606,6 +6606,13 @@ var qm = {
                 qm.assert.doesNotContain(":variableName", updated.href);
                 return updated;
             }
+        },
+        urlUhelper: {
+            testGetQueryParamsFromQueryBeforeHash: function(){
+                var url = 'https://dev-web.quantimo.do/?clientId=preve-wellness-tracker#/app/onboarding';
+                var params = qm.urlHelper.getQueryParams(url);
+                qm.assert.equals('preve-wellness-tracker', params.clientId);
+            }
         }
     },
     timeHelper: {
@@ -6846,7 +6853,7 @@ var qm = {
             if(!url){return null;}
             if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
             if(url.split('?').length > 1){
-                var queryString = url.split('?')[1];
+                var queryString = qm.urlHelper.getQueryStringFromUrl(url);
                 var parameterKeyValuePairs = queryString.split('&');
                 for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
@@ -6867,7 +6874,7 @@ var qm = {
             var keyValuePairsObject = {};
             var array = [];
             if(url.split('?').length > 1){
-                var queryString = url.split('?')[1];
+                var queryString = qm.urlHelper.getQueryStringFromUrl(url);
                 var parameterKeyValueSubstrings = queryString.split('&');
                 for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
                     array = parameterKeyValueSubstrings[i].split('=');
@@ -6875,6 +6882,11 @@ var qm = {
                 }
             }
             return keyValuePairsObject;
+        },
+        getQueryStringFromUrl: function(url){
+            var queryString = url.split('?')[1];
+            if(queryString.indexOf('#') !== -1){queryString = queryString.split('#')[0];}
+            return queryString;
         },
         openUrlInNewTab: function (url, showLocation) {
             if(!qm.platform.getWindow()){return false;}
