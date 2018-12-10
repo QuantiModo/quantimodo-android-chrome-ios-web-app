@@ -419,23 +419,23 @@ var qmLog = {
             "push enabled": qmLog.qm.push.enabled(),
             "draw over apps enabled": qmLog.qm.storage.getItem(qmLog.qm.items.drawOverAppsPopupEnabled), // Don't use function drawOverAppsPopupEnabled() because of recursion error
             "last popup": qmLog.qm.notifications.getTimeSinceLastPopupString(),
-            'last push data': qm.storage.getItem(qm.items.lastPushData),
-            'last Local Notification Triggered': qm.notifications.getTimeSinceLastLocalNotification(),
-            'drawOverAppsPopupEnabled': qm.storage.getItem(qm.items.drawOverAppsPopupEnabled),
+            'last push data': qmLog.qm.storage.getItem(qmLog.qm.items.lastPushData),
+            'last Local Notification Triggered': qmLog.qm.notifications.getTimeSinceLastLocalNotification(),
+            'drawOverAppsPopupEnabled': qmLog.qm.storage.getItem(qmLog.qm.items.drawOverAppsPopupEnabled),
             scheduled_local_notifications: qmLog.qm.storage.getItem(qmLog.qm.items.scheduledLocalNotifications),
         };
         qmLog.globalMetaData.platform = {
-            'platform': qm.platform.getCurrentPlatform(),
-            browser: qm.platform.browser.get()
+            'platform': qmLog.qm.platform.getCurrentPlatform(),
+            browser: qmLog.qm.platform.browser.get()
         };
         if(qmLog.isDebugMode()){qmLog.globalMetaData.local_storage = qmLog.qm.storage.getLocalStorageList();} // Too slow to do for every error
-        qmLog.globalMetaData.api = {log: qm.api.requestLog, ApiUrl: qm.api.getApiUrl()};
+        qmLog.globalMetaData.api = {log: qmLog.qm.api.requestLog, ApiUrl: qmLog.qm.api.getApiUrl()};
         if(qmLog.qm.getAppSettings()){
-            qmLog.globalMetaData.api.client_id = qm.api.getClientId();
+            qmLog.globalMetaData.api.client_id = qmLog.qm.api.getClientId();
             qmLog.globalMetaData.build = {
                 build_server: qmLog.qm.getAppSettings().buildServer,
                 build_link: qmLog.qm.getAppSettings().buildLink,
-                build_at: qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt),
+                build_at: qmLog.qm.timeHelper.getTimeSinceString(qmLog.qm.getAppSettings().builtAt),
             };
         }
         qmLog.globalMetaData.test_app_url = getTestUrl();

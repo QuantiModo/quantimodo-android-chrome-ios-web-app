@@ -259,6 +259,19 @@ var qmTests = {
             }
         }
         process.exit(1);
+    },
+    runAllTestsForType: function (testType, callback) {
+        console.info("=== "+testType+" Tests ===");
+        qmTests.getStaticData();
+        qmTests.setTestParams(this._params);
+        var tests = qm.tests[testType];
+        for (var testName in tests) {
+            if (!tests.hasOwnProperty(testName)) continue;
+            console.info(testName+"...");
+            tests[testName]();
+            console.info(testName+" passed! :D");
+        }
+        if(callback){callback();}
     }
 };
 gulp.task('oauth-disabled-utopia', function (callback) {
@@ -319,6 +332,7 @@ gulp.task('test-get-units', function(callback) {
 gulp.task('unit-tests', function(callback) {
     qmTests.getStaticData();
     qmTests.setTestParams(this._params);
+    qmTests.runAllTestsForType('menu');
     runSequence(
         'test-get-common-variable',
         'test-record-measurement-intent',
