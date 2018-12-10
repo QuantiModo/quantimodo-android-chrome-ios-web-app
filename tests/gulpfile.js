@@ -321,17 +321,17 @@ gulp.task('test-get-common-variable', function(callback) {
 });
 gulp.task('test-record-measurement-intent', function(callback) {
     qmTests.getStaticData();
-    qmTests.setTestParams(this._params);
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.recordMeasurementIntentTest(callback);
 });
 gulp.task('test-get-units', function(callback) {
     qmTests.getStaticData();
-    qmTests.setTestParams(this._params);
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.getUnitsTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
     qmTests.getStaticData();
-    qmTests.setTestParams(this._params);
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.runAllTestsForType('menu');
     runSequence(
         'test-get-common-variable',
@@ -344,7 +344,7 @@ gulp.task('unit-tests', function(callback) {
         });
 });
 gulp.task('unit-gi-failed-gi-all', function(callback) {
-    qmTests.setTestParams(this._params);
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
     runSequence(
         'unit-tests',
         'gi-failed',
