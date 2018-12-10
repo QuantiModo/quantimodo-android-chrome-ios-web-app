@@ -7705,7 +7705,7 @@ var qm = {
                 qm.qmLog.debug("Not registering service worker because not on Web");
                 return false;
             }
-            if(!qm.appMode.isBuilder()){
+            if(qm.appMode.isBuilder()){
                 qm.qmLog.debug("Not registering service worker because appMode isBuilder");
                 return false;
             }
