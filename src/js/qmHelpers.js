@@ -3025,12 +3025,6 @@ var qm = {
                 }
                 qm.api.responseHandler(error, data, response);
             });
-        },
-        getIntegrationJsEmbedCodeForClient: function(clientId, callback){
-            if(qm.integration.integrationJs){
-                return callback(qm.integration.integrationJs.replace('CLIENT_ID', clientId));
-            }
-            qm.integration.getIntegrationJsWithoutClientId(clientId, callback);
         }
     },
     items: {
