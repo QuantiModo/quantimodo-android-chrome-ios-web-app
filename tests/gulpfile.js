@@ -155,7 +155,7 @@ var qmTests = {
         },
         executeSuite: function(suiteId, callback, startUrl){
             var options = qmTests.tests.getOptions(startUrl);
-            console.info('Testing suite on startUrl '+ options.startUrl +'...');
+            console.info('Testing suite on startUrl '+ options.startUrl +' with API url '+options.apiUrl+'...');
             var suiteUrl = "https://app.ghostinspector.com/suites/"+suiteId;
             console.info("Check progress at " + suiteUrl +" ");
             GhostInspector.executeSuite(suiteId, options, function (err, suiteResults, passing) {
@@ -343,7 +343,7 @@ gulp.task('unit-tests', function(callback) {
             callback(error);
         });
 });
-gulp.task('unit-gi-failed-gi-all', function(callback) {
+gulp.task('_unit-gi-failed-gi-all', function(callback) {
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     runSequence(
         'unit-tests',
