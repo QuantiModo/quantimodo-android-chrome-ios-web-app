@@ -1238,77 +1238,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return true;
             }
         },
-        menu: {
-            href: {
-                updateHrefAndIdInMenuItemBasedOnStateName: function(menuItem) {
-                    if(!menuItem.stateName){
-                        qmLog.info("No stateName so can't update", menuItem, menuItem);
-                        return menuItem;
-                    }
-                    function addMenuId(menuItem) {
-                        function convertStringToId(string) {
-                            return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
-                        }
-                        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
-                        return menuItem;
-                    }
-                    function addUrlToMenuItem(menuItem){
-                        if(menuItem.url){return menuItem;}
-                        if(menuItem.stateName){
-                            menuItem.url = qmService.stateHelper.getUrlFromStateName(menuItem.stateName);
-                            if(menuItem.url){return menuItem;}
-                        }
-                        if(menuItem.href){
-                            for(var i = 0; i < allStates.length; i++){
-                                if(menuItem.href.indexOf(allStates[i].url) !== -1){
-                                    menuItem.url = allStates[i].url;
-                                }
-                            }
-                        }
-                        return menuItem;
-                    }
-                    menuItem = addUrlToMenuItem(menuItem);
-                    menuItem = qmService.menu.href.convertQueryStringToParams(menuItem);
-                    menuItem = qmService.menu.href.convertUrlAndParamsToHref(menuItem);
-                    menuItem = addMenuId(menuItem);
-                    delete menuItem.url;
-                    return menuItem;
-                },
-                convertUrlAndParamsToHref: function(menuItem) {
-                    var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
-                    if(!menuItem.subMenu){
-                        menuItem.href = '#/app' + menuItem.url;
-                        if(params && params.variableCategoryName && menuItem.href.indexOf('-category') === -1){
-                            menuItem.href += "-category/" + params.variableCategoryName;
-                            //delete(params.variableCategoryName);
-                        }
-                        menuItem.href += qm.urlHelper.convertObjectToQueryString(params);
-                        menuItem.href = menuItem.href.replace('app/app', 'app');
-                    }
-                    qmLog.debug('convertUrlAndParamsToHref ', menuItem, menuItem);
-                    return menuItem;
-                },
-                convertQueryStringToParams: function(menuItem){
-                    if(!menuItem.href){
-                        qmLogService.debug('No menuItem.href for ', menuItem, null);
-                        return menuItem;
-                    }
-                    if(menuItem.href && !menuItem.params){
-                        menuItem.params = qm.urlHelper.getQueryParams(menuItem.href);
-                    }
-                    menuItem.href = qm.urlHelper.stripQueryString(menuItem.href);
-                    if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
-                        menuItem.params.variableCategoryName = qm.urlHelper.getStringAfterLastSlash(menuItem.href).replace('?', '');
-                    }
-                    if(menuItem.params && menuItem.params.variableCategoryName){
-                        if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
-                        if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
-                        if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
-                    }
-                    return menuItem;
-                }
-            }
-        },
         navBar: {
             setFilterBarSearchIcon: function(value){
                 qmService.rootScope.setProperty('showFilterBarSearchIcon', value)
@@ -2118,12 +2047,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     params.variableId = variableId;
                 }
                 return params;
-            },
-            getUrlFromStateName: function(stateName){
-                for(var i = 0; i < allStates.length; i++){
-                    if(allStates[i].name === stateName){ return allStates[i].url; }
-                }
-                qmLogService.error("Could not find state with name: " + stateName);
             }
         },
         sharing: {

@@ -1605,6 +1605,81 @@ var qm = {
                 if(newIndex < 0){return menuItems;}
                 menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
                 return menuItems;
+            },
+            href: {
+                updateHrefAndIdInMenuItemBasedOnStateName: function(menuItem) {
+                    if(!menuItem.stateName){
+                        qmLog.info("No stateName so can't update", menuItem, menuItem);
+                        return menuItem;
+                    }
+                    function addMenuId(menuItem) {
+                        function convertStringToId(string) {
+                            return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
+                        }
+                        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+                        return menuItem;
+                    }
+                    function addUrlToMenuItem(menuItem){
+                        if(menuItem.url){return menuItem;}
+                        if(menuItem.stateName){
+                            menuItem.url = qm.builder.menu.href.getUrlFromStateName(menuItem.stateName);
+                            if(menuItem.url){return menuItem;}
+                        }
+                        if(menuItem.href){
+                            for(var i = 0; i < qm.staticData.states.length; i++){
+                                if(menuItem.href.indexOf(qm.staticData.states[i].url) !== -1){
+                                    menuItem.url = qm.staticData.states[i].url;
+                                }
+                            }
+                        }
+                        return menuItem;
+                    }
+                    menuItem = addUrlToMenuItem(menuItem);
+                    menuItem = qm.builder.menu.href.convertQueryStringToParams(menuItem);
+                    menuItem = qm.builder.menu.href.convertUrlAndParamsToHref(menuItem);
+                    menuItem = addMenuId(menuItem);
+                    delete menuItem.url;
+                    return menuItem;
+                },
+                convertUrlAndParamsToHref: function(menuItem) {
+                    var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
+                    if(!menuItem.subMenu){
+                        menuItem.href = '#/app' + menuItem.url;
+                        if(params && params.variableCategoryName && menuItem.href.indexOf('-category') === -1){
+                            menuItem.href += "-category/" + params.variableCategoryName;
+                            //delete(params.variableCategoryName);
+                        }
+                        menuItem.href += qm.urlHelper.convertObjectToQueryString(params);
+                        menuItem.href = menuItem.href.replace('app/app', 'app');
+                    }
+                    qmLog.debug('convertUrlAndParamsToHref ', menuItem, menuItem);
+                    return menuItem;
+                },
+                convertQueryStringToParams: function(menuItem){
+                    if(!menuItem.href){
+                        qm.qmLog.debug('No menuItem.href for ', menuItem, null);
+                        return menuItem;
+                    }
+                    if(menuItem.href && !menuItem.params){
+                        menuItem.params = qm.urlHelper.getQueryParams(menuItem.href);
+                    }
+                    menuItem.href = qm.urlHelper.stripQueryString(menuItem.href);
+                    if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
+                        menuItem.params.variableCategoryName = qm.urlHelper.getStringAfterLastSlash(menuItem.href).replace('?', '');
+                    }
+                    if(menuItem.params && menuItem.params.variableCategoryName){
+                        if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
+                        if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
+                        if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
+                    }
+                    return menuItem;
+                },
+                getUrlFromStateName: function(stateName){
+                    for(var i = 0; i < qm.staticData.states.length; i++){
+                        if(qm.staticData.states[i].name === stateName){ return qm.staticData.states[i].url; }
+                    }
+                    qm.qmLog.error("Could not find state with name: " + stateName);
+                }
             }
         }
     },
@@ -3482,6 +3557,7 @@ var qm = {
             });
         }
     },
+
     mic: {
         globalCommands: {
             "quantimodo": function(){
