@@ -400,6 +400,7 @@ var qm = {
             if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, apiUrl);}
             if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(qm.appMode.isBrowser() && window.location.host.indexOf('dev-') === 0){return "https://local.quantimo.do";}
             if(!apiUrl){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
                 if(appSettings && appSettings.apiUrl){apiUrl = appSettings.apiUrl;}
@@ -1268,9 +1269,25 @@ var qm = {
         doesNotHaveUserId: function(item){
             qm.assert.doesNotHaveProperty(item, 'userId');
         },
+        throwTestException: function(testMessage, customMessage){
+            if(customMessage){customMessage = ': ' +customMessage;} else {customMessage = '';}
+            var combinedMessage = testMessage + customMessage;
+            console.error("FAILED: "+combinedMessage+"\n");
+            var e = new Error(combinedMessage);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Gulp', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Object.runAllTestsForType', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringAfter('Object.throwTestException', combinedMessage, e.stack);
+            throw e;
+        },
         equals: function(expected, actual, message){
             if(expected !== actual){
-                throw message + " expected "+expected+" but got "+actual;
+                qm.assert.throwTestException("Expected "+expected+" but got "+actual, message);
+            }
+        },
+        doesNotEqual: function(expected, actual, message){
+            message = message || qm.assert.doesNotEqual.caller;
+            if(expected === actual){
+                qm.assert.throwTestException("Actual value "+actual+" should not equal "+expected, message);
             }
         },
         variables: {
@@ -1579,7 +1596,14 @@ var qm = {
         menu: {
             moveMenuItemDown: function(menuItems, oldIndex){
                 var newIndex = oldIndex + 1;
-                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, old_index, newIndex);
+                if(newIndex > menuItems.length){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+                return menuItems;
+            },
+            moveMenuItemUp: function(menuItems, oldIndex){
+                var newIndex = oldIndex - 1;
+                if(newIndex < 0){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
                 return menuItems;
             }
         }
@@ -2650,21 +2674,20 @@ var qm = {
             if(!stringContents){
                 throw filePath + " stringContents not provided to writeToFileWithCallback";
             }
-            qmLog.info("Writing to " + filePath);
+            qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
             return fs.writeFile(filePath, stringContents, callback);
         },
         outputFileContents: function(path){
-            qmLog.info(path+": "+fs.readFileSync(path));
+            qm.qmLog.info(path+": "+fs.readFileSync(path));
         },
         cleanFiles: function(filesArray) {
-            var clean = require('./src/ionic/node_modules/gulp-rimraf');
-            qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
-            return gulp.src(filesArray, {read: false}).pipe(clean());
+            qm.qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
+            return qm.gulp.src(filesArray, {read: false}).pipe(qm.clean());
         },
         writeToFile: function(filePath, stringContents) {
             filePath = './' + filePath;
-            qmLog.info("Writing to " + filePath);
+            qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = qm.stringHelper.prettyJSONStringify(stringContents);}
             return fs.writeFileSync(filePath, stringContents);
         },
@@ -2676,8 +2699,8 @@ var qm = {
                 srcArray.push('!' + excludedFolder);
                 srcArray.push('!' + excludedFolder + '/**');
             }
-            return gulp.src(srcArray)
-                .pipe(gulp.dest(destinationPath));
+            return qm.gulp.src(srcArray)
+                .pipe(qm.gulp.dest(destinationPath));
         }
     },
     functionHelper: {
@@ -2780,19 +2803,19 @@ var qm = {
     gitHelper: {
         branchName: null,
         getBranchName: function(){
-            if(qmGit.branchName || !qm.appMode.isBackEnd()){
-                return qmGit.branchName;
+            if(qm.gitHelper.branchName || !qm.appMode.isBackEnd()){
+                return qm.gitHelper.branchName;
             }
             return process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH;
         },
         isMaster: function(){
-            return qmGit.getBranchName() === "master";
+            return qm.gitHelper.getBranchName() === "master";
         },
         isDevelop: function(){
-            return qmGit.getBranchName() === "develop";
+            return qm.gitHelper.getBranchName() === "develop";
         },
         isFeature: function(){
-            return qmGit.getBranchName().indexOf("feature") !== -1;
+            return qm.gitHelper.getBranchName().indexOf("feature") !== -1;
         },
         getCurrentGitCommitSha: function(){
             if(qm.appMode.isBackEnd() && process.env.SOURCE_VERSION){
@@ -2801,49 +2824,49 @@ var qm = {
             try{
                 return require('child_process').execSync('git rev-parse HEAD').toString().trim();
             }catch (error){
-                qmLog.info(error);
+                qm.qmLog.info(error);
             }
         },
         getCommitMessage: function(callback){
             var commandForGit = 'git log -1 HEAD --pretty=format:%s';
             qm.nodeHelper.execute(commandForGit, function(error, output){
                 var commitMessage = output.trim();
-                qmLog.info("Commit: " + commitMessage);
+                qm.qmLog.info("Commit: " + commitMessage);
                 if(callback){
                     callback(commitMessage);
                 }
             });
         },
         outputCommitMessageAndBranch: function(){
-            qmGit.getCommitMessage(function(commitMessage){
-                qmGit.setBranchName(function(branchName){
-                    qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
+            qm.gitHelper.getCommitMessage(function(commitMessage){
+                qm.gitHelper.setBranchName(function(branchName){
+                    qm.qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
                 });
             });
         },
         setBranchName: function(callback){
             function setBranch(branch, callback){
-                qmGit.branchName = branch.replace('origin/', '');
-                qmLog.info('current git branch: ' + qmGit.branchName);
+                qm.gitHelper.branchName = branch.replace('origin/', '');
+                qm.qmLog.info('current git branch: ' + qm.gitHelper.branchName);
                 if(callback){
-                    callback(qmGit.branchName);
+                    callback(qm.gitHelper.branchName);
                 }
             }
-            if(qmGit.branchName){
-                setBranch(qmGit.branchName, callback);
+            if(qm.gitHelper.branchName){
+                setBranch(qm.gitHelper.branchName, callback);
                 return;
             }
             try{
                 var git = require('./src/ionic/node_modules/gulp-git');
                 git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
                     if(err){
-                        qmLog.error(err);
+                        qm.qmLog.error(err);
                         return;
                     }
                     setBranch(branch, callback);
                 });
             }catch (e){
-                qmLog.info("Could not set branch name because " + e.message);
+                qm.qmLog.info("Could not set branch name because " + e.message);
             }
         },
         getReleaseStage: function(){
@@ -2862,14 +2885,14 @@ var qm = {
             if(process.env.HOSTNAME.indexOf("production") !== -1){
                 return "production";
             }
-            qmLog.error("Could not determine release stage!");
+            qm.qmLog.error("Could not determine release stage!");
         },
         releaseStage: {
             isProduction: function(){
-                return qmGit.getReleaseStage() === "production";
+                return qm.gitHelper.getReleaseStage() === "production";
             },
             isStaging: function(){
-                return qmGit.getReleaseStage() === "staging";
+                return qm.gitHelper.getReleaseStage() === "staging";
             }
         },
     },
@@ -3920,23 +3943,23 @@ var qm = {
     },
     nodeHelper: {
         execute: function(command, callback, suppressErrors, lotsOfOutput) {
-            qmLog.debug('executing ' + command);
+            qm.qmLog.debug('executing ' + command);
             if(lotsOfOutput){
                 var args = command.split(" ");
                 var program = args.shift();
                 var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
                 var ps = spawn(program, args);
                 ps.on('exit', function (code, signal) {
-                    qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
+                    qm.qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
                     if(callback){callback();}
                 });
-                ps.stdout.on('data', function (data) {qmLog.info(command + ' stdout: ' + data);});
-                ps.stderr.on('data', function (data) {qmLog.error(command + '  stderr: ' + data);});
-                ps.on('close', function (code) {if (code !== 0) {qmLog.error(command + ' process exited with code ' + code);}});
+                ps.stdout.on('data', function (data) {qm.qmLog.info(command + ' stdout: ' + data);});
+                ps.stderr.on('data', function (data) {qm.qmLog.error(command + '  stderr: ' + data);});
+                ps.on('close', function (code) {if (code !== 0) {qm.qmLog.error(command + ' process exited with code ' + code);}});
             } else {
                 var exec = require('child_process').exec;
                 var my_child_process = exec(command, function (error, stdout, stderr) {
-                    if (error !== null) {if (suppressErrors) {qmLog.info('ERROR: exec ' + error);} else {qmLog.error('ERROR: exec ' + error);}}
+                    if (error !== null) {if (suppressErrors) {qm.qmLog.info('ERROR: exec ' + error);} else {qm.qmLog.error('ERROR: exec ' + error);}}
                     callback(error, stdout);
                 });
                 my_child_process.stdout.pipe(process.stdout);
@@ -4720,7 +4743,7 @@ var qm = {
         },
         browser: {
             get: function(){
-                if(qm.platform.browser.isChrome()){return "chrome";}
+                if(qm.platform.browser.isChromeBrowser()){return "chrome";}
                 if(qm.platform.browser.isFirefox()){return "firefox";}
                 if(qm.platform.browser.isEdge()){return "edge";}
                 if(qm.platform.browser.isIE()){return "ie";}
@@ -4731,9 +4754,9 @@ var qm = {
             isFirefox: function(){
                 return typeof InstallTrigger !== 'undefined';
             },
-            isChrome: function () {
+            isChromeBrowser: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return !!window.chrome && !!window.chrome.webstore;
+                return typeof window.chrome !== "undefined"
             },
             isEdge: function () {
                 if(!qm.platform.getWindow()){return false;}
@@ -4752,7 +4775,7 @@ var qm = {
             },
             isBlink: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
+                return (qm.platform.browser.isChromeBrowser() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
         }
     },
@@ -4992,6 +5015,12 @@ var qm = {
             });
         }
     },
+    menu: {
+        getMenu: function(){
+            var appSettings = qm.getAppSettings();
+            return appSettings.appDesign.menu.active;
+        }
+    },
     qmLog: function(){return qmLog;},
     robot: {
         showing: false,
@@ -5109,7 +5138,7 @@ var qm = {
             }
             qm.qmLog.info("speechSynthesis is available");
             var isWebBrowser = qm.platform.isWeb();
-            var isChromeBrowser = qm.platform.browser.isChrome();
+            var isChromeBrowser = qm.platform.browser.isChromeBrowser();
             if(isWebBrowser && !isChromeBrowser){
                 if(!qm.appMode.isTesting()){
                     qm.qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
@@ -5961,13 +5990,11 @@ var qm = {
                 return defaultValue;
             }
         },
-        getStringBeforeSubstring: function(needle, haystack){
+        getStringBeforeSubstring: function(needle, haystack, defaultResponse){
+            defaultResponse = defaultResponse || haystack;
             var i = haystack.indexOf(needle);
-            if(i > 0) {
-                return  haystack.slice(0, i);
-            } else {
-                return haystack;
-            }
+            if(i > 0) {return haystack.slice(0, i);}
+            return defaultResponse;
         },
         toCamelCase: function(string) {
             string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -6341,6 +6368,29 @@ var qm = {
             var url = qm.studyHelper.getStudyUrl(study);
             qm.qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
             qm.urlHelper.goToUrl(url);
+        }
+    },
+    tests: {
+        menu: {
+            testMoveMenuItemDown: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+                qm.assert.equals(original[0].id, reordered[1].id);
+            },
+            testMoveFirstMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.equals(original[0].id, reordered[0].id);
+            },
+            testMoveMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
+                qm.assert.equals(original[1].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+            },
         }
     },
     timeHelper: {
