@@ -681,17 +681,6 @@ var qm = {
                 }, errorHandler)
             });
         },
-        loadBuildInfoFromJson: function(callback) {  // I think adding appSettings to the chrome manifest breaks installation
-            if(qm.buildInfo){callback(qm.buildInfo);}
-            qm.api.getViaXhrOrFetch(qm.urlHelper.getAbsoluteUrlFromRelativePath('build-info.json'), function (parsedResponse) {  // Can't use QM SDK in service worker
-                if(parsedResponse){
-                    qm.buildInfo = parsedResponse;
-                }
-                callback(parsedResponse);
-            }, function () {
-                qm.qmLog.error("Could not get appSettings from build-info.json");
-            });
-        },
         loadPrivateConfigFromJsonFile: function(successHandler, errorHandler) {  // I think adding appSettings to the chrome manifest breaks installation
             if(!qm.privateConfig){
                 qm.api.getViaXhrOrFetch(qm.urlHelper.getPrivateConfigJsonUrl(), function (parsedResponse) {  // Can't use QM SDK in service worker
@@ -724,18 +713,16 @@ var qm = {
             }
             if(qm.appMode.isBuilder()){return successHandler();}  // Don't need to mess with app settings refresh in builder
             qm.storage.setItem(qm.items.appSettings, appSettings);
-            qm.appsManager.loadBuildInfoFromJson(function (buildInfo) {
-                for (var propertyName in buildInfo) {
-                    if( buildInfo.hasOwnProperty(propertyName) ) {
-                        appSettings[propertyName] = buildInfo[propertyName];
-                    }
+            for (var propertyName in qm.staticData.buildInfo) {
+                if( qm.staticData.buildInfo.hasOwnProperty(propertyName) ) {
+                    appSettings[propertyName] = qm.staticData.buildInfo[propertyName];
                 }
-                if(!appSettings.gottenAt){appSettings.gottenAt = qm.timeHelper.getUnixTimestampInSeconds();}
-                if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
-                    qm.appsManager.getAppSettingsFromApi(appSettings.clientId);
-                }
-                successHandler();
-            })
+            }
+            if(!appSettings.gottenAt){appSettings.gottenAt = qm.timeHelper.getUnixTimestampInSeconds();}
+            if(appSettings.gottenAt < qm.timeHelper.getUnixTimestampInSeconds() - 86400){
+                qm.appsManager.getAppSettingsFromApi(appSettings.clientId);
+            }
+            successHandler();
         },
         // SubDomain : Filename
         appConfigFileNames: {
@@ -1603,7 +1590,6 @@ var qm = {
     },
     builder: {
     },
-    buildInfo: {},
     chartHelper: {
         setChartExportingOptionsOnce: function(highchartConfig){
             if(!highchartConfig){
@@ -2671,10 +2657,10 @@ var qm = {
             }
             qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
-            return fs.writeFile(filePath, stringContents, callback);
+            return qm.fs.writeFile(filePath, stringContents, callback);
         },
         outputFileContents: function(path){
-            qm.qmLog.info(path+": "+fs.readFileSync(path));
+            qm.qmLog.info(path+": "+qm.fs.readFileSync(path));
         },
         cleanFiles: function(filesArray) {
             qm.qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
@@ -2684,7 +2670,7 @@ var qm = {
             filePath = './' + filePath;
             qm.qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){stringContents = qm.stringHelper.prettyJSONStringify(stringContents);}
-            return fs.writeFileSync(filePath, stringContents);
+            return qm.fs.writeFileSync(filePath, stringContents);
         },
         copyFiles: function(sourceFiles, destinationPath, excludedFolder) {
             console.log("Copying " + sourceFiles + " to " + destinationPath);

@@ -9,7 +9,7 @@ var qmLog = {
         };
         bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
     },
-    errorAndExceptionTestingOrDevelopment(message, metaData, maxCharacters){
+    errorAndExceptionTestingOrDevelopment: function(message, metaData, maxCharacters){
         throw message;
     },
     info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
@@ -129,11 +129,6 @@ var qmLog = {
         getPreviousBuildInfo: function () {
             return JSON.parse(fs.readFileSync(paths.www.buildInfo));
         },
-        writeBuildInfo: function () {
-            var buildInfo = qmLog.buildInfoHelper.getCurrentBuildInfo();
-            qmLog.fileHelper.writeToFile(paths.src.buildInfo, buildInfo);
-            return qmLog.fileHelper.writeToFile(paths.www.buildInfo, buildInfo);
-        },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
             if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
@@ -163,7 +158,7 @@ var qmLog = {
             }
         },
         accessToken: process.env.GITHUB_ACCESS_TOKEN,
-        getCommitMessage(callback){
+        getCommitMessage: function(callback){
             var commandForGit = 'git log -1 HEAD --pretty=format:%s';
             execute(commandForGit, function (error, output) {
                 var commitMessage = output.trim();

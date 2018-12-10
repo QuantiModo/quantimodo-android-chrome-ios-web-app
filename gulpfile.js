@@ -131,7 +131,6 @@ var paths = {
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
-        buildInfo: "src/build-info.json",
         devCredentials: "src/dev-credentials.json",
         defaultPrivateConfig: "src/default.private_config.json",
         icons: "src/img/icons",
@@ -142,7 +141,6 @@ var paths = {
     },
     www: {
         devCredentials: "www/dev-credentials.json",
-        buildInfo: "www/build-info.json",
         defaultPrivateConfig: "www/default.private_config.json",
         icons: "www/img/icons",
         firebase: "www/lib/firebase/",
@@ -587,12 +585,9 @@ var qmGulp = {
             return qmGulp.buildInfoHelper.previousBuildInfo;
         },
         previousBuildInfo: null,
-        writeBuildInfo: function () {
-            var buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-            writeToFile(paths.src.buildInfo, buildInfo);
+        writeCommitSha: function () {
             writeToFile('www/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
             writeToFile('src/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
-            return writeToFile(paths.www.buildInfo, buildInfo);
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -1562,9 +1557,6 @@ gulp.task('post-app-status', ['getAppConfigs'], function () {
 });
 gulp.task('validateChromeManifest', function () {
     return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
-});
-gulp.task('verifyExistenceOfBuildInfo', function () {
-    return verifyExistenceOfFile(paths.www.buildInfo);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
     if(buildSettings.xwalkMultipleApk){
@@ -2671,8 +2663,8 @@ gulp.task('setVersionNumberInFiles', function () {
         .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
 });
-gulp.task('buildInfo', ['getAppConfigs'], function () {
-    return qmGulp.buildInfoHelper.writeBuildInfo();
+gulp.task('writeCommitSha', ['getAppConfigs'], function () {
+    return qmGulp.buildInfoHelper.writeCommitSha();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -3016,7 +3008,7 @@ gulp.task('configureApp', [], function (callback) {
         //'getUnits', // This is in staticData now
         //'getVariableCategories',  // This is in staticData now
         'getAppConfigs',
-        'buildInfo',
+        'writeCommitSha',
         'uncommentBugsnagInIndexHtml',
         //'uncommentOpbeatInIndexHtml',
         'staticDataFile',
@@ -3029,7 +3021,6 @@ gulp.task('configureApp', [], function (callback) {
         'downloadSplashScreen',
         'copyServiceWorkerFirebaseLocalForage',
         'setVersionNumberInFiles',
-        'verifyExistenceOfBuildInfo',
         'createSuccessFile',
         callback);
 });
@@ -3074,7 +3065,6 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'chromeBackgroundJS',
         'chromeIFrameHtml',
         'chromeOptionsHtml',
-        'verifyExistenceOfBuildInfo',
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
