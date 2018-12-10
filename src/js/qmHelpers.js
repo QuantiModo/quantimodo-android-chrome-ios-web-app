@@ -4893,10 +4893,12 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl("://localhost:") !== -1;
         },
         isDesignMode: function () {
+            if(!qm.platform.getWindow()){return false;}
             return qm.getAppSettings().designMode;
         },
         browser: {
             get: function(){
+                if(!qm.platform.getWindow()){return false;}
                 if(qm.platform.browser.isChromeBrowser()){return "chrome";}
                 if(qm.platform.browser.isFirefox()){return "firefox";}
                 if(qm.platform.browser.isEdge()){return "edge";}
@@ -4906,6 +4908,7 @@ var qm = {
                 if(qm.platform.browser.isBlink()){return "blink";}
             },
             isFirefox: function(){
+                if(!qm.platform.getWindow()){return false;}
                 return typeof InstallTrigger !== 'undefined';
             },
             isChromeBrowser: function () {
@@ -4917,6 +4920,7 @@ var qm = {
                 return !qm.platform.browser.isIE() && !!window.StyleMedia;
             },
             isIE: function () {
+                if(!qm.platform.getWindow()){return false;}
                 return /*@cc_on!@*/!!document.documentMode;
             },
             isSafari: function () {
