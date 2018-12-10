@@ -292,11 +292,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(title, textContent, ev);
     };
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-    $scope.copyToClipboard = function (text, name) {
-        name = name || text;
+    $scope.copyToClipboard = function (url, name) {
+        name = name || url;
         $scope.copyLinkText = 'Copied!';
-        clipboard.copyText(text);
+        clipboard.copyText(url);
         qmService.showInfoToast('Copied ' + name + ' to clipboard!');
+    };
+    $scope.copyDemoLink = function () {
+        var url = "https://web.quantimo.do"+window.location.hash;
+        url = qm.urlHelper.addUrlQueryParamsToUrlString({clientId: qm.getClientId(), accessToken: "demo"}, url);
+        var name = "Demo Link to "+qm.stringHelper.camelToTitleCase($state.current.name.replace('app.', ''));
+        $scope.copyToClipboard(url, name);
     };
     $scope.sendEmailAfterVerification = function(emailType) {
         qmService.sendEmailAfterVerification(emailType);

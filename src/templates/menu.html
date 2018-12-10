@@ -3,9 +3,19 @@
         <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}"
                      ng-show="hideNavigationMenu === false || appSettings.designMode" >
             <ion-nav-buttons side="left">
-                <button id="menu-toggle-button" ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
-                <button id="menu-close-button" ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
-                <button id="menu-back-button" ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back" ng-click="goBack()"></button>
+                <button id="menu-toggle-button" ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon"
+                        menu-toggle="left">
+                </button>
+                <button id="menu-close-button" ng-show="showCloseMenuButton" class="button button-icon ion-android-close"
+                        ng-click="closeMenu()">
+                </button>
+                <button id="menu-back-button" ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back"
+                        ng-click="goBack()">
+                </button>
+                <button id="demo-link-button" ng-if="appSettings.designMode" class="button button-icon ion-link"
+                        ng-click="copyDemoLink()">
+                    <md-tooltip>Copy Demo Link To Clipboard</md-tooltip>
+                </button>
                 <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/ Also, now back button goes home if we don't have a back view so we don't need a home button
                 <button ng-hide="hideHomeButton" class="button button-icon ion-home" ng-click="goToState('app.remindersInbox')"> </button>
                 -->
