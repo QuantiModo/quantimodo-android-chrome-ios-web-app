@@ -278,6 +278,11 @@ var qmGit = {
     },
     accessToken: process.env.GITHUB_ACCESS_TOKEN,
     getCommitMessage: function(callback){
+        if(process.env.BUILDPACK_LOG_FILE){
+            qmLog.info("Can't get commit on Heroku");
+            callback("Can't get commit on Heroku");
+            return;
+        }
         var commandForGit = 'git log -1 HEAD --pretty=format:%s';
         execute(commandForGit, function (error, output) {
             var commitMessage = output.trim();
