@@ -527,6 +527,7 @@ var qmLog = {
                 options.user = qmLog.obfuscateSecrets(user);
             }
             if(qmLog.qm.getAppSettings()){options.appVersion = qmLog.qm.getAppSettings().androidVersionCode;}
+            if(qmLog.qm.staticData.buildInfo.gitCommitShaHash){options.appVersion = qmLog.qm.staticData.buildInfo.gitCommitShaHash;}
             if(qmLog.qm.platform.getWindow()){window.bugsnagClient = bugsnag(options);}
         } else {
             if(!qmLog.qm.appMode.isDevelopment()){qmLog.error('Bugsnag is not defined');}
