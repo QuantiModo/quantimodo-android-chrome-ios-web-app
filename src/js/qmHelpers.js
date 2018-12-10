@@ -80,6 +80,9 @@ var qm = {
             if(qm.appMode.isDevelopment()){env = "development";}
             if(qm.appMode.isTesting()){env = "testing";}
             return env;
+        },
+        isBackEnd: function(){
+            return qm.platform.isBackEnd();
         }
     },
     apiPaths: {
@@ -397,6 +400,7 @@ var qm = {
             if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){qm.storage.setItem(qm.items.apiUrl, apiUrl);}
             if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){apiUrl = "https://utopia.quantimo.do";}
             if(!apiUrl){apiUrl = qm.storage.getItem(qm.items.apiUrl);}
+            if(qm.appMode.isBrowser() && window.location.host.indexOf('dev-') === 0){return "https://local.quantimo.do";}
             if(!apiUrl){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
                 if(appSettings && appSettings.apiUrl){apiUrl = appSettings.apiUrl;}
@@ -815,7 +819,7 @@ var qm = {
                 qm.qmLog.error("No array provided to arrayHasItemWithSpecificPropertyValue");
                 return false;
             }
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 var obj = array[i];
                 if(obj[propertyName] && obj[propertyName] === propertyValue){
                     return true;
@@ -827,10 +831,12 @@ var qm = {
             return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
         },
         removeItemsWithDifferentName: function(arrayOfObjects, queryTerm){
-            return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+            return arrayOfObjects.filter(function(obj){
+                return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;
+            });
         },
-        concatenateUniqueId: function (preferred, secondary) {
-            for (var i = 0; i < preferred.length; ++i) {
+        concatenateUniqueId: function(preferred, secondary){
+            for(var i = 0; i < preferred.length; ++i){
                 var preferredItem = preferred[i];
                 secondary = secondary.filter(function(secondaryItem){
                     return secondaryItem.id !== preferredItem.id;
@@ -840,46 +846,52 @@ var qm = {
             return combined;
         },
         convertToArrayIfNecessary: function(variable){
-            if(!qm.arrayHelper.variableIsArray(variable)){variable = [variable];}
+            if(!qm.arrayHelper.variableIsArray(variable)){
+                variable = [variable];
+            }
             return variable;
         },
-        convertObjectToArray: function (object) {
+        convertObjectToArray: function(object){
             if(!object){
                 qm.qmLog.info(object + " provided to convertObjectToArray");
                 return object;
             }
-            if(qm.arrayHelper.variableIsArray(object)){return object;}
-            return Object.keys(object).map(function(key) {
+            if(qm.arrayHelper.variableIsArray(object)){
+                return object;
+            }
+            return Object.keys(object).map(function(key){
                 return object[key];
             });
         },
         deleteById: function(id, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj.id !== id;
             });
             return array;
         },
         deleteByProperty: function(propertyName, value, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj[propertyName] !== value;
             });
             return array;
         },
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
-            return unfilteredElementArray.filter(function( obj ) {
+            return unfilteredElementArray.filter(function(obj){
                 if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
                     return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
-                } else {
+                }else{
                     return filterPropertyValue === obj[filterPropertyName];
                 }
             });
         },
         filterByPropertyOrSize: function(matchingElements, filterPropertyName, filterPropertyValue,
                                          lessThanPropertyName, lessThanPropertyValue,
-                                         greaterThanPropertyName, greaterThanPropertyValue) {
-            if(!matchingElements){return null;}
+                                         greaterThanPropertyName, greaterThanPropertyValue){
+            if(!matchingElements){
+                return null;
+            }
             if(matchingElements.length){
-                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined"){
                     qm.qmLog.error(greaterThanPropertyName + ' greaterThanPropertyName does not exist');
                 }
                 if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
@@ -893,19 +905,19 @@ var qm = {
                 matchingElements = qm.arrayHelper.filterByProperty(filterPropertyName, filterPropertyValue, matchingElements);
             }
             if(lessThanPropertyName && typeof lessThanPropertyValue !== "undefined"){
-                matchingElements = matchingElements.filter(function( obj ) {
+                matchingElements = matchingElements.filter(function(obj){
                     return obj[lessThanPropertyName] < lessThanPropertyValue;
                 });
             }
             if(greaterThanPropertyName && typeof greaterThanPropertyValue !== "undefined"){
-                matchingElements = matchingElements.filter(function( obj ) {
+                matchingElements = matchingElements.filter(function(obj){
                     return obj[greaterThanPropertyName] > greaterThanPropertyValue;
                 });
             }
             return matchingElements;
         },
         getByProperty: function(propertyName, value, array){
-            array = array.filter(function( obj ) {
+            array = array.filter(function(obj){
                 return obj[propertyName] === value;
             });
             return array;
@@ -917,7 +929,7 @@ var qm = {
             }
             searchTerm = searchTerm.toLowerCase();
             var matches = [];
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 if(JSON.stringify(array[i]).toLowerCase().indexOf(searchTerm) > -1){
                     matches.push(array[i]);
                 }
@@ -955,28 +967,34 @@ var qm = {
             return array.filter(function(item){
                 var name = item.name || item.variableName;
                 if(!name){
-                    qm.qmLog.error("No name on: "+JSON.stringify(item));
+                    qm.qmLog.error("No name on: " + JSON.stringify(item));
                     return false;
                 }
                 name = name.toLowerCase();
-                var result = filterBy.every(function (word){
+                var result = filterBy.every(function(word){
                     var exists = name.indexOf(word);
-                    if(exists !== -1){return true;}
+                    if(exists !== -1){
+                        return true;
+                    }
                     if(item.synonyms && item.synonyms.length){
                         var synonyms = JSON.stringify(item.synonyms).toLowerCase();
-                        if(synonyms.indexOf(word) !== -1){return true;}
+                        if(synonyms.indexOf(word) !== -1){
+                            return true;
+                        }
                     }
                     if(item.alias){
                         var alias = item.alias.toLowerCase();
-                        if(alias.indexOf(word) !== -1){return true;}
+                        if(alias.indexOf(word) !== -1){
+                            return true;
+                        }
                     }
                 });
                 return result;
             });
         },
-        inArray: function(needle, haystack) {
+        inArray: function(needle, haystack){
             var length = haystack.length;
-            for(var i = 0; i < length; i++) {
+            for(var i = 0; i < length; i++){
                 if(haystack[i] === needle) return true;
             }
             return false;
@@ -984,7 +1002,7 @@ var qm = {
         mergeWithUniqueId: function(replacements, existingArray){
             return qm.arrayHelper.concatenateUniqueId(replacements, existingArray);
         },
-        replaceElementInArrayById: function (array, replacementElement) {
+        replaceElementInArrayById: function(array, replacementElement){
             return qm.arrayHelper.concatenateUniqueId([replacementElement], array);
         },
         removeLastItem: function(array){
@@ -1011,31 +1029,37 @@ var qm = {
                 qm.qmLog.error("Removing only element from single item array!");
                 return [];
             }
-            while (qm.arrayHelper.getSizeInKiloBytes(array) > maxKb) {
+            while(qm.arrayHelper.getSizeInKiloBytes(array) > maxKb){
                 qm.arrayHelper.removeLastItem(array);
             }
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName){
-            qm.qmLog.info("Sorting by "+propertyName+"...");
+            qm.qmLog.info("Sorting by " + propertyName + "...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qm.qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;
             }
-            if(arrayToSort.length < 2){return arrayToSort;}
+            if(arrayToSort.length < 2){
+                return arrayToSort;
+            }
             if(propertyName.indexOf('-') > -1){
-                arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
-            } else {
-                arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
+                arrayToSort.sort(function(a, b){
+                    return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
+                });
+            }else{
+                arrayToSort.sort(function(a, b){
+                    return a[propertyName] - b[propertyName];
+                });
             }
             return arrayToSort;
         },
-        unsetNullProperties: function (array) {
+        unsetNullProperties: function(array){
             if(!array){
                 qm.qmLog.error("Nothing provided to unsetNullProperties");
                 return null;
             }
-            for (var i = 0; i < array.length; i++) {
+            for(var i = 0; i < array.length; i++){
                 array[i] = qm.objectHelper.unsetNullProperties(array[i]);
             }
             return array;
@@ -1046,31 +1070,41 @@ var qm = {
                 return false;
             }
             var isAnArray = Array.isArray(variable);
-            if(isAnArray){return true;}
+            if(isAnArray){
+                return true;
+            }
             var constructorArray = variable.constructor === Array;
-            if(constructorArray){return true;}
+            if(constructorArray){
+                return true;
+            }
             var instanceOfArray = variable instanceof Array;
-            if(instanceOfArray){return true;}
+            if(instanceOfArray){
+                return true;
+            }
             return Object.prototype.toString.call(variable) === '[object Array]';
         },
-        removeArrayElementsWithDuplicateIds: function(array) {
-            if(!array){return array;}
+        removeArrayElementsWithDuplicateIds: function(array){
+            if(!array){
+                return array;
+            }
             var a = array.concat();
-            for(var i = 0; i < a.length; i++) {
-                for(var j = i + 1; j < a.length; j++) {
-                    if(!a[i]){qm.qmLog.error('a[i] not defined!');}
+            for(var i = 0; i < a.length; i++){
+                for(var j = i + 1; j < a.length; j++){
+                    if(!a[i]){
+                        qm.qmLog.error('a[i] not defined!');
+                    }
                     if(!a[j]){
                         qm.qmLog.error('a[j] not defined!');
                         return a;
                     }
-                    if(a[i].id === a[j].id) {
+                    if(a[i].id === a[j].id){
                         a.splice(j--, 1);
                     }
                 }
             }
             return a;
         },
-        filterByRequestParams: function(array, requestParams) {
+        filterByRequestParams: function(array, requestParams){
             if(!array){
                 qm.qmLog.error("Nothing provided to filterByRequestParams");
                 return array;
@@ -1089,22 +1123,32 @@ var qm = {
             var lessThanPropertyValue = null;
             var filterPropertyValues = [];
             var filterPropertyNames = [];
-            for (var key in requestParams) {
-                if(!requestParams.hasOwnProperty(key)){continue;}
+            for(var key in requestParams){
+                if(!requestParams.hasOwnProperty(key)){
+                    continue;
+                }
                 var value = requestParams[key];
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
                     lessThanPropertyValue = Number(lessThanPropertyValue);
                     lessThanPropertyName = key;
-                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                }else if(typeof value === "string" && value.indexOf('(gt)') !== -1){
                     greaterThanPropertyValue = value.replace('(gt)', "");
                     greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     greaterThanPropertyName = key;
-                } else {
-                    if (value === false && key === "manualTracking") { continue; }
-                    if (value === null || value === "" || value === "Anything") { continue; }
-                    if (excludedFilterParams.indexOf(key) !== -1) {continue;}
-                    if (allowedFilterParams.indexOf(key) === -1) {qm.qmLog.error(key + " is not in allowed filter params");}
+                }else{
+                    if(value === false && key === "manualTracking"){
+                        continue;
+                    }
+                    if(value === null || value === "" || value === "Anything"){
+                        continue;
+                    }
+                    if(excludedFilterParams.indexOf(key) !== -1){
+                        continue;
+                    }
+                    if(allowedFilterParams.indexOf(key) === -1){
+                        qm.qmLog.error(key + " is not in allowed filter params");
+                    }
                     qm.qmLog.info("filtering by " + key);
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
@@ -1117,67 +1161,95 @@ var qm = {
                     results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
                 }
             }
-            if(!results){return null;}
+            if(!results){
+                return null;
+            }
             if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
                 results = qm.arrayHelper.getWithNameContainingEveryWord(requestParams.searchPhrase, results);
             }
-            if(requestParams && requestParams.sort){results = qm.arrayHelper.sortByProperty(results, requestParams.sort);}
+            if(requestParams && requestParams.sort){
+                results = qm.arrayHelper.sortByProperty(results, requestParams.sort);
+            }
             results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
             return results;
         },
-        getUnique: function(array, propertyName) {
+        getUnique: function(array, propertyName){
             if(!propertyName){
-                function onlyUnique(value, index, self) {return self.indexOf(value) === index;}
-                return array.filter( onlyUnique );
+                function onlyUnique(value, index, self){
+                    return self.indexOf(value) === index;
+                }
+                return array.filter(onlyUnique);
             }
             var flags = [], output = [], l = array.length, i;
-            for( i=0; i<l; i++) {
-                if(flags[array[i][propertyName]]) {continue;}
+            for(i = 0; i < l; i++){
+                if(flags[array[i][propertyName]]){
+                    continue;
+                }
                 flags[array[i][propertyName]] = true;
                 output.push(array[i]);
             }
             return output;
         },
-        deleteFromArrayByProperty: function(localStorageItemArray, propertyName, propertyValue) {
+        deleteFromArrayByProperty: function(localStorageItemArray, propertyName, propertyValue){
             var elementsToKeep = [];
             for(var i = 0; i < localStorageItemArray.length; i++){
-                if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
+                if(localStorageItemArray[i][propertyName] !== propertyValue){
+                    elementsToKeep.push(localStorageItemArray[i]);
+                }
             }
             return elementsToKeep;
         },
         addToOrReplaceByIdAndMoveToFront: function(localStorageItemArray, replacementElementArray, key){
-            if(!(replacementElementArray instanceof Array)){replacementElementArray = [replacementElementArray];}
+            if(!(replacementElementArray instanceof Array)){
+                replacementElementArray = [replacementElementArray];
+            }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
             var found = false;
             if(localStorageItemArray){  // NEED THIS DOUBLE LOOP IN CASE THE STUFF WE'RE ADDING IS AN ARRAY
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     found = false;
-                    for (var j = 0; j < replacementElementArray.length; j++){
+                    for(var j = 0; j < replacementElementArray.length; j++){
                         if(typeof replacementElementArray[j] === "string"){
-                           throw key+" replacementElementArray item is string: " +replacementElementArray[j];
+                            throw key + " replacementElementArray item is string: " + replacementElementArray[j];
                         }
                         if(!replacementElementArray[j].id){
-                            qm.qmLog.warn("No id on "+key+" replacementElementArray item: " +JSON.stringify(replacementElementArray[j]));
+                            qm.qmLog.warn("No id on " + key + " replacementElementArray item: " + JSON.stringify(replacementElementArray[j]));
                         }
                         if(replacementElementArray[j].id &&
                             localStorageItemArray[i].id === replacementElementArray[j].id){
                             found = true;
                         }
                     }
-                    if(!found){elementsToKeep.push(localStorageItemArray[i]);}
+                    if(!found){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
                 }
             }
             return elementsToKeep;
         },
-        getSizeInKiloBytes: function(string) {
-            if(typeof value !== "string"){string = JSON.stringify(string);}
-            return Math.round(string.length*16/(8*1024));
+        getSizeInKiloBytes: function(string){
+            if(typeof value !== "string"){
+                string = JSON.stringify(string);
+            }
+            return Math.round(string.length * 16 / (8 * 1024));
         },
         getFirstElementIfArray: function(possibleArray){
-            if(qm.arrayHelper.variableIsArray(possibleArray)){return possibleArray[0];}
+            if(qm.arrayHelper.variableIsArray(possibleArray)){
+                return possibleArray[0];
+            }
             return possibleArray;
-        }
+        },
+        moveElementOfArray: function(arr, old_index, new_index){
+            if(new_index >= arr.length){
+                var k = new_index - arr.length + 1;
+                while(k--){
+                    arr.push(undefined);
+                }
+            }
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr; // for testing
+        },
     },
     assert: {
         count: function(expected, array){
@@ -1197,9 +1269,25 @@ var qm = {
         doesNotHaveUserId: function(item){
             qm.assert.doesNotHaveProperty(item, 'userId');
         },
+        throwTestException: function(testMessage, customMessage){
+            if(customMessage){customMessage = ': ' +customMessage;} else {customMessage = '';}
+            var combinedMessage = testMessage + customMessage;
+            console.error("FAILED: "+combinedMessage+"\n");
+            var e = new Error(combinedMessage);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Gulp', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringBeforeSubstring('at Object.runAllTestsForType', e.stack, e.stack);
+            e.stack = qm.stringHelper.getStringAfter('Object.throwTestException', combinedMessage, e.stack);
+            throw e;
+        },
         equals: function(expected, actual, message){
             if(expected !== actual){
-                throw message + " expected "+expected+" but got "+actual;
+                qm.assert.throwTestException("Expected "+expected+" but got "+actual, message);
+            }
+        },
+        doesNotEqual: function(expected, actual, message){
+            message = message || qm.assert.doesNotEqual.caller;
+            if(expected === actual){
+                qm.assert.throwTestException("Actual value "+actual+" should not equal "+expected, message);
             }
         },
         variables: {
@@ -1502,6 +1590,22 @@ var qm = {
             var reason = 'we got this 401 response: ' + JSON.stringify(response);
             qm.auth.deleteAllAccessTokens(reason);
             qm.auth.setAfterLoginGoToUrlAndSendToLogin(reason);
+        }
+    },
+    builder: {
+        menu: {
+            moveMenuItemDown: function(menuItems, oldIndex){
+                var newIndex = oldIndex + 1;
+                if(newIndex > menuItems.length){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+                return menuItems;
+            },
+            moveMenuItemUp: function(menuItems, oldIndex){
+                var newIndex = oldIndex - 1;
+                if(newIndex < 0){return menuItems;}
+                menuItems = qm.arrayHelper.moveElementOfArray(menuItems, oldIndex, newIndex);
+                return menuItems;
+            }
         }
     },
     buildInfo: {},
@@ -2565,6 +2669,40 @@ var qm = {
             qm.qmLog.error("Undo function not defined!");
         }
     },
+    fileHelper: {
+        writeToFileWithCallback: function(filePath, stringContents, callback) {
+            if(!stringContents){
+                throw filePath + " stringContents not provided to writeToFileWithCallback";
+            }
+            qm.qmLog.info("Writing to " + filePath);
+            if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
+            return fs.writeFile(filePath, stringContents, callback);
+        },
+        outputFileContents: function(path){
+            qm.qmLog.info(path+": "+fs.readFileSync(path));
+        },
+        cleanFiles: function(filesArray) {
+            qm.qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
+            return qm.gulp.src(filesArray, {read: false}).pipe(qm.clean());
+        },
+        writeToFile: function(filePath, stringContents) {
+            filePath = './' + filePath;
+            qm.qmLog.info("Writing to " + filePath);
+            if(typeof stringContents !== "string"){stringContents = qm.stringHelper.prettyJSONStringify(stringContents);}
+            return fs.writeFileSync(filePath, stringContents);
+        },
+        copyFiles: function(sourceFiles, destinationPath, excludedFolder) {
+            console.log("Copying " + sourceFiles + " to " + destinationPath);
+            var srcArray = [sourceFiles];
+            if(excludedFolder){
+                console.log("Excluding " + excludedFolder + " from copy.. ");
+                srcArray.push('!' + excludedFolder);
+                srcArray.push('!' + excludedFolder + '/**');
+            }
+            return qm.gulp.src(srcArray)
+                .pipe(qm.gulp.dest(destinationPath));
+        }
+    },
     functionHelper: {
         getCurrentFunctionNameDoesNotWork: function () {
             var functionName = arguments.callee.toString();
@@ -2661,6 +2799,102 @@ var qm = {
             return qm.userHelper.getUserFromLocalStorage();
         }
         qm.userHelper.getUserFromLocalStorageOrApi(successHandler, errorHandler);
+    },
+    gitHelper: {
+        branchName: null,
+        getBranchName: function(){
+            if(qm.gitHelper.branchName || !qm.appMode.isBackEnd()){
+                return qm.gitHelper.branchName;
+            }
+            return process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH;
+        },
+        isMaster: function(){
+            return qm.gitHelper.getBranchName() === "master";
+        },
+        isDevelop: function(){
+            return qm.gitHelper.getBranchName() === "develop";
+        },
+        isFeature: function(){
+            return qm.gitHelper.getBranchName().indexOf("feature") !== -1;
+        },
+        getCurrentGitCommitSha: function(){
+            if(qm.appMode.isBackEnd() && process.env.SOURCE_VERSION){
+                return process.env.SOURCE_VERSION;
+            }
+            try{
+                return require('child_process').execSync('git rev-parse HEAD').toString().trim();
+            }catch (error){
+                qm.qmLog.info(error);
+            }
+        },
+        getCommitMessage: function(callback){
+            var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+            qm.nodeHelper.execute(commandForGit, function(error, output){
+                var commitMessage = output.trim();
+                qm.qmLog.info("Commit: " + commitMessage);
+                if(callback){
+                    callback(commitMessage);
+                }
+            });
+        },
+        outputCommitMessageAndBranch: function(){
+            qm.gitHelper.getCommitMessage(function(commitMessage){
+                qm.gitHelper.setBranchName(function(branchName){
+                    qm.qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
+                });
+            });
+        },
+        setBranchName: function(callback){
+            function setBranch(branch, callback){
+                qm.gitHelper.branchName = branch.replace('origin/', '');
+                qm.qmLog.info('current git branch: ' + qm.gitHelper.branchName);
+                if(callback){
+                    callback(qm.gitHelper.branchName);
+                }
+            }
+            if(qm.gitHelper.branchName){
+                setBranch(qm.gitHelper.branchName, callback);
+                return;
+            }
+            try{
+                var git = require('./src/ionic/node_modules/gulp-git');
+                git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
+                    if(err){
+                        qm.qmLog.error(err);
+                        return;
+                    }
+                    setBranch(branch, callback);
+                });
+            }catch (e){
+                qm.qmLog.info("Could not set branch name because " + e.message);
+            }
+        },
+        getReleaseStage: function(){
+            if(!process.env.HOSTNAME){
+                return "local";
+            }
+            if(process.env.HOSTNAME.indexOf("local") !== -1){
+                return "local";
+            }
+            if(process.env.HOSTNAME.indexOf("staging") !== -1){
+                return "staging";
+            }
+            if(process.env.HOSTNAME.indexOf("app") !== -1){
+                return "production";
+            }
+            if(process.env.HOSTNAME.indexOf("production") !== -1){
+                return "production";
+            }
+            qm.qmLog.error("Could not determine release stage!");
+        },
+        releaseStage: {
+            isProduction: function(){
+                return qm.gitHelper.getReleaseStage() === "production";
+            },
+            isStaging: function(){
+                return qm.gitHelper.getReleaseStage() === "staging";
+            }
+        },
     },
     globalHelper: {
         setStudy: function(study){
@@ -3707,6 +3941,32 @@ var qm = {
     nlp: function(){
         return nlp;
     },
+    nodeHelper: {
+        execute: function(command, callback, suppressErrors, lotsOfOutput) {
+            qm.qmLog.debug('executing ' + command);
+            if(lotsOfOutput){
+                var args = command.split(" ");
+                var program = args.shift();
+                var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
+                var ps = spawn(program, args);
+                ps.on('exit', function (code, signal) {
+                    qm.qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
+                    if(callback){callback();}
+                });
+                ps.stdout.on('data', function (data) {qm.qmLog.info(command + ' stdout: ' + data);});
+                ps.stderr.on('data', function (data) {qm.qmLog.error(command + '  stderr: ' + data);});
+                ps.on('close', function (code) {if (code !== 0) {qm.qmLog.error(command + ' process exited with code ' + code);}});
+            } else {
+                var exec = require('child_process').exec;
+                var my_child_process = exec(command, function (error, stdout, stderr) {
+                    if (error !== null) {if (suppressErrors) {qm.qmLog.info('ERROR: exec ' + error);} else {qm.qmLog.error('ERROR: exec ' + error);}}
+                    callback(error, stdout);
+                });
+                my_child_process.stdout.pipe(process.stdout);
+                my_child_process.stderr.pipe(process.stderr);
+            }
+        }
+    },
     notifications: {
         actions: {
             trackYesAction: function (data){
@@ -4483,7 +4743,7 @@ var qm = {
         },
         browser: {
             get: function(){
-                if(qm.platform.browser.isChrome()){return "chrome";}
+                if(qm.platform.browser.isChromeBrowser()){return "chrome";}
                 if(qm.platform.browser.isFirefox()){return "firefox";}
                 if(qm.platform.browser.isEdge()){return "edge";}
                 if(qm.platform.browser.isIE()){return "ie";}
@@ -4494,9 +4754,9 @@ var qm = {
             isFirefox: function(){
                 return typeof InstallTrigger !== 'undefined';
             },
-            isChrome: function () {
+            isChromeBrowser: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return !!window.chrome && !!window.chrome.webstore;
+                return typeof window.chrome !== "undefined"
             },
             isEdge: function () {
                 if(!qm.platform.getWindow()){return false;}
@@ -4515,7 +4775,7 @@ var qm = {
             },
             isBlink: function () {
                 if(!qm.platform.getWindow()){return false;}
-                return (qm.platform.browser.isChrome() || qm.platform.browser.isOpera()) && !!window.CSS;
+                return (qm.platform.browser.isChromeBrowser() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
         }
     },
@@ -4755,6 +5015,12 @@ var qm = {
             });
         }
     },
+    menu: {
+        getMenu: function(){
+            var appSettings = qm.getAppSettings();
+            return appSettings.appDesign.menu.active;
+        }
+    },
     qmLog: function(){return qmLog;},
     robot: {
         showing: false,
@@ -4872,7 +5138,7 @@ var qm = {
             }
             qm.qmLog.info("speechSynthesis is available");
             var isWebBrowser = qm.platform.isWeb();
-            var isChromeBrowser = qm.platform.browser.isChrome();
+            var isChromeBrowser = qm.platform.browser.isChromeBrowser();
             if(isWebBrowser && !isChromeBrowser){
                 if(!qm.appMode.isTesting()){
                     qm.qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
@@ -5724,13 +5990,11 @@ var qm = {
                 return defaultValue;
             }
         },
-        getStringBeforeSubstring: function(needle, haystack){
+        getStringBeforeSubstring: function(needle, haystack, defaultResponse){
+            defaultResponse = defaultResponse || haystack;
             var i = haystack.indexOf(needle);
-            if(i > 0) {
-                return  haystack.slice(0, i);
-            } else {
-                return haystack;
-            }
+            if(i > 0) {return haystack.slice(0, i);}
+            return defaultResponse;
         },
         toCamelCase: function(string) {
             string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -6104,6 +6368,29 @@ var qm = {
             var url = qm.studyHelper.getStudyUrl(study);
             qm.qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
             qm.urlHelper.goToUrl(url);
+        }
+    },
+    tests: {
+        menu: {
+            testMoveMenuItemDown: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+                qm.assert.equals(original[0].id, reordered[1].id);
+            },
+            testMoveFirstMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
+                qm.assert.equals(original[0].id, reordered[0].id);
+            },
+            testMoveMenuItemUp: function(){
+                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
+                var reordered = qm.builder.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
+                qm.assert.equals(original[1].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
+                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
+            },
         }
     },
     timeHelper: {
@@ -7416,6 +7703,10 @@ var qm = {
             }
             if(!qm.platform.isWeb()){
                 qm.qmLog.debug("Not registering service worker because not on Web");
+                return false;
+            }
+            if(!qm.appMode.isBuilder()){
+                qm.qmLog.debug("Not registering service worker because appMode isBuilder");
                 return false;
             }
             try {
