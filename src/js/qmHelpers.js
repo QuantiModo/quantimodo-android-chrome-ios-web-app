@@ -2879,6 +2879,42 @@ var qm = {
                 return qm.gitHelper.getReleaseStage() === "staging";
             }
         },
+        createStatusToCommit: function(statusOptions, callback){
+            qm.github.createStatusToCommit(statusOptions, qm.gitHelper.getGithubOptions(), callback);
+        },
+        getGithubOptions: function(){
+            var options = {
+                // Required options: git_token, git_repo
+                // refer to https://help.github.com/articles/creating-an-access-token-for-command-line-use/
+                git_token: process.env.GITHUB_ACCESS_TOKEN,
+                // comment into this repo, this pr.
+                git_repo: 'QuantiModo/quantimodo-android-chrome-ios-web-app',
+                //git_prid: '1',
+                // create status to this commit, optional
+                git_sha: qm.gitHelper.getCurrentGitCommitSha(),
+                jshint_status: 'error',       // Set status to error when jshint errors, optional
+                jscs_status: 'failure',       // Set git status to failure when jscs errors, optional
+                eslint_status: 'error',       // Set git status to error when eslint errors, optional
+                // when using github enterprise, optional
+                git_option: {
+                    // refer to https://www.npmjs.com/package/github for more options
+                    //host: 'github.mycorp.com',
+                    // You may require this when you using Enterprise Github
+                    //pathPrefix: '/api/v3'
+                },
+                // Provide your own jshint reporter, optional
+                jshint_reporter: function (E, file) { // gulp stream file object
+                    // refer to http://jshint.com/docs/reporters/ for E structure.
+                    return 'Error in ' + E.file + '!';
+                },
+                // Provide your own jscs reporter, optional
+                jscs_reporter: function (E, file) { // gulp stream file object
+                    // refer to https://github.com/jscs-dev/node-jscs/wiki/Error-Filters for E structure.
+                    return 'Error in ' + E.filename + '!';
+                }
+            };
+            return options;
+        }
     },
     globalHelper: {
         setStudy: function(study){
