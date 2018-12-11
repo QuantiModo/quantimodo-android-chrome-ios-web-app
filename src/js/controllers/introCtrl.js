@@ -84,12 +84,12 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmService.hideLoader();
         qmService.navBar.hideNavigationMenu();
         qm.splash.text.show();
         qmService.splash.hideSplashScreen();
         qm.robot.onRobotClick = $scope.myIntro.next;
         qmService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
+        qmService.hideLoader();
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         qm.music.fadeOut();
