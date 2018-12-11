@@ -212,13 +212,13 @@ ansi-colors@1.1.0, ansi-colors@^1.0.1, ansi-colors@^1.1.0:
   dependencies:
     ansi-wrap "^0.1.0"
 
+ansi-colors@3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
+
 ansi-colors@^3.0.5:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.2.tgz#e49349137dbeb6d381b91e607c189915e53265ba"
-
-ansi-colors@^3.2.3:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
 
 ansi-cyan@^0.1.1:
   version "0.1.1"
@@ -3795,7 +3795,7 @@ gulp-endpoint@mikepsinn/gulp-endpoint:
     response-time "^2.3.1"
     vinyl "^1.1.0"
 
-gulp-eslint@^5.0.0:
+gulp-eslint@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/gulp-eslint/-/gulp-eslint-5.0.0.tgz#2a2684095f774b2cf79310262078c56cc7a12b52"
   dependencies:
@@ -3875,7 +3875,7 @@ gulp-if@^2.0.2:
     ternary-stream "^2.0.1"
     through2 "^2.0.1"
 
-gulp-jscs@^4.1.0:
+gulp-jscs@4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/gulp-jscs/-/gulp-jscs-4.1.0.tgz#72dfc9cde413db076e0922f3de6b0697ef437a9c"
   dependencies:
@@ -3884,7 +3884,7 @@ gulp-jscs@^4.1.0:
     through2 "^2.0.0"
     tildify "^1.0.0"
 
-gulp-jshint@^2.1.0:
+gulp-jshint@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/gulp-jshint/-/gulp-jshint-2.1.0.tgz#bfaf927f78eee263c5bbac5f63e314d44a7bd41e"
   dependencies:
