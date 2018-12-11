@@ -2891,7 +2891,7 @@ var qm = {
                 git_repo: 'QuantiModo/quantimodo-android-chrome-ios-web-app',
                 //git_prid: '1',
                 // create status to this commit, optional
-                git_sha: qmGit.getCurrentGitCommitSha(),
+                git_sha: qm.gitHelper.getCurrentGitCommitSha(),
                 jshint_status: 'error',       // Set status to error when jshint errors, optional
                 jscs_status: 'failure',       // Set git status to failure when jscs errors, optional
                 eslint_status: 'error',       // Set git status to error when eslint errors, optional
