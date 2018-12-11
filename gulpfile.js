@@ -671,6 +671,43 @@ var qmGulp = {
         buildInfo: null,
         configXml: null,
         chromeExtensionManifest: null
+    },
+    createStatusToCommit: function(statusOptions, callback){
+        var github = require('gulp-github');
+        github.createStatusToCommit(statusOptions, qmGulp.getGithubOptions(), callback);
+    },
+    getGithubOptions: function(){
+        var options = {
+            // Required options: git_token, git_repo
+            // refer to https://help.github.com/articles/creating-an-access-token-for-command-line-use/
+            git_token: process.env.GITHUB_ACCESS_TOKEN,
+            // comment into this repo, this pr.
+            git_repo: 'QuantiModo/quantimodo-android-chrome-ios-web-app',
+            //git_prid: '1',
+            // create status to this commit, optional
+            git_sha: qmGit.getCurrentGitCommitSha(),
+            jshint_status: 'error',       // Set status to error when jshint errors, optional
+            jscs_status: 'failure',       // Set git status to failure when jscs errors, optional
+            eslint_status: 'error',       // Set git status to error when eslint errors, optional
+            // when using github enterprise, optional
+            git_option: {
+                // refer to https://www.npmjs.com/package/github for more options
+                //host: 'github.mycorp.com',
+                // You may require this when you using Enterprise Github
+                //pathPrefix: '/api/v3'
+            },
+            // Provide your own jshint reporter, optional
+            jshint_reporter: function (E, file) { // gulp stream file object
+                // refer to http://jshint.com/docs/reporters/ for E structure.
+                return 'Error in ' + E.file + '!';
+            },
+            // Provide your own jscs reporter, optional
+            jscs_reporter: function (E, file) { // gulp stream file object
+                // refer to https://github.com/jscs-dev/node-jscs/wiki/Error-Filters for E structure.
+                return 'Error in ' + E.filename + '!';
+            }
+        };
+        return options;
     }
 };
 var Quantimodo = require('quantimodo');
@@ -780,8 +817,14 @@ function uploadBuildToS3(filePath) {
         return;
     }
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
-    qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] =
-        'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
+    var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
+    qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
+    qmGulp.createStatusToCommit({
+        description: 'Click the link to download and test this!',
+        context: qmGulp.currentTask,
+        target_url: url,
+        state: 'success'
+    });
     /** @namespace qm.getAppSettings().appStatus.buildStatus */
     qmGulp.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
     return uploadToS3(filePath);
@@ -1180,6 +1223,8 @@ var timeHelper = {
     },
     secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
 };
+gulp.Gulp.prototype.__runTask = gulp.Gulp.prototype._runTask; // Lets us get task name
+gulp.Gulp.prototype._runTask = function(task) { this.currentTask = task; this.__runTask(task);};
 // Set the default to the build task
 gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
@@ -1822,23 +1867,30 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
     });
     return deferred.promise;
 });
-gulp.task("upload-chrome-extension-to-s3", function() {return uploadBuildToS3(getPathToChromeExtensionZip());});
+gulp.task("upload-chrome-extension-to-s3", function() {
+    qmGulp.currentTask = this.currentTask.name;
+    return uploadBuildToS3(getPathToChromeExtensionZip());
+});
 gulp.task("upload-x86-release-apk-to-s3", function() {
+    qmGulp.currentTask = this.currentTask.name;
     if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(paths.apk.x86Release);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
+    qmGulp.currentTask = this.currentTask.name;
     if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(paths.apk.arm7Release);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
+    qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(paths.apk.builtApk);
     }
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
+    qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
         if(qmGulp.buildSettings.buildDebug()){
             return uploadBuildToS3(paths.apk.combinedDebug);
@@ -1848,7 +1900,9 @@ gulp.task("upload-combined-debug-apk-to-s3", function() {
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
+    qmGulp.currentTask = this.currentTask.name;
     var request = require('request');
+    var q = require('q');
     var deferred = q.defer();
     var source = fs.createReadStream('./chromeApps/zips/' + QUANTIMODO_CLIENT_ID + '.zip');
     // upload the package
@@ -3872,4 +3926,18 @@ gulp.task('merge-dialogflow-export', function() {
             qmLog.error(error);
         }
     }
+});
+gulp.task('lint_report_github', function () {
+    var jshint = require('gulp-jshint'),
+        jscs = require('gulp-jscs'),
+        eslint = require('gulp-eslint'),
+        github = require('gulp-github');
+    return gulp.src('lib/*.js')
+        .pipe(jshint())
+        .pipe(jscs()).on('error', function (E) {
+            console.log(E.message);   // This handled jscs stream error.
+        })
+        .pipe(eslint())
+        .pipe(github(qmGulp.getGithubOptions()))       // Comment issues in github PR!
+        .pipe(github.failThisTask()); // Fail this task when jscs/jshint/eslint issues found.
 });
