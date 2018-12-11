@@ -451,7 +451,7 @@ gulp.task('chcp-production-unit-gi-failed-gi-all', function(callback) {
     qmTests.setTestParams(this._params);
     qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/production/';
     runSequence(
-        'unit-gi-failed-gi-all',
+        '_unit-gi-failed-gi-all',
         function (error) {
             if (error) {throw error.message;}
             qmLog.green('TESTS FINISHED SUCCESSFULLY');
@@ -500,7 +500,7 @@ gulp.task('trigger-jenkins', function() {
             cause: 'Netflify Deploy',
             START_URL: process.env.DEPLOY_PRIME_URL,
             SUB_FOLDER: 'tests',
-            TASK_NAME: 'unit-gi-failed-gi-all',
+            TASK_NAME: '_unit-gi-failed-gi-all',
             token: 'ionic-test',
         },
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
