@@ -181,7 +181,7 @@ var qmTests = {
             var message = 'Testing suite on startUrl '+ options.startUrl + " with API url " + options.apiUrl +'...';
             console.info(message);
             var suiteUrl = "https://app.ghostinspector.com/suites/"+suiteId;
-            console.info("Check progress at " + suiteUrl +" ");
+            console.info("Check progress at " + suiteUrl);
             qm.gitHelper.createStatusToCommit({
                 description: message,
                 context: qm.currentTask,
