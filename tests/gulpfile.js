@@ -202,7 +202,7 @@ var qmTests = {
                 if(!passing){
                     for(var i = 0; i < suiteResults.length; i++){
                         var testResults = suiteResults[i];
-                        qmTests.outputErrorsForTest(testResults);
+                        if(!testResults.passing){qmTests.outputErrorsForTest(testResults);}
                     }
                     qm.gitHelper.createStatusToCommit({
                         description: "Failed on startUrl "+ options.startUrl + " with API url " + options.apiUrl,
@@ -365,7 +365,9 @@ gulp.task('api-staging-failed', function (callback) {
 gulp.task('gi-all', function (callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
-    qmTests.tests.executeSuite('56f5b92519d90d942760ea96', callback);
+    var suiteId = '56f5b92519d90d942760ea96';
+    //suiteId = '5c081c4f4a85d01c0233a9bd'; // Experimental suite with 1 success and 1 failure for debugging test runner
+    qmTests.tests.executeSuite(suiteId, callback);
     //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
