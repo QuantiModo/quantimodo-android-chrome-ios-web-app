@@ -647,9 +647,12 @@ var qm = {
                     });
                     return;
                 }
+                var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
                 if(appSettings){
-                    qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
-                    return;
+                    if(!clientIdFromUrl || appSettings.clientId === clientIdFromUrl){
+                        qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
+                        return;
+                    }
                 }
                 qm.appsManager.getAppSettingsFromApi(null, successHandler);
             });
