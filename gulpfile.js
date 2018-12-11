@@ -819,9 +819,10 @@ function uploadBuildToS3(filePath) {
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
     var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
     qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
+    var context = qmGulp.getClientId() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
     qmGulp.createStatusToCommit({
-        description: 'Click the link to download and test this!',
-        context: qmGulp.currentTask,
+        description: 'Click Details to download and test',
+        context: context,
         target_url: url,
         state: 'success'
     });
