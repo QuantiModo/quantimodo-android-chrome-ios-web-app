@@ -1,11 +1,11 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Welcome</ion-nav-title>
     <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; opacity: 0.5; pointer-events: none; background-color: transparent;"></canvas>
-    <div id="splash-screen" ng-if="appSettings.appDesign.intro.active.futuristicBackground !== false"
+    <div id="splash-screen" ng-if="appSettings.appDesign.intro.futuristicBackground !== false"
          class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
         <div class="splash-grid"></div>
     </div>
-    <div ng-show="!myIntro.ready && appSettings.appDesign.intro.active.futuristicBackground !== false"
+    <div ng-show="!myIntro.ready && appSettings.appDesign.intro.futuristicBackground !== false"
          ng-include="'templates/splash-logo.html'" style="z-index: 3;">
     </div>
     <div ng-if="state.speechEnabled === null" style="margin-top: 60%; bottom: 30%; color: white;
