@@ -213,7 +213,7 @@ var qmTests = {
                 }
                 console.log(suiteUrl + ' ' + ' passed! :D');
                 qm.gitHelper.createStatusToCommit({
-                    description: test.name + ' ' + ' passed! :D',
+                    description: 'Suite passed! :D',
                     context: qm.currentTask,
                     target_url: suiteUrl,
                     state: 'success'
