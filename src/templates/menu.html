@@ -1,5 +1,5 @@
-<ion-side-menus enable-menu-with-back-views="true" id="app-container">
-    <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}">
+<ion-side-menus enable-menu-with-back-views="true" id="app-container" ng-show="appReady">
+    <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}" >
         <ion-nav-bar id="top-nav-bar" class="{{appSettings.appDesign.ionNavBarClass}}"
                      ng-show="hideNavigationMenu === false || appSettings.designMode">
             <ion-nav-buttons side="left">
