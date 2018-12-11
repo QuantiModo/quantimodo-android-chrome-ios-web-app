@@ -2880,7 +2880,7 @@ var qm = {
             }
         },
         createStatusToCommit: function(statusOptions, callback){
-            qm.github.createStatusToCommit(statusOptions, qmGulp.getGithubOptions(), callback);
+            qm.github.createStatusToCommit(statusOptions, qm.gitHelper.getGithubOptions(), callback);
         },
         getGithubOptions: function(){
             var options = {
