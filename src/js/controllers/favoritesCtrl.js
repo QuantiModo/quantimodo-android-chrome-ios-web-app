@@ -1,12 +1,12 @@
 angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$rootScope", "$stateParams", function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,
-										  $stateParams) {
+                                                                                                                                                                                $stateParams){
     $scope.controller_name = "FavoritesCtrl";
     qmLogService.debug('Loading ' + $scope.controller_name, null);
     $scope.state = {
         favoritesArray: [],
-        selected1to5Value : false,
-        loading : true,
-        trackingReminder : null,
+        selected1to5Value: false,
+        loading: true,
+        trackingReminder: null,
         lastSent: new Date(),
         title: "Favorites",
         addButtonText: "Add a Favorite Variable",
@@ -15,16 +15,23 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
     };
     qmService.navBar.setFilterBarSearchIcon(false);
-    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug('Entering state ' + $state.current.name, null);
+    $scope.$on('$ionicView.enter', function(e){
+        qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"});
-        if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
+        qmService.rootScope.setProperty('bloodPressure', {
+            systolicValue: null,
+            diastolicValue: null,
+            displayTotal: "Blood Pressure"
+        });
+        if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
             $scope.variableCategoryName = $stateParams.variableCategoryName;
             $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
             $scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
             $scope.state.moreHelpText = null;
-        } else {$scope.variableCategoryName = null;}
-        if($stateParams.variableCategoryName === 'Treatments') {
+        }else{
+            $scope.variableCategoryName = null;
+        }
+        if($stateParams.variableCategoryName === 'Treatments'){
             $scope.state.addButtonText = "Add an as-needed medication";
             $scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
             $scope.state.addButtonIcon = "ion-ios-medkit-outline";
@@ -34,7 +41,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
             $scope.state.favoritesArray = $stateParams.presetVariables;
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-        } else {
+        }else{
             getFavoritesFromLocalStorage();
             $scope.refreshFavorites();
         }
@@ -42,14 +49,16 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     var getFavoritesFromLocalStorage = function(){
         qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
-            qmService.showInfoToast('Got '+favorites.length+' favorites!');
+            qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
         });
     };
-    $scope.favoriteAddButtonClick = function () {qmService.goToState('app.favoriteSearch');};
-    $scope.refreshFavorites = function () {
+    $scope.favoriteAddButtonClick = function(){
+        qmService.goToState('app.favoriteSearch');
+    };
+    $scope.refreshFavorites = function(){
         qmLogService.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
         qmService.showInfoToast('Syncing favorites...');
-        qmService.trackingReminders.syncTrackingReminders(true).then(function () {
+        qmService.trackingReminders.syncTrackingReminders(true).then(function(){
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

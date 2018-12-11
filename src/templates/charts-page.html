@@ -1,12 +1,17 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>{{state.title}}</ion-nav-title>
-    <ion-content scroll="{ isBrowserView : platform.isWeb == false }" ng-class="{ isBrowserView : platform.isWeb == true }">
+    <ion-content scroll="{ isBrowserView : platform.isWeb == false }"
+                 ng-class="{ isBrowserView : platform.isWeb == true }">
         <ion-refresher on-refresh="refreshCharts()"></ion-refresher>
         <div ng-cloak>
             <div class="card" ng-show="!state.variableObject.charts" style="border-radius: 15px;">
-                <div class="item" > <div class="row">
-                    <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
-                </div> </div>
+                <div class="item">
+                    <div class="row">
+                        <ion-spinner></ion-spinner>
+                        <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching
+                            measurements...</p>
+                    </div>
+                </div>
             </div>
             <div ng-if="state.variableObject.charts" ng-include="'templates/fragments/charts-fragment.html'"></div>
             <div ng-if="state.variableObject" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
@@ -53,16 +58,20 @@
                 </label>
             </div>
             <div class="list card" ng-click="compareButtonClick()">
-                <a id="compareButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Compare Another Variable </a>
+                <a id="compareButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Compare
+                    Another Variable </a>
             </div>
             <div class="list card" ng-click="recordMeasurementButtonClick()">
-                <a id="recordMeasurementButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Record Measurement </a>
+                <a id="recordMeasurementButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i>
+                    Record Measurement </a>
             </div>
             <div class="list card" ng-click="addNewReminderButtonClick()">
-                <a id="addReminderButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Add Reminder </a>
+                <a id="addReminderButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Add
+                    Reminder </a>
             </div>
             <div class="list card" ng-click="editSettingsButtonClick()">
-                <a class="item item-icon-left"> <!--Find better icon in blue--> <i class="icon ion-settings positive"></i> Analysis Settings </a>
+                <a class="item item-icon-left"> <!--Find better icon in blue--> <i
+                        class="icon ion-settings positive"></i> Analysis Settings </a>
             </div>
         </div>
     </ion-content>

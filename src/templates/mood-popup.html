@@ -3,13 +3,13 @@
 <head>
     <title>Rate your mood!</title>
     <style>
-        body{
+        body {
             width: 376px;
             height: 56px;
             margin: 0px;
         }
 
-        #sectionRate{
+        #sectionRate {
             opacity: 1;
             height: 52px;
             padding-top: 4px;
@@ -17,8 +17,7 @@
             overflow: hidden;
         }
 
-        #sectionRate img
-        {
+        #sectionRate img {
             height: 100%;
             display: inline-block;
             padding-left: 6px;
@@ -26,12 +25,12 @@
             background-color: #FFFFFF;
             transition: all 200ms linear;
         }
-        #sectionRate img:hover
-        {
+
+        #sectionRate img:hover {
             -webkit-filter: blur(1px) brightness(110%) saturate(150%);
         }
-        #sectionRate div
-        {
+
+        #sectionRate div {
             width: 1px;
             position: relative;
             display: inline-block;
@@ -39,7 +38,7 @@
             bottom: 32%;
         }
 
-        #sectionSendingMood{
+        #sectionSendingMood {
             display: none;
             opacity: 0;
             width: 346px;
@@ -58,11 +57,12 @@
 
         .invisible {
             -webkit-animation-name: fadeOut;
-            -webkit-animation-duration:0.4s;
+            -webkit-animation-duration: 0.4s;
             -webkit-animation-iteration-count: 1;
             -webkit-animation-timing-function: ease;
             -webkit-animation-fill-mode: forwards;
         }
+
         @-webkit-keyframes fadeOut {
             from {
                 -webkit-transform: rotate(0deg) scale(1) skew(0deg);
@@ -76,11 +76,12 @@
 
         .visible {
             -webkit-animation-name: fadeIn;
-            -webkit-animation-duration:0.3s;
+            -webkit-animation-duration: 0.3s;
             -webkit-animation-iteration-count: 1;
             -webkit-animation-timing-function: ease;
             -webkit-animation-fill-mode: forwards;
         }
+
         @-webkit-keyframes fadeIn {
             from {
                 -webkit-transform: rotate(0deg) scale(1.02) skew(0deg);
