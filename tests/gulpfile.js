@@ -409,7 +409,7 @@ gulp.task('unit-tests', function(callback) {
             callback(error);
         });
 });
-gulp.task('unit-gi-failed-gi-all', function(callback) {
+gulp.task('_unit-gi-failed-gi-all', function(callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     runSequence(
