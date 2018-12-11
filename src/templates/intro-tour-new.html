@@ -1,6 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Welcome</ion-nav-title>
-    <canvas id="rainbow-canvas" style="position: absolute; z-index: 1; display: block; opacity: 0.5; pointer-events: none; background-color: transparent;"></canvas>
+    <canvas id="rainbow-canvas"
+            style="position: absolute; z-index: 1; display: block; opacity: 0.5; pointer-events: none; background-color: transparent;"></canvas>
     <div id="splash-screen" ng-if="appSettings.appDesign.intro.futuristicBackground !== false"
          class="splash-wrapper" style="width: 100%; position: absolute; height: 100%;">
         <div class="splash-grid"></div>
@@ -13,8 +14,8 @@
                                                     left: 0; right: 0;">
         <h1 style="color: white;">May I speak to you?</h1>
         <div style="font-size: 60px;">
-            <md-button id="disableSpeechButton" ng-click="state.setSpeechEnabled(false)"> &nbsp; NO &nbsp; </md-button>
-            <md-button id="enableSpeechButton" ng-click="state.setSpeechEnabled(true)"> &nbsp; YES &nbsp; </md-button>
+            <md-button id="disableSpeechButton" ng-click="state.setSpeechEnabled(false)"> &nbsp; NO &nbsp;</md-button>
+            <md-button id="enableSpeechButton" ng-click="state.setSpeechEnabled(true)"> &nbsp; YES &nbsp;</md-button>
         </div>
     </div>
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" style="z-index: 2;">
@@ -22,9 +23,10 @@
                    style="display: flex; flex-direction: column; justify-content: center; background-color: {{circlePage.color.backgroundColor}};">
             <div ng-show="!circlePage" ng-include="'templates/splash-logo.html'" style="z-index: 3;"></div>
             <div ng-show="circlePage" ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
-            <div class="button-bar" style="max-height: 80px;" >
+            <div class="button-bar" style="max-height: 80px;">
                 <md-button id="goButtonIntro" class="button circle-page-button"
-                           ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1" ng-click="myIntro.startApp()">
+                           ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1"
+                           ng-click="myIntro.startApp()">
                     GET STARTED
                 </md-button>
                 <md-button id="skipButtonIntro" class="button circle-page-button" ng-click="myIntro.startApp()"
@@ -37,11 +39,13 @@
                 </md-button>
             </div>
             <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
-                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('intro', circlePage)" ><i class="icon ion-edit"></i></i>
-                &nbsp&nbsp<i ng-click="addAppComponentElement('intro', circlePage)" class="icon ion-ios-copy-outline" ></i>
-                &nbsp&nbsp<i ng-click="deleteAppComponentElement('intro', circlePage)" class="icon ion-trash-a" ></i>
+                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('intro', circlePage)"><i class="icon ion-edit"></i></i>
+                &nbsp&nbsp<i ng-click="addAppComponentElement('intro', circlePage)"
+                             class="icon ion-ios-copy-outline"></i>
+                &nbsp&nbsp<i ng-click="deleteAppComponentElement('intro', circlePage)" class="icon ion-trash-a"></i>
             </div>
         </ion-slide>
     </ion-slide-box>
-    <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" class="robot-container" style="left: calc(50% - 80px);"></div>
+    <div ng-show="showRobot" ng-include="'templates/robot.html'" ng-click="robotClick()" class="robot-container"
+         style="left: calc(50% - 80px);"></div>
 </ion-view>

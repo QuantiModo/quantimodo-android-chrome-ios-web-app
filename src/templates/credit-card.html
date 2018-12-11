@@ -6,20 +6,22 @@
 
     </md-radio-group>
     <input style="text-align: center; border: 1px solid #a2a2a2;"
-            type="text"
-            name="creditCard"
-            ng-model="ccinfo.number"
-            required
-            data-credit-card-type
-            data-ng-pattern="/^[0-9]+$/"
-            data-ng-minlength="15"
-            maxlength="19"
-            placeholder="Card Number" >{{ccinfo.type}}
+           type="text"
+           name="creditCard"
+           ng-model="ccinfo.number"
+           required
+           data-credit-card-type
+           data-ng-pattern="/^[0-9]+$/"
+           data-ng-minlength="15"
+           maxlength="19"
+           placeholder="Card Number">{{ccinfo.type}}
     <br/>
     <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
         <li ng-show="paymentForm.creditCard.$error.minlength">Credit card must be 15-19 digits</li>
         <li ng-show="paymentForm.creditCard.$error.pattern">Credit card must consist of only numbers</li>
-        <li ng-show="paymentForm.creditCard.$error.invalid">Credit card must be a valid Amex, Visa, Discover, or Master Card</li>
+        <li ng-show="paymentForm.creditCard.$error.invalid">Credit card must be a valid Amex, Visa, Discover, or Master
+            Card
+        </li>
         <li ng-show="paymentForm.creditCard.$error.required">Enter card number</li>
     </ul>
     <input
@@ -40,7 +42,7 @@
     </ul>
     <select ng-model="ccinfo.month" name="month" data-card-expiration required>
         <option disabled selected value="">Month</option>
-        <option ng-repeat="month in months" value="{{$index+1}}" > {{$index+1}} - {{month}}</option>
+        <option ng-repeat="month in months" value="{{$index+1}}"> {{$index+1}} - {{month}}</option>
     </select>
     <br/>
     <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
@@ -60,7 +62,7 @@
     <input
             style="text-align: center; border: 1px solid #a2a2a2;"
             type="text"
-            name="coupon"bower
+            name="coupon" bower
             ng-model="ccinfo.coupon"
             placeholder="Coupon Code">
 </form>

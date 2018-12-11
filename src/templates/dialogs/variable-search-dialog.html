@@ -3,7 +3,8 @@
         <div class="md-toolbar-tools">
             <h2 style="color: white;">{{ctrl.title}}</h2>
             <span flex></span>
-            <md-button id="barcode-button" class="md-icon-button" ng-click="ctrl.querySearch('barcode')" ng-if="ctrl.platform.isMobile">
+            <md-button id="barcode-button" class="md-icon-button" ng-click="ctrl.querySearch('barcode')"
+                       ng-if="ctrl.platform.isMobile">
                 <md-icon md-svg-src="img/material-icons/ic_camera_enhance_white_24px.svg" aria-label="Help"></md-icon>
             </md-button>
             <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
@@ -21,18 +22,18 @@
                 <!--Why disable cache? It causes lots of pointless searches? md-no-cache="true"-->
                 <!--We have to disable cache so that "Not seeing.." is replaced with "Create new variable" if not found in API-->
                 <md-autocomplete id="variable-search-box"
-                        md-no-cache="true"
-                        md-selected-item="ctrl.selectedItem"
-                        md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
-                        md-search-text="ctrl.searchText"
-                        md-selected-item-change="ctrl.selectedItemChange(item)"
-                        md-items="item in ctrl.querySearch(ctrl.searchText)"
-                        ng-model-options="{debounce: 500}"
-                        md-item-text="item.name"
-                        md-min-length="ctrl.minLength"
-                        placeholder="{{ctrl.placeholder}}"
-                        md-menu-class="autocomplete-custom-template"
-                        md-autofocus="true">
+                                 md-no-cache="true"
+                                 md-selected-item="ctrl.selectedItem"
+                                 md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                                 md-search-text="ctrl.searchText"
+                                 md-selected-item-change="ctrl.selectedItemChange(item)"
+                                 md-items="item in ctrl.querySearch(ctrl.searchText)"
+                                 ng-model-options="{debounce: 500}"
+                                 md-item-text="item.name"
+                                 md-min-length="ctrl.minLength"
+                                 placeholder="{{ctrl.placeholder}}"
+                                 md-menu-class="autocomplete-custom-template"
+                                 md-autofocus="true">
                     <md-item-template id="variable-item">
                         <span class="item-title" id="variable-item-title">
                             <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
@@ -43,7 +44,7 @@
                             <span><small>{{item.subtitle}}</small></span>
                         </span>
                     </md-item-template>
-                    <md-not-found  id="variable-not-found">
+                    <md-not-found id="variable-not-found">
                         <span ng-if="ctrl.dialogParameters.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
                         <a ng-if="!ctrl.dialogParameters.doNotCreateNewVariables && !ctrl.doNotCreateNewVariables"
                            ng-click="ctrl.createNewVariable(ctrl.searchText)">
@@ -55,8 +56,10 @@
         </div>
     </md-dialog-content>
     <md-dialog-actions ng-if="ctrl.selectedItem">
-        <md-button id="select-variable-button" ng-if="ctrl.buttonText" aria-label="Finished" ng-click="ctrl.finish($event, item)">
-            <i ng-if="ctrl.selectedItem.ionIcon" class="icon {{ctrl.selectedItem.ionIcon}}"></i>  &nbsp;  {{ctrl.buttonText}}
+        <md-button id="select-variable-button" ng-if="ctrl.buttonText" aria-label="Finished"
+                   ng-click="ctrl.finish($event, item)">
+            <i ng-if="ctrl.selectedItem.ionIcon" class="icon {{ctrl.selectedItem.ionIcon}}"></i> &nbsp;
+            {{ctrl.buttonText}}
         </md-button>
     </md-dialog-actions>
 </md-dialog>
