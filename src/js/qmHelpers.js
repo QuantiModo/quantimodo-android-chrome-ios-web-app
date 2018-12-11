@@ -7758,6 +7758,7 @@ var qm = {
                 qm.assert.equals("charts-overall-mood", updated.id);
                 qm.assert.equals("Overall Mood Charts", updated.title);
                 qm.assert.doesNotContain(":variableName", updated.href);
+                qm.assert.doesNotHaveProperty(updated.params, 'variableCategoryName');
                 return updated;
             }
         },

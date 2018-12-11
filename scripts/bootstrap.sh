@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+set -x
+set -e
 ANDROID_SDK_FILENAME=android-sdk_r24.4.1-linux.tgz
 ANDROID_SDK=http://dl.google.com/android/${ANDROID_SDK_FILENAME}
 
