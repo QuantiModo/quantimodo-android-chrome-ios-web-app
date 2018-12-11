@@ -1,30 +1,40 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Get Started</ion-nav-title>
-    <div ng-if="!state.registrationForm && !state.loginForm" class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
+    <div ng-if="!state.registrationForm && !state.loginForm" class="outer"
+         style=" background-color: {{circlePage.color.backgroundColor}};">
         <div class="middle">
             <div class="inner">
-                <div style="text-align: center; color: white; padding: 30px; height: 100%" >
+                <div style="text-align: center; color: white; padding: 30px; height: 100%">
                     <div>
-                        <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()" ng-cloak></div>
-                        <div ng-if="state.showRetry" ng-click="retryLogin('user clicked retry button')" ><br><br>Click here to retry if this takes too long</div>
+                        <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()"
+                             ng-cloak></div>
+                        <div ng-if="state.showRetry" ng-click="retryLogin('user clicked retry button')"><br><br>Click
+                            here to retry if this takes too long
+                        </div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
                             <div id="material-login-buttons" ng-if="true">
                                 <!--<md-button class="md-raised md-primary icon icon-left ion-social-github" style="background: #2d2d2d;" ng-click="state.socialLogin('github', $event)">
                                     &nbsp Github Login &nbsp
                                 </md-button>-->
-                                <md-button id="signInWithGoogle" class="md-raised md-primary icon icon-left ion-social-google"
-                                           style="background: #d34836;" ng-click="state.socialLogin('googleplus', $event)">
+                                <md-button id="signInWithGoogle"
+                                           class="md-raised md-primary icon icon-left ion-social-google"
+                                           style="background: #d34836;"
+                                           ng-click="state.socialLogin('googleplus', $event)">
                                     &nbsp Google Login &nbsp
                                 </md-button>
-                                <md-button id="signInWithFacebook" class="md-raised md-primary icon icon-left ion-social-facebook"
-                                           style="background: #3B5998;" ng-click="state.socialLogin('facebook', $event)">
+                                <md-button id="signInWithFacebook"
+                                           class="md-raised md-primary icon icon-left ion-social-facebook"
+                                           style="background: #3B5998;"
+                                           ng-click="state.socialLogin('facebook', $event)">
                                     &nbsp Facebook Login &nbsp
                                 </md-button>
                                 <md-button id="signUpButton" class="md-raised md-primary icon icon-left ion-email"
-                                           style="background: #2d2d2d;" ng-click="state.socialLogin('quantimodo', $event, {register: true})">
+                                           style="background: #2d2d2d;"
+                                           ng-click="state.socialLogin('quantimodo', $event, {register: true})">
                                     &nbsp Email Sign Up &nbsp
                                 </md-button>
-                                <md-button id="signInButton" class="md-raised md-primary icon icon-left ion-email" style="background: #2d2d2d;"
+                                <md-button id="signInButton" class="md-raised md-primary icon icon-left ion-email"
+                                           style="background: #2d2d2d;"
                                            ng-click="state.socialLogin('quantimodo', $event, {register: false})">
                                     &nbsp Email Login &nbsp
                                 </md-button>
@@ -42,21 +52,23 @@
                     <md-content layout="column" class="md-padding">
                         <md-input-container>
                             <label>Username</label>
-                            <input required type="text" ng-model="loginModel.username" name="username" />
+                            <input required type="text" ng-model="loginModel.username" name="username"/>
                             <div ng-messages="loginForm.username.$error">
                                 <div ng-message="required">This is required.</div>
                             </div>
                         </md-input-container>
                         <md-input-container>
                             <label>Password</label>
-                            <input required type="password" ng-model="loginModel.password" name="password" />
+                            <input required type="password" ng-model="loginModel.password" name="password"/>
                             <div ng-messages="loginForm.password.$error" role="alert">
                                 <div ng-message="required">This is required.</div>
                             </div>
                         </md-input-container>
                         <md-button type="submit" class="md-raised md-primary">Sign Up</md-button>
                         <md-button href="" md-no-ink>Forgot Password</md-button>
-                        <md-button ng-click="state.loginForm = state.registrationForm; state.registrationForm = false;" md-no-ink>Already have an account?</md-button>
+                        <md-button ng-click="state.loginForm = state.registrationForm; state.registrationForm = false;"
+                                   md-no-ink>Already have an account?
+                        </md-button>
                     </md-content>
                 </form>
             </div>
@@ -69,21 +81,23 @@
                     <md-content layout="column" class="md-padding">
                         <md-input-container>
                             <label>Username</label>
-                            <input required type="text" ng-model="loginModel.username" name="username" />
+                            <input required type="text" ng-model="loginModel.username" name="username"/>
                             <div ng-messages="loginForm.username.$error">
                                 <div ng-message="required">This is required.</div>
                             </div>
                         </md-input-container>
                         <md-input-container>
                             <label>Password</label>
-                            <input required type="password" ng-model="loginModel.password" name="password" />
+                            <input required type="password" ng-model="loginModel.password" name="password"/>
                             <div ng-messages="loginForm.password.$error" role="alert">
                                 <div ng-message="required">This is required.</div>
                             </div>
                         </md-input-container>
                         <md-button type="submit" class="md-raised md-primary">Login</md-button>
                         <md-button href="" md-no-ink>Forgot Password</md-button>
-                        <md-button ng-click="state.registrationForm = state.loginForm; state.loginForm = false;"  md-no-ink>Sign Up</md-button>
+                        <md-button ng-click="state.registrationForm = state.loginForm; state.loginForm = false;"
+                                   md-no-ink>Sign Up
+                        </md-button>
                     </md-content>
                 </form>
             </div>

@@ -1,4 +1,4 @@
-<div ng-show="state.variableObject.userId && user && state.variableObject.userId === user.id" >
+<div ng-show="state.variableObject.userId && user && state.variableObject.userId === user.id">
     <div class="card">
         <ion-toggle ng-model="state.variableObject.shareUserMeasurements"
                     ng-change="toggleVariableShare(variableObject)">
@@ -19,21 +19,21 @@
         <div class="sharingButtons" style="cursor: pointer">
             <div ng-click="shareCharts(variableObject, variableObject.chartsLinkFacebook, $event)" class="show-inline">
                 <div class="tooltip" title="Share Study to Facebook">
-                    <i  style="font-size: 32px;" class="ion-social-facebook"></i>
+                    <i style="font-size: 32px;" class="ion-social-facebook"></i>
                 </div>
             </div>
             &nbsp;
             &nbsp;
             <div ng-click="shareCharts(variableObject, variableObject.chartsLinkTwitter, $event);" class="show-inline">
                 <div class="tooltip" title="Share Study to Twitter">
-                    <i  style="font-size: 32px;" class="ion-social-twitter"></i>
+                    <i style="font-size: 32px;" class="ion-social-twitter"></i>
                 </div>
             </div>
             &nbsp;
             &nbsp;
             <div ng-click="shareCharts(variableObject, variableObject.chartsLinkEmail, $event);" class="show-inline">
                 <div class="tooltip" title="Share Study to Twitter">
-                    <i  style="font-size: 32px;" class="ion-email"></i>
+                    <i style="font-size: 32px;" class="ion-email"></i>
                 </div>
             </div>
         </div>
