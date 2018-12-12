@@ -3202,8 +3202,7 @@ var qm = {
                 return;
             }
             try{
-                var git = require('./src/ionic/node_modules/gulp-git');
-                git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
+                qm.git.revParse({args: '--abbrev-ref HEAD'}, function(err, branch){
                     if(err){
                         qm.qmLog.error(err);
                         return;
