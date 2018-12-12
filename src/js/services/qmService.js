@@ -3280,24 +3280,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
-            params = addGlobalUrlParamsToObject(params);
-            params.groupingWidth = 86400;
-            var cachedData = qm.api.cacheGet(params, 'getMeasurementsDailyFromApi');
-            if(cachedData && successHandler){
-                //successHandler(cachedData);
-                //return;
-            }
-            if(!qm.api.configureClient('getMeasurementsDailyFromApi', errorHandler, params)){
-                return false;
-            }
-            var apiInstance = new Quantimodo.MeasurementsApi();
-            function callback(error, data, response){
-                qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsDailyFromApi');
-            }
-            apiInstance.getMeasurements(params, callback);
-            //qmService.get('api/v3/measurements/daily', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
-        };
         qmService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
             qmService.post('api/v3/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
         };
@@ -7298,17 +7280,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $ionicLoading.show({duration: duration * 1000});
         };
         qmService.showBlackRingLoader = function(duration){
-            duration = duration || 10;
+            if(qm.urlHelper.getParam('loaderDebug')){
+                qmLog.debug('Called showBlackRingLoader in ' + $state.current.name);
+            }
+            duration = duration || 15;
             if(ionic && ionic.Platform && ionic.Platform.isIOS()){
                 qmService.showBasicLoader(duration);  // Centering is messed up on iOS for some reason
             }else{
                 $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: duration * 1000});
             }
-            qmLogService.debug('Called showBlackRingLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         };
         qmService.hideLoader = function(delay){
             if(qm.urlHelper.getParam('loaderDebug')){
-                qmLogService.debug('Called hideLoader in ' + $state.current.name, null, qmLog.getStackTrace());
+                qmLog.debug('Called hideLoader in ' + $state.current.name);
             }
             if(delay){
                 $timeout(function(){
