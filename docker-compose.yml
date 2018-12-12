@@ -3,7 +3,7 @@ services:
   ionic:
     build:
       context: https://github.com/mswag/docker-ionic.git#develop
-      #args:
+      args:
         # USER: ionic # the project user, which will be used to run this Docker container
         # JAVA_VERSION: 8 # the java version that should be installed and used to run the Android SDK
         # ANDROID_SDK_VERSION: 24.4.1 # the Android SDK version that should be installed and used by Cordova
