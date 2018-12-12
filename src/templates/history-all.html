@@ -68,7 +68,7 @@
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
                 </p>
                 <div class="buttons">
-                    <button ng-if="historyItem.productUrl && !appSettings.additionalSettings.monetizationSettings.hideBuyNowButton"
+                    <button ng-if="historyItem.productUrl && !appSettings.additionalSettings.monetizationSettings.hideBuyNowButton.value"
                             class="button button-assertive"
                             ng-click="openUrl(historyItem.productUrl, 'yes', '_system')">
                         <md-tooltip md-direction="down">Buy Now</md-tooltip>
