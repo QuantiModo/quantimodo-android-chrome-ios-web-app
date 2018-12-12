@@ -2,7 +2,7 @@ version: '3'
 services:
   ionic:
     build:
-      context: https://github.com/mswag/docker-ionic.git#develop
+      context: "."
       args:
         # USER: ionic # the project user, which will be used to run this Docker container
         # JAVA_VERSION: 8 # the java version that should be installed and used to run the Android SDK
