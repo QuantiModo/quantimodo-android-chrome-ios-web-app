@@ -1169,13 +1169,13 @@ caseless@~0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.8.0.tgz#5bca2881d41437f54b2407ebe34888c7b9ad4f7d"
 
-cdnizer@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/cdnizer/-/cdnizer-3.0.1.tgz#842a09621b0e67d29e958bd64e1024f3c483b880"
+cdnizer@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/cdnizer/-/cdnizer-3.0.2.tgz#03f9f1664b1b43a20135f88d5e420e330408ab2d"
   dependencies:
     cdnjs-cdn-data "^0.1.1"
     google-cdn-data "^0.1.6"
-    jsdelivr-cdn-data "^0.1.1"
+    jsdelivr-cdn-data "git://github.com/shahata/jsdelivr-cdn-data.git#d014a2ad1bdfb4c6e3d3cefc7f264435281b91e0"
     lodash "^4.17.11"
     minimatch "^3.0.2"
 
@@ -3729,11 +3729,11 @@ gulp-angular-templatecache@2.2.5:
     lodash.template "^4.4.0"
     through2 "^2.0.3"
 
-gulp-cdnizer@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-cdnizer/-/gulp-cdnizer-2.0.1.tgz#401c159ab0ec94dc57bf0fed27fbbdb23744f754"
+gulp-cdnizer@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/gulp-cdnizer/-/gulp-cdnizer-2.0.2.tgz#a49297e1d63b517f1c6c9265f5bfc82e9f43382a"
   dependencies:
-    cdnizer "^3.0.1"
+    cdnizer "^3.0.2"
     gulp-util "^3.0.0"
     through2 "^0.5.1"
 
@@ -5197,11 +5197,12 @@ jscs@^3.0.4:
     vow-fs "~0.3.4"
     xmlbuilder "^3.1.0"
 
-jsdelivr-cdn-data@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/jsdelivr-cdn-data/-/jsdelivr-cdn-data-0.1.1.tgz#a450e2dc6ecee7bb7b6f6a7294e5180acbc9c10a"
+"jsdelivr-cdn-data@git://github.com/shahata/jsdelivr-cdn-data.git#d014a2ad1bdfb4c6e3d3cefc7f264435281b91e0":
+  version "1.0.0"
+  uid d014a2ad1bdfb4c6e3d3cefc7f264435281b91e0
+  resolved "git://github.com/shahata/jsdelivr-cdn-data.git#d014a2ad1bdfb4c6e3d3cefc7f264435281b91e0"
   dependencies:
-    semver "~2.2.1"
+    semver "^5.3.0"
 
 jsdoctypeparser@~1.2.0:
   version "1.2.0"
@@ -8528,10 +8529,6 @@ semver@4.3.6, semver@^4.1.0, semver@^4.3.x:
 semver@^3.0.1:
   version "3.0.1"
   resolved "http://registry.npmjs.org/semver/-/semver-3.0.1.tgz#720ac012515a252f91fb0dd2e99a56a70d6cf078"
-
-semver@~2.2.1:
-  version "2.2.1"
-  resolved "http://registry.npmjs.org/semver/-/semver-2.2.1.tgz#7941182b3ffcc580bff1c17942acdf7951c0d213"
 
 semver@~5.0.1:
   version "5.0.3"
