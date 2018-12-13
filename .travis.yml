@@ -73,7 +73,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"*  ]]; then source tests/test_chcp.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"* && "$TRAVIS_BRANCH" != *"renovate"* ]]; then source tests/test_chcp.sh; fi
 
   #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi  Can be done in Jenkins concurrently since they use different test domains
   #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
