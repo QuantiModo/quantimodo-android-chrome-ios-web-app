@@ -68,7 +68,7 @@
     "inquirer": "6.2.1",
     "ionic": "2.2.3",
     "jshint": "2.9.7",
-    "lazypipe": "1.0.1",
+    "lazypipe": "1.0.2",
     "morgan": "1.9.1",
     "ng-material-floating-button": "0.6.2",
     "path": "0.12.7",
