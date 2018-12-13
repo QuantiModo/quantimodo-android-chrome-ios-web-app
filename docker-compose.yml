@@ -1,0 +1,28 @@
+version: '3'
+services:
+  ionic:
+    build:
+      context: "."
+      args:
+        # USER: ionic # the project user, which will be used to run this Docker container
+        # JAVA_VERSION: 8 # the java version that should be installed and used to run the Android SDK
+        # ANDROID_SDK_VERSION: 24.4.1 # the Android SDK version that should be installed and used by Cordova
+        # ANDROID_PLATFORMS_VERSION: "23.0.1" # the Android platforms version that should be installed and used by Cordova
+        # ANDROID_BUILD_TOOLS_VERSION: "23" # the Android build tools version that should be installed and used by Cordova
+        # NODE_VERSION: "6.9.1" #" the node version that should be installed globally and used by Cordova and Ionic
+        # NPM_VERSION: "5.3.0": # the npm version that will be installed with node globally
+        # PACKAGE_MANAGER: "npm"  # if yarn or npm should be used as package manager
+        CORDOVA_VERSION: "6.5.0" # the Cordova version that will be installed globally and used by Ionic to build the Android APKs
+        IONIC_VERSION: "2.2.3" # the Ionic version that will be installed globally to power your project
+        # TYPESCRIPT_VERSION: "2.3.4" # the Typescript version that will be installed globally to translate your .ts files
+        # GULP_VERSION: # the Gulp version that will be installed globally to run your gulp tasks
+    ports:
+    - "0.0.0.0:3000:3000" # ng dev server
+    - "0.0.0.0:5000:5000" # node
+    - "0.0.0.0:8100:8100" # ionic dev server
+    - "0.0.0.0:8080:8080" # webpack
+    - "0.0.0.0:9876:9876" # karma
+    - "0.0.0.0:35729:35729" # livereload
+    volumes:
+    - ".:/app:rw" # mapping to local ionic project directory
+    #- "/dev/bus/usb:/dev/bus/usb" # usb to build to device | ATTENTION: only enable this on non-osx systems

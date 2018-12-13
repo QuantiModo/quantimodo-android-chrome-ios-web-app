@@ -11,7 +11,7 @@
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
-  //background-color: #171723 !important;
+  background-color: #171723 !important; // Need this to avoid flashing menu when loading into page.  Might want separate blackRingLoader css sometime
   -webkit-box-pack: center;
   -moz-box-pack: center;
   -webkit-justify-content: center;
