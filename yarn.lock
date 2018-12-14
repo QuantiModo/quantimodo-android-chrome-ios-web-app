@@ -1169,22 +1169,6 @@ caseless@~0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.8.0.tgz#5bca2881d41437f54b2407ebe34888c7b9ad4f7d"
 
-cdnizer@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/cdnizer/-/cdnizer-3.0.1.tgz#842a09621b0e67d29e958bd64e1024f3c483b880"
-  dependencies:
-    cdnjs-cdn-data "^0.1.1"
-    google-cdn-data "^0.1.6"
-    jsdelivr-cdn-data "^0.1.1"
-    lodash "^4.17.11"
-    minimatch "^3.0.2"
-
-cdnjs-cdn-data@^0.1.1:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/cdnjs-cdn-data/-/cdnjs-cdn-data-0.1.2.tgz#865d34ba4e48dd1b73fd668e24a61a5adf9b8b21"
-  dependencies:
-    semver "~5.0.1"
-
 chainsaw@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/chainsaw/-/chainsaw-0.1.0.tgz#5eab50b28afe58074d0d58291388828b5e5fbc98"
@@ -2674,18 +2658,6 @@ event-emitter@^0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
-event-stream@*, event-stream@4.0.1, event-stream@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-4.0.1.tgz#4092808ec995d0dd75ea4580c1df6a74db2cde65"
-  dependencies:
-    duplexer "^0.1.1"
-    from "^0.1.7"
-    map-stream "0.0.7"
-    pause-stream "^0.0.11"
-    split "^1.0.1"
-    stream-combiner "^0.2.2"
-    through "^2.3.8"
-
 event-stream@3.3.4:
   version "3.3.4"
   resolved "http://registry.npmjs.org/event-stream/-/event-stream-3.3.4.tgz#4ab4c9a0f5a54db9338b4c34d86bfce8f4b35571"
@@ -2697,6 +2669,18 @@ event-stream@3.3.4:
     split "0.3"
     stream-combiner "~0.0.4"
     through "~2.3.1"
+
+event-stream@4.0.1, event-stream@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-4.0.1.tgz#4092808ec995d0dd75ea4580c1df6a74db2cde65"
+  dependencies:
+    duplexer "^0.1.1"
+    from "^0.1.7"
+    map-stream "0.0.7"
+    pause-stream "^0.0.11"
+    split "^1.0.1"
+    stream-combiner "^0.2.2"
+    through "^2.3.8"
 
 event-stream@^3.3.1:
   version "3.3.5"
@@ -3679,10 +3663,6 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-google-cdn-data@^0.1.6:
-  version "0.1.25"
-  resolved "https://registry.yarnpkg.com/google-cdn-data/-/google-cdn-data-0.1.25.tgz#9c3c3149ab18a7c2d5ed5f0f0b4ee8bc45992b71"
-
 got@^6.7.1:
   version "6.7.1"
   resolved "http://registry.npmjs.org/got/-/got-6.7.1.tgz#240cd05785a9a18e561dc1b44b41c763ef1e8db0"
@@ -3717,25 +3697,18 @@ graceful-fs@~1.2.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-gulp-angular-templatecache@2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/gulp-angular-templatecache/-/gulp-angular-templatecache-2.2.5.tgz#56393cf3f9982f2d931de3ff51d1170bfa40248f"
+gulp-angular-templatecache@2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/gulp-angular-templatecache/-/gulp-angular-templatecache-2.2.6.tgz#2f2bee43797d204e61ccd66b85c3f34104d9871f"
   dependencies:
-    event-stream "3.3.4"
     gulp-concat "2.6.1"
-    gulp-footer "2.0.1"
+    gulp-footer "2.0.2"
     gulp-header "2.0.5"
     jsesc "2.5.1"
     lodash.template "^4.4.0"
+    map-stream "0.0.7"
+    stream-combiner "0.2.2"
     through2 "^2.0.3"
-
-gulp-cdnizer@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-cdnizer/-/gulp-cdnizer-2.0.1.tgz#401c159ab0ec94dc57bf0fed27fbbdb23744f754"
-  dependencies:
-    cdnizer "^3.0.1"
-    gulp-util "^3.0.0"
-    through2 "^0.5.1"
 
 gulp-change@1.0.2:
   version "1.0.2"
@@ -3811,15 +3784,15 @@ gulp-filter@5.1.0:
     plugin-error "^0.1.2"
     streamfilter "^1.0.5"
 
-gulp-footer@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-footer/-/gulp-footer-2.0.1.tgz#76578359feb72aa280a97cb980bcfbe0e6216f3e"
+gulp-footer@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/gulp-footer/-/gulp-footer-2.0.2.tgz#2cf58e1cc046b8a3a479f1a41bcd1b7baae076cd"
   dependencies:
-    event-stream "*"
     lodash._reescape "^3.0.0"
     lodash._reevaluate "^3.0.0"
     lodash._reinterpolate "^3.0.0"
     lodash.template "^3.6.2"
+    map-stream "0.0.7"
 
 gulp-gh-pages-will@0.5.5:
   version "0.5.5"
@@ -5196,12 +5169,6 @@ jscs@^3.0.4:
     vow "~0.4.8"
     vow-fs "~0.3.4"
     xmlbuilder "^3.1.0"
-
-jsdelivr-cdn-data@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/jsdelivr-cdn-data/-/jsdelivr-cdn-data-0.1.1.tgz#a450e2dc6ecee7bb7b6f6a7294e5180acbc9c10a"
-  dependencies:
-    semver "~2.2.1"
 
 jsdoctypeparser@~1.2.0:
   version "1.2.0"
@@ -8529,10 +8496,6 @@ semver@^3.0.1:
   version "3.0.1"
   resolved "http://registry.npmjs.org/semver/-/semver-3.0.1.tgz#720ac012515a252f91fb0dd2e99a56a70d6cf078"
 
-semver@~2.2.1:
-  version "2.2.1"
-  resolved "http://registry.npmjs.org/semver/-/semver-2.2.1.tgz#7941182b3ffcc580bff1c17942acdf7951c0d213"
-
 semver@~5.0.1:
   version "5.0.3"
   resolved "http://registry.npmjs.org/semver/-/semver-5.0.3.tgz#77466de589cd5d3c95f138aa78bc569a3cb5d27a"
@@ -9046,7 +9009,7 @@ stream-combiner2@~1.0.0:
     duplexer2 "~0.0.2"
     through2 "~0.5.1"
 
-stream-combiner@*, stream-combiner@^0.2.2:
+stream-combiner@*, stream-combiner@0.2.2, stream-combiner@^0.2.2:
   version "0.2.2"
   resolved "http://registry.npmjs.org/stream-combiner/-/stream-combiner-0.2.2.tgz#aec8cbac177b56b6f4fa479ced8c1912cee52858"
   dependencies:
@@ -9419,13 +9382,6 @@ through2@^0.4.1:
     readable-stream "~1.0.17"
     xtend "~2.1.1"
 
-through2@^0.5.1, through2@~0.5.1:
-  version "0.5.1"
-  resolved "http://registry.npmjs.org/through2/-/through2-0.5.1.tgz#dfdd012eb9c700e2323fd334f38ac622ab372da7"
-  dependencies:
-    readable-stream "~1.0.17"
-    xtend "~3.0.0"
-
 through2@^0.6.0, through2@^0.6.1, through2@^0.6.3:
   version "0.6.5"
   resolved "http://registry.npmjs.org/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
@@ -9439,6 +9395,13 @@ through2@^1.0.0:
   dependencies:
     readable-stream ">=1.1.13-1 <1.2.0-0"
     xtend ">=4.0.0 <4.1.0-0"
+
+through2@~0.5.1:
+  version "0.5.1"
+  resolved "http://registry.npmjs.org/through2/-/through2-0.5.1.tgz#dfdd012eb9c700e2323fd334f38ac622ab372da7"
+  dependencies:
+    readable-stream "~1.0.17"
+    xtend "~3.0.0"
 
 through@2, "through@>=2.2.7 <3", through@^2.3.6, through@^2.3.7, through@^2.3.8, through@latest, through@~2.3, through@~2.3.1, through@~2.3.4:
   version "2.3.8"
