@@ -570,6 +570,7 @@ var qmGulp = {
             qmGulp.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
                 builtAt: timeHelper.getUnixTimestampInSeconds(),
+                builtAtString:  new Date().toISOString(),
                 buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qmGulp.buildInfoHelper.getBuildLink(),
                 versionNumber: versionNumbers.ionicApp,
