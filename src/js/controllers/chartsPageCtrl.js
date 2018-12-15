@@ -3,7 +3,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
     function($scope, $q, $state, $timeout, $rootScope, $ionicLoading, $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard){
         $scope.controller_name = "ChartsPageCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
-        $scope.state = {title: "Charts"};
+        $scope.state = {
+            title: "Charts",
+        };
         $scope.$on('$ionicView.enter', function(e){
             qmLogService.debug('Entering state ' + $state.current.name);
             qm.urlHelper.addUrlParamsToObject($scope.state);
@@ -21,6 +23,10 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                 $scope.hideClipboardButton = true;
             }
         });
+        function hideLoader(){
+            qmService.hideLoader();
+            $scope.$broadcast('scroll.refreshComplete');
+        }
         function getVariableName(){
             if($scope.variableName){
                 return $scope.variableName;
@@ -50,12 +56,11 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         }
         function initializeCharts(){
             if(!getScopedVariableObject() || !getScopedVariableObject().charts){
-                qmService.showBlackRingLoader();
                 getCharts();
             }else if($stateParams.refresh){
                 $scope.refreshCharts();
             }else{
-                qmService.hideLoader();
+                hideLoader();
             }
         }
         function removeHiddenCharts(variableObject){
@@ -91,8 +96,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
                 }else{
                     qmLog.error("No variable for action sheet!");
                 }
-                qmService.hideLoader();
-                $scope.$broadcast('scroll.refreshComplete');
+                hideLoader();
             });
         }
         $scope.refreshCharts = function(){
