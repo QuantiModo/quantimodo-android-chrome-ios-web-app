@@ -5889,7 +5889,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 variableSearchQuery = '*';
             }
             params.searchPhrase = variableSearchQuery;
-            qm.userVariables.getFromApi(params, function(variables){
+            qm.userVariables.getFromLocalStorageOrApi(params, function(variables){
                 deferred.resolve(variables);
             }, function(error){
                 qmLogService.error(error);
