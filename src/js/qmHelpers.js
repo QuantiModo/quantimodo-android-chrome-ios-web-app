@@ -81,6 +81,12 @@ var qm = {
             }
             return window.location.origin.indexOf('staging.') !== -1;
         },
+        isProduction: function(){
+            if(!qm.platform.getWindow()){
+                return false;
+            }
+            return !qm.appMode.isStaging() && !qm.appMode.isDevelopment() && !qm.appMode.isTesting();
+        },
         isBuilder: function(){
             if(typeof window === "undefined"){
                 return false;
@@ -2530,7 +2536,21 @@ var qm = {
             return param;
         },
         calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
+            //qm.functionHelper.checkTypes( arguments, ['string'] );
+            qm.qmLog.info("userInput: "+userInput);
+            if(!userInput){
+                qm.qmLog.error("No userInput given to calculateScoreAndFillParameters");
+                return false;
+            }
             var doc = qm.nlp(userInput);
+            if(!doc){
+                qm.qmLog.error("Maybe nlp package isn't available?  qm.nlp("+userInput+") returns "+JSON.stringify(doc));
+                return false;
+            }
+            if(typeof doc.out !== "function"){
+                qm.qmLog.error("Maybe nlp package isn't available? typeof doc.out !== function! qm.nlp("+userInput+") returns "+JSON.stringify(doc));
+                return false;
+            }
             var parsed = doc.out('tags');
             var number = doc.values().out();
             if(number){
@@ -2609,6 +2629,11 @@ var qm = {
             return matchedIntent;
         },
         getIntent: function(userInput){
+            qm.functionHelper.checkTypes( arguments, ['string'] );
+            if(!userInput){
+                qm.qmLog.error("No userInput given to userInput");
+                return false;
+            }
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             var matchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput, matchedEntities);
             if(matchedIntent){
@@ -3036,6 +3061,21 @@ var qm = {
         },
         isFunction: function(functionToCheck){
             return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+        },
+        checkTypes: function( args, types ) {
+            function typeOf( obj ) {
+                return ({}).toString.call( obj ).match(/\s(\w+)/)[1].toLowerCase();
+            }
+            args = [].slice.call( args );
+            for ( var i = 0; i < types.length; ++i ) {
+                if ( typeOf( args[i] ) != types[i] ) {
+                    if(qm.appMode.isProduction()){
+                        qm.qmLog.error( 'param '+ i +' must be of type '+ types[i] );
+                    } else {
+                        throw new TypeError( 'param '+ i +' must be of type '+ types[i] );
+                    }
+                }
+            }
         }
     },
     geoLocation: {
@@ -3461,6 +3501,7 @@ var qm = {
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
         patientUser: 'patientUser',
+        pushLog: 'pushLog',
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
@@ -3860,6 +3901,29 @@ var qm = {
                     return element !== null;
                 });
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
+                    qm.qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
+                    if(successHandler){
+                        successHandler(localStorageItemArray);
+                    }
+                }, function(error){
+                    qm.qmLog.error(error);
+                    if(errorHandler){
+                        errorHandler(error);
+                    }
+                });
+            });
+        },
+        addToArrayWithLimit: function(localStorageItemName, limit, newElementOrArray, successHandler, errorHandler){
+            qm.functionHelper.checkTypes( arguments, ['string', 'int'] );
+            if(!qm.arrayHelper.variableIsArray(newElementOrArray)){newElementOrArray = [newElementOrArray];}
+            qm.localForage.getItem(localStorageItemName, function(existing){
+                existing = existing || [];
+                var toStore = newElementOrArray.concat(existing);
+                toStore = toStore.filter(function(element){
+                    return element !== null;
+                });
+                toStore = toStore.slice(0, limit);
+                qm.localForage.setItem(localStorageItemName, toStore, function(){
                     qm.qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
                     if(successHandler){
                         successHandler(localStorageItemArray);

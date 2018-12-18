@@ -107,8 +107,8 @@ messaging.setBackgroundMessageHandler(function(payload) {
     showNotification(payload);
 });
 self.addEventListener('push', function(event) {
-    console.log('[Service Worker] Push Received.', event);
-    qm.localForage.setItem(qm.items.lastPushData, event);
+    qmLog.info('[Service Worker] Push Received.', event);
+    qm.localForage.addToArrayWithLimit(qm.items.pushLog, event);
     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
     try {
         var pushData = event.data.json();
