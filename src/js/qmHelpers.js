@@ -171,6 +171,7 @@ var qm = {
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic'
             };
+            if(typeof moment !== "undefined"){qmApiClient.defaultHeaders['X-Timezone'] = moment.tz.guess();}
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
