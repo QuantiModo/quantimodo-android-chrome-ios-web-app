@@ -2530,7 +2530,20 @@ var qm = {
             return param;
         },
         calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
+            qmLog.info("userInput: "+userInput);
+            if(!userInput){
+                qm.qmLog.error("No userInput given to calculateScoreAndFillParameters");
+                return false;
+            }
             var doc = qm.nlp(userInput);
+            if(!doc){
+                qm.qmLog.error("Maybe nlp package isn't available?  qm.nlp("+userInput+") returns "+JSON.stringify(doc));
+                return false;
+            }
+            if(typeof doc.out !== "function"){
+                qm.qmLog.error("Maybe nlp package isn't available? typeof doc.out !== function! qm.nlp("+userInput+") returns "+JSON.stringify(doc));
+                return false;
+            }
             var parsed = doc.out('tags');
             var number = doc.values().out();
             if(number){
@@ -2609,6 +2622,10 @@ var qm = {
             return matchedIntent;
         },
         getIntent: function(userInput){
+            if(!userInput){
+                qm.qmLog.error("No userInput given to userInput");
+                return false;
+            }
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             var matchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput, matchedEntities);
             if(matchedIntent){
