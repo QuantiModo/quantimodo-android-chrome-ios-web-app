@@ -6184,8 +6184,11 @@ var qm = {
                 return qm.speech.speechAvailable;
             }
             if(typeof speechSynthesis === "undefined"){
-                if(!qm.appMode.isTesting() || qm.platform.isMobile()){
-                    qm.qmLog.error("Speech not available on " + qm.platform.getPlatformAndBrowserString());
+                var message = "Speech not available on " + qm.platform.getPlatformAndBrowserString();
+                if(qm.platform.browser.isFirefox()){
+                    qm.qmLog.info(message);
+                } else if(!qm.appMode.isTesting() || qm.platform.isMobile()){
+                    qm.qmLog.error(message);
                 }
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
