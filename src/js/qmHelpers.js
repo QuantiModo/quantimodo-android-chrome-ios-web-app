@@ -2537,7 +2537,7 @@ var qm = {
         },
         calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
             //qm.functionHelper.checkTypes( arguments, ['string'] );
-            qmLog.info("userInput: "+userInput);
+            qm.qmLog.info("userInput: "+userInput);
             if(!userInput){
                 qm.qmLog.error("No userInput given to calculateScoreAndFillParameters");
                 return false;
@@ -3501,6 +3501,7 @@ var qm = {
         notificationsSyncQueue: 'notificationsSyncQueue',
         onboarded: 'onboarded',
         patientUser: 'patientUser',
+        pushLog: 'pushLog',
         physicianUser: 'physicianUser',
         privateConfig: 'privateConfig',
         primaryOutcomeVariableMeasurements: 'primaryOutcomeVariableMeasurements',
@@ -3900,6 +3901,29 @@ var qm = {
                     return element !== null;
                 });
                 qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
+                    qm.qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
+                    if(successHandler){
+                        successHandler(localStorageItemArray);
+                    }
+                }, function(error){
+                    qm.qmLog.error(error);
+                    if(errorHandler){
+                        errorHandler(error);
+                    }
+                });
+            });
+        },
+        addToArrayWithLimit: function(localStorageItemName, limit, newElementOrArray, successHandler, errorHandler){
+            qm.functionHelper.checkTypes( arguments, ['string', 'int'] );
+            if(!qm.arrayHelper.variableIsArray(newElementOrArray)){newElementOrArray = [newElementOrArray];}
+            qm.localForage.getItem(localStorageItemName, function(existing){
+                existing = existing || [];
+                var toStore = newElementOrArray.concat(existing);
+                toStore = toStore.filter(function(element){
+                    return element !== null;
+                });
+                toStore = toStore.slice(0, limit);
+                qm.localForage.setItem(localStorageItemName, toStore, function(){
                     qm.qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
                     if(successHandler){
                         successHandler(localStorageItemArray);
