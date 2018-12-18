@@ -58,7 +58,8 @@
     "quagga": "^0.12.1",
     "quantimodo": "5.9.92713",
     "svg-morpheus": "^0.3.2",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "moment-timezone": "^0.5.23"
   },
   "resolutions": {
     "angular": "1.5.9",
