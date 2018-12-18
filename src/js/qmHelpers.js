@@ -81,6 +81,12 @@ var qm = {
             }
             return window.location.origin.indexOf('staging.') !== -1;
         },
+        isProduction: function(){
+            if(!qm.platform.getWindow()){
+                return false;
+            }
+            return !qm.appMode.isStaging() && !qm.appMode.isDevelopment() && !qm.appMode.isTesting();
+        },
         isBuilder: function(){
             if(typeof window === "undefined"){
                 return false;
@@ -2530,6 +2536,7 @@ var qm = {
             return param;
         },
         calculateScoreAndFillParameters: function(intent, matchedEntities, userInput){
+            //qm.functionHelper.checkTypes( arguments, ['string'] );
             qmLog.info("userInput: "+userInput);
             if(!userInput){
                 qm.qmLog.error("No userInput given to calculateScoreAndFillParameters");
@@ -2622,6 +2629,7 @@ var qm = {
             return matchedIntent;
         },
         getIntent: function(userInput){
+            qm.functionHelper.checkTypes( arguments, ['string'] );
             if(!userInput){
                 qm.qmLog.error("No userInput given to userInput");
                 return false;
@@ -3053,6 +3061,21 @@ var qm = {
         },
         isFunction: function(functionToCheck){
             return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+        },
+        checkTypes: function( args, types ) {
+            function typeOf( obj ) {
+                return ({}).toString.call( obj ).match(/\s(\w+)/)[1].toLowerCase();
+            }
+            args = [].slice.call( args );
+            for ( var i = 0; i < types.length; ++i ) {
+                if ( typeOf( args[i] ) != types[i] ) {
+                    if(qm.appMode.isProduction()){
+                        qm.qmLog.error( 'param '+ i +' must be of type '+ types[i] );
+                    } else {
+                        throw new TypeError( 'param '+ i +' must be of type '+ types[i] );
+                    }
+                }
+            }
         }
     },
     geoLocation: {
