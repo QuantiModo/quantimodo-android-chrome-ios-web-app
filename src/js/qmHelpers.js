@@ -5905,6 +5905,10 @@ var qm = {
                 return false;
             }
             return qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled;
+        },
+        logPushReceived: function(pushData){
+            pushData.receivedAt = qm.timeHelper.getCurrentLocalDateAndTime();
+            qm.localForage.addToArrayWithLimit(qm.items.pushLog, 20, pushData);
         }
     },
     qmService: null,

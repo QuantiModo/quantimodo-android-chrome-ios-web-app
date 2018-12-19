@@ -7587,6 +7587,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
                     push.on('notification', function(data){
+                        qm.push.logPushReceived({data: data});
                         qm.storage.setItem(qm.items.lastPushTimestamp, qm.timeHelper.getUnixTimestampInSeconds());
                         qm.storage.setItem(qm.items.lastPushData, data);
                         qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "received");
