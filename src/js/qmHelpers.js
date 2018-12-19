@@ -73,6 +73,9 @@ var qm = {
             if(window.location.origin.indexOf('http://localhost:') !== -1){
                 return true;
             }
+            if(window.location.origin.indexOf('https://dev-web.quantimo.do') !== -1){
+                return true;
+            }
             return window.location.origin.indexOf('local.quantimo.do') !== -1;
         },
         isStaging: function(){
