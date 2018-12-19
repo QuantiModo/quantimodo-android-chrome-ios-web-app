@@ -32,7 +32,7 @@ function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     console.log("push data: ", pushData);
     if(!pushData.title && pushData.data) {
-        console.log("Weird push format");
+        console.log("Provided entire payload to showNotification instead of just payload.data");
         pushData = pushData.data;
     }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
@@ -103,24 +103,25 @@ function showNotification(pushData) {
 // implement this optional method.
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    showNotification(payload);
+    console.log('[firebase-messaging-sw.js] Received background message payload: ', payload);
+    qm.localForage.addToArrayWithLimit(qm.items.pushLog, payload);
+    showNotification(payload.data);
 });
-self.addEventListener('push', function(event) {
-    qmLog.info('[Service Worker] Push Received.', event);
-    qm.localForage.addToArrayWithLimit(qm.items.pushLog, event);
-    //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
-    try {
-        var pushData = event.data.json();
-        pushData = pushData.data;
-        showNotification(pushData);
-    } catch (error) {
-        qmLog.error("Could not show push notification because: " + error);
-    }
-});
+// I think addEventListener('push' isn't necessary since we use messaging.setBackgroundMessageHandler and I think duplicate handlers cause "Updated in background" notifications
+// self.addEventListener('push', function(event) {
+//     qmLog.info('[Service Worker] Push Received.', event);
+//     qm.localForage.addToArrayWithLimit(qm.items.pushLog, event);
+//     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+//     try {
+//         var pushData = event.data.json();
+//         pushData = pushData.data;
+//         showNotification(pushData);
+//     } catch (error) {
+//         qmLog.error("Could not show push notification because: " + error);
+//     }
+// });
 // [END background_handler]
-function runFunction(name, arguments)
-{
+function runFunction(name, arguments){
     var fn = qm.notifications.actions[name];
     if(typeof fn !== 'function'){
       console.log(name +" is not a function");
@@ -131,7 +132,7 @@ function runFunction(name, arguments)
     return true;
 }
 self.addEventListener('notificationclick', function(event) {
-    console.log('[Service Worker] Notification click Received: ' + event.action);
+    console.log('[Service Worker] Notification click Received for event: ' + JSON.stringify(event), event);
     event.notification.close();
     if(event.action === ""){
         qmLog.error("No event action provided! event is: ", null, event);
@@ -139,14 +140,13 @@ self.addEventListener('notificationclick', function(event) {
     if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
         return;
     }
-    var basePath = '/ionic/Modo/www/index.html#/app/';
+    var basePath = '/#/app/';
     var urlPathToOpen = basePath + 'reminders-inbox';
     if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
         urlPathToOpen = event.notification.data.url;
     }
     if(event.action && event.action.indexOf("https://") !== -1){
-        var providedUrl = event.action.replace('src', 'www');
-        var route = qm.stringHelper.getStringAfter(providedUrl, basePath);
+        var route = qm.stringHelper.getStringAfter(event.action, basePath);
         urlPathToOpen = basePath + route;
     }
     // This looks to see if the current is already open and focuses if it is
