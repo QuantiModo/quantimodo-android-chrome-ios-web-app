@@ -104,7 +104,7 @@ function showNotification(pushData) {
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message payload: ', payload);
-    qm.localForage.addToArrayWithLimit(qm.items.pushLog, payload);
+    qm.localForage.addToArrayWithLimit(qm.items.pushLog, 20, payload);
     showNotification(payload.data);
 });
 // I think addEventListener('push' isn't necessary since we use messaging.setBackgroundMessageHandler and I think duplicate handlers cause "Updated in background" notifications
