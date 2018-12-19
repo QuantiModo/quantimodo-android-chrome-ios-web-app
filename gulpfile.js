@@ -1147,7 +1147,7 @@ function outputVersionCodeForApk(pathToApk) {
     });
 }
 function copyFiles(sourceFiles, destinationPath, excludedFolder) {
-    var srcArray = [sourceFiles];
+    var srcArray = (sourceFiles.constructor !== Array) ? [sourceFiles] : sourceFiles;
     if(excludedFolder && typeof excludedFolder === "string"){
         console.log("Excluding " + excludedFolder + " from copy.. ");
         srcArray.push('!' + excludedFolder);
@@ -2820,7 +2820,7 @@ gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copy-www-img-to-src', [], function () {
-    return copyFiles('www/img/*', 'src/img/');
+    return copyFiles('www/img/**/*', 'src/img/');
 });
 gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
@@ -3077,7 +3077,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
-        'chromeDefaultConfigJson',
+        //'chromeDefaultConfigJson',
         //'deleteWwwPrivateConfig', // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         'zipChromeExtension',
         'unzipChromeExtension',
@@ -3163,7 +3163,7 @@ gulp.task('_build-all-chrome', function (callback) {
 });
 gulp.task('downloadQmAmazonJs', function (callback) {
     var git = require('gulp-git');
-    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', function (err) {
+    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', {args: './src/qm-amazon'}, function (err) {
         if (err) {qmLog.info(err);}
         callback();
     });
@@ -3363,6 +3363,7 @@ gulp.task('resizeIcons', function (callback) {
         'resizeIcon192',
         'resizeIcon512',
         'resizeIcon700',
+        'copy-www-img-to-src',
         callback);
 });
 gulp.task('prepareRepositoryForAndroid', function (callback) {
