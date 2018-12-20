@@ -104,22 +104,25 @@ function showNotification(pushData) {
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message payload: ', payload);
-    qm.localForage.addToArrayWithLimit(qm.items.pushLog, payload);
+    qm.push.logPushReceived({pushType: 'background', payload: payload});
     showNotification(payload.data);
 });
+// UPDATE:  Disregard the comment below because it didn't solve the problem and broke pushes. I guess both handlers are required?  I think the background thing might just be a dev console issue
 // I think addEventListener('push' isn't necessary since we use messaging.setBackgroundMessageHandler and I think duplicate handlers cause "Updated in background" notifications
-// self.addEventListener('push', function(event) {
-//     qmLog.info('[Service Worker] Push Received.', event);
-//     qm.localForage.addToArrayWithLimit(qm.items.pushLog, event);
-//     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
-//     try {
-//         var pushData = event.data.json();
-//         pushData = pushData.data;
-//         showNotification(pushData);
-//     } catch (error) {
-//         qmLog.error("Could not show push notification because: " + error);
-//     }
-// });
+self.addEventListener('push', function(event) {
+    qmLog.info('[Service Worker] Non-background Push Received. event: ', event);
+    qm.push.logPushReceived({pushType: 'non-background-event', event: event});
+    //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    try {
+        var pushData = event.data.json();
+        pushData = pushData.data;
+        qmLog.info('[Service Worker] Non-background Push Received. pushData: ', pushData);
+        qm.push.logPushReceived({pushType: 'non-background-push-data', pushData: pushData});
+        showNotification(pushData);
+    } catch (error) {
+        qmLog.error("Could not show push notification because: " + error);
+    }
+});
 // [END background_handler]
 function runFunction(name, arguments){
     var fn = qm.notifications.actions[name];
