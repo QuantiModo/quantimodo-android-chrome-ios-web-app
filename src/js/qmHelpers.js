@@ -3067,11 +3067,13 @@ var qm = {
             }
             args = [].slice.call( args );
             for ( var i = 0; i < types.length; ++i ) {
-                if ( typeOf( args[i] ) != types[i] ) {
+                var type = typeOf( args[i] );
+                if ( types[i] && type != types[i] ) {
+                    var message = 'param '+ i +' must be of type '+ types[i] + " but is "+type;
                     if(qm.appMode.isProduction()){
-                        qm.qmLog.error( 'param '+ i +' must be of type '+ types[i] );
+                        qm.qmLog.error(message);
                     } else {
-                        throw new TypeError( 'param '+ i +' must be of type '+ types[i] );
+                        throw new TypeError(message);
                     }
                 }
             }
@@ -3913,7 +3915,7 @@ var qm = {
             });
         },
         addToArrayWithLimit: function(localStorageItemName, limit, newElementOrArray, successHandler, errorHandler){
-            qm.functionHelper.checkTypes( arguments, ['string', 'int'] );
+            qm.functionHelper.checkTypes(arguments, ['string', 'number'] );
             if(!qm.arrayHelper.variableIsArray(newElementOrArray)){newElementOrArray = [newElementOrArray];}
             qm.localForage.getItem(localStorageItemName, function(existing){
                 existing = existing || [];
