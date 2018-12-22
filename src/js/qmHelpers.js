@@ -634,7 +634,7 @@ var qm = {
                 }
             });
         },
-        getViaXhr: function(url, successHandler){
+        getViaXhr: function(url, successHandler, errorHandler){
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function(){
                 if(xhr.readyState === XMLHttpRequest.DONE){
@@ -823,7 +823,7 @@ var qm = {
             }
             return qm.privateConfig.client_secrets.Web;
         },
-        getAppSettingsLocallyOrFromApi: function(successHandler){
+        getAppSettingsLocallyOrFromApi: function(successHandler, errorHandler){
             if(qm.getAppSettings() && qm.getAppSettings().clientId){
                 successHandler(qm.getAppSettings());
                 return;
@@ -839,11 +839,7 @@ var qm = {
                     return;
                 }
                 if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler, function(appSettings){
-                        if(appSettings){
-                            qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
-                        }
-                    });
+                    qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
                     return;
                 }
                 var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
@@ -853,7 +849,7 @@ var qm = {
                         return;
                     }
                 }
-                qm.appsManager.getAppSettingsFromApi(null, successHandler);
+                qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
             });
         },
         getAppSettingsFromMemory: function(){

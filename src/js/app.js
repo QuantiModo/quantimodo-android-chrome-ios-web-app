@@ -185,6 +185,9 @@ angular.module('starter',
                     var deferred = $q.defer();
                     qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
                         deferred.resolve(appSettings);
+                    }, function(error){
+                        qmLog.error("Could not get appSettings because "+error+" so falling back to QuantiModo app settings from staticData");
+                        deferred.resolve(qm.staticData.appSettings);
                     });
                     return deferred.promise;
                 }
