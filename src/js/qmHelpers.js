@@ -1325,7 +1325,7 @@ var qm = {
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
                 'variableName', 'connectorName'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform', 'reason'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
