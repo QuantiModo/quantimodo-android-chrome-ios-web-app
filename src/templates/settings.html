@@ -29,6 +29,13 @@
                 <p style="white-space: normal">So you'll never lose access to your account</p>
             </a>
         </div>
+        <div id="user-description" class="list card" ng-show="user">
+            <a ng-click="state.showBioModalPromptPopup($event)" class="item ">
+                <i class="icon ion-email"></i> &nbsp Edit Your Bio
+                <p ng-if="!user.description" style="white-space: normal">Displayed on studies that you publish</p>
+                <p ng-if="user.description" style="white-space: normal">{{user.description}}</p>
+            </a>
+        </div>
         <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
         <div id="location-tracking" ng-show="user" class="card sign-in">
