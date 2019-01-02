@@ -229,7 +229,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             $scope.$broadcast('scroll.infiniteScrollComplete');
         }
         $scope.loadMore = function(){
-            qmService.showBlackRingLoader();
+            //qmService.showBlackRingLoader();
             if($scope.state.studiesResponse.studies.length){
                 $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
                 populateStudyList();
