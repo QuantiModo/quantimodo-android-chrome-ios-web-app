@@ -3211,6 +3211,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     errorName += ': ' + data.error.message;
                 }
             }
+            if(!userErrorMessage && data && data.message){
+                userErrorMessage = data.message;
+                errorName += ': ' + data.message;
+            }
             var metaData = {
                 debugApiUrl: getDebugApiUrlFromRequest(request),
                 appUrl: window.location.href,
