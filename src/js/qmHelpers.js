@@ -953,6 +953,7 @@ var qm = {
             "oauth": "quantimodo",
             "quantimodo": "quantimodo",
             "staging": "quantimodo",
+            "studies": "quantimodo",
             "utopia": "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         },
@@ -7430,7 +7431,7 @@ var qm = {
             }
         },
         getCauseVariableName: function($stateParams, $scope, $rootScope){
-            if($stateParams.causeVariable){
+            if($stateParams && $stateParams.causeVariable){
                 return $stateParams.causeVariable.name;
             }
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['causeVariableName', 'predictorVariableName'], $stateParams, $scope, $rootScope);
@@ -7465,7 +7466,7 @@ var qm = {
             }
         },
         getEffectVariableName: function($stateParams, $scope, $rootScope){
-            if($stateParams.effectVariable){
+            if($stateParams && $stateParams.effectVariable){
                 return $stateParams.effectVariable.name;
             }
             var value = qm.parameterHelper.getStateUrlRootScopeOrRequestParam(['effectVariableName', 'outcomeVariableName'], $stateParams, $scope, $rootScope);
