@@ -388,4 +388,24 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             //     qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
             // });
         }
+        $scope.state.showBioModalPromptPopup = function(ev) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            var confirm = $mdDialog.prompt()
+                .title('Your Biography')
+                .textContent('Will be displayed on your published studies')
+                .placeholder('Your Biography')
+                .ariaLabel('Your Biography')
+                .initialValue(qm.getUser().description)
+                .targetEvent(ev)
+                .required(true)
+                .ok('Okay!')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                qmService.showInfoToast("Bio updated!");
+                qmService.updateUserSettingsDeferred({description: result})
+            }, function() {
+                qmService.showInfoToast("Canceled");
+            });
+        };
     }]);
