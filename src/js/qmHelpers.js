@@ -7533,10 +7533,18 @@ var qm = {
                 qm.qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
                 return false;
             }
-            var causeVariableName = study.causeVariableName || study.causeVariable.name;
-            var effectVariableName = study.effectVariableName || study.effectVariable.name;
-            var causeVariableId = study.causeVariableId || study.causeVariable.id;
-            var effectVariableId = study.effectVariableId || study.effectVariable.id;
+            var causeVariableName = study.causeVariableName;
+            if(!causeVariableName && study.causeVariable){causeVariableName = study.causeVariable.name;}
+
+            var effectVariableName = study.effectVariableName;
+            if(!effectVariableName && study.effectVariable){effectVariableName = study.effectVariable.name;}
+
+            var causeVariableId = study.causeVariableId;
+            if(!causeVariableId && study.causeVariable){causeVariableId = study.causeVariable.id;}
+
+            var effectVariableId = study.effectVariableId;
+            if(!effectVariableId && study.effectVariable){effectVariableId = study.effectVariable.id;}
+
             if(params.causeVariableId && params.causeVariableId !== causeVariableId){
                 return false;
             }
