@@ -121,23 +121,23 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                     $scope.goBack();
                     return;
                 }
-                if(studiesResponse){
+                qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
+                if(studiesResponse && !$scope.state.studiesResponse.studies.length){
                     $scope.state.studiesResponse = studiesResponse;
-                }
-                if(studiesResponse.studies.length){
-                    qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
-                    qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " + studiesResponse.studies[0].effectVariableName);
-                    if($scope.state.requestParams.offset){
-                        $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
+                } else if(studiesResponse.studies.length){
+                    qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " +
+                        studiesResponse.studies[0].effectVariableName);
+                    if($scope.state.studiesResponse.studies){
+                        $scope.state.studiesResponse.studies =
+                            $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
                     }else{
                         $scope.state.studiesResponse.studies = studiesResponse.studies;
                     }
-                    $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
-                    showLoadMoreButtonIfNecessary();
                 }else{
                     qmLogService.info('Did not get any studies with params ' + JSON.stringify(params));
                     $scope.state.noStudies = true;
                 }
+                showLoadMoreButtonIfNecessary();
                 hideLoader();
             }, function(error){
                 hideLoader();
@@ -216,7 +216,8 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             populateStudyList();
         };
         function showLoadMoreButtonIfNecessary(){
-            if($scope.state.studiesResponse.studies.length && $scope.state.studiesResponse.studies.length % $scope.state.requestParams.limit === 0){
+            if($scope.state.studiesResponse.studies.length &&
+                $scope.state.studiesResponse.studies.length % $scope.state.requestParams.limit === 0){
                 $scope.state.showLoadMoreButton = true;
             }else{
                 $scope.state.showLoadMoreButton = false;
@@ -231,7 +232,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.loadMore = function(){
             //qmService.showBlackRingLoader();
             if($scope.state.studiesResponse.studies.length){
-                $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
+                $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
                 populateStudyList();
             }
         };
