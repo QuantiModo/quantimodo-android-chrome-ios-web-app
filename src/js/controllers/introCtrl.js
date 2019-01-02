@@ -175,7 +175,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 readSlide();
             }
             //callback();
-            qm.speech.machinesOfLovingGrace(callback);
-            qm.music.play();
+            var useBlissSpeech = false;
+            if(useBlissSpeech){
+                // TODO: Implement play callback for after bliss-speech.mp3 ends
+                qm.music.play('sound/bliss-speech.mp3', 1);
+            } else {
+                qm.speech.machinesOfLovingGrace(callback);
+                qm.music.play();
+            }
         }
     }]);
