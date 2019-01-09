@@ -1556,11 +1556,12 @@ compression@^1.6.0:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-compromise@11.12.4:
-  version "11.12.4"
-  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.12.4.tgz#f2c6ac011f9d5bfe8ea1483bd1880747daaad76e"
+compromise@11.13.0:
+  version "11.13.0"
+  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.13.0.tgz#f39ea17ae82a87a9eafd3d6c11ee651641470aec"
   dependencies:
     efrt-unpack "2.0.3"
+    terser "^3.14.1"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -8851,6 +8852,13 @@ source-map-support@^0.4.0:
   dependencies:
     source-map "^0.5.6"
 
+source-map-support@~0.5.6:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.9.tgz#41bc953b2534267ea2d605bccfa7bfa3111ced5f"
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
 source-map-url@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/source-map-url/-/source-map-url-0.4.0.tgz#3e935d7ddd73631b97659956d55128e87b5084a3"
@@ -9338,6 +9346,14 @@ ternary-stream@^2.0.1:
     fork-stream "^0.0.4"
     merge-stream "^1.0.0"
     through2 "^2.0.1"
+
+terser@^3.14.1:
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-3.14.1.tgz#cc4764014af570bc79c79742358bd46926018a32"
+  dependencies:
+    commander "~2.17.1"
+    source-map "~0.6.1"
+    source-map-support "~0.5.6"
 
 text-table@^0.2.0, text-table@~0.2.0:
   version "0.2.0"
