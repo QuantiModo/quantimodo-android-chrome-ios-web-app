@@ -202,7 +202,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                     qm.feed.addToFeedAndRemoveFromFeedQueue(card, cardHandlers.getCards);
                 };
                 var button = card.selectedButton;
-                if(button.successToastText){
+                if(button && button.successToastText){
                     qmService.toast.showUndoToast(button.successToastText, qm.feed.undoFunction);
                 }
             },
