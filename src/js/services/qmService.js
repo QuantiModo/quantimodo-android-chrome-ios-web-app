@@ -1653,6 +1653,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 },
                 drawOverAppsPopupEnabled: function(){
+                    if(!qm.platform.isAndroid()){return false;}
                     var enabled = qm.storage.getItem(qm.items.drawOverAppsPopupEnabled);
                     if(enabled === true || enabled === "true"){
                         return true;
