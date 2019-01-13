@@ -28,6 +28,46 @@ var config = {
 console.log("firebase.initializeApp(config)");
 firebase.initializeApp(config);
 var messaging = firebase.messaging();
+qm.push.notificationClick = function(event){  // Have to attach to qm because it says undefined function otherwise
+    console.log('[Service Worker] Notification click Received for event: ' + JSON.stringify(event), event);
+    event.notification.close();
+    if(event.action === ""){
+        qmLog.error("No event action provided! event is: ", null, event);
+    }
+    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
+        return;
+    }
+    var basePath = '/#/app/';
+    var urlPathToOpen = basePath + 'reminders-inbox';
+    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
+        urlPathToOpen = event.notification.data.url;
+    }
+    if(event.action && event.action.indexOf("https://") !== -1){
+        var route = qm.stringHelper.getStringAfter(event.action, basePath);
+        urlPathToOpen = basePath + route;
+    }
+    // This looks to see if the current is already open and focuses if it is
+    event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+        for (var i = 0; i < clientList.length; i++) {
+            var client = clientList[i];
+            var currentlyOpenUrl = client.url;
+            console.log(currentlyOpenUrl + " is open already");
+            if(currentlyOpenUrl.indexOf(urlPathToOpen) !== -1){
+                if ('focus' in client) {
+                    console.log("Focusing " + currentlyOpenUrl);
+                    return client.focus();
+                }
+            }
+        }
+        if (clients.openWindow) {
+            console.log("Opening new " + urlPathToOpen + " window");
+            return clients.openWindow(urlPathToOpen);
+        } else {
+            console.error("Can't open windows!")
+        }
+
+    }));
+};
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     console.log("push data: ", pushData);
@@ -46,7 +86,8 @@ function showNotification(pushData) {
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
             tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
-            silent: true
+            silent: true,
+            onClick: qm.push.notificationClick
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
@@ -134,43 +175,4 @@ function runFunction(name, arguments){
     fn.apply(qm.notifications.actions, [arguments]);
     return true;
 }
-self.addEventListener('notificationclick', function(event) {
-    console.log('[Service Worker] Notification click Received for event: ' + JSON.stringify(event), event);
-    event.notification.close();
-    if(event.action === ""){
-        qmLog.error("No event action provided! event is: ", null, event);
-    }
-    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
-        return;
-    }
-    var basePath = '/#/app/';
-    var urlPathToOpen = basePath + 'reminders-inbox';
-    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
-        urlPathToOpen = event.notification.data.url;
-    }
-    if(event.action && event.action.indexOf("https://") !== -1){
-        var route = qm.stringHelper.getStringAfter(event.action, basePath);
-        urlPathToOpen = basePath + route;
-    }
-    // This looks to see if the current is already open and focuses if it is
-    event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-        for (var i = 0; i < clientList.length; i++) {
-            var client = clientList[i];
-            var currentlyOpenUrl = client.url;
-            console.log(currentlyOpenUrl + " is open already");
-            if(currentlyOpenUrl.indexOf(urlPathToOpen) !== -1){
-                if ('focus' in client) {
-                    console.log("Focusing " + currentlyOpenUrl);
-                    return client.focus();
-                }
-            }
-        }
-        if (clients.openWindow) {
-            console.log("Opening new " + urlPathToOpen + " window");
-            return clients.openWindow(urlPathToOpen);
-        } else {
-            console.error("Can't open windows!")
-        }
-
-    }));
-});
+self.addEventListener('notificationclick', qm.push.notificationClick);
