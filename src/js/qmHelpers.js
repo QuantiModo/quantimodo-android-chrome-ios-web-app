@@ -519,7 +519,7 @@ var qm = {
             if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){
                 qm.storage.setItem(qm.items.apiUrl, apiUrl);
             }
-            if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile()){
+            if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile() && (!qm.getUser() || qm.getUser().id === 230)){
                 apiUrl = "https://utopia.quantimo.do";
             }
             if(!apiUrl){
