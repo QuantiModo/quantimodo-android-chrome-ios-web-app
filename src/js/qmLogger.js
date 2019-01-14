@@ -103,7 +103,9 @@ var qmLog = {
     },
     setDebugMode: function(value){
         if(value){
-            qmLog.qm.storage.setItem(qmLog.qm.items.apiUrl, 'utopia.quantimo.do');
+            if(qm.getUser() && qm.getUser().id === 230){
+                qmLog.qm.storage.setItem(qmLog.qm.items.apiUrl, 'utopia.quantimo.do');
+            }
             qmLog.setLogLevelName("debug");
         }else{
             qmLog.qm.storage.removeItem(qmLog.qm.items.apiUrl);
