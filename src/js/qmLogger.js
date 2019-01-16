@@ -477,7 +477,7 @@ var qmLog = {
                 var parts = window.location.href.split("#/app");
                 return parts[1];
             }
-            var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
+            var url = "https://dev-web.quantimo.do/#/app" + getCurrentRoute();
             if(qmLog.qm.getUser()){
                 url = qmLog.qm.urlHelper.addUrlQueryParamsToUrlString({userEmail: qmLog.qm.getUser().email}, url);
             }
