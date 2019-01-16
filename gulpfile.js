@@ -653,8 +653,8 @@ var qmGulp = {
             return qmGulp.releaseService.getReleaseStage() === 'production';
         },
         getReleaseStageSubDomain: function(){
-            if(qmGulp.releaseService.isStaging()){return "qm-staging";}
-            if(qmGulp.releaseService.isProduction()){return "quantimodo";}
+            if(qmGulp.releaseService.isStaging()){return "staging-web";}
+            if(qmGulp.releaseService.isProduction()){return "web";}
             qmLog.error("No RELEASE_STAGE set!  Assuming GHPagesSubDomain qm-dev");
             return "qm-dev";
         }
@@ -2633,7 +2633,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [], function () {
         return;
     }
     qmLog.info("release stage is " + qmGulp.releaseService.getReleaseStage());
-    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/';
     var options = {logs: {enabled: true, notReplaced: true}};
     return gulp.src(['www/index.html'], {base: '.'})
         .pipe(replace('src="scripts', 'src="'+url+'scripts', options))

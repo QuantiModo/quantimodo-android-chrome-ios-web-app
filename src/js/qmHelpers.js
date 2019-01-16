@@ -1743,7 +1743,7 @@ var qm = {
             if(qm.getAppSettings().redirectUri){
                 return qm.getAppSettings().redirectUri;
             }
-            return qm.api.getBaseUrl() + '/ionic/Modo/www/callback/';
+            return qm.api.getBaseUrl() + '/callback/';
         },
         getAccessTokenFromUrlAndSetLocalStorageFlags: function(stateName){
             if(qm.auth.accessTokenFromUrl){
@@ -1887,7 +1887,10 @@ var qm = {
                 partialPath = '';
             }
             qm.api.getClientIdWithCallback(function(clientId){
-                var url = "https://" + clientId + ".quantimo.do/ionic/Modo/www/" + partialPath;
+                // TODO: Stop using quantimodo.quantimo.do for resource hosting on Github so we can point quantimodo.quantimo.do to Netlify
+                if(clientId === 'quantimodo'){clientId = 'web';}
+                var url = "https://" + clientId + ".quantimo.do/" + partialPath;
+                url = qm.urlHelper.addUrlQueryParamsToUrlString({clientId: clientId}, url);
                 successHandler(url)
             })
         }
