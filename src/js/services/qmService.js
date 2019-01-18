@@ -3576,6 +3576,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());
             qmLog.info('Going to state ' + to);
             if(to !== "false"){
+                params = params || {};
+                params.fromUrl = window.location.href;
                 $state.go(to, params, options);
             }
         };
