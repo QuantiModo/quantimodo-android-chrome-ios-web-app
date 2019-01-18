@@ -196,9 +196,9 @@ amqplib@^0.5.2:
     readable-stream "1.x >=1.1.9"
     safe-buffer "^5.0.1"
 
-angular-mocks@1.7.5:
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.7.5.tgz#c8baba5a06ed60b934697026b492169626af384b"
+angular-mocks@1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.7.6.tgz#dc291a5311caa0b5b1aaf94a375084c27b477c47"
 
 ansi-align@^2.0.0:
   version "2.0.0"
