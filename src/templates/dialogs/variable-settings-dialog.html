@@ -13,14 +13,7 @@
     </md-toolbar>
     <md-dialog-content ng-cloak>
         <div class="md-dialog-content">
-            <form ng-submit="$event.preventDefault()">
-                <p>{{ctrl.helpText}}</p>
-                <md-input-container class="md-block">
-                    <input ng-model="ctrl.value"
-                           placeholder="{{ctrl.placeholder}}"
-                           name="value">
-                </md-input-container>
-            </form>
+            <div ng-include="'templates/fragments/variable-settings-fragment.html'"></div>
         </div>
     </md-dialog-content>
     <md-dialog-actions>
