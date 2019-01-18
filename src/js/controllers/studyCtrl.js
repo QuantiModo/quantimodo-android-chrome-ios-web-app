@@ -108,6 +108,10 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }
         if(getStateOrUrlOrRootScopeOrRequestParam("studyId")){
             requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+            if(requestParams.studyId.length < 6){
+                qmLog.error("studyId should not be "+requestParams.studyId);
+                delete requestParams.studyId;
+            }
         }
         requestParams.includeCharts = true;
         if(recalculate || qm.urlHelper.getParam('recalculate')){
