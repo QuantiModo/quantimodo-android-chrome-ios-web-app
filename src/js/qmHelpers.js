@@ -7661,9 +7661,13 @@ var qm = {
                 //successHandler(cachedData);
                 //return;
             }
-            if(!params.studyId && !params.causeVariableName && !params.causeVariableName){
-                errorHandler("No study params provided!");
-                return;
+            if(!params.studyId){
+                var hasNames = params.causeVariableName && params.effectVariableName;
+                var hasIds = params.causeVariableId && params.effectVariableId;
+                if(!hasNames && !hasIds){
+                    errorHandler("No study params provided!");
+                    return;
+                }
             }
             if(!qm.api.configureClient(cacheKey, errorHandler, params)){
                 return false;
