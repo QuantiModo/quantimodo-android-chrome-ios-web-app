@@ -457,7 +457,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 qmLog.error("Why is outcome not boolean in this notification!?!?!", null, trackingReminderNotification)
             }
             for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
-                buttons.push({text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
+                buttons.push({
+                    text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title,
+                    trackAllIndex: i
+                })
             }
             //buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});  // TODO: Why aren't we using the destructive button for this?
             var hideSheetForNotification = $ionicActionSheet.show({
@@ -470,39 +473,31 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 buttonClicked: function(index, button){
                     qmLogService.debug('BUTTON CLICKED', null, index);
                     if(index === 0){
-                        qmLogService.debug('clicked variable name', null);
+                        qmLog.debug('clicked variable name');
+                        return false; // Don't hide
                     }
-                    if(index === 1){
+                    if(typeof button.trackAllIndex !== "undefined"){
+                        trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[button.trackAllIndex].modifiedValue);
+                        return true; // Hide sheet
+                    }
+                    if(button.state){
+                        qmService.goToState(button.state, {
+                            variableObject: $scope.state.variableObject,
+                            variableName: $scope.state.variableObject.name
+                        });
+                        return true; // Hide sheet
+                    }
+                    if(button.text.indexOf("Edit Reminder") !== -1){
                         $scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
+                        return true; // Hide sheet
                     }
-                    if(index === 2){
-                        qmService.goToState('app.charts', {
-                            variableObject: $scope.state.variableObject,
-                            variableName: $scope.state.variableObject.name
-                        });
-                    }
-                    if(index === 3){
-                        qmService.goToState('app.historyAllVariable', {
-                            variableObject: $scope.state.variableObject,
-                            variableName: $scope.state.variableObject.name
-                        });
-                    }
-                    var buttonIndex = 4;
-                    for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
-                        if(index === buttonIndex){
-                            trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);
-                        }
-                        buttonIndex++;
-                    }
-                    if(index === buttonIndex){
+                    if(button.text.indexOf("Skip All") !== -1){
                         $scope.skipAllForVariable(trackingReminderNotification);
+                        return true; // Hide sheet
                     }
-                    buttonIndex++;
-                    if(index === buttonIndex){
-                        qmLog.error("How should I handle this button?", {button: button});
-                    }
+                    qmLog.error("How should I handle this button?", {button: button});
                     //if(index === buttonIndex){qmService.goToVariableSettingsByName($scope.state.trackingReminderNotification.variableName);}
-                    return true;
+                    return true; // Hide sheet
                 },
                 destructiveButtonClicked: function(){
                     $scope.skipAllForVariable(trackingReminderNotification);
