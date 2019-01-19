@@ -41,10 +41,13 @@ qm.push.notificationClick = function(event){  // Have to attach to qm because it
     var urlPathToOpen = basePath + 'reminders-inbox';
     if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
         urlPathToOpen = event.notification.data.url;
+        console.debug("urlPathToOpen from event.notification.data.url", urlPathToOpen);
     }
     if(event.action && event.action.indexOf("https://") !== -1){
         var route = qm.stringHelper.getStringAfter(event.action, basePath);
         urlPathToOpen = basePath + route;
+        console.debug("basePath", basePath);
+        console.debug("urlPathToOpen from basePath + route", urlPathToOpen);
     }
     // This looks to see if the current is already open and focuses if it is
     event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
