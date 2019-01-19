@@ -182,7 +182,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 return false;
             }
             trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
-            qm.notifications.setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
             notificationAction(trackingReminderNotification);
             qm.notifications.trackNotification(trackingReminderNotification);
             refreshIfRunningOutOfNotifications();
@@ -264,7 +263,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 return false;
             }
             var body = notificationAction(trackingReminderNotification);
-            qmService.notifications.track(body, modifiedReminderValue, $event, trackAll);
+            if(modifiedReminderValue !== null){body.modifiedValue = modifiedReminderValue;}
+            qm.notifications.trackNotification(body, trackAll);
             refreshIfRunningOutOfNotifications();
         };
         function trackAll(trackingReminderNotification, modifiedReminderValue, ev){
