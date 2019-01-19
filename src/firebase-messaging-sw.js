@@ -63,6 +63,7 @@ qm.push.notificationClick = function(event){  // Have to attach to qm because it
             }
         }
         if (clients.openWindow) {
+            if(urlPathToOpen.indexOf('#') === 0){urlPathToOpen = '/' + urlPathToOpen;}
             console.log("Opening new " + urlPathToOpen + " window");
             return clients.openWindow(urlPathToOpen);
         } else {
