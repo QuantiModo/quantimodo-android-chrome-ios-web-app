@@ -1438,22 +1438,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             notifications: {
                 trackAll: function(trackingReminderNotification, modifiedReminderValue, ev){
                     qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                    qmService.notifications.track(trackingReminderNotification, modifiedReminderValue, ev, true);
-                    qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
-                },
-                track: function(trackingReminderNotification, modifiedReminderValue, $event, trackAll, undoCallback){
-                    if(modifiedReminderValue === null && trackingReminderNotification.modifiedValue){
-                        modifiedReminderValue = trackingReminderNotification.modifiedValue;
-                    }
-                    if(modifiedReminderValue === null){
-                        modifiedReminderValue = trackingReminderNotification.defaultValue;
-                    }
-                    qm.notifications.setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
-                    var body = qmService.notifications.handleNotificationAction(trackingReminderNotification, undoCallback);
-                    body.modifiedValue = modifiedReminderValue;
-                    // I think this slows down inbox
-                    //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "track", null, modifiedReminderValue);
-                    qm.notifications.trackNotification(body, trackAll);
+                    if(modifiedReminderValue !== null){trackingReminderNotification.modifiedValue = modifiedReminderValue;}
+                    qm.notifications.trackNotification(trackingReminderNotification, true);
+                    //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
                 },
                 showActionSheetForNotification: function(trackingReminderNotification){
                     var trackingReminder = trackingReminderNotification;
@@ -1739,6 +1726,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 lastAction: "",
                 showUndoToast: function(callback){
+                    if(!callback){
+                        throw "No undo action provided to showUndoToast to refresh view!";
+                    }
                     qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
                         qm.notifications.undo();
                         if(callback){
@@ -1747,6 +1737,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 },
                 handleNotificationAction: function(trackingReminderNotification, undoCallback){
+                    qm.notifications.setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
                     qmLog.info("Clicked " + qm.notifications.lastAction + " for " + trackingReminderNotification.variableName);
                     trackingReminderNotification.hide = true;
                     qm.notifications.numberOfPendingNotifications--;
@@ -7424,6 +7415,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(hideDelay * 1000));
         };
         qmService.showToastWithButton = function(textContent, buttonText, buttonFunction){
+            if(!textContent || textContent === ""){
+                throw "No textContent provided to showToastWithButton!";
+            }
             var toast = $mdToast.simple()
                 .textContent(textContent)
                 .action(buttonText)
@@ -7898,11 +7892,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         //         });
         //     });
         // };
-        function isFalsey(value){
-            if(value === false || value === "false"){
-                return true;
-            }
-        }
         qmService.drawOverAppsPopupRatingNotification = function(trackingReminderNotification, force){
             if(!$rootScope.platform.isAndroid){
                 qmLog.debug('Can only show popups on android', null);
