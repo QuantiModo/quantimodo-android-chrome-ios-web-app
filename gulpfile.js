@@ -456,7 +456,7 @@ var qmGulp = {
         appPath: null,
         getAppPath: function(){
             if(qmGulp.chcp.appPath){return qmGulp.chcp.appPath;}
-            return qmGulp.getClientId();
+            return qmGulp.getClientIdFromStaticData();
         },
         getS3Prefix: function(){
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath();
@@ -629,7 +629,7 @@ var qmGulp = {
     getBuildStatus: function(){
         return qmGulp.staticData.appSettings.appStatus.buildStatus;
     },
-    getClientId: function(){
+    getClientIdFromStaticData: function(){
         return qmGulp.staticData.appSettings.clientId;
     },
     getMonetizationSettings: function(){
@@ -820,7 +820,7 @@ function uploadBuildToS3(filePath) {
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
     var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
     qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
-    var context = qmGulp.getClientId() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
+    var context = qmGulp.getClientIdFromStaticData() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
     qmGulp.createStatusToCommit({
         description: 'Click Details to download and test',
         context: context,
@@ -1066,13 +1066,13 @@ function getRequestOptions(path) {
     return options;
 }
 function getAppEditUrl() {
-    return getAppsListUrl() + '?clientId=' + qmGulp.getClientId();
+    return getAppsListUrl() + '?clientId=' + qmGulp.getClientIdFromStaticData();
 }
 function getAppsListUrl() {
     return 'https://builder.quantimo.do/#/app/configuration';
 }
 function getAppDesignerUrl() {
-    return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientId();
+    return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientIdFromStaticData();
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -1191,7 +1191,7 @@ function generateConfigXmlFromTemplate(callback) {
     if (qmGulp.getAppIds().googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', qmGulp.getAppIds().googleReversedClientId);
     }
-    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', qmGulp.getClientId());
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', qmGulp.getClientIdFromStaticData());
     xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', qmGulp.getAppSettings().clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
@@ -1358,9 +1358,12 @@ function chromeManifest(outputPath, backgroundScriptArray) {
     writeToFile(outputPath, chromeManifestString);
 }
 gulp.task('chromeIFrameHtml', [], function () {
-    return gulp.src(['src/chrome_default_popup_iframe.html'])
-        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
-        .pipe(gulp.dest(chromeExtensionBuildPath));
+    return gulp.src([
+            //'src/chrome_default_popup_iframe.html',
+            'src/js/closeChromePopup.js'
+        ])
+        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './src/'))
+        .pipe(gulp.dest(chromeExtensionBuildPath+'/js'));
 });
 gulp.task('chromeOptionsHtml', [], function () {
     return gulp.src(['src/chrome_options.html'])
@@ -1385,7 +1388,7 @@ function createProgressiveWebAppManifest(outputPath) {
     var pwaManifest = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
-        'short_name': qmGulp.getClientId(),
+        'short_name': qmGulp.getClientIdFromStaticData(),
         'description': qmGulp.getAppSettings().appDescription,
         "start_url": "index.html",
         "display": "standalone",
@@ -1484,8 +1487,8 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', ['setClientId'], function () {
-    if(qmGulp.getAppSettings() && qmGulp.getClientId() === QUANTIMODO_CLIENT_ID){
-        qmLog.info("Already have appSettings for " + qmGulp.getClientId());
+    if(qmGulp.getAppSettings() && qmGulp.getClientIdFromStaticData() === QUANTIMODO_CLIENT_ID){
+        qmLog.info("Already have appSettings for build client id " + QUANTIMODO_CLIENT_ID);
         return;
     }
     var options = getRequestOptions('/api/v1/appSettings');
@@ -1652,6 +1655,11 @@ function writeStaticDataFile(){
         writeToFile(paths.www.staticData, string);
     } catch(e){
         qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
+    }
+    try {
+        writeToFile('build/chrome_extension/data/qmStaticData.js', string);
+    } catch(e){
+        qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src");
     }
     return writeToFile(paths.src.staticData, string);
 }
@@ -3068,6 +3076,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         return;
     }
     runSequence(
+        'staticDataFile',
         'downloadQmAmazonJs',
         'downloadIcon',
         'resizeIcons',
