@@ -8162,7 +8162,11 @@ var qm = {
                     if(currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()){
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
                         if(typeof shouldDecode !== "undefined"){
-                            return decodeURIComponent(currentParameterKeyValuePair[1]);
+                            var decoded = decodeURIComponent(currentParameterKeyValuePair[1]);
+                            if(decoded && decoded.indexOf('%2') !== -1){
+                                decoded = decodeURIComponent(decoded); // Must have been double encoded
+                            }
+                            return decodeURIComponent(decoded);
                         }else{
                             return currentParameterKeyValuePair[1];
                         }
