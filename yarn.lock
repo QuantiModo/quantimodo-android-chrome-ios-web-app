@@ -1044,9 +1044,9 @@ bufferstreams@^1.1.0:
   dependencies:
     readable-stream "^2.0.2"
 
-bugsnag-sourcemaps@1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.0.7.tgz#aa35179f2e9d34b592265c7166a88b8217e4b6f4"
+bugsnag-sourcemaps@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/bugsnag-sourcemaps/-/bugsnag-sourcemaps-1.1.0.tgz#923ae27350a1ceed62bb88d396064aae655b7d5d"
   dependencies:
     graceful-fs "^4.1.11"
     listr "^0.12.0"
