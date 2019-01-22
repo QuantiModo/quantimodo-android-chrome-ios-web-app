@@ -8739,6 +8739,7 @@ var qm = {
                 }
             }
             function getFromApi(localVariables, reason){
+                if(reason && typeof reason !== "string"){throw "Reason should be a string!"}
                 requestParams.reason = reason;
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length){
@@ -8759,7 +8760,7 @@ var qm = {
                 });
             }
             if(requestParams.excludeLocal){
-                getFromApi(null, requestParams, "excludeLocal is " + requestParams.excludeLocal +
+                getFromApi(null, "excludeLocal is " + requestParams.excludeLocal +
                     " (excludeLocal is necessary for complex filtering like tag searches)");
                 return;
             }

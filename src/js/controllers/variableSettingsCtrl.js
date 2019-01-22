@@ -226,7 +226,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             dialogParameters.requestParams = requestParams;
             qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
         };
-        $scope.openJoinVariableSearchDialog = function($event, requestParams){
+        $scope.state.openJoinVariableSearchDialog = function($event, requestParams){
             qmLog.info("openJoinVariableSearchDialog called by this event:", $event);
             qmLog.info("openJoinVariableSearchDialog requestParams:", requestParams);
             requestParams = requestParams || {joinVariableId: $scope.state.variableObject.id};
