@@ -339,7 +339,7 @@ var qmGit = {
     }
 };
 qmGit.setBranchName();
-var majorMinorVersionNumbers = '2.8.';
+var majorMinorVersionNumbers = '2.9.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
