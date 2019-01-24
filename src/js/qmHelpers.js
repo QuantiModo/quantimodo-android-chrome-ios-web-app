@@ -370,6 +370,9 @@ var qm = {
                 qm.qmLog.info("Could not get client id!");
                 //clientId = 'quantimodo';
             }
+            if(qm.clientId && qm.clientId.indexOf('.') !== -1){
+                throw "Client id should not have a dot!"
+            }
             if(!successHandler){
                 return qm.clientId;
             }
