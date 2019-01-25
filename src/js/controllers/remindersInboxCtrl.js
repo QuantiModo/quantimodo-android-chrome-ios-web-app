@@ -182,6 +182,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 return false;
             }
             trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
+            var lastAction = 'Recorded ' + trackingReminderNotification.modifiedValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
+            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+trackingReminderNotification.variableName;
             notificationAction(trackingReminderNotification);
             qm.notifications.trackNotification(trackingReminderNotification);
             refreshIfRunningOutOfNotifications();
@@ -262,12 +264,18 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(isGhostClick($event)){
                 return false;
             }
+            trackingReminderNotification.modifiedValue = modifiedReminderValue;
+            var lastAction = 'Recorded ' + trackingReminderNotification.modifiedValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
+            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+ trackingReminderNotification.variableName;
             var body = notificationAction(trackingReminderNotification);
             if(modifiedReminderValue !== null){body.modifiedValue = modifiedReminderValue;}
             qm.notifications.trackNotification(body, trackAll);
             refreshIfRunningOutOfNotifications();
         };
         function trackAll(trackingReminderNotification, modifiedReminderValue, ev){
+            trackingReminderNotification.modifiedValue = modifiedReminderValue;
+            var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
+            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for all '+trackingReminderNotification.variableName;
             var body = notificationAction(trackingReminderNotification);
             qmService.notifications.trackAll(body, modifiedReminderValue, ev);
             getTrackingReminderNotifications();
@@ -288,7 +296,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(isGhostClick($event)){
                 return;
             }
-            qm.notifications.lastAction = 'Skipped';
+            qm.notifications.lastAction = 'Skipped '+trackingReminderNotification.variableName;
             var params = notificationAction(trackingReminderNotification);
             qm.notifications.skip(params);
             qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
@@ -298,7 +306,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(isGhostClick($event)){
                 return;
             }
-            qm.notifications.lastAction = 'Snoozed';
+            qm.notifications.lastAction = 'Snoozed '+trackingReminderNotification.variableName;
             var params = notificationAction(trackingReminderNotification);
             qm.notifications.snoozeNotification(params);
             qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
