@@ -7865,6 +7865,26 @@ var qm = {
                 var params = qm.urlHelper.getQueryParams(url);
                 qm.assert.equals('preve-wellness-tracker', params.clientId);
             }
+        },
+        study: {
+            testGetVariableAfterGettingStudy: function(callback){
+                qm.studyHelper.getStudyFromApi({causeVariableName: "Eggs (serving)", effectVariableName: "Overall Mood", userId: 230}, function(study){
+                    qm.qmLog.info("Got study "+study.causeVariableName);
+                    qm.variablesHelper.getFromLocalStorageOrApi({variableName: "Eggs (serving)"}, function(variables){
+                        if(variables.length > 1){
+                            throw "Why did we get "+variables.length+" variables for Eggs (serving)?!?!?"
+                        }
+                        var user = qm.getUser();
+                        qm.qmLog.info("Got variable for user "+ variables[0].userId);
+                        qm.assert.equals(user.id, variables[0].userId, "We should have saved the user variable from the study!");
+                        if(callback){callback();}
+                    }, function(error){
+                        throw error;
+                    });
+                }, function(error){
+                    throw error;
+                });
+            }
         }
     },
     timeHelper: {
