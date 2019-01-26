@@ -7626,6 +7626,7 @@ var qm = {
                 qm.qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
                 return;
             }
+            qm.variablesHelper.saveToLocalStorage([study.causeVariable, study.effectVariable]);
             qm.globalHelper.setStudy(study);
             qm.localForage.setItem(qm.items.lastStudy, study);
         },
@@ -8894,7 +8895,7 @@ var qm = {
                 var variable = variables[i];
                 if(variable.userId && variable.userId === qm.getUser().id){
                     userVariables.push(variable);
-                }else{
+                }else if(!variable.userId){ // Don't save other peoples user variables when looking at studies
                     commonVariables.push(variable);
                 }
             }
