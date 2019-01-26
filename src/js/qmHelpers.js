@@ -8895,6 +8895,7 @@ var qm = {
                 if(variable.userId && variable.userId === qm.getUser().id){
                     userVariables.push(variable);
                 }else{
+                }else if(!variable.userId){ // Don't save other peoples user variables when looking at studies
                     commonVariables.push(variable);
                 }
             }
