@@ -1737,7 +1737,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 },
                 handleNotificationAction: function(trackingReminderNotification, undoCallback){
-                    qm.notifications.setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
                     qmLog.info("Clicked " + qm.notifications.lastAction + " for " + trackingReminderNotification.variableName);
                     trackingReminderNotification.hide = true;
                     qm.notifications.numberOfPendingNotifications--;
