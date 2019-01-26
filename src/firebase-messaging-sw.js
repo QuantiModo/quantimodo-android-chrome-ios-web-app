@@ -90,7 +90,7 @@ function showNotification(pushData) {
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
             tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
-            silent: true,
+            silent: true,  // Why do we still hear sounds on Chrome for Android?
             onClick: qm.push.notificationClick
         };
         try {

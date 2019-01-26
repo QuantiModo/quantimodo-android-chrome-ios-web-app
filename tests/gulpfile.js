@@ -409,6 +409,12 @@ gulp.task('unit-tests', function(callback) {
             callback(error);
         });
 });
+gulp.task('study-tests', function(callback) {
+    qm.currentTask = this.currentTask.name;
+    qmTests.getStaticData();
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
+    qm.tests.study.testGetVariableAfterGettingStudy(callback);
+});
 gulp.task('_unit-gi-failed-gi-all', function(callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
