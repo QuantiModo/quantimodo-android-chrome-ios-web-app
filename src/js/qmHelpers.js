@@ -7859,7 +7859,7 @@ var qm = {
                 return updated;
             }
         },
-        urlUhelper: {
+        urlHelper: {
             testGetQueryParamsFromQueryBeforeHash: function(){
                 var url = 'https://dev-web.quantimo.do/?clientId=preve-wellness-tracker#/app/onboarding';
                 var params = qm.urlHelper.getQueryParams(url);
