@@ -192,7 +192,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             setAllStateProperties(study);
         }, function(error){
             qmLog.info(error + " So making abstract studies request without charts");
-            qm.studyHelper.getStudiesFromApi($scope.state.requestParams, function(studiesResponse){
+            qm.studyHelper.getStudiesFromApi(getRequestParams(), function(studiesResponse){
                 if(studiesResponse.studies.length){
                     setAllStateProperties(studiesResponse.studies[0]);
                 }
