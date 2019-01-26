@@ -1,7 +1,6 @@
 # QuantiModo Ionic App
 
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
--------
 
 # DEMOS
 - [QuantiModo Web App](https://app.quantimo.do) 
@@ -40,4 +39,238 @@ For more info about the types of data you can store and get from the QuantiModo 
 <br><br>
 <img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?" width="300">
 </p>
- 
+  # **Ionic Docker Image**
+Ionic docker image for development, build and continous integration (and certainly useful for all Cordova projects in general as well)
+
+
+## Why
+- Installing Java and Android SDK is a pain
+- Keeping your Node modules in sync and up-to-date is a pain
+- Ensuring all project developers have exactly the same Java version, Android SDK, and node modules is a Sisyphos like task, not to mention your CI environment. 
+- Using a standardized Docker image and a versionednDocker-Compose file for your project ensures an identical environment for all developers, testers, build bots etc.
+
+
+## Features
+- Based on Ubuntu 16.04
+- Minimal assumptions/restrictions regarding your development environment and project structure
+- Android SDK, Node, Npm, Yarn, Cordova, Ionic installed
+- Easily set package versions (Java, Android, Node, Cordova, Ionic) via cli arguments based on your project requirements
+- Map your local Cordova/Ionic project via docker volume
+- package.json is continously watched and re-installed on changes
+- Yarn available optionally
+- Gulp available optionally
+
+
+## Default versions
+The following default versions are installed (for customizing see below):
+- Java: 8
+- Android platforms: 25
+- Android build tools: 25.0.3
+- Node: 6.9.5
+- Npm: 5.3.0
+- Cordova: 6.5.0
+- Ionic: 3.6.1
+- Typescript: 2.3.4
+- Yarn: latest
+
+
+## Quick start
+Create your project directory
+```
+mkdir demoapp
+cd demoapp
+```
+
+Download the docker-compose file
+```
+curl -o docker-compose.yml https://raw.githubusercontent.com/mswag/docker-ionic/master/docker-compose.yml
+```
+
+Build the docker image (grab a coffee, this might take a while when you run it the first time)
+```
+docker-compose build
+```
+*This will only work, if you have docker already installed on your machine. If not, please look at the Usage section for more instructions.*
+
+Start the development server
+```
+docker-compose up
+```
+Congratulations! Look at the default Ionic project at localhost:8100 that is served out of your Docker container.
+
+**If you want to know, how to get your own Ionic project served and built out of the Docker container, follow the instructions below.**
+
+
+## Usage
+1. Install Docker 
+Install docker for your platform [Linux](https://docs.docker.com/engine/installation/linux/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/).
+
+
+2. Build your image and start your container
+You can build your image and start your container directly with docker. Or you can use docker-compose. In general, we recommend to download our compose file and work with docker-compose.
+
+3. How to develop your local Ionic project in the Docker container
+The provided image / container does have an Ionic app setup and installled in the directory /app. This app is only for demo purposes and not intended for development. You you should create / integrate your Ionic project from the host aka your development machine. Therefore, you map your local Ionic project directory to the container via a volume mapping. This will work out of the box if you follow instructions below.
+
+By default, the Docker container has a start script that watches your package.json, which installs on start or on changes.
+
+
+## Usage with docker-compose
+
+To manage the build and run options in your project via cli parameters is a hassle and does not scale very well in larger project teams. Therefore, we recommend to use a compose file, which can be versioned and should be checked into your project repository.
+
+1. Create your inital docker-compose.yml file
+
+    Download it from our repository into your project root
+    ```
+    curl -o docker-compose.yml https://raw.githubusercontent.com/mswag/docker-ionic/develop/docker-compose.yml
+    ```
+    and customize it to your needs. However, the defaults should be good to start with.
+
+2. Build your image
+
+    After customizing your docker-compose file, build your project specific image
+    ```
+    docker-compose build
+    ```
+
+3. Run the container
+
+    The default container command is "ionic serve -b". Thus,  by just starting the container via
+    ```
+    docker-compose up
+    ```
+    you will have your development server up and running on port 8100.
+
+    You can change the default command by appending to cli call. E.g. this command
+    ```
+    docker-compose run ionic npm run test
+    ```
+    will start the unit tests.
+
+4. Run specific one-off commands
+    Use the run commaned for one-off commands. E.g. to build the Android APKs just run
+    ```
+    docker-compose run ionic ionic build android
+    ```
+
+    If you want to check the build configuration of your underlying container, just run
+    ```
+    docker-compose run ionic cat /image.config
+    ```
+
+
+## Usage with docker
+
+1. Build your custom docker image
+
+    ```
+    docker build -tag [IMAGE_NAME] \
+                 --build-arg [ARG=VALUE] \
+                 https://github.com/mswag/docker-ionic
+    ```
+    (this might take a while the first time)
+
+    Please choose an appropriate IMAGE_NAME for the built image; the name of your project might be a good idea.
+
+    The following build arguments can be used to customize your image:
+    - USER (mandatory, default: ionic): the project user, which will be used to run this Docker container
+    - JAVA_VERSION (mandatory, default: 8): the java version that should be installed and used to run the Android SDKstalled and used by Cordova
+    - ANDROID_PLATFORMS_VERSION (mandatory, default: 25): the Android SDK Tools platforms version that should be installed and used by Cordova
+    - ANDROID_BUILD_TOOLS_VERSION (mandatory, default: 25.0.3): the Android build tools version that should be installed and used by Cordova
+    - NODE_VERSION (mandatory, default: 6.9.1): the node version that should be installed globally and used by Cordova and Ionic
+    - NPM_VERSION (mandatory, default: 5.3.0): the npm version that will be installed with node globally
+    - PACKAGE_MANAGER (mandatory, default: npm): if yarn or npm should be used as package manager
+    - CORDOVA_VERSION (mandatory, default: 6.5.0): the Cordova version that will be installed globally and used by Ionic to build the Android APKs
+    - IONIC_VERSION (optional, default: 2.2.1): the Ionic version that will be installed globally to power your project
+    - TYPESCRIPT_VERSION (optional, default: 2.0.3): the Typescript version that will be installed globally to translate your .ts files
+    - GULP_VERSION (optional, default: none): the Gulp version that will be installed globally to run your gulp tasks
+
+    *Example for Ionic 2 project*:
+    ```
+    docker build --tag my-great-ionic2-project \
+                 --build-arg USER="$USER"
+                 https://github.com/mswag/docker-ionic
+    ```
+    This will generate a Docker image named "my-great-ionic2-project" with the default configuration and a user, who's name is identical to the one on the host.
+
+
+2. Feel free to use your image and connect with a bash shell: 
+
+    ```
+    docker run --name "my-great-ionic2-project" -it \
+               -v $PWD:/app:rw \
+               -v /dev/bus/usb:/dev/bus/usb \
+               -u `id -u $USER` \
+               -p 3000:3000 -p 5000:5000 -p 8100:8100 -p 8080:8080 -p 9876:9876 -p 35729:35729 \                                                     
+               my-great-ionic2-project-container
+    ```
+    This will run the created image with the following features:
+
+   - **Project Directory**:
+    
+        The option ```-v $PWD:/app:rw``` will map your hosts current directory to /app in the container. This should  allways be our project root directory, where the package.jsons ist provided.
+
+    - **USB Devices**:
+    
+        The option ```-v /dev/bus/usb:/dev/bus/usb``` will map your hosts usb ports such that you can build/deploy your project directly to your device.
+        
+        **Attention**: this will not work on osx.
+
+    - **Container User Id**
+        
+        The option ```-u `id -u $USER``` will run the container with the current user's id. This will avoid permissions issues on the host.
+
+    - **Port Mappings**
+        
+        The defined port mappings ("-p") do map the following ports from the container to the host:
+        - 3000: Angular Lite Server
+        - 5000: node
+        - 8100: ionic
+        - 8080: webpack
+        - 9876: karma
+        - 35729: ionic livereload
+
+Now you have a Docker container, that you can use to develop, build and serve your Ionic (or Cordova) project.
+
+
+
+## Credits
+
+**This project is inspired and builds on various other projects:**
+- https://github.com/agileek/docker
+- https://github.com/mkaag/docker-ionic
+- https://github.com/nodejs/docker-node
+- https://github.com/netizy/docker-ionic-2
+- https://github.com/rsaddey/jump-ionic2
+- https://github.com/DroidsOnRoids/bitrise-docker-android
+
+
+
+## FAQs
+* Why are you using Ubuntu 16.04 as base Docker image instead of smaller ones like Alpine?*
+
+    The goal of this image is to have a standardized development and build environment. Therefore the image should meet a developer's needs in terms of tools, command line usage etc. Since it is not planned to use this image in production or for deployment, minimizing size was not in scope.
+
+* Why is this image not available on the Docker hub?
+
+    The idea of this image is to have a custom build for your requirements. You might even want to have a separate image per project.
+
+* Why are you not running as the root user (like most other ionic images)?
+
+    Because this might cause permission issues on your host's mapped application directory. Furthermore, cli calls, tools behavior etc. would differ from a developer's host workflow.
+
+* How do I deploy my APK to a device on a mac
+
+    TODO: 
+
+## Roadmap & ToDos
+* Enable yarn version pinning
+* Review installed Android versions
+* Enable cache volume mapping from the client
+
+
+## Anything missing?
+Great! Open a ticket or send us a PR!
+
+

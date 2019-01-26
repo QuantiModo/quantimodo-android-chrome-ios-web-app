@@ -108,6 +108,10 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         }
         if(getStateOrUrlOrRootScopeOrRequestParam("studyId")){
             requestParams.studyId = getStateOrUrlOrRootScopeOrRequestParam("studyId");
+            if(requestParams.studyId.length < 6){
+                qmLog.error("studyId should not be "+requestParams.studyId);
+                delete requestParams.studyId;
+            }
         }
         requestParams.includeCharts = true;
         if(recalculate || qm.urlHelper.getParam('recalculate')){
@@ -188,7 +192,7 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             setAllStateProperties(study);
         }, function(error){
             qmLog.info(error + " So making abstract studies request without charts");
-            qm.studyHelper.getStudiesFromApi($scope.state.requestParams, function(studiesResponse){
+            qm.studyHelper.getStudiesFromApi(getRequestParams(), function(studiesResponse){
                 if(studiesResponse.studies.length){
                     setAllStateProperties(studiesResponse.studies[0]);
                 }

@@ -36,7 +36,7 @@
     "gsap": "1.19.1",
     "highcharts": "5.0.14",
     "highcharts-ng": "1.1.0",
-    "ionic": "driftyco/ionic-bower#1.3.1",
+    "ionic": "driftyco/ionic-bower#1.3.5",
     "ionic-datepicker": "~1.1.0",
     "ionic-timepicker": "0.6.0",
     "Ionicons": "ionicons#^2.0.1",
@@ -56,9 +56,11 @@
     "pouchdb-upsert": "^2.2.0",
     "pusher-js": "pusher#^4.3.0",
     "quagga": "^0.12.1",
-    "quantimodo": "5.9.92713",
+    "quantimodo": "5.10.12613",
     "svg-morpheus": "^0.3.2",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "moment-timezone": "^0.5.23",
+    "qm-redirector": "*"
   },
   "resolutions": {
     "angular": "1.5.9",

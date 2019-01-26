@@ -32,8 +32,10 @@
                             <img class="menu-avatar" id="patientAvatarRight" ng-src="{{user.avatar}}"></a>
                         <button id="switch-button-right" class="button button-icon ion-arrow-swap"></button>
                     </div>
-                    <button id="menu-mic-button" class="button button-icon ion-mic-a" ng-if="micAvailable"
-                            ng-click="goToState('app.chat')"></button>
+                    <!-- Mic button is too crowded for navigation menu and chat page is still buggy
+                    <button id="menu-mic-button" class="button button-icon ion-mic-a" ng-if="micAvailable"-->
+                            <!--ng-click="goToState('app.chat')"></button>
+                    -->
                     <a ng-if="popOutUrl" href="{{popOutUrl}}" target="_blank">
                         <button class="button button-icon ion-android-open">
                             <md-tooltip md-direction="down">Pop Out</md-tooltip>

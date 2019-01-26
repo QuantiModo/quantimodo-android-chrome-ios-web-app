@@ -1,10 +1,9 @@
-qm.client.getClientWebsiteUrl(function(fullWebsiteUrl){
-    var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
-    windowParams.url = fullWebsiteUrl;
-    console.info("Opening " + fullWebsiteUrl);
-    chrome.windows.create(windowParams, function(chromeWindow){
-        chrome.windows.update(chromeWindow.id, {focused: true});
-    });
+console.log("Opening website popup!!!");
+var windowParams = qm.chrome.windowParams.fullInboxWindowParams;
+windowParams.url = "https://quantimodo.quantimo.do";
+console.info("Opening " + windowParams.url);
+chrome.windows.create(windowParams, function(chromeWindow){
+    chrome.windows.update(chromeWindow.id, {focused: true});
 });
 window.setTimeout(function(){
     window.close();

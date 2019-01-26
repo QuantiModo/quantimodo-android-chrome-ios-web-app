@@ -58,7 +58,7 @@ var qmLog = {
         metaData = metaData || {};
         metaData.environment = qmLog.obfuscateSecrets(process.env);
         metaData.subsystem = { name: qmLog.getCurrentServerContext() };
-        metaData.client_id = qmLog.getClientId();
+        metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
         metaData.build_link = qmLog.getBuildLink();
         return metaData;
     },
@@ -99,9 +99,6 @@ var qmLog = {
     },
     prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
     isTruthy: function(value){return value && value !== "false"; },
-    getClientId: function(){
-        return process.env.QUANTIMODO_CLIENT_ID;
-    },
     getBuildLink: function() {
         if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
         if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}

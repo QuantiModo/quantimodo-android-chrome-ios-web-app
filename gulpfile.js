@@ -339,7 +339,7 @@ var qmGit = {
     }
 };
 qmGit.setBranchName();
-var majorMinorVersionNumbers = '2.8.';
+var majorMinorVersionNumbers = '2.9.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
@@ -456,7 +456,7 @@ var qmGulp = {
         appPath: null,
         getAppPath: function(){
             if(qmGulp.chcp.appPath){return qmGulp.chcp.appPath;}
-            return qmGulp.getClientId();
+            return qmGulp.getClientIdFromStaticData();
         },
         getS3Prefix: function(){
             return qmGulp.chcp.getAppPath() + "/"+qmGulp.chcp.getReleaseStagePath();
@@ -570,6 +570,7 @@ var qmGulp = {
             qmGulp.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
                 builtAt: timeHelper.getUnixTimestampInSeconds(),
+                builtAtString:  new Date().toISOString(),
                 buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qmGulp.buildInfoHelper.getBuildLink(),
                 versionNumber: versionNumbers.ionicApp,
@@ -628,7 +629,7 @@ var qmGulp = {
     getBuildStatus: function(){
         return qmGulp.staticData.appSettings.appStatus.buildStatus;
     },
-    getClientId: function(){
+    getClientIdFromStaticData: function(){
         return qmGulp.staticData.appSettings.clientId;
     },
     getMonetizationSettings: function(){
@@ -652,8 +653,8 @@ var qmGulp = {
             return qmGulp.releaseService.getReleaseStage() === 'production';
         },
         getReleaseStageSubDomain: function(){
-            if(qmGulp.releaseService.isStaging()){return "qm-staging";}
-            if(qmGulp.releaseService.isProduction()){return "quantimodo";}
+            if(qmGulp.releaseService.isStaging()){return "staging-web";}
+            if(qmGulp.releaseService.isProduction()){return "web";}
             qmLog.error("No RELEASE_STAGE set!  Assuming GHPagesSubDomain qm-dev");
             return "qm-dev";
         }
@@ -819,7 +820,7 @@ function uploadBuildToS3(filePath) {
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
     var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
     qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
-    var context = qmGulp.getClientId() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
+    var context = qmGulp.getClientIdFromStaticData() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
     qmGulp.createStatusToCommit({
         description: 'Click Details to download and test',
         context: context,
@@ -1065,13 +1066,13 @@ function getRequestOptions(path) {
     return options;
 }
 function getAppEditUrl() {
-    return getAppsListUrl() + '?clientId=' + qmGulp.getClientId();
+    return getAppsListUrl() + '?clientId=' + qmGulp.getClientIdFromStaticData();
 }
 function getAppsListUrl() {
     return 'https://builder.quantimo.do/#/app/configuration';
 }
 function getAppDesignerUrl() {
-    return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientId();
+    return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientIdFromStaticData();
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -1146,7 +1147,7 @@ function outputVersionCodeForApk(pathToApk) {
     });
 }
 function copyFiles(sourceFiles, destinationPath, excludedFolder) {
-    var srcArray = [sourceFiles];
+    var srcArray = (sourceFiles.constructor !== Array) ? [sourceFiles] : sourceFiles;
     if(excludedFolder && typeof excludedFolder === "string"){
         console.log("Excluding " + excludedFolder + " from copy.. ");
         srcArray.push('!' + excludedFolder);
@@ -1190,7 +1191,7 @@ function generateConfigXmlFromTemplate(callback) {
     if (qmGulp.getAppIds().googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', qmGulp.getAppIds().googleReversedClientId);
     }
-    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', qmGulp.getClientId());
+    xml = xml.replace('QuantiModoClientId_PLACEHOLDER', qmGulp.getClientIdFromStaticData());
     xml = xml.replace('QuantiModoClientSecret_PLACEHOLDER', qmGulp.getAppSettings().clientSecret);
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
@@ -1357,9 +1358,12 @@ function chromeManifest(outputPath, backgroundScriptArray) {
     writeToFile(outputPath, chromeManifestString);
 }
 gulp.task('chromeIFrameHtml', [], function () {
-    return gulp.src(['src/chrome_default_popup_iframe.html'])
-        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './www/'))
-        .pipe(gulp.dest(chromeExtensionBuildPath));
+    return gulp.src([
+            //'src/chrome_default_popup_iframe.html',
+            'src/js/closeChromePopup.js'
+        ])
+        .pipe(replace("quantimodo.quantimo.do", QUANTIMODO_CLIENT_ID + ".quantimo.do", './src/'))
+        .pipe(gulp.dest(chromeExtensionBuildPath+'/js'));
 });
 gulp.task('chromeOptionsHtml', [], function () {
     return gulp.src(['src/chrome_options.html'])
@@ -1384,7 +1388,7 @@ function createProgressiveWebAppManifest(outputPath) {
     var pwaManifest = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
-        'short_name': qmGulp.getClientId(),
+        'short_name': qmGulp.getClientIdFromStaticData(),
         'description': qmGulp.getAppSettings().appDescription,
         "start_url": "index.html",
         "display": "standalone",
@@ -1483,8 +1487,8 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', ['setClientId'], function () {
-    if(qmGulp.getAppSettings() && qmGulp.getClientId() === QUANTIMODO_CLIENT_ID){
-        qmLog.info("Already have appSettings for " + qmGulp.getClientId());
+    if(qmGulp.getAppSettings() && qmGulp.getClientIdFromStaticData() === QUANTIMODO_CLIENT_ID){
+        qmLog.info("Already have appSettings for build client id " + QUANTIMODO_CLIENT_ID);
         return;
     }
     var options = getRequestOptions('/api/v1/appSettings');
@@ -1651,6 +1655,11 @@ function writeStaticDataFile(){
         writeToFile(paths.www.staticData, string);
     } catch(e){
         qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
+    }
+    try {
+        writeToFile('build/chrome_extension/data/qmStaticData.js', string);
+    } catch(e){
+        qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src");
     }
     return writeToFile(paths.src.staticData, string);
 }
@@ -2102,58 +2111,6 @@ gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], funct
 gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
     if (!qmGulp.buildSettings.weShouldMinify()) {return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('android_popup.html');
-});
-gulp.task('cdnizer', [], function() {
-    // I think this is pointless because Ntlify and Coudflare already act as CDN"s
-    var cdnizer = require("gulp-cdnizer");
-    return gulp.src("./src/index.html")
-        .pipe(cdnizer([
-            'google:angular',          // for most libraries, that's all you'll need to do!
-            'google:jquery',
-            'google:bugsnag',
-            'google:localforage',
-            'google:ionic',
-            'google:ng-cordova',
-            'google:ocLazyLoad',
-            'google:moment',
-            'google:angular-moment',
-            'google:highstock',
-            'google:highcharts-ng',
-            'google:ionic-datepicker',
-            'google:ionic-timepicker',
-            'google:pluralize',
-            'google:angular-clipboard',
-            'google:angular-google-analytics',
-            'google:angular-material-datetimepicker',
-            'google:angular-wikipedia-api-factory',
-            'google:angular-aria',
-            'google:angular-animate',
-            'google:angular-material',
-            'google:angular-cache',
-            'google:angular-messages',
-            'google:ng-material-floating-button',
-            'google:d3',
-            'google:d3-cloud',
-            'google:angular-d3-word-cloud',
-            'google:gsap',
-            'google:ng-file-upload',
-            'google:simple-web-notification',
-            'google:angular-web-notification',
-            'google:firebase',
-            'google:ngFitText',
-            'google:underscore',
-            'google:annyang',
-            'google:pusher-js',
-            'google:svg-morpheus',
-            'google:angular-material-icons',
-            'google:compromise',
-            'google:chat-engine',
-            'google:pouchdb',
-            'google:pouchdb-upsert',
-            'google:quagga',
-            'google:Bravey',
-        ]))
-        .pipe(gulp.dest("./www"));
 });
 var serviceWorkerFirebaseLocalForage = [
     paths.src.serviceWorker,
@@ -2684,7 +2641,7 @@ gulp.task('replaceRelativePathsWithAbsolutePaths', [], function () {
         return;
     }
     qmLog.info("release stage is " + qmGulp.releaseService.getReleaseStage());
-    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/ionic/Modo/www/';
+    var url = 'https://'+qmGulp.releaseService.getReleaseStageSubDomain()+'.quantimo.do/';
     var options = {logs: {enabled: true, notReplaced: true}};
     return gulp.src(['www/index.html'], {base: '.'})
         .pipe(replace('src="scripts', 'src="'+url+'scripts', options))
@@ -2871,7 +2828,7 @@ gulp.task('copySrcToAndroidWww', [], function () {
     return copyFiles('src/**/*', 'www'); /// Have to copy to www because android build will overwrite android/assets/www
 });
 gulp.task('copy-www-img-to-src', [], function () {
-    return copyFiles('www/img/*', 'src/img/');
+    return copyFiles('www/img/**/*', 'src/img/');
 });
 gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
@@ -3119,6 +3076,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         return;
     }
     runSequence(
+        'staticDataFile',
         'downloadQmAmazonJs',
         'downloadIcon',
         'resizeIcons',
@@ -3128,7 +3086,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', ['getAppConfigs'], function (ca
         'copyIconsToChromeImg',
         'setVersionNumberInFiles',
         'chromeManifestInBuildFolder',
-        'chromeDefaultConfigJson',
+        //'chromeDefaultConfigJson',
         //'deleteWwwPrivateConfig', // We need this for OAuth login.  It's OK to expose QM client secret because it can't be used to get user data.  We need to require it so it can be changed without changing the client id
         'zipChromeExtension',
         'unzipChromeExtension',
@@ -3214,7 +3172,7 @@ gulp.task('_build-all-chrome', function (callback) {
 });
 gulp.task('downloadQmAmazonJs', function (callback) {
     var git = require('gulp-git');
-    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', function (err) {
+    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', {args: './src/qm-amazon'}, function (err) {
         if (err) {qmLog.info(err);}
         callback();
     });
@@ -3414,6 +3372,7 @@ gulp.task('resizeIcons', function (callback) {
         'resizeIcon192',
         'resizeIcon512',
         'resizeIcon700',
+        'copy-www-img-to-src',
         callback);
 });
 gulp.task('prepareRepositoryForAndroid', function (callback) {

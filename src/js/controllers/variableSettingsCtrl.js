@@ -226,7 +226,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             dialogParameters.requestParams = requestParams;
             qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
         };
-        $scope.openJoinVariableSearchDialog = function($event, requestParams){
+        $scope.state.openJoinVariableSearchDialog = function($event, requestParams){
             qmLog.info("openJoinVariableSearchDialog called by this event:", $event);
             qmLog.info("openJoinVariableSearchDialog requestParams:", requestParams);
             requestParams = requestParams || {joinVariableId: $scope.state.variableObject.id};
@@ -415,6 +415,13 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmService.postUserVariableDeferred(body).then(function(userVariable){
                 qmService.hideLoader();
                 qmService.showInfoToast('Saved ' + variableObject.name + ' settings');
+                if($stateParams.fromUrl){
+                    window.location.href = qm.urlHelper.addUrlQueryParamsToUrlString({
+                        refresh: true,
+                        recalculate: true
+                    }, $stateParams.fromUrl);
+                    return;
+                }
                 $scope.goBack({variableObject: userVariable, refresh: true});  // Temporary workaround to make tests pass
             }, function(error){
                 qmService.hideLoader();

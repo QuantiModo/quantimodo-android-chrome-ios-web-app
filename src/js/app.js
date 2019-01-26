@@ -78,15 +78,16 @@ angular.module('starter',
                     return;
                 }
                 if(stateName.indexOf('button') !== -1){
+                    var showVariableSearchDialog = false; // Disabled until I can get it to add new variables properly and write tests for it
                     var buttonName = stateName;
                     /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
                     stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
                     stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
-                    if(stateName === qm.stateNames.reminderSearch){
+                    if(stateName === qm.stateNames.reminderSearch && showVariableSearchDialog){
                         qmService.search.reminderSearch(null, ev, stateParameters.variableCategoryName);
                         return;
                     }
-                    if(stateName === qm.stateNames.measurementAddSearch){
+                    if(stateName === qm.stateNames.measurementAddSearch && showVariableSearchDialog){
                         qmService.search.measurementAddSearch(null, ev, stateParameters.variableCategoryName);
                         return;
                     }
@@ -123,7 +124,8 @@ angular.module('starter',
                 ionic.Platform.exitApp();
             }, 100);
             //var intervalChecker = setInterval(function(){if(qm.getAppSettings()){clearInterval(intervalChecker);}}, 500);
-            if(qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') || qm.urlHelper.getParam('refreshUser') || window.designMode){
+            if(qm.urlHelper.getParam('existingUser') || qm.urlHelper.getParam('introSeen') ||
+                qm.urlHelper.getParam('refreshUser') || window.designMode){
                 qmService.intro.setIntroSeen(true, "Url params have existingUser or introSeen or refreshUser or designMode");
                 qm.storage.setItem(qm.items.onboarded, true);
             }
@@ -185,6 +187,9 @@ angular.module('starter',
                     var deferred = $q.defer();
                     qm.appsManager.getAppSettingsLocallyOrFromApi(function(appSettings){
                         deferred.resolve(appSettings);
+                    }, function(error){
+                        qmLog.error("Could not get appSettings because "+error+" so falling back to QuantiModo app settings from staticData");
+                        deferred.resolve(qm.staticData.appSettings);
                     });
                     return deferred.promise;
                 }

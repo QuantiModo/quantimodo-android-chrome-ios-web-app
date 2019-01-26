@@ -237,7 +237,7 @@ window.qm.chrome = {
             height: 750,
             focused: qm.chrome.allowFocusing
         };
-        windowParams.url = "https://" + qm.getClientId() + '.quantimo.do/ionic/Modo/www/index.html#/app/login';
+        windowParams.url = "https://web.quantimo.do/#/app/login?clientId="+qm.getClientId();
         windowParams.focused = true;
         qm.chrome.openOrFocusChromePopupWindow(windowParams);
     },
