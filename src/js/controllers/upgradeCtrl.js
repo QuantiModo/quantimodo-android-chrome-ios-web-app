@@ -1,5 +1,7 @@
-angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$mdDialog", "$rootScope", "$stateParams", "qmService", "qmLogService", "$locale", function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
-                                                                                                                                                                                                                $rootScope, $stateParams, qmService, qmLogService, $locale){
+angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading",
+    "$mdDialog", "$rootScope", "$stateParams", "qmService", "qmLogService", "$locale",
+    function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
+             $rootScope, $stateParams, qmService, qmLogService, $locale){
     WebUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.state = {
