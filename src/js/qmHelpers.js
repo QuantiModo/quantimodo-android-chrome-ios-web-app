@@ -7626,7 +7626,9 @@ var qm = {
                 qm.qmLog.error("Study does not have causeVariable or causeVariableName", null, study);
                 return;
             }
-            qm.variablesHelper.saveToLocalStorage([study.causeVariable, study.effectVariable]);
+            if(study.causeVariable && study.effectVariable){
+                qm.variablesHelper.saveToLocalStorage([study.causeVariable, study.effectVariable]);
+            }
             qm.globalHelper.setStudy(study);
             qm.localForage.setItem(qm.items.lastStudy, study);
         },
@@ -8893,6 +8895,9 @@ var qm = {
             var commonVariables = [];
             for(var i = 0; i < variables.length; i++){
                 var variable = variables[i];
+                if(!variable){
+                    throw "empty array provided to saveToLocalStorage";
+                }
                 if(variable.userId && variable.userId === qm.getUser().id){
                     userVariables.push(variable);
                 }else if(!variable.userId){ // Don't save other peoples user variables when looking at studies
