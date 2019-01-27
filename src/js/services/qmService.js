@@ -6508,7 +6508,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     bodyText: "Would you like to automatically log location? ",
-                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
+                    moreInfo: $rootScope.variableCategories.Locations.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -7266,7 +7266,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     buttonClass: "button button-large button-assertive"
                 }
             };
-            if($rootScope.platform.isIOS){
+            if(qm.platform.isIOS()){
                 planFeatureCards = JSON.parse(JSON.stringify(planFeatureCards).replace('Android, and iOS', 'any mobile device').replace(', Sleep as Android', ''));
             }
             return planFeatureCards;
