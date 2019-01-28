@@ -198,7 +198,7 @@ ansi-colors@1.1.0, ansi-colors@^1.0.1, ansi-colors@^1.1.0:
   dependencies:
     ansi-wrap "^0.1.0"
 
-ansi-colors@3.2.3:
+ansi-colors@3.2.3, ansi-colors@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
 
@@ -3848,18 +3848,18 @@ gulp-run@1.7.1:
     lodash.template "^4.0.2"
     vinyl "^0.4.6"
 
-gulp-s3-upload@1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/gulp-s3-upload/-/gulp-s3-upload-1.7.1.tgz#b64043bfada7d36821a72cfc12381669411d5dfa"
+gulp-s3-upload@1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/gulp-s3-upload/-/gulp-s3-upload-1.7.2.tgz#fd0d842eded8593d75c7f024515468137bb041e5"
   dependencies:
-    ansi-colors "^1.0.1"
+    ansi-colors "^3.2.3"
     aws-sdk "^2.88.0"
     event-stream "3.3.4"
     fancy-log "^1.3.2"
     hasha "^3.0.0"
     https-proxy-agent "^2.0.0"
-    mime "^1.3.6"
-    plugin-error "^0.1.2"
+    mime "^2.4.0"
+    plugin-error "^1.0.1"
     underscore "^1.8.3"
 
 gulp-sass@3.2.1:
@@ -5896,11 +5896,11 @@ mime@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
 
-mime@^1.2.11, mime@^1.3.6, mime@^1.4.1:
+mime@^1.2.11, mime@^1.4.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
 
-mime@^2.3.1:
+mime@^2.3.1, mime@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.0.tgz#e051fd881358585f3279df333fe694da0bcffdd6"
 
