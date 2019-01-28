@@ -3788,7 +3788,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         var setupGoogleAnalytics = function(user){
             if(!qm.getAppSettings()){
-                qmLog.error("No appSettings for googleAnalyticsTrackingIds");
+                qmLog.errorAndExceptionTestingOrDevelopment("No appSettings for googleAnalyticsTrackingIds");
                 return;
             }
             if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds){
@@ -6389,7 +6389,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return qm.storage.getItem(qm.items.defaultHelpCards);
             }
             if(!qm.getAppSettings()){
-                qmLog.error("No appSettings to setup help cards!");
+                qmLog.errorAndExceptionTestingOrDevelopment("No appSettings to setup help cards!");
                 qm.getAppSettings();
                 return;
             }
