@@ -8774,8 +8774,8 @@ var qm = {
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length){
                         qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {
-                            local: localVariables,
-                            api: variablesFromApi
+                            local: localVariables.length,
+                            api: variablesFromApi.length
                         });
                     }
                     sortUpdateSubtitlesAndReturnVariables(variablesFromApi);
