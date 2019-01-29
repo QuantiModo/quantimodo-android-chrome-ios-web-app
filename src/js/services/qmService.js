@@ -2301,6 +2301,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 getVariableNameFromScopeStateParamsOrUrl: function($scope, $stateParams){
                     var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableName', $scope, $stateParams);
+                    if(variableName){return variableName;}
                     var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
                     if(variableObject){
                         variableName = variableObject.name;
