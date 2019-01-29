@@ -8882,6 +8882,10 @@ var qm = {
             return variables;
         },
         setLastSelectedAtAndSave: function(variable){
+            if(!variable){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No variable provided to setLastSelectedAtAndSave");
+                return;
+            }
             var timestamp = qm.timeHelper.getUnixTimestampInSeconds();
             variable.lastSelectedAt = timestamp;  // Do this so it's at the top of the list
             qm.variablesHelper.saveToLocalStorage(variable);
