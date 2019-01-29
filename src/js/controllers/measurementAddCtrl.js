@@ -135,8 +135,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
             if($stateParams.currentMeasurementHistory){
+                var updateMeasurement = qm.measurements.addInfoAndImagesToMeasurements([$scope.state.measurement])[0];
                 backStateParams.updatedMeasurementHistory =
-                    qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, $scope.state.measurement);
+                    qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, updateMeasurement);
             }
             qmService.postMeasurementDeferred(measurementInfo, function(){
                 if(unitChanged){
