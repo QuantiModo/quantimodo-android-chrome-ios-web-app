@@ -2723,6 +2723,11 @@ var qm = {
         currentCard: null,
         getMostRecentCard: function(successHandler, errorHandler){
             qm.feed.getFeedFromLocalForageOrApi({}, function(feedCards){
+                if(!feedCards){
+                    qm.qmLog.error("No FeedFromLocalForageOrApi!");
+                    if(errorHandler){errorHandler();}
+                    return;
+                }
                 var currentCard = feedCards.shift();
                 qm.feed.saveFeedInLocalForage(feedCards, function(){
                     successHandler(currentCard);
