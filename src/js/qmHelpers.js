@@ -8843,7 +8843,7 @@ var qm = {
                 if(object.userId){
                     return object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
                 }
-                return object.numberOfTrackingReminders || object.numberOfUserVariables;
+                return object.numberOfUserVariables;
             }
             variables.sort(function(a, b){
                 var aValue = getValue(a);
