@@ -8840,7 +8840,10 @@ var qm = {
                 if(object.lastSelectedAt){
                     return object.lastSelectedAt;
                 }
-                return object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+                if(object.userId){
+                    return object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+                }
+                return object.numberOfTrackingReminders || object.numberOfUserVariables;
             }
             variables.sort(function(a, b){
                 var aValue = getValue(a);
