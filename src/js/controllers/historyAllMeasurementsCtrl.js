@@ -21,18 +21,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            if($stateParams.refresh){
-                $scope.state.history = null;
-            }
-            var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
-            if($scope.state.history && queue){
-                $scope.state.history = queue.concat($scope.state.history);
-            }
-            var recentlyPosted = qm.measurements.getRecentlyPostedMeasurements(getRequestParams());
-            qm.measurements.recentlyPostedMeasurements = [];
-            if($scope.state.history && recentlyPosted){
-                $scope.state.history = recentlyPosted.concat($scope.state.history);
-            }
+            if($stateParams.refresh){$scope.state.history = null;}
+            $scope.state.history = addRecentlyPostedAndQueuedMeasurements($scope.state.history);
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
@@ -61,6 +51,15 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 $scope.getHistory();
             }
         });
+        function addRecentlyPostedAndQueuedMeasurements(history){
+            history = history || [];
+            var recentlyPosted = qm.measurements.getRecentlyPostedMeasurements(getRequestParams());
+            //qm.measurements.recentlyPostedMeasurements = [];  TODO: Why are we resetting recentlyPostedMeasurements?
+            if(recentlyPosted){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, recentlyPosted);}
+            var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
+            if(queue){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, queue);}
+            return history;
+        }
         function updateNavigationMenuButton(){
             $timeout(function(){
                 qmService.rootScope.setShowActionSheetMenu(function(){
@@ -197,6 +196,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 if(measurements.length < $scope.state.limit){
                     $scope.state.noHistory = measurements.length === 0;
                 }
+                measurements = addRecentlyPostedAndQueuedMeasurements(measurements);
                 measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
                 if(!qm.arrayHelper.variableIsArray($scope.state.history)){
                     qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
