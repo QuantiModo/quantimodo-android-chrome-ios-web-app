@@ -4,7 +4,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
              $ionicActionSheet, qmService, qmLogService){
         $scope.controller_name = "VariableSettingsCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
-        $scope.state = {variableObject: null};
+        $scope.state = {
+            variableObject: null,
+            saveButtonText: "Save"
+        };
         $scope.$on('$ionicView.beforeEnter', function(e){
             qmLogService.debug('Entering state ' + $state.current.name, null);
             qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name);
@@ -373,7 +376,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
         };
         $scope.saveVariableSettings = function(variableObject){
-            qmService.showBlackRingLoader();
+            qmService.showInfoToast('Saving ' + variableObject.name + ' settings (this could take a minute)');
+            $scope.state.saveButtonText = "Saving...";
             var experimentEndTimeString, experimentStartTimeString = null;
             if(variableObject.experimentStartTimeString){
                 try{
@@ -414,7 +418,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             };
             qmService.postUserVariableDeferred(body).then(function(userVariable){
                 qmService.hideLoader();
-                qmService.showInfoToast('Saved ' + variableObject.name + ' settings');
                 if($stateParams.fromUrl){
                     window.location.href = qm.urlHelper.addUrlQueryParamsToUrlString({
                         refresh: true,
