@@ -4202,6 +4202,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var deferred = $q.defer();
             qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurement.id);
             qmService.storage.deleteByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
+            if(qm.measurements.recentlyPostedMeasurements){
+                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
+                    return recent.startTimeEpoch !== measurement.startTimeEpoch;
+                });
+            }
             qmService.showInfoToast("Deleted " + measurement.variableName + " measurement");
             qmService.deleteV1Measurements(measurement, function(response){
                 deferred.resolve(response);
