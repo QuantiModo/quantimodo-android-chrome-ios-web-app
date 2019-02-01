@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+called=$_ && [[ ${called} != $0 ]] && echo "${BASH_SOURCE[@]} is being sourced" || echo "${0} is being run"
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd ${SCRIPT_FOLDER}&& cd .. && export QM_API="$PWD"
 #printenv
 BRANCH_NAME=${BRANCH_NAME:-${TRAVIS_BRANCH}}
 BRANCH_NAME=${BRANCH_NAME:-${BUDDYBUILD_BRANCH}}
