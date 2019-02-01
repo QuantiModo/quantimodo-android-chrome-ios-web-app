@@ -28,8 +28,8 @@ npm install
 fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
 fastlane add_plugin ionic
-cordova platform rm ios
 cordova plugin rm cordova-plugin-console --save
+cordova platform rm ios
 cordova platform add ios@4.5.2
 if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]];
     then
@@ -45,4 +45,6 @@ if [[ ${QUANTIMODO_CLIENT_ID} = *"moodimodoapp"* ]];
     else
         echo "CHCP deploy should be done in Android build"
 fi
+cd platforms/ios/cordova && npm install ios-sim@latest && cd ../../..
+ionic emulate ios
 source ${WORKSPACE}/scripts/save_last_build_workspace.sh
