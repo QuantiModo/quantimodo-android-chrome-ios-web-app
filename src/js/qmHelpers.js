@@ -6793,6 +6793,14 @@ var qm = {
             function createStudy(){
                 function callback(error, data, response){
                     var study = qm.studyHelper.processAndSaveStudy(data, error);
+                    if(!study.causeVariable || !study.effectVariable){
+                        if(error){
+                            errorHandler(error);
+                        } else {
+                            errorHandler("No study cause and effect variable properties!");
+                        }
+                        return;
+                    }
                     qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'createStudy');
                 }
                 var params = qm.api.addGlobalParams({});
@@ -6862,6 +6870,14 @@ var qm = {
         joinStudy: function(body, successHandler, errorHandler){
             function callback(error, data, response){
                 var study = qm.studyHelper.processAndSaveStudy(data);
+                if(!study.causeVariable || !study.effectVariable){
+                    if(error){
+                        errorHandler(error);
+                    } else {
+                        errorHandler("No study cause and effect variable properties!");
+                    }
+                    return;
+                }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'joinStudy');
             }
             var params = qm.api.addGlobalParams({});
@@ -7685,6 +7701,14 @@ var qm = {
             }
             function callback(error, data, response){
                 var study = qm.studyHelper.processAndSaveStudy(data);
+                if(!study.causeVariable || !study.effectVariable){
+                    if(error){
+                        errorHandler(error);
+                    } else {
+                        errorHandler("No study cause and effect variable properties!");
+                    }
+                    return;
+                }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
             }
             qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name).getStudy(params, callback);
