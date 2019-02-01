@@ -449,8 +449,8 @@ var qmLog = {
                 console.error("Could not stringify log meta data", error);
             }
         }
-        if(!logString.toLowerCase){
-            console.error("logString not a string: ", logString);
+        if(!logString || typeof logString !== "string" || !logString.toLowerCase){
+            console.error("logString not a string and is: ", logString);
             return "logString not a string: ";
         }
         var censored = qmLog.stringContainsSecretAliasWord(logString);
