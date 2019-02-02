@@ -17,11 +17,13 @@
         <ion-refresher on-refresh="refreshList()"></ion-refresher>
         <div ng-show="searching">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
-            <div> <h1 style="text-align: center; padding: 20px;">Analyzing data...</h1> </div>
-            <div style="max-width: 600px; display:block; margin:auto;" ng-include="'templates/loaders/blue-robot-loader.html'"></div>
+            <h1 style="text-align: center; padding: 20px;">Analyzing data...</h1>
+            <div style="max-width: 600px; display:block; margin:auto;"
+                 ng-include="'templates/loaders/blue-robot-loader.html'">
+            </div>
         </div>
         <div ng-include="'templates/fragments/studies-list-fragment.html'"></div>
-        <div class="list card"  ng-show="state.noCorrelations">
+        <div class="list card" ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
                 <div class="row">
@@ -34,7 +36,7 @@
                         </h2>
                     </div>
                 </div>
-                <div class="row" >
+                <div class="row">
                     <div class="button-bar">
                         <button class="button button-clear button-balanced" style="font-size: 14px;"
                                 ng-click="goToState('app.reminderSearch')">
@@ -53,8 +55,10 @@
                 </i>
             </a>
         </div>
+        <div ng-show="searching" style="text-align: center"><br><br><br><ion-spinner icon="android"></ion-spinner><br></div>
         <br>
         <br>
     </ion-content>
-    <div ng-hide="hideNavigationMenu || showRobot" ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+    <div ng-hide="hideNavigationMenu || showRobot"
+         ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

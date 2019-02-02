@@ -1,5 +1,5 @@
 angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout",
-    function( $state, $scope, $rootScope, $http, qmService, $stateParams, $timeout) {
+    function($state, $scope, $rootScope, $http, qmService, $stateParams, $timeout){
         $scope.controller_name = "FeedCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -10,42 +10,49 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 card.selectedButton = button;
                 if(clickHandlers[button.action]){
                     clickHandlers[button.action](card, ev);
-                } else {
+                }else{
                     qmService.actionSheets.handleCardButtonClick(button, card);
                 }
             },
-            openActionSheetForCard: function (card) {
+            openActionSheetForCard: function(card){
                 var destructiveButtonClickedFunction = cardHandlers.removeCard;
                 qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
             },
-            refreshFeed: function () {
+            refreshFeed: function(){
                 qm.feed.getFeedFromApi({}, function(cards){
                     hideLoader();
                     cardHandlers.getCards(cards);
                 });
             }
         };
-        $scope.$on('$ionicView.beforeEnter', function(e) {
+        $scope.$on('$ionicView.beforeEnter', function(e){
             qmLog.debug('beforeEnter state ' + $state.current.name);
             qmService.showBasicLoader();
-            if ($stateParams.hideNavigationMenu !== true){qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();}
+            if($stateParams.hideNavigationMenu !== true){
+                qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
+            }
         });
-        $scope.$on('$ionicView.enter', function(e) {
-            if(!qm.getUser()){qmService.login.sendToLoginIfNecessaryAndComeBack("No user in "+$state.current.name); return;}
+        $scope.$on('$ionicView.enter', function(e){
+            if(!qm.getUser()){
+                qmService.login.sendToLoginIfNecessaryAndComeBack("No user in " + $state.current.name);
+                return;
+            }
             cardHandlers.getCards();
-            if(!$scope.state.cards){qmService.showBasicLoader();}
+            if(!$scope.state.cards){
+                qmService.showBasicLoader();
+            }
         });
-        $rootScope.$on('getCards', function() {
+        $rootScope.$on('getCards', function(){
             qmLogService.info('getCards broadcast received..');
             cardHandlers.getCards();
         });
         var cardHandlers = {
             addCardsToScope: function(cards){
-                $scope.safeApply(function () {
+                $scope.safeApply(function(){
                     $scope.state.cards = cards;
                 });
             },
-            removeCard: function(card) {
+            removeCard: function(card){
                 card.hide = true;
                 qm.feed.deleteCardFromLocalForage(card, function(){
                     cardHandlers.getCards();
@@ -59,7 +66,7 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                     qmService.toast.showUndoToast(button.successToastText, qm.feed.undoFunction);
                 }
             },
-            getCards: function(cards) {
+            getCards: function(cards){
                 if(cards){
                     cardHandlers.addCardsToScope(cards);
                     return;
@@ -71,22 +78,22 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             }
         };
         var clickHandlers = {
-            skipAll: function (card, ev) {
+            skipAll: function(card, ev){
                 qm.ui.preventDragAfterAlert(ev);
                 qmService.showBasicLoader();
-                qm.feed.postCardImmediately(card, function (cardsFromResponse) {
+                qm.feed.postCardImmediately(card, function(cardsFromResponse){
                     cardHandlers.getCards(cardsFromResponse);
                 });
                 cardHandlers.removeCard(card);
                 return true;
             },
-            track: function(card) {
+            track: function(card){
                 cardHandlers.removeCard(card);
                 qm.feed.addToFeedQueueAndRemoveFromFeed(card);
                 return true;
             }
         };
-        function hideLoader() {
+        function hideLoader(){
             qmService.hideLoader();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

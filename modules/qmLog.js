@@ -1,3 +1,27 @@
+function execute(command, callback, suppressErrors, lotsOfOutput) {
+    var exec = require('child_process').exec;
+    var spawn = require('child_process').spawn; // For commands with lots of output resulting in stdout maxBuffer exceeded error
+    qmLog.info('executing ' + command);
+    if(lotsOfOutput){
+        var args = command.split(" ");
+        var program = args.shift();
+        var ps = spawn(program, args);
+        ps.on('exit', function (code, signal) {
+            qmLog.info(command + ' exited with ' + 'code '+ code + ' and signal '+ signal);
+            if(callback){callback();}
+        });
+        ps.stdout.on('data', function (data) {qmLog.info(command + ' stdout: ' + data);});
+        ps.stderr.on('data', function (data) {qmLog.error(command + '  stderr: ' + data);});
+        ps.on('close', function (code) {if (code !== 0) {qmLog.error(command + ' process exited with code ' + code);}});
+    } else {
+        var my_child_process = exec(command, function (error, stdout, stderr) {
+            if (error !== null) {if (suppressErrors) {qmLog.info('ERROR: exec ' + error);} else {qmLog.error('ERROR: exec ' + error);}}
+            callback(error, stdout);
+        });
+        my_child_process.stdout.pipe(process.stdout);
+        my_child_process.stderr.pipe(process.stderr);
+    }
+}
 var qmLog = {
     error: function (message, metaData, maxCharacters) {
         metaData = qmLog.addMetaData(metaData);
@@ -9,7 +33,7 @@ var qmLog = {
         };
         bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
     },
-    errorAndExceptionTestingOrDevelopment(message, metaData, maxCharacters){
+    errorAndExceptionTestingOrDevelopment: function(message, metaData, maxCharacters){
         throw message;
     },
     info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
@@ -34,7 +58,7 @@ var qmLog = {
         metaData = metaData || {};
         metaData.environment = qmLog.obfuscateSecrets(process.env);
         metaData.subsystem = { name: qmLog.getCurrentServerContext() };
-        metaData.client_id = qmLog.getClientId();
+        metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
         metaData.build_link = qmLog.getBuildLink();
         return metaData;
     },
@@ -75,9 +99,6 @@ var qmLog = {
     },
     prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
     isTruthy: function(value){return value && value !== "false"; },
-    getClientId: function(){
-        return process.env.QUANTIMODO_CLIENT_ID;
-    },
     getBuildLink: function() {
         if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
         if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
@@ -129,11 +150,6 @@ var qmLog = {
         getPreviousBuildInfo: function () {
             return JSON.parse(fs.readFileSync(paths.www.buildInfo));
         },
-        writeBuildInfo: function () {
-            var buildInfo = qmLog.buildInfoHelper.getCurrentBuildInfo();
-            qmLog.fileHelper.writeToFile(paths.src.buildInfo, buildInfo);
-            return qmLog.fileHelper.writeToFile(paths.www.buildInfo, buildInfo);
-        },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
             if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
@@ -163,7 +179,7 @@ var qmLog = {
             }
         },
         accessToken: process.env.GITHUB_ACCESS_TOKEN,
-        getCommitMessage(callback){
+        getCommitMessage: function(callback){
             var commandForGit = 'git log -1 HEAD --pretty=format:%s';
             execute(commandForGit, function (error, output) {
                 var commitMessage = output.trim();

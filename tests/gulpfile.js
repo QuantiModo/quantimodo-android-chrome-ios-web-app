@@ -10,7 +10,8 @@ var qm = require('./../src/js/qmHelpers');
 qm.appMode.mode = 'testing';
 var qmLog = require('./../src/js/qmLogger');
 qmLog.qm = qm;
-qmLog.color = require('ansi-colors');
+qmLog.color = require('./../node_modules/ansi-colors');
+qm.github = require('./../node_modules/gulp-github');
 qm.Quantimodo = require('./../node_modules/quantimodo');
 qm.staticData = false;
 qm.qmLog = qmLog;
@@ -55,6 +56,7 @@ var qmTests = {
     getStatusesUrl: function(){
         var params = qmTests.getTestParams();
         if(params && params.statuses_url){return params.statuses_url;}
+        /** @namespace params.commit_url */
         if(params && params.commit_url){
             var url = params.commit_url;
             url = url.replace('github.com', 'api.github.com/repos');
@@ -137,11 +139,26 @@ var qmTests = {
             var options = qmTests.tests.getOptions(startUrl);
             var test = tests.pop();
             var time = new Date(Date.now()).toLocaleString();
-            qmLog.info(time+": Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...');
+            var message = "Testing "+test.name +" from "+test.suite.name + ' on startUrl '+ options.startUrl +'...';
+            qmLog.info(time+": " + message);
             var testUrl = "https://app.ghostinspector.com/tests/"+test._id;
             qmLog.info("Check progress at " + testUrl +" ");
+            qm.gitHelper.createStatusToCommit({
+                description: message,
+                context: qm.currentTask,
+                target_url: testUrl,
+                state: 'pending'
+            });
             GhostInspector.executeTest(test._id, options, function (err, testResults, passing) {
-                if (err) throw test.name + " Error: " + err;
+                if (err) {
+                    qm.gitHelper.createStatusToCommit({
+                        description: err,
+                        context: qm.currentTask,
+                        target_url: testUrl,
+                        state: 'error'
+                    });
+                    throw test.name + " Error: " + err;
+                }
                 if(!passing){
                     qmTests.outputErrorsForTest(testResults);
                 }
@@ -149,25 +166,58 @@ var qmTests = {
                 if (tests && tests.length) {
                     qmTests.tests.executeTests(tests, callback, startUrl);
                 } else if (callback) {
+                    qm.gitHelper.createStatusToCommit({
+                        description: test.name + ' ' + ' passed! :D',
+                        context: qm.currentTask,
+                        target_url: testUrl,
+                        state: 'success'
+                    });
                     callback();
                 }
             });
         },
         executeSuite: function(suiteId, callback, startUrl){
             var options = qmTests.tests.getOptions(startUrl);
-            console.info('Testing suite on startUrl '+ options.startUrl +'...');
+            var message = 'Testing suite on startUrl '+ options.startUrl + " with API url " + options.apiUrl +'...';
+            console.info(message);
             var suiteUrl = "https://app.ghostinspector.com/suites/"+suiteId;
-            console.info("Check progress at " + suiteUrl +" ");
+            console.info("Check progress at " + suiteUrl);
+            qm.gitHelper.createStatusToCommit({
+                description: message,
+                context: qm.currentTask,
+                target_url: suiteUrl,
+                state: 'pending'
+            });
             GhostInspector.executeSuite(suiteId, options, function (err, suiteResults, passing) {
-                if (err) throw suiteUrl + " Error: " + err;
+                if (err) {
+                    qm.gitHelper.createStatusToCommit({
+                        description: err,
+                        context: qm.currentTask,
+                        target_url: suiteUrl,
+                        state: 'error'
+                    });
+                    throw suiteUrl + " Error: " + err;
+                }
                 console.log(passing === true ? 'Passed' : 'Failed');
                 if(!passing){
                     for(var i = 0; i < suiteResults.length; i++){
                         var testResults = suiteResults[i];
-                        qmTests.outputErrorsForTest(testResults);
+                        if(!testResults.passing){qmTests.outputErrorsForTest(testResults);}
                     }
+                    qm.gitHelper.createStatusToCommit({
+                        description: "Failed on startUrl "+ options.startUrl + " with API url " + options.apiUrl,
+                        context: qm.currentTask,
+                        target_url: suiteUrl,
+                        state: 'failure'
+                    });
                 }
                 console.log(suiteUrl + ' ' + ' passed! :D');
+                qm.gitHelper.createStatusToCommit({
+                    description: 'Suite passed! :D',
+                    context: qm.currentTask,
+                    target_url: suiteUrl,
+                    state: 'success'
+                });
                 callback();
             });
         },
@@ -274,62 +324,78 @@ var qmTests = {
         if(callback){callback();}
     }
 };
+gulp.Gulp.prototype.__runTask = gulp.Gulp.prototype._runTask; // Lets us get task name
+gulp.Gulp.prototype._runTask = function(task) { this.currentTask = task; this.__runTask(task);};
 gulp.task('oauth-disabled-utopia', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://utopia.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-staging', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', false, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-staging-failed', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('oauth-disabled-failed', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     var url = process.env.APP_HOST_NAME;
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('57aa05ac6f43214f19b2f055', true, callback, url+'/api/v2/auth/login');
 });
 gulp.task('api-failed', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     var url = process.env.APP_HOST_NAME;
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, url+'/api/v2/auth/login');
 });
 gulp.task('api-staging-failed', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('559020a9f71321f80c6d8176', true, callback, 'https://staging.quantimo.do/api/v2/auth/login');
 });
 gulp.task('gi-all', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
-    qmTests.tests.executeSuite('56f5b92519d90d942760ea96', callback);
+    var suiteId = '56f5b92519d90d942760ea96';
+    //suiteId = '5c081c4f4a85d01c0233a9bd'; // Experimental suite with 1 success and 1 failure for debugging test runner
+    qmTests.tests.executeSuite(suiteId, callback);
     //qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', false, callback);
 });
 gulp.task('gi-failed', function (callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmLog.info("Running failed tests sequentially so we don't use up all our test runs re-running successful tests");
     qmTests.tests.getSuiteTestsAndExecute('56f5b92519d90d942760ea96', true, callback);
 });
 gulp.task('test-get-common-variable', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.commonVariables.getCar(callback);
 });
 gulp.task('test-record-measurement-intent', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.recordMeasurementIntentTest(callback);
 });
 gulp.task('test-get-units', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.getUnitsTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.runAllTestsForType('menu');
@@ -343,7 +409,14 @@ gulp.task('unit-tests', function(callback) {
             callback(error);
         });
 });
-gulp.task('unit-gi-failed-gi-all', function(callback) {
+gulp.task('study-tests', function(callback) {
+    qm.currentTask = this.currentTask.name;
+    qmTests.getStaticData();
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
+    qm.tests.study.testGetVariableAfterGettingStudy(callback);
+});
+gulp.task('_unit-gi-failed-gi-all', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     runSequence(
         'unit-tests',
@@ -356,6 +429,7 @@ gulp.task('unit-gi-failed-gi-all', function(callback) {
         });
 });
 gulp.task('chcp-dev-unit-gi-failed-gi-all', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/dev/';
     runSequence(
@@ -367,6 +441,7 @@ gulp.task('chcp-dev-unit-gi-failed-gi-all', function(callback) {
         });
 });
 gulp.task('chcp-qa-unit-gi-failed-gi-all', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/qa/';
     runSequence(
@@ -378,10 +453,11 @@ gulp.task('chcp-qa-unit-gi-failed-gi-all', function(callback) {
         });
 });
 gulp.task('chcp-production-unit-gi-failed-gi-all', function(callback) {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     qmTests.startUrl = 'https://qm-cordova-hot-code-push.s3.amazonaws.com/quantimodo/production/';
     runSequence(
-        'unit-gi-failed-gi-all',
+        '_unit-gi-failed-gi-all',
         function (error) {
             if (error) {throw error.message;}
             qmLog.green('TESTS FINISHED SUCCESSFULLY');
@@ -421,6 +497,7 @@ var qmReq = {
     }
 };
 gulp.task('trigger-jenkins', function() {
+    qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params);
     var options = {
         uri: 'http://auto:'+process.env.JENKINS_TOKEN+'@quantimodo2.asuscomm.com:8082/view/Ionic/job/ionic-gulp/buildWithParameters?token=ionic-test',
@@ -429,7 +506,7 @@ gulp.task('trigger-jenkins', function() {
             cause: 'Netflify Deploy',
             START_URL: process.env.DEPLOY_PRIME_URL,
             SUB_FOLDER: 'tests',
-            TASK_NAME: 'unit-gi-failed-gi-all',
+            TASK_NAME: '_unit-gi-failed-gi-all',
             token: 'ionic-test',
         },
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},

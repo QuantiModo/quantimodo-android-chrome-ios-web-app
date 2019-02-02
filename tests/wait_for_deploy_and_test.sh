@@ -8,5 +8,5 @@ if [[ -z "$COMMIT_URL" ]]; then COMMIT_URL=${START_URL}data/commits/${GIT_COMMIT
 until $(curl --output /dev/null --silent --head --fail ${COMMIT_URL}); do
     echo "Waiting for ${COMMIT_URL}" && sleep 30;
 done
-set -e && cd ${TEST_FOLDER} && gulp unit-gi-failed-gi-all
+set -e && cd ${TEST_FOLDER} && gulp _unit-gi-failed-gi-all
 exit 0;

@@ -1,4 +1,4 @@
-<span class="buttons" ng-repeat="actionItem in trackingReminderNotification.actionArray" >
+<span class="buttons" ng-repeat="actionItem in trackingReminderNotification.actionArray">
     <button class="button button-assertive"
             ng-if="actionItem.action !== 'snooze'"
             on-hold="trackAllWithConfirmation(trackingReminderNotification, actionItem.modifiedValue, $event)"
