@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+called=$_ && [[ ${called} != $0 ]] && echo "${BASH_SOURCE[@]} is being sourced" || echo "${0} is being run"
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd ${SCRIPT_FOLDER}&& cd .. && export QM_API="$PWD"
 if [ -z ${APP_IDENTIFIER} ];
     then
         echo "Please specify APP_IDENTIFIER env" && exit 1;
@@ -25,8 +28,8 @@ npm install
 fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
 fastlane add_plugin ionic
-cordova platform rm ios
 cordova plugin rm cordova-plugin-console --save
+cordova platform rm ios
 cordova platform add ios@4.5.2
 if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]];
     then
@@ -42,4 +45,6 @@ if [[ ${QUANTIMODO_CLIENT_ID} = *"moodimodoapp"* ]];
     else
         echo "CHCP deploy should be done in Android build"
 fi
+cd platforms/ios/cordova && npm install ios-sim@latest && cd ../../..
+ionic emulate ios
 source ${WORKSPACE}/scripts/save_last_build_workspace.sh

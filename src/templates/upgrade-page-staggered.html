@@ -1,11 +1,12 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Upgrade</ion-nav-title>
-    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : platform.isWeb == true } ">
+    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};"
+                 ng-class="{ isBrowserView : platform.isWeb == true } ">
         <div style="background-color: {{upgradePages[0].backgroundColor}};
                 text-align: center;
                 color: white;
                 padding: 20px;
-                height: 100%" >
+                height: 100%">
             <br>
             <br>
             <p style="font-size: 20px; line-height: 1;">
@@ -29,7 +30,7 @@
             </div>
             <div class="list">
 
-                <a ng-repeat="feature in planFeaturesCards[1].features" class="item item-avatar" >
+                <a ng-repeat="feature in planFeaturesCards[1].features" class="item item-avatar">
                     <img ng-src="{{feature.image}}">
                     <h2>{{feature.title}}</h2>
                     <p>{{feature.body}}</p>
@@ -39,7 +40,7 @@
             <br>
             <div class="row">
                 <div class="col">
-                    <div >
+                    <div>
                         <img style="width:100%" ng-src="img/intro/intro_import.png">
                     </div>
                 </div>
@@ -53,7 +54,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <div >
+                    <div>
                         <img style="width:100%" ng-src="img/intro/intro_track_anything.png">
                     </div>
                 </div>
@@ -84,9 +85,9 @@
 
             <br>
             <span ng-bind-html="upgradePages[0].bodyText"
-                style="font-size: 16px; line-height: 1.5;">
+                  style="font-size: 16px; line-height: 1.5;">
             </span>
-            <div ng-repeat="button in upgradePages[0].buttons" >
+            <div ng-repeat="button in upgradePages[0].buttons">
                 <div class="button-bar">
                     <button class="button"
                             ng-hide="{{button.ngHideLogic}}"
@@ -113,7 +114,7 @@
                 </div>
             </div>
 
-            <div ng-hide="hideLearnMoreButton" >
+            <div ng-hide="hideLearnMoreButton">
                 <div class="button-bar">
                     <button class="button"
                             style="background-color: {{upgradePages[0].backgroundColor}};

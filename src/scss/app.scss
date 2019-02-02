@@ -30,5 +30,5 @@ body {
 }
 #fc_frame, #fc_frame.fc-widget-normal {
   left: 15px !important;     // FreshChat on left to avoid FAB overlap
-  z-index: 104 !important;  // Don't cover toasts
+  z-index: 10 !important;  // Don't cover toasts or action sheet
 }

@@ -67,13 +67,15 @@ script:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
   - yarn install
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
+  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp buildAndroidAfterCleaning; fi
 
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
 
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"*  ]]; then source tests/test_chcp.sh; fi
+  # Temporarily disabled CHCP tests because it keeps using up our Ghost Inspector quota and running concurrently/conflicting with feature test runs
+  # TODO: Create separate GI test suite for this and re-enable
+  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"* && "$TRAVIS_BRANCH" != *"renovate"* ]]; then source tests/test_chcp.sh; fi
 
   #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi  Can be done in Jenkins concurrently since they use different test domains
   #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi

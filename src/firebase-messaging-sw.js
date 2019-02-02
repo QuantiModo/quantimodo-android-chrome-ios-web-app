@@ -28,11 +28,55 @@ var config = {
 console.log("firebase.initializeApp(config)");
 firebase.initializeApp(config);
 var messaging = firebase.messaging();
+qm.push.notificationClick = function(event){  // Have to attach to qm because it says undefined function otherwise
+    console.log('[Service Worker] Notification click Received for event: ' + JSON.stringify(event), event);
+    event.notification.close();
+    if(event.action === ""){
+        qmLog.error("No event action provided! event is: ", null, event);
+    }
+    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
+        return;
+    }
+    var basePath = '/#/app/';
+    var urlPathToOpen = basePath + 'reminders-inbox';
+    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
+        urlPathToOpen = event.notification.data.url;
+        console.debug("urlPathToOpen from event.notification.data.url", urlPathToOpen);
+    }
+    if(event.action && event.action.indexOf("https://") !== -1){
+        var route = qm.stringHelper.getStringAfter(event.action, basePath);
+        urlPathToOpen = basePath + route;
+        console.debug("basePath", basePath);
+        console.debug("urlPathToOpen from basePath + route", urlPathToOpen);
+    }
+    // This looks to see if the current is already open and focuses if it is
+    event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+        for (var i = 0; i < clientList.length; i++) {
+            var client = clientList[i];
+            var currentlyOpenUrl = client.url;
+            console.log(currentlyOpenUrl + " is open already");
+            if(currentlyOpenUrl.indexOf(urlPathToOpen) !== -1){
+                if ('focus' in client) {
+                    console.log("Focusing " + currentlyOpenUrl);
+                    return client.focus();
+                }
+            }
+        }
+        if (clients.openWindow) {
+            if(urlPathToOpen.indexOf('#') === 0){urlPathToOpen = '/' + urlPathToOpen;}
+            console.log("Opening new " + urlPathToOpen + " window");
+            return clients.openWindow(urlPathToOpen);
+        } else {
+            console.error("Can't open windows!")
+        }
+
+    }));
+};
 function showNotification(pushData) {
     //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
     console.log("push data: ", pushData);
     if(!pushData.title && pushData.data) {
-        console.log("Weird push format");
+        console.log("Provided entire payload to showNotification instead of just payload.data");
         pushData = pushData.data;
     }
     qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
@@ -46,7 +90,8 @@ function showNotification(pushData) {
             icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
             //lang: string,
             tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
-            silent: true
+            silent: true,  // Why do we still hear sounds on Chrome for Android?
+            onClick: qm.push.notificationClick
         };
         try {
             qm.allActions = JSON.parse(pushData.actions);
@@ -103,24 +148,28 @@ function showNotification(pushData) {
 // implement this optional method.
 // [START background_handler]
 messaging.setBackgroundMessageHandler(function(payload) {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    showNotification(payload);
+    console.log('[firebase-messaging-sw.js] Received background message payload: ', payload);
+    qm.push.logPushReceived({pushType: 'background', payload: payload});
+    showNotification(payload.data);
 });
+// UPDATE:  Disregard the comment below because it didn't solve the problem and broke pushes. I guess both handlers are required?  I think the background thing might just be a dev console issue
+// I think addEventListener('push' isn't necessary since we use messaging.setBackgroundMessageHandler and I think duplicate handlers cause "Updated in background" notifications
 self.addEventListener('push', function(event) {
-    console.log('[Service Worker] Push Received.', event);
-    qm.localForage.setItem(qm.items.lastPushData, event);
+    qmLog.info('[Service Worker] Non-background Push Received. event: ', event);
+    qm.push.logPushReceived({pushType: 'non-background-event', event: event});
     //console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
     try {
         var pushData = event.data.json();
         pushData = pushData.data;
+        qmLog.info('[Service Worker] Non-background Push Received. pushData: ', pushData);
+        qm.push.logPushReceived({pushType: 'non-background-push-data', pushData: pushData});
         showNotification(pushData);
     } catch (error) {
         qmLog.error("Could not show push notification because: " + error);
     }
 });
 // [END background_handler]
-function runFunction(name, arguments)
-{
+function runFunction(name, arguments){
     var fn = qm.notifications.actions[name];
     if(typeof fn !== 'function'){
       console.log(name +" is not a function");
@@ -130,44 +179,4 @@ function runFunction(name, arguments)
     fn.apply(qm.notifications.actions, [arguments]);
     return true;
 }
-self.addEventListener('notificationclick', function(event) {
-    console.log('[Service Worker] Notification click Received: ' + event.action);
-    event.notification.close();
-    if(event.action === ""){
-        qmLog.error("No event action provided! event is: ", null, event);
-    }
-    if (event.action.indexOf("https://") === -1 && runFunction(event.action, event.notification.data)) {
-        return;
-    }
-    var basePath = '/ionic/Modo/www/index.html#/app/';
-    var urlPathToOpen = basePath + 'reminders-inbox';
-    if(event.notification && event.notification.data && event.notification.data.url && event.notification.data.url !== ""){
-        urlPathToOpen = event.notification.data.url;
-    }
-    if(event.action && event.action.indexOf("https://") !== -1){
-        var providedUrl = event.action.replace('src', 'www');
-        var route = qm.stringHelper.getStringAfter(providedUrl, basePath);
-        urlPathToOpen = basePath + route;
-    }
-    // This looks to see if the current is already open and focuses if it is
-    event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-        for (var i = 0; i < clientList.length; i++) {
-            var client = clientList[i];
-            var currentlyOpenUrl = client.url;
-            console.log(currentlyOpenUrl + " is open already");
-            if(currentlyOpenUrl.indexOf(urlPathToOpen) !== -1){
-                if ('focus' in client) {
-                    console.log("Focusing " + currentlyOpenUrl);
-                    return client.focus();
-                }
-            }
-        }
-        if (clients.openWindow) {
-            console.log("Opening new " + urlPathToOpen + " window");
-            return clients.openWindow(urlPathToOpen);
-        } else {
-            console.error("Can't open windows!")
-        }
-
-    }));
-});
+self.addEventListener('notificationclick', qm.push.notificationClick);
