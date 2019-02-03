@@ -7105,8 +7105,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
         };
         qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev, noText){
-            if(title.length > 15){
-                title = title.substring(0, 10) + '...';
+            var maxLength = 20;
+            if(title.length > maxLength){
+                title = title.substring(0, maxLength) + '...';
             }
             ConfirmationDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
             if(!noText){
