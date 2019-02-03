@@ -2488,7 +2488,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                                 break;
                                             }
                                         }
-                                        if(!notificationExists && trackingReminderSyncQueue[0].reminderFrequency){
+                                        if(!notificationExists && trackingReminderSyncQueue[0].reminderFrequency && !trackingReminderSyncQueue[0].stopTrackingDate){
                                             qmLog.error("Notification not found for reminder we just created!", null, {'reminder': trackingReminderSyncQueue[0]});
                                         }
                                         qmLog.info("Got " + notifications.length + " notifications to from postTrackingRemindersDeferred response", null, {notifications: notifications});
