@@ -186,6 +186,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             openTagVariableSearchDialog(e, requestParams, dialogParameters);
         };
         $scope.state.openChildVariableSearchDialog = function(e){
+            dialogParameters.conversionFactor = 1;
             dialogParameters.title = 'Add a child sub-type';
             dialogParameters.helpText = "Search for a child sub-class of " +
                 $scope.state.variableObject.name.toUpperCase() + ".  Then " +
