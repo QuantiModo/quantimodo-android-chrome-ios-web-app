@@ -1,18 +1,5 @@
 <div class="voteButtons" style="cursor: pointer; text-align: center;" ng-init="study = study || state.study">
-    <div ng-click="upVote(study, $index, $event)" class="show-inline">
-        <div class="tooltip" title="Relationship Seems Plausible">
-            <img ng-if="study.studyVotes.userVote === null || study.studyVotes.userVote === 0"
-                 src="img/thumbs/thumb_up_white.png" height="32px" width="32px"/>
-            <img ng-if="study.studyVotes.userVote === 1" src="img/thumbs/thumb_up_black.png" height="32px" width="32px"/>
-        </div>
-    </div> &nbsp;&nbsp;
-    <div ng-click="downVote(study, $index, $event)" class="show-inline">
-        <div class="tooltip" title="Relationship Seems Impossible">
-            <img ng-if="study.studyVotes.userVote === null || study.studyVotes.userVote === 1"
-                 src="img/thumbs/thumb_down_white.png" height="32px" width="32px"/>
-            <img ng-if="study.studyVotes.userVote === 0" src="img/thumbs/thumb_down_black.png" height="32px" width="32px"/>
-        </div>
-    </div>
+    <div ng-include="'templates/buttons/vote-buttons.html'"></div>
     <div ng-hide="state.hideStudyButton" ng-click="goToStudyPageViaStudy(study)" class="show-inline">
         <div class="tooltip" title="Go to Full Study"> &nbsp &nbsp <i style="font-size: 32px;"
                                                                       class="ion-ios-book-outline"></i></div>
