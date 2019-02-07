@@ -8,7 +8,7 @@
   "description": "Perfect your life!",
   "devDependencies": {
     "angular-mocks": "1.7.7",
-    "compromise": "11.13.0",
+    "compromise": "11.13.1",
     "ghost-inspector": "3.0.0",
     "jasmine-core": "3.3.0",
     "karma": "4.0.0",
