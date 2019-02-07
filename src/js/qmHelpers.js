@@ -8221,7 +8221,12 @@ var qm = {
                             if(decoded && decoded.indexOf('%2') !== -1){
                                 decoded = decodeURIComponent(decoded); // Must have been double encoded
                             }
-                            return decodeURIComponent(decoded);
+                            try {
+                                return decodeURIComponent(decoded);
+                            } catch (error) {
+                                qmLog.error(error);
+                                return decoded; // Must have already been decoded (happens when % symbol is in variable name)
+                            }
                         }else{
                             return currentParameterKeyValuePair[1];
                         }
