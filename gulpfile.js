@@ -975,6 +975,7 @@ function resizeIcon(callback, resolution) {
             qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             qmLog.info('ERROR: ' + JSON.stringify(error));
         }
+        copyFiles([outputIconPath], paths.src.icons);
         uploadAppImagesToS3(outputIconPath);
         callback();
     });
@@ -1394,7 +1395,12 @@ function createProgressiveWebAppManifest(outputPath) {
         "display": "standalone",
         "icons": [{
             "src": "img/icons/icon_512.png",
-            "sizes": "5121x512",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "img/icons/icon_192.png",
+            "sizes": "192x192",
             "type": "image/png"
         }],
         "background_color": "#FF9800",
@@ -3362,7 +3368,7 @@ gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 
 gulp.task('resizeIcon48', [], function (callback) { return resizeIcon(callback, 48); });
 gulp.task('resizeIcon128', [], function (callback) { return resizeIcon(callback, 128); });
 gulp.task('resizeIcon192', [], function (callback) { return resizeIcon(callback, 192); });
-gulp.task('resizeIcon512', [], function (callback) { return resizeIcon(callback, 192); });
+gulp.task('resizeIcon512', [], function (callback) { return resizeIcon(callback, 512); });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcons', function (callback) {
     runSequence(
