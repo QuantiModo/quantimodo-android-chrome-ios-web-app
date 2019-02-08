@@ -975,6 +975,7 @@ function resizeIcon(callback, resolution) {
             qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             qmLog.info('ERROR: ' + JSON.stringify(error));
         }
+        copyFiles([outputIconPath], paths.src.icons);
         uploadAppImagesToS3(outputIconPath);
         callback();
     });
@@ -1394,7 +1395,12 @@ function createProgressiveWebAppManifest(outputPath) {
         "display": "standalone",
         "icons": [{
             "src": "img/icons/icon_512.png",
-            "sizes": "5121x512",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "img/icons/icon_192.png",
+            "sizes": "192x192",
             "type": "image/png"
         }],
         "background_color": "#FF9800",
