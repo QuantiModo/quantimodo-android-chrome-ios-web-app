@@ -38,6 +38,14 @@ angular.module('starter',
 )
     .run(["$ionicPlatform", "$ionicHistory", "$state", "$rootScope", "qmService", "ngChatEngine",
         function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, ngChatEngine){
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('firebase-messaging-sw.js')
+                    .then(function(reg) {
+                        console.log('Registration done');
+                    },function(error) {
+                        console.log('Registration failed with ' + error);
+                    });
+            }
             if(typeof ChatEngineCore !== "undefined"){
                 $rootScope.ChatEngine = ChatEngineCore.create({
                     publishKey: 'pub-c-d8599c43-cecf-42ba-a72f-aa3b24653c2b',

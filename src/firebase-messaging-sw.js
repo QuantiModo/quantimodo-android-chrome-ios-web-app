@@ -180,3 +180,20 @@ function runFunction(name, arguments){
     return true;
 }
 self.addEventListener('notificationclick', qm.push.notificationClick);
+// TODO: Fix Service worker does not successfully serve the manifest's start_url, No usable web app manifest found on page.
+// in order to implement Add to home screen prompt
+self.addEventListener('install', function(e) {
+    e.waitUntil(
+        caches.open('airhorner').then(function(cache) {
+            return cache.addAll([
+                '/',
+                '/index.html',
+                //'/index.html?homescreen=1',
+                //'/?homescreen=1',
+                '/css/app.css',
+                //'/scripts/main.min.js',
+                //'/sounds/airhorn.mp3'
+            ]);
+        })
+    );
+});
