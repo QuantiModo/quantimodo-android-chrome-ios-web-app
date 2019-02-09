@@ -7149,8 +7149,8 @@ var qm = {
                 qm.qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
-            if(typeof localStorage === "undefined"){
-                qm.qmLog.debug("localStorage not defined");
+            if(typeof localStorage === "undefined" || localStorage === null){
+                qm.qmLog.error("localStorage not defined!");
                 return false;
             }
             var itemFromLocalStorage = localStorage.getItem(key);
@@ -9588,3 +9588,37 @@ if(typeof window !== "undefined"){
 }else{
     module.exports = qm;
 }
+
+// START localStorage polyfill.  For some, Chrome on Android localStorage is null so this replaces with transient global memory storage
+(function () {
+    function isSupported() {
+        try {
+            return 'localStorage' in window && window['localStorage'] !== null;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    if (!isSupported()) {
+        function init(undef) {
+            var store = {
+                setItem: function (id, val) {
+                    return store[id] = String(val);
+                },
+                getItem: function (id) {
+                    return store.hasOwnProperty(id) ? String(store[id]) : undef;
+                },
+                removeItem: function (id) {
+                    return delete store[id];
+                },
+                clear: function () {
+                    init();
+                }
+            };
+
+            window.localStorage = store;
+        }
+        init();
+    }
+}());
+// END localStorage POLYFILL
