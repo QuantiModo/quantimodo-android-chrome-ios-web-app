@@ -6880,14 +6880,14 @@ var qm = {
                 }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'joinStudy');
             }
-            var params = qm.api.addGlobalParams({});
+            var params = qm.api.addGlobalParams(body);
             var hasRequiredParams = typeof params.studyId !== "undefined" ||
                 (typeof params.causeVariableName !== "undefined" && typeof params.effectVariableName !== "undefined") ||
                 (typeof params.causeVariableId !== "undefined" && typeof params.effectVariableId !== "undefined");
             if(!hasRequiredParams){
                 qmLog.errorAndExceptionTestingOrDevelopment("Missing required params for study join!");
             }
-            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).joinStudy(body, callback);
+            qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name).joinStudy(body, callback);
         },
     },
     storage: {
