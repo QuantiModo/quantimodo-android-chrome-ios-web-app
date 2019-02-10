@@ -9593,7 +9593,7 @@ if(typeof window !== "undefined"){
 (function () {
     function isSupported() {
         try {
-            return 'localStorage' in window && window['localStorage'] !== null;
+            return typeof window !== "undefined" && 'localStorage' in window && window['localStorage'] !== null;
         } catch(e) {
             return false;
         }
