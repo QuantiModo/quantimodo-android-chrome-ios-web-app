@@ -9593,13 +9593,13 @@ if(typeof window !== "undefined"){
 (function () {
     function isSupported() {
         try {
-            return typeof window !== "undefined" && 'localStorage' in window && window['localStorage'] !== null;
+            return 'localStorage' in window && window['localStorage'] !== null;
         } catch(e) {
             return false;
         }
     }
 
-    if (!isSupported()) {
+    if (typeof window !== "undefined" && !isSupported()) {
         function init(undef) {
             var store = {
                 setItem: function (id, val) {
