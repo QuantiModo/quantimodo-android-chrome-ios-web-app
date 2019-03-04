@@ -1329,7 +1329,9 @@ var qm = {
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
                 'variableName', 'connectorName'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform', 'reason'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase',
+                'fallbackToAggregatedCorrelations',
+                'platform', 'reason'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
@@ -6880,14 +6882,14 @@ var qm = {
                 }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, 'joinStudy');
             }
-            var params = qm.api.addGlobalParams({});
+            var params = qm.api.addGlobalParams(body);
             var hasRequiredParams = typeof params.studyId !== "undefined" ||
                 (typeof params.causeVariableName !== "undefined" && typeof params.effectVariableName !== "undefined") ||
                 (typeof params.causeVariableId !== "undefined" && typeof params.effectVariableId !== "undefined");
             if(!hasRequiredParams){
                 qmLog.errorAndExceptionTestingOrDevelopment("Missing required params for study join!");
             }
-            qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).joinStudy(body, callback);
+            qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name).joinStudy(body, callback);
         },
     },
     storage: {
@@ -7150,8 +7152,8 @@ var qm = {
                 return fromGlobals;
             }
             if(typeof localStorage === "undefined" || localStorage === null){
-                qm.qmLog.error("localStorage not defined!");
-                return false;
+                qm.qmLog.debug("localStorage not defined!");
+                return null;
             }
             var itemFromLocalStorage = localStorage.getItem(key);
             if(itemFromLocalStorage === "undefined"){
@@ -9599,7 +9601,7 @@ if(typeof window !== "undefined"){
         }
     }
 
-    if (!isSupported()) {
+    if (typeof window !== "undefined" && !isSupported()) {
         function init(undef) {
             var store = {
                 setItem: function (id, val) {
