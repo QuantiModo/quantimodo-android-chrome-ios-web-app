@@ -1329,7 +1329,9 @@ var qm = {
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
                 'variableName', 'connectorName'];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase', 'platform', 'reason'];
+                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase',
+                'fallbackToAggregatedCorrelations',
+                'platform', 'reason'];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
@@ -7150,8 +7152,8 @@ var qm = {
                 return fromGlobals;
             }
             if(typeof localStorage === "undefined" || localStorage === null){
-                qm.qmLog.error("localStorage not defined!");
-                return false;
+                qm.qmLog.debug("localStorage not defined!");
+                return null;
             }
             var itemFromLocalStorage = localStorage.getItem(key);
             if(itemFromLocalStorage === "undefined"){
