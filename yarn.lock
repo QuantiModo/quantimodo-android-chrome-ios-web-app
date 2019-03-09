@@ -2032,9 +2032,9 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
-deepmerge@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.0.0.tgz#ca7903b34bfa1f8c2eab6779280775a411bfc6ba"
+deepmerge@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.2.0.tgz#58ef463a57c08d376547f8869fdc5bcee957f44e"
 
 defaults@^1.0.0, defaults@^1.0.3:
   version "1.0.3"
@@ -3773,15 +3773,15 @@ gulp-jshint@2.1.0:
     rcloader "^0.2.2"
     through2 "^2.0.0"
 
-gulp-json-editor@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/gulp-json-editor/-/gulp-json-editor-2.5.0.tgz#23aaa7d30f8425cf60cf1aefae098c257da11ada"
+gulp-json-editor@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/gulp-json-editor/-/gulp-json-editor-2.5.1.tgz#96a3051bfeecdf7f58b240bbdc10ec19b3eed28d"
   dependencies:
-    deepmerge "^3.0.0"
+    deepmerge "^3.2.0"
     detect-indent "^5.0.0"
-    js-beautify "^1.8.9"
+    js-beautify "^1.9.0"
     plugin-error "^1.0.1"
-    through2 "^3.0.0"
+    through2 "^3.0.1"
 
 gulp-match@^1.0.3:
   version "1.0.3"
@@ -4977,9 +4977,9 @@ js-base64@^2.1.8:
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.9.tgz#748911fb04f48a60c4771b375cac45a80df11c03"
 
-js-beautify@^1.8.9:
-  version "1.8.9"
-  resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.8.9.tgz#08e3c05ead3ecfbd4f512c3895b1cda76c87d523"
+js-beautify@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.9.0.tgz#2562fcdee340f9f962ae2ec4a8a40e7aaa6d964f"
   dependencies:
     config-chain "^1.1.12"
     editorconfig "^0.15.2"
@@ -9037,6 +9037,12 @@ through2@^1.0.0:
   dependencies:
     readable-stream ">=1.1.13-1 <1.2.0-0"
     xtend ">=4.0.0 <4.1.0-0"
+
+through2@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/through2/-/through2-3.0.1.tgz#39276e713c3302edf9e388dd9c812dd3b825bd5a"
+  dependencies:
+    readable-stream "2 || 3"
 
 through2@~0.5.1:
   version "0.5.1"
