@@ -17,6 +17,7 @@
                                     &nbsp Github Login &nbsp
                                 </md-button>-->
                                 <md-button id="signInWithGoogle"
+                                           ng-if="!platform.isWebView"
                                            class="md-raised md-primary icon icon-left ion-social-google"
                                            style="background: #d34836;"
                                            ng-click="state.socialLogin('googleplus', $event)">
