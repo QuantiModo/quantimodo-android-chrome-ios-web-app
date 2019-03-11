@@ -8208,6 +8208,7 @@ var qm = {
             if(!url){
                 return null;
             }
+            url = qm.urlHelper.putQueryAfterHash(url);
             if(parameterName.toLowerCase().indexOf('name') !== -1){
                 shouldDecode = true;
             }
@@ -8436,6 +8437,16 @@ var qm = {
             var full = window.location.host;
             var parts = full.split('.');
             return parts[0].toLowerCase();
+        },
+        putQueryAfterHash: function (url) {
+            if(!url){url = window.location.href;}
+            var question = url.indexOf('?');
+            var hash = url.indexOf("#");
+            if(hash > question){
+                var query = url.substr(question, hash - question);
+                url = url.replace(query, '') + query;
+            }
+            return url;
         }
     },
     user: null,
