@@ -4294,7 +4294,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var platform = {};
             //qmLog.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
             platform.isWeb = qm.platform.isWeb();
-            platform.isWebView = ionic.Platform.isWebView();
+            if(qm.urlHelper.getParam('webview')){qm.storage.setItem('webview', true);}
+            platform.isWebView = ionic.Platform.isWebView() || qm.urlHelper.getParam('webview') || qm.storage.getItem('webview');
             platform.isIPad = ionic.Platform.isIPad() && !platform.isWeb;
             platform.isIOS = qm.platform.isIOS();
             platform.isAndroid = qm.platform.isAndroid();
