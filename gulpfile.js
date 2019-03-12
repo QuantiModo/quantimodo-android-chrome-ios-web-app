@@ -376,6 +376,7 @@ function setVersionNumbers() {
 setVersionNumbers();
 var qmGulp = {
     chcp: {
+        enabled: false,
         loginBuildAndDeploy: function(callback){ // DOESN'T WORK
             // loginAndBuild doesn't complete soon enough for ordova-hcp deploy to work.
             // Have to use in sequence buildAndroidApp task to provide necessary delay
@@ -3417,6 +3418,7 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     qmPlatform.buildingFor.platform = qmPlatform.android;
+    fs.unlinkSync('platforms/android/assets/www/lib/quagga/server.pem');
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
     if(!qmGulp.getMonetizationSettings().playPublicLicenseKey.value && qmGulp.getMonetizationSettings().subscriptionsEnabled.value){
@@ -3485,9 +3487,14 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/manifest.json']);
 });
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
+    if(!qmGulp.chcp.enabled){return;}
     qmGulp.chcp.loginAndBuild(callback);
 });
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
@@ -3503,9 +3510,14 @@ gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (call
         }, false, false);
 });
 gulp.task('chcp-clean-config-files', [], function () {
+    if(!qmGulp.chcp.enabled){return;}
     return qmGulp.chcp.chcpCleanConfigFiles();
 });
 gulp.task('chcp-deploy', ['getAppConfigs'], function (callback) {
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     qmGulp.chcp.outputCordovaHcpJson();
     //qmGulp.chcp.loginBuildAndDeploy(callback);  // Have to build early in sequence to allow time for completion during other build steps so files are ready for deploy
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
