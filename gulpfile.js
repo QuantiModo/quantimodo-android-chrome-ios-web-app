@@ -3324,6 +3324,7 @@ function buildAndroidRelease(callback){
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
+    try {fs.unlinkSync('platforms/android/assets/www/lib/quagga/server.pem');} catch (e) {}
     if(qmGulp.buildSettings.buildDebug()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
@@ -3418,7 +3419,6 @@ gulp.task('buildAndroidAfterCleaning', [], function (callback) {
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     qmPlatform.buildingFor.platform = qmPlatform.android;
-    fs.unlinkSync('platforms/android/assets/www/lib/quagga/server.pem');
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings */
     /** @namespace qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value */
     if(!qmGulp.getMonetizationSettings().playPublicLicenseKey.value && qmGulp.getMonetizationSettings().subscriptionsEnabled.value){
@@ -3487,7 +3487,10 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/manifest.json']);
 });
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
-    if(!qmGulp.chcp.enabled){return;}
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     qmGulp.chcp.loginAndBuild(callback);
 });
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
