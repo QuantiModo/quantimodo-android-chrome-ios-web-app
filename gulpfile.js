@@ -1200,7 +1200,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];
+            if(parsedXmlFile.widget.chcp){parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];}
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
