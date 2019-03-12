@@ -58,3 +58,19 @@ You can manage your subscription and auto-renewal may be turned off by going to 
 
 
 [Icon, Splash, Screenshots, and Feature Images](https://www.dropbox.com/sh/p252nfnxnqkckwq/AACFtjCrRUOkH71XXyC4UBQca?dl=0)
+
+# App Review Information
+
+SEE ALL REQUIRED INFO FOR SUBSCRIPTIONS AT BOTTOM OF UPGRADE PAGE AND IN THE APP STORE DESCRIPTION.
+
+SEE ALL REQUIRED LOCATION TRACKING INFORMATION BY PRESSING THE ? BUTTON NEXT TO LOCATION TRACKING ON UPGRADE PAGE OR ON SETTINGS PAGE AND IN THE APP STORE DESCRIPTION.
+
+MoodiModo is a mood tracking app. 
+Steps:
+1. You will see an app walkthrough for the first time when you launch the app.
+2. On the Welcome screen, it will ask you to rate your mood, You can rate it by tapping an emoji that best reflects your mood.
+3. Once you rate your mood, it will ask you if you want to schedule notifications, Tap on schedule or cancel to move forward.
+4. Next, you can Sign in with your Facebook, Google or QuantiModo Account (demo quantimodo account is submitted with the application.
+5. After you log in, It will load your data, and will show you the 'Track Page' where you can see your average mood with charts to show the change in moods. You can also, rate your mood.
+6. On the top left menu button, you can select `History` to see the history of your mood ratings, tap on one to edit, where you can also add a note. 
+7. On the top left menu button, you can Select `Track Factors` to Track Foods,  Emotions, Symptoms, Treatments, or select Track Anything.
