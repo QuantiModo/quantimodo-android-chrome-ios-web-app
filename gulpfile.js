@@ -1472,6 +1472,7 @@ gulp.task('downloadIcon', [], function(){
     /** @namespace qm.getAppSettings().additionalSettings.appImages.appIcon */
     /** @namespace qm.getAppSettings().additionalSettings.appImages */
     var iconUrl = (qmGulp.getAdditionalSettings().appImages.appIcon) ? qmGulp.getAdditionalSettings().appImages.appIcon : qmGulp.getAppSettings().iconUrl;
+    cleanFiles(['resources/icon.psd']); // Sometimes QM PSD gets left and overrides MediModo PNG
     return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
