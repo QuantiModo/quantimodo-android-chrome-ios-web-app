@@ -2122,6 +2122,9 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
 var serviceWorkerFirebaseLocalForage = [
     paths.src.serviceWorker,
     'src/lib/firebase/firebase-app.js',
+    'src/lib/ionic/fonts/ionicons.woff',
+    'src/lib/ionic/fonts/ionicons.ttf',
+    'src/lib/Bravey/build/bravey.js',
     'src/lib/firebase/firebase-messaging.js',
     'src/lib/localforage/dist/localforage.js',
     'src/js/qmLogger.js',
@@ -3443,6 +3446,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'bowerInstall',
         'copySrcToWwwExceptJsLibrariesAndConfigs', // Don't copy entire lib because it makes the app and chcp sync huge!
         'configureApp',
+        'deleteLargeFilesFromWww',
         'copyAppResources',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
@@ -3478,13 +3482,23 @@ gulp.task('watch-src', function () {
 });
 gulp.task('deleteAppSpecificFilesFromWww', [], function () {
     return cleanFiles([
-        paths.www.defaultConfig,
+        //paths.www.defaultConfig,
         paths.www.defaultPrivateConfig,
         paths.www.devCredentials,
         'www/configs/*',
         'www/private_configs/*',
         'www/img/icons/*',
         'www/manifest.json']);
+});
+gulp.task('deleteLargeFilesFromWww', [], function () {
+    return cleanFiles([
+        //'www/lib',
+        'www/scripts/*.map',
+        'www/lib/**/*.map',
+        'www/lib/moment-timezone/data',
+        'www/lib/highcharts/js',
+        'www/lib/angular-material/modules',
+    ]);
 });
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
     if(!qmGulp.chcp.enabled){
