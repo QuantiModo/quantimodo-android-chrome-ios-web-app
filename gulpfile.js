@@ -2625,7 +2625,7 @@ gulp.task('makeIosApp', function (callback) {
         'deleteFacebookPlugin',
         'googleServicesPList',
         'platform-add-ios',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'ionicResources',
         'addFacebookPlugin',
         //'addGooglePlusPlugin',
@@ -2921,7 +2921,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2947,7 +2947,7 @@ gulp.task('build-ios-app', function (callback) {
         'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2972,7 +2972,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'ionicResourcesIos',
         'write-build-json',
         'googleServicesPList',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'platform-add-ios',
         callback);
 });
