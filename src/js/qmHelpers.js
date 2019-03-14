@@ -180,7 +180,13 @@ var qm = {
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic'
             };
-            if(typeof moment !== "undefined"){qmApiClient.defaultHeaders['X-Timezone'] = moment.tz.guess();}
+            if(typeof moment !== "undefined"){
+                if(typeof moment.tz === "undefined"){
+                    qmLog.error("moment.tz is not defined!");
+                } else {
+                    qmApiClient.defaultHeaders['X-Timezone'] = moment.tz.guess();
+                }
+            }
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
