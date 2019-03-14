@@ -376,6 +376,7 @@ function setVersionNumbers() {
 setVersionNumbers();
 var qmGulp = {
     chcp: {
+        enabled: false,
         loginBuildAndDeploy: function(callback){ // DOESN'T WORK
             // loginAndBuild doesn't complete soon enough for ordova-hcp deploy to work.
             // Have to use in sequence buildAndroidApp task to provide necessary delay
@@ -967,9 +968,14 @@ function zipAndUploadToS3(folderPath, zipFileName) {
             logger: console
         }));
 }
-function resizeIcon(callback, resolution) {
+function resizeIcon(callback, resolution, noAlpha) {
     var outputIconPath = paths.www.icons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
+    if(noAlpha){
+        outputIconPath = paths.www.icons + '/icon_white_' + resolution + '.png';
+        command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution +
+            ' -background white -alpha remove -alpha off ' + outputIconPath;
+    }
     execute(command, function (error) {
         if (error) {
             qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
@@ -1200,7 +1206,7 @@ function generateConfigXmlFromTemplate(callback) {
         } else {
             parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
             parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
-            parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];
+            if(parsedXmlFile.widget.chcp){parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];}
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
             writeStaticDataFile();
@@ -1471,6 +1477,7 @@ gulp.task('downloadIcon', [], function(){
     /** @namespace qm.getAppSettings().additionalSettings.appImages.appIcon */
     /** @namespace qm.getAppSettings().additionalSettings.appImages */
     var iconUrl = (qmGulp.getAdditionalSettings().appImages.appIcon) ? qmGulp.getAdditionalSettings().appImages.appIcon : qmGulp.getAppSettings().iconUrl;
+    cleanFiles(['resources/icon.psd']); // Sometimes QM PSD gets left and overrides MediModo PNG
     return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
@@ -2121,6 +2128,9 @@ gulp.task('minify-js-generate-css-and-android-popup-html', [], function() {
 var serviceWorkerFirebaseLocalForage = [
     paths.src.serviceWorker,
     'src/lib/firebase/firebase-app.js',
+    'src/lib/ionic/fonts/ionicons.woff',
+    'src/lib/ionic/fonts/ionicons.ttf',
+    'src/lib/Bravey/build/bravey.js',
     'src/lib/firebase/firebase-messaging.js',
     'src/lib/localforage/dist/localforage.js',
     'src/js/qmLogger.js',
@@ -2620,7 +2630,7 @@ gulp.task('makeIosApp', function (callback) {
         'deleteFacebookPlugin',
         'googleServicesPList',
         'platform-add-ios',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'ionicResources',
         'addFacebookPlugin',
         //'addGooglePlusPlugin',
@@ -2916,7 +2926,7 @@ gulp.task('build-ios-app-without-cleaning', function (callback) {
         'write-build-json',
         'googleServicesPList',
         'platform-add-ios',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'ionicInfo',
         'ios-sim-fix',
         'ionic-build-ios',
@@ -2942,7 +2952,7 @@ gulp.task('build-ios-app', function (callback) {
         'chcp-config-login-build',
         'write-build-json',
         'googleServicesPList',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'platform-add-ios',
         'ionicInfo',
         'ios-sim-fix',
@@ -2967,7 +2977,7 @@ gulp.task('prepare-ios-app', function (callback) {
         'ionicResourcesIos',
         'write-build-json',
         'googleServicesPList',
-        'cordova-plugin-rm-cordova-plugin-console',
+        //'cordova-plugin-rm-cordova-plugin-console', // Can't seem to catch exception when plugin not present
         'platform-add-ios',
         callback);
 });
@@ -3323,6 +3333,7 @@ function buildAndroidRelease(callback){
     execute(getCordovaBuildCommand('release', 'android'), callback);
 }
 gulp.task('cordovaBuildAndroid', function (callback) {
+    try {fs.unlinkSync('platforms/android/assets/www/lib/quagga/server.pem');} catch (e) {}
     if(qmGulp.buildSettings.buildDebug()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
@@ -3371,6 +3382,7 @@ gulp.task('resizeIcon192', [], function (callback) { return resizeIcon(callback,
 gulp.task('resizeIcon512', [], function (callback) { return resizeIcon(callback, 512); });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon1024', [], function (callback) { return resizeIcon(callback, 1024); });
+gulp.task('resizeIcon1024White', [], function (callback) { return resizeIcon(callback, 1024, true); });
 gulp.task('resizeIcons', function (callback) {
     runSequence(
         'resizeIcon16',
@@ -3380,6 +3392,7 @@ gulp.task('resizeIcons', function (callback) {
         'resizeIcon512',
         'resizeIcon700',
         'resizeIcon1024',
+        'resizeIcon1024White',
         'copy-www-img-to-src',
         callback);
 });
@@ -3441,6 +3454,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'bowerInstall',
         'copySrcToWwwExceptJsLibrariesAndConfigs', // Don't copy entire lib because it makes the app and chcp sync huge!
         'configureApp',
+        'deleteLargeFilesFromWww',
         'copyAppResources',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
@@ -3476,7 +3490,7 @@ gulp.task('watch-src', function () {
 });
 gulp.task('deleteAppSpecificFilesFromWww', [], function () {
     return cleanFiles([
-        paths.www.defaultConfig,
+        //paths.www.defaultConfig,
         paths.www.defaultPrivateConfig,
         paths.www.devCredentials,
         'www/configs/*',
@@ -3484,10 +3498,28 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/img/icons/*',
         'www/manifest.json']);
 });
+gulp.task('deleteLargeFilesFromWww', [], function () {
+    return cleanFiles([
+        //'www/lib',
+        'www/scripts/*.map',
+        'www/lib/**/*.map',
+        'www/lib/moment-timezone/data',
+        'www/lib/highcharts/js',
+        'www/lib/angular-material/modules',
+    ]);
+});
 gulp.task('chcp-config-login-build', ['getAppConfigs'], function (callback) {
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     qmGulp.chcp.loginAndBuild(callback);
 });
 gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (callback) {
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     console.log("After this, run cordova-hcp server and cordova run android in new window");
     var runCommand = "cordova run android";
     if(qmPlatform.isOSX()){runCommand = "cordova emulate ios";}
@@ -3503,9 +3535,14 @@ gulp.task('chcp-install-local-dev-plugin', ['copyOverrideFiles'], function (call
         }, false, false);
 });
 gulp.task('chcp-clean-config-files', [], function () {
+    if(!qmGulp.chcp.enabled){return;}
     return qmGulp.chcp.chcpCleanConfigFiles();
 });
 gulp.task('chcp-deploy', ['getAppConfigs'], function (callback) {
+    if(!qmGulp.chcp.enabled){
+        callback();
+        return;
+    }
     qmGulp.chcp.outputCordovaHcpJson();
     //qmGulp.chcp.loginBuildAndDeploy(callback);  // Have to build early in sequence to allow time for completion during other build steps so files are ready for deploy
     execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
