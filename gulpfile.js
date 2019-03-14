@@ -968,9 +968,14 @@ function zipAndUploadToS3(folderPath, zipFileName) {
             logger: console
         }));
 }
-function resizeIcon(callback, resolution) {
+function resizeIcon(callback, resolution, noAlpha) {
     var outputIconPath = paths.www.icons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
+    if(noAlpha){
+        outputIconPath = paths.www.icons + '/icon_white_' + resolution + '.png';
+        command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution +
+            ' -background white -alpha remove -alpha off ' + outputIconPath;
+    }
     execute(command, function (error) {
         if (error) {
             qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
@@ -3377,6 +3382,7 @@ gulp.task('resizeIcon192', [], function (callback) { return resizeIcon(callback,
 gulp.task('resizeIcon512', [], function (callback) { return resizeIcon(callback, 512); });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon1024', [], function (callback) { return resizeIcon(callback, 1024); });
+gulp.task('resizeIcon1024White', [], function (callback) { return resizeIcon(callback, 1024, true); });
 gulp.task('resizeIcons', function (callback) {
     runSequence(
         'resizeIcon16',
@@ -3386,6 +3392,7 @@ gulp.task('resizeIcons', function (callback) {
         'resizeIcon512',
         'resizeIcon700',
         'resizeIcon1024',
+        'resizeIcon1024White',
         'copy-www-img-to-src',
         callback);
 });
