@@ -679,6 +679,9 @@ var qmGulp = {
         github.createStatusToCommit(statusOptions, qmGulp.getGithubOptions(), callback);
     },
     getGithubOptions: function(){
+        if(!process.env.GITHUB_ACCESS_TOKEN){
+            throw "Please set GITHUB_ACCESS_TOKEN env in order to update Github statuses";
+        }
         var options = {
             // Required options: git_token, git_repo
             // refer to https://help.github.com/articles/creating-an-access-token-for-command-line-use/
