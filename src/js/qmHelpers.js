@@ -686,7 +686,7 @@ var qm = {
         postMeasurements: function(measurements, onDoneListener){
             qm.api.postToQuantiModo(measurements, "v1/measurements", onDoneListener);
         },
-        getRequestUrl: function(path, successHandler){
+        getRequestUrl: function(path, successHandler, params){
             qm.userHelper.getUserFromLocalStorage(function(user){
                 function addGlobalQueryParameters(url){
                     function addQueryParameter(url, name, value){
@@ -731,6 +731,9 @@ var qm = {
                     return url;
                 }
                 var url = addGlobalQueryParameters(qm.api.getBaseUrl() + "/api/" + path);
+                if(params){
+                    url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
+                }
                 qm.qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
@@ -8543,19 +8546,19 @@ var qm = {
             }
             return true;
         },
-        getUserViaXhrOrFetch: function(userSuccessHandler, errorHandler){
+        getUserViaXhrOrFetch: function(userSuccessHandler, errorHandler, params){
             qm.api.getRequestUrl('api/v1/user', function(url){
                 qm.api.getViaXhrOrFetch(url, function(user){
                     userSuccessHandler(user);
                 }, errorHandler)
-            });
+            }, params);
         },
-        getUserViaSdk: function(userSuccessHandler, errorHandler){
+        getUserViaSdk: function(userSuccessHandler, errorHandler, params){
             qm.api.configureClient(arguments.callee.name);
             var apiInstance = new qm.Quantimodo.UserApi();
             //params.includeAuthorizedClients = true;  // To big for $rootScope!
             //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
-            var params = qm.api.addGlobalParams({});
+            params = qm.api.addGlobalParams(params);
             apiInstance.getUser(params, function(error, user, response){
                 qm.api.generalResponseHandler(error, user, response, function(){
                     if(user){
@@ -8564,7 +8567,7 @@ var qm = {
                 }, errorHandler, params, 'getUserFromApi');
             });
         },
-        getUserFromApi: function(successHandler, errorHandler){
+        getUserFromApi: function(successHandler, errorHandler, params){
             qm.qmLog.info("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if(userFromApi && typeof userFromApi.displayName !== "undefined"){
@@ -8581,9 +8584,9 @@ var qm = {
                 }
             }
             if(typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler);
+                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler, params);
             }else{   // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler);
+                qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler, params);
             }
         },
         getUserFromLocalStorageOrApi: function(successHandler, errorHandler){
