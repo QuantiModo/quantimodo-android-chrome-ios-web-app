@@ -46,7 +46,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     qmService.hideLoader();
                     leaveIfLoggedIn();
                 }, function(error){
-                    qmService.showMaterialAlert(error);
+                    qmLog.error("Email Login Error", error);
+                    qmService.showMaterialAlert("Login Error", "Hmm. I couldn't sign you in with those credentials.  Please double check them or contact me at https://help.quantimo.do.");
                     qmService.hideLoader();  // Hides login loader too early
                     leaveIfLoggedIn();
                 });
