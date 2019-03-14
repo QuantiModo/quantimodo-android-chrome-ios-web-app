@@ -5746,7 +5746,7 @@ var qm = {
                 qm.storage.setItem('webview', true);
                 return true;
             }
-            if(qm.storage.get('webview')){
+            if(qm.storage.getItem('webview')){
                 return true;
             }
             if(qm.platform.isAndroid() || qm.platform.isIOS()){
