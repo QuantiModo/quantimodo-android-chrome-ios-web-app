@@ -4294,8 +4294,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var platform = {};
             //qmLog.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
             platform.isWeb = qm.platform.isWeb();
-            if(qm.urlHelper.getParam('webview')){qm.storage.setItem('webview', true);}
-            platform.isWebView = ionic.Platform.isWebView() || qm.urlHelper.getParam('webview') || qm.storage.getItem('webview');
             platform.isIPad = ionic.Platform.isIPad() && !platform.isWeb;
             platform.isIOS = qm.platform.isIOS();
             platform.isAndroid = qm.platform.isAndroid();
@@ -4308,6 +4306,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             platform.isChromeExtension = qm.platform.isChromeExtension();
             platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
             platform.isIframe = qm.windowHelper.isIframe();
+            platform.isWebView = qm.platform.isWebView();
+            if(platform.isMobile){qmLog.error("isWebView is  " + platform.isWebView);}
             qmService.localNotificationsEnabled = platform.isChromeExtension;
             qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
             qmLog.info("Platform: ", platform);
