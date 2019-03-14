@@ -5741,6 +5741,22 @@ var qm = {
             }
             return isWeb;
         },
+        isWebView: function(){
+            if(qm.urlHelper.getParam('webview')){
+                qm.storage.setItem('webview', true);
+                return true;
+            }
+            if(qm.storage.get('webview')){
+                return true;
+            }
+            if(qm.platform.isAndroid() || qm.platform.isIOS()){
+                return false;
+            }
+            if(typeof ionic !== "undefined" && ionic.Platform.isWebView()){
+                return true;
+            }
+            return false;
+        },
         isWebOrChrome: function(){
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
         },
