@@ -24,6 +24,7 @@ bundle install
 bundle update
 # npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli  # Too slow to do every time!
 # yarn install # Fresh one takes 12 minutes on OSX
+bower install
 npm install
 fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
