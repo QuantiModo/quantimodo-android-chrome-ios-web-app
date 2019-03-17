@@ -7270,7 +7270,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     backgroundColor: "#ffeda5",
                     subtitle: 'Perfect your life!',
                     priceHtml: "14 day free trial <br> Monthly: $6.99/month <br> Annual: $4.99/month (4 months free!)",
-                    buttonText: "Start My 14 Day Free Trial",
+                    buttonText: "Start My Free Trial",
                     buttonClass: "button button-large button-assertive"
                 }
             };
