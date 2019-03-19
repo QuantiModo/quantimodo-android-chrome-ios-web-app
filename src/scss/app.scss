@@ -32,3 +32,7 @@ body {
   left: 15px !important;     // FreshChat on left to avoid FAB overlap
   z-index: 10 !important;  // Don't cover toasts or action sheet
 }
+#payment-form {
+  max-width: 400px;
+  margin: auto;
+}
