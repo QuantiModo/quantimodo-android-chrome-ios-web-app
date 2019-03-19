@@ -377,7 +377,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
         };
         $scope.saveVariableSettings = function(variableObject){
-            qmService.showInfoToast('Saving ' + variableObject.name + ' settings (this could take a minute)');
+            qmService.showInfoToast('Saving ' + variableObject.name + ' settings (this could take a minute)', 30);
             $scope.state.saveButtonText = "Saving...";
             var experimentEndTimeString, experimentStartTimeString = null;
             if(variableObject.experimentStartTimeString){
@@ -419,11 +419,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             };
             qmService.postUserVariableDeferred(body).then(function(userVariable){
                 qmService.hideLoader();
-                if($stateParams.fromUrl){
+                var fromUrl = $stateParams.fromUrl || qm.urlHelper.getParam('fromUrl');
+                if(fromUrl){
                     window.location.href = qm.urlHelper.addUrlQueryParamsToUrlString({
                         refresh: true,
                         recalculate: true
-                    }, $stateParams.fromUrl);
+                    }, fromUrl);
                     return;
                 }
                 $scope.goBack({variableObject: userVariable, refresh: true});  // Temporary workaround to make tests pass
