@@ -26,6 +26,7 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Feed") {document.title = "Feed";}
             qmLog.debug('beforeEnter state ' + $state.current.name);
             qmService.showBasicLoader();
             if($stateParams.hideNavigationMenu !== true){

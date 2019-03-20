@@ -6,7 +6,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.state = {
         coupon: null,
-        hideFeatures: false
+        hideFeatures: false,
+        title: "Upgrade"
     };
     $scope.signUpQuestions = [
         {
@@ -25,6 +26,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         },
     ];
     $scope.$on('$ionicView.beforeEnter', function(e){
+        if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){

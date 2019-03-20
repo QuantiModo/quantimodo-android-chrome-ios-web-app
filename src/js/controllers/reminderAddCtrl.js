@@ -17,6 +17,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             selectedStopTrackingDate: null,
             showMoreOptions: false,
             showMoreUnits: false,
+            title: "Add Reminder",
             trackingReminder: {
                 variableId: null,
                 variableName: null,
@@ -49,6 +50,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.refreshUser();
         }
         $scope.$on('$ionicView.beforeEnter', function(){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLog.info('ReminderAddCtrl beforeEnter...');
             if($stateParams.reminder){
                 $scope.state.trackingReminder = $stateParams.reminder;
