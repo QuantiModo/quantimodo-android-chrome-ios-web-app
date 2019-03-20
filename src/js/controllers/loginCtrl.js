@@ -129,6 +129,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             }, duration * 1000);
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Login") {document.title = "Login";}
             qmLog.authDebug('beforeEnter in state ' + $state.current.name);
             leaveIfLoggedIn();
             if(qm.urlHelper.getParam('loggingIn') || qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags($state.current.name)){

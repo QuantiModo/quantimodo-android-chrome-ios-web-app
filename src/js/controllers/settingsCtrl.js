@@ -5,10 +5,13 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
              //$ionicDeploy,
              $ionicPlatform, $mdDialog){
         $scope.controller_name = "SettingsCtrl";
-        $scope.state = {};
+        $scope.state = {
+            title: "Settings"
+        };
         $scope.userEmail = qm.urlHelper.getParam('userEmail');
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('beforeEnter state ' + $state.current.name, null);
             $scope.debugMode = qmLog.getDebugMode();
             if($rootScope.user){

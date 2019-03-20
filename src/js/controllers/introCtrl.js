@@ -80,6 +80,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Welcome") {document.title = "Welcome";}
             $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
             //qmLogService.debug("Entering state " + $state.current.name);
             if(!$rootScope.appSettings){

@@ -11,6 +11,7 @@ angular.module('starter').controller('OnboardingCtrl',
                 qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
             }
             $scope.$on('$ionicView.beforeEnter', function(e){
+                if (document.title !== "Get Started") {document.title = "Get Started";}
                 setRequireUpgradesInOnboarding();
                 qmLogService.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
                 qmService.navBar.hideNavigationMenu();

@@ -50,6 +50,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             },
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Chat") {document.title = "Chat";}
             $rootScope.setMicAndSpeechEnabled(true);
             qmLog.debug('beforeEnter state ' + $state.current.name);
             qmService.showBasicLoader();

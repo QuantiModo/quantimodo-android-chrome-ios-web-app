@@ -5,13 +5,14 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.state = {
             variableName: null,
             studiesResponse: {studies: []},
-            showLoadMoreButton: false
+            showLoadMoreButton: false,
+            title: "Studies"
         };
         $scope.data = {"search": ''};
         $scope.filterSearchQuery = '';
         $scope.searching = true;
         $scope.$on('$ionicView.beforeEnter', function(e){
-            qmLogService.debug('beforeEnter state ' + $state.current.name);
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('beforeEnter state ' + $state.current.name);
             $scope.showSearchFilterBox = false;
             qmService.navBar.setFilterBarSearchIcon(true);

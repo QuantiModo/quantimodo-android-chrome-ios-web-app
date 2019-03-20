@@ -1,5 +1,6 @@
-angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService", "qmLogService", "$rootScope", "$stateParams", function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,
-                                                                                                                                                                                $stateParams){
+angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService",
+    "qmLogService", "$rootScope", "$stateParams",
+    function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,$stateParams){
     $scope.controller_name = "FavoritesCtrl";
     qmLogService.debug('Loading ' + $scope.controller_name, null);
     $scope.state = {
@@ -16,6 +17,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     };
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on('$ionicView.enter', function(e){
+        if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.rootScope.setProperty('bloodPressure', {

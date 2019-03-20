@@ -1,7 +1,11 @@
-angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "$ionicLoading", "qmService", "qmLogService", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                                                                                                                                                                                                                $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLogService){
+angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams",
+    "$filter", "$ionicActionSheet", "$ionicHistory", "$ionicLoading", "qmService", "qmLogService",
+    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory,
+             $ionicLoading, qmService, qmLogService){
     $scope.controller_name = "TagAddCtrl";
-    $scope.state = {};
+    $scope.state = {
+        title: "Add Tag"
+    };
     $scope.cancel = function(){
         $ionicHistory.goBack();
     };
@@ -95,7 +99,8 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         qmLogService.debug('$ionicView.enter ' + $state.current.name, null);
     });
     $scope.$on('$ionicView.beforeEnter', function(){
-        $scope.state.title = 'Record a Tag';
+        $scope.state.title = 'Add a Tag';
+        if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         $scope.stateParams = $stateParams;
         var debug = false;
         if(debug && qm.appMode.isDevelopment()){
