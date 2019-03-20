@@ -39,7 +39,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
-            $scope.loading = true;
+            $scope.state.loading = true;
             if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){
                 return;
             }
@@ -346,7 +346,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmService.hideLoader();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            $scope.loading = false;
+            $scope.state.loading = false;
         };
         var getFilteredTodayTrackingReminderNotifications = function(){
             qmService.getTodayTrackingReminderNotificationsDeferred(getVariableCategoryName())
@@ -380,10 +380,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             return trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
         }
         var showLoader = function(){
-            $scope.loading = true;
+            $scope.state.loading = true;
             $timeout(function(){
-                if($scope.loading){
-                    $scope.loading = false;
+                if($scope.state.loading){
+                    $scope.state.loading = false;
                 }
             }, 10000);
         };
