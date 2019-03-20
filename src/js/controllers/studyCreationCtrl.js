@@ -86,7 +86,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         };
         $scope.createStudy = function(type){
             qmLog.info('Clicked createStudy for ' + getCauseVariableName() + ' and ' + getEffectVariableName());
-            qmService.showInfoToast("Creating study...", 20);
+            qmService.showInfoToast("Creating study... (this could take a minute)", 60);
             qmService.showBasicLoader(60);
             var body = new Quantimodo.StudyCreationBody(getCauseVariableName(), getEffectVariableName(), type);
             qm.studiesCreated.createStudy(body, function(study){
