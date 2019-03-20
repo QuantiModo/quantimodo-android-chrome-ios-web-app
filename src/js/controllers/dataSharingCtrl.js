@@ -12,6 +12,7 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
             }
         };
         $scope.$on("$ionicView.beforeEnter", function(){
+            if (document.title !== "Sharing") {document.title = "Sharing";}
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             $scope.state.refreshAuthorizedClients();
             qm.shares.getAuthorizedClientsFromLocalStorageOrApi(function(authorizedClients){

@@ -1,5 +1,7 @@
-angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
-    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup, $mdDialog){
+angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService",
+    "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet,
+             Upload, $timeout, $ionicPopup, $mdDialog){
         $scope.controller_name = "ImportCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -26,6 +28,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Import") {document.title = "Import";}
             if(!$scope.helpCard || $scope.helpCard.title !== "Import Your Data"){
                 $scope.helpCard = {
                     title: "Import Your Data",

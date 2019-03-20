@@ -6,9 +6,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
             variableObject: null,
-            saveButtonText: "Save"
+            saveButtonText: "Save",
+            title: "Variable Settings"
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('Entering state ' + $state.current.name, null);
             qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name);
             qmService.navBar.showNavigationMenu();

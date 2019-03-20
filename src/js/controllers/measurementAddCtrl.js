@@ -21,10 +21,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             defaultValuePlaceholderText: 'Enter a value',
             hideReminderMeButton: false,
             editReminder: false,
-            variableCategoryNames: qm.manualTrackingVariableCategoryNames
+            variableCategoryNames: qm.manualTrackingVariableCategoryNames,
+            title: "Record a Measurement"
         };
         var unitChanged = false;
         $scope.$on('$ionicView.beforeEnter', function(){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             unitChanged = false;
             qmLogService.debug($state.current.name + ': beforeEnter', null);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();

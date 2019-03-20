@@ -1,9 +1,13 @@
-angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope", "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
-                                                                                                                                                                                                                                                            $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog){
+angular.module("starter").controller("StudyCtrl", [
+    "$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope",
+    "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog",
+    function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
+             $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog){
     VariableSettingsController.$inject = ["qmService", "qmLogService", "dialogParameters"];
     $scope.controller_name = "StudyCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on("$ionicView.beforeEnter", function(){
+        if (document.title !== "Study") {document.title = "Study";}
         $scope.loadingCharts = true;  // Need to do this here so robot works properly
         qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state = {
