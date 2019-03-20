@@ -14,6 +14,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             moreDataCanBeLoaded: true
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             if(!$scope.helpCard || $scope.helpCard.title !== "Past Measurements"){
                 $scope.helpCard = {
                     title: "Past Measurements",
@@ -32,7 +33,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                $scope.state.title = $stateParams.variableCategoryName + ' History';
+                document.title = $scope.state.title = $stateParams.variableCategoryName + ' History';
                 $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
             }
             if($stateParams.variableCategoryName){

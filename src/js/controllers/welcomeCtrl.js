@@ -1,4 +1,5 @@
-angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams", function($scope, $state, $rootScope, qmService, qmLogService, $stateParams){
+angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams",
+    function($scope, $state, $rootScope, qmService, qmLogService, $stateParams){
     $scope.controller_name = "WelcomeCtrl";
     qmService.navBar.hideNavigationMenu();
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
@@ -63,6 +64,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         qmLogService.debug($state.current.name + ' initializing...', null);
     };
     $scope.$on('$ionicView.beforeEnter', function(){
+        if (document.title !== "Welcome") {document.title = "Welcome";}
         if($rootScope.user){
             qmLogService.debug('Already have user so no need to welcome. Going to default state.', null);
             qmService.goToDefaultState();

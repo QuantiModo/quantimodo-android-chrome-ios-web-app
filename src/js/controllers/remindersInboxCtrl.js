@@ -32,10 +32,12 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             lastClientY: 0,
             numberOfDisplayedNotifications: 0,
             favoritesTitle: "Your Favorites",
-            studiesResponse: null
+            studiesResponse: null,
+            title: "Inbox"
         };
         //createWordCloudFromNotes();
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
             $scope.loading = true;
             if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){
