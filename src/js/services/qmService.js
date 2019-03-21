@@ -2627,10 +2627,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 card.selectedButton = button;
                 if(button.webhookUrl){
                     var yesCallback = function(){
-                        qmService.post(button.webhookUrl, function(response){
+                        card.hide = true;
+                        qmService.post(button.webhookUrl, [], button.parameters,function(response){
                             if(button.successToastText){
                                 qmService.showInfoToast(button.successToastText);
                             }
+                        }, function(error){
+                            qmService.showMaterialAlert("Error", error);
                         });
                     };
                     qmService.showMaterialConfirmationDialog(button.tooltip, button.confirmationText, yesCallback, function(){
