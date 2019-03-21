@@ -7279,7 +7279,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             };
             if(qm.platform.isIOS()){
-                planFeatureCards = JSON.parse(JSON.stringify(planFeatureCards).replace('Android, and iOS', 'any mobile device').replace(', Sleep as Android', ''));
+                planFeatureCards = JSON.parse(JSON.stringify(planFeatureCards)
+                    .replace('Start My Free Trial', 'Upgrade')
+                    .replace('Android, and iOS', 'any mobile device')
+                    .replace(', Sleep as Android', ''));
             }
             return planFeatureCards;
         };
