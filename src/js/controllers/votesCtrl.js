@@ -24,7 +24,8 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
                     cardHandlers.getCards(cards);
                 });
             },
-            title: "Your Votes"
+            title: "Your Votes",
+            loading: true
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
@@ -45,7 +46,7 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
             }
         });
         $rootScope.$on('getCards', function(){
-            qmLogService.info('getCards broadcast received..');
+            qmLog.info('getCards broadcast received..');
             cardHandlers.getCards();
         });
         var cardHandlers = {
@@ -56,26 +57,29 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
             },
             removeCard: function(card){
                 card.hide = true;
-                qm.feed.deleteCardFromLocalForage(card, function(){
-                    cardHandlers.getCards();
+                qmService.showInfoToast("Deleted vote");
+                qmService.deleteVoteToApi(card.parameters, function(response){
+                    qmLog.debug('deleteVote response', null, response);
+                }, function(error){
+                    qmLog.error("deleteVote error", error);
                 });
-                qm.feed.undoFunction = function(){
-                    card.hide = false;
-                    qm.feed.addToFeedAndRemoveFromFeedQueue(card, cardHandlers.getCards);
-                };
-                var button = card.selectedButton;
-                if(button.successToastText){
-                    qmService.toast.showUndoToast(button.successToastText, qm.feed.undoFunction);
-                }
             },
             getCards: function(cards){
                 if(cards){
                     cardHandlers.addCardsToScope(cards);
                     return;
                 }
+                $scope.state.loading = true;
                 qmService.get('api/v1/votes', [], {}, function(data){
+                    $scope.state.loading = false;
+                    if(!data.cards || !data.cards.length){
+                        qmService.goToState(qm.staticData.stateNames.studies);
+                        return;
+                    }
                     $scope.state.cards = data.cards;
                 }, function(error){
+                    $scope.state.loading = false;
+                    qmService.goToState(qm.staticData.stateNames.studies);
                     qmService.showMaterialAlert("Error", error);
                 });
             }
