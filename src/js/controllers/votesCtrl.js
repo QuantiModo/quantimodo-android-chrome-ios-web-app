@@ -1,12 +1,10 @@
-angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams", "$timeout",
-    function($state, $scope, $rootScope, $http, qmService, $stateParams, $timeout){
+angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScope", "$http", "qmService", "$stateParams",
+    function($state, $scope, $rootScope, $http, qmService, $stateParams){
         $scope.controller_name = "VoteCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
             cards: [],
             cardButtonClick: function(card, button, ev){
-                qmLog.debug("card", card);
-                qmLog.debug("button", button);
                 card.selectedButton = button;
                 if(clickHandlers[button.action]){
                     clickHandlers[button.action](card, ev);
@@ -19,10 +17,7 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
                 qmService.actionSheets.openActionSheetForCard(card, destructiveButtonClickedFunction);
             },
             refreshFeed: function(){
-                qm.feed.getFeedFromApi({}, function(cards){
-                    hideLoader();
-                    cardHandlers.getCards(cards);
-                });
+                cardHandlers.getCards();
             },
             title: "Your Votes",
             loading: true
@@ -30,7 +25,6 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLog.debug('beforeEnter state ' + $state.current.name);
-            qmService.showBasicLoader();
             if($stateParams.hideNavigationMenu !== true){
                 qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             }
@@ -41,18 +35,12 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
                 return;
             }
             cardHandlers.getCards();
-            if(!$scope.state.cards){
-                qmService.showBasicLoader();
-            }
-        });
-        $rootScope.$on('getCards', function(){
-            qmLog.info('getCards broadcast received..');
-            cardHandlers.getCards();
         });
         var cardHandlers = {
             addCardsToScope: function(cards){
                 $scope.safeApply(function(){
                     $scope.state.cards = cards;
+                    hideLoader();
                 });
             },
             removeCard: function(card){
@@ -71,14 +59,14 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
                 }
                 $scope.state.loading = true;
                 qmService.get('api/v1/votes', [], {}, function(data){
-                    $scope.state.loading = false;
+                    hideLoader();
                     if(!data.cards || !data.cards.length){
                         qmService.goToState(qm.staticData.stateNames.studies);
                         return;
                     }
                     $scope.state.cards = data.cards;
                 }, function(error){
-                    $scope.state.loading = false;
+                    hideLoader();
                     qmService.goToState(qm.staticData.stateNames.studies);
                     qmService.showMaterialAlert("Error", error);
                 });
@@ -101,6 +89,7 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
             }
         };
         function hideLoader(){
+            $scope.state.loading = false;
             qmService.hideLoader();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
