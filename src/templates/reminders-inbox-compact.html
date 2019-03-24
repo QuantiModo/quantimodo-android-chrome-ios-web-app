@@ -3,11 +3,11 @@
     <ion-content style="background-color: #f2f2f2">
         <div id="notification-icon" ng-click="showActionSheetForNotification(trackingReminderNotifications[0], $event)"
              class="row">
-            <div class="col col-20" style="padding-top: 0px;">
+            <div class="col col-20" style="padding-top: 0;">
                 <i ng-if="!trackingReminderNotifications[0].pngPath" style="font-size: 40px;"
                    class="icon positive {{trackingReminderNotifications[0].ionIcon}}"></i>
                 <img ng-if="trackingReminderNotifications[0].pngPath"
-                     ng-src="{{trackingReminderNotifications[0].pngPath}}" style="max-width: 40px;">
+                     ng-src="{{trackingReminderNotifications[0].pngPath}}" style="max-width: 40px;" alt="{{trackingReminderNotifications[0].pngPath}}">
             </div>
             <div id="notification-title" class="col col-70">
                 <h2 style="white-space: normal; line-height: normal; ">{{trackingReminderNotifications[0].title}}</h2>
