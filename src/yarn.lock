@@ -79,9 +79,10 @@
   dependencies:
     moment ">=2.8.0 <3.0.0"
 
-"@bower_components/angular-sanitize@angular/bower-angular-sanitize#1.5.9":
-  version "1.5.9"
-  resolved "https://codeload.github.com/angular/bower-angular-sanitize/tar.gz/935bad867e89ec35f1cd6d93a4f779848bc6fa33"
+"@bower_components/angular-sanitize@angular/bower-angular-sanitize#v1.7.8":
+  version "1.7.8"
+  uid "845b3064da357de96f38fdbbb923f918d0d82bbe"
+  resolved "https://codeload.github.com/angular/bower-angular-sanitize/tar.gz/845b3064da357de96f38fdbbb923f918d0d82bbe"
 
 "@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#0.2.13":
   version "0.0.0"
