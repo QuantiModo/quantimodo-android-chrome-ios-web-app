@@ -2729,9 +2729,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                         qmService.actionSheets.actionSheetButtons.reminderAdd
                     ];
-                    if(variableObject.userId && variableObject.numberOfRawMeasurements){
+                    var hasMeasurements = variableObject.userId && variableObject.numberOfRawMeasurements;
+                    if(hasMeasurements){
                         buttons.push(qmService.actionSheets.actionSheetButtons.charts);
                         buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
+                    }
+                    var hasMeasurementsOrIsAdmin = hasMeasurements ||
+                        (qm.getUser() && qm.getUser().administrator);
+                    if(hasMeasurementsOrIsAdmin){
                         buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
                     }
                     if(variableObject){
