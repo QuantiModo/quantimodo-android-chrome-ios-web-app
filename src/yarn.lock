@@ -83,9 +83,12 @@
   version "1.5.9"
   resolved "https://codeload.github.com/angular/bower-angular-sanitize/tar.gz/935bad867e89ec35f1cd6d93a4f779848bc6fa33"
 
-"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#0.2.13":
-  version "0.0.0"
-  resolved "https://codeload.github.com/angular-ui/angular-ui-router-bower/tar.gz/2e580f271defdec34f464aab0cca519e41d1ee33"
+"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#1.0.22":
+  version "1.0.22"
+  uid "39c7b51cd40d24e15e83310f7ae61ec5fad3f0e2"
+  resolved "https://codeload.github.com/angular-ui/angular-ui-router-bower/tar.gz/39c7b51cd40d24e15e83310f7ae61ec5fad3f0e2"
+  dependencies:
+    "@uirouter/core" "5.0.23"
 
 "@bower_components/angular-web-notification@sagiegurari/angular-web-notification#^1.2.26":
   version "1.2.31"
@@ -353,6 +356,11 @@
   version "8.10.45"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.45.tgz#4c49ba34106bc7dced77ff6bae8eb6543cde8351"
   integrity sha512-tGVTbA+i3qfXsLbq9rEq/hezaHY55QxQLeXQL2ejNgFAxxrgu8eMmYIOsRcl7hN1uTLVsKOOYacV/rcJM3sfgQ==
+
+"@uirouter/core@5.0.23":
+  version "5.0.23"
+  resolved "https://registry.yarnpkg.com/@uirouter/core/-/core-5.0.23.tgz#363b4bea635a1b48900dc7e65793a65a3b58a79e"
+  integrity sha512-rwFOH++z/KY8y+h0IOpQ5uC8Nim6E0EBCQrIjhVCr+XKYXgpK+VdtuOLFdogvbJ3AAi5Z7ei00qdEr7Did5CAg==
 
 abbrev@1:
   version "1.1.1"
