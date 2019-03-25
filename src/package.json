@@ -43,7 +43,7 @@
     "@bower_components/moment": "moment/moment#2.22.2",
     "@bower_components/moment-timezone": "moment/moment-timezone#^0.5.23",
     "@bower_components/natural": "NaturalNode/natural#^1.0.9",
-    "@bower_components/ng-cordova-oauth": "mikepsinn/ng-cordova-oauth#c997b00092c5ba3fce25d23008b02d753c6aa07c",
+    "@bower_components/ng-cordova-oauth": "mikepsinn/ng-cordova-oauth#5dd456fb24df1edbad1c21ba6d2e00d8b6908538",
     "@bower_components/ng-file-upload": "danialfarid/angular-file-upload-bower#^12.2.13",
     "@bower_components/ng-material-floating-button": "nobitagit/ng-material-floating-button#^0.6.2",
     "@bower_components/ngCordova": "driftyco/ng-cordova#0.1.17-alpha",

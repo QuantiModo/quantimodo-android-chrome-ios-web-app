@@ -229,9 +229,10 @@
     sylvester ">= 0.0.12"
     underscore ">=1.3.1"
 
-"@bower_components/ng-cordova-oauth@mikepsinn/ng-cordova-oauth#c997b00092c5ba3fce25d23008b02d753c6aa07c":
+"@bower_components/ng-cordova-oauth@mikepsinn/ng-cordova-oauth#5dd456fb24df1edbad1c21ba6d2e00d8b6908538":
   version "0.2.10"
-  resolved "https://codeload.github.com/mikepsinn/ng-cordova-oauth/tar.gz/c997b00092c5ba3fce25d23008b02d753c6aa07c"
+  uid "5dd456fb24df1edbad1c21ba6d2e00d8b6908538"
+  resolved "https://codeload.github.com/mikepsinn/ng-cordova-oauth/tar.gz/5dd456fb24df1edbad1c21ba6d2e00d8b6908538"
   dependencies:
     angular "1.5.7"
 
