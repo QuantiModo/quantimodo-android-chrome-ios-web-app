@@ -185,9 +185,10 @@
   dependencies:
     highcharts "^5.0.9"
 
-"@bower_components/highcharts@highcharts/highcharts-dist#5.0.14":
-  version "5.0.14"
-  resolved "https://codeload.github.com/highcharts/highcharts-dist/tar.gz/4f89cf3f98a557a9512f7ba63f727998d21f3b79"
+"@bower_components/highcharts@highcharts/highcharts-dist#v7.0.3":
+  version "7.0.3"
+  uid ef21e56472fcf6281b9f985f2257402b048410df
+  resolved "https://codeload.github.com/highcharts/highcharts-dist/tar.gz/ef21e56472fcf6281b9f985f2257402b048410df"
 
 "@bower_components/ionic-datepicker@rajeshwarpatlolla/ionic-datepicker#~1.1.0":
   version "1.1.0"
