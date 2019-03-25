@@ -111,16 +111,17 @@
   version "3.3.7"
   resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/0b9c4a4007c44201dce9a6cc1a38407005c26c86"
 
-"@bower_components/bugsnag@bugsnag/bugsnag-js#4.6.0":
-  version "4.6.0"
-  resolved "https://codeload.github.com/bugsnag/bugsnag-js/tar.gz/c54cf09057b7b7729aac593fb4600704d3e96414"
+"@bower_components/bugsnag@bugsnag/bugsnag-js#v4.7.3":
+  version "4.7.3"
+  uid "7071fe484c6650f1731c2b99c5af368c18bf16a6"
+  resolved "https://codeload.github.com/bugsnag/bugsnag-js/tar.gz/7071fe484c6650f1731c2b99c5af368c18bf16a6"
   dependencies:
     "@bugsnag/cuid" "^3.0.0"
     "@bugsnag/safe-json-stringify" "^2.1.0"
     browserify-versionify "^1.0.6"
-    error-stack-parser "^2.0.1"
+    error-stack-parser "^2.0.2"
     iserror "0.0.2"
-    stack-generator "github:bengourley/stack-generator#190a6f500cfc4a9ef77db204b4f571964e39c3d8"
+    stack-generator "^2.0.3"
 
 "@bower_components/chat-engine-online-user-search@pubnub/chat-engine-online-user-search#^0.0.8":
   version "0.0.8"
@@ -1192,7 +1193,7 @@ errno@~0.1.1:
   dependencies:
     prr "~1.0.1"
 
-error-stack-parser@^2.0.1:
+error-stack-parser@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/error-stack-parser/-/error-stack-parser-2.0.2.tgz#4ae8dbaa2bf90a8b450707b9149dcabca135520d"
   integrity sha512-E1fPutRDdIj/hohG0UpT5mayXNCxXP9d+snxFsPU9X0XgccOumKraa3juDMwTUyi7+Bu5+mCGagjg4IYeNbOdw==
@@ -2585,9 +2586,10 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
-"stack-generator@github:bengourley/stack-generator#190a6f500cfc4a9ef77db204b4f571964e39c3d8":
-  version "2.0.2"
-  resolved "https://codeload.github.com/bengourley/stack-generator/tar.gz/190a6f500cfc4a9ef77db204b4f571964e39c3d8"
+stack-generator@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/stack-generator/-/stack-generator-2.0.3.tgz#bb74385c67ffc4ccf3c4dee5831832d4e509c8a0"
+  integrity sha512-kdzGoqrnqsMxOEuXsXyQTmvWXZmG0f3Ql2GDx5NtmZs59sT2Bt9Vdyq0XdtxUi58q/+nxtbF9KOQ9HkV1QznGg==
   dependencies:
     stackframe "^1.0.4"
 
