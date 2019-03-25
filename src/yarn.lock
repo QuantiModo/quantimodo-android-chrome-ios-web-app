@@ -178,11 +178,10 @@
   version "1.19.1"
   resolved "https://codeload.github.com/greensock/GreenSock-JS/tar.gz/40028af1a0e7fe534b2e238a47f6caadf40a5b68"
 
-"@bower_components/highcharts-ng@pablojim/highcharts-ng#1.1.0":
-  version "1.1.0"
-  resolved "https://codeload.github.com/pablojim/highcharts-ng/tar.gz/477b05cb1963553c644a7c4121118b662cd3d224"
-  dependencies:
-    highcharts "^5.0.9"
+"@bower_components/highcharts-ng@pablojim/highcharts-ng#1.2.1":
+  version "1.2.1"
+  uid f8c94a34ba00d1f470bd97e0d62d62ca34549132
+  resolved "https://codeload.github.com/pablojim/highcharts-ng/tar.gz/f8c94a34ba00d1f470bd97e0d62d62ca34549132"
 
 "@bower_components/highcharts@highcharts/highcharts-dist#5.0.14":
   version "5.0.14"
@@ -1484,11 +1483,6 @@ has-unicode@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha1-4Ob+aijPUROIVeCG0Wkedx3iqLk=
-
-highcharts@^5.0.9:
-  version "5.0.15"
-  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-5.0.15.tgz#a9af11538a85b85f300e66f7a0e048a7ef8ab381"
-  integrity sha512-+LTe57ntLyWgkjsHzLmvRspM3FVKtds7iDswOTwuTAmZD3FtG1I/DqHiVSRjX92RQmQMZ1M7dcoRb7T648m1xA==
 
 http-errors@1.6.3:
   version "1.6.3"
