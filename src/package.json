@@ -40,7 +40,7 @@
     "@bower_components/Ionicons": "driftyco/ionicons#^2.0.1",
     "@bower_components/jquery": "jquery/jquery-dist#~2.1.4",
     "@bower_components/localforage": "mozilla/localForage#^1.5.6",
-    "@bower_components/moment": "moment/moment#2.22.2",
+    "@bower_components/moment": "moment/moment#2.24.0",
     "@bower_components/moment-timezone": "moment/moment-timezone#^0.5.23",
     "@bower_components/natural": "NaturalNode/natural#^1.0.9",
     "@bower_components/ng-cordova-oauth": "mikepsinn/ng-cordova-oauth#c997b00092c5ba3fce25d23008b02d753c6aa07c",
