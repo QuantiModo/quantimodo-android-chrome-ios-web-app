@@ -99,9 +99,10 @@
   dependencies:
     angular "*"
 
-"@bower_components/angular@angular/bower-angular#1.5.9":
-  version "1.5.9"
-  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/b0ef53cc950305cb5cae49e6c69c673e4da8a63b"
+"@bower_components/angular@angular/bower-angular#v1.7.8":
+  version "1.7.8"
+  uid "56690b5e545ad36d04e369a65171de1adbe3ce64"
+  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/56690b5e545ad36d04e369a65171de1adbe3ce64"
 
 "@bower_components/annyang@TalAter/annyang#^2.6.1":
   version "2.6.1"
