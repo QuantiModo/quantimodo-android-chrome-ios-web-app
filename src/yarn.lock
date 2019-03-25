@@ -20,9 +20,10 @@
   version "1.5.9"
   resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/0fc827eb7723b82d9db2415ccc68d453673103cb"
 
-"@bower_components/angular-aria@angular/bower-angular-aria#1.5.9":
-  version "1.5.9"
-  resolved "https://codeload.github.com/angular/bower-angular-aria/tar.gz/ae7ad8b3766264d91a5de60d7dca73365388a556"
+"@bower_components/angular-aria@angular/bower-angular-aria#v1.7.8":
+  version "1.7.8"
+  uid bf2348e7645347a160681d442a538f25ada0d307
+  resolved "https://codeload.github.com/angular/bower-angular-aria/tar.gz/bf2348e7645347a160681d442a538f25ada0d307"
 
 "@bower_components/angular-cache@jmdobry/angular-cache#^4.6.0":
   version "4.6.0"
