@@ -16,9 +16,10 @@
   version "0.0.0"
   resolved "https://codeload.github.com/driftyco/ionicons/tar.gz/ecb4b806831005c25b97ed9089fbb1d7dcc0879c"
 
-"@bower_components/angular-animate@angular/bower-angular-animate#1.5.9":
-  version "1.5.9"
-  resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/0fc827eb7723b82d9db2415ccc68d453673103cb"
+"@bower_components/angular-animate@angular/bower-angular-animate#v1.7.8":
+  version "1.7.8"
+  uid "1e182b37089bf7f9bb1993a25e00475cb028d4ad"
+  resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/1e182b37089bf7f9bb1993a25e00475cb028d4ad"
 
 "@bower_components/angular-aria@angular/bower-angular-aria#1.5.9":
   version "1.5.9"
