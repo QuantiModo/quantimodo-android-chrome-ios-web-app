@@ -60,6 +60,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             if(message){
                 qmService.showMaterialAlert(decodeURIComponent(message), "You should begin seeing your imported data within an hour or so.")
             }
+            updateNavigationMenuButton();
         });
         function userCanConnect(connector){
             if(!$rootScope.user){
@@ -498,4 +499,30 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     qmService.hideLoader();
                 });
         };
+        function updateNavigationMenuButton(){
+            $timeout(function(){
+                qmService.rootScope.setShowActionSheetMenu(function(){
+                    // Show the action sheet
+                    var hideSheet = $ionicActionSheet.show({
+                        buttons: [
+                            qmService.actionSheets.actionSheetButtons.refresh,
+                            qmService.actionSheets.actionSheetButtons.settings
+                        ],
+                        cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                        cancel: function(){
+                            qmLogService.debug('CANCELLED', null);
+                        },
+                        buttonClicked: function(index, button){
+                            if(index === 0){
+                                $scope.refreshConnectors();
+                            }
+                            if(index === 1){
+                                qmService.goToState(qm.stateNames.settings);
+                            }
+                            return true;
+                        }
+                    });
+                });
+            }, 1);
+        }
     }]);
