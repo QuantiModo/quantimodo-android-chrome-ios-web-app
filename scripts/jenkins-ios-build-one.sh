@@ -21,6 +21,7 @@ fastlane add_plugin upgrade_super_old_xcode_project
 fastlane add_plugin cordova
 fastlane add_plugin ionic
 cordova plugin rm cordova-plugin-console --save
+cordova plugin rm cordova-plugin-mauron85-background-geolocation --save
 cordova platform rm ios
 cordova platform add ios@4.5.2
 if [[ ${BRANCH_NAME} = *"develop"* || ${BRANCH_NAME} = *"master"* ]];
