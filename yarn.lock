@@ -8520,10 +8520,10 @@ qs@~6.4.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
   integrity sha1-E+JtKK1rD/qpExLNO/cI7TUecjM=
 
-quantimodo@5.10.20315:
-  version "5.10.20315"
-  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.10.20315.tgz#5654aba5760a0bf6cc84a668dc7ee951d5bf72a6"
-  integrity sha512-ys/5cqmlKdEBTwklCzypiNyBraMfoMGLf3GLV1kjKh4ZVxY+iE7BhrXUhZxP+cbYFj0OuIdeMc6INpMWNR4QUA==
+quantimodo@5.10.32613:
+  version "5.10.32613"
+  resolved "https://registry.yarnpkg.com/quantimodo/-/quantimodo-5.10.32613.tgz#5396ef4a1d8d5f564efbd7c90c5ef2d1f3446e6c"
+  integrity sha512-Nvo7D+E7yIaj2T4b5cMbPMwVCOvQg0mCKZLKg/dyPkzSLH0WnpkrHriW+LVxAM9nR4J3jKcZRDlYii0w99+Crw==
   dependencies:
     superagent "3.8.3"
 
