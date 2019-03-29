@@ -562,6 +562,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }else{
                 qmLogService.debug('selecting_unit', null, $scope.state.trackingReminder.unitAbbreviatedName);
                 $scope.state.trackingReminder = qm.unitHelper.updateAllUnitPropertiesOnObject($scope.state.trackingReminder.unitAbbreviatedName, $scope.state.trackingReminder);
+                $scope.state.trackingReminder.defaultValue = null;
             }
             setHideDefaultValueField();
         };
