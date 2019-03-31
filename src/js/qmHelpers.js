@@ -427,6 +427,9 @@ var qm = {
             if(!clientId){
                 clientId = qm.urlHelper.getParam('quantimodoClientId');
             }
+            if(clientId && clientId === "web"){
+                clientId === null;
+            }
             if(clientId){
                 qm.storage.setItem('clientId', clientId);
             }
