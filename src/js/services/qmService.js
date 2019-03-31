@@ -6621,7 +6621,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.postCreditCardDeferred = function(body){
             var deferred = $q.defer();
             qmService.recordUpgradeProductPurchase(body.productId, null, 1);
-            qmService.showBlackRingLoader();
+            qmService.showBlackRingLoader(30);
+            qmService.showInfoToast("Thank you! One moment please...", 30);
             function upgradeErrorHandler(response){
                 qmLog.error("Upgrade failed", null, response);
                 var message = 'Please try again or contact mike@quantimo.do for help.';
