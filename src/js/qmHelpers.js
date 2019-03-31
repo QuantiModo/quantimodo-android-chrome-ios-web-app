@@ -869,7 +869,14 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
-            var appSettings = qm.globalHelper.getItem(qm.items.appSettings) || qm.staticData.appSettings;
+            var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
+            if(!appSettings){
+                if(!qm.staticData){
+                    qm.qmLog.error("qm.staticData not set!");
+                    return false;
+                }
+                appSettings = qm.staticData.appSettings;
+            }
             var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
             if(!clientId || clientId.toLowerCase() === appSettings.clientId.toLowerCase()){ // For some reason clientId from url is lowercase sometimes
                 return appSettings;
