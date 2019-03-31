@@ -58,10 +58,12 @@ window.qm.chrome = {
             });
         }
         if(windowParams.url.indexOf('.quantimo.do') !== -1 || windowParams.url.indexOf('popup.html') !== -1){
+            qm.urlHelper.validateUrl(windowParams.url);
             createPopup(windowParams);
         }else{
             qm.client.getClientWebsiteUrl(function(fullWebsiteUrl){
-                windowParams.url = fullWebsiteUrl + windowParams.url;
+                //windowParams.url = fullWebsiteUrl + windowParams.url;
+                windowParams.url = qm.urlHelper.appendPathToUrl(fullWebsiteUrl, windowParams.url);
                 createPopup(windowParams);
             })
         }
