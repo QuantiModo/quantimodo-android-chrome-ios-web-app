@@ -3799,14 +3799,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        var setupGoogleAnalytics = function(user){
-            if(!qm.getAppSettings()){
+        var setupGoogleAnalytics = function(user, appSettings){
+            if(!appSettings){appSettings = qm.getAppSettings();}
+            if(!appSettings){
                 qmLog.errorAndExceptionTestingOrDevelopment("No appSettings for googleAnalyticsTrackingIds");
                 return;
             }
-            if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds){
+            var additionalSettings = appSettings.additionalSettings;
+            if(additionalSettings && additionalSettings.googleAnalyticsTrackingIds){
                 if(typeof Analytics !== "undefined"){
-                    Analytics.configuration.accounts[0].tracker = qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps;
+                    Analytics.configuration.accounts[0].tracker = additionalSettings.googleAnalyticsTrackingIds.endUserApps;
                 }
             }else{
                 qmLog.error("No qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
@@ -3818,14 +3820,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 Analytics.set('&uid', user.id);
             }
             Analytics.set('&ds', qm.platform.getCurrentPlatform());
-            Analytics.set('&cn', qm.getAppSettings().appDisplayName);
-            Analytics.set('&cs', qm.getAppSettings().appDisplayName);
+            Analytics.set('&cn', appSettings.appDisplayName);
+            Analytics.set('&cs', appSettings.appDisplayName);
             Analytics.set('&cm', qm.platform.getCurrentPlatform());
-            Analytics.set('&an', qm.getAppSettings().appDisplayName);
-            if(qm.getAppSettings().additionalSettings && qm.getAppSettings().additionalSettings.appIds && qm.getAppSettings().additionalSettings.appIds.googleReversedClientId){
-                Analytics.set('&aid', qm.getAppSettings().additionalSettings.appIds.googleReversedClientId);
+            Analytics.set('&an', appSettings.appDisplayName);
+            if(additionalSettings && additionalSettings.appIds && additionalSettings.appIds.googleReversedClientId){
+                Analytics.set('&aid', additionalSettings.appIds.googleReversedClientId);
             }
-            Analytics.set('&av', qm.getAppSettings().versionNumber);
+            Analytics.set('&av', appSettings.versionNumber);
             // Register a custom dimension for the default, unnamed account object
             // e.g., ga('set', 'dimension1', 'Paid');
             Analytics.set('dimension1', 'Paid');
@@ -7492,7 +7494,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
             qmService.backgroundGeolocationStartIfEnabled();
             qmLog.setupBugsnag();
-            setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
+            setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage(), appSettings);
             qmService.navBar.hideNavigationMenuIfHideUrlParamSet();
             qmService.scheduleSingleMostFrequentLocalNotification();
             if(qm.urlHelper.getParam('finish_url')){
