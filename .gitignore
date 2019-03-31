@@ -126,3 +126,4 @@ src/data/apiai/
 src/data/commits/
 tmp/
 sh.exe.stackdump
+.vscode/launch.json
