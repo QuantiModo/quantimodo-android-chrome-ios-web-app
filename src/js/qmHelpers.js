@@ -288,6 +288,7 @@ var qm = {
             delete urlParams.excludeLocal;  // Used locally only
             if(typeof urlParams === "string"){
                 url = urlParams;
+                qm.urlHelper.validateUrl(url);
                 urlParams = {};
             }
             if(qm.appsManager.getAppSettingsFromMemory()){
@@ -7918,6 +7919,11 @@ var qm = {
                 return updated;
             }
         },
+        chrome: {
+            testPopupWindow: function(){
+                qm.chrome.createPopup(qm.chrome.windowParams.introWindowParams);
+            }
+        },
         urlHelper: {
             testGetQueryParamsFromQueryBeforeHash: function(){
                 var url = 'https://dev-web.quantimo.do/?clientId=preve-wellness-tracker#/app/onboarding';
@@ -8175,9 +8181,19 @@ var qm = {
         }
     },
     urlHelper: {
+        validateUrl: function(url){
+            if(url.indexOf('index.html') !== -1 && url.indexOf('/index.html') === -1){
+                console.trace();
+                e = new Error();
+                console.error(e.stack);
+                throw "url should not be "+ url;
+            }
+        },
         addUrlQueryParamsToUrlString: function(params, url){
+            qm.urlHelper.validateUrl(url);
             if(!url){
                 url = qm.urlHelper.getCurrentUrl();
+                qm.urlHelper.validateUrl(url);
             }
             var previousParams = qm.urlHelper.getQueryParams(url); // Avoid duplicates
             params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, previousParams, false);
@@ -8196,6 +8212,7 @@ var qm = {
                     }
                 }
             }
+            qm.urlHelper.validateUrl(url);
             return url;
         },
         addUrlParamsToObject: function(state){

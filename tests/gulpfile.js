@@ -526,3 +526,6 @@ gulp.task('trigger-jenkins', function() {
         throw err;
     });
 });
+gulp.task('chrome-tests', function(callback) {
+    qmTests.runAllTestsForType('chrome', callback);
+});
