@@ -7449,6 +7449,21 @@ var qm = {
                 return true;
             }
             return sentence.indexOf(" " + word + " ") !== -1;
+        },
+        getFirstCharacter: function(string){
+            return string.charAt(0);
+        },
+        getLastCharacter: function(string){
+            return string[string.length - 1];
+        },
+        removeLastCharacter: function(string){
+            return string.substring(0, string.length - 1);
+        },
+        getFirstCharacter: function(string){
+            while(string.charAt(0) === '0'){
+                string = string.substr(1);
+            }
+            return string;
         }
     },
     studyHelper: {
@@ -8181,6 +8196,27 @@ var qm = {
         }
     },
     urlHelper: {
+        appendPathToUrl: function(baseUrl, pathToAppend){
+            var params = {};
+            if(baseUrl.indexOf('?') !== -1){
+                params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(qm.urlHelper.getQueryParams(baseUrl), params, false);
+                baseUrl = qm.stringHelper.getStringBeforeSubstring('?', baseUrl);
+            }
+            if(pathToAppend.indexOf('?') !== -1){
+                params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(qm.urlHelper.getQueryParams(pathToAppend), params, false);
+                pathToAppend = qm.stringHelper.getStringBeforeSubstring('?', pathToAppend);
+            }
+            if(qm.stringHelper.getLastCharacter(baseUrl) === '/'){
+                baseUrl = qm.stringHelper.removeLastCharacter(baseUrl);
+            }
+            if(qm.stringHelper.getFirstCharacter(pathToAppend) === '/'){
+                pathToAppend = qm.stringHelper.removeFirstCharacter(pathToAppend);
+            }
+            var fullUrl = baseUrl + '/' + pathToAppend;
+            fullUrl = qm.urlHelper.addUrlQueryParamsToUrlString(params, fullUrl);
+            qm.urlHelper.validateUrl(fullUrl);
+            return fullUrl;
+        },
         validateUrl: function(url){
             if(url.indexOf('index.html') !== -1 && url.indexOf('/index.html') === -1){
                 console.trace();

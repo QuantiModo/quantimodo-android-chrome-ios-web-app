@@ -62,7 +62,8 @@ window.qm.chrome = {
             createPopup(windowParams);
         }else{
             qm.client.getClientWebsiteUrl(function(fullWebsiteUrl){
-                windowParams.url = fullWebsiteUrl + windowParams.url;
+                //windowParams.url = fullWebsiteUrl + windowParams.url;
+                windowParams.url = qm.urlHelper.appendPathToUrl(fullWebsiteUrl, windowParams.url);
                 createPopup(windowParams);
             })
         }
