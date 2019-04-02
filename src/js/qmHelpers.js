@@ -104,10 +104,12 @@ var qm = {
             }
             var urlParm = qm.urlHelper.getParam('physicianMode');
             if(urlParm !== null){qm.storage.setItem('physicianMode', urlParm);}
-            return window.location.href.indexOf('app/physician') !== -1 ||
+            var isPhysicianMode = window.location.href.indexOf('app/physician') !== -1 ||
                 qm.storage.getItem('physicianMode') ||
                 qm.urlHelper.indexOfCurrentUrl('physician-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('physician.quantimo') !== -1;
+            if(isPhysicianMode){window.designMode = false;}
+            return isPhysicianMode;
         },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
