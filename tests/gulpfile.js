@@ -113,6 +113,17 @@ var qmTests = {
             assert(units.length > 5);
             if(callback){callback();}
         },
+        getUsersTest: function(callback){
+            qm.storage.setItem(qm.items.accessToken, process.env.QUANTIMODO_ACCESS_TOKEN);
+            qm.storage.setItem(qm.items.apiUrl, 'local.quantimo.do');
+            qm.userHelper.getUsersFromApi(function(users){
+                qmLog.debug("users:", users);
+                assert(users.length > 0);
+                if(callback){callback();}
+            }, function(error){
+                throw error;
+            });
+        },
         rememberIntentTest: function(callback){
             var userInput = "Remember where my keys are";
             var expectedIntentName = 'Remember Intent';
@@ -393,6 +404,12 @@ gulp.task('test-get-units', function(callback) {
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.getUnitsTest(callback);
+});
+gulp.task('test-get-users', function(callback) {
+    qm.currentTask = this.currentTask.name;
+    qmTests.getStaticData();
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
+    qmTests.tests.getUsersTest(callback);
 });
 gulp.task('unit-tests', function(callback) {
     qm.currentTask = this.currentTask.name;

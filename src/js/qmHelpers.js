@@ -1708,6 +1708,7 @@ var qm = {
             qm.api.configureClient('deleteAllAccessTokens');
         },
         deleteAllCookies: function(){
+            if(typeof document === "undefined"){return;}
             qm.qmLog.info("Deleting all cookies...");
             var cookies = document.cookie.split(";");
             for(var i = 0; i < cookies.length; i++){
@@ -8716,7 +8717,21 @@ var qm = {
                 qm.qmLog.info("userIsOlderThanXSeconds: User is " + ageInSeconds + " seconds old. createdAt: " + user.userRegistered);
                 callback(ageInSeconds > secondsCutoff);
             });
-        }
+        },
+        getUsersFromApi: function(userSuccessHandler, errorHandler, params){
+            qm.api.configureClient(arguments.callee.name);
+            var apiInstance = new qm.Quantimodo.UserApi();
+            //params.includeAuthorizedClients = true;  // To big for $rootScope!
+            //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getUsers(params, function(error, user, response){
+                qm.api.generalResponseHandler(error, user, response, function(){
+                    if(user){
+                        userSuccessHandler(user);
+                    }
+                }, errorHandler, params, 'getUsersFromApi');
+            });
+        },
     },
     commonVariablesHelper: {
         getFromLocalStorage: function(requestParams, successHandler, errorHandler){
