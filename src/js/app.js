@@ -214,16 +214,10 @@ angular.module('starter',
             ionicDatePickerProvider.configDatePicker(datePickerObj);
             if(qm.appMode.isPhysicianMode()){
                 $stateProvider.state("app", {
-                    "name": "",
-                    "url": "^",
-                    "views": null,
-                    "abstract": true
-                });
-                $stateProvider.state("app", {
                     "url": "/app",
                     "templateUrl": "templates/menu.html",
                     "controller": "AppCtrl",
-                    "resolve": {},
+                    "resolve": config_resolver,
                     "name": "app"
                 });
                 $stateProvider.state("app.login", {
