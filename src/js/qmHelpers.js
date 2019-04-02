@@ -98,6 +98,17 @@ var qm = {
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
+        isPhysicianMode: function(){
+            if(typeof window === "undefined"){
+                return false;
+            }
+            var urlParm = qm.urlHelper.getParam('physicianMode');
+            if(urlParm !== null){qm.storage.setItem('physicianMode', urlParm);}
+            return window.location.href.indexOf('app/physician') !== -1 ||
+                qm.storage.getItem('physicianMode') ||
+                qm.urlHelper.indexOfCurrentUrl('physician-index.html') !== -1 ||
+                qm.urlHelper.indexOfCurrentUrl('physician.quantimo') !== -1;
+        },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
         },

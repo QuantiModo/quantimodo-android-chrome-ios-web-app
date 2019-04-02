@@ -212,22 +212,69 @@ angular.module('starter',
                 closeOnSelect: false
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
-            qm.staticData.states.forEach(function(state){
-                if(state.name === ''){
-                    return;
-                }
-                if(state.name === 'app'){
-                    state.resolve = config_resolver;
-                }
-                var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
-                if(isBuilderState && !isBuilderMode){
-                    return;
-                }
-                if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
-                    state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
-                }
-                $stateProvider.state(state.name, state);
-            });
+            if(qm.appMode.isPhysicianMode()){
+                $stateProvider.state("app", {
+                    "name": "",
+                    "url": "^",
+                    "views": null,
+                    "abstract": true
+                });
+                $stateProvider.state("app", {
+                    "url": "/app",
+                    "templateUrl": "templates/menu.html",
+                    "controller": "AppCtrl",
+                    "resolve": {},
+                    "name": "app"
+                });
+                $stateProvider.state("app.login", {
+                    "url": "/login",
+                    "params": {
+                        "fromState": null,
+                        "fromUrl": null,
+                        "title": "Login",
+                        "ionIcon": "ion-log-in"
+                    },
+                    "views": {
+                        "menuContent": {
+                            "templateUrl": "templates/login-page.html",
+                            "controller": "LoginCtrl"
+                        }
+                    },
+                    "name": "app.login"
+                });
+                $stateProvider.state("app.physician", {
+                    "cache": true,
+                    "url": "/physician",
+                    "params": {
+                        "title": "Physician Dashboard",
+                        "ionIcon": "ion-medkit"
+                    },
+                    "views": {
+                        "menuContent": {
+                            "templateUrl": "builder-templates/physician.html",
+                            "controller": "PhysicianCtrl"
+                        }
+                    },
+                    "name": "app.physician"
+                });
+            } else {
+                qm.staticData.states.forEach(function(state){
+                    if(state.name === ''){
+                        return;
+                    }
+                    if(state.name === 'app'){
+                        state.resolve = config_resolver;
+                    }
+                    var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
+                    if(isBuilderState && !isBuilderMode){
+                        return;
+                    }
+                    if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
+                        state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
+                    }
+                    $stateProvider.state(state.name, state);
+                });
+            }
             function setFallbackRoute(){
                 if(qm.appMode.isBuilder()){
                     $urlRouterProvider.otherwise('/app/configuration');
