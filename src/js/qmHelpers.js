@@ -98,6 +98,19 @@ var qm = {
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
+        isPhysicianMode: function(){
+            if(typeof window === "undefined"){
+                return false;
+            }
+            var urlParm = qm.urlHelper.getParam('physicianMode');
+            if(urlParm !== null){qm.storage.setItem('physicianMode', urlParm);}
+            var isPhysicianMode = window.location.href.indexOf('app/physician') !== -1 ||
+                qm.storage.getItem('physicianMode') ||
+                qm.urlHelper.indexOfCurrentUrl('physician-index.html') !== -1 ||
+                qm.urlHelper.indexOfCurrentUrl('physician.quantimo') !== -1;
+            if(isPhysicianMode){window.designMode = false;}
+            return isPhysicianMode;
+        },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
         },
@@ -5841,6 +5854,9 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl("://localhost:") !== -1;
         },
         isDesignMode: function(){
+            if(qm.appMode.isPhysicianMode()){
+                return false;
+            }
             if(!qm.platform.getWindow()){
                 return false;
             }
