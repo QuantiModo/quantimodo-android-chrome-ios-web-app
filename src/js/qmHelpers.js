@@ -5852,6 +5852,9 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl("://localhost:") !== -1;
         },
         isDesignMode: function(){
+            if(qm.appMode.isPhysicianMode()){
+                return false;
+            }
             if(!qm.platform.getWindow()){
                 return false;
             }
