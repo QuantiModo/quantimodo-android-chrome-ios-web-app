@@ -270,7 +270,9 @@ angular.module('starter',
                 });
             }
             function setFallbackRoute(){
-                if(qm.appMode.isBuilder()){
+                if(qm.appMode.isPhysicianMode()){
+                    $urlRouterProvider.otherwise('/app/physician');
+                } else if(qm.appMode.isBuilder()){
                     $urlRouterProvider.otherwise('/app/configuration');
                 }else if(!qm.storage.getItem(qm.items.introSeen)){
                     $urlRouterProvider.otherwise('/app/intro');
