@@ -887,6 +887,9 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
+            if(qm.appMode.isPhysicianMode() && qm.staticData){
+                return qm.staticData.appSettings;
+            }
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
             if(!appSettings){
                 if(!qm.staticData){
