@@ -3585,7 +3585,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         };
         function getDefaultState(){
-            if(qm.appMode.isPhysicianMode()){
+            if(qm.appMode.isPhysician()){
                 return 'app.physician';
             }
             if(window.designMode){
