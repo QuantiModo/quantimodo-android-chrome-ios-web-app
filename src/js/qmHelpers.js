@@ -829,8 +829,13 @@ var qm = {
             if(qm.clientSecret){
                 return qm.clientSecret;
             }
-            if(qm.getAppSettings().clientSecret){
-                return qm.getAppSettings().clientSecret;
+            var appSettings = qm.getAppSettings();
+            if(!appSettings){
+                qm.qmLog.error("No appSettings!");
+                appSettings = qm.getAppSettings();
+            }
+            if(appSettings && appSettings.clientSecret){
+                return appSettings.clientSecret;
             }
             if(!qm.privateConfig){
                 if(qm.urlHelper.indexOfCurrentUrl('quantimo.do') === -1){
