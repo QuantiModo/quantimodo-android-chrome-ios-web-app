@@ -829,8 +829,13 @@ var qm = {
             if(qm.clientSecret){
                 return qm.clientSecret;
             }
-            if(qm.getAppSettings().clientSecret){
-                return qm.getAppSettings().clientSecret;
+            var appSettings = qm.getAppSettings();
+            if(!appSettings){
+                qm.qmLog.error("No appSettings!");
+                appSettings = qm.getAppSettings();
+            }
+            if(appSettings && appSettings.clientSecret){
+                return appSettings.clientSecret;
             }
             if(!qm.privateConfig){
                 if(qm.urlHelper.indexOfCurrentUrl('quantimo.do') === -1){
@@ -882,6 +887,9 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
+            if(qm.appMode.isPhysicianMode() && qm.staticData){
+                return qm.staticData.appSettings;
+            }
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
             if(!appSettings){
                 if(!qm.staticData){
