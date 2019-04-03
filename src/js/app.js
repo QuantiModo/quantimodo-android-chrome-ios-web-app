@@ -138,7 +138,6 @@ angular.module('starter',
                  //, $opbeatProvider
         ){
             //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
-            var isBuilderMode = window.designMode = qm.appMode.isBuilder();
             if(qm.urlHelper.getParam(qm.items.apiUrl)){
                 qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));
             }
@@ -212,47 +211,7 @@ angular.module('starter',
                 closeOnSelect: false
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
-            if(qm.appMode.isPhysicianMode()){
-                $stateProvider.state("app", {
-                    "url": "/app",
-                    "templateUrl": "templates/menu.html",
-                    "controller": "AppCtrl",
-                    "resolve": config_resolver,
-                    "name": "app"
-                });
-                $stateProvider.state("app.login", {
-                    "url": "/login",
-                    "params": {
-                        "fromState": null,
-                        "fromUrl": null,
-                        "title": "Login",
-                        "ionIcon": "ion-log-in"
-                    },
-                    "views": {
-                        "menuContent": {
-                            "templateUrl": "templates/login-page.html",
-                            "controller": "LoginCtrl"
-                        }
-                    },
-                    "name": "app.login"
-                });
-                $stateProvider.state("app.physician", {
-                    "cache": true,
-                    "url": "/physician",
-                    "params": {
-                        "title": "Physician Dashboard",
-                        "ionIcon": "ion-medkit"
-                    },
-                    "views": {
-                        "menuContent": {
-                            "templateUrl": "builder-templates/physician.html",
-                            "controller": "PhysicianCtrl"
-                        }
-                    },
-                    "name": "app.physician"
-                });
-            } else {
-                qm.staticData.states.forEach(function(state){
+            qm.staticData.states.forEach(function(state){
                     if(state.name === ''){
                         return;
                     }
@@ -260,7 +219,11 @@ angular.module('starter',
                         state.resolve = config_resolver;
                     }
                     var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
-                    if(isBuilderState && !isBuilderMode){
+                    if(isBuilderState && !qm.appMode.isBuilder()){
+                        return;
+                    }
+                    var isPhysicianState = state.views && state.views.menuContent.templateUrl.indexOf('physician') !== -1;
+                    if(isPhysicianState && !qm.appMode.isPhysician()){
                         return;
                     }
                     if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
@@ -268,9 +231,8 @@ angular.module('starter',
                     }
                     $stateProvider.state(state.name, state);
                 });
-            }
             function setFallbackRoute(){
-                if(qm.appMode.isPhysicianMode()){
+                if(qm.appMode.isPhysician()){
                     $urlRouterProvider.otherwise('/app/physician');
                 } else if(qm.appMode.isBuilder()){
                     $urlRouterProvider.otherwise('/app/configuration');
