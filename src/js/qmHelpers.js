@@ -98,18 +98,18 @@ var qm = {
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
-        isPhysicianMode: function(){
+        isPhysician: function(){
             if(typeof window === "undefined"){
                 return false;
             }
             var urlParm = qm.urlHelper.getParam('physicianMode');
             if(urlParm !== null){qm.storage.setItem('physicianMode', urlParm);}
-            var isPhysicianMode = window.location.href.indexOf('app/physician') !== -1 ||
+            var isPhysician = window.location.href.indexOf('app/physician') !== -1 ||
                 qm.storage.getItem('physicianMode') ||
                 qm.urlHelper.indexOfCurrentUrl('physician-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('physician.quantimo') !== -1;
-            if(isPhysicianMode){window.designMode = false;}
-            return isPhysicianMode;
+            if(isPhysician){window.designMode = false;}
+            return isPhysician;
         },
         isDebug: function(){
             return qm.qmLog.isDebugMode();
@@ -352,7 +352,7 @@ var qm = {
             return urlParams;
         },
         getClientIdFromBuilderQueryOrSubDomain: function(){
-            if(qm.appMode.isPhysicianMode()){return "physician";}
+            if(qm.appMode.isPhysician()){return "physician";}
             if(qm.appsManager.getBuilderClientId()){
                 return qm.clientId = qm.appsManager.getBuilderClientId();
             }
@@ -888,7 +888,7 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
-            //if(qm.appMode.isPhysicianMode() && qm.staticData){return qm.staticData.appSettings;}
+            //if(qm.appMode.isPhysician() && qm.staticData){return qm.staticData.appSettings;}
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
             if(!appSettings){
                 if(!qm.staticData){
@@ -5862,7 +5862,7 @@ var qm = {
             return qm.urlHelper.indexOfCurrentUrl("://localhost:") !== -1;
         },
         isDesignMode: function(){
-            if(qm.appMode.isPhysicianMode()){
+            if(qm.appMode.isPhysician()){
                 return false;
             }
             if(!qm.platform.getWindow()){
