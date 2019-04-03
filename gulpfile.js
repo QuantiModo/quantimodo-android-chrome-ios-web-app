@@ -157,7 +157,9 @@ var gulp = require('gulp');
 var q = require('q');
 var replace = require('gulp-string-replace');
 var runSequence = require('run-sequence');
-var s3Options = {accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY};
+var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
+var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
+var s3Options = {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY};
 var qmLog = {
     error: function (message, metaData, maxCharacters) {
         metaData = qmLog.addMetaData(metaData);
@@ -193,7 +195,7 @@ var qmLog = {
         if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
         message += objectString;
         if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
-        if(process.env.AWS_SECRET_ACCESS_KEY){message = message.replace(process.env.AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
+        if(AWS_SECRET_ACCESS_KEY){message = message.replace(AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
         if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
         if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
         message = qmLog.obfuscateString(message);
@@ -420,9 +422,7 @@ var qmGulp = {
         },
         chcpLogin: function (callback){
             if(!checkAwsEnvs()){throw "Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY";}
-            /** @namespace process.env.AWS_ACCESS_KEY_ID */
-            /** @namespace process.env.AWS_SECRET_ACCESS_KEY */
-            var string = '{"key": "' + process.env.AWS_ACCESS_KEY_ID + ' ", "secret": "' + process.env.AWS_SECRET_ACCESS_KEY +'"}';
+            var string = '{"key": "' + AWS_ACCESS_KEY_ID + ' ", "secret": "' + AWS_SECRET_ACCESS_KEY +'"}';
             return writeToFileWithCallback(paths.chcpLogin, string, callback);
         },
         getS3HostName: function(){
@@ -840,12 +840,12 @@ function uploadAppImagesToS3(filePath) {
     return uploadToS3(filePath);
 }
 function checkAwsEnvs() {
-    if(!process.env.AWS_ACCESS_KEY_ID){
-        qmLog.info("Please set environmental variable AWS_ACCESS_KEY_ID");
+    if(!AWS_ACCESS_KEY_ID){
+        qmLog.info("Please set environmental variable QM_AWS_ACCESS_KEY_ID");
         return false;
     }
-    if(!process.env.AWS_SECRET_ACCESS_KEY){
-        qmLog.info("Please set environmental variable AWS_SECRET_ACCESS_KEY");
+    if(!AWS_SECRET_ACCESS_KEY){
+        qmLog.info("Please set environmental variable QM_AWS_SECRET_ACCESS_KEY");
         return false;
     }
     return true;
