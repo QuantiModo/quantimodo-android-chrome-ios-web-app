@@ -352,6 +352,7 @@ var qm = {
             return urlParams;
         },
         getClientIdFromBuilderQueryOrSubDomain: function(){
+            if(qm.appMode.isPhysicianMode()){return "physician";}
             if(qm.appsManager.getBuilderClientId()){
                 return qm.clientId = qm.appsManager.getBuilderClientId();
             }
@@ -887,9 +888,7 @@ var qm = {
             });
         },
         getAppSettingsFromMemory: function(){
-            if(qm.appMode.isPhysicianMode() && qm.staticData){
-                return qm.staticData.appSettings;
-            }
+            //if(qm.appMode.isPhysicianMode() && qm.staticData){return qm.staticData.appSettings;}
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
             if(!appSettings){
                 if(!qm.staticData){
