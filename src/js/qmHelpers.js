@@ -8257,8 +8257,7 @@ var qm = {
                 url.indexOf('/index.html') === -1){
                 console.trace();
                 e = new Error();
-                console.errorAndExceptionTestingOrDevelopment(e.stack);
-                throw "url should not be "+ url;
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("url should not be "+ url, e.stack);
             }
         },
         addUrlQueryParamsToUrlString: function(params, url){
