@@ -8252,11 +8252,12 @@ var qm = {
             return fullUrl;
         },
         validateUrl: function(url){
-            if(url.indexOf('index.html') !== -1 && url.indexOf('/index.html') === -1){
+            if(url.indexOf('index.html') !== -1 &&
+                url.indexOf('2Findex.html') === -1 &&
+                url.indexOf('/index.html') === -1){
                 console.trace();
                 e = new Error();
-                console.error(e.stack);
-                throw "url should not be "+ url;
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("url should not be "+ url, e.stack);
             }
         },
         addUrlQueryParamsToUrlString: function(params, url){
