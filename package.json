@@ -10,7 +10,7 @@
     "angular-mocks": "1.7.7",
     "compromise": "11.13.2",
     "ghost-inspector": "3.0.1",
-    "jasmine-core": "3.3.0",
+    "jasmine-core": "3.4.0",
     "karma": "4.0.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "2.0.1",
