@@ -8526,12 +8526,18 @@ var qm = {
             }
             return window.location.origin + window.location.pathname;
         },
-        goToUrl: function(url, reason){
+        goToUrl: function(url, reason, newTab){
             if(!qm.platform.getWindow()){
                 return false;
             }
+            if(url.indexOf('mailto') !== -1){ newTab = true; }
             qm.qmLog.info("Going to " + url + " because " + reason);
-            window.location.href = url;
+            if(newTab){
+                var win = window.open(url, '_blank');
+                win.focus();
+            } else {
+                window.location.href = url;
+            }
         },
         getCurrentUrl: function(){
             if(!qm.platform.getWindow()){
