@@ -18,6 +18,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qm.notifications.postNotifications();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
+                qm.chatButton.setChatButtonZIndex();
             });
             $scope.$on('$ionicView.beforeLeave', function(e){
                 qmService.stateHelper.previousUrl = window.location.href;
