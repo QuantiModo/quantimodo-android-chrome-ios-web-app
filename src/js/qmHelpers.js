@@ -1927,6 +1927,16 @@ var qm = {
             }
         }
     },
+    chatButton: {
+        setChatButtonZIndex: function(){
+            setTimeout(function(){
+                //var x = document.getElementById("zsiq_float");
+                var x = document.querySelector('body > div.zsiq_custommain.siq_bR');
+                //x.style.zIndex = "10 !important";
+                x.setAttribute('style', 'z-index: 10 !important');
+            }, 5000)
+        }
+    },
     client: {
         getClientWebsiteUrl: function(successHandler, partialPath){
             if(!partialPath){
