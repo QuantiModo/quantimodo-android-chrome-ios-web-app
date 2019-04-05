@@ -1933,8 +1933,8 @@ var qm = {
                 //var x = document.getElementById("zsiq_float");
                 var x = document.querySelector('body > div.zsiq_custommain.siq_bR');
                 //x.style.zIndex = "10 !important";
-                x.setAttribute('style', 'z-index: 10 !important');
-            }, 5000)
+                if(x){ x.setAttribute('style', 'z-index: 10 !important'); }
+            }, 15000)
         }
     },
     client: {
