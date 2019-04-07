@@ -8350,7 +8350,7 @@ var qm = {
                             try {
                                 return decodeURIComponent(decoded);
                             } catch (error) {
-                                qmLog.error(error);
+                                qm.qmLog.info(error.message + " so just returning " + decoded);
                                 return decoded; // Must have already been decoded (happens when % symbol is in variable name)
                             }
                         }else{
