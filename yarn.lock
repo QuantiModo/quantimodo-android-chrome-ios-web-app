@@ -1520,7 +1520,7 @@ concat-stream@~1.4.1, concat-stream@~1.4.5:
     readable-stream "~1.1.9"
     typedarray "~0.0.5"
 
-concat-with-sourcemaps@*, concat-with-sourcemaps@^1.0.0:
+concat-with-sourcemaps@^1.0.0, concat-with-sourcemaps@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/concat-with-sourcemaps/-/concat-with-sourcemaps-1.1.0.tgz#d4ea93f05ae25790951b99e7b3b09e3908a4082e"
   dependencies:
@@ -3566,13 +3566,13 @@ graceful-fs@~1.2.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-gulp-angular-templatecache@2.2.6:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/gulp-angular-templatecache/-/gulp-angular-templatecache-2.2.6.tgz#2f2bee43797d204e61ccd66b85c3f34104d9871f"
+gulp-angular-templatecache@2.2.7:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/gulp-angular-templatecache/-/gulp-angular-templatecache-2.2.7.tgz#d71ed65b5280e8623a313d23c4d3f138d62eaba9"
   dependencies:
     gulp-concat "2.6.1"
     gulp-footer "2.0.2"
-    gulp-header "2.0.5"
+    gulp-header "2.0.7"
     jsesc "2.5.1"
     lodash.template "^4.4.0"
     map-stream "0.0.7"
@@ -3695,12 +3695,13 @@ gulp-git@2.9.0:
     gulp-util "3.0.7"
     through2 "*"
 
-gulp-header@2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/gulp-header/-/gulp-header-2.0.5.tgz#16e229c73593ade301168024fea68dab75d9d38c"
+gulp-header@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/gulp-header/-/gulp-header-2.0.7.tgz#07505740eb432e8d2bb2af68744858dabaaf491b"
   dependencies:
-    concat-with-sourcemaps "*"
+    concat-with-sourcemaps "^1.1.0"
     lodash.template "^4.4.0"
+    map-stream "0.0.7"
     through2 "^2.0.0"
 
 gulp-if-else@1.0.3:
