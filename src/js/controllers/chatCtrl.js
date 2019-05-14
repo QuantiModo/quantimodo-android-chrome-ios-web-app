@@ -119,6 +119,11 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 getCards();
             }
             qm.feed.getMostRecentCard(function(mostRecentCard){
+                if(!mostRecentCard){
+                    qmLog.error("No mostRecentCard in chat state so going to onboard...");
+                    qmService.goToState(qm.staticData.stateNames.onboarding);
+                    return;
+                }
                 qmService.hideLoader();
                 if(nextCard){
                     mostRecentCard = nextCard;
