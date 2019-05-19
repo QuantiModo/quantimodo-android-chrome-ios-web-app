@@ -95,6 +95,7 @@ var qm = {
                 return false;
             }
             return window.designMode ||
+                qm.urlHelper.indexOfCurrentUrl('app/configuration') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
