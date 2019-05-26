@@ -16,13 +16,21 @@
                                 <!--<md-button class="md-raised md-primary icon icon-left ion-social-github" style="background: #2d2d2d;" ng-click="state.socialLogin('github', $event)">
                                     &nbsp Github Login &nbsp
                                 </md-button>-->
-                                <md-button id="signInWithGoogle"
+                                <img src="img/signin-assets/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png"
+                                     alt="google login"
+                                     id="signInWithGoogle"
+                                     ng-if="!platform.isWebView"
+                                     ng-click="state.socialLogin('googleplus', $event)"
+                                >
+                                <br>
+                                <!-- Google Bitches About Our Standard Material Themed Button
+                                <md-button id="signInWithGoogle2"
                                            ng-if="!platform.isWebView"
                                            class="md-raised md-primary icon icon-left ion-social-google"
                                            style="background: #d34836;"
                                            ng-click="state.socialLogin('googleplus', $event)">
                                     &nbsp Google Login &nbsp
-                                </md-button>
+                                </md-button>-->
                                 <md-button id="signInWithFacebook"
                                            class="md-raised md-primary icon icon-left ion-social-facebook"
                                            style="background: #3B5998;"
