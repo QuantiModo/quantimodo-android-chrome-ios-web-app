@@ -4,7 +4,8 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
              $ionicLoading, qmService, qmLogService){
     $scope.controller_name = "TagAddCtrl";
     $scope.state = {
-        title: "Add Tag"
+        title: "Add Tag",
+        saveButtonText: "Save"
     };
     $scope.cancel = function(){
         $ionicHistory.goBack();
@@ -75,6 +76,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         qm.variablesHelper.setLastSelectedAtAndSave($scope.stateParams.userTaggedVariableObject);
     }
     $scope.done = function(){
+        $scope.state.saveButtonText = 'Saving...';
         if(!$scope.stateParams.tagConversionFactor){
             $scope.stateParams.tagConversionFactor = 1;
         }
@@ -100,6 +102,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Add a Tag';
+        $scope.state.saveButtonText = 'Save';
         if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         $scope.stateParams = $stateParams;
         var debug = false;
