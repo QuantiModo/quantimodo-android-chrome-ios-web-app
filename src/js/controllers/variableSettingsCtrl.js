@@ -14,9 +14,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmLogService.debug('Entering state ' + $state.current.name, null);
             qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name);
             qmService.navBar.showNavigationMenu();
-            if(qmService.variableIdToGetOnReturnToSettings){
-                getUserVariableWithTags(qmService.variableIdToGetOnReturnToSettings);
-                qm.userVariables.getFromLocalStorageOrApi({id: qmLogService.variableIdToGetOnReturnToSettings}, function(variables){
+            var id = qmService.variableIdToGetOnReturnToSettings;
+            if(id){
+                getUserVariableWithTags(id);
+                qm.userVariables.getFromLocalStorageOrApi({id: id}, function(variables){
                     setVariableObject(variables[0])
                 });
                 delete qmService.variableIdToGetOnReturnToSettings;
@@ -161,7 +162,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         }
         function goToAddTagState(stateParams){
             stateParams.fromState = $state.current.name;
-            stateParams.fromStateParams = {variableObject: $scope.state.variableObject};
+            stateParams.fromStateParams = {
+                variableObject: $scope.state.variableObject, // This gets deleted in tagAdd for some reason we need to get from local storage
+                variableId: $scope.state.variableObject.id  // with variable id
+            };
             qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.id;
             qmService.goToState(qm.stateNames.tagAdd, stateParams);
         }
