@@ -15,7 +15,8 @@ angular.module("starter").controller("StudyCtrl", [
             requestParams: {},
             hideStudyButton: true,
             loading: true,
-            study: $stateParams.study
+            study: $stateParams.study,
+            copyLinkText: "Copy Shareable Link to Clipboard"
         };
         qmService.hideLoader(); // Hide before robot is called in afterEnter
         setAllStateProperties(getScopedStudyIfMatchesVariableNames());
@@ -131,9 +132,8 @@ angular.module("starter").controller("StudyCtrl", [
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
-    $scope.copyLinkText = "Copy Shareable Link to Clipboard";
     $scope.copyStudyUrlToClipboard = function(causeVariableName, effectVariableName){
-        $scope.copyLinkText = "Copied!";
+        $scope.state.copyLinkText = "Copied!";
         var studyLink = qmService.getStudyLinkStatic(causeVariableName, effectVariableName, $scope.state.study);
         clipboard.copyText(studyLink);
     };
