@@ -64,7 +64,7 @@
     "gulp-util": "3.0.8",
     "gulp-watch": "5.0.1",
     "gulp-zip": "4.2.0",
-    "inquirer": "6.2.2",
+    "inquirer": "6.4.1",
     "ionic": "2.2.3",
     "jshint": "2.10.1",
     "lazypipe": "1.0.2",
