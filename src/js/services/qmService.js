@@ -2074,39 +2074,44 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             delete dialogParameters.requestParams.searchPhrase;
                         } // This happens after clicking x clear button
                         logDebug("getFromLocalStorageOrApi in querySearch with params: " + JSON.stringify(dialogParameters.requestParams), query);
-                        qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
-                            logDebug('Got ' + variables.length + ' results matching ', query);
-                            showVariableList();
-                            var list = convertVariablesToToResultsList(variables);
-                            if(!dialogParameters.requestParams.excludeLocal){
-                                list.push({
-                                    value: "search-more",
-                                    name: "Not seeing what you're looking for?",
-                                    variable: "Search for more...",
-                                    ionIcon: ionIcons.search,
-                                    subtitle: "Search for more..."
-                                });
-                            }else if(!list.length){
-                                list.push({
-                                    value: "create-new-variable",
-                                    name: "Create " + query + " variable",
-                                    variable: {name: query},
-                                    ionIcon: ionIcons.plus,
-                                    subtitle: null
-                                });
-                            }
-                            self.lastResults = list;
-                            deferred.resolve(list);
-                            if(variables && variables.length){
-                                if(variableSearchSuccessHandler){
-                                    variableSearchSuccessHandler(variables);
+
+                        // Debounce in the template doesn't seem to work so we wait 500ms before searching here
+                        clearTimeout(qmService.searchTimeout);
+                        qmService.searchTimeout = setTimeout(function(){
+                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
+                                logDebug('Got ' + variables.length + ' results matching ', query);
+                                showVariableList();
+                                var list = convertVariablesToToResultsList(variables);
+                                if(!dialogParameters.requestParams.excludeLocal){
+                                    list.push({
+                                        value: "search-more",
+                                        name: "Not seeing what you're looking for?",
+                                        variable: "Search for more...",
+                                        ionIcon: ionIcons.search,
+                                        subtitle: "Search for more..."
+                                    });
+                                }else if(!list.length){
+                                    list.push({
+                                        value: "create-new-variable",
+                                        name: "Create " + query + " variable",
+                                        variable: {name: query},
+                                        ionIcon: ionIcons.plus,
+                                        subtitle: null
+                                    });
                                 }
-                            }else{
-                                if(variableSearchErrorHandler){
-                                    variableSearchErrorHandler();
+                                self.lastResults = list;
+                                deferred.resolve(list);
+                                if(variables && variables.length){
+                                    if(variableSearchSuccessHandler){
+                                        variableSearchSuccessHandler(variables);
+                                    }
+                                }else{
+                                    if(variableSearchErrorHandler){
+                                        variableSearchErrorHandler();
+                                    }
                                 }
-                            }
-                        }, variableSearchErrorHandler);
+                            }, variableSearchErrorHandler);
+                        }, 500);
                         return deferred.promise;
                     }
                     function searchTextChange(text){
