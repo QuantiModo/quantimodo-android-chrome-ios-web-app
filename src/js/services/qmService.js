@@ -2589,6 +2589,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     stateParams: {skipReminderSettingsIfPossible: true}
                 },
                 settings: {state: window.qm.stateNames.settings, icon: ionIcons.settings, text: 'Settings'},
+                sortDescendingValue: {icon: ionIcons.androidArrowDown, text: 'Sort Descending by Value'},
                 studyCreation: {icon: ionIcons.study, text: 'Create Study'},
                 variableSettings: {
                     state: qm.stateNames.variableSettingsVariableName,

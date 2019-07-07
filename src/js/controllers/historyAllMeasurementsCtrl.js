@@ -40,8 +40,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 setupVariableCategoryActionSheet();
             }
             getScopedVariableObject();
-            if(getVariableName()){
-                $scope.state.title = getVariableName() + ' History';
+            if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
+            if(false && getVariableName()){
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
                     return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
                 });
@@ -68,7 +68,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
                             qmService.actionSheets.actionSheetButtons.refresh,
-                            qmService.actionSheets.actionSheetButtons.settings
+                            qmService.actionSheets.actionSheetButtons.settings,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingValue
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
@@ -80,6 +81,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                             }
                             if(index === 1){
                                 qmService.goToState(qm.stateNames.settings);
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingValue.text){
+                                $scope.state.history = [];
+                                $scope.getHistory('-value');
                             }
                             return true;
                         }
@@ -162,7 +167,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             return params;
         }
-        $scope.getHistory = function(){
+        $scope.getHistory = function(sort){
             if($scope.state.loading){
                 return qmLog.info("Already getting measurements!");
             }
@@ -180,6 +185,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 sort: "-startTimeEpoch",
                 doNotProcess: true
             };
+            if(sort){params.sort = sort;}
             params = getRequestParams(params);
             if(getVariableName()){
                 if(!$scope.state.variableObject){
