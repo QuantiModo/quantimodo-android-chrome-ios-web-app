@@ -148,8 +148,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
                 var title, textContent, yesCallback, noCallback;
                 if(study.studyVotes.userVote !== 0){
-                    title = 'Implausible relationship?';
-                    textContent = 'Do you think is is IMPOSSIBLE that ' + causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '?';
+                    //title = 'Implausible relationship?';
+                    title = 'Flawed?';
+                    //textContent = 'Do you think is is IMPOSSIBLE that ' + causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '?';
+                    textContent = 'Do you feel this study is invalid in some way or useless?';
                     yesCallback = function(){
                         study.studyVotes.userVote = 0;
                         qmService.postVoteToApi(study, function(response){
@@ -162,7 +164,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     };
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                 }else{
-                    title = 'Delete Downvote';
+                    title = 'Delete Down-Vote';
                     textContent = 'You previously voted that it is IMPOSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this down vote?';
                     yesCallback = function(){
@@ -184,8 +186,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
                 var title, textContent, yesCallback, noCallback;
                 if(study.studyVotes.userVote !== 1){
-                    title = 'Plausible relationship?';
-                    textContent = 'Do you think it is POSSIBLE that ' + causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '?';
+                    title = 'Seems Valid?';
+                    textContent = 'Do you think it is POSSIBLE that ' + causeVariableName + ' ' +
+                        //$scope.increasesDecreases +
+                        ' is related to ' +
+                        ' your ' + effectVariableName + '?';
                     yesCallback = function(){
                         study.studyVotes.userVote = 1;
                         qmService.postVoteToApi(study, function(){
@@ -198,7 +203,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     };
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                 }else{
-                    title = 'Delete Upvote';
+                    title = 'Delete Up-Vote';
                     textContent = 'You previously voted that it is POSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this up vote?';
                     yesCallback = function(){
