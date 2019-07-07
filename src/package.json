@@ -8,7 +8,7 @@
     "@bower_components/angular-d3-word-cloud": "weihanchen/angular-d3-word-cloud#^0.3.1",
     "@bower_components/angular-google-adsense": "Stegoo/angular-google-adsense#0.6.0",
     "@bower_components/angular-google-analytics": "mikepsinn/angular-google-analytics#b4a9b7cccd227e5e8e0e8f16ab26aee684f24866",
-    "@bower_components/angular-material": "angular/bower-material#1.1.5",
+    "@bower_components/angular-material": "angular/bower-material#v1.1.19",
     "@bower_components/angular-material-datetimepicker": "mikepsinn/angular-material-datetimepicker#f50eb7d5aa49c9915396cfdae524da87ad3a402e",
     "@bower_components/angular-material-icons": "klarsys/angular-material-icons#^0.7.1",
     "@bower_components/angular-messages": "angular/bower-angular-messages#1.5.9",
