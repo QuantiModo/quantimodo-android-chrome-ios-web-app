@@ -8343,7 +8343,9 @@ var qm = {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
                     if(currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()){
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
-                        if(currentParameterKeyValuePair[1] && currentParameterKeyValuePair[1].indexOf("https:%2F%2F") === 0){shouldDecode = true;}
+                        if(typeof currentParameterKeyValuePair[1].indexOf !== "undefined" && currentParameterKeyValuePair[1].indexOf("https:%2F%2F") === 0){
+                            shouldDecode = true;
+                        }
                         if(typeof shouldDecode !== "undefined"){
                             var decoded = decodeURIComponent(currentParameterKeyValuePair[1]);
                             if(decoded && decoded.indexOf('%2') !== -1){
