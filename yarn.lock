@@ -679,6 +679,13 @@ bintrees@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.1.tgz#0e655c9b9c2435eaab68bf4027226d2b55a34524"
 
+bl@^1.2.1:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/bl/-/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
+  dependencies:
+    readable-stream "^2.3.5"
+    safe-buffer "^5.1.1"
+
 bl@~0.9.0:
   version "0.9.5"
   resolved "https://registry.yarnpkg.com/bl/-/bl-0.9.5.tgz#c06b797af085ea00bc527afc8efcf11de2232054"
@@ -3288,6 +3295,15 @@ fstream@^1.0.0, fstream@^1.0.2, fstream@~1.0.10:
     mkdirp ">=0.5 0"
     rimraf "2"
 
+fstream@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/fstream/-/fstream-1.0.12.tgz#4e8ba8ee2d48be4f7d0de505455548eae5932045"
+  dependencies:
+    graceful-fs "^4.1.2"
+    inherits "~2.0.0"
+    mkdirp ">=0.5 0"
+    rimraf "2"
+
 fstream@~0.1.21:
   version "0.1.31"
   resolved "https://registry.yarnpkg.com/fstream/-/fstream-0.1.31.tgz#7337f058fbbbbefa8c9f561a28cab0849202c988"
@@ -4011,13 +4027,13 @@ gulp-uglify@3.0.1:
     uglify-js "^3.0.5"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-unzip@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-unzip/-/gulp-unzip-1.0.1.tgz#2a31e35574cb32a8f30d54986f1bb2f389b99347"
+gulp-unzip@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/gulp-unzip/-/gulp-unzip-1.1.0.tgz#d182f55172c7ea910d3052fd0271d7065bf9d9c7"
   dependencies:
-    through2 "3.0.0"
-    unzipper "0.9.10"
-    vinyl "1.2.0"
+    unzipper "0.9.15"
+    vinyl "2.2.0"
+    vinyl-buffer "1.0.1"
 
 gulp-useref@3.1.6:
   version "3.1.6"
@@ -9104,13 +9120,6 @@ through2@2.X, through2@^2.0.0, through2@^2.0.1, through2@^2.0.3, through2@~2.0.0
     readable-stream "~2.3.6"
     xtend "~4.0.1"
 
-through2@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/through2/-/through2-3.0.0.tgz#468b461df9cd9fcc170f22ebf6852e467e578ff2"
-  dependencies:
-    readable-stream "2 || 3"
-    xtend "~4.0.1"
-
 through2@^0.6.0, through2@^0.6.1, through2@^0.6.3:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
@@ -9456,16 +9465,16 @@ unzip@0.1.9:
     readable-stream "~1.0.0"
     setimmediate "~1.0.1"
 
-unzipper@0.9.10:
-  version "0.9.10"
-  resolved "https://registry.yarnpkg.com/unzipper/-/unzipper-0.9.10.tgz#1954ed60f69d102d4416f92825588f2916ba503e"
+unzipper@0.9.15:
+  version "0.9.15"
+  resolved "https://registry.yarnpkg.com/unzipper/-/unzipper-0.9.15.tgz#97d99203dad17698ee39882483c14e4845c7549c"
   dependencies:
     big-integer "^1.6.17"
     binary "~0.3.0"
     bluebird "~3.4.1"
     buffer-indexof-polyfill "~1.0.0"
     duplexer2 "~0.1.4"
-    fstream "~1.0.10"
+    fstream "^1.0.12"
     listenercount "~1.0.1"
     readable-stream "~2.3.6"
     setimmediate "~1.0.4"
@@ -9631,6 +9640,13 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+vinyl-buffer@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vinyl-buffer/-/vinyl-buffer-1.0.1.tgz#96c1a3479b8c5392542c612029013b5b27f88bbf"
+  dependencies:
+    bl "^1.2.1"
+    through2 "^2.0.3"
+
 vinyl-bufferstream@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/vinyl-bufferstream/-/vinyl-bufferstream-1.0.1.tgz#0537869f580effa4ca45acb47579e4b9fe63081a"
@@ -9746,13 +9762,16 @@ vinyl-sourcemaps-apply@^0.2.0, vinyl-sourcemaps-apply@^0.2.1:
   dependencies:
     source-map "^0.5.1"
 
-vinyl@1.2.0, vinyl@^1.0.0, vinyl@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-1.2.0.tgz#5c88036cf565e5df05558bfc911f8656df218884"
+vinyl@2.2.0, vinyl@^2.0.0, vinyl@^2.0.1, vinyl@^2.1.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-2.2.0.tgz#d85b07da96e458d25b2ffe19fece9f2caa13ed86"
   dependencies:
-    clone "^1.0.0"
-    clone-stats "^0.0.1"
-    replace-ext "0.0.1"
+    clone "^2.1.1"
+    clone-buffer "^1.0.0"
+    clone-stats "^1.0.0"
+    cloneable-readable "^1.0.0"
+    remove-trailing-separator "^1.0.1"
+    replace-ext "^1.0.0"
 
 vinyl@^0.4.0, vinyl@^0.4.6:
   version "0.4.6"
@@ -9769,16 +9788,13 @@ vinyl@^0.5.0:
     clone-stats "^0.0.1"
     replace-ext "0.0.1"
 
-vinyl@^2.0.0, vinyl@^2.0.1, vinyl@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-2.2.0.tgz#d85b07da96e458d25b2ffe19fece9f2caa13ed86"
+vinyl@^1.0.0, vinyl@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-1.2.0.tgz#5c88036cf565e5df05558bfc911f8656df218884"
   dependencies:
-    clone "^2.1.1"
-    clone-buffer "^1.0.0"
-    clone-stats "^1.0.0"
-    cloneable-readable "^1.0.0"
-    remove-trailing-separator "^1.0.1"
-    replace-ext "^1.0.0"
+    clone "^1.0.0"
+    clone-stats "^0.0.1"
+    replace-ext "0.0.1"
 
 vm-browserify@~0.0.1:
   version "0.0.4"
