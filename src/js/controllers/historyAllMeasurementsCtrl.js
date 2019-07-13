@@ -69,7 +69,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         buttons: [
                             qmService.actionSheets.actionSheetButtons.refresh,
                             qmService.actionSheets.actionSheetButtons.settings,
-                            qmService.actionSheets.actionSheetButtons.sortDescendingValue
+                            qmService.actionSheets.actionSheetButtons.sortDescendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingTime,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingTime
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
@@ -83,14 +86,27 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 qmService.goToState(qm.stateNames.settings);
                             }
                             if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingValue.text){
-                                $scope.state.history = [];
-                                $scope.getHistory('-value');
+                                changeSortAndGetHistory('-value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingValue.text){
+                                changeSortAndGetHistory('value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
+                                changeSortAndGetHistory('-startTimeEpoch');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
+                                changeSortAndGetHistory('startTimeEpoch');
                             }
                             return true;
                         }
                     });
                 });
             }, 1);
+        }
+        function changeSortAndGetHistory(sort){
+            $scope.state.history = [];
+            $scope.state.sort = sort;
+            $scope.getHistory();
         }
         function updateMeasurementIfNecessary(){
             if($stateParams.updatedMeasurementHistory){
@@ -167,7 +183,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             return params;
         }
-        $scope.getHistory = function(sort){
+        $scope.getHistory = function(){
             if($scope.state.loading){
                 return qmLog.info("Already getting measurements!");
             }
@@ -182,10 +198,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
-                sort: "-startTimeEpoch",
+                sort: $scope.state.sort || "-startTimeEpoch",
                 doNotProcess: true
             };
-            if(sort){params.sort = sort;}
             params = getRequestParams(params);
             if(getVariableName()){
                 if(!$scope.state.variableObject){
