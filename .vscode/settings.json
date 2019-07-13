@@ -2,7 +2,9 @@
     "gulptasks.pattern": "gulpfile.js",
     "gulptasks.filters": [
       "!**/node_modules/**",
-      "!**/bower_components/**"
+      "!**/bower_components/**",
+      "!**/lib/**",
+      "!**/tests/**"
     ],
     "gulptasks.args": [],
     "gulptasks.output.show": "Task Starts",
