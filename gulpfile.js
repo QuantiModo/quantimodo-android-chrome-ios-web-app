@@ -1320,8 +1320,12 @@ var chromeScripts = [
     'lib/underscore/underscore-min.js'
 ];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
+function deleteFile(path){
+    return cleanFiles([outputPath+"/_redirects"]);
+}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
+    deleteFile(outputPath+"/_redirects");
     var chromeManifestObject = qmGulp.staticData.chromeManifestString = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
