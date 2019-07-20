@@ -55,7 +55,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                     }
                 }
                 if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = "Add a Variable";
+                    $scope.stateParams.addButtonText = "Add a Reminder";
                 }
                 if(!$scope.stateParams.addMeasurementButtonText){
                     $scope.stateParams.addMeasurementButtonText = "Record Measurement";
