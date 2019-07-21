@@ -1321,11 +1321,13 @@ var chromeScripts = [
 ];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function deleteFile(path){
-    return cleanFiles([outputPath+"/_redirects"]);
+    return cleanFiles([path]);
 }
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
-    deleteFile(outputPath+"/_redirects");
+    try {
+        deleteFile(chromeExtensionBuildPath+"/_redirects");
+    } catch (e) {}
     var chromeManifestObject = qmGulp.staticData.chromeManifestString = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
