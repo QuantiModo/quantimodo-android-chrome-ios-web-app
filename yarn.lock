@@ -3960,12 +3960,12 @@ gulp-rev@9.0.0:
     vinyl "^2.1.0"
     vinyl-file "^3.0.0"
 
-gulp-rimraf@0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/gulp-rimraf/-/gulp-rimraf-0.2.2.tgz#967f309ab19c207e131e008218a5f01e1f13e1ce"
+gulp-rimraf@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-rimraf/-/gulp-rimraf-1.0.0.tgz#ccb3e639447e95831601f3d6d678bd3f33962285"
   dependencies:
     rimraf "^2.6.2"
-    through2 "^2.0.3"
+    through2 "^3.0.1"
 
 gulp-run@1.7.1:
   version "1.7.1"
