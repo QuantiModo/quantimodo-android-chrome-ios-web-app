@@ -1693,9 +1693,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
                 },
                 reconfigurePushNotificationsIfNoTokenOnServerOrToSync: function(){
-                    if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+                    //if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+                    if(!qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
                         qmLog.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                         qmService.configurePushNotifications();
+                    } else {
+                        qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
                     }
                 },
                 skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler, ev){
@@ -3396,6 +3399,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var apiInstance = new Quantimodo.RemindersApi();
             function callback(error, trackingReminderNotifications, response){
+                if(trackingReminderNotifications && trackingReminderNotifications.data){
+                    trackingReminderNotifications = trackingReminderNotifications.data;
+                }
                 if(trackingReminderNotifications && trackingReminderNotifications.length){
                     qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                     checkHoursSinceLastPushNotificationReceived();
@@ -7537,12 +7543,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
                 qmLog.error("Push never received!");
-                qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+                qmService.notifications.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
                 qmLog.error("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                     "minutes (most frequent reminder period)!", "Last push was " + qm.push.getHoursSinceLastPush() + " hours ago!");
-                qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+                qmService.notifications.configurePushNotifications();
             }
         }
         qmService.sendBugReport = function(){
