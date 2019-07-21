@@ -7534,9 +7534,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             ];
         };
         function checkHoursSinceLastPushNotificationReceived(){
-            if(!$rootScope.platform.isMobile){
-                return;
-            }
+            //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
                 qmLog.error("Push never received!");
                 qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
