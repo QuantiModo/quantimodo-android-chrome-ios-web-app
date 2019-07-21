@@ -1547,11 +1547,11 @@ compression@^1.6.0:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-compromise@11.13.2:
-  version "11.13.2"
-  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.13.2.tgz#19cf7d9814ca005548b7e470cf9025c9bb7b5524"
+compromise@11.14.2:
+  version "11.14.2"
+  resolved "https://registry.yarnpkg.com/compromise/-/compromise-11.14.2.tgz#06c7acfb0fca677d41e2b4cb93fc1893162fd7d4"
   dependencies:
-    efrt-unpack "2.0.3"
+    efrt-unpack "2.2.0"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -2334,9 +2334,9 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
-efrt-unpack@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/efrt-unpack/-/efrt-unpack-2.0.3.tgz#6ada57793e3dda16d182f6a371fbe3d135af9dc2"
+efrt-unpack@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/efrt-unpack/-/efrt-unpack-2.2.0.tgz#b05dbec0fb8cb346a27840e00c969df9c72fee52"
 
 elementtree@0.1.6:
   version "0.1.6"
