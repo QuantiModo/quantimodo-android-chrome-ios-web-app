@@ -1929,13 +1929,32 @@ var qm = {
         }
     },
     chatButton: {
-        setChatButtonZIndex: function(){
+        setZohoChatButtonZIndex: function(){
             setTimeout(function(){
                 //var x = document.getElementById("zsiq_float");
                 var x = document.querySelector('body > div.zsiq_custommain.siq_bR');
                 //x.style.zIndex = "10 !important";
                 if(x){ x.setAttribute('style', 'z-index: 10 !important'); }
             }, 15000)
+        },
+        getDriftButtonElement: function(){
+            var x = document.querySelector('#root');
+            return x;
+        },
+        hideDriftButton: function(){
+            console.log("called hide drift");
+            drift.on('ready',function(api){
+                console.log("hiding drift");
+                api.widget.hide();
+            })
+              
+        },
+        showDriftButton: function(){
+            console.log("called show drift");
+            drift.on('ready',function(api){
+                console.log("showing drift");
+                api.widget.show();
+            })
         }
     },
     client: {

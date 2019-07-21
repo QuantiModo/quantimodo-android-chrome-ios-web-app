@@ -7526,6 +7526,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.getUser()){
                 qmService.setUserInLocalStorageBugsnagIntercomPush(qm.getUser());
             }
+            qmService.statesToShowDriftButton = [
+                qm.staticData.stateNames.onboarding,
+                qm.staticData.stateNames.login,
+                qm.staticData.stateNames.settings,
+                qm.staticData.stateNames.upgrade,
+            ];
         };
         function checkHoursSinceLastPushNotificationReceived(){
             if(!$rootScope.platform.isMobile){
