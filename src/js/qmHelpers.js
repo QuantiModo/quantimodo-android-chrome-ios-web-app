@@ -8653,6 +8653,14 @@ var qm = {
             }
             return false;
         },
+        setDriftIdentity: function(user){
+            if(typeof drift !== "undefined"){
+                drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
+                    email: user.email,
+                    name: user.displayName,            
+                  })
+            }
+        },
         setUser: function(user){
             if(user && user.data && user.data.user){
                 user = user.data.user;
@@ -8675,6 +8683,7 @@ var qm = {
             }else{
                 qm.auth.saveAccessTokenResponse(user);
             }
+            qm.userHelper.setDriftIdentity(user);
         },
         withinAllowedNotificationTimes: function(){
             if(qm.userHelper.getUserFromLocalStorage()){

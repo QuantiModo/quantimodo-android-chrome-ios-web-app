@@ -24,6 +24,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 } else {
                     qm.chatButton.hideDriftButton();
                 }
+                if(typeof drift !== "undefined"){drift.page();}
             });
             $scope.$on('$ionicView.beforeLeave', function(e){
                 qmService.stateHelper.previousUrl = window.location.href;
