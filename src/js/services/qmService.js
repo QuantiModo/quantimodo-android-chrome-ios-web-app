@@ -7543,12 +7543,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
                 qmLog.error("Push never received!");
-                qmService.notifications.configurePushNotifications();
+                qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
                 qmLog.error("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                     "minutes (most frequent reminder period)!", "Last push was " + qm.push.getHoursSinceLastPush() + " hours ago!");
-                qmService.notifications.configurePushNotifications();
+                qmService.configurePushNotifications();
             }
         }
         qmService.sendBugReport = function(){
@@ -7599,6 +7599,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         };
         qmService.configurePushNotifications = function(){
+            if(!$rootScope.platform.isMobile){
+                qm.webNotifications.registerServiceWorker(true);
+                return;
+            }
             $ionicPlatform.ready(function(){
                 if($rootScope.platform.isMobile){
                     if(typeof PushNotification === "undefined"){
