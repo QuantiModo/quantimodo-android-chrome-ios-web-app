@@ -1693,9 +1693,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.notifications.drawOverAppsPopup(qm.chrome.windowParams.compactInboxWindowParams.url);
                 },
                 reconfigurePushNotificationsIfNoTokenOnServerOrToSync: function(){
-                    if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+                    //if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
+                    if(!qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
                         qmLog.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                         qmService.configurePushNotifications();
+                    } else {
+                        qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
                     }
                 },
                 skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler, ev){
@@ -2074,39 +2077,44 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             delete dialogParameters.requestParams.searchPhrase;
                         } // This happens after clicking x clear button
                         logDebug("getFromLocalStorageOrApi in querySearch with params: " + JSON.stringify(dialogParameters.requestParams), query);
-                        qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
-                            logDebug('Got ' + variables.length + ' results matching ', query);
-                            showVariableList();
-                            var list = convertVariablesToToResultsList(variables);
-                            if(!dialogParameters.requestParams.excludeLocal){
-                                list.push({
-                                    value: "search-more",
-                                    name: "Not seeing what you're looking for?",
-                                    variable: "Search for more...",
-                                    ionIcon: ionIcons.search,
-                                    subtitle: "Search for more..."
-                                });
-                            }else if(!list.length){
-                                list.push({
-                                    value: "create-new-variable",
-                                    name: "Create " + query + " variable",
-                                    variable: {name: query},
-                                    ionIcon: ionIcons.plus,
-                                    subtitle: null
-                                });
-                            }
-                            self.lastResults = list;
-                            deferred.resolve(list);
-                            if(variables && variables.length){
-                                if(variableSearchSuccessHandler){
-                                    variableSearchSuccessHandler(variables);
+
+                        // Debounce in the template doesn't seem to work so we wait 500ms before searching here
+                        clearTimeout(qmService.searchTimeout);
+                        qmService.searchTimeout = setTimeout(function(){
+                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
+                                logDebug('Got ' + variables.length + ' results matching ', query);
+                                showVariableList();
+                                var list = convertVariablesToToResultsList(variables);
+                                if(!dialogParameters.requestParams.excludeLocal){
+                                    list.push({
+                                        value: "search-more",
+                                        name: "Not seeing what you're looking for?",
+                                        variable: "Search for more...",
+                                        ionIcon: ionIcons.search,
+                                        subtitle: "Search for more..."
+                                    });
+                                }else if(!list.length){
+                                    list.push({
+                                        value: "create-new-variable",
+                                        name: "Create " + query + " variable",
+                                        variable: {name: query},
+                                        ionIcon: ionIcons.plus,
+                                        subtitle: null
+                                    });
                                 }
-                            }else{
-                                if(variableSearchErrorHandler){
-                                    variableSearchErrorHandler();
+                                self.lastResults = list;
+                                deferred.resolve(list);
+                                if(variables && variables.length){
+                                    if(variableSearchSuccessHandler){
+                                        variableSearchSuccessHandler(variables);
+                                    }
+                                }else{
+                                    if(variableSearchErrorHandler){
+                                        variableSearchErrorHandler();
+                                    }
                                 }
-                            }
-                        }, variableSearchErrorHandler);
+                            }, variableSearchErrorHandler);
+                        }, 500);
                         return deferred.promise;
                     }
                     function searchTextChange(text){
@@ -2584,6 +2592,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     stateParams: {skipReminderSettingsIfPossible: true}
                 },
                 settings: {state: window.qm.stateNames.settings, icon: ionIcons.settings, text: 'Settings'},
+                sortAscendingTime: {icon: ionIcons.androidArrowUp, text: 'Sort Ascending by Time'},
+                sortAscendingValue: {icon: ionIcons.androidArrowUp, text: 'Sort Ascending by Value'},
+                sortDescendingTime: {icon: ionIcons.androidArrowDown, text: 'Sort Descending by Time'},
+                sortDescendingValue: {icon: ionIcons.androidArrowDown, text: 'Sort Descending by Value'},
                 studyCreation: {icon: ionIcons.study, text: 'Create Study'},
                 variableSettings: {
                     state: qm.stateNames.variableSettingsVariableName,
@@ -3387,6 +3399,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var apiInstance = new Quantimodo.RemindersApi();
             function callback(error, trackingReminderNotifications, response){
+                if(trackingReminderNotifications && trackingReminderNotifications.data){
+                    trackingReminderNotifications = trackingReminderNotifications.data;
+                }
                 if(trackingReminderNotifications && trackingReminderNotifications.length){
                     qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                     checkHoursSinceLastPushNotificationReceived();
@@ -7517,19 +7532,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.getUser()){
                 qmService.setUserInLocalStorageBugsnagIntercomPush(qm.getUser());
             }
+            qmService.statesToShowDriftButton = [
+                qm.staticData.stateNames.onboarding,
+                qm.staticData.stateNames.login,
+                qm.staticData.stateNames.settings,
+                qm.staticData.stateNames.upgrade,
+            ];
         };
         function checkHoursSinceLastPushNotificationReceived(){
-            if(!$rootScope.platform.isMobile){
-                return;
-            }
+            //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
                 qmLog.error("Push never received!");
-                qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+                qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
                 qmLog.error("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                     "minutes (most frequent reminder period)!", "Last push was " + qm.push.getHoursSinceLastPush() + " hours ago!");
-                qmService.notifications.reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+                qmService.configurePushNotifications();
             }
         }
         qmService.sendBugReport = function(){
@@ -7580,6 +7599,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         };
         qmService.configurePushNotifications = function(){
+            if(!$rootScope.platform.isMobile){
+                qm.webNotifications.registerServiceWorker(true);
+                return;
+            }
             $ionicPlatform.ready(function(){
                 if($rootScope.platform.isMobile){
                     if(typeof PushNotification === "undefined"){

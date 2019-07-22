@@ -1046,9 +1046,14 @@ function makeApiRequest(options, successHandler) {
     //options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf('staging') !== -1){options.strictSSL = false;}
     return rp(options).then(function (response) {
-        qmLog.info("Successful response from " + options.uri + " for client id " + options.qs.clientId);
-        qmLog.debug(options.uri + " response", response);
-        if(successHandler){successHandler(response);}
+        if(response.success){
+            qmLog.info("Successful response from " + options.uri + " for client id " + options.qs.clientId);
+            qmLog.debug(options.uri + " response", response);
+            if(successHandler){successHandler(response);}
+        } else {
+            outputApiErrorResponse({response: response}, options);
+            throw "Success is false in response: "+ JSON.stringify(response);
+        }
     }).catch(function (err) {
         outputApiErrorResponse(err, options);
         throw err;
@@ -1320,8 +1325,18 @@ var chromeScripts = [
     'lib/underscore/underscore-min.js'
 ];
 if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
+function deleteFile(path){
+    if (fs.existsSync(path)) {
+        return cleanFiles([path]);
+    }
+}
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
+    try {
+        deleteFile(chromeExtensionBuildPath+"/_redirects");
+    } catch (e) {
+        qmLog.error(e.message);
+    }
     var chromeManifestObject = qmGulp.staticData.chromeManifestString = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),

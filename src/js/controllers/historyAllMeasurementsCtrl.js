@@ -40,8 +40,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 setupVariableCategoryActionSheet();
             }
             getScopedVariableObject();
-            if(getVariableName()){
-                $scope.state.title = getVariableName() + ' History';
+            if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
+            if(false && getVariableName()){
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
                     return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
                 });
@@ -68,7 +68,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
                             qmService.actionSheets.actionSheetButtons.refresh,
-                            qmService.actionSheets.actionSheetButtons.settings
+                            qmService.actionSheets.actionSheetButtons.settings,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingTime,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingTime
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
@@ -81,11 +85,28 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                             if(index === 1){
                                 qmService.goToState(qm.stateNames.settings);
                             }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingValue.text){
+                                changeSortAndGetHistory('-value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingValue.text){
+                                changeSortAndGetHistory('value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
+                                changeSortAndGetHistory('-startTimeEpoch');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
+                                changeSortAndGetHistory('startTimeEpoch');
+                            }
                             return true;
                         }
                     });
                 });
             }, 1);
+        }
+        function changeSortAndGetHistory(sort){
+            $scope.state.history = [];
+            $scope.state.sort = sort;
+            $scope.getHistory();
         }
         function updateMeasurementIfNecessary(){
             if($stateParams.updatedMeasurementHistory){
@@ -177,7 +198,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
-                sort: "-startTimeEpoch",
+                sort: $scope.state.sort || "-startTimeEpoch",
                 doNotProcess: true
             };
             params = getRequestParams(params);

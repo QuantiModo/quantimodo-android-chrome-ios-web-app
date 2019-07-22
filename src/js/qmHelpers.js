@@ -95,6 +95,7 @@ var qm = {
                 return false;
             }
             return window.designMode ||
+                qm.urlHelper.indexOfCurrentUrl('app/configuration') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
         },
@@ -1928,13 +1929,32 @@ var qm = {
         }
     },
     chatButton: {
-        setChatButtonZIndex: function(){
+        setZohoChatButtonZIndex: function(){
             setTimeout(function(){
                 //var x = document.getElementById("zsiq_float");
                 var x = document.querySelector('body > div.zsiq_custommain.siq_bR');
                 //x.style.zIndex = "10 !important";
                 if(x){ x.setAttribute('style', 'z-index: 10 !important'); }
             }, 15000)
+        },
+        getDriftButtonElement: function(){
+            var x = document.querySelector('#root');
+            return x;
+        },
+        hideDriftButton: function(){
+            console.log("called hide drift");
+            drift.on('ready',function(api){
+                console.log("hiding drift");
+                api.widget.hide();
+            })
+              
+        },
+        showDriftButton: function(){
+            console.log("called show drift");
+            drift.on('ready',function(api){
+                console.log("showing drift");
+                api.widget.show();
+            })
         }
     },
     client: {
@@ -8342,6 +8362,9 @@ var qm = {
                     var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
                     if(currentParameterKeyValuePair[0].toCamelCase().toLowerCase() === parameterName.toCamelCase().toLowerCase()){
                         currentParameterKeyValuePair[1] = qm.stringHelper.parseBoolean(currentParameterKeyValuePair[1]);
+                        if(typeof currentParameterKeyValuePair[1].indexOf !== "undefined" && currentParameterKeyValuePair[1].indexOf("https:%2F%2F") === 0){
+                            shouldDecode = true;
+                        }
                         if(typeof shouldDecode !== "undefined"){
                             var decoded = decodeURIComponent(currentParameterKeyValuePair[1]);
                             if(decoded && decoded.indexOf('%2') !== -1){
@@ -8630,6 +8653,14 @@ var qm = {
             }
             return false;
         },
+        setDriftIdentity: function(user){
+            if(typeof drift !== "undefined"){
+                drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
+                    email: user.email,
+                    name: user.displayName,            
+                  })
+            }
+        },
         setUser: function(user){
             if(user && user.data && user.data.user){
                 user = user.data.user;
@@ -8652,6 +8683,7 @@ var qm = {
             }else{
                 qm.auth.saveAccessTokenResponse(user);
             }
+            qm.userHelper.setDriftIdentity(user);
         },
         withinAllowedNotificationTimes: function(){
             if(qm.userHelper.getUserFromLocalStorage()){
@@ -9597,25 +9629,27 @@ var qm = {
             qm.firebase = firebase.initializeApp(config);
             return qm.firebase;
         },
-        registerServiceWorker: function(){
-            if(!qm.platform.getWindow()){
-                return false;
-            }
-            if(qm.platform.browser.isFirefox() && qm.urlHelper.indexOfCurrentUrl("herokuapp") !== -1){
-                qm.qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
-                return false;
-            }
-            if(qm.serviceWorker){
-                qm.qmLog.debug("serviceWorker already registered");
-                return false;
-            }
-            if(!qm.platform.isWeb()){
-                qm.qmLog.debug("Not registering service worker because not on Web");
-                return false;
-            }
-            if(qm.appMode.isBuilder()){
-                qm.qmLog.debug("Not registering service worker because appMode isBuilder");
-                return false;
+        registerServiceWorker: function(force){
+            if(!force){
+                if(!qm.platform.getWindow()){
+                    return false;
+                }
+                if(qm.platform.browser.isFirefox() && qm.urlHelper.indexOfCurrentUrl("herokuapp") !== -1){
+                    qm.qmLog.info("serviceWorker doesn't work in Firefox tests for some reason");
+                    return false;
+                }
+                if(qm.serviceWorker){
+                    qm.qmLog.debug("serviceWorker already registered");
+                    return false;
+                }
+                if(!qm.platform.isWeb()){
+                    qm.qmLog.debug("Not registering service worker because not on Web");
+                    return false;
+                }
+                if(qm.appMode.isBuilder()){
+                    qm.qmLog.debug("Not registering service worker because appMode isBuilder");
+                    return false;
+                }
             }
             try{
                 qm.webNotifications.initializeFirebase();
@@ -9634,8 +9668,12 @@ var qm = {
                 navigator.serviceWorker.register(serviceWorkerUrl)
                     .then(function(registration){
                         var messaging = firebase.messaging();
-                        messaging.useServiceWorker(registration);
-                        qm.webNotifications.subscribeUser(messaging);
+                        try {
+                            messaging.useServiceWorker(registration);
+                        } catch (error) {
+                            qm.qmLog.info(error.message);
+                        }
+                        qm.webNotifications.subscribeUser(messaging, force);
                     });
                 qm.serviceWorker = navigator.serviceWorker;
                 return qm.serviceWorker;
@@ -9644,62 +9682,71 @@ var qm = {
                 return false;
             }
         },
-        subscribeUser: function(messaging){
-            messaging.requestPermission()
-                .then(function(){
-                    console.log('Notification permission granted.');
-                    // Get Instance ID token. Initially this makes a network call, once retrieved
-                    // subsequent calls to getToken will return from cache.
-                    messaging.getToken()
-                        .then(function(currentToken){
-                            if(currentToken){
-                                console.log("FB token: " + currentToken);
-                                var deviceTokenOnServer = qm.storage.getItem(qm.items.deviceTokenOnServer);
-                                if(!deviceTokenOnServer || deviceTokenOnServer !== currentToken){
-                                    qm.webNotifications.postWebPushSubscriptionToServer(currentToken);
-                                }
-                                //updateUIForPushEnabled(currentToken);
-                            }else{
-                                // Show permission request.
-                                console.log('No Instance ID token available. Request permission to generate one.');
-                                // Show permission UI.
-                                //updateUIForPushPermissionRequired();
-                                qm.webNotifications.postWebPushSubscriptionToServer(false);
-                            }
-                        })
-                        .catch(function(err){
-                            qm.qmLog.error('An error occurred while retrieving token. ', null, err);
-                            //showToken('Error retrieving Instance ID token. ', err);
-                            //qm.webNotifications.postWebPushSubscriptionToServer(false);
-                        });
+        getAndPostDeviceToken: function(messaging, force){
+            messaging.getToken()
+                .then(function(currentToken){
+                    if(currentToken){
+                        qm.qmLog.info("Firebase messaging token: " + currentToken);
+                        var deviceTokenOnServer = qm.storage.getItem(qm.items.deviceTokenOnServer);
+                        if(force || !deviceTokenOnServer || deviceTokenOnServer !== currentToken){
+                            qm.webNotifications.postWebPushSubscriptionToServer(currentToken);
+                        }
+                        //updateUIForPushEnabled(currentToken);
+                    }else{
+                        // Show permission request.
+                        qm.qmLog.error('No Instance ID token available. Request permission to generate one.');
+                        // Show permission UI.
+                        //updateUIForPushPermissionRequired();
+                    }
                 })
                 .catch(function(err){
-                    console.log('Unable to get permission to notify.', err);
+                    qm.qmLog.error('An error occurred while retrieving token. ', null, err);
+                    //showToken('Error retrieving Instance ID token. ', err);
+                    //qm.webNotifications.postWebPushSubscriptionToServer(false);
+                });
+        },
+        subscribeUser: function(messaging, force){
+            messaging.requestPermission()
+                .then(function(){
+                    qm.qmLog.info('Notification permission granted.');
+                    // Get Instance ID token. Initially this makes a network call, once retrieved
+                    // subsequent calls to getToken will return from cache.
+                    qm.webNotifications.getAndPostDeviceToken(messaging, force);
+                })
+                .catch(function(err){
+                    qm.qmLog.error('Unable to get permission to notify.', err);
                 });
         },
         postWebPushSubscriptionToServer: function(deviceTokenString){
-            if(deviceTokenString){
-                console.log("Got token: " + deviceTokenString);
-                qm.api.configureClient(arguments.callee.name);
-                var apiInstance = new qm.Quantimodo.NotificationsApi();
-                function callback(error, data, response){
-                    if(!error){
-                        qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
-                    }else{
-                        var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
-                        if(errorMessage.toLowerCase().indexOf('already exists') !== -1){
-                            qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
-                            return;
-                        }
-                    }
-                    qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
-                }
-                var params = qm.api.addGlobalParams({
-                    'platform': qm.platform.browser.get(),
-                    deviceToken: deviceTokenString
-                });
-                apiInstance.postDeviceToken(params, callback);
+            if(!deviceTokenString){
+                qm.qmLog.error("No deviceTokenString for postWebPushSubscriptionToServer!")
+                return;
             }
+            if(qm.webNotifications.tokenJustPosted && qm.webNotifications.tokenJustPosted === deviceTokenString){
+                qm.qmLog.info("Just posted "+deviceTokenString+" already");
+                return;
+            }
+            qm.webNotifications.tokenJustPosted = deviceTokenString;
+            qm.qmLog.info("Got token: " + deviceTokenString);
+            qm.api.configureClient(arguments.callee.name);
+            var apiInstance = new qm.Quantimodo.NotificationsApi();
+            function callback(error, data, response){
+                if(!error){
+                    qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
+                }else{
+                    var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
+                    if(errorMessage.toLowerCase().indexOf('already exists') !== -1){
+                        qm.storage.setItem(qm.items.deviceTokenOnServer, deviceTokenString);
+                        return;
+                    }
+                }
+                qm.api.generalResponseHandler(error, data, response, null, null, null, 'postWebPushSubscriptionToServer');
+            }
+            var params = qm.api.addGlobalParams({
+                'platform': qm.platform.browser.get(),
+                deviceToken: deviceTokenString
+            });
+            apiInstance.postDeviceToken(params, callback);
         }
     },
     windowHelper: {
