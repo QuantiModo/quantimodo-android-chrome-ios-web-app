@@ -3394,19 +3394,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
             var functionName = "getTrackingReminderNotificationsFromApi";
             qmLog.debug(functionName, null, params, qmLog.getStackTrace());
-            if(!qm.api.configureClient(functionName, errorHandler, params)){
-                return false;
-            }
+            if(!qm.api.configureClient(functionName, errorHandler, params)){return false;}
             var apiInstance = new Quantimodo.RemindersApi();
-            function callback(error, trackingReminderNotifications, response){
-                if(trackingReminderNotifications && trackingReminderNotifications.data){
-                    trackingReminderNotifications = trackingReminderNotifications.data;
-                }
-                if(trackingReminderNotifications && trackingReminderNotifications.length){
+            function callback(error, notifications, response){
+                if(notifications && notifications.data){notifications = notifications.data;}
+                if(notifications && notifications.length){
                     qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                     checkHoursSinceLastPushNotificationReceived();
                 }
-                qmSdkApiResponseHandler(error, trackingReminderNotifications, response, successHandler, errorHandler, {}, functionName);
+                qmSdkApiResponseHandler(error, notifications, response, successHandler, errorHandler, {}, functionName);
             }
             params = addGlobalUrlParamsToObject(params);
             apiInstance.getTrackingReminderNotifications(params, callback);
@@ -4827,21 +4823,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 maximumReminderTimeUtcString: qmService.getTomorrowLocalMidnightInUtcString(),
                 sort: 'reminderTime'
             };
-            if(variableCategoryName){
-                params.variableCategoryName = variableCategoryName;
-            }
+            if(variableCategoryName){params.variableCategoryName = variableCategoryName;}
             var deferred = $q.defer();
-            qmService.getTrackingReminderNotificationsFromApi(params, function(response){
-                if(response.success){
-                    var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
-                    if(trackingReminderNotifications.length){
-                        checkHoursSinceLastPushNotificationReceived();
-                        qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
-                    }
-                    deferred.resolve(trackingReminderNotifications);
-                }else{
-                    deferred.reject("error");
+            qmService.getTrackingReminderNotificationsFromApi(params, function(notifications){
+                notifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
+                if(notifications.length){
+                    checkHoursSinceLastPushNotificationReceived();
+                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                 }
+                deferred.resolve(notifications);
             }, function(error){
                 qmLog.error(error);
                 deferred.reject(error);
@@ -4868,22 +4858,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
                 params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
-                qmService.getTrackingReminderNotificationsFromApi(params, function(response){
-                    if(response.data){
-                        var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
-                        if(trackingReminderNotifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){
-                            qmService.registerDeviceToken();
-                        }
-                        if($rootScope.platform.isAndroid){
-                            qmService.notifications.showAndroidPopupForMostRecentNotification(true);
-                        }
-                        qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
-                        qmService.refreshingTrackingReminderNotifications = false;
-                        deferred.resolve(trackingReminderNotifications);
-                    }else{
-                        qmService.refreshingTrackingReminderNotifications = false;
-                        deferred.reject("error");
+                qmService.getTrackingReminderNotificationsFromApi(params, function(notifications){
+                    notifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
+                    if(notifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){
+                        qmService.registerDeviceToken();
                     }
+                    if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification(true);}
+                    qm.chrome.updateChromeBadge(notifications.length);
+                    qmService.refreshingTrackingReminderNotifications = false;
+                    deferred.resolve(notifications);
                 }, function(error){
                     qmLog.error(error);
                     qmService.refreshingTrackingReminderNotifications = false;
