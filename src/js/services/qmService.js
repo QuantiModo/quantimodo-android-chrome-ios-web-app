@@ -7582,12 +7582,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         };
         qmService.configurePushNotifications = function(){
-            if(!$rootScope.platform.isMobile){
+            if(!qm.platform.isMobile()){
                 qm.webNotifications.registerServiceWorker(true);
                 return;
             }
             $ionicPlatform.ready(function(){
-                if($rootScope.platform.isMobile){
+                if(qm.platform.isMobile()){
                     if(typeof PushNotification === "undefined"){
                         qmLog.error('PushNotification is undefined on mobile!');
                     }
