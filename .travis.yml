@@ -18,7 +18,7 @@ matrix:
       os: linux
       sudo: false
       language: android
-      jdk: oraclejdk9
+      jdk: oraclejdk8
       android:
         components:
           - tools
@@ -85,7 +85,7 @@ script:
   #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
-    - JAVA_HOME=/usr/lib/jvm/java-9-oracle
+    - JAVA_HOME=/usr/lib/jvm/java-8-oracle
 notifications:
   webhooks: https://www.travisbuddy.com/
   email:
