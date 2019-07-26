@@ -85,7 +85,7 @@ script:
   #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
 env:
   global:
-    - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    - JAVA_HOME=/usr/lib/jvm/java-9-oracle
 notifications:
   webhooks: https://www.travisbuddy.com/
   email:
