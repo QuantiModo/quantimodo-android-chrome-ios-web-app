@@ -1,5 +1,6 @@
 angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$timeout",
-    "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService){
+    "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter,
+                                                     qmService, qmLogService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = JSON.parse(JSON.stringify($stateParams));
@@ -39,9 +40,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             qmLog.info($state.current.name + ' enter...');
             // We always need to repopulate in case variable was updated in local storage and the search view was cached
             qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables(function(userVariables){
-                populateUserVariables();
+                populateSearchResults();
             }, function(){
-                populateUserVariables();
+                populateSearchResults();
             });
             setHelpText();
             qmService.hideLoader();
@@ -228,10 +229,10 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                         variableSearchSuccessHandler(variables, successHandler, errorHandler);
                     });
             }else{
-                populateUserVariables();
+                populateSearchResults();
             }
         };
-        var populateUserVariables = function(){
+        var populateSearchResults = function(){
             if($scope.state.variableSearchQuery.name.length > 2){
                 return;
             }
@@ -240,13 +241,13 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 $scope.state.searching = true;
             }
             var params = getVariableSearchParameters();
-            qm.userVariables.getFromLocalStorageOrApi(params, function(userVariables){
-                if(userVariables && userVariables.length > 0){
+            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
+                if(variables && variables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3){
                         if($scope.state.variableSearchResults){
-                            userVariables = $scope.state.variableSearchResults.concat(userVariables);
+                            variables = $scope.state.variableSearchResults.concat(variables);
                         }
-                        addVariablesToScope(userVariables);
+                        addVariablesToScope(variables);
                     }
                 }else{
                     $scope.state.noVariablesFoundCard.show = true;
