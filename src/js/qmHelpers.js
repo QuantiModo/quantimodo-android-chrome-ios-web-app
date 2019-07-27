@@ -999,6 +999,7 @@ var qm = {
             "staging": "quantimodo",
             "studies": "quantimodo",
             "utopia": "quantimodo",
+            "patient": "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         },
         getDoctorRobotoAlias: function(appSettings){
