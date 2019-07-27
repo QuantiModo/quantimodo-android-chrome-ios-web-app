@@ -5,10 +5,10 @@
 /* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
-    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet",
+    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
-             $ionicActionSheet){
+             $ionicActionSheet, clipboard){
         var allStates = $state.get();
         //console.log(JSON.stringify(allStates));
         var qmService = {
@@ -472,6 +472,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             buttonClickHandlers: {
                 generalButtonClickHandler: function(button, ev){
+                    if(button.link && button.text && button.text.toLowerCase().indexOf('clipboard') !== -1){
+                        button.text = 'Copied!';
+                        clipboard.copyText(button.link);
+                        qmService.showInfoToast('Copied link to clipboard!');
+                        return;
+                    }
                     if(button.link){
                         return qm.urlHelper.goToUrl(button.link);
                     }
@@ -1151,6 +1157,42 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             email: {
+                postInvitation: function(callback, $scope){
+                    if(!$scope.data){$scope.data = {};}
+                    if(!$scope.data.email){$scope.data.email = null;}
+                    var myPopup = $ionicPopup.show({
+                        template: '<label class="item item-input">' +
+                            '<i class="icon ion-email placeholder-icon"></i>' +
+                            '<input type="email" placeholder="Email" ng-model="data.email"></label>',
+                        title: 'Enter Email',
+                        subTitle: 'Invite someone to share their data',
+                        scope: $scope,
+                        buttons: [
+                            {text: 'Cancel'},
+                            {
+                                text: '<b>Save</b>',
+                                type: 'button-positive',
+                                onTap: function(e){
+                                    if(!$scope.data.email){
+                                        //don't allow the user to close unless he enters email
+                                        e.preventDefault();
+                                    }else{
+                                        return $scope.data;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+                    myPopup.then(function(res){
+                        qmService.showInfoToast("Inviting "+$scope.data.email+" via email");
+                        qm.api.postToQuantiModo({email: $scope.data.email}, 'v1/shares/invitePatient',
+                            function(response){
+                            if(callback){callback();}
+                        }, function(error){
+                            if(callback){callback();}
+                        });
+                    });
+                },
                 updateEmailAndExecuteCallback: function(callback){
                     var $scope = {};
                     if($rootScope.user.email){
