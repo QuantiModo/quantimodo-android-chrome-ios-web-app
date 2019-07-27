@@ -1942,14 +1942,19 @@ var qm = {
             return x;
         },
         hideDriftButton: function(){
+            if(typeof drift === "undefined"){return;}
             console.log("called hide drift");
             drift.on('ready',function(api){
                 console.log("hiding drift");
                 api.widget.hide();
             })
-              
+
         },
         showDriftButton: function(){
+            if(typeof drift === "undefined"){
+                qm.qmLog.error("drift not defined!")
+                return;
+            }
             console.log("called show drift");
             drift.on('ready',function(api){
                 console.log("showing drift");
@@ -8657,7 +8662,7 @@ var qm = {
             if(typeof drift !== "undefined"){
                 drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
                     email: user.email,
-                    name: user.displayName,            
+                    name: user.displayName,
                   })
             }
         },
