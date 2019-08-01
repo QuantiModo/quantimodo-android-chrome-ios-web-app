@@ -1332,11 +1332,6 @@ function deleteFile(path){
 }
 function chromeManifest(outputPath, backgroundScriptArray) {
     outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
-    try {
-        deleteFile(chromeExtensionBuildPath+"/_redirects");
-    } catch (e) {
-        qmLog.error(e.message);
-    }
     var chromeManifestObject = qmGulp.staticData.chromeManifestString = {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
@@ -1362,25 +1357,25 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'https://*.intercom.io/*',
             'https://*.googleapis.com/*',
             'https://*.google-analytics.com/*',
-            'webRequest', 
+            'webRequest',
             'webRequestBlocking',
             'http://www.amazon.com/*',
             'https://www.amazon.com/*',
             'http://www.amazon.ca/*',
             'https://www.amazon.ca/*',
-            'http://www.amazon.co.uk/*', 
-            'https://www.amazon.co.uk/*', 
+            'http://www.amazon.co.uk/*',
+            'https://www.amazon.co.uk/*',
             'http://www.amazon.de/*',
-            'https://www.amazon.de/*', 
+            'https://www.amazon.de/*',
             'http://www.amazon.es/*',
-            'https://www.amazon.es/*', 
-            'http://www.amazon.fr/*', 
-            'https://www.amazon.fr/*', 
-            'http://www.amazon.it/*', 
-            'https://www.amazon.it/*', 
-            'http://www.amazon.co.jp/*', 
-            'https://www.amazon.co.jp/*', 
-            'http://www.amazon.cn/*', 
+            'https://www.amazon.es/*',
+            'http://www.amazon.fr/*',
+            'https://www.amazon.fr/*',
+            'http://www.amazon.it/*',
+            'https://www.amazon.it/*',
+            'http://www.amazon.co.jp/*',
+            'https://www.amazon.co.jp/*',
+            'http://www.amazon.cn/*',
             'https://www.amazon.cn/*'
         ],
         'browser_action': {
@@ -2909,7 +2904,7 @@ gulp.task('copyWwwFolderHtmlToChromeExtension', ['getAppConfigs'], function () {
     return copyFiles('www/*.html', chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
-    return copyFiles('www/**/*', chromeExtensionBuildPath);
+    return copyFiles(['www/**/*', '!www/_redirects'], chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
