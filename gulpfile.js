@@ -2904,7 +2904,11 @@ gulp.task('copyWwwFolderHtmlToChromeExtension', ['getAppConfigs'], function () {
     return copyFiles('www/*.html', chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
-    return copyFiles(['www/**/*', '!www/_redirects'], chromeExtensionBuildPath);
+    return copyFiles([
+        'www/**/*',
+        '!www/_redirects',
+        "!www/**/*.map"
+    ], chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
