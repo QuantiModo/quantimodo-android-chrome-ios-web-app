@@ -7264,7 +7264,8 @@ var qm = {
                 qm.qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
             }else{
-                qm.qmLog.debug(key + ' not found in localStorage');
+                // Too verbose.  Uncomment temporarily if necessary
+                //qm.qmLog.debug(key + ' not found in localStorage');
             }
             return null;
         },
