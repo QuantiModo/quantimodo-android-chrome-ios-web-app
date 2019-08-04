@@ -3187,7 +3187,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
                 //console.log("Log level is " + qmLog.getLogLevelName());
-                var url = qm.api.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
+                var url = qm.api.getQuantiModoUrl(route);
+                var globalParams = addGlobalUrlParamsToArray([]);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(globalParams, url);
                 var request = {
                     method: 'POST',
                     url: url,
