@@ -183,7 +183,8 @@ var qm = {
             qm.api.requestLog.push({
                 time: qm.timeHelper.getCurrentLocalDateAndTime(),
                 name: functionName,
-                message: message
+                message: message,
+                params: requestParams
             });
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
