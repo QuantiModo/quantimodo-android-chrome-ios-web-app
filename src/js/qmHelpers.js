@@ -6722,6 +6722,13 @@ var qm = {
             qm.api.configureClient(arguments.callee.name, null, body);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
+                if(!data){
+                    qm.qmLog.error("No data from sendInvitation response", {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 var authorizedClients = data.authorizedClients || data;
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
@@ -6737,6 +6744,13 @@ var qm = {
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 var authorizedClients = data.authorizedClients || data;
+                if(!data){
+                    qm.qmLog.error("No data from getAuthorizedClientsFromApi response", {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
                 }
@@ -6790,6 +6804,13 @@ var qm = {
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 var authorizedClients = data.authorizedClients || data;
+                if(!data){
+                    qm.qmLog.error("No data from revokeClientAccess response for client "+clientIdToRevoke, {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
                 }

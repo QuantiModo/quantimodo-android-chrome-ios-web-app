@@ -376,13 +376,17 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 }
             }
             applyReminderTimesToReminder();
+            $scope.state.savingText = "Saving " + $scope.state.trackingReminder.variableName + '...';
+            qmService.showInfoToast($scope.state.savingText);
+            if(qm.editReminderCallback){  // For saving default reminders created by physician or app builder
+                qm.editReminderCallback($scope.state.trackingReminder);
+                return;
+            }
             if($scope.state.trackingReminder.id){
                 qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id);
             }
             qmService.showBasicLoader();
             qmService.addToTrackingReminderSyncQueue(remindersArray);
-            $scope.state.savingText = "Saving " + $scope.state.trackingReminder.variableName + '...';
-            qmService.showInfoToast($scope.state.savingText);
             qmService.trackingReminders.syncTrackingReminders(true).then(function(){
                 var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
                 qmService.showInfoToast(toastMessage);
