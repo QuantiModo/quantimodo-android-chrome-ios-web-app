@@ -2918,56 +2918,26 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        // GET method with the added token
-        function addGlobalUrlParamsToArray(urlParams){
-            urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent($rootScope.appSettings.appDisplayName));
-            if($rootScope.appSettings.versionNumber){
-                urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appSettings.versionNumber));
-            }else{
-                qmLog.authDebug("Version number not specified!", "Version number not specified on qm.getAppSettings()");
-            }
-            urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qm.api.getClientId()));
-            if(qm.devCredentials){
-                if(qm.devCredentials.username){
-                    urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(qm.devCredentials.username));
-                }
-                if(qm.devCredentials.password){
-                    urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(qm.devCredentials.password));
-                }
-            }
-            var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
-            for(var i = 0; i < passableUrlParameters.length; i++){
-                if(qm.urlHelper.getParam(passableUrlParameters[i])){
-                    urlParams.push(encodeURIComponent(passableUrlParameters[i]) + '=' + qm.urlHelper.getParam(passableUrlParameters[i]));
-                }
-            }
-            //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
-            return urlParams;
+        function addGlobalUrlParamsToObject(specificParams){
+            var combined = qm.objectHelper.copyPropertiesFromOneObjectToAnother(specificParams, getGlobalParamsObject());
+            return combined;
         }
-        function addGlobalUrlParamsToObject(urlParams){
-            urlParams.appName = encodeURIComponent($rootScope.appSettings.appDisplayName);
-            if($rootScope.appSettings.versionNumber){
-                urlParams.appVersion = encodeURIComponent($rootScope.appSettings.versionNumber);
-            }else{
-                qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
-            }
-            urlParams.clientId = encodeURIComponent(qm.api.getClientId());
+        function getGlobalParamsObject(){
+            var obj = {};
+            obj.appName = $rootScope.appSettings.appDisplayName;
+            obj.clientId = qm.api.getClientId();
+            if($rootScope.appSettings.versionNumber){obj.appVersion = $rootScope.appSettings.versionNumber;}
             if(qm.devCredentials){
-                if(qm.devCredentials.username){
-                    urlParams.log = encodeURIComponent(qm.devCredentials.username);
-                }
-                if(qm.devCredentials.password){
-                    urlParams.pwd = encodeURIComponent(qm.devCredentials.password);
-                }
+                if(qm.devCredentials.username){obj.log = qm.devCredentials.username;}
+                if(qm.devCredentials.password){obj.pwd = qm.devCredentials.password;}
             }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
-                if(qm.urlHelper.getParam(passableUrlParameters[i])){
-                    urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);
-                }
+                var name = passableUrlParameters[i];
+                var val = qm.urlHelper.getParam(name);
+                if(val){obj[name] = val;}
             }
-            //urlParams.access_token = encodeURIComponent(tokenObject.accessToken);  //We can't append access token to Ionic requests for some reason
-            return urlParams;
+            return obj;
         }
         function addVariableCategoryInfo(array){
             angular.forEach(array, function(value, key){
@@ -3106,10 +3076,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                     }
                 }
-                urlParams = addGlobalUrlParamsToArray(urlParams);
+                var url = qm.api.getQuantiModoUrl(route);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(getGlobalParamsObject(), url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(urlParams, url);
                 var request = {
                     method: 'GET',
-                    url: (qm.api.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))),
+                    url: url,
                     responseType: 'json',
                     headers: {'Content-Type': "application/json"}
                 };
@@ -3188,8 +3160,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 //console.log("Log level is " + qmLog.getLogLevelName());
                 var url = qm.api.getQuantiModoUrl(route);
-                var globalParams = addGlobalUrlParamsToArray([]);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(globalParams, url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(getGlobalParamsObject(), url);
                 var request = {
                     method: 'POST',
                     url: url,
