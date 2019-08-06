@@ -3029,15 +3029,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return array;
         };
         qmService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
-            if(!params){
-                params = {};
-            }
-            if(!successHandler){
-                throw "Please provide successHandler function as fourth parameter in qmService.get";
-            }
-            if(!options){
-                options = {};
-            }
+            if(!params){params = {};}
+            if(!successHandler){ throw "Please provide successHandler function as fourth parameter in qmService.get";}
+            if(!options){options = {};}
             var cache = false;
             options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
             delete params.stackTrace;
@@ -3046,9 +3040,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 params.cache = null;
             }
             if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
-                if(requestSpecificErrorHandler){
-                    requestSpecificErrorHandler("Too soon to make request");
-                }
+                if(requestSpecificErrorHandler){requestSpecificErrorHandler("Too soon to make request");}
                 return;
             }
             if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
@@ -3061,36 +3053,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             delete params.force;
             qmService.getAccessTokenFromAnySource().then(function(accessToken){
-                allowedParams.push('limit');
-                allowedParams.push('offset');
-                allowedParams.push('sort');
-                allowedParams.push('updatedAt');
-                // configure params
-                var urlParams = [];
-                for(var property in params){
-                    if(params.hasOwnProperty(property)){
-                        if(typeof params[property] !== "undefined" && params[property] !== null){
-                            urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
-                        }else{
-                            //console.warn("Not including parameter " + property + " in request because it is null or undefined");
-                        }
-                    }
-                }
                 var url = qm.api.getQuantiModoUrl(route);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(getGlobalParamsObject(), url);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(urlParams, url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                 var request = {
                     method: 'GET',
                     url: url,
                     responseType: 'json',
                     headers: {'Content-Type': "application/json"}
                 };
-                if(cache){
-                    request.cache = cache;
-                }
-                if(accessToken){
-                    request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};
-                }
+                if(cache){request.cache = cache;}
+                if(accessToken){request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
                 qmLog.debug('GET ' + request.url, null, options.stackTrace);
                 $http(request)
                     .success(function(data, status, headers){
