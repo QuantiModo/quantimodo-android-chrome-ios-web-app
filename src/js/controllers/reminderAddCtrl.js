@@ -539,7 +539,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 hide = true;
             }
             var number = getNumberOfUniqueValues($scope);
-            if(number && number > 10){hide = true;}
+            if(number && number > 30){hide = true;}
             $scope.state.hideDefaultValueField = hide;
         }
         function showMoreUnits(){
