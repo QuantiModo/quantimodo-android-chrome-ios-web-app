@@ -242,9 +242,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 validationFailure('Please select a unit for ' + r.variableName);
                 return false;
             }else{
-                r.unitId = getUnit().id;
+                r.unitId = getUnit($scope).id;
             }
-            var unit = getUnit();
+            var unit = getUnit($scope);
             if(unit && typeof unit.minimumValue !== "undefined" && unit.minimumValue !== null){
                 if(r.defaultValue !== null && r.defaultValue < unit.minimumValue){
                     validationFailure(unit.minimumValue + ' is the smallest possible value for the unit ' + unit.name +
@@ -657,7 +657,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
     }
     function getUnit(scope){
         scope = scope || $scope; // Not sure why this is necessary but $scope is undefined sometimes
-        return qm.unitsIndexedByAbbreviatedName[getUnitAbbreviatedName()];
+        return qm.unitsIndexedByAbbreviatedName[getUnitAbbreviatedName(scope)];
     }
     function getNumberOfUniqueValues(scope){
         scope = scope || $scope; // Not sure why this is necessary but $scope is undefined sometimes
