@@ -38,7 +38,9 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
         function setAuthorizedClients(response){
             var authorizedClients = response.authorizedClients || response;
             if(authorizedClients){
-                $scope.state.authorizedClients = authorizedClients;
+                $timeout(function(){
+                    $scope.state.authorizedClients = authorizedClients;
+                }, 0);
             }
             qmService.hideLoader();
         }
