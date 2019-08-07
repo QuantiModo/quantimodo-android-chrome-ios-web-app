@@ -183,7 +183,8 @@ var qm = {
             qm.api.requestLog.push({
                 time: qm.timeHelper.getCurrentLocalDateAndTime(),
                 name: functionName,
-                message: message
+                message: message,
+                params: requestParams
             });
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
@@ -999,6 +1000,7 @@ var qm = {
             "staging": "quantimodo",
             "studies": "quantimodo",
             "utopia": "quantimodo",
+            "patient": "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         },
         getDoctorRobotoAlias: function(appSettings){
@@ -1942,14 +1944,19 @@ var qm = {
             return x;
         },
         hideDriftButton: function(){
+            if(typeof drift === "undefined"){return;}
             console.log("called hide drift");
             drift.on('ready',function(api){
                 console.log("hiding drift");
                 api.widget.hide();
             })
-              
+
         },
         showDriftButton: function(){
+            if(typeof drift === "undefined"){
+                qm.qmLog.error("drift not defined!")
+                return;
+            }
             console.log("called show drift");
             drift.on('ready',function(api){
                 console.log("showing drift");
@@ -6715,6 +6722,13 @@ var qm = {
             qm.api.configureClient(arguments.callee.name, null, body);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
+                if(!data){
+                    qm.qmLog.error("No data from sendInvitation response", {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 var authorizedClients = data.authorizedClients || data;
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
@@ -6730,6 +6744,13 @@ var qm = {
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 var authorizedClients = data.authorizedClients || data;
+                if(!data){
+                    qm.qmLog.error("No data from getAuthorizedClientsFromApi response", {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
                 }
@@ -6783,6 +6804,13 @@ var qm = {
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 var authorizedClients = data.authorizedClients || data;
+                if(!data){
+                    qm.qmLog.error("No data from revokeClientAccess response for client "+clientIdToRevoke, {
+                        error: error,
+                        data: data,
+                        response: response
+                    });
+                }
                 if(authorizedClients){
                     qm.shares.saveAuthorizedClientsToLocalStorage(authorizedClients);
                 }
@@ -7257,7 +7285,8 @@ var qm = {
                 qm.qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
             }else{
-                qm.qmLog.debug(key + ' not found in localStorage');
+                // Too verbose.  Uncomment temporarily if necessary
+                //qm.qmLog.debug(key + ' not found in localStorage');
             }
             return null;
         },
@@ -8657,7 +8686,7 @@ var qm = {
             if(typeof drift !== "undefined"){
                 drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
                     email: user.email,
-                    name: user.displayName,            
+                    name: user.displayName,
                   })
             }
         },
@@ -8995,9 +9024,11 @@ var qm = {
                 requestParams.reason = reason;
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length){
-                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", {
+                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", 
+                        {
                             local: localVariables.length,
-                            api: variablesFromApi.length
+                            api: variablesFromApi.length,
+                            params: requestParams
                         });
                     }
                     sortUpdateSubtitlesAndReturnVariables(variablesFromApi);
