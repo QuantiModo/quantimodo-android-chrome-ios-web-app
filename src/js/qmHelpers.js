@@ -152,6 +152,24 @@ var qm = {
                 };
             };
         },
+        getDefaultHeaders: function(){
+            var headers = {
+                'X-Client-Id': qm.getClientId(),
+                'X-Platform': qm.platform.getCurrentPlatform(),
+                'X-App-Version': qm.appsManager.getAppVersion(),
+                'X-Framework': 'ionic'
+            };
+            if(typeof moment !== "undefined"){
+                if(typeof moment.tz === "undefined"){
+                    qmLog.error("moment.tz is not defined!");
+                } else {
+                    headers['X-Timezone'] = moment.tz.guess();
+                }
+            }
+            var token = qm.auth.getAccessToken();
+            if(token){headers['Authorization'] = 'Bearer ' + token;}
+            return headers;
+        },
         configureClient: function(functionName, errorHandler, requestParams){
             requestParams = requestParams || {};
             var minimumSecondsBetweenRequests = requestParams.minimumSecondsBetweenRequests || 1;
@@ -189,19 +207,7 @@ var qm = {
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
-            qmApiClient.defaultHeaders = {
-                'X-Client-Id': qm.getClientId(),
-                'X-Platform': qm.platform.getCurrentPlatform(),
-                'X-App-Version': qm.appsManager.getAppVersion(),
-                'X-Framework': 'ionic'
-            };
-            if(typeof moment !== "undefined"){
-                if(typeof moment.tz === "undefined"){
-                    qmLog.error("moment.tz is not defined!");
-                } else {
-                    qmApiClient.defaultHeaders['X-Timezone'] = moment.tz.guess();
-                }
-            }
+            qmApiClient.defaultHeaders = qm.api.getDefaultHeaders();
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
@@ -642,8 +648,10 @@ var qm = {
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qm.qmLog.pushDebug("Making get request to " + url);
-            fetch(url, {method: 'get'})
-                .then(function(response){
+            fetch(url, {
+                method: 'get',
+                headers: new Headers(qm.api.getDefaultHeaders())
+            }).then(function(response){
                     return response.json();
                 }).then(function(data){
                 if(successHandler){
@@ -663,6 +671,8 @@ var qm = {
         },
         getViaXhr: function(url, successHandler, errorHandler){
             var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = null; // Just return null instead of 500 page HTML
@@ -670,13 +680,13 @@ var qm = {
                     successHandler(responseObject);
                 }
             };
-            xhr.open('GET', url, true);
             xhr.send(null);
         },
         postViaFetch: function(body, url, successHandler){
             fetch(url, {
                 method: 'post',
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                headers: new Headers(qm.api.getDefaultHeaders())
             }).then(function(response){
                 qm.qmLog.info("Got " + response.status + " response from POST to " + url);
                 if(successHandler){
@@ -686,10 +696,21 @@ var qm = {
                 qm.qmLog.error("Error from POST to " + url + ": " + err);
             });
         },
+        addXhrHeaders: function(xhr){
+            var headers = qm.api.getDefaultHeaders();
+            for (var headerName in headers) {
+                if (headers.hasOwnProperty(headerName)) {
+                    var headerValue = headers[headerName];
+                    xhr.setRequestHeader(headerName, headerValue);
+                }
+            }
+            return xhr;
+        },
         postViaXhr: function(body, url, successHandler){
             var xhr = new XMLHttpRequest();   // new HttpRequest instance
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){//Call a function when the state changes.
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = xhr.responseText;
@@ -901,6 +922,9 @@ var qm = {
             }
             var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
             if(!clientId || clientId.toLowerCase() === appSettings.clientId.toLowerCase()){ // For some reason clientId from url is lowercase sometimes
+                return appSettings;
+            }
+            if(clientId === "physician"){
                 return appSettings;
             }
             return false;
@@ -3211,7 +3235,7 @@ var qm = {
             }
         }
     },
-    getAppSettings: function(successHandler){
+    getAppSettings: function(successHandler, errorHandler){
         if(!successHandler){
             var appSettings = qm.appsManager.getAppSettingsFromMemory();
             if(appSettings){
@@ -3220,7 +3244,7 @@ var qm = {
             console.debug("No app settings and no successHandler!"); // qm.qmLog here causes infinite loop
             return null;
         }
-        qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler);
+        qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler, errorHandler);
     },
     getClientId: function(successHandler){
         if(!successHandler){
@@ -7566,6 +7590,26 @@ var qm = {
                 string = string.substr(1);
             }
             return string;
+        },
+        slugify: function(str){
+            str = str.replace(/^\s+|\s+$/g, ''); // trim
+            str = str.toLowerCase();
+
+            // remove accents, swap ñ for n, etc
+            var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+            var to   = "aaaaeeeeiiiioooouuuunc------";
+
+            for (var i=0, l=from.length ; i<l ; i++)
+            {
+                str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+            }
+
+            str = str.replace('.', '-') // replace a dot by a dash
+                .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+                .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
+                .replace(/-+/g, '-'); // collapse dashes
+
+            return str;
         }
     },
     studyHelper: {
