@@ -1,5 +1,5 @@
-angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qmService",
-    function($scope, $state, qmService){
+angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qmService", "$timeout",
+    function($scope, $state, qmService, $timeout){
         $scope.controller_name = "DataSharingCtrl";
         $scope.state = {
             authorizedClients: null,
