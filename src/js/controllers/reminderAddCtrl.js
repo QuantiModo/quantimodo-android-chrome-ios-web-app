@@ -112,6 +112,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         });
         $scope.showMoreOptions = function(){
             $scope.state.showMoreOptions = true;
+            setHideDefaultValueField();
         };
         if($rootScope.user){
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
@@ -538,8 +539,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if(unitName === '/5' || unitName === '/10' || unitName === 'yes/no'){
                 hide = true;
             }
-            var number = getNumberOfUniqueValues($scope);
-            if(number && number > 30){hide = true;}
+            if(!$scope.state.showMoreOptions){
+                var number = getNumberOfUniqueValues($scope);
+                if(number && number > 30){hide = true;}
+            }
             $scope.state.hideDefaultValueField = hide;
         }
         function showMoreUnits(){
