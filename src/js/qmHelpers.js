@@ -5614,6 +5614,65 @@ var qm = {
                 qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
                 qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
             }
+        },
+        convertPushDataToWebNotificationOptions: function(pushData, appSettings){
+            // https://developers.google.com/web/fundamentals/push-notifications/notification-behaviour
+            var notificationOptions = {
+                actions: [],
+                requireInteraction: false,
+                body: pushData.message || "Click here for more options",
+                data: JSON.parse(JSON.stringify(pushData)),
+                //dir: NotificationDirection,
+                icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
+                //lang: string,
+                tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
+                silent: true,  // Why do we still hear sounds on Chrome for Android?
+                onClick: qm.push.notificationClick
+            };
+            try {
+                qm.allActions = JSON.parse(pushData.actions);
+                console.log("allActions", qm.allActions);
+                for (var i = 0; i < qm.allActions.length; i++) {
+                    notificationOptions.actions[i] = {
+                        action: qm.allActions[i].callback ||  qm.allActions[i].action || qm.allActions[i].functionName,
+                        title: qm.allActions[i].longTitle ||  qm.allActions[i].longTitle ||  qm.allActions[i].text
+                    };
+                }
+                if(typeof Notification !== "undefined"){
+                    var maxVisibleActions = Notification.maxActions;
+                    if (maxVisibleActions < 4) {
+                        console.log("This notification will only display " + maxVisibleActions   +" actions.");
+                    } else {
+                        console.log("This notification can display up to " + maxVisibleActions +" actions");
+                    }
+                }
+            } catch (error) {
+                console.error("could not parse actions in pushData: ", pushData);
+            }
+            //event.waitUntil(self.registration.showNotification(title, pushData));
+            console.log("Notification options", notificationOptions);
+            if(!pushData.title || pushData.title === "undefined"){
+                qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+
+                    JSON.stringify(notificationOptions));
+            }
+            var variableDisplayName = pushData.variableDisplayName || pushData.variableName;
+            if(variableDisplayName){
+                notificationOptions.title = variableDisplayName; // Exclude "Track" because it gets cut off
+                notificationOptions.body = "Record " + variableDisplayName + " or click here for more options";
+            }
+            return notificationOptions;
+        },
+        showWebNotification: function(pushData){
+            //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
+            console.log("push data: ", pushData);
+            if(!pushData.title && pushData.data) {
+                console.log("Provided entire payload to showNotification instead of just payload.data");
+                pushData = pushData.data;
+            }
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
+                notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, appSettings);
+                self.registration.showNotification(notificationOptions.title, notificationOptions);
+            });
         }
     },
     objectHelper: {

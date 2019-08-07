@@ -299,6 +299,36 @@ var qmTests = {
                     });
                 });
             }
+        },
+        parsePushDataTest: function(callback){
+            var pushData = {
+                actions: '[{"longTitle":"Rate 3\\/5","callback":"trackThreeRatingAction","modifiedValue":3,"action":"track","foreground":false,"shortTitle":"3\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_ok.png","accessibilityText":"3\\/5","functionName":"track","html":"<md-tooltip>Rate 3\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_ok.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":3,"modifiedValue":3,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 3 out of 5","text":"3\\/5","title":"3\\/5","tooltip":"Rate 3\\/5"},{"longTitle":"Rate 2\\/5","callback":"trackTwoRatingAction","modifiedValue":2,"action":"track","foreground":false,"shortTitle":"2\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_sad.png","accessibilityText":"2\\/5","functionName":"track","html":"<md-tooltip>Rate 2\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_sad.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":2,"modifiedValue":2,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 2 out of 5","text":"2\\/5","title":"2\\/5","tooltip":"Rate 2\\/5"},{"longTitle":"Rate 4\\/5","callback":"trackFourRatingAction","modifiedValue":4,"action":"track","foreground":false,"shortTitle":"4\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_happy.png","accessibilityText":"4\\/5","functionName":"track","html":"<md-tooltip>Rate 4\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_happy.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":4,"modifiedValue":4,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 4 out of 5","text":"4\\/5","title":"4\\/5","tooltip":"Rate 4\\/5"}]',
+                color: "#2196F3",
+                "content-available": "1",
+                "force-start": "1",
+                foreground: "false",
+                icon: "https://web.quantimo.do/img/variable_categories/emotions.png",
+                image: "",
+                isBackground: "true",
+                lastValue: "3",
+                message: "Pull down and select a value to record or tap to open inbox for more options",
+                notId: "1398",
+                secondToLastValue: "2",
+                soundName: "false",
+                thirdToLastValue: "4",
+                title: "Track Overall Mood",
+                trackingReminderNotificationId: "40611535",
+                unitAbbreviatedName: "/5",
+                url: "https://web.quantimo.do/#/app/reminders-inbox",
+                valence: "positive",
+                variableCategoryId: "1",
+                variableDisplayName: "Overall Mood",
+                variableName: "Overall Mood"
+            };
+            var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings());
+            assert(notificationOptions.length = 2);
+            assert(notificationOptions.title = "Overall Mood");
+            callback();
         }
     },
     logBugsnagLink: function(suite, start, end){
@@ -411,12 +441,19 @@ gulp.task('test-get-users', function(callback) {
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.tests.getUsersTest(callback);
 });
+gulp.task('test-push-parsing', function(callback) {
+    qm.currentTask = this.currentTask.name;
+    qmTests.getStaticData();
+    qmTests.setTestParams(this._params); // For tests triggered by gulp API
+    qmTests.tests.parsePushDataTest(callback);
+});
 gulp.task('unit-tests', function(callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     qmTests.runAllTestsForType('menu');
     runSequence(
+        'test-push-parsing',
         'test-get-common-variable',
         'test-record-measurement-intent',
         'test-get-units',
