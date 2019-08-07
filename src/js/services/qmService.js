@@ -3804,6 +3804,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var setupGoogleAnalytics = function(user, appSettings){
             if(!appSettings){appSettings = qm.getAppSettings();}
             if(!appSettings){
+                appSettings = qm.getAppSettings();
                 qmLog.errorAndExceptionTestingOrDevelopment("No appSettings for googleAnalyticsTrackingIds");
                 return;
             }
