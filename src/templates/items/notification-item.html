@@ -41,13 +41,29 @@
 <label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null"
        class="item item-input"
        style="display: flex; justify-content: center;">
-    <input type="number" ng-model="trackingReminderNotification.total" id="emptyValueField"
+    Enter Value
+    <input id="emptyValueField"
+           type="number"
+           ng-model="trackingReminderNotification.total"
            ng-click="onTextClick($event)" placeholder="Enter value"
-           style="text-align: center; max-width: 125px; padding-right: 10px">
-    <span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label">
-        {{trackingReminderNotification.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;"
-                                                                      class="icon positive ion-checkmark-round"></i>
+           style="
+                    text-align: center;
+                    max-width: 75px;
+                    padding-right: 0px;
+                    border: 2px solid red;
+                    border-radius: 4px;
+                    margin: 5px;
+            ">
+    <span id="value-field-unit-name"
+            on-tap="trackByValueField(trackingReminderNotification, $event)">
+        {{trackingReminderNotification.unitAbbreviatedName}} &nbsp
     </span>
+    <button id="record-value-field-button"
+            class="button button-assertive"
+            style="border-radius: 74px;"
+            ng-click="trackByValueField(trackingReminderNotification, $event)">
+        <i class="icon ion-checkmark-round">&nbsp Record</i>
+    </button>
 </label>
 <span class="row"
       ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null"
