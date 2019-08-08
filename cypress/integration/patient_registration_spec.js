@@ -1,4 +1,6 @@
+
 var appHostName = 'https://local.quantimo.do';
+if(process.env.APP_HOST_NAME){appHostName = process.env.APP_HOST_NAME;}
 var unixTime = Math.floor(Date.now() / 1000);
 var physicianOAuthUrl = appHostName+ '/api/v1/oauth/authorize?response_type=token&scope=readmeasurements&client_id=m-thinkbynumbers-org';
 var registerUrl = appHostName+ '/api/v2/auth/register';
@@ -6,33 +8,58 @@ var usernameInput = '#username-group > input';
 var emailInput = '#email-group > input';
 var pw = '#password-group > input';
 var pwConfirm = '#password-confirm-group > input';
-var registerButton = '#register-button-group > div > input.btn.btn-primary';
+var registerButton = '#submit-button-group > div > input.btn.btn-primary';
 var acceptButton = '#button-approve';
+var errorMessageSelector = '#error-messages > li';
+var testUsername = 'testuser'+unixTime;
+var testEmail = 'testuser'+unixTime+'@gmail.com';
 
-describe('Existing Username Test', function() {
-    it('Creates an Account and is sent back the the OAuth url', function() {
+function enterPasswordsAndClickRegister(){
+    cy.get(pw).type('testing123');
+    cy.get(pwConfirm).type('testing123');
+    cy.get(registerButton).click();
+}
+
+function validRegistration(){
+    changeTestUsernameAndEmail();
+    cy.get(usernameInput)
+        .clear()
+        .type(testUsername);
+    cy.get(emailInput)
+        .clear()
+        .type(testEmail);
+    enterPasswordsAndClickRegister();
+}
+
+function changeTestUsernameAndEmail(){
+    unixTime = Math.floor(Date.now() / 1000);
+    testUsername = 'testuser'+unixTime;
+    testEmail = 'testuser'+unixTime+'@gmail.com';
+}
+
+function checkIntroWithAccessToken(){
+    cy.url().should('include', 'intro');
+    cy.url().should('include', 'quantimodoAccessToken');
+}
+
+describe('Auth Tests', function() {
+    it.only('Patient creates account and is sent to OAuth url', function() {
+        cy.clearCookies();
+        cy.visit(physicianOAuthUrl);
+        validRegistration();
+        cy.url().should('include', physicianOAuthUrl);
+        cy.get(acceptButton).click();
+        checkIntroWithAccessToken();
+    });
+
+    it('Tries to create account with exiting username', function() {
         cy.clearCookies();
         cy.visit(registerUrl);
         cy.get(usernameInput).type('mike');
-        cy.get(emailInput).type('testuser'+unixTime+'@gmail.com');
-        cy.get(pw).type('testing123');
-        cy.get(pwConfirm).type('testing123');
-        cy.get(registerButton).click();
-    })
+        cy.get(emailInput).type(testEmail);
+        enterPasswordsAndClickRegister();
+        cy.contains(errorMessageSelector, 'The user login has already been taken.');
+        validRegistration();
+        checkIntroWithAccessToken();
+    });
 });
-
-describe('Physician Auth Test', function() {
-    it('Creates an Account and is sent back the the OAuth url', function() {
-        cy.clearCookies();
-        cy.visit(physicianOAuthUrl);
-        cy.get(usernameInput).type('testuser'+unixTime);
-        cy.get(emailInput).type('testuser'+unixTime+'@gmail.com');
-        cy.get(pw).type('testing123');
-        cy.get(pwConfirm).type('testing123');
-        cy.get(registerButton).click();
-        cy.url().should('include', physicianOAuthUrl);
-        cy.get(acceptButton).click();
-        cy.url().should('include', physicianOAuthUrl);
-    })
-});
-
