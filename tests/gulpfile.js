@@ -79,12 +79,12 @@ var qmTests = {
             var matchedEntities = qm.dialogFlow.getEntitiesFromUserInput(userInput);
             for (var expectedEntityName in expectedEntities) {
                 if (!expectedEntities.hasOwnProperty(expectedEntityName)) {continue;}
-                assert(typeof matchedEntities[expectedEntityName] !== "undefined", expectedEntityName + " not in matchedEntities!");
-                assert(matchedEntities[expectedEntityName].matchedEntryValue === expectedEntities[expectedEntityName]);
+                qm.assert.doesNotEqual(typeof matchedEntities[expectedEntityName], "undefined", expectedEntityName + " not in matchedEntities!");
+                qm.assert.equals(matchedEntities[expectedEntityName].matchedEntryValue, expectedEntities[expectedEntityName]);
             }
             var expectedIntent = intents[expectedIntentName];
             var triggerPhraseMatchedIntent = qm.dialogFlow.getIntentMatchingCommandOrTriggerPhrase(userInput);
-            assert(triggerPhraseMatchedIntent.name === expectedIntentName);
+            qm.assert.equals(triggerPhraseMatchedIntent.name, expectedIntentName);
             var score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
             var filledParameters = expectedIntent.parameters;
             var expectedParameterName;
@@ -93,24 +93,24 @@ var qmTests = {
                 if(typeof filledParameters[expectedParameterName] === "undefined"){
                     score = qm.dialogFlow.calculateScoreAndFillParameters(expectedIntent, matchedEntities, userInput);
                 }
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+                qm.assert.doesNotEqual(typeof filledParameters[expectedParameterName], "undefined", expectedParameterName + " not in filledParameters!");
+                qm.assert.equals(filledParameters[expectedParameterName], expectedParameters[expectedParameterName]);
             }
-            assert(score > -2);
+            qm.assert.greaterThan(-2, score);
             var matchedIntent = qm.dialogFlow.getIntent(userInput);
             filledParameters = matchedIntent.parameters;
-            assert(matchedIntent.name === expectedIntentName);
+            qm.assert.equals(matchedIntent.name, expectedIntentName);
             for (expectedParameterName in expectedParameters) {
                 if (!expectedParameters.hasOwnProperty(expectedParameterName)) {continue;}
-                assert(typeof filledParameters[expectedParameterName] !== "undefined", expectedParameterName + " not in filledParameters!");
-                assert(filledParameters[expectedParameterName] === expectedParameters[expectedParameterName]);
+                qm.assert.doesNotEqual(typeof filledParameters[expectedParameterName], "undefined", expectedParameterName + " not in filledParameters!");
+                qm.assert.equals(filledParameters[expectedParameterName], expectedParameters[expectedParameterName]);
             }
             if(callback){callback();}
         },
         getUnitsTest: function(callback){
             var units = qm.unitHelper.getAllUnits();
             qmLog.debug("units:", units);
-            assert(units.length > 5);
+            qm.assert.greaterThan(5, units.length);
             if(callback){callback();}
         },
         getUsersTest: function(callback){
@@ -118,7 +118,7 @@ var qmTests = {
             qm.storage.setItem(qm.items.apiUrl, 'local.quantimo.do');
             qm.userHelper.getUsersFromApi(function(users){
                 qmLog.debug("users:", users);
-                assert(users.length > 0);
+                qm.assert.greaterThan(0, users.length);
                 if(callback){callback();}
             }, function(error){
                 throw error;
@@ -274,7 +274,7 @@ var qmTests = {
                         qmLog.info('=== Got ' + variables.length + ' variables matching '+requestParams.searchPhrase);
                         qm.assert.doesNotHaveUserId(variables);
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
-                        assert(variables.length > 5);
+                        qm.assert.greaterThan(5, variables.length);
                         var variable5 = variables[4];
                         var timestamp = qm.timeHelper.getUnixTimestampInSeconds();
                         qm.variablesHelper.setLastSelectedAtAndSave(variable5);
@@ -288,9 +288,9 @@ var qmTests = {
                             qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
                                 qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                                 var variable1 = variables[0];
-                                assert(variable1.lastSelectedAt === timestamp);
-                                assert(variable1.variableId === variable5.variableId);
-                                assert(qm.api.requestLog.length === 1);
+                                qm.assert.equals(variable1.lastSelectedAt, timestamp);
+                                qm.assert.equals(variable1.variableId, variable5.variableId);
+                                qm.assert.equals(qm.api.requestLog.length, 1);
                                 if(callback){callback();}
                             });
                         }, function(error){
@@ -299,6 +299,27 @@ var qmTests = {
                     });
                 });
             }
+        },
+        parseCorrelationNotificationTest: function(cb){
+            var pushData = {
+                color: "#2196F3",
+                "content-available": "1",
+                "force-start": "0",
+                forceStart: "0",
+                foreground: "false",
+                image: "https://web.quantimo.do/img/variable_categories/symptoms.png",
+                isBackground: "true",
+                message: "Your EffectVariableName is generally 40% higher after $1.1 over the previous 30 days. ",
+                notId: "100624100625",
+                soundName: "false",
+                title: "↑Higher Purchases Of CauseVariableName Predicts Significantly ↑Higher EffectVariableName",
+                url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=quantimodo",
+                user: "1"
+            };
+            var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings());
+            qm.assert.equals(notificationOptions.title, pushData.title);
+            qm.assert.equals(notificationOptions.body, pushData.message);
+            cb();
         },
         parsePushDataTest: function(callback){
             var pushData = {
@@ -326,8 +347,8 @@ var qmTests = {
                 variableName: "Overall Mood"
             };
             var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings());
-            assert(notificationOptions.length = 2);
-            assert(notificationOptions.title = "Overall Mood");
+            qm.assert.equals(3, notificationOptions.actions.length);
+            qm.assert.equals("Overall Mood", notificationOptions.title);
             callback();
         }
     },
@@ -445,7 +466,9 @@ gulp.task('test-push-parsing', function(callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
-    qmTests.tests.parsePushDataTest(callback);
+    qmTests.tests.parsePushDataTest(function(){
+        qmTests.tests.parseCorrelationNotificationTest(callback);
+    });
 });
 gulp.task('unit-tests', function(callback) {
     qm.currentTask = this.currentTask.name;

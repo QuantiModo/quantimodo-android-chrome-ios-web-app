@@ -1582,6 +1582,11 @@ var qm = {
                 qm.assert.throwTestException("Actual value " + actual + " should not equal " + expected, message);
             }
         },
+        greaterThan: function(expected, actual, message){
+            if(actual <= expected){
+                qm.assert.throwTestException("Actual value " + actual + " shoudl be greater than " + expected, message);
+            }
+        },
         doesNotContain: function(expected, actual, message){
             if(actual.indexOf(expected) !== -1){
                 qm.assert.throwTestException("Actual value " + actual + " should not contain " + expected, message);
@@ -5627,7 +5632,8 @@ var qm = {
                 //lang: string,
                 tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
                 silent: true,  // Why do we still hear sounds on Chrome for Android?
-                onClick: qm.push.notificationClick
+                onClick: qm.push.notificationClick,
+                title: pushData.title
             };
             try {
                 qm.allActions = JSON.parse(pushData.actions);
