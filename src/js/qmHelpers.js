@@ -152,6 +152,24 @@ var qm = {
                 };
             };
         },
+        getDefaultHeaders: function(){
+            var headers = {
+                'X-Client-Id': qm.getClientId(),
+                'X-Platform': qm.platform.getCurrentPlatform(),
+                'X-App-Version': qm.appsManager.getAppVersion(),
+                'X-Framework': 'ionic'
+            };
+            if(typeof moment !== "undefined"){
+                if(typeof moment.tz === "undefined"){
+                    qmLog.error("moment.tz is not defined!");
+                } else {
+                    headers['X-Timezone'] = moment.tz.guess();
+                }
+            }
+            var token = qm.auth.getAccessToken();
+            if(token){headers['Authorization'] = 'Bearer ' + token;}
+            return headers;
+        },
         configureClient: function(functionName, errorHandler, requestParams){
             requestParams = requestParams || {};
             var minimumSecondsBetweenRequests = requestParams.minimumSecondsBetweenRequests || 1;
@@ -189,19 +207,7 @@ var qm = {
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
-            qmApiClient.defaultHeaders = {
-                'X-Client-Id': qm.getClientId(),
-                'X-Platform': qm.platform.getCurrentPlatform(),
-                'X-App-Version': qm.appsManager.getAppVersion(),
-                'X-Framework': 'ionic'
-            };
-            if(typeof moment !== "undefined"){
-                if(typeof moment.tz === "undefined"){
-                    qmLog.error("moment.tz is not defined!");
-                } else {
-                    qmApiClient.defaultHeaders['X-Timezone'] = moment.tz.guess();
-                }
-            }
+            qmApiClient.defaultHeaders = qm.api.getDefaultHeaders();
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
@@ -291,67 +297,64 @@ var qm = {
             }
             return errorMessage;
         },
-        addGlobalParams: function(urlParams){
-            if(urlParams && qm.functionHelper.isFunction(urlParams)){
-                throw "params should not be a function!"
-            }
+        addGlobalParams: function(params){
+            if(params && qm.functionHelper.isFunction(params)){throw "params should not be a function!"}
             var url;
-            if(!urlParams){
-                urlParams = {};
-            }
-            delete urlParams.force;  // Used locally only
-            delete urlParams.excludeLocal;  // Used locally only
-            if(typeof urlParams === "string"){
-                url = urlParams;
+            if(!params){params = {};}
+            delete params.force;  // Used locally only
+            delete params.excludeLocal;  // Used locally only
+            if(typeof params === "string"){
+                url = params;
                 qm.urlHelper.validateUrl(url);
-                urlParams = {};
+                params = {};
             }
-            if(qm.appsManager.getAppSettingsFromMemory()){
-                urlParams.appName = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().appDisplayName);
-                if(qm.getAppSettings().versionNumber){
-                    urlParams.appVersion = encodeURIComponent(qm.appsManager.getAppSettingsFromMemory().versionNumber);
+            var appSettings = qm.appsManager.getAppSettingsFromMemory();
+            if(appSettings){
+                params.appName = encodeURIComponent(appSettings.appDisplayName);
+                if(appSettings.versionNumber){
+                    params.appVersion = encodeURIComponent(appSettings.versionNumber);
                 }else{
                     qm.qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
-            if(!urlParams.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                urlParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            if(!params.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
+                params.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
             }
-            if(!urlParams.clientId && qm.api.getClientId()){
-                urlParams.clientId = qm.api.getClientId();
+            if(!params.clientId && qm.api.getClientId()){
+                params.clientId = qm.api.getClientId();
             }
-            urlParams.platform = qm.platform.getCurrentPlatform();
+            params.platform = qm.platform.getCurrentPlatform();
             if(qm.devCredentials){
                 if(qm.devCredentials.username){
-                    urlParams.log = encodeURIComponent(qm.devCredentials.username);
+                    params.log = encodeURIComponent(qm.devCredentials.username);
                 }
                 if(qm.devCredentials.password){
-                    urlParams.pwd = encodeURIComponent(qm.devCredentials.password);
+                    params.pwd = encodeURIComponent(qm.devCredentials.password);
                 }
             }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
                 if(qm.urlHelper.getParam(passableUrlParameters[i])){
-                    urlParams[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);
+                    params[passableUrlParameters[i]] = qm.urlHelper.getParam(passableUrlParameters[i]);
                 }
             }
-            for(var property in urlParams){
-                if(urlParams.hasOwnProperty(property)){
-                    if(typeof urlParams[property] === "undefined"){
+            for(var property in params){
+                if(params.hasOwnProperty(property)){
+                    if(typeof params[property] === "undefined"){
                         qm.qmLog.error(property + " is undefined!");
-                        delete urlParams[property];
+                        delete params[property];
                     }
-                    if(urlParams[property] === ""){
+                    if(params[property] === ""){
                         qm.qmLog.error(property + " is empty string!");
-                        delete urlParams[property];
+                        delete params[property];
                     }
                 }
             }
             if(url){
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(urlParams, url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                 return url;
             }
-            return urlParams;
+            return params;
         },
         getClientIdFromBuilderQueryOrSubDomain: function(){
             if(qm.appMode.isPhysician()){return "physician";}
@@ -371,8 +374,9 @@ var qm = {
             if(qm.platform.isBackEnd() && typeof process.env.QUANTIMODO_CLIENT_ID !== "undefined"){
                 return process.env.QUANTIMODO_CLIENT_ID;
             }
-            if(!qm.clientId && qm.getAppSettings()){
-                qm.clientId = qm.getAppSettings().clientId;
+            var appSettings = qm.getAppSettings();
+            if(!qm.clientId && appSettings){
+                qm.clientId = appSettings.clientId;
             }
             // DON'T DO THIS
             // if(!clientId && qm.platform.isMobile()){
@@ -644,8 +648,10 @@ var qm = {
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qm.qmLog.pushDebug("Making get request to " + url);
-            fetch(url, {method: 'get'})
-                .then(function(response){
+            fetch(url, {
+                method: 'get',
+                headers: new Headers(qm.api.getDefaultHeaders())
+            }).then(function(response){
                     return response.json();
                 }).then(function(data){
                 if(successHandler){
@@ -665,6 +671,8 @@ var qm = {
         },
         getViaXhr: function(url, successHandler, errorHandler){
             var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = null; // Just return null instead of 500 page HTML
@@ -672,13 +680,13 @@ var qm = {
                     successHandler(responseObject);
                 }
             };
-            xhr.open('GET', url, true);
             xhr.send(null);
         },
         postViaFetch: function(body, url, successHandler){
             fetch(url, {
                 method: 'post',
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                headers: new Headers(qm.api.getDefaultHeaders())
             }).then(function(response){
                 qm.qmLog.info("Got " + response.status + " response from POST to " + url);
                 if(successHandler){
@@ -688,10 +696,21 @@ var qm = {
                 qm.qmLog.error("Error from POST to " + url + ": " + err);
             });
         },
+        addXhrHeaders: function(xhr){
+            var headers = qm.api.getDefaultHeaders();
+            for (var headerName in headers) {
+                if (headers.hasOwnProperty(headerName)) {
+                    var headerValue = headers[headerName];
+                    xhr.setRequestHeader(headerName, headerValue);
+                }
+            }
+            return xhr;
+        },
         postViaXhr: function(body, url, successHandler){
             var xhr = new XMLHttpRequest();   // new HttpRequest instance
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){//Call a function when the state changes.
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = xhr.responseText;
@@ -736,8 +755,9 @@ var qm = {
                         if(qm.chrome.getChromeManifest()){
                             return qm.chrome.getChromeManifest().version;
                         }
-                        if(qm.getAppSettings()){
-                            return qm.getAppSettings().versionNumber;
+                        var appSettings = qm.getAppSettings();
+                        if(appSettings){
+                            return appSettings.versionNumber;
                         }
                         return qm.urlHelper.getParam('appVersion');
                     }
@@ -861,8 +881,9 @@ var qm = {
             return qm.privateConfig.client_secrets.Web;
         },
         getAppSettingsLocallyOrFromApi: function(successHandler, errorHandler){
-            if(qm.getAppSettings() && qm.getAppSettings().clientId){
-                successHandler(qm.getAppSettings());
+            var appSettings = qm.getAppSettings();
+            if(appSettings && appSettings.clientId){
+                successHandler(appSettings);
                 return;
             }
             var localStorageKey = qm.items.appSettings;
@@ -901,6 +922,9 @@ var qm = {
             }
             var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
             if(!clientId || clientId.toLowerCase() === appSettings.clientId.toLowerCase()){ // For some reason clientId from url is lowercase sometimes
+                return appSettings;
+            }
+            if(clientId === "physician"){
                 return appSettings;
             }
             return false;
@@ -988,19 +1012,19 @@ var qm = {
         // SubDomain : Filename
         appConfigFileNames: {
             "app": "quantimodo",
-            "energymodo": "energymodo",
             "default": "default",
+            "energymodo": "energymodo",
             "ionic": "quantimodo",
             "local": "quantimodo",
             "medimodo": "medimodo",
             "mindfirst": "mindfirst",
             "moodimodo": "moodimodo",
             "oauth": "quantimodo",
+            "patient": "quantimodo",
             "quantimodo": "quantimodo",
             "staging": "quantimodo",
             "studies": "quantimodo",
             "utopia": "quantimodo",
-            "patient": "quantimodo",
             "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
         },
         getDoctorRobotoAlias: function(appSettings){
@@ -1789,8 +1813,9 @@ var qm = {
             qm.auth.openBrowserWindowAndGetParameterFromRedirect(url, redirectUrl, 'code', successHandler);
         },
         getRedirectUri: function(){
-            if(qm.getAppSettings().redirectUri){
-                return qm.getAppSettings().redirectUri;
+            var appSettings = qm.getAppSettings();
+            if(appSettings && appSettings.redirectUri){
+                return appSettings.redirectUri;
             }
             return qm.api.getBaseUrl() + '/callback/';
         },
@@ -3176,8 +3201,9 @@ var qm = {
             if(qm.privateConfig && qm.privateConfig.FOURSQUARE_CLIENT_ID){/** @namespace qm.privateConfig.FOURSQUARE_CLIENT_ID */
                 return qm.privateConfig.FOURSQUARE_CLIENT_ID;
             }
-            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID){
-                return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_ID;
+            var appSettings = qm.getAppSettings();
+            if(appSettings && appSettings.privateConfig && appSettings.privateConfig.FOURSQUARE_CLIENT_ID){
+                return appSettings.privateConfig.FOURSQUARE_CLIENT_ID;
             }
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
             if(connector){
@@ -3189,8 +3215,9 @@ var qm = {
             if(qm.privateConfig && qm.privateConfig.FOURSQUARE_CLIENT_SECRET){
                 return qm.privateConfig.FOURSQUARE_CLIENT_SECRET;
             }
-            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET){
-                return qm.getAppSettings().privateConfig.FOURSQUARE_CLIENT_SECRET;
+            var appSettings = qm.getAppSettings();
+            if(appSettings && appSettings.privateConfig && appSettings.privateConfig.FOURSQUARE_CLIENT_SECRET){
+                return appSettings.privateConfig.FOURSQUARE_CLIENT_SECRET;
             }
             var connector = qm.connectorHelper.getConnectorByName('foursquare');
             if(connector){/** @namespace connector.connectorClientSecret */
@@ -3202,12 +3229,13 @@ var qm = {
             if(qm.privateConfig && qm.privateConfig.GOOGLE_MAPS_API_KEY){
                 return qm.privateConfig.GOOGLE_MAPS_API_KEY;
             }
-            if(qm.getAppSettings().privateConfig && qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY){
-                return qm.getAppSettings().privateConfig.GOOGLE_MAPS_API_KEY;
+            var appSettings = qm.getAppSettings();
+            if(appSettings && appSettings.privateConfig && appSettings.privateConfig.GOOGLE_MAPS_API_KEY){
+                return appSettings.privateConfig.GOOGLE_MAPS_API_KEY;
             }
         }
     },
-    getAppSettings: function(successHandler){
+    getAppSettings: function(successHandler, errorHandler){
         if(!successHandler){
             var appSettings = qm.appsManager.getAppSettingsFromMemory();
             if(appSettings){
@@ -3216,7 +3244,7 @@ var qm = {
             console.debug("No app settings and no successHandler!"); // qm.qmLog here causes infinite loop
             return null;
         }
-        qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler);
+        qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler, errorHandler);
     },
     getClientId: function(successHandler){
         if(!successHandler){
@@ -3226,8 +3254,9 @@ var qm = {
         }
     },
     getPrimaryOutcomeVariable: function(){
-        if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableDetails){
-            return qm.getAppSettings().primaryOutcomeVariableDetails;
+        var appSettings = qm.getAppSettings();
+        if(appSettings && appSettings.primaryOutcomeVariableDetails){
+            return appSettings.primaryOutcomeVariableDetails;
         }
         var variables = {
             "Overall Mood": {
@@ -3262,8 +3291,8 @@ var qm = {
                 averageText: "Your average energy level is "
             }
         };
-        if(qm.getAppSettings() && qm.getAppSettings().primaryOutcomeVariableName){
-            return variables[qm.getAppSettings().primaryOutcomeVariableName];
+        if(appSettings && appSettings.primaryOutcomeVariableName){
+            return variables[appSettings.primaryOutcomeVariableName];
         }
         return variables['Overall Mood'];
     },
@@ -3271,7 +3300,9 @@ var qm = {
         return qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
     },
     getSourceName: function(){
-        return qm.appsManager.getAppSettingsFromMemory().appDisplayName + " for " + qm.platform.getCurrentPlatform();
+        var appSettings = qm.appsManager.getAppSettingsFromMemory();
+        if(!appSettings){return null;}
+        return appSettings.appDisplayName + " for " + qm.platform.getCurrentPlatform();
     },
     getUser: function(successHandler, errorHandler){
         if(!successHandler){
@@ -5583,6 +5614,65 @@ var qm = {
                 qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
                 qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
             }
+        },
+        convertPushDataToWebNotificationOptions: function(pushData, appSettings){
+            // https://developers.google.com/web/fundamentals/push-notifications/notification-behaviour
+            var notificationOptions = {
+                actions: [],
+                requireInteraction: false,
+                body: pushData.message || "Click here for more options",
+                data: JSON.parse(JSON.stringify(pushData)),
+                //dir: NotificationDirection,
+                icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
+                //lang: string,
+                tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
+                silent: true,  // Why do we still hear sounds on Chrome for Android?
+                onClick: qm.push.notificationClick
+            };
+            try {
+                qm.allActions = JSON.parse(pushData.actions);
+                console.log("allActions", qm.allActions);
+                for (var i = 0; i < qm.allActions.length; i++) {
+                    notificationOptions.actions[i] = {
+                        action: qm.allActions[i].callback ||  qm.allActions[i].action || qm.allActions[i].functionName,
+                        title: qm.allActions[i].longTitle ||  qm.allActions[i].longTitle ||  qm.allActions[i].text
+                    };
+                }
+                if(typeof Notification !== "undefined"){
+                    var maxVisibleActions = Notification.maxActions;
+                    if (maxVisibleActions < 4) {
+                        console.log("This notification will only display " + maxVisibleActions   +" actions.");
+                    } else {
+                        console.log("This notification can display up to " + maxVisibleActions +" actions");
+                    }
+                }
+            } catch (error) {
+                console.error("could not parse actions in pushData: ", pushData);
+            }
+            //event.waitUntil(self.registration.showNotification(title, pushData));
+            console.log("Notification options", notificationOptions);
+            if(!pushData.title || pushData.title === "undefined"){
+                qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+
+                    JSON.stringify(notificationOptions));
+            }
+            var variableDisplayName = pushData.variableDisplayName || pushData.variableName;
+            if(variableDisplayName){
+                notificationOptions.title = variableDisplayName; // Exclude "Track" because it gets cut off
+                notificationOptions.body = "Record " + variableDisplayName + " or click here for more options";
+            }
+            return notificationOptions;
+        },
+        showWebNotification: function(pushData){
+            //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
+            console.log("push data: ", pushData);
+            if(!pushData.title && pushData.data) {
+                console.log("Provided entire payload to showNotification instead of just payload.data");
+                pushData = pushData.data;
+            }
+            qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
+                notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, appSettings);
+                self.registration.showNotification(notificationOptions.title, notificationOptions);
+            });
         }
     },
     objectHelper: {
@@ -5905,7 +5995,9 @@ var qm = {
             if(!qm.platform.getWindow()){
                 return false;
             }
-            return qm.getAppSettings().designMode;
+            var appSettings = qm.getAppSettings();
+            if(appSettings){return appSettings.designMode;}
+            return false;
         },
         browser: {
             get: function(){
@@ -7557,6 +7649,26 @@ var qm = {
                 string = string.substr(1);
             }
             return string;
+        },
+        slugify: function(str){
+            str = str.replace(/^\s+|\s+$/g, ''); // trim
+            str = str.toLowerCase();
+
+            // remove accents, swap ñ for n, etc
+            var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+            var to   = "aaaaeeeeiiiioooouuuunc------";
+
+            for (var i=0, l=from.length ; i<l ; i++)
+            {
+                str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+            }
+
+            str = str.replace('.', '-') // replace a dot by a dash
+                .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+                .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
+                .replace(/-+/g, '-'); // collapse dashes
+
+            return str;
         }
     },
     studyHelper: {
@@ -8638,7 +8750,7 @@ var qm = {
             function callback(error, data, response){
                 qm.api.responseHandler(error, data, response, successHandler);
             }
-            apiInstance.deleteUser(reason, {clientId: qm.getAppSettings().clientId}, callback);
+            apiInstance.deleteUser(reason, {clientId: qm.getClientId()}, callback);
         },
         getUserFromLocalStorage: function(successHandler){
             var user = qm.storage.getItem(qm.items.user);
