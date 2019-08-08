@@ -7,9 +7,13 @@
     </span>
         <span style="text-align: center; height: 40px; line-height: 40px; white-space: nowrap; font-family: 'Open Sans', sans-serif;">
             <p ng-if="!platform.isMobile"
-                style="font-size: 24px; color: white; margin-left: 50px; margin-right: 50px; white-space: normal;">{{card.title || card.headerTitle}}</p>
+                style="font-size: 24px; color: white; margin-left: 50px; margin-right: 50px; white-space: normal;">
+                {{card.title || card.headerTitle}}
+            </p>
             <p ng-if="platform.isMobile"
-                style="font-size: 18px; color: white; margin-left: 50px; margin-right: 50px; white-space: normal;">{{card.title|| card.headerTitle}}</p>
+                style="font-size: 18px; color: white; margin-left: 50px; margin-right: 50px; white-space: normal;">
+                {{card.title|| card.headerTitle}}
+            </p>
         </span>
         <button id="closeButton" class="button button-clear button-assertive" ng-click="card.hide = true;"
                 style="position: absolute; top: 10px; right: 10px; font-size: 25px;"><i class="ion-close-round"></i>
@@ -33,4 +37,4 @@
             </div>
         </div>
     </div>
-</div>    
+</div>
