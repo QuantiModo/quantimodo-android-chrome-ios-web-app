@@ -48,27 +48,28 @@
         <i class="ion-settings"> &nbsp; Settings</i>
     </button>
 </div>
-<label id="value-input-field"
-        ng-if="trackingReminderNotification.inputType === 'value'"
-       class="item-input"
-       style="display: flex; justify-content: center;">
-    Enter Value
-    <input id="emptyValueField"
-           type="number"
-           ng-model="trackingReminderNotification.total"
-           ng-click="onTextClick($event)" placeholder="Enter value"
-           style="
+<div class="row" ng-if="trackingReminderNotification.inputType === 'value'">
+    <label id="value-input-field"
+           class="item-input"
+           style="display: flex; justify-content: center;">
+        Enter Value
+        <input id="emptyValueField"
+               type="number"
+               ng-model="trackingReminderNotification.total"
+               ng-click="onTextClick($event)" placeholder="Enter value"
+               style="
                     text-align: center;
-                    max-width: 75px;
-                    padding-right: 0px;
+                    max-width: 100px;
+                    padding-right: 0;
                     border: 2px solid red;
                     border-radius: 4px;
                     margin: 5px;
             ">
-    <span id="value-field-unit-name"
-            on-tap="trackByValueField(trackingReminderNotification, $event)">
+        <span id="value-field-unit-name"
+              on-tap="trackByValueField(trackingReminderNotification, $event)">
         {{trackingReminderNotification.unitAbbreviatedName}} &nbsp
     </span>
+    </label>
     <button id="record-value-field-button"
             class="button button-assertive"
             style="border-radius: 74px;"
@@ -79,7 +80,7 @@
             </span>
         </i>
     </button>
-</label>
+</div>
 <span id="last-values-buttons"
       class="row"
       ng-if="trackingReminderNotification.inputType === 'value'"

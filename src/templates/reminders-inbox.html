@@ -29,15 +29,18 @@
              ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
-                <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
+                <div ng-hide="hideNavigationMenu"
+                     class="item item-divider">
+                    {{divider.name}}
                     <a style="float: right; margin: 5px; cursor: pointer;"
-                       ng-click="refreshTrackingReminderNotifications()"><i
-                            class="icon ion-refresh">&nbsp;Refresh</i></a>
+                       ng-click="refreshTrackingReminderNotifications()">
+                        <i class="icon ion-refresh">&nbsp;Refresh</i>
+                    </a>
                 </div>
                 <div id="notification-item"
                     ng-show="!trackingReminderNotification.hide"
                     class="item"
-                    ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
+                    ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications track by trackingReminderNotification.id"
                     ng-init="trackingReminderNotificationIndex = $index">
                     <div style="padding-bottom:10px;">
                         <span ng-include="'templates/items/notification-item.html'"></span>
