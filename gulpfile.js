@@ -1324,7 +1324,7 @@ var chromeScripts = [
     'js/qmChrome.js',
     'lib/underscore/underscore-min.js'
 ];
-if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
+//if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 function deleteFile(path){
     if (fs.existsSync(path)) {
         return cleanFiles([path]);
@@ -2862,7 +2862,7 @@ gulp.task('chromeBackgroundJS', [], function () {
         chromeScriptsWithBase[i] = base + chromeScripts[i];
     }
     return gulp.src(chromeScriptsWithBase)
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(concat(chromeBackgroundJsFilename))
         .pipe(gulp.dest(chromeExtensionBuildPath));
     //return gulp.src(chromeScriptsWithBase).pipe(babel({presets: ['es2015']})).pipe(uglify()).pipe(gulp.dest(chromeExtensionBuildPath));
