@@ -41,7 +41,13 @@ function checkIntroWithAccessToken(){
     cy.url().should('include', 'intro');
     cy.url().should('include', 'quantimodoAccessToken');
 }
-
+function skipIntro(){
+    cy.get('.menu-content > .view-container > .pane > .slider > .slider-slides').click();
+    cy.get('.menu-content > .view-container > .pane > .slider > .slider-slides').click();
+    cy.get('.pane > div > div > #disableSpeechButton > span').click();
+    cy.get('.slider > .slider-slides > .slider-slide:nth-child(1) > .button-bar > #skipButtonIntro').click();
+    cy.get('.slider > .slider-slides > .slider-slide:nth-child(1) > .button-bar > #skipButtonIntro').click();
+}
 describe('Auth Tests', function() {
     it.only('Patient creates account and is sent to OAuth url', function() {
         cy.clearCookies();
@@ -50,6 +56,7 @@ describe('Auth Tests', function() {
         cy.url().should('include', physicianOAuthUrl);
         cy.get(acceptButton).click();
         checkIntroWithAccessToken();
+        skipIntro();
     });
 
     it('Tries to create account with exiting username', function() {
