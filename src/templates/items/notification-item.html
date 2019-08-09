@@ -48,8 +48,11 @@
         <i class="ion-settings"> &nbsp; Settings</i>
     </button>
 </div>
-<div class="row" ng-if="trackingReminderNotification.inputType === 'value'">
-    <label id="value-input-field"
+<div id="value-input-field-row"
+    class="row"
+     ng-if="trackingReminderNotification.inputType === 'value'"
+     style="display: flex; justify-content: center;">
+    <label id="value-input-field-label"
            class="item-input"
            style="display: flex; justify-content: center;">
         Enter Value
