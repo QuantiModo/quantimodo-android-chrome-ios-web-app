@@ -5905,6 +5905,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
+        qmService.searchVariablesDeferred = function(variableSearchQuery, params){
+            var deferred = $q.defer();
+            if(!variableSearchQuery){
+                variableSearchQuery = '*';
+            }
+            params.searchPhrase = variableSearchQuery;
+            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
+                deferred.resolve(variables);
+            }, function(error){
+                qmLog.error(error);
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
         qmService.goToPredictorsList = function(variableName){
             qmService.goToState(qm.stateNames.predictorsAll, {effectVariableName: variableName});
         };
