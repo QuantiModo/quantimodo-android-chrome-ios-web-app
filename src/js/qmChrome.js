@@ -442,5 +442,5 @@ if(typeof screen !== "undefined"){
 if(qm.platform.isChromeExtension()){
     qm.chrome.initialize();
 } else {
-    console.error("Not a chrome extension");
+    console.info("Not a chrome extension");
 }
