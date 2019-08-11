@@ -224,7 +224,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             qmLog.info($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name + " with params: " + JSON.stringify(params));
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
-                qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, params)
+                qmService.searchVariablesDeferred($scope.state.variableSearchQuery.name, params)
                     .then(function(variables){
                         variableSearchSuccessHandler(variables, successHandler, errorHandler);
                     });
