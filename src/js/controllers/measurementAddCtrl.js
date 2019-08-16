@@ -414,7 +414,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         function getVariableCategoryName(object){
             var name;
             if(object && object.variableCategoryName){name = object.variableCategoryName;}
-            if(!name && $scope.state.measurement && $scope.state.measurement.variableCategoryName){name = $scope.state.measurement.variableCategoryName;}
+            if(!name && $scope.state && $scope.state.measurement && $scope.state.measurement.variableCategoryName){
+                name = $scope.state.measurement.variableCategoryName;
+            }
             if(!name){name = $stateParams.variableCategoryName;}
             if(!name){name = qm.urlHelper.getParam('variableCategoryName');}
             if(!name && $stateParams.variableObject){name = $stateParams.variableObject.variableCategoryName;}
