@@ -7206,26 +7206,24 @@ var qm = {
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit){
-            var trackingReminderNotifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
-            if(!trackingReminderNotifications){
-                trackingReminderNotifications = [];
-            }
+            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
+            if(!notifications){notifications = [];}
             if(limit){
                 try{
-                    trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+                    notifications = notifications.slice(0, limit);
                 }catch (error){
-                    qm.qmLog.error(error, null, {trackingReminderNotifications: trackingReminderNotifications});
-                    trackingReminderNotifications = JSON.parse(JSON.stringify(trackingReminderNotifications));
-                    trackingReminderNotifications = trackingReminderNotifications.slice(0, limit);
+                    qm.qmLog.error(error, null, {trackingReminderNotifications: notifications});
+                    notifications = JSON.parse(JSON.stringify(notifications));
+                    notifications = notifications.slice(0, limit);
                 }
             }
-            if(trackingReminderNotifications.length){
+            if(notifications.length){
                 if(qm.platform.isChromeExtension()){
                     //noinspection JSUnresolvedFunction
-                    qm.chrome.updateChromeBadge(trackingReminderNotifications.length);
+                    qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return trackingReminderNotifications;
+            return notifications;
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);

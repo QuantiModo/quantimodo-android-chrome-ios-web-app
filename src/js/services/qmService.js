@@ -1434,6 +1434,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return false;
                     }
                     if(!measurement.variableCategoryName){
+                        measurement.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
+                    }
+                    if(!measurement.variableCategoryName){
                         message = 'Please select a variable category';
                         qmService.validationFailure(message, measurement);
                         return false;
