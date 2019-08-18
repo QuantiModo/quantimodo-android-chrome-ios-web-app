@@ -4107,6 +4107,7 @@ var qm = {
         },
         updateMeasurementInQueue: function(measurementInfo){
             var measurementsQueue = qm.storage.getItem(qm.items.measurementsQueue);
+            if(!measurementsQueue){measurementsQueue = [];}
             var i = 0;
             while(i < measurementsQueue.length){
                 if(measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch){
