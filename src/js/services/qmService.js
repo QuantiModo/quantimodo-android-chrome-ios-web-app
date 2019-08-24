@@ -7305,11 +7305,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return planFeatureCards;
         };
         qmService.showBasicLoader = function(duration){
+            if(psychedelicLoader.showing){return;}
             duration = duration || 10;
             qmLog.debug('Called showBasicLoader in ' + $state.current.name, null, qmLog.getStackTrace());
             $ionicLoading.show({duration: duration * 1000});
         };
         qmService.showBlackRingLoader = function(duration){
+            if(psychedelicLoader.showing){return;}
             if(qm.urlHelper.getParam('loaderDebug')){
                 qmLog.debug('Called showBlackRingLoader in ' + $state.current.name);
             }
@@ -7327,10 +7329,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(delay){
                 $timeout(function(){
                     $ionicLoading.hide();
+                    psychedelicLoader.stop();
                 }, delay * 1000);
             }else{
                 $timeout(function(){
                     $ionicLoading.hide();
+                    psychedelicLoader.stop();
                 }, 0);
             }
         };
