@@ -44,11 +44,9 @@ function skipIntro(){
     cy.get('.slider > .slider-slides > .slider-slide:nth-child(1) > .button-bar > #skipButtonIntro').click();
 }
 describe('Auth Tests', function() {
-    it.only('Connect withings', function() {
+    it.only('Connect Withings', function() {
         cy.clearCookies();
-        cy.visit(physicianOAuthUrl);
-        validRegistration();
-        cy.url().should('include', physicianOAuthUrl);
+        cy.visit(importUrl+"?accessToken=demo");
         cy.get(acceptButton).click();
         checkIntroWithAccessToken();
         skipIntro();
@@ -62,7 +60,7 @@ describe('Auth Tests', function() {
         checkIntroWithAccessToken();
         skipIntro();
     });
-    it('Tries to create account with exiting username', function() {
+    it('Tries to create account with existing username', function() {
         cy.clearCookies();
         cy.visit(registerUrl);
         cy.get(usernameInput).type('mike');
