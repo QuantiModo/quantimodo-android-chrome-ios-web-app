@@ -697,23 +697,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     return deferred.promise;
                 },
-                getConnectUrl: function(connector, additionalParams){
+                getConnectUrl: function(connector, params){
                     var url = qm.api.getQuantiModoUrl('api/v1/connectors/' + connector.name + '/connect');
-                    var final_callback_url = window.location.href;
-                    if(qm.platform.isChromeExtension()){
-                        final_callback_url = chrome.identity.getRedirectURL();
-                    }
-                    url = qm.urlHelper.addUrlQueryParamsToUrlString({
-                        final_callback_url: final_callback_url,
-                        clientId: qm.api.getClientId()
-                    }, url);
-                    if(qm.api.getClientSecret()){
-                        url = qm.urlHelper.addUrlQueryParamsToUrlString({clientSecret: qm.api.getClientSecret()}, url);
-                    }
-                    if(qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                        additionalParams.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-                    }
-                    url = qm.urlHelper.addUrlQueryParamsToUrlString(additionalParams, url);
+                    params.final_callback_url = window.location.href;
+                    if(qm.platform.isChromeExtension()){params.final_callback_url = chrome.identity.getRedirectURL();}
+                    params.clientId = qm.api.getClientId();
+                    if(qm.api.getClientSecret()){params.clientSecret = qm.api.getClientSecret();}
+                    if(qm.auth.getAccessTokenFromUrlUserOrStorage()){params.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();}
+                    url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                     console.info('Going to ' + url);
                     return url;
                 },
