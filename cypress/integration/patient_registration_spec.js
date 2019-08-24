@@ -1,8 +1,7 @@
-
-var appHostName = 'https://local.quantimo.do';
-if(process.env.APP_HOST_NAME){appHostName = process.env.APP_HOST_NAME;}
+var appHostName = process.env.APP_HOST_NAME || 'https://local.quantimo.do';
 var unixTime = Math.floor(Date.now() / 1000);
 var physicianOAuthUrl = appHostName+ '/api/v1/oauth/authorize?response_type=token&scope=readmeasurements&client_id=m-thinkbynumbers-org';
+var importUrl = appHostName+ '/import';
 var registerUrl = appHostName+ '/api/v2/auth/register';
 var usernameInput = '#username-group > input';
 var emailInput = '#email-group > input';
@@ -13,13 +12,11 @@ var acceptButton = '#button-approve';
 var errorMessageSelector = '#error-messages > li';
 var testUsername = 'testuser'+unixTime;
 var testEmail = 'testuser'+unixTime+'@gmail.com';
-
 function enterPasswordsAndClickRegister(){
     cy.get(pw).type('testing123');
     cy.get(pwConfirm).type('testing123');
     cy.get(registerButton).click();
 }
-
 function validRegistration(){
     changeTestUsernameAndEmail();
     cy.get(usernameInput)
@@ -30,13 +27,11 @@ function validRegistration(){
         .type(testEmail);
     enterPasswordsAndClickRegister();
 }
-
 function changeTestUsernameAndEmail(){
     unixTime = Math.floor(Date.now() / 1000);
     testUsername = 'testuser'+unixTime;
     testEmail = 'testuser'+unixTime+'@gmail.com';
 }
-
 function checkIntroWithAccessToken(){
     cy.url().should('include', 'intro');
     cy.url().should('include', 'quantimodoAccessToken');
@@ -49,7 +44,7 @@ function skipIntro(){
     cy.get('.slider > .slider-slides > .slider-slide:nth-child(1) > .button-bar > #skipButtonIntro').click();
 }
 describe('Auth Tests', function() {
-    it.only('Patient creates account and is sent to OAuth url', function() {
+    it.only('Connect withings', function() {
         cy.clearCookies();
         cy.visit(physicianOAuthUrl);
         validRegistration();
@@ -58,7 +53,15 @@ describe('Auth Tests', function() {
         checkIntroWithAccessToken();
         skipIntro();
     });
-
+    it('Patient creates account and is sent to OAuth url', function() {
+        cy.clearCookies();
+        cy.visit(physicianOAuthUrl);
+        validRegistration();
+        cy.url().should('include', physicianOAuthUrl);
+        cy.get(acceptButton).click();
+        checkIntroWithAccessToken();
+        skipIntro();
+    });
     it('Tries to create account with exiting username', function() {
         cy.clearCookies();
         cy.visit(registerUrl);
