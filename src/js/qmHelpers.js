@@ -4144,47 +4144,34 @@ var qm = {
             var ratingInfo = qm.ratingImages.getRatingInfo();
             var index;
             for(index = 0; index < measurements.length; ++index){
-                var parsedNote = parseJsonIfPossible(measurements[index].note);
+                var m = measurements[index];
+                var parsedNote = parseJsonIfPossible(m.note);
                 if(parsedNote){
                     if(parsedNote.url && parsedNote.message){
-                        measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
+                        m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                     }else{
-                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
                     }
                 }
-                if(!measurements[index].variableName){
-                    measurements[index].variableName = measurements[index].variable;
-                }
-                if(measurements[index].variableName === qm.getPrimaryOutcomeVariable().name){
-                    measurements[index].valence = qm.getPrimaryOutcomeVariable().valence;
-                }
-                if(measurements[index].unitAbbreviatedName === '/5'){
-                    measurements[index].roundedValue = Math.round(measurements[index].value);
-                }
-                if(measurements[index].displayValueAndUnitString){
-                    measurements[index].valueUnitVariableName = measurements[index].displayValueAndUnitString + " " + measurements[index].variableName;
+                if(!m.variableName){m.variableName = m.variable;}
+                if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
+                if(m.unitAbbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
+                if(m.displayValueAndUnitString){
+                    m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
                 }else{
-                    measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + " " + measurements[index].variableName;
+                    m.valueUnitVariableName = m.value + " " + m.unitAbbreviatedName + " " + m.variableName;
                 }
-                //measurements[index].valueUnitVariableName = qm.stringHelper.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
-                //if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
-                if(measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]){
-                    measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
+                if(!m.image && m.roundedValue && ratingInfo[m.roundedValue]){
+                    m.image = ratingInfo[m.roundedValue].numericImage;
+                    if(m.valence === 'positive'){m.image = m.image = ratingInfo[m.roundedValue].positiveImage;}
+                    if(m.valence === 'negative'){m.image = ratingInfo[m.roundedValue].negativeImage;}
                 }
-                if(measurements[index].roundedValue && measurements[index].valence === 'negative' && ratingInfo[measurements[index].roundedValue]){
-                    measurements[index].image = ratingInfo[measurements[index].roundedValue].negativeImage;
-                }
-                if(!measurements[index].image && measurements[index].roundedValue && ratingInfo[measurements[index].roundedValue]){
-                    measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
-                }
-                if(measurements[index].image){
-                    measurements[index].pngPath = measurements[index].image;
-                }
-                measurements[index].icon = measurements[index].icon || measurements[index].ionIcon;
-                if(measurements[index].variableCategoryName && !measurements[index].icon){
-                    var category = qm.variableCategoryHelper.getVariableCategory(measurements[index].variableCategoryName);
-                    measurements[index].icon = category.ionIcon;
-                    measurements[index].pngPath = category.pngPath;
+                if(m.image){m.pngPath = m.image;}
+                m.icon = m.icon || m.ionIcon;
+                if(m.variableCategoryName && !m.icon){
+                    var category = qm.variableCategoryHelper.getVariableCategory(m.variableCategoryName);
+                    m.icon = category.ionIcon;
+                    m.pngPath = category.pngPath;
                 }
             }
             return measurements;
