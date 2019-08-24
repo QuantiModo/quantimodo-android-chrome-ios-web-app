@@ -7335,7 +7335,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $timeout(function(){
                     $ionicLoading.hide();
                     psychedelicLoader.stop();
-                }, 0);
+                }, 500);
             }
         };
         qmService.weShouldUseOAuthLogin = function(){
