@@ -48,16 +48,6 @@ particle.prototype.draw = function() {
         delete particles[this.id];
     }
 };
-function drawParticle() {
-    c.fillStyle = "rgba(0,0,0,0)";
-    c.fillRect(0, 0, w, h);
-    for (var i = 0; i < particleNum; i++) {
-        new particle();
-    }
-    for (var i in particles) {
-        particles[i].draw();
-    }
-}
 var mouse = {x: 0, y: 0};
 var last_mouse = {x: 0, y: 0};
 canvas.addEventListener('mousemove', function(e) {
@@ -76,27 +66,40 @@ window.requestAnimFrame = (function() {
             window.setTimeout(callback, 1000 / 60);
         };
 })();
-var appended = false;
-var psychedelicLoaderShowing = false;
-function showLoader() {
-    if(!psychedelicLoaderShowing){return;}
-    if(!appended){
-        document.body.appendChild(canvas);
-        appended = true;
+var psychedelicLoader = {
+    appended: false,
+    showing: false,
+    drawParticle: function() {
+        c.fillStyle = "rgba(0,0,0,0)";
+        c.fillRect(0, 0, w, h);
+        for (var i = 0; i < particleNum; i++) {
+            new particle();
+        }
+        for (var i in particles) {
+            particles[i].draw();
+        }
+    },
+    showLoader: function() {
+        if(!psychedelicLoader.showing){return;}
+        if(!psychedelicLoader.appended){
+            document.body.appendChild(canvas);
+            appended = true;
+        }
+        window.requestAnimFrame(psychedelicLoader.showLoader);
+        psychedelicLoader.drawParticle();
+    },
+    start: function () {
+        psychedelicLoader.showing = true;
+        psychedelicLoader.showLoader();
+    },
+    stop: function () {
+        if(!psychedelicLoader.showing){return;} // Avoid removeChild already removed errors
+        psychedelicLoader.showing = false;
+        psychedelicLoader.appended = false;
+        document.body.removeChild(canvas);
     }
-    window.requestAnimFrame(showLoader);
-    drawParticle();
-}
-function stopPsychedelicLoader() {
-    psychedelicLoaderShowing = false;
-    appended = false;
-    document.body.removeChild(canvas);
-}
-function startPsychedelicLoader() {
-    psychedelicLoaderShowing = true;
-    showLoader();
-}
+};
 (function() {
     // your page initialization code here the DOM will be available here
-    startPsychedelicLoader();
+    psychedelicLoader.start();
 })();

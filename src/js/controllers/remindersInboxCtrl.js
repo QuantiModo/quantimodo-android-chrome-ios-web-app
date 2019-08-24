@@ -334,19 +334,19 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmLogService.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
             $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
             //if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}  // TODO: Why was did we only do this if we had notifications?  It loads forever if category inbox has no notifications
-            hideInboxLoader();
             if($state.current.name === "app.remindersInboxCompact"){
                 $scope.trackingReminderNotifications = trackingReminderNotifications;
             }else{
                 $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
                 qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
             }
+            hideInboxLoader();
         };
         var hideInboxLoader = function(){
-            qmService.hideLoader();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             $scope.state.loading = false;
+            qmService.hideLoader();
         };
         var getFilteredTodayTrackingReminderNotifications = function(){
             qmService.getTodayTrackingReminderNotificationsDeferred(getVariableCategoryName())
@@ -358,8 +358,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }, function(error){
                     getFallbackInboxContentIfNecessary();
                     qmLogService.error(error);
-                    hideInboxLoader();
                     qmLogService.error('failed to get reminder notifications!');
+                    hideInboxLoader();
                 });
         };
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
@@ -390,7 +390,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         $scope.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
             showLoader();
             qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
-                hideInboxLoader();
                 getTrackingReminderNotifications();
                 if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
                     getFallbackInboxContentIfNecessary();
@@ -432,7 +431,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         $scope.skipAllForVariable = function(trackingReminderNotification, ev){
             qm.ui.preventDragAfterAlert(ev);
             qmService.notifications.skipAllForVariable(trackingReminderNotification, function(trackingReminderNotifications){
-                hideInboxLoader();
                 getFilteredTrackingReminderNotificationsFromLocalStorage();
             }, function(error){
                 hideInboxLoader();
