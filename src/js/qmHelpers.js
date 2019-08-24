@@ -8434,14 +8434,16 @@ var qm = {
             for(var key in params){
                 if(params.hasOwnProperty(key)){
                     if(url.indexOf(key + '=') === -1){
-                        if(params[key] === null){
-                            console.error("Not adding null param " + key);  // Don't use qm.qmLog here because it's called by the logger -> infitnite loop
+                        var value = params[key];
+                        if(value === false){value = "0";} // False is converted to empty string in PHP for some reason
+                        if(value === null){
+                            console.error("Not adding null param " + key);  // Don't use qm.qmLog here because it's called by the logger -> infinite loop
                             continue;
                         }
                         if(url.indexOf('?') === -1){
-                            url = url + "?" + key + "=" + encodeURIComponent(params[key]);
+                            url = url + "?" + key + "=" + encodeURIComponent(value);
                         }else{
-                            url = url + "&" + key + "=" + encodeURIComponent(params[key]);
+                            url = url + "&" + key + "=" + encodeURIComponent(value);
                         }
                     }
                 }
@@ -9128,7 +9130,7 @@ var qm = {
                 requestParams.reason = reason;
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length){
-                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!", 
+                        qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!",
                         {
                             local: localVariables.length,
                             api: variablesFromApi.length,
