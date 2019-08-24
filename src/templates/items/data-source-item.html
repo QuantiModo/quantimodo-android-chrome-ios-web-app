@@ -1,3 +1,4 @@
+<!--suppress XmlDuplicatedId -->
 <div class="row">
     <div class="col col-20" style="padding-top: 10px;">
         <img ng-src="{{connector.image}}" alt="Connector Image"
@@ -19,18 +20,28 @@
     <p ng-bind-html="connector.updateError"></p>
 </div>-->
 <div class="buttons" style="text-align: center;" ng-if="connector.spreadsheetUploadLink">
-    <button ng-repeat="button in connector.buttons" class="button button-balanced"
+    <button ng-repeat="button in connector.buttons"
+            class="button button-balanced"
+            id="{{button.id}}"
             style="text-overflow: clip; margin: 5px;"
             ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
         <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i></button>
 </div>
 <div class="buttons" style="text-align: center;" ng-if="!connector.spreadsheetUploadLink">
-    <button ng-repeat="button in connector.buttons" class="button button-balanced"
-            style="text-overflow: clip; margin: 5px;" ng-click="connectorAction(connector, button, $event)">
+    <button ng-repeat="button in connector.buttons"
+            id="{{button.id}}"
+            class="button button-balanced"
+            style="text-overflow: clip; margin: 5px;"
+            ng-click="connectorAction(connector, button, $event)">
         <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
     </button>
 </div>
-<div class="buttons" style="text-align: center;" ng-if="connector.loadingText">
-    <button class="button button-royal" style="text-overflow: clip; margin: 5px;" ng-click=""><i
-            class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i></button>
+<div class="buttons"
+     style="text-align: center;"
+     ng-if="connector.loadingText">
+    <button class="button button-royal"
+            style="text-overflow: clip; margin: 5px;"
+            ng-click="">
+        <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i>
+    </button>
 </div>
