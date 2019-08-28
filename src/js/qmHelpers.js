@@ -9101,21 +9101,11 @@ var qm = {
             requestParams = requestParams || {};
             var search = requestParams.searchPhrase;
             var min = requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest;
-            if(!search || search === ""){
-                min = 20;
-            }
-            if(search && search.length > 2){
-                min = 4;
-            }
-            if(search && search.length > 3){
-                min = 2;
-            }
-            if(search && search.length > 4){
-                min = 1;
-            }
-            if(requestParams.id || requestParams.name){
-                min = 1;
-            }
+            if(!search || search === ""){min = 20;}
+            if(search && search.length > 8){min = 4;}
+            if(search && search.length > 12){min = 2;}
+            if(search && search.length > 16){min = 1;} // Must be 16 search.length or we don't make API request to get Green Olives
+            if(requestParams.id || requestParams.name){min = 1;}
             function sortUpdateSubtitlesAndReturnVariables(variables){
                 if(!requestParams.sort){
                     variables = qm.variablesHelper.defaultVariableSort(variables);
