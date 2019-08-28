@@ -21,6 +21,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 }else{
                     $scope.myIntro.ready = true;
                 }
+            },
+            triangleName: {
+                lineOne: "Dr.",
+                lineTwo: "Modo"
             }
         };
         var slide;
@@ -97,6 +101,17 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
             if(!qm.speech.getSpeechAvailable() || useFuturisticBackground() === false){
                 $scope.state.setSpeechEnabled(false);
+            }
+            var appSettings = qm.getAppSettings();
+            var displayName = appSettings.appDisplayName;
+            var words = displayName.split(' ');
+            if(words.length > 1){
+                $scope.state.triangleName = {
+                    lineOne: words[0],
+                    lineTwo: words[1]
+                }
+            } else {
+                $scope.state.triangleName.lineTwo = qm.appsManager.getDoctorRobotoAlias(appSettings);
             }
         });
         $scope.$on('$ionicView.afterEnter', function(){
