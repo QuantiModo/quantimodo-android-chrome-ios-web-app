@@ -1263,6 +1263,296 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 }
             },
+            healthKit: {
+                postData: function(data){
+                    var caller = arguments.callee.caller.name;
+                    cosole.log(caller+": "+JSON.stringify(data));
+                },
+                available: function () {
+                    window.plugins.healthkit.available(
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                requestAuthorization: function () {
+                    var supportedTypes = [
+                        'HKQuantityTypeIdentifierHeight',
+                        'HKQuantityTypeIdentifierStepCount',
+                        'HKQuantityTypeIdentifierDistanceWalkingRunning',
+                        'HKCategoryTypeIdentifierSleepAnalysis',
+                        'HKQuantityTypeIdentifierDietaryEnergyConsumed',
+                        'HKQuantityTypeIdentifierDietaryFatTotal'
+                    ];
+                    window.plugins.healthkit.requestAuthorization(
+                        {
+                            readTypes: supportedTypes,
+                            writeTypes: supportedTypes
+                        },
+                        function () {
+                            qmService.healthKit.findWorkouts();
+                            qmService.healthKit.readBloodType();
+                            qmService.healthKit.readDateOfBirth();
+                            qmService.healthKit.readFitzpatrickSkinType();
+                            qmService.healthKit.readGender();
+                            qmService.healthKit.readHeight();
+                            qmService.healthKit.readWeight();
+                            qmService.healthKit.querySampleType();
+                        },
+                        function () {
+                            alert('nok')
+                        }
+                    );
+                },
+                checkAuthStatus: function () {
+                    window.plugins.healthkit.checkAuthStatus(
+                        {
+                            'type': 'HKQuantityTypeIdentifierHeight'
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readDateOfBirth: function () {
+                    window.plugins.healthkit.readDateOfBirth(
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readGender: function () {
+                    window.plugins.healthkit.readGender(
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readBloodType: function () {
+                    window.plugins.healthkit.readBloodType(
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readFitzpatrickSkinType: function () {
+                    window.plugins.healthkit.readFitzpatrickSkinType(
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                saveWeight: function () {
+                    window.plugins.healthkit.saveWeight({
+                            'requestReadPermission': false, // use if your app doesn't need to read
+                            'unit': 'kg',
+                            'amount': 78.5,
+                            'date': new Date() // is 'now', which is the default as well
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readWeight: function () {
+                    window.plugins.healthkit.readWeight(
+                        {
+                            'requestWritePermission': true, // use if your app doesn't need to write
+                            'unit': 'kg'
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                saveHeight: function () {
+                    window.plugins.healthkit.saveHeight({
+                            'requestReadPermission': false,
+                            'unit': 'cm', // m|cm|mm|in|ft
+                            'amount': 187
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                readHeight: function () {
+                    window.plugins.healthkit.readHeight({
+                            'requestWritePermission': false,
+                            'unit': 'cm' // m|cm|mm|in|ft
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                findWorkouts: function () {
+                    window.plugins.healthkit.findWorkouts({},
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                saveWorkout: function () {
+                    window.plugins.healthkit.saveWorkout({
+                            //'requestReadPermission' : false,
+                            'activityType': 'HKWorkoutActivityTypeCycling', // HKWorkoutActivityType constant (https://developer.apple.com/library/ios/documentation/HealthKit/Reference/HKWorkout_Class/#//apple_ref/c/tdef/HKWorkoutActivityType)
+                            'quantityType': 'HKQuantityTypeIdentifierDistanceCycling',
+                            'startDate': new Date(), // mandatory
+                            'endDate': null, // optional, use either this or duration
+                            'duration': 3600, // in seconds, optional, use either this or endDate
+                            'energy': 300, //
+                            'energyUnit': 'kcal', // J|cal|kcal
+                            'distance': 11, // optional
+                            'distanceUnit': 'km' // probably useful with the former param
+                            // 'extraData': "", // Not sure how necessary this is
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                querySampleType: function () {
+                    window.plugins.healthkit.querySampleType(
+                        {
+                            'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
+                            'endDate': new Date(), // now
+                            'sampleType': 'HKQuantityTypeIdentifierBasalBodyTemperature',
+                            //'sampleType': 'HKQuantityTypeIdentifierStepCount', // anything in HealthKit/HKTypeIdentifiers.h
+                            'unit': 'degF' // make sure this is compatible with the sampleType
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                querySampleTypeAggregated: function () {
+                    window.plugins.healthkit.querySampleTypeAggregated(
+                        {
+                            'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
+                            'endDate': new Date(), // now
+                            'aggregation': 'week', // 'hour', 'week', 'year' or 'day', default 'day'
+                            'sampleType': 'HKQuantityTypeIdentifierStepCount', // any HKQuantityType
+                            'unit': 'count' // make sure this is compatible with the sampleType
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                // to test, set a few 'weight' samples, then run this
+                deleteSamples: function () {
+                    window.plugins.healthkit.deleteSamples(
+                        {
+                            'startDate': new Date(new Date().getTime() - 60 * 60 * 1000), // an hour ago
+                            'endDate': new Date(), // now
+                            'sampleType': 'HKQuantityTypeIdentifierBodyMass'
+                        },
+                        qmService.healthKit.postData,
+                        qmService.healthKit.postData
+                    );
+                },
+                // this is work in progress
+                monitorSampleType: function () {
+                    window.plugins.healthkit.monitorSampleType(
+                        {
+                            'sampleType': 'HKCategoryTypeIdentifierSleepAnalysis'
+                        },
+                        function (value) {
+                            // this gets called when a new sample is available (can then be fetched by a different function)
+                            console.log("Sleep (webview): " + value);
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                sumQuantityType: function () {
+                    window.plugins.healthkit.sumQuantityType(
+                        {
+                            'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
+                            'endDate': new Date(), // now
+                            'sampleType': 'HKQuantityTypeIdentifierStepCount'
+                        },
+                        function (value) {
+                            alert("Success for running step query " + value);
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                saveQuantitySample_StepCount: function () {
+                    window.plugins.healthkit.saveQuantitySample(
+                        {
+                            'startDate': new Date(new Date().getTime() - 24 * 60 * 60 * 1000), // a day ago
+                            'endDate': new Date(), // now
+                            'sampleType': 'HKQuantityTypeIdentifierStepCount', // make sure you request write access beforehand
+                            'unit': 'count',
+                            'amount': 300
+                        },
+                        function (value) {
+                            alert("Success running saveQuantitySample, result: " + value);
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                saveQuantitySample_Energy: function () {
+                    window.plugins.healthkit.saveQuantitySample(
+                        {
+                            'startDate': new Date(), // now
+                            'endDate': new Date(), // now
+                            'sampleType': 'HKQuantityTypeIdentifierDietaryEnergyConsumed', // make sure you request write access beforehand
+                            'unit': 'kcal',
+                            'amount': 64
+                        },
+                        function (value) {
+                            alert("Success running saveQuantitySample, result: " + value);
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                saveCorrelation: function () {
+                    window.plugins.healthkit.saveCorrelation(
+                        {
+                            'startDate': new Date(), // now
+                            'endDate': new Date(), // now
+                            'metadata': {'a': 'b'},
+                            'correlationType': 'HKCorrelationTypeIdentifierFood', // don't request write permission for this
+                            'samples': [
+                                {
+                                    'startDate': new Date(),
+                                    'endDate': new Date(),
+                                    'sampleType': 'HKQuantityTypeIdentifierDietaryEnergyConsumed', // make sure you request write access beforehand
+                                    'unit': 'kcal',
+                                    'amount': 500
+                                },
+                                {
+                                    'startDate': new Date(),
+                                    'endDate': new Date(),
+                                    'sampleType': 'HKQuantityTypeIdentifierDietaryFatTotal', // make sure you request write access beforehand
+                                    'unit': 'g',
+                                    'amount': 25
+                                }
+                            ]
+                        },
+                        function (value) {
+                            alert("Success running saveCorrelation, result: " + value);
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                queryCorrelationTypeFood: function () {
+                    window.plugins.healthkit.queryCorrelationType(
+                        {
+                            'startDate': new Date(new Date().getTime() - 24 * 60 * 60 * 1000), // a day ago
+                            'endDate': new Date(), // now
+                            'correlationType': 'HKCorrelationTypeIdentifierFood', // don't request read permission for this
+                            'unit': 'g'
+                        },
+                        function (value) {
+                            alert("Success running queryCorrelationType, result: " + JSON.stringify(value));
+                        },
+                        qmService.healthKit.postData
+                    );
+                },
+                queryCorrelationTypeBloodPressure: function () {
+                    window.plugins.healthkit.queryCorrelationType(
+                        {
+                            'startDate': new Date(new Date().getTime() - 24 * 60 * 60 * 1000), // a day ago
+                            'endDate': new Date(), // now
+                            'correlationType': 'HKCorrelationTypeIdentifierBloodPressure', // don't request read permission for this
+                            'unit': 'Pa'
+                        },
+                        function (value) {
+                            alert("Success running queryCorrelationType, result: " + JSON.stringify(value));
+                        },
+                        qmService.healthKit.postData
+                    );
+                }
+            },
             help: {
                 showExplanationsPopup: function(parameterOrPropertyName, ev, modelName, title){
                     qm.help.getExplanation(parameterOrPropertyName, modelName, function(explanation){
