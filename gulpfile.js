@@ -3482,9 +3482,9 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'ionicResourcesAndroid',
         'copyAndroidResources',
         'chcp-config-login-build',  // Must be done after all www files are present, but do this early enough to allow time to complete before chcp-deploy is run below
-        'reinstallDrawOverAppsPlugin',
+        //'reinstallDrawOverAppsPlugin',
         'ionicInfo',
-        'checkDrawOverAppsPlugin',
+        //'checkDrawOverAppsPlugin',
         'cordovaBuildAndroid',
         'chcp-deploy', // This should cover iOS as well (except mooodimodoapp)
         'chcp-clean-config-files',
