@@ -2115,10 +2115,10 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         qmLog.info("Not renaming minified files because we can't remove from old ones from cordova hcp server");
     }
     return gulp.src("src/" + sourceIndexFileName)
-    //.pipe(useref())      // Concatenate with gulp-useref
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
         .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
+        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(csso())               // Minify any CSS sources
@@ -2127,21 +2127,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(ifElse(renameForCacheBusting, rev))                // Rename the concatenated files for cache busting (but not index.html)
         .pipe(indexHtmlFilter.restore)
         .pipe(ifElse(renameForCacheBusting, revReplace))         // Substitute in new filenames for cache busting
-        //.pipe(replace('="scripts', '="https://quantimodo.quantimo.do/ionic/Modo/www/scripts'))  // TODO: Replace relative with absolute paths to github hosting
         .pipe(sourcemaps.write('.', sourceMapsWriteOptions))
-        //.pipe(rev.manifest('rev-manifest.json'))
-        // .pipe(through.obj(function (file, enc, cb) {
-        //     console.log(file.revOrigPath); //=> /Users/.../project_manage.js
-        //     console.log(file.revHash); //=> '4ad9f04399'
-        //
-        //     // write the NEW path
-        //     file.path = modify(file.revOrigPath, function (name, ext) {
-        //         return name + '_' + file.revHash + '.min' + ext;
-        //     }); //=> 'project_manage_4ad9f04399.min.js
-        //     console.log(file.path);
-        //     // send it back to stream
-        //     cb(null, file);
-        // }))
         .pipe(gulp.dest('www'))
         ;
 }
