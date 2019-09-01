@@ -72,7 +72,12 @@ module.exports = function(ctx) {
       // shell.exec("cp resources/android/res/drawable-xxhdpi/* platforms/android/res/drawable", {silent:true} ); // Must be done first
       // shell.exec("cp resources/android/res/drawable-xxhdpi-v11/* platforms/android/res/drawable", {silent:true} );
       copies.map(function(args) {
-        return copy.apply(copy, args);
+        try {
+          return copy.apply(copy, args);
+        } catch (e){
+          console.log(e.toString());
+          return;
+        }
       });
       Q.all(copies).then(function(r) {
         deferred.resolve();
