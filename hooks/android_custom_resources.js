@@ -1,9 +1,10 @@
 var fs = require('fs');
 var path = require('path');
 var shell = require( "shelljs" );
+var Q = require("q");
 console.log("Started copying android_custom_resources and icons hook...");
 var sourceDir = 'resources/android/custom';
-var platformDir = 'platforms/android';
+var platformDir = 'platforms/android/app/src/main/';
 var resourceDirs = [
   'res/drawable-ldpi',
   'res/drawable-mdpi',
@@ -18,7 +19,6 @@ module.exports = function(ctx) {
     console.log("Platform not android so quitting");
     return;
   }
-  var Q = ctx.requireCordovaModule('q');
   var deferred = Q.defer();
   var androidPlatformDir = path.join(ctx.opts.projectRoot, platformDir);
   var customResourcesDir = path.join(ctx.opts.projectRoot, sourceDir);

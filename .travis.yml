@@ -62,7 +62,7 @@ before_install:
   - export LANG=en_US.UTF-8
   - nvm install 8
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
-  - npm install -g cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
+  - npm install -g cordova ionic gulp bower cordova-hot-code-push-cli
 script:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
   #- yarn install  -> error upath@1.1.1: The engine "yarn" is incompatible with this module. Expected version ">=1".
