@@ -1178,10 +1178,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.showInfoToast("Inviting "+$scope.data.email+" via email");
                         qm.api.postToQuantiModo({email: $scope.data.email}, 'v1/shares/invitePatient',
                             function(response){
-                            if(callback){callback();}
-                        }, function(error){
-                            if(callback){callback();}
-                        });
+                                if(callback){callback();}
+                            }, function(error){
+                                if(callback){callback();}
+                            });
                     });
                 },
                 updateEmailAndExecuteCallback: function(callback){
@@ -1264,6 +1264,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             healthKit: {
+                sampleTypes: {
+                    'HKQuantityTypeIdentifierBasalBodyTemperature': {unit: 'degF'},
+                    'HKQuantityTypeIdentifierDietaryEnergyConsumed': {unit: 'kilocalorieUnit'},
+                    'HKQuantityTypeIdentifierDietaryFatTotal': {unit: 'gramUnit'},
+                    'HKQuantityTypeIdentifierDistanceWalkingRunning': {unit: 'meterUnit'},
+                    'HKQuantityTypeIdentifierHeight': {unit: 'footUnit'},
+                    'HKQuantityTypeIdentifierStepCount': {unit: 'countUnit'},
+                },
                 postData: function(data){
                     var caller = arguments.callee.caller.name;
                     cosole.log(caller+": "+JSON.stringify(data));
@@ -1289,14 +1297,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             writeTypes: supportedTypes
                         },
                         function () {
-                            qmService.healthKit.findWorkouts();
-                            qmService.healthKit.readBloodType();
-                            qmService.healthKit.readDateOfBirth();
-                            qmService.healthKit.readFitzpatrickSkinType();
-                            qmService.healthKit.readGender();
-                            qmService.healthKit.readHeight();
-                            qmService.healthKit.readWeight();
-                            qmService.healthKit.querySampleType();
+                            // qmService.healthKit.findWorkouts();
+                            // qmService.healthKit.readBloodType();
+                            // qmService.healthKit.readDateOfBirth();
+                            // qmService.healthKit.readFitzpatrickSkinType();
+                            // qmService.healthKit.readGender();
+                            // qmService.healthKit.readHeight();
+                            // qmService.healthKit.readWeight();
+                            for (var type in qmService.healthKit.sampleTypes){
+                                if(qmService.healthKit.sampleTypes.hasOwnProperty(key)){
+                                    var req = {
+                                        'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
+                                        'endDate': new Date(), // now
+                                        'sampleType': type,
+                                        //'sampleType': 'HKQuantityTypeIdentifierStepCount', // anything in HealthKit/HKTypeIdentifiers.h
+                                        'unit': qmService.healthKit.sampleTypes[type] // make sure this is compatible with the sampleType
+                                    };
+                                    qmService.healthKit.querySampleType(req);
+                                }
+                            }
                         },
                         function () {
                             alert('nok')
@@ -1400,15 +1419,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.healthKit.postData
                     );
                 },
-                querySampleType: function () {
+                querySampleType: function (params) {
                     window.plugins.healthkit.querySampleType(
-                        {
-                            'startDate': new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000), // three days ago
-                            'endDate': new Date(), // now
-                            'sampleType': 'HKQuantityTypeIdentifierBasalBodyTemperature',
-                            //'sampleType': 'HKQuantityTypeIdentifierStepCount', // anything in HealthKit/HKTypeIdentifiers.h
-                            'unit': 'degF' // make sure this is compatible with the sampleType
-                        },
+                        params,
                         qmService.healthKit.postData,
                         qmService.healthKit.postData
                     );
