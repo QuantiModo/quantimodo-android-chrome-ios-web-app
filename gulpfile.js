@@ -495,6 +495,7 @@ var qmGulp = {
     buildSettings: {
         doNotMinify: null,
         weShouldMinify: function(){
+            if(qmPlatform.buildingFor.android()){return false;}
             //if(!qmPlatform.buildingFor.web()){return false;}  We need to minify on mobile or the app contains huge lib folder and CHCP sync is slow!
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
             if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
@@ -3439,7 +3440,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'google-services-json',
         'ionicPlatformAddAndroid',
-        'ionicAddCrosswalk',
+        //'ionicAddCrosswalk',
         'ionicInfo',
         callback);
 });
