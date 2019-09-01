@@ -40,7 +40,7 @@
     "cordova-android": "^8.0.0",
     "cordova-ios": "4.4.0",
     "cordova-plugin-compat": "^1.2.0",
-    "cordova-plugin-drawoverapps": "git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git",
+    "cordova-plugin-drawoverapps": "git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#7e441915c3725a9ec70a2e04818b45f34ee4640f",
     "cordova-plugin-googleplus": "^8.0.0",
     "es6-promise-plugin": "^4.1.0",
     "event-stream": "4.0.1",

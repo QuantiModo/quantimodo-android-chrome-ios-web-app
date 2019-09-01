@@ -126,7 +126,7 @@
   <!--<plugin name="cordova-plugin-console" spec="~1.0.3"/>-->
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
-  <plugin name="cordova-plugin-drawoverapps" spec="https://github.com/mikepsinn/cordova-plugin-drawoverapps#master" />
+  <plugin name="cordova-plugin-drawoverapps" spec="https://github.com/mikepsinn/cordova-plugin-drawoverapps#7e441915c3725a9ec70a2e04818b45f34ee4640f" />
   <plugin name="cordova-plugin-inappbrowser" version="2.0.2"/>
   <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
