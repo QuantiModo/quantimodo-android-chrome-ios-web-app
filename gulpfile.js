@@ -3439,6 +3439,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'google-services-json',
+        'copyAppResources', // Fixes Source path does not exist: resources/icon.png
         'cordovaPlatformAddAndroid',
         //'ionicAddCrosswalk',
         'ionicInfo',
