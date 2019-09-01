@@ -853,10 +853,13 @@ function checkAwsEnvs() {
 }
 function uploadToS3(filePath) {
     var s3 = require('gulp-s3-upload')(s3Options);
-    if(!checkAwsEnvs()){return;}
+    if(!checkAwsEnvs()){
+        qmLog.info("No S3 credentials to upload " + filePath);
+        return;
+    }
     fs.stat(filePath, function (err, stat) {
         if (!err) {
-            qmLog.info("Uploading " + filePath + "...");
+            qmLog.info("Uploading to S3 " + filePath + "...");
             return gulp.src([filePath]).pipe(s3({
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
@@ -865,6 +868,7 @@ function uploadToS3(filePath) {
                     if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
                         S3AppUploadsRelativePath = S3AppUploadsRelativePath.replace('.apk', versionNumbers.buildVersionNumber+'.apk');
                     }
+                    qmLog.info("S3AppUploadsRelativePath " + S3AppUploadsRelativePath);
                     return S3AppUploadsRelativePath;
                 }
             }, {
