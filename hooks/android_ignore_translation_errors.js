@@ -26,9 +26,9 @@ function ignoreTranslationErrors(ctx){
 	if(ctx.opts.platforms.indexOf('android') < 0){
 		return;
 	}
-	var fs       = ctx.requireCordovaModule('fs'),
-		path     = ctx.requireCordovaModule('path'),
-		deferral = ctx.requireCordovaModule('q').defer();
+	var fs       = require('fs'),
+		path     = require('path'),
+		deferral = require('q').defer();
 	
 	var rootdir = path.join(ctx.opts.projectRoot, 'platforms/android');
 	
