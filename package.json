@@ -9,8 +9,20 @@
   "devDependencies": {
     "angular-mocks": "1.7.7",
     "compromise": "11.14.2",
+    "cordova-ios-plugin-no-export-compliance": "0.0.5",
+    "cordova-plugin-appsettings": "^1.0.2",
+    "cordova-plugin-datepicker": "^0.9.3",
+    "cordova-plugin-device": "^1.1.7",
+    "cordova-plugin-inappbrowser": "^2.0.2",
+    "cordova-plugin-inapppurchase": "^1.1.0",
+    "cordova-plugin-splashscreen": "^3.2.2",
+    "cordova-plugin-statusbar": "^2.2.0",
+    "cordova-plugin-whitelist": "^1.2.2",
+    "cordova-plugin-x-socialsharing": "^5.2.1",
     "cypress": "3.4.1",
+    "de.appplant.cordova.plugin.local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#53262c8242e9b932758d2086071865e27909204f",
     "ghost-inspector": "3.0.1",
+    "ionic-plugin-keyboard": "^2.2.1",
     "jasmine-core": "3.3.0",
     "karma": "4.2.0",
     "karma-chrome-launcher": "3.0.0",
@@ -25,6 +37,12 @@
     "bower": "1.8.8",
     "bugsnag": "2.4.3",
     "bugsnag-sourcemaps": "1.2.1",
+    "cordova-android": "^8.0.0",
+    "cordova-ios": "4.4.0",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-drawoverapps": "git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git",
+    "cordova-plugin-googleplus": "^8.0.0",
+    "es6-promise-plugin": "^4.1.0",
     "event-stream": "4.0.1",
     "express": "4.17.1",
     "gulp": "3.9.1",
@@ -117,5 +135,30 @@
       "version": "4.4.0",
       "locator": "ios@4.4.0"
     }
-  ]
+  ],
+  "cordova": {
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": {
+      "cordova-ios-plugin-no-export-compliance": {},
+      "cordova-plugin-datepicker": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-inapppurchase": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-x-socialsharing": {},
+      "de.appplant.cordova.plugin.local-notification": {},
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-googleplus": {
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+        "PLAY_SERVICES_VERSION": "11.8.0"
+      },
+      "cordova-plugin-appsettings": {},
+      "cordova-plugin-drawoverapps": {}
+    }
+  }
 }

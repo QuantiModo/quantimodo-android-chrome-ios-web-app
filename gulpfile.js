@@ -2436,7 +2436,7 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
             if(callback){callback();}
         } else {
             qmLog.error('drawoverapps plugin NOT installed! Installing now');
-            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#cordova6.5", function (error) {
+            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#master", function (error) {
                 if (error !== null) {
                     qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
                 } else {

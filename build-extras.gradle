@@ -1,3 +1,4 @@
+/* 
 android {
     dexOptions {
         jumboMode true  // Fixes Dex: Error converting bytecode to dex:
@@ -6,6 +7,7 @@ android {
         javaMaxHeapSize "2560M"
     }
 }
+
 
 // Fixes https://github.com/arnesson/cordova-plugin-firebase/issues/610
 configurations.all {
@@ -28,4 +30,5 @@ configurations.all {
        force 'com.google.firebase:firebase-config:11.8.0'
        force 'com.google.firebase:firebase-messaging:11.8.0'
    }
-}
+} 
+*/
