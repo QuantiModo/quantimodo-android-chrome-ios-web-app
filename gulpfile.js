@@ -2118,7 +2118,10 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
         .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
-        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
+        .on('error', function (err) { 
+            var gutil = require('gulp-util');
+            gutil.log(gutil.colors.red('[Error]'), err.toString()); 
+        })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(csso())               // Minify any CSS sources
