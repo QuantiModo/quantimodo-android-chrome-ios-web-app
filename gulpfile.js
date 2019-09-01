@@ -121,12 +121,12 @@ var appIds = {
     'medimodo': true
 };
 var paths = {
-    apk: {//android\app\build\outputs\apk\release\app-release.apk
-        combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
-        combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
-        arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
-        x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
-        outputFolder: "platforms/android/app/build/outputs/apk",
+    apk: {
+        combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
+        combinedDebug: "platforms/android/build/outputs/apk/android-debug.apk",
+        arm7Release: "platforms/android/build/outputs/apk/android-arm7-release.apk",
+        x86Release: "platforms/android/build/outputs/apk/android-x86-release.apk",
+        outputFolder: "platforms/android/build/outputs/apk",
         builtApk: null
     },
     sass: ['./src/scss/**/*.scss'],
@@ -818,9 +818,6 @@ function getS3AppUploadsRelativePath(relative_filename) {
     return  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
 }
 function uploadBuildToS3(filePath) {
-    if(!fs.existsSync(filePath)){
-        throw filePath+" not found!";
-    }
     if(qmGulp.getAppSettings().apiUrl === "local.quantimo.do"){
         qmLog.info("Not uploading because qm.getAppSettings().apiUrl is " + qmGulp.getAppSettings().apiUrl);
         return;
@@ -1942,7 +1939,7 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
         return uploadBuildToS3(paths.apk.arm7Release);
     }
 });
-gulp.task("upload-combined-release-apk-to-s3", ['getAppConfigs'], function() {
+gulp.task("upload-combined-release-apk-to-s3", function() {
     qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(paths.apk.builtApk);
@@ -2126,9 +2123,9 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
         .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
-        .on('error', function (err) {
+        .on('error', function (err) { 
             var gutil = require('gulp-util');
-            gutil.log(gutil.colors.red('[Error]'), err.toString());
+            gutil.log(gutil.colors.red('[Error]'), err.toString()); 
         })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
