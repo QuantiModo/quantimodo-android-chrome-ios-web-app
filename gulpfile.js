@@ -121,12 +121,12 @@ var appIds = {
     'medimodo': true
 };
 var paths = {
-    apk: {
-        combinedRelease: "platforms/android/build/outputs/apk/android-release.apk",
-        combinedDebug: "platforms/android/build/outputs/apk/android-debug.apk",
-        arm7Release: "platforms/android/build/outputs/apk/android-arm7-release.apk",
-        x86Release: "platforms/android/build/outputs/apk/android-x86-release.apk",
-        outputFolder: "platforms/android/build/outputs/apk",
+    apk: {//android\app\build\outputs\apk\release\app-release.apk
+        combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
+        combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
+        arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
+        x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
+        outputFolder: "platforms/android/app/build/outputs/apk",
         builtApk: null
     },
     sass: ['./src/scss/**/*.scss'],
@@ -495,6 +495,7 @@ var qmGulp = {
     buildSettings: {
         doNotMinify: null,
         weShouldMinify: function(){
+            if(qmPlatform.buildingFor.android()){return false;}
             //if(!qmPlatform.buildingFor.web()){return false;}  We need to minify on mobile or the app contains huge lib folder and CHCP sync is slow!
             if(qmGulp.buildSettings.doNotMinify !== null){return !!qmGulp.buildSettings.doNotMinify;}
             if(typeof process.env.MINIFY !== "undefined"){return isTruthy(process.env.MINIFY);}
@@ -817,6 +818,9 @@ function getS3AppUploadsRelativePath(relative_filename) {
     return  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
 }
 function uploadBuildToS3(filePath) {
+    if(!fs.existsSync(filePath)){
+        throw filePath+" not found!";
+    }
     if(qmGulp.getAppSettings().apiUrl === "local.quantimo.do"){
         qmLog.info("Not uploading because qm.getAppSettings().apiUrl is " + qmGulp.getAppSettings().apiUrl);
         return;
@@ -852,10 +856,13 @@ function checkAwsEnvs() {
 }
 function uploadToS3(filePath) {
     var s3 = require('gulp-s3-upload')(s3Options);
-    if(!checkAwsEnvs()){return;}
+    if(!checkAwsEnvs()){
+        qmLog.info("No S3 credentials to upload " + filePath);
+        return;
+    }
     fs.stat(filePath, function (err, stat) {
         if (!err) {
-            qmLog.info("Uploading " + filePath + "...");
+            qmLog.info("Uploading to S3 " + filePath + "...");
             return gulp.src([filePath]).pipe(s3({
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
@@ -864,6 +871,7 @@ function uploadToS3(filePath) {
                     if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
                         S3AppUploadsRelativePath = S3AppUploadsRelativePath.replace('.apk', versionNumbers.buildVersionNumber+'.apk');
                     }
+                    qmLog.info("S3AppUploadsRelativePath " + S3AppUploadsRelativePath);
                     return S3AppUploadsRelativePath;
                 }
             }, {
@@ -986,6 +994,23 @@ function resizeIcon(callback, resolution, noAlpha) {
         }
         copyFiles([outputIconPath], paths.src.icons);
         uploadAppImagesToS3(outputIconPath);
+        callback();
+    });
+}
+function cordovaResources(callback){
+    resizeIcon1024(function(){
+        execute("cordova-res", function (error) {
+            callback();
+        });
+    })
+}
+function resizeIcon1024(callback) {
+    var command = 'convert resources/icon.png -resize 1024x1024 resources/icon.png';
+    execute(command, function (error) {
+        if (error) {
+            qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
+            qmLog.info('ERROR: ' + JSON.stringify(error));
+        }
         callback();
     });
 }
@@ -1934,7 +1959,7 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
         return uploadBuildToS3(paths.apk.arm7Release);
     }
 });
-gulp.task("upload-combined-release-apk-to-s3", function() {
+gulp.task("upload-combined-release-apk-to-s3", ['getAppConfigs'], function() {
     qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(paths.apk.builtApk);
@@ -2118,7 +2143,10 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(jsFilter)
         .pipe(uglify({mangle: false}))             // Minify any javascript sources (Can't mangle Angular files for some reason)
-        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
+        .on('error', function (err) {
+            var gutil = require('gulp-util');
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(csso())               // Minify any CSS sources
@@ -2436,7 +2464,7 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
             if(callback){callback();}
         } else {
             qmLog.error('drawoverapps plugin NOT installed! Installing now');
-            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#cordova6.5", function (error) {
+            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#master", function (error) {
                 if (error !== null) {
                     qmLog.error('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
                 } else {
@@ -3317,11 +3345,11 @@ gulp.task('xcodeProjectFix', function (callback) {
     var command = 'ruby hooks/xcodeprojectfix.rb';
     execute(command, callback);
 });
-gulp.task('ionicPlatformAddAndroid', function (callback) {
-    execute('ionic platform add android@6.2.2', callback);
+gulp.task('cordovaPlatformAddAndroid', function (callback) {
+    execute('cordova platform add android', callback);
 });
-gulp.task('ionicPlatformRemoveAndroid', function (callback) {
-    execute('ionic platform remove android', callback);
+gulp.task('cordovaPlatformRemoveAndroid', function (callback) {
+    execute('cordova platform remove android', callback);
 });
 gulp.task('platform-remove-ios', function (callback) {
     execute('ionic platform remove ios', callback);
@@ -3381,17 +3409,17 @@ gulp.task('_copy-src-and-run-android', function (callback) {
         callback);
 });
 gulp.task('ionicResourcesAndroid', [], function (callback) {
-    execute('ionic resources android', function () {
+    cordovaResources(function () {
         qmLog.info("Uploading android resources in case ionic resources command breaks");
         zipAndUploadToS3('resources', 'resources-android');
         callback();
     });
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
-    execute('ionic run android', callback);
+    execute('cordova run android', callback);
 });
 gulp.task('ionicEmulateAndroid', [], function (callback) {
-    execute('ionic emulate android', callback);
+    execute('cordova emulate android', callback);
 });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
 gulp.task('resizeIcon48', [], function (callback) { return resizeIcon(callback, 48); });
@@ -3435,8 +3463,9 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'google-services-json',
-        'ionicPlatformAddAndroid',
-        'ionicAddCrosswalk',
+        'copyAppResources', // Fixes Source path does not exist: resources/icon.png
+        'cordovaPlatformAddAndroid',
+        //'ionicAddCrosswalk',
         'ionicInfo',
         callback);
 });
