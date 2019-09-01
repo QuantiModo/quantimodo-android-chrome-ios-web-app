@@ -3321,11 +3321,11 @@ gulp.task('xcodeProjectFix', function (callback) {
     var command = 'ruby hooks/xcodeprojectfix.rb';
     execute(command, callback);
 });
-gulp.task('ionicPlatformAddAndroid', function (callback) {
-    execute('ionic platform add android@6.2.2', callback);
+gulp.task('cordovaPlatformAddAndroid', function (callback) {
+    execute('cordova platform add android', callback);
 });
-gulp.task('ionicPlatformRemoveAndroid', function (callback) {
-    execute('ionic platform remove android', callback);
+gulp.task('cordovaPlatformRemoveAndroid', function (callback) {
+    execute('cordova platform remove android', callback);
 });
 gulp.task('platform-remove-ios', function (callback) {
     execute('ionic platform remove ios', callback);
@@ -3392,10 +3392,10 @@ gulp.task('ionicResourcesAndroid', [], function (callback) {
     });
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
-    execute('ionic run android', callback);
+    execute('cordova run android', callback);
 });
 gulp.task('ionicEmulateAndroid', [], function (callback) {
-    execute('ionic emulate android', callback);
+    execute('cordova emulate android', callback);
 });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
 gulp.task('resizeIcon48', [], function (callback) { return resizeIcon(callback, 48); });
@@ -3439,7 +3439,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'google-services-json',
-        'ionicPlatformAddAndroid',
+        'cordovaPlatformAddAndroid',
         //'ionicAddCrosswalk',
         'ionicInfo',
         callback);
