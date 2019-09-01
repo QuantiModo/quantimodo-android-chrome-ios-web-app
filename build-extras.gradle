@@ -1,3 +1,14 @@
+allprojects {
+    // Workaround for https://issuetracker.google.com/117900475
+    // Remove when upgrading to AGP 3.4 or higher.
+    configurations.matching { it.name == '_internal_aapt2_binary' }.all { config ->
+        config.resolutionStrategy.eachDependency { details ->
+            details.useVersion("3.5.0-alpha03-5252756")
+        }
+    }
+}
+
+/* 
 android {
     dexOptions {
         jumboMode true  // Fixes Dex: Error converting bytecode to dex:
@@ -6,6 +17,7 @@ android {
         javaMaxHeapSize "2560M"
     }
 }
+
 
 // Fixes https://github.com/arnesson/cordova-plugin-firebase/issues/610
 configurations.all {
@@ -28,4 +40,5 @@ configurations.all {
        force 'com.google.firebase:firebase-config:11.8.0'
        force 'com.google.firebase:firebase-messaging:11.8.0'
    }
-}
+} 
+*/
