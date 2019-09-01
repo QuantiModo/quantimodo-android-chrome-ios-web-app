@@ -25,7 +25,7 @@
     <resource-file src="google-services.json" target="google-services.json" />
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
-    <hook type="after_prepare" src="hooks/android_custom_resources.js" />
+    <!-- Breaks build.  I think paths need to be updated <hook type="after_prepare" src="hooks/android_custom_resources.js" /> -->
       <hook src="hooks/build-extras-hook.js" type="before_run" />
       <hook src="hooks/build-extras-hook.js" type="before_build" />
   </platform>
