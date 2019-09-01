@@ -997,6 +997,23 @@ function resizeIcon(callback, resolution, noAlpha) {
         callback();
     });
 }
+function cordovaResources(callback){
+    resizeIcon1024(function(){
+        execute("cordova-res", function (error) {
+            callback();
+        });
+    })
+}
+function resizeIcon1024(callback) {
+    var command = 'convert resources/icon.png -resize 1024x1024 resources/icon.png';
+    execute(command, function (error) {
+        if (error) {
+            qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
+            qmLog.info('ERROR: ' + JSON.stringify(error));
+        }
+        callback();
+    });
+}
 function onWindows(callback) {
     if(process.env.OS && process.env.OS.toLowerCase().indexOf('win') !== -1){
         qmLog.info("Cannot do this on windows");
@@ -3392,7 +3409,7 @@ gulp.task('_copy-src-and-run-android', function (callback) {
         callback);
 });
 gulp.task('ionicResourcesAndroid', [], function (callback) {
-    execute('ionic resources android', function () {
+    cordovaResources(function () {
         qmLog.info("Uploading android resources in case ionic resources command breaks");
         zipAndUploadToS3('resources', 'resources-android');
         callback();
