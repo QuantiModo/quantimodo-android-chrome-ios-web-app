@@ -816,7 +816,7 @@ function convertFilePathToPropertyName(filePath) {
 }
 function getS3AppUploadsRelativePath(relative_filename) {
     var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-    if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
+    if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
         path = path.replace('.apk', '-'.versionNumbers.buildVersionNumber+'.apk');
     }
     return path;
