@@ -815,7 +815,15 @@ function convertFilePathToPropertyName(filePath) {
     return propertyName;
 }
 function getS3AppUploadsRelativePath(relative_filename) {
-    return  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+    var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+    if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
+        path = path.replace('.apk', '-'.versionNumbers.buildVersionNumber+'.apk');
+    }
+    return path;
+}
+function getApkS3DownloadUrl(filePath){
+    var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
+    return url;
 }
 function uploadBuildToS3(filePath) {
     if(!fs.existsSync(filePath)){
@@ -826,7 +834,8 @@ function uploadBuildToS3(filePath) {
         return;
     }
     /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
-    var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
+    var url = getApkS3DownloadUrl(filePath);
+    qmLog.info("Download from "+url+ " and test!");
     qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
     var context = qmGulp.getClientIdFromStaticData() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
     qmGulp.createStatusToCommit({
@@ -868,9 +877,6 @@ function uploadToS3(filePath) {
                 ACL: 'public-read',
                 keyTransform: function(relative_filename) {
                     var S3AppUploadsRelativePath = getS3AppUploadsRelativePath(filePath);
-                    if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
-                        S3AppUploadsRelativePath = S3AppUploadsRelativePath.replace('.apk', versionNumbers.buildVersionNumber+'.apk');
-                    }
                     qmLog.info("S3AppUploadsRelativePath " + S3AppUploadsRelativePath);
                     return S3AppUploadsRelativePath;
                 }
