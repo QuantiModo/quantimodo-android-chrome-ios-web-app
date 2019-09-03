@@ -868,10 +868,10 @@ function getS3AppUploadsRelativePath(relative_filename) {
     var numbers = qmGulp.buildInfoHelper.buildInfo.versionNumbers;
     if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
         var slug = qmLog.slugify(qmGit.getBranchName());
-        path = path.replace('.apk', '-'+
+        path = path.replace('app-',
             //numbers.buildVersionNumber
             slug
-            +'.apk');
+            +'-app-');
     }
     return path;
 }
