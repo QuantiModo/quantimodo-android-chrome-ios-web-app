@@ -245,7 +245,27 @@ var qmLog = {
         if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
         return process.env.HOSTNAME;
     },
-    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');}
+    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
+    slugify: function(str){
+        str = str.replace(/^\s+|\s+$/g, ''); // trim
+        str = str.toLowerCase();
+
+        // remove accents, swap ñ for n, etc
+        var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+        var to   = "aaaaeeeeiiiioooouuuunc------";
+
+        for (var i=0, l=from.length ; i<l ; i++)
+        {
+            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+        }
+
+        str = str.replace('.', '-') // replace a dot by a dash
+            .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+            .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
+            .replace(/-+/g, '-'); // collapse dashes
+
+        return str;
+    }
 };
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
@@ -847,7 +867,11 @@ function getS3AppUploadsRelativePath(relative_filename) {
     var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
     var numbers = qmGulp.buildInfoHelper.buildInfo.versionNumbers;
     if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
-        path = path.replace('.apk', '-'+numbers.buildVersionNumber+'.apk');
+        var slug = qmLog.slugify(qmGit.getBranchName());
+        path = path.replace('.apk', '-'+
+            //numbers.buildVersionNumber
+            slug
+            +'.apk');
     }
     return path;
 }
