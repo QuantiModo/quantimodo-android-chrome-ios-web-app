@@ -15,7 +15,7 @@
     "cordova-plugin-device": "1.1.7",
     "cordova-plugin-inappbrowser": "3.1.0",
     "cordova-plugin-inapppurchase": "1.1.0",
-    "cordova-plugin-splashscreen": "3.2.2",
+    "cordova-plugin-splashscreen": "5.0.3",
     "cordova-plugin-statusbar": "2.2.0",
     "cordova-plugin-whitelist": "1.2.2",
     "cordova-plugin-x-socialsharing": "5.2.1",
