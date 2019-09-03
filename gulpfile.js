@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
-var devCredentials, versionNumbers;
+var devCredentials;
 var androidArm7DebugApkName = 'android-armv7-debug';
 var androidX86DebugApkName = 'android-x86-debug';
 var androidArm7ReleaseApkName = 'android-armv7-release';
@@ -167,7 +167,13 @@ var qmLog = {
         metaData.build_info = qmGulp.buildInfoHelper.getCurrentBuildInfo();
         bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
     },
-    info: function (message, object, maxCharacters) {console.log(qmLog.obfuscateStringify(message, object, maxCharacters));},
+    info: function (message, object, maxCharacters) {
+        if(typeof message !== "string"){
+            object = message;
+            message = null;
+        }
+        console.log(qmLog.obfuscateStringify(message, object, maxCharacters));
+    },
     debug: function (message, object, maxCharacters) {
         if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
             qmLog.info("DEBUG: " + message, object, maxCharacters);
@@ -345,37 +351,6 @@ var majorMinorVersionNumbers = '2.9.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
-function setVersionNumbers() {
-    var date = new Date();
-    function getPatchVersionNumber() {
-        var monthNumber = (date.getMonth() + 1).toString();
-        var dayOfMonth = ('0' + date.getDate()).slice(-2);
-        return monthNumber + dayOfMonth;
-    }
-    function getIosMinorVersionNumber() {
-        return (getMinutesSinceMidnight()).toString();
-    }
-    function getMinutesSinceMidnight() {
-        return date.getHours() * 60 + date.getMinutes();
-    }
-    function getAndroidMinorVersionNumber() {
-        var number = getMinutesSinceMidnight() * 99 / 1440;
-        number = Math.round(number);
-        number = appendLeadingZero(number);
-        return number;
-    }
-    function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
-    function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
-    versionNumbers = {
-        iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
-        //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
-        androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
-        ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
-    };
-    versionNumbers.buildVersionNumber = versionNumbers.androidVersionCode;
-    qmLog.info(JSON.stringify(versionNumbers));
-}
-setVersionNumbers();
 var qmGulp = {
     chcp: {
         enabled: false,
@@ -559,7 +534,7 @@ var qmGulp = {
             buildServer: null,
             buildLink: null,
             versionNumber: null,
-            versionNumbers: null,
+            versionNumbers: {},
             gitBranch: null,
             gitCommitShaHash: null
         },
@@ -570,13 +545,13 @@ var qmGulp = {
         },
         getCurrentBuildInfo: function () {
             qmGulp.buildInfoHelper.currentBuildInfo = {
-                iosCFBundleVersion: versionNumbers.iosCFBundleVersion,
+                iosCFBundleVersion: qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion,
                 builtAt: timeHelper.getUnixTimestampInSeconds(),
                 builtAtString:  new Date().toISOString(),
                 buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qmGulp.buildInfoHelper.getBuildLink(),
-                versionNumber: versionNumbers.ionicApp,
-                versionNumbers: versionNumbers,
+                versionNumber: qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
+                versionNumbers: qmGulp.buildInfoHelper.buildInfo.versionNumbers,
                 gitBranch: qmGit.getBranchName(),
                 gitCommitShaHash: qmGit.getCurrentGitCommitSha()
             };
@@ -601,6 +576,36 @@ var qmGulp = {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
             if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
             if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
+        },
+        setVersionNumbers: function(){
+            var date = new Date();
+            function getPatchVersionNumber() {
+                var monthNumber = (date.getMonth() + 1).toString();
+                var dayOfMonth = ('0' + date.getDate()).slice(-2);
+                return monthNumber + dayOfMonth;
+            }
+            function getIosMinorVersionNumber() {
+                return (getMinutesSinceMidnight()).toString();
+            }
+            function getMinutesSinceMidnight() {
+                return date.getHours() * 60 + date.getMinutes();
+            }
+            function getAndroidMinorVersionNumber() {
+                var number = getMinutesSinceMidnight() * 99 / 1440;
+                number = Math.round(number);
+                number = appendLeadingZero(number);
+                return number;
+            }
+            function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
+            function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
+            qmGulp.buildInfoHelper.buildInfo.versionNumbers = {
+                iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
+                //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
+                androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
+                ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+            };
+            qmGulp.buildInfoHelper.buildInfo.versionNumbers.buildVersionNumber = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
+            qmLog.info(JSON.stringify(qmGulp.buildInfoHelper.buildInfo.versionNumbers));
         }
     },
     getAdditionalSettings: function(){
@@ -714,8 +719,32 @@ var qmGulp = {
             }
         };
         return options;
+    },
+    uploadBuildToS3: function(filePath) {
+        if(!fs.existsSync(filePath)){
+            throw filePath+" not found!";
+        }
+        if(qmGulp.getAppSettings().apiUrl === "local.quantimo.do"){
+            qmLog.info("Not uploading because qm.getAppSettings().apiUrl is " + qmGulp.getAppSettings().apiUrl);
+            return;
+        }
+        /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
+        var url = getApkS3DownloadUrl(filePath);
+        qmLog.info("Download from "+url+ " and test!");
+        qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
+        var context = qmGulp.getClientIdFromStaticData() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
+        qmGulp.createStatusToCommit({
+            description: 'Click Details to download and test',
+            context: context,
+            target_url: url,
+            state: 'success'
+        });
+        /** @namespace qm.getAppSettings().appStatus.buildStatus */
+        qmGulp.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
+        return uploadToS3(filePath);
     }
 };
+qmGulp.buildInfoHelper.setVersionNumbers();
 var Quantimodo = require('quantimodo');
 /** @namespace Quantimodo.ApiClient */
 var defaultClient = Quantimodo.ApiClient.instance;
@@ -816,37 +845,15 @@ function convertFilePathToPropertyName(filePath) {
 }
 function getS3AppUploadsRelativePath(relative_filename) {
     var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-    if(QUANTIMODO_CLIENT_ID === 'quantimodo'){
-        path = path.replace('.apk', '-'.versionNumbers.buildVersionNumber+'.apk');
+    var numbers = qmGulp.buildInfoHelper.buildInfo.versionNumbers;
+    if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
+        path = path.replace('.apk', '-'+numbers.buildVersionNumber+'.apk');
     }
     return path;
 }
 function getApkS3DownloadUrl(filePath){
     var url = 'https://quantimodo.s3.amazonaws.com/' + getS3AppUploadsRelativePath(filePath);
     return url;
-}
-function uploadBuildToS3(filePath) {
-    if(!fs.existsSync(filePath)){
-        throw filePath+" not found!";
-    }
-    if(qmGulp.getAppSettings().apiUrl === "local.quantimo.do"){
-        qmLog.info("Not uploading because qm.getAppSettings().apiUrl is " + qmGulp.getAppSettings().apiUrl);
-        return;
-    }
-    /** @namespace qm.getAppSettings().appStatus.betaDownloadLinks */
-    var url = getApkS3DownloadUrl(filePath);
-    qmLog.info("Download from "+url+ " and test!");
-    qmGulp.getAppStatus().betaDownloadLinks[convertFilePathToPropertyName(filePath)] = url;
-    var context = qmGulp.getClientIdFromStaticData() + " " + qmGulp.currentTask.replace('upload-combined-', '').replace('-to-s3', '');
-    qmGulp.createStatusToCommit({
-        description: 'Click Details to download and test',
-        context: context,
-        target_url: url,
-        state: 'success'
-    });
-    /** @namespace qm.getAppSettings().appStatus.buildStatus */
-    qmGulp.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
-    return uploadToS3(filePath);
 }
 function uploadAppImagesToS3(filePath) {
     //qm.getAdditionalSettings().appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP constructor
@@ -871,13 +878,13 @@ function uploadToS3(filePath) {
     }
     fs.stat(filePath, function (err, stat) {
         if (!err) {
-            qmLog.info("Uploading to S3 " + filePath + "...");
+            qmLog.info("Uploading " + filePath + " to S3...");
             return gulp.src([filePath]).pipe(s3({
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
                 keyTransform: function(relative_filename) {
                     var S3AppUploadsRelativePath = getS3AppUploadsRelativePath(filePath);
-                    qmLog.info("S3AppUploadsRelativePath " + S3AppUploadsRelativePath);
+                    qmLog.info("S3 path: " + S3AppUploadsRelativePath);
                     return S3AppUploadsRelativePath;
                 }
             }, {
@@ -1053,9 +1060,9 @@ function fastlaneSupply(track, callback) {
 }
 function setVersionNumbersInWidget(parsedXmlFile) {
     /** @namespace parsedXmlFile.widget */
-    parsedXmlFile.widget.$.version = versionNumbers.ionicApp;
-    parsedXmlFile.widget.$['ios-CFBundleVersion'] = versionNumbers.iosCFBundleVersion;
-    parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
+    parsedXmlFile.widget.$.version = qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
+    parsedXmlFile.widget.$['ios-CFBundleVersion'] = qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion;
+    parsedXmlFile.widget.$['android-versionCode'] = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
     return parsedXmlFile;
 }
 function getPostRequestOptions() {
@@ -1367,7 +1374,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
         'description': qmGulp.getAppSettings().appDescription,
-        'version': versionNumbers.ionicApp,
+        'version': qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
         'options_page': 'chrome_options.html',
         'icons': {
             '16': 'img/icons/icon_16.png',
@@ -1571,8 +1578,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         function addBuildInfoToAppSettings() {
             qmGulp.getAppSettings().buildServer = qmLog.getCurrentServerContext();
             qmGulp.getAppSettings().buildLink = qmGulp.buildInfoHelper.getBuildLink();
-            qmGulp.getAppSettings().versionNumber = versionNumbers.ionicApp;
-            qmGulp.getAppSettings().androidVersionCode = versionNumbers.androidVersionCode;
+            qmGulp.getAppSettings().versionNumber = qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
+            qmGulp.getAppSettings().androidVersionCode = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
             qmGulp.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG);
             qmGulp.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds();
             // if (!qm.getAppSettings().clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
@@ -1951,31 +1958,32 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
 });
 gulp.task("upload-chrome-extension-to-s3", function() {
     qmGulp.currentTask = this.currentTask.name;
-    return uploadBuildToS3(getPathToChromeExtensionZip());
+    return qmGulp.uploadBuildToS3(getPathToChromeExtensionZip());
 });
 gulp.task("upload-x86-release-apk-to-s3", function() {
     qmGulp.currentTask = this.currentTask.name;
     if(buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.x86Release);
+        return qmGulp.uploadBuildToS3(paths.apk.x86Release);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
     qmGulp.currentTask = this.currentTask.name;
     if(buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.arm7Release);
+        return qmGulp.uploadBuildToS3(paths.apk.arm7Release);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", ['getAppConfigs'], function() {
     qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
-        return uploadBuildToS3(paths.apk.builtApk);
+        qmLog.info(qmGulp.buildInfoHelper.buildInfo.versionNumbers);
+        return qmGulp.uploadBuildToS3(paths.apk.combinedRelease);
     }
 });
 gulp.task("upload-combined-debug-apk-to-s3", function() {
     qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
         if(qmGulp.buildSettings.buildDebug()){
-            return uploadBuildToS3(paths.apk.combinedDebug);
+            return qmGulp.uploadBuildToS3(paths.apk.combinedDebug);
         } else {
             return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
         }
@@ -2196,7 +2204,7 @@ gulp.task('upload-source-maps', [], function(callback) {
             if(file.indexOf('.map') !== -1){return;}
             var options = {
                 apiKey: 'ae7bc49d1285848342342bb5c321a2cf',
-                appVersion: versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
+                appVersion: qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
                 //codeBundleId: '1.0-123', // optional (react-native only)
                 minifiedUrl: '*'+file, // supports wildcards
                 sourceMap: paths.www.scripts + '/'+file+'.map', // file path of the source map on the current machine
@@ -2740,8 +2748,8 @@ gulp.task('setVersionNumberInFiles', function () {
         'resources/chrome_app/manifest.json'
     ];
     return gulp.src(filesToUpdate, {base: '.'})
-        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.iosCFBundleVersion))
-        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
+        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion))
+        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
 });
 gulp.task('writeCommitSha', ['getAppConfigs'], function () {
@@ -3056,7 +3064,7 @@ gulp.task('zipBuild', [], function () {
     return zipAFolder(process.env.BUDDYBUILD_WORKSPACE, "buddybuild.zip", './');
 });
 gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
-    return uploadBuildToS3("buddybuild.zip");
+    return qmGulp.uploadBuildToS3("buddybuild.zip");
 });
 // Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
