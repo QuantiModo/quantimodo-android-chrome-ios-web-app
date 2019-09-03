@@ -18,7 +18,7 @@
     "cordova-plugin-splashscreen": "5.0.3",
     "cordova-plugin-statusbar": "2.4.3",
     "cordova-plugin-whitelist": "1.2.2",
-    "cordova-plugin-x-socialsharing": "5.2.1",
+    "cordova-plugin-x-socialsharing": "5.4.7",
     "cypress": "3.4.1",
     "de.appplant.cordova.plugin.local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#53262c8242e9b932758d2086071865e27909204f",
     "ghost-inspector": "3.0.1",
