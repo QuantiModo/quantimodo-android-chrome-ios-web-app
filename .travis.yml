@@ -97,6 +97,11 @@ notifications:
       - mike@quantimo.do
     on_success: never
     on_failure: always
+  slack:
+    rooms:
+      - quantimodo:BijCp5nmBJtuwXTnJ1ALT6xo#web
+    on_success: always 
+    on_failure: always
 #deploy:
 #  provider: releases
 #  api_key:
