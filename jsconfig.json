@@ -1,1 +1,8 @@
-{}
+{
+    "compilerOptions": {
+        "target": "es5"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
