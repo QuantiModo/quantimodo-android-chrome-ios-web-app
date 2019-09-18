@@ -913,6 +913,34 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.setUser(response.user)
                     }
                     return qm.connectorHelper.storeConnectorResponse(response);
+                },
+                weatherConnect: function(connector, $scope){
+                    $scope.data = {};
+                    myPopup = $ionicPopup.show({
+                        template: '<label class="item item-input">' +
+                            '<i class="icon ion-android-locate placeholder-icon"></i>' +
+                            '<input type="text" placeholder="Postal Code"></label>',
+                        title: connector.displayName,
+                        subTitle: 'Enter your zip code or postal code',
+                        scope: $scope,
+                        buttons: [
+                            {text: 'Cancel'},
+                            {
+                                text: '<b>Save</b>',
+                                type: 'button-positive',
+                                onTap: function(e){
+                                    if(!$scope.data.zip){
+                                        e.preventDefault();
+                                    }else{
+                                        return $scope.data.zip;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+                    myPopup.then(function(res){
+                        qmService.connectors.connectWithParams({zip: res}, connector.name);
+                    });
                 }
             },
             cordova: {
@@ -3664,7 +3692,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             qmLog.authDebug("connectConnectorWithParamsToApi:", params, params);
-            var allowedParams = ['location', 'username', 'password', 'email'];
+            var allowedParams = ['location', 'username', 'password', 'email', 'zip'];
             qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
         };
         qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
@@ -4669,7 +4697,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
             var deferred = $q.defer();
-            if(lowercaseConnectorName.indexOf('weather') > -1 && !params.location){
+            if(lowercaseConnectorName.indexOf('weather') > -1 && !params.location && !params.zip){
+                // Not sure why this is necessary but it doesn't seem to work?
                 $http.get('https://freegeoip.net/json/').success(function(data){
                     console.log(JSON.stringify(data, null, 2));
                     qmService.connectConnectorWithParamsToApi({location: data.ip}, lowercaseConnectorName, function(){
