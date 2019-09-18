@@ -198,8 +198,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             qmLog.info("connectConnector is not inArray('oauth', 'facebook', 'google') no not using qmService.connectors.oAuthConnect: " + JSON.stringify(connector), null, connector);
-            if(connector.name === 'worldweatheronline'){
-                qmService.connectors.connectWithParams({}, 'worldweatheronline');
+            if(connector.name.indexOf('weather') !== -1){
+                qmService.connectors.weatherConnect(connector, $scope);
             }
             if(connector.name === 'whatpulse'){
                 $scope.data = {};
