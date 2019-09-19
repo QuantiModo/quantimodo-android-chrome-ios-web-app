@@ -11,15 +11,15 @@ https://qm-staging-builder.netlify.com/* https://staging-builder.quantimo.do/:sp
 https://qm-physician.netlify.com/* https://physician.quantimo.do/:splat 301!
 
 
-https://web.quantimo.do/charts https://web.quantimo.do/#/app/chart-search 301!
-https://web.quantimo.do/history https://web.quantimo.do/#/app/history-all-category/Anything 301!
-https://web.quantimo.do/import https://web.quantimo.do/#/app/import 301!
-https://web.quantimo.do/inbox https://web.quantimo.do/#/app/reminders-inbox 301!
-https://web.quantimo.do/intro https://web.quantimo.do/#/app/intro 301!
-https://web.quantimo.do/login https://web.quantimo.do/#/app/login 301!
-https://web.quantimo.do/onboarding https://web.quantimo.do/#/app/onboarding 301!
-https://web.quantimo.do/outcomes https://web.quantimo.do/#/app/outcome-search 301!
-https://web.quantimo.do/predictors https://web.quantimo.do/#/app/predictor-search 301!
-https://web.quantimo.do/settings https://web.quantimo.do/#/app/settings 301!
-https://web.quantimo.do/studies https://web.quantimo.do/#/app/studies 301!
-https://web.quantimo.do/study-creation https://web.quantimo.do/#/app/study-creation 301!
+/charts /#/app/chart-search 301!
+/history /#/app/history-all-category/Anything 301!
+/import /#/app/import 301!
+/inbox /#/app/reminders-inbox 301!
+/intro /#/app/intro 301!
+/login /#/app/login 301!
+/onboarding /#/app/onboarding 301!
+/outcomes /#/app/outcome-search 301!
+/predictors /#/app/predictor-search 301!
+/settings /#/app/settings 301!
+/studies /#/app/studies 301!
+/study-creation /#/app/study-creation 301!
