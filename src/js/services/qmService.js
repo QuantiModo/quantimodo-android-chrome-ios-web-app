@@ -916,10 +916,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 weatherConnect: function(connector, $scope){
                     $scope.data = {};
-                    myPopup = $ionicPopup.show({
+                    var myPopup = $ionicPopup.show({
                         template: '<label class="item item-input">' +
                             '<i class="icon ion-android-locate placeholder-icon"></i>' +
-                            '<input type="text" placeholder="Postal Code"></label>',
+                            '<input type="text" placeholder="Postal Code" ng-model="data.zip"></label>',
                         title: connector.displayName,
                         subTitle: 'Enter your zip code or postal code',
                         scope: $scope,
@@ -928,10 +928,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             {
                                 text: '<b>Save</b>',
                                 type: 'button-positive',
-                                onTap: function(e){
-                                    if(!$scope.data.zip){
+                                onTap: function (e) {
+                                    if (!$scope.data.zip) {
                                         e.preventDefault();
-                                    }else{
+                                    } else {
                                         return $scope.data.zip;
                                     }
                                 }
