@@ -919,7 +919,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     myPopup = $ionicPopup.show({
                         template: '<label class="item item-input">' +
                             '<i class="icon ion-android-locate placeholder-icon"></i>' +
-                            '<input type="text" placeholder="Postal Code"></label>',
+                            '<input type="text" placeholder="Postal Code" ng-model="data.zip"></label>',
                         title: connector.displayName,
                         subTitle: 'Enter your zip code or postal code',
                         scope: $scope,
