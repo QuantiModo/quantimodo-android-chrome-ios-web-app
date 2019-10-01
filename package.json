@@ -23,7 +23,7 @@
     "de.appplant.cordova.plugin.local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#53262c8242e9b932758d2086071865e27909204f",
     "ghost-inspector": "3.0.1",
     "ionic-plugin-keyboard": "2.2.1",
-    "jasmine-core": "3.3.0",
+    "jasmine-core": "3.5.0",
     "karma": "4.2.0",
     "karma-chrome-launcher": "3.0.0",
     "karma-jasmine": "2.0.1",
