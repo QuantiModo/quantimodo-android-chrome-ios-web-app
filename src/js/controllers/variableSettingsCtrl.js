@@ -54,6 +54,9 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 }
             })
         }
+        function getVariableName(){
+            return qmService.stateHelper.getVariableNameFromScopeStateParamsOrUrl($scope, $stateParams);
+        }
         function setVariableObject(variableObject){
             $scope.state.variableObject = $scope.state.variableObject = variableObject;
             if(!$scope.variableName){
@@ -71,12 +74,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                         qmService.actionSheets.actionSheetButtons.chartSearch,
                         qmService.actionSheets.actionSheetButtons.historyAllVariable,
                         {text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
-                        {text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                     ],
                     destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
-                        qmLogService.debug('CANCELLED', null);
+                        qmLogService.debug('CANCELLED');
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
@@ -108,9 +110,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                                 fromState: $state.current.name,
                                 userTaggedVariableObject: variableObject
                             });
-                        }
-                        if(index === 5){
-                            $scope.tagAnotherVariable(variableObject);
                         }
                         return true;
                     },
@@ -235,7 +234,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }
             dialogParameters.requestParams = requestParams;
             qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, $event);
-        };
+        }
         $scope.state.openJoinVariableSearchDialog = function($event, requestParams){
             qmLog.info("openJoinVariableSearchDialog called by this event:", $event);
             qmLog.info("openJoinVariableSearchDialog requestParams:", requestParams);
@@ -473,6 +472,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
         $scope.refreshUserVariable = function(hideLoader){
             var refresh = true;
+            var variableName = getVariableName();
             if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){
                 $scope.state.variableObject = null;
             }
