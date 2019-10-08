@@ -3550,6 +3550,13 @@ var qm = {
                     textContent: "I'm really good at finding correlations and even compensating for various onset delays and durations of action. " +
                         "However, you're much better than me at knowing if there's a way that a given factor could plausibly influence an outcome. " +
                         "You can help me learn and get better at my predictions by pressing the thumbs down button for relationships that you don't think could possibly be causal.",
+                },
+                primaryOutcomeVariable: {
+                    title: "Primary Outcome Variable",
+                    textContent: "A good primary outcome variable is something that you want to improve and that changes inexplicably. "+
+                        "For instance, if you have anxiety, back pain or arthritis which is worse on some days than others, "+
+                        "these would be good candidates for primary outcome variables.  Recording their severity and potential factors "+
+                        "will help you identify hidden factors exacerbating or improving them. ",
                 }
             };
             return explanations;
