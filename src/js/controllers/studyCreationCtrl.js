@@ -30,7 +30,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.hideLoader();
         });
         if(!clipboard.supported){
-            qmLog.debug('Sorry, copy to clipboard is not supported', null);
+            qmLog.debug('Sorry, copy to clipboard is not supported');
             $scope.hideClipboardButton = true;
         }
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
