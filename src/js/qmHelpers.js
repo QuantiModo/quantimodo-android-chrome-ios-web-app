@@ -1651,8 +1651,9 @@ var qm = {
                 qm.qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned " + accessToken);
                 return accessToken;
             }
-            if(qm.userHelper.getUserFromLocalStorage()){
-                accessToken = qm.userHelper.getUserFromLocalStorage().accessToken;
+            var u = qm.userHelper.getUserFromLocalStorage();
+            if(u){
+                accessToken = u.accessToken;
                 if(accessToken){
                     if(!qm.auth.accessTokenIsValid(accessToken)){
                         qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: " + accessToken);
@@ -1740,9 +1741,8 @@ var qm = {
         deleteAllAccessTokens: function(reason){
             qm.qmLog.info("deleteAllAccessTokens because: " + reason);
             qm.storage.removeItem('accessToken');
-            if(qm.userHelper.getUserFromLocalStorage()){
-                qm.userHelper.getUserFromLocalStorage().accessToken = null;
-            }
+            var u = qm.userHelper.getUserFromLocalStorage();
+            if(u){u.accessToken = null;}
             qm.auth.deleteAllCookies();
             qm.api.configureClient('deleteAllAccessTokens');
         },
@@ -3652,7 +3652,6 @@ var qm = {
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminders: 'trackingReminders',
         trackingReminderSyncQueue: 'trackingReminderSyncQueue',
-        units: 'units',
         user: 'user',
         useSmallInbox: 'useSmallInbox',
         userCorrelations: 'userCorrelations',
@@ -6103,10 +6102,9 @@ var qm = {
             return qm.timeHelper.getTimeSinceString(qm.push.getLastPushTimeStampInSeconds());
         },
         enabled: function(){
-            if(!qm.userHelper.getUserFromLocalStorage()){
-                return false;
-            }
-            return qm.userHelper.getUserFromLocalStorage().pushNotificationsEnabled;
+            var u = qm.userHelper.getUserFromLocalStorage();
+            if(!u){ return false; }
+            return u.pushNotificationsEnabled;
         },
         logPushReceived: function(pushData){
             pushData.receivedAt = qm.timeHelper.getCurrentLocalDateAndTime();
@@ -7438,7 +7436,7 @@ var qm = {
         },
         clearStorageExceptForUnitsAndCommonVariables: function(){
             qm.qmLog.info('Clearing local storage!');
-            var units = qm.storage.getItem(qm.items.units);
+            var units = qm.staticData.units;
             qm.storage.clear();
             qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
@@ -8267,7 +8265,7 @@ var qm = {
     unitHelper: {
         getNonAdvancedUnits: function(){
             var nonAdvancedUnitObjects = [];
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
                 if(!allUnits[i].advanced){
                     nonAdvancedUnitObjects.push(allUnits[i]);
@@ -8279,7 +8277,7 @@ var qm = {
         },
         inNonAdvancedUnitAbbreviatedNames: function(unitAbbreviatedName){
             var nonAdvancedUnitAbbreviatedNames = [];
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
                 if(!allUnits[i].advanced){
                     nonAdvancedUnitAbbreviatedNames.push(allUnits[i].abbreviatedName);
@@ -8289,7 +8287,7 @@ var qm = {
         },
         getManualTrackingUnits: function(){
             var manualTrackingUnitObjects = [];
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
                 if(allUnits[i].manualTracking){
                     manualTrackingUnitObjects.push(allUnits[i]);
@@ -8301,7 +8299,7 @@ var qm = {
         },
         inManualTrackingUnitUnitAbbreviatedNames: function(unitAbbreviatedName){
             var manualTrackingUnitUnitAbbreviatedNames = [];
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
                 if(allUnits[i].manualTracking){
                     manualTrackingUnitUnitAbbreviatedNames.push(allUnits[i].abbreviatedName);
@@ -8310,7 +8308,7 @@ var qm = {
             return manualTrackingUnitUnitAbbreviatedNames.indexOf(unitAbbreviatedName) > -1;
         },
         getAllUnits: function(){
-            var units = qm.storage.getItem(qm.items.units);
+            var units = qm.staticData.units;
             if(!units){
                 units = qm.staticData.units;
             }
@@ -8326,7 +8324,7 @@ var qm = {
             return qm.unitHelper.getAllUnits();
         },
         getByNameAbbreviatedNameOrId: function(unitAbbreviatedNameOrId){
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
                 if(allUnits[i].abbreviatedName === unitAbbreviatedNameOrId){
                     return allUnits[i];
@@ -8341,7 +8339,7 @@ var qm = {
             return null;
         },
         indexByAbbreviatedName: function(){
-            var allUnits = qm.storage.getItem(qm.items.units);
+            var allUnits = qm.staticData.units;
             qm.unitsIndexedByAbbreviatedName = [];
             for(var i = 0; i < allUnits.length; i++){
                 qm.unitsIndexedByAbbreviatedName[allUnits[i].abbreviatedName] = allUnits[i];
@@ -8812,12 +8810,13 @@ var qm = {
             qm.userHelper.setDriftIdentity(user);
         },
         withinAllowedNotificationTimes: function(){
-            if(qm.userHelper.getUserFromLocalStorage()){
+            var u = qm.userHelper.getUserFromLocalStorag();
+            if(u){
                 var now = new Date();
                 var hours = now.getHours();
                 var currentTime = hours + ':00:00';
-                if(currentTime > qm.userHelper.getUserFromLocalStorage().latestReminderTime ||
-                    currentTime < qm.userHelper.getUserFromLocalStorage().earliestReminderTime){
+                if(currentTime > u.latestReminderTime ||
+                    currentTime < u.earliestReminderTime){
                     qm.qmLog.info('Not showing notification because outside allowed time range');
                     return false;
                 }
@@ -8847,6 +8846,7 @@ var qm = {
         },
         getUserFromApi: function(successHandler, errorHandler, params){
             qm.qmLog.info("Getting user from API...");
+            qm.qmLog.error("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if(userFromApi && typeof userFromApi.displayName !== "undefined"){
                     qm.qmLog.info("Got user from API...");
