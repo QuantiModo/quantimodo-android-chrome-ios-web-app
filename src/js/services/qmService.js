@@ -7850,7 +7850,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.urlHelper.getParam('finish_url')){
                 $rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);
             }
-            qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
             qmService.deploy.setVersionInfo();
             qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
             qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());

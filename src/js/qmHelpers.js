@@ -8360,22 +8360,6 @@ var qm = {
             }
             return qm.unitHelper.getAllUnits();
         },
-        getUnitsFromApiAndIndexByAbbreviatedNames: function(successHandler, errorHandler){
-            if(qm.storage.getItem(qm.items.units)){
-                qm.unitHelper.indexByAbbreviatedName();
-                return;
-            }
-            qm.api.configureClient(arguments.callee.name);
-            var apiInstance = new qm.Quantimodo.UnitsApi();
-            function callback(error, data, response){
-                if(data){
-                    qm.storage.setItem(qm.items.units, data);
-                    qm.unitHelper.indexByAbbreviatedName();
-                }
-                qm.api.responseHandler(error, data, response, successHandler, errorHandler);
-            }
-            apiInstance.getUnits(callback);
-        },
         updateAllUnitPropertiesOnObject: function(unitNameAbbreviatedNameOrId, object){
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(unitNameAbbreviatedNameOrId);
             qm.qmLog.info('Changing unit to ' + unit.name);
