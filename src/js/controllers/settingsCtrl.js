@@ -6,7 +6,23 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
              $ionicPlatform, $mdDialog){
         $scope.controller_name = "SettingsCtrl";
         $scope.state = {
-            title: "Settings"
+            title: "Settings",
+            updatePrimaryOutcomeVariable: function(ev){
+                qm.help.getExplanation('primaryOutcomeVariable', null, function(explanation){
+                    var dialogParameters = {
+                        title: explanation.title,
+                        helpText: explanation.textContent,
+                        placeholder: "Search for an outcome...",
+                        buttonText: "Select Outcome",
+                        requestParams: {includePublic: true, outcome: true,  sort: "-numberOfUserVariables"}
+                    };
+                    qmService.showVariableSearchDialog(dialogParameters, function(v){
+                        $rootScope.user.primaryOutcomeVariableId = v.id;
+                        $rootScope.user.primaryOutcomeVariableName = v.name;
+                        qmService.updateUserSettingsDeferred({primaryOutcomeVariableId: v.id});
+                    }, null, ev);
+                });
+            }
         };
         $scope.userEmail = qm.urlHelper.getParam('userEmail');
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -36,6 +52,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }
             if(!$rootScope.user){
                 qmService.login.sendToLoginIfNecessaryAndComeBack("No $rootScope.user in " + $state.current.name);
+            } else {
+                qmService.refreshUser();
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
