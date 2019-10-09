@@ -8338,14 +8338,6 @@ var qm = {
             }
             return null;
         },
-        indexByAbbreviatedName: function(){
-            var allUnits = qm.staticData.units;
-            qm.unitsIndexedByAbbreviatedName = [];
-            for(var i = 0; i < allUnits.length; i++){
-                qm.unitsIndexedByAbbreviatedName[allUnits[i].abbreviatedName] = allUnits[i];
-            }
-            return qm.unitsIndexedByAbbreviatedName;
-        },
         getUnitArrayContaining: function(currentUnitAbbreviatedName){
             if(!currentUnitAbbreviatedName || currentUnitAbbreviatedName === ""){
                 return qm.unitHelper.getNonAdvancedUnits();
