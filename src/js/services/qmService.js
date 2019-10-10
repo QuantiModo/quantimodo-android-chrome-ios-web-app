@@ -1768,11 +1768,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.validationFailure(message, measurement);
                         return false;
                     }else{
-                        if(!qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName)){
-                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + measurement.unitAbbreviatedName +
-                                ' and qm.unitsIndexedByAbbreviatedName are ' + JSON.stringify(qm.unitsIndexedByAbbreviatedName), {}, "error");
+                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName);
+                        if(!u){
+                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + measurement.unitAbbreviatedName);
                         }else{
-                            measurement.unitId = qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName).id;
+                            measurement.unitId = u.id;
                         }
                     }
                     return true;
@@ -7510,16 +7510,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.valueIsValid = function(object, value){
             var message;
-            if(qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== "undefined" && qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== null){
-                if(value < qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue){
-                    message = qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue + ' is the smallest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+            var u = qm.unitHelper.getByNameAbbreviatedNameOrId(object.unitAbbreviatedName);
+            if(!u){
+                qm.qmLog.error("Unit named "+u.unitAbbreviatedName+" not found!");
+                return true;
+            }
+            if(u.minimumValue !== "undefined" && u.minimumValue !== null){
+                if(value < u.minimumValue){
+                    message = u.minimumValue + ' is the smallest possible value for the unit ' + u.name + ".  Please select another unit or value.";
                     qmService.validationFailure(message);
                     return false;
                 }
             }
-            if(qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== "undefined" && qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== null){
-                if(value > qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue){
-                    message = qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue + ' is the largest possible value for the unit ' + qm.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+            if(typeof u.maximumValue !== "undefined" && u.maximumValue !== null){
+                if(value > u.maximumValue){
+                    message = u.maximumValue + ' is the largest possible value for the unit ' + u.name + ".  Please select another unit or value.";
                     qmService.validationFailure(message);
                     return false;
                 }
@@ -7850,7 +7855,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.urlHelper.getParam('finish_url')){
                 $rootScope.finishUrl = qm.urlHelper.getParam('finish_url', null, true);
             }
-            qm.unitHelper.getUnitsFromApiAndIndexByAbbreviatedNames();
             qmService.deploy.setVersionInfo();
             qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
             qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
