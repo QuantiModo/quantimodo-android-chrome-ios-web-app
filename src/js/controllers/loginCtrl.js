@@ -149,8 +149,8 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
             qmService.splash.hideSplashScreen();
             var errorMessage = qm.urlHelper.getParam('error');
-            errorMessage = decodeURIComponent(errorMessage);
             if(!qm.stringHelper.isFalsey(errorMessage)){
+                errorMessage = decodeURIComponent(errorMessage);
                 qmLog.error(errorMessage);
                 if(!qm.getUser()){
                     qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  Error: " +
