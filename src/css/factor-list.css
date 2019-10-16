@@ -26,8 +26,8 @@
 }
 .factor-image-block {
     float: left;
-    width: 60px;
-    height: 60px;
+    width: 46px;
+    height: 46px;
     background: #fff;
     border-radius: 50%;
     cursor: pointer;
@@ -36,6 +36,8 @@
 }
 .factor-image {
     padding: 10%;
+    width: 40px;
+    height: 40px;
 }
 .percent-text {
     float: right;
@@ -53,6 +55,7 @@
 .factor-bar-container {
     align-items: center;
     padding-bottom: 10px;
+    height: 60px;
 }
 .factors-title{
     font-size: 28px;
