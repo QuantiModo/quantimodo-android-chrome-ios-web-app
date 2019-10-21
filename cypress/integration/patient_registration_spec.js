@@ -7,6 +7,7 @@ var urls = {
     import: appHostName+ '/import',
     register: appHostName+ '/api/v2/auth/register',
     physicianOAuth: appHostName+ '/api/v1/oauth/authorize?response_type=token&scope=readmeasurements&client_id=m-thinkbynumbers-org',
+    study: 'https://local.quantimo.do/api/v2/study?logLevel=info&effectVariableName=Overall%20Mood&causeVariableName=Flaxseed%20Oil'
 };
 var selectors = {
     usernameInput:'#username-group > input',
@@ -51,7 +52,16 @@ function skipIntro(){
     cy.get('.slider > .slider-slides > .slider-slide:nth-child(1) > .button-bar > #skipButtonIntro').click();
 }
 describe('Auth Tests', function() {
-    it.only('Check demo page', function() {
+    it.only('Check study page', function() {
+        cy.clearCookies();
+        cy.visit(urls.study);
+        try {
+            cy.get("#joinStudyButton").click();
+        } catch (e) {
+            console.info(e.message);
+        }
+    });
+    it('Check demo page', function() {
         cy.clearCookies();
         cy.visit(urls.demo.importPage);
         try {
