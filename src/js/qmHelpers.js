@@ -208,6 +208,12 @@ var qm = {
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
             qmApiClient.defaultHeaders = qm.api.getDefaultHeaders();
+            qmApiClient.cache = true;
+            if(requestParams){
+                if(requestParams.refresh || requestParams.recalculate || requestParams.noCache){
+                    qmApiClient.cache = false;
+                }
+            }
             return qmApiClient;
         },
         cacheSet: function(params, data, functionName){
@@ -2847,7 +2853,7 @@ var qm = {
         getFeedApiInstance: function(params){
             qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.FeedApi();
-            apiInstance.cache = !params || !params.noCache;
+            // apiInstance.cache = !params || !params.noCache; Should be done in qm.api.configureClient
             return apiInstance;
         },
         getFeedFromLocalForage: function(successHandler, errorHandler){
@@ -7673,7 +7679,7 @@ var qm = {
             qm.api.configureClient(functionName, null, params);
             var apiInstance = new qm.Quantimodo.StudiesApi();
             apiInstance.apiClient.timeout = 120 * 1000;
-            apiInstance.cache = !params || !params.recalculate;
+            //apiInstance.cache = !params || !params.recalculate;  apiInstance.cache be set in qm.api.configureClient
             return apiInstance;
         },
         lastStudy: null,
