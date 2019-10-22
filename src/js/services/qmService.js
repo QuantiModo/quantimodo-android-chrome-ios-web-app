@@ -1698,6 +1698,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             if(qm.appMode.isBuilder()){
                                 afterLoginGoToState = qm.stateNames.configuration;
                             }
+                            if(qm.appMode.isPhysician()){
+                                afterLoginGoToState = qm.stateNames.physician;
+                            }
                             qmService.goToState(afterLoginGoToState);
                             qmService.login.deleteAfterLoginState();
                             return true;
@@ -3910,7 +3913,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         function getDefaultState(){
             if(qm.appMode.isPhysician()){
-                return 'app.physician';
+                return qm.stateNames.physician;
             }
             if(window.designMode){
                 return qm.stateNames.configuration;
