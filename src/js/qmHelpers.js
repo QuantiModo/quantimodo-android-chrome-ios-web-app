@@ -103,8 +103,8 @@ var qm = {
             if(typeof window === "undefined"){
                 return false;
             }
-            var urlParm = qm.urlHelper.getParam('physicianMode');
-            if(urlParm !== null){qm.storage.setItem('physicianMode', urlParm);}
+            var urlParam = qm.urlHelper.getParam('physicianMode');
+            if(urlParam !== null){qm.storage.setItem('physicianMode', urlParam);}
             var isPhysician = window.location.href.indexOf('app/physician') !== -1 ||
                 qm.storage.getItem('physicianMode') ||
                 qm.urlHelper.indexOfCurrentUrl('physician-index.html') !== -1 ||
@@ -480,6 +480,9 @@ var qm = {
                 return null;
             }
             if(qm.appMode.isBuilder()){
+                return null;
+            }
+            if(qm.appMode.isPhysician()){
                 return null;
             }
             var subDomain = qm.urlHelper.getSubDomain();
