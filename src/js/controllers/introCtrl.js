@@ -90,6 +90,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             if(!$rootScope.appSettings){
                 qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
             }
+            if(qm.appMode.isPhysician()){qmService.goToState(qm.staticData.stateNames.physician);}
             makeBackgroundTransparentIfUsingFuturisticBackground();
             setColorsFromSlide(introSlides()[0]);
             if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
