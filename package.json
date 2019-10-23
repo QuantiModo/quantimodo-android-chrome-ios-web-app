@@ -9,7 +9,7 @@
   "devDependencies": {
     "angular-mocks": "1.7.7",
     "compromise": "11.14.3",
-    "cordova-ios-plugin-no-export-compliance": "0.0.5",
+    "cordova-ios-plugin-no-export-compliance": "0.0.6",
     "cordova-plugin-appsettings": "1.0.2",
     "cordova-plugin-datepicker": "0.9.3",
     "cordova-plugin-device": "2.0.3",
