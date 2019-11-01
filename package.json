@@ -36,7 +36,7 @@
     "body-parser": "1.18.3",
     "bower": "1.8.8",
     "bugsnag": "2.4.3",
-    "bugsnag-sourcemaps": "1.2.1",
+    "bugsnag-sourcemaps": "1.2.2",
     "cordova-android": "8.1.0",
     "cordova-ios": "5.0.1",
     "cordova-plugin-compat": "1.2.0",
