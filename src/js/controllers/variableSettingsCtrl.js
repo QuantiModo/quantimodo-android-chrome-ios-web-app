@@ -47,8 +47,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             }
             $scope.state.loading = true;
             qm.userVariables.getFromApi(params, function(userVariables){
-                qmService.hideLoader();
-                $scope.state.loading = false;
                 if(userVariables && userVariables[0]){
                     setVariableObject(userVariables[0]);
                 }
@@ -63,6 +61,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 $scope.variableName = variableObject.name;
             }
             setShowActionSheetMenu(variableObject);
+            qmService.hideLoader();
+            $scope.state.loading = false;
         }
         function setShowActionSheetMenu(variableObject){
             qmService.rootScope.setShowActionSheetMenu(function(){
@@ -151,8 +151,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     };
                     qmService.showBlackRingLoader();
                     qmService.postUserTagDeferred(userTagData).then(function(response){
-                        $scope.state.variableObject = response.data.userTaggedVariable;
-                        qmService.hideLoader();
+                        setVariableObject(response.data.userTaggedVariable);
                     });
                 }
             }
@@ -227,7 +226,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     };
                     qmService.showBlackRingLoader();
                     qmService.postUserTagDeferred(userTagData).then(function(response){
-                        $scope.state.variableObject = response.data.userTagVariable;
+                        setVariableObject(response.data.userTagVariable);
                         qmService.hideLoader();
                     });
                 }
@@ -247,8 +246,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     conversionFactor: 1
                 };
                 qmService.postVariableJoinDeferred(variableData).then(function(currentVariable){
-                    qmService.hideLoader();
-                    $scope.state.variableObject = currentVariable;
+                    setVariableObject(currentVariable);
                 }, function(error){
                     qmService.hideLoader();
                     qmLogService.error(error);
@@ -377,7 +375,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             // Populate fields with original settings for variable
             qmService.showBlackRingLoader();
             qmService.resetUserVariableDeferred(variableObject.id).then(function(userVariable){
-                $scope.state.variableObject = userVariable;
+                setVariableObject(userVariable);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             });
         };
@@ -474,7 +472,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             var refresh = true;
             var variableName = getVariableName();
             if($scope.state.variableObject && $scope.state.variableObject.name !== variableName){
-                $scope.state.variableObject = null;
+                setVariableObject(null);
             }
             if(!hideLoader){
                 qmService.showBlackRingLoader();
@@ -483,7 +481,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qm.userVariables.getByName(variableName, params, refresh, function(variableObject){
                 $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
                 qmService.hideLoader();
-                $scope.state.variableObject = variableObject;
+                setVariableObject(variableObject);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
                 qmService.setupVariableByVariableObject(variableObject);
             }, function(error){
