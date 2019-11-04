@@ -161,8 +161,7 @@
       "cordova-plugin-drawoverapps": {}
     },
     "engines": {
-      "node": "10",
-      "npm": "6"
+      "node": "10.16.3"
     }
   }
 }
