@@ -338,6 +338,9 @@ var qm = {
                     params.pwd = encodeURIComponent(qm.devCredentials.password);
                 }
             }
+            if(qm.appMode.isDevelopment()){
+                params.XDEBUG_SESSION_START = "PHPSTORM";
+            }
             var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
             for(var i = 0; i < passableUrlParameters.length; i++){
                 if(qm.urlHelper.getParam(passableUrlParameters[i])){
