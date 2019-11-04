@@ -8847,7 +8847,6 @@ var qm = {
         },
         getUserFromApi: function(successHandler, errorHandler, params){
             qm.qmLog.info("Getting user from API...");
-            qm.qmLog.error("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if(userFromApi && typeof userFromApi.displayName !== "undefined"){
                     qm.qmLog.info("Got user from API...");
