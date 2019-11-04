@@ -2065,7 +2065,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 reconfigurePushNotificationsIfNoTokenOnServerOrToSync: function(){
                     //if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
                     if(!qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
-                        qmLog.error("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
+                        qmLog.warn("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                         qmService.configurePushNotifications();
                     } else {
                         qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
