@@ -159,6 +159,9 @@
       },
       "cordova-plugin-appsettings": {},
       "cordova-plugin-drawoverapps": {}
+    },
+    "engines": {
+      "node": "<12"
     }
   }
 }
