@@ -3246,27 +3246,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        function addGlobalUrlParamsToObject(specificParams){
-            var combined = qm.objectHelper.copyPropertiesFromOneObjectToAnother(specificParams, getGlobalParamsObject());
-            return combined;
-        }
-        function getGlobalParamsObject(){
-            var obj = {};
-            obj.appName = $rootScope.appSettings.appDisplayName;
-            obj.clientId = qm.api.getClientId();
-            if($rootScope.appSettings.versionNumber){obj.appVersion = $rootScope.appSettings.versionNumber;}
-            if(qm.devCredentials){
-                if(qm.devCredentials.username){obj.log = qm.devCredentials.username;}
-                if(qm.devCredentials.password){obj.pwd = qm.devCredentials.password;}
-            }
-            var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
-            for(var i = 0; i < passableUrlParameters.length; i++){
-                var name = passableUrlParameters[i];
-                var val = qm.urlHelper.getParam(name);
-                if(val){obj[name] = val;}
-            }
-            return obj;
-        }
         function addVariableCategoryInfo(array){
             angular.forEach(array, function(value, key){
                 if(!value){
@@ -3382,7 +3361,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             delete params.force;
             qmService.getAccessTokenFromAnySource().then(function(accessToken){
                 var url = qm.api.getQuantiModoUrl(route);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(getGlobalParamsObject(), url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                 var request = {
                     method: 'GET',
@@ -3461,7 +3440,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 //console.log("Log level is " + qmLog.getLogLevelName());
                 var url = qm.api.getQuantiModoUrl(route);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(getGlobalParamsObject(), url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
                 var request = {
                     method: 'POST',
                     url: url,
@@ -3657,7 +3636,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler);
             }
             var params = {id: variableId};
-            params = addGlobalUrlParamsToObject(params);
+            params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
             //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
         };
@@ -3720,7 +3699,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 qmSdkApiResponseHandler(error, notifications, response, successHandler, errorHandler, {}, functionName);
             }
-            params = addGlobalUrlParamsToObject(params);
+            params = qm.api.addGlobalParams(params);
             apiInstance.getTrackingReminderNotifications(params, callback);
             //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
         };
@@ -3837,7 +3816,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function callback(error, data, response){
                 qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserTags');
             }
-            params = addGlobalUrlParamsToObject(params);
+            params = qm.api.addGlobalParams(params);
             apiInstance.getUserTags(params, callback);
             //qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
         };
@@ -5253,7 +5232,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function callback(error, data, response){
                 qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getCurrentTrackingReminderNotificationsFromApi');
             }
-            params = addGlobalUrlParamsToObject(params);
+            params = qm.api.addGlobalParams(params);
             apiInstance.getTrackingReminderNotifications(params, callback);
             //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'], params, successHandler, errorHandler);
             return deferred.promise;
