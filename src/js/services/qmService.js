@@ -3655,9 +3655,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     'experimentEndTime'
                 ], userVariable, successHandler, errorHandler);
         };
-        qmService.resetUserVariable = function(body, successHandler, errorHandler){
-            qmService.post('api/v3/userVariables/reset', ['variableId'], body, successHandler, errorHandler);
-        };
         qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler){
             qmService.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
             qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
@@ -6306,8 +6303,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.resetUserVariableDeferred = function(variableId){
             var deferred = $q.defer();
-            var body = {variableId: variableId};
-            qmService.resetUserVariable(body, function(response){
+            qmService.post('api/v3/userVariables/reset', ['variableId'], {variableId: variableId}, function(response){
                 qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
                 deferred.resolve(response.data.userVariable);
             }, function(error){
