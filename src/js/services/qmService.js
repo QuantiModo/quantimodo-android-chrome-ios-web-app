@@ -7917,6 +7917,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         };
         qmService.configurePushNotifications = function(){
+            if(!qm.getUser()){ // Otherwise we try to do it immediately and always get 401 and make duplicate appSettings requests
+                qmLog.info("Not configuring push notifications because we don't have a user yet");
+                return;
+            }
             if(!qm.platform.isMobile()){
                 qm.webNotifications.registerServiceWorker(true);
                 return;
