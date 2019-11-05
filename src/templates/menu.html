@@ -11,10 +11,14 @@
                         class="button button-icon ion-android-close"
                         ng-click="closeMenu()">
                 </button>
-                <button id="menu-back-button" ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back"
+                <button id="menu-back-button"
+                        style="padding: 0;"
+                        ng-hide="hideBackButton"
+                        class="button button-icon ion-android-arrow-back"
                         ng-click="goBack()">
                 </button>
-                <button id="demo-link-button" ng-if="appSettings.designMode" class="button button-icon ion-link"
+                <button id="demo-link-button" ng-if="appSettings.designMode"
+                        class="button button-icon ion-link"
                         ng-click="copyDemoLink()">
                     <md-tooltip>Copy Demo Link To Clipboard</md-tooltip>
                 </button>
@@ -42,20 +46,28 @@
                         </button>
                     </a>
                     <a id="navBarAvatar" href="#/app/settings"
-                       ng-if="!physicianUser && user && user.avatar && !platform.isMobile" class="button button-clear hide-xs">
+                       ng-if="!physicianUser && user && user.avatar && !platform.isMobile"
+                       class="button button-clear hide-xs">
                         <img class="menu-avatar" ng-src="{{user.avatar}}">
                     </a>
-                    <button id="menu-search-button" class="button button-icon ion-ios-search"
+                    <button id="menu-search-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-search"
                             ng-click="showGeneralVariableSearchDialog($event)"></button>
                     <a ng-if="finishUrl" href="{{finishUrl}}">
                         <button id="menu-finish-button" ng-show="finishUrl"
                                 class="button button-icon ion-android-close"></button>
                     </a>
-                    <button id="menu-help-button" class="button button-icon ion-ios-help-outline"
-                            ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')">
+                    <button id="menu-help-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-help-outline"
+                            ng-hide="stateParams.helpText || hideHelpButton"
+                            ng-click="goToState('app.help')">
                         <md-tooltip md-direction="down">Get Help</md-tooltip>
                     </button>
-                    <button id="menu-showMaterialAlert-button" class="button button-icon ion-ios-help-outline"
+                    <button id="menu-showMaterialAlert-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-help-outline"
                             ng-show="stateParams.helpText"
                             ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)">
                         <md-tooltip md-direction="down">Get Help</md-tooltip>

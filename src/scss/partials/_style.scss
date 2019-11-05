@@ -207,8 +207,10 @@ label.item.item-input.item-text > input[type="text"] {
 }
 // Fixed truncated header bar titles
 .title.title-center.header-item {
-  left: 49px!important;
-  right: 49px!important;
+  //left: 49px!important;
+  //right: 49px!important;
+  max-width: 43%;
+  margin: auto;
 }
 .white-links {
   a, a:hover, a:active, a:visited { color: white; }
