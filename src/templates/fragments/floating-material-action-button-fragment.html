@@ -1,5 +1,13 @@
-<nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round"
-     resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu"
+<!-- mfb-button-close closes on loss of focus => https://github.com/nobitagit/ng-material-floating-button#mfb-button-close-attribute -->
+<nav id="floatingActionButton"
+     mfb-menu
+     mfb-button-close
+     position="br"
+     effect="slidein-spring"
+     active-icon="ion-minus-round"
+     resting-icon="ion-plus-round"
+     toggling-method="click"
+     ng-hide="hideNavigationMenu"
      menu-state="mfbMenuState">
     <button id="mfb4" mfb-button icon="{{appSettings.appDesign.floatingActionButton.active.button4.icon}}"
             label="{{appSettings.appDesign.floatingActionButton.active.button4.label}}"
