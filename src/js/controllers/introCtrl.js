@@ -2,6 +2,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", "$timeout",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
              $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse, $timeout){
+
         qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
         qmService.initializeApplication(appSettingsResponse);
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -104,6 +105,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 $scope.state.setSpeechEnabled(false);
             }
             var appSettings = qm.getAppSettings();
+            if(!appSettings){
+                qmLog.error("Why isn't app settings set?");
+                appSettings = appSettingsResponse;
+                qm.appsManager.processAndSaveAppSettings(appSettingsResponse);
+            }
             var displayName = appSettings.appDisplayName;
             var words = displayName.split(' ');
             if(words.length > 1){
