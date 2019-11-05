@@ -1,4 +1,4 @@
-<div ng-show="state.loading" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
+<div ng-show="state.loading || !state.variableObject" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
     <div>
         <div><h1 style="text-align: center;">Analyzing data...</h1></div>
         <div style="max-width: 600px; display:block; margin:auto;"
@@ -9,7 +9,7 @@
         <br> <br> <br>
     </div>
 </div>
-<div ng-show="state.variableObject">
+<div ng-if="state.variableObject">
     <div id="variablePropertiesCard" class="card variable-settings">
         <div class="list">
             <div class="item item-divider ng-binding">Variable Properties</div>
