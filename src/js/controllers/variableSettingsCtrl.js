@@ -372,8 +372,10 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             });
         };
         $scope.resetVariableToDefaultSettings = function(variableObject){
-            // Populate fields with original settings for variable
+            variableObject = variableObject || $scope.state.variableObject;
+            qmService.showInfoToast('Resetting ' + variableObject.name + ' analysis settings back to global defaults (this could take a minute)', 30);
             qmService.showBlackRingLoader();
+            $scope.state.variableObject = null;
             qmService.resetUserVariableDeferred(variableObject.id).then(function(userVariable){
                 setVariableObject(userVariable);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
