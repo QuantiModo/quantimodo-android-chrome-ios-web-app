@@ -168,7 +168,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = result.error.message;
                     qmService.showMaterialAlert("Whoops!", result.error.message);
-                    qmLog.error(result.error.message, result.error)
+                    qmLog.error(result.error.message, result.error);
+                    qm.chatButton.openDriftSidebar();
                 }else{
                     var formObject = getFormObj('payment-form');
                     formObject.productId = $scope.productId;
