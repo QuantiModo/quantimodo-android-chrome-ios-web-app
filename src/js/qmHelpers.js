@@ -366,7 +366,7 @@ var qm = {
             return params;
         },
         getClientIdFromBuilderQueryOrSubDomain: function(){
-            if(qm.appMode.isPhysician()){return "physician";}
+            //if(qm.appMode.isPhysician()){return "physician";}  // Don't do this because we need to use physician/patient aliases
             if(qm.appsManager.getBuilderClientId()){
                 return qm.clientId = qm.appsManager.getBuilderClientId();
             }
