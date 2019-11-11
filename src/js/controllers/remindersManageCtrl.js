@@ -68,7 +68,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                 $scope.state.noRemindersIcon = qmService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
                 $scope.stateParams.title = document.title = $stateParams.variableCategoryName;
                 if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
+                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminder";
                 }
                 $scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
                 actionButtons[2] = {
