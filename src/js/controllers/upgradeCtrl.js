@@ -167,7 +167,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                     // Inform the user if there was an error.
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = result.error.message;
-                    qmService.showMaterialAlert(result.error.message);
+                    qmService.showMaterialAlert("Whoops!", result.error.message);
                     qmLog.error(result.error.message, result.error)
                 }else{
                     var formObject = getFormObj('payment-form');
