@@ -4183,9 +4183,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.trackingReminders.syncTrackingReminders();
             qm.userVariables.getFromLocalStorageOrApi();
         };
+        qmService.deferredRequests = {};
         qmService.refreshUser = function(force, params){
-            var deferred = $q.defer();
+            var deferred = qmService.deferredRequests.user;
+            if(deferred){
+                return deferred.promise;
+            }
+            qmService.deferredRequests.user = deferred = $q.defer();
             if(qm.urlHelper.getParam('logout') && !force){
+                qmService.deferredRequests.user = null;
                 qmLog.authDebug('qmService.refreshUser: Not refreshing user because we have a logout parameter');
                 deferred.reject('Not refreshing user because we have a logout parameter');
                 return deferred.promise;
@@ -4194,9 +4200,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.userHelper.getUserFromApi(function(user){
                 qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ', user);
                 qmService.setUserInLocalStorageBugsnagIntercomPush(user);
+                qmService.deferredRequests.user = null;
                 deferred.resolve(user);
             }, function(error){
+                qmLog.error(error);
                 deferred.reject(error);
+                qmService.deferredRequests.user = null;
+                return deferred.promise;
             }, params);
             return deferred.promise;
         };
