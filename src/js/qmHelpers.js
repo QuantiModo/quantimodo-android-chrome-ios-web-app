@@ -1987,22 +1987,32 @@ var qm = {
         },
         hideDriftButton: function(){
             if(typeof drift === "undefined"){return;}
-            console.log("called hide drift");
+            console.debug("called hide drift");
             drift.on('ready',function(api){
-                console.log("hiding drift");
+                console.debug("hiding drift");
                 api.widget.hide();
             })
-
         },
         showDriftButton: function(){
             if(typeof drift === "undefined"){
-                qm.qmLog.error("drift not defined!")
+                qm.qmLog.error("drift not defined!");
                 return;
             }
-            console.log("called show drift");
+            console.debug("called show drift");
             drift.on('ready',function(api){
-                console.log("showing drift");
+                console.debug("showing drift");
                 api.widget.show();
+            })
+        },
+        openDriftSidebar: function(){
+            if(typeof drift === "undefined"){
+                qm.qmLog.error("drift not defined!");
+                return;
+            }
+            console.debug("called open drift");
+            drift.on('ready',function(api){
+                console.debug("open drift");
+                api.sidebar.open(); // https://devdocs.drift.com/docs/conversation-sidebar
             })
         }
     },
