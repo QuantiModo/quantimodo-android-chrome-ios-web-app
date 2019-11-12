@@ -248,7 +248,7 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
+                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "[redacted]";
             }
         }
         if(censoredString !== lowerCase){
@@ -416,6 +416,16 @@ var qmLog = {
         qmLog.globalMetaData = qmLog.globalMetaData || null;
         if(qmLog.qm.appMode.isTesting()){
             qmLog.info(name, message, metaData, stackTrace);
+        }else{
+            qmLog.error(name, message, metaData, stackTrace);
+        }
+    },
+    errorOrDebugIfTesting: function(name, message, metaData, stackTrace){
+        message = message || name;
+        name = name || message;
+        qmLog.globalMetaData = qmLog.globalMetaData || null;
+        if(qmLog.qm.appMode.isTesting()){
+            qmLog.debug(name, message, metaData, stackTrace);
         }else{
             qmLog.error(name, message, metaData, stackTrace);
         }
