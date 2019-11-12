@@ -1253,7 +1253,7 @@ var qm = {
                 qm.qmLog.error("searchTerm is not a string!", searchTerm);
                 return array;
             }
-            qm.qmLog.info("Called getWithNameContainingEveryWord...");
+            qm.qmLog.debug("Called getWithNameContainingEveryWord...");
             searchTerm = searchTerm.toLowerCase();
             var filterBy = searchTerm.split(/\s+/);
             return array.filter(function(item){
@@ -1660,7 +1660,7 @@ var qm = {
         getAccessTokenFromUrlUserOrStorage: function(){
             var accessToken = qm.auth.getAndSaveAccessTokenFromCurrentUrl();
             if(accessToken){
-                qm.qmLog.info("getAndSaveAccessTokenFromCurrentUrl returned " + accessToken);
+                qm.qmLog.authDebug("getAndSaveAccessTokenFromCurrentUrl returned " + accessToken);
                 return accessToken;
             }
             var u = qm.userHelper.getUserFromLocalStorage();
@@ -9072,7 +9072,7 @@ var qm = {
         refreshIfNumberOfRemindersGreaterThanUserVariables: function(successHandler, errorHandler){
             if(!qm.getUser()){
                 var message = "No user so not going to refreshIfNumberOfRemindersGreaterThanUserVariables";
-                qm.qmLog.info(message);
+                qm.qmLog.debug(message);
                 if(errorHandler){
                     errorHandler(message);
                 }
@@ -9761,7 +9761,7 @@ var qm = {
                 storageBucket: "quantimo-do.appspot.com",
                 messagingSenderId: "1052648855194"
             };
-            console.log("firebase.initializeApp(config)");
+            console.debug("firebase.initializeApp(config)");
             qm.firebase = firebase.initializeApp(config);
             return qm.firebase;
         },
