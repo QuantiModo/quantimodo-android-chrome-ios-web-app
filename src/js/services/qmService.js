@@ -5100,15 +5100,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(!lastGotNotificationsAtMilliseconds){
                 lastGotNotificationsAtMilliseconds = 0;
             }
-            return parseInt((window.qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds) / 1000);
+            return parseInt((qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds) / 1000);
         };
         qmService.getTrackingRemindersDeferred = function(variableCategoryName){
             var deferred = $q.defer();
             qmService.storage.getTrackingReminders(variableCategoryName).then(function(trackingReminders){
+                if(trackingReminders && !Array.isArray(trackingReminders) && trackingReminders.data){trackingReminders = trackingReminders.data;}
                 if(trackingReminders && trackingReminders.length){
                     deferred.resolve(trackingReminders);
                 }else{
                     qmService.trackingReminders.syncTrackingReminders().then(function(trackingReminders){
+                        if(trackingReminders && !Array.isArray(trackingReminders) && trackingReminders.data){trackingReminders = trackingReminders.data;}
                         deferred.resolve(trackingReminders);
                     });
                 }
@@ -7314,6 +7316,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return separateFavoritesAndArchived(trackingReminders);
         }
         function separateFavoritesAndArchived(trackingReminders){
+            if(trackingReminders && !Array.isArray(trackingReminders) && trackingReminders.data){trackingReminders = trackingReminders.data;}
             var reminderTypesArray = {allTrackingReminders: trackingReminders};
             qmLog.debug('separateFavoritesAndArchived: allTrackingReminders is: ', trackingReminders);
             if(!(trackingReminders instanceof Array)){
