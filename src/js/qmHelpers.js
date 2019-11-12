@@ -6219,10 +6219,15 @@ var qm = {
             return activeReminders.concat(favorites);
         },
         getFavorites: function(allReminders){
+            if(allReminders && !Array.isArray(allReminders) && allReminders.data){allReminders = allReminders.data;}
             if(!allReminders){
                 allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
             }
             if(!allReminders){
+                return [];
+            }
+            if(typeof allReminders.filter !== "function"){
+                qm.qmLog.error("Cannot filter allReminders", {allReminders: allReminders});
                 return [];
             }
             return allReminders.filter(function(trackingReminder){
