@@ -405,7 +405,6 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     });
                 }
             }
-            console.log("debugMode is " + qmLog.getDebugMode());
             var body = {
                 variableId: variableObject.id,
                 durationOfAction: variableObject.durationOfActionInHours * 60 * 60,
