@@ -12,9 +12,10 @@
         <div class="row">
             <h2 class="col col-90"
                 id="{{connector.name}}-name"
-                style="white-space: normal; line-height: normal;"> {{connector.displayName}}
+                style="white-space: normal; line-height: normal;">
+                {{connector.displayName}}
             </h2>
-            <div id="{{connector.name}}-notification-more"
+            <div id="{{connector.name}}-action-sheet-button"
                  ng-click="showActionSheetForConnector(connector, $event)"
                  class="col col-10">
                 <i style="font-size: 20px;"
