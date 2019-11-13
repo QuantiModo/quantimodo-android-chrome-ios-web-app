@@ -73,28 +73,31 @@
         <div class="primary-outcome-variable-reporting"
              ng-if="trackingReminderNotifications[0].inputType === 'oneToFiveNumbers'">
             <div class="primary-outcome-variable-rating-buttons">
-                <img id="{{'numericRatingOptions' + option.numericValue}}" ng-repeat="option in numericRatingOptions"
+                <button id="{{'numericRatingOptions' + option.numericValue}}" ng-repeat="option in numericRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-src="{{option.img}}">
+                     ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)">
+                    <img ng-src="{{option.img}}">
+                </button>
             </div>
         </div>
         <div class="primary-outcome-variable-reporting"
              ng-if="trackingReminderNotifications[0].inputType === 'happiestFaceIsFive'">
             <div class="primary-outcome-variable-rating-buttons">
-                <img id="{{'positiveRatingOptions' + option.numericValue}}" ng-repeat="option in positiveRatingOptions"
+                <button id="{{'positiveRatingOptions' + option.numericValue}}" ng-repeat="option in positiveRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-src="{{option.img}}">
+                    ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)">
+                    <img ng-src="{{option.img}}">
+                </button>
             </div>
         </div>
         <div class="primary-outcome-variable-reporting"
              ng-if="trackingReminderNotifications[0].inputType === 'saddestFaceIsFive'">
             <div class="primary-outcome-variable-rating-buttons">
-                <img id="{{'negativeRatingOptions' + option.numericValue}}" ng-repeat="option in negativeRatingOptions"
+                <button id="{{'negativeRatingOptions' + option.numericValue}}" ng-repeat="option in negativeRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
-                     ng-src="{{option.img}}">
+                    ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)">
+                    <img ng-src="{{option.img}}">
+                </button>
             </div>
         </div>
         <div class="row" ng-if="trackingReminderNotifications[0].unitAbbreviatedName.indexOf('yes/no') !== -1 ">
