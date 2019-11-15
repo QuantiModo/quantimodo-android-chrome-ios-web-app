@@ -249,21 +249,17 @@ var qmLog = {
     slugify: function(str){
         str = str.replace(/^\s+|\s+$/g, ''); // trim
         str = str.toLowerCase();
-
         // remove accents, swap ñ for n, etc
         var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
         var to   = "aaaaeeeeiiiioooouuuunc------";
-
         for (var i=0, l=from.length ; i<l ; i++)
         {
             str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
         }
-
         str = str.replace('.', '-') // replace a dot by a dash
             .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
             .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
             .replace(/-+/g, '-'); // collapse dashes
-
         return str;
     }
 };
@@ -2111,6 +2107,41 @@ gulp.task('git-check', function (done) {
         process.exit(1);
     }
     done();
+});
+function executeSynchronously(cmd, catchExceptions){
+    const execSync = require('child_process').execSync;
+    qmLog.info(cmd);
+    try {
+        let res = execSync(cmd);
+        //qmLog.info(res);
+    } catch (error) {
+        if(catchExceptions){
+            qmLog.error(error);
+        } else {
+            throw error;
+        }
+    }
+}
+gulp.task('git-create-feature-for-each-changed-file', function (done) {
+    var gitModified = require('gulp-gitmodified');
+    var i = 0;
+    return gulp.src('./src/templates/**/*')
+        .pipe(gitModified('modified'))
+        .on('data', function (file) {
+            i++;
+            var filePath = file.history[0];
+            var fileName = filePath.split("/");
+            fileName = fileName[fileName.length - 1];
+            fileName = fileName.split("\\");
+            fileName = fileName[fileName.length - 1];
+            console.log('Modified file:', filePath);
+            var feature = 'feature/'+qmLog.slugify(fileName);
+            executeSynchronously(`git checkout -b ${feature} develop`, true);
+            executeSynchronously(`git add ${filePath}`, true);
+            executeSynchronously(`git commit -m ${fileName}`);
+            executeSynchronously(`git push origin ${feature}`);
+            //if(cb && i === files.length){cb();}
+        });
 });
 gulp.task('git-set-branch-name', function (callback) {
     qmGit.setBranchName(callback);
