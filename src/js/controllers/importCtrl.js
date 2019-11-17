@@ -344,15 +344,21 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         function connectWithInputCredentials(connector, button){
             function getHtmlForInput(parameters){
                 var html ='';
-                parameters.forEach(function(param){
+                parameters.forEach(function (param) {
                     var ionIcon = param.ionIcon;
-                    if(param.type === "password"){ionIcon = 'ion-locked';}
-                    if(param.key.indexOf("user") !== -1){ionIcon = 'ion-person';}
-                    if(param.key.indexOf("mail") !== -1){ionIcon = 'ion-mail';}
-                    html += `<label class="item item-input">` +
-                        `<i class="icon ${ionIcon} placeholder-icon"></i>` +
-                        `<input type="${param.type}" placeholder="${param.displayName}" ng-model="data.${param.key}">` +
-                        `</label>`;
+                    if (param.type === "password") {
+                        ionIcon = 'ion-locked';
+                    }
+                    if (param.key.indexOf("user") !== -1) {
+                        ionIcon = 'ion-person';
+                    }
+                    if (param.key.indexOf("mail") !== -1) {
+                        ionIcon = 'ion-mail';
+                    }
+                    html += '<label class="item item-input">' +
+                        '<i class="icon ' + ionIcon + 'placeholder-icon"></i>' +
+                        '<input type="' + param.type + '" placeholder="' + param.displayName + '" ng-model="data.' + param.key + '">' +
+                        '</label>';
                 });
                 return html;
             }
