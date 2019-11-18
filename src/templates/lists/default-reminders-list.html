@@ -1,0 +1,32 @@
+<div 
+    ng-if="!state.reminderCard.hide" 
+    ng-include="'templates/cards/blue-card.html'" 
+    ng-init="card = state.reminderCard"
+    ng-model="state.reminderCard">
+</div>
+<md-list class="md-dense" flex>
+    <md-list-item ng-repeat="reminder in appSettings.appDesign.defaultTrackingReminderSettings.active" class="noright">
+        <img alt="{{ reminder.variableName }}" ng-src="{{ reminder.pngPath }}" class="md-avatar"/>
+        <div class="md-list-item-text">
+            <h3>{{ reminder.variableName }}</h3>
+            <p>{{ reminder.valueAndFrequencyTextDescriptionWithTime }}</p>
+        </div>
+        <md-button class="md-secondary md-icon-button" style="font-size: 30px;"
+                   ng-click="editReminder(reminder)" aria-label="edit">
+            <md-icon class="ion-edit">
+                <md-tooltip md-direction="down">Edit Tracking Reminder</md-tooltip>
+            </md-icon>
+        </md-button>
+        <md-button class="md-secondary md-icon-button" style="font-size: 30px;"
+                   ng-click="deleteReminder(reminder)" aria-label="delete">
+            <md-icon class="ion-close-round">
+                <md-tooltip md-direction="down">Delete Tracking Reminder</md-tooltip>
+            </md-icon>
+        </md-button>
+    </md-list-item>
+    <md-list-item class="secondary-button-padding" ng-click="addReminder()">
+            <md-icon class="ion-android-notifications-none"></md-icon>
+        <p>ADD A DEFAULT REMINDER</p>
+    </md-list-item>
+</md-list>
+
