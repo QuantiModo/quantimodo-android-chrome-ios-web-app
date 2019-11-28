@@ -118,7 +118,7 @@
     "bower": "bower install --allow-root --quiet",
     "configure:app": "npm run bower && gulp configureAppAfterNpmInstall",
     "cypress:open": "cypress open",
-    "heroku-postbuild": "npm run test",
+    "heroku-postbuild": "npm run configure:app",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
     "heroku-push": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "postinstall": "",
