@@ -123,7 +123,7 @@
     "heroku-push": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "postinstall": "",
     "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
-    "test:cypress": "./scripts/cypress.sh",
+    "test:cypress": "bash ./scripts/cypress.sh",
     "test:gi": "cd tests && gulp _unit-gi-failed-gi-all"
   },
   "cordovaPlugins": [],
