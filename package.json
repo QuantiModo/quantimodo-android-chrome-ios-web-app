@@ -115,10 +115,15 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "postinstall": "",
+    "bower": "bower install --allow-root --quiet",
+    "configure:app": "npm run bower && gulp configureAppAfterNpmInstall",
     "cypress:open": "cypress open",
+    "heroku-postbuild": "npm run test",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
-    "heroku-postbuild": "echo Done installing Ionic package.json dependencies && bower install --allow-root --quiet && gulp configureAppAfterNpmInstall"
+    "postinstall": "",
+    "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
+    "test:cypress": "./scripts/cypress.sh",
+    "test:gi": "cd tests && gulp _unit-gi-failed-gi-all"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
