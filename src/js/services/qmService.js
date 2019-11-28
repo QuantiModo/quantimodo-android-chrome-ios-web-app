@@ -915,32 +915,42 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return qm.connectorHelper.storeConnectorResponse(response);
                 },
                 weatherConnect: function(connector, $scope){
-                    $scope.data = {};
-                    var myPopup = $ionicPopup.show({
-                        template: '<label class="item item-input">' +
-                            '<i class="icon ion-android-locate placeholder-icon"></i>' +
-                            '<input type="text" placeholder="Postal Code" ng-model="data.zip"></label>',
-                        title: connector.displayName,
-                        subTitle: 'Enter your zip code or postal code',
-                        scope: $scope,
-                        buttons: [
-                            {text: 'Cancel'},
-                            {
-                                text: '<b>Save</b>',
-                                type: 'button-positive',
-                                onTap: function (e) {
-                                    if (!$scope.data.zip) {
-                                        e.preventDefault();
-                                    } else {
-                                        return $scope.data.zip;
+                    if(!connector){
+                        qm.connectorHelper.getConnectorByName('weather', function(connector){
+                            showPopup(connector, $scope);
+                        });
+                    }else{
+                        showPopup(connector, $scope);
+                    }
+                    function showPopup(connector, $scope){
+                        $scope.data = {};
+                        var myPopup = $ionicPopup.show({
+                            template: '<label class="item item-input">' +
+                                '<i class="icon ion-android-locate placeholder-icon"></i>' +
+                                '<input id="postal-code-input" type="text" placeholder="Postal Code" ng-model="data.zip"></label>',
+                            title: connector.displayName,
+                            subTitle: 'Enter your zip code or postal code',
+                            scope: $scope,
+                            buttons: [
+                                {text: 'Cancel'},
+                                {
+                                    text: '<b>Save</b>',
+                                    type: 'button-positive',
+                                    onTap: function(e){
+                                        if(!$scope.data.zip){
+                                            e.preventDefault();
+                                        }else{
+                                            return $scope.data.zip;
+                                        }
                                     }
                                 }
-                            }
-                        ]
-                    });
-                    myPopup.then(function(res){
-                        qmService.connectors.connectWithParams({zip: res}, connector.name);
-                    });
+                            ]
+                        });
+                        myPopup.then(function(res){
+                            qmService.showInfoToast("Connecting weather...");
+                            qmService.connectors.connectWithParams({zip: res}, connector.name);
+                        });
+                    }
                 }
             },
             cordova: {
@@ -4641,7 +4651,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
             var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
-            if(connectors){
+            if(connectors && qm.connectorHelper.filterConnectorsByName("weather", connectors)){
                 //connectors = hideUnavailableConnectors(connectors);
                 deferred.resolve(connectors);
             }else{
