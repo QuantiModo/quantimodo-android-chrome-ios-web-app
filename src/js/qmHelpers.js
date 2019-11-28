@@ -2083,12 +2083,22 @@ var qm = {
                 }
             }
         },
+        filterConnectorsByName: function(name, connectors){
+            let c = connectors.find(function(connector){
+                return connector.name === name.toLowerCase();
+            });
+            if(!c){
+                c = connectors.find(function(connector){
+                    return connector.name.indexOf(name.toLowerCase()) !== -1;
+                });
+            }
+            return c;
+        },
         getConnectorByName: function(connectorName, successHandler, errorHandler){
             if(!successHandler){
                 var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
-                return connectors.find(function(connector){
-                    return connector.name === connectorName.toLowerCase();
-                });
+                let c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
+                return c;
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(connectors){
                 if(!connectors){
@@ -2098,10 +2108,15 @@ var qm = {
                     }
                     return;
                 }
-                var match = connectors.find(function(connector){
-                    return connector.name === connectorName.toLowerCase();
-                });
-                successHandler(match);
+                let c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
+                if(c){
+                    successHandler(c);
+                }else{
+                    qm.connectorHelper.getConnectorsFromApi({}, function(connectors){
+                        c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
+                        successHandler(c);
+                    }, errorHandler);
+                }
             }, errorHandler)
         },
         storeConnectorResponse: function(response){
