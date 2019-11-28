@@ -43,6 +43,10 @@ angular.module('starter').controller('OnboardingCtrl',
                 });
                 initializeAddRemindersPageIfNecessary();
             });
+            function setOnboardedTrueAndResetOnboardingSequence(){
+                window.qm.storage.setItem(qm.items.onboarded, true);
+                qm.storage.removeItem('onboardingPages');
+            }
             function setRequireUpgradesInOnboarding(){
                 if(qm.getUser() && qm.getUser().stripeActive){
                     $scope.state.requireUpgrades = false;
@@ -73,7 +77,7 @@ angular.module('starter').controller('OnboardingCtrl',
             };
             $scope.skipOnboarding = function(){
                 qmService.rootScope.setProperty('hideMenuButton', false);
-                window.qm.storage.setItem(qm.items.onboarded, true);
+                setOnboardedTrueAndResetOnboardingSequence();
                 qmService.goToDefaultState();
             };
             $scope.goToReminderSearchFromOnboarding = function(ev){
@@ -121,14 +125,13 @@ angular.module('starter').controller('OnboardingCtrl',
                 }
             }
             $scope.connectWeatherOnboarding = function(event){
-                qmService.connectors.weatherConnect(connector, $scope);
+                qmService.connectors.weatherConnect(null, $scope);
                 $scope.hideOnboardingPage();
             };
             $scope.doneOnboarding = function(){
                 qmService.goToState('app.remindersInbox');
                 qmService.rootScope.setProperty('hideMenuButton', false);
-                window.qm.storage.setItem(qm.items.onboarded, true);
-                qm.storage.removeItem('onboardingPages');
+                setOnboardedTrueAndResetOnboardingSequence();
             };
             function askQuestion(circlePage){
                 if(!speechEnabled){
