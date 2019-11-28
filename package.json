@@ -120,6 +120,7 @@
     "cypress:open": "cypress open",
     "heroku-postbuild": "npm run test",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
+    "heroku-push": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "postinstall": "",
     "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
     "test:cypress": "./scripts/cypress.sh",
