@@ -12,26 +12,33 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
-
-    <link href="css/study.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-    <!-- build:css css/combined.css -->
-    <!-- endbuild -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <link rel="shortcut icon" href="img/icons/icon_16.png">
-    <!-- build:js scripts/combined-head-libraries.js -->
-    <script src="lib/bugsnag/dist/bugsnag.js"></script>
-    <script src="lib/localforage/dist/localforage.js"></script>
-    <script src="lib/jquery/dist/jquery.min.js"></script>  <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
-    <!--<script src="lib/templates.js"></script>-->
-    <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
-    <!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->
-    <script src="lib/quantimodo/quantimodo-web.js"></script>
-    <script src="js/ionIcons.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Yellowtail"
+            rel="stylesheet">
+      <link href="css/study.css"
+            rel="stylesheet">
+      <link rel="manifest"
+            href="manifest.json">
+      <!-- build:css css/combined.css -->
+      <!-- endbuild -->
+      <!-- inject:css -->
+      <!-- endinject -->
+      <link rel="shortcut icon"
+            href="img/icons/icon_16.png">
+      <!-- build:js scripts/combined-head-libraries.js -->
+      <script crossorigin="anonymous"
+              src="https://cdn.lr-ingest.io/LogRocket.min.js"></script>
+      <script>window.LogRocket && window.LogRocket.init('mkcthl/quantimodo');</script>
+      <script src="lib/bugsnag/dist/bugsnag.js"></script>
+      <script src="lib/localforage/dist/localforage.js"></script>
+      <script src="lib/jquery/dist/jquery.min.js"></script>
+      <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
+      <script src="lib/ionic/js/ionic.bundle.js"></script>
+      <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+      <!--<script src="lib/templates.js"></script>-->
+      <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
+      <!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->
+      <script src="lib/quantimodo/quantimodo-web.js"></script>
+      <script src="js/ionIcons.js"></script>
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
     <script src="data/qmStaticData.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
