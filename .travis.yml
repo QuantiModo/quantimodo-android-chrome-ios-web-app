@@ -64,6 +64,7 @@ env:
     - ANDROID_API_LEVEL=28
     - ANDROID_BUILD_TOOLS_VERSION=28.0.3
     - ANDROID_ABI=armeabi-v7a
+    - START_URL=https://medimodo.herokuapp.com/
 notifications:
   webhooks: https://www.travisbuddy.com/
   email:
