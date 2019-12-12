@@ -1,19 +1,5 @@
-#branches:
-#  #only:
-#  #- master
-#  #- develop
-#  #- /^renovate.*$/
-#  except:
-#    - /^feature.*$/
 matrix:
   include:
-    #  - env: PLATFORM=ios-11.0
-    #    os: osx
-    #    osx_image: xcode8.3
-    #    language: node_js
-    #    node_js: '4.2'
-    #    rvm:
-    #      - 2.2.5
     - env: PLATFORM=android-28
       os: linux
       sudo: false
@@ -40,7 +26,7 @@ matrix:
             - imagemagick
       licenses:
         - android-sdk-preview-license-.+
-        - 'android-sdk-preview-license-52d11cd2'
+        - android-sdk-preview-license-52d11cd2
         - android-sdk-license-.+
         - google-gdk-license-.+
 before_cache:
@@ -51,10 +37,9 @@ before_cache:
 cache:
   directories:
     - bundler
-    - $HOME/.gradle/caches/
-    #- $HOME/.gradle/wrapper/ # I think this causes Exception in thread "main" java.io.FileNotFoundException: /home/travis/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3-all.zip (Permission denied)
-    - $HOME/Library/Caches/Yarn/v1/
-    - $HOME/.cache/yarn/v1/
+    - "$HOME/.gradle/caches/"
+    - "$HOME/Library/Caches/Yarn/v1/"
+    - "$HOME/.cache/yarn/v1/"
 before_install:
   - echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
@@ -62,28 +47,17 @@ before_install:
   - bundle update
   - export LANG=en_US.UTF-8
   - nvm install 8
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim
+    ios-deploy imagemagick; fi
   - npm install -g cordova ionic gulp bower cordova-hot-code-push-cli cordova-res
 script:
-  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
-  #- yarn install  -> error upath@1.1.1: The engine "yarn" is incompatible with this module. Expected version ">=1".
   - npm install
-  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp buildAndroidAfterCleaning; fi
-
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-
-  # Temporarily disabled CHCP tests because it keeps using up our Ghost Inspector quota and running concurrently/conflicting with feature test runs
-  # TODO: Create separate GI test suite for this and re-enable
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"* && "$TRAVIS_BRANCH" != *"renovate"* ]]; then source tests/test_chcp.sh; fi
-
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi  Can be done in Jenkins concurrently since they use different test domains
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
-
-  #- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp
+    buildAndroidAfterCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp
+    buildAllAndroidAppsWithCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp
+    buildAllAndroidAppsWithCleaning; fi
 env:
   global:
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle
@@ -100,15 +74,13 @@ notifications:
   slack:
     rooms:
       - quantimodo:BijCp5nmBJtuwXTnJ1ALT6xo#web
-    on_success: always 
+    on_success: always
     on_failure: always
-#deploy:
-#  provider: releases
-#  api_key:
-#    secure: 1WU0Csb0tb7rKRbRE6oV6wBdHozMTE+uWkBMD0RSc9ZVzrl4aravifrUZNq5QPjt13eB8ZuMQTi+6882cyEtr68Uhy8LE/85I86AkyOsxQdnPgoB4fLFuow7fc80+lCH+QLc8HU9XH5Jwx/a9f2HxSv5ZGkluaHkMglGLTTIqE0pKDWfowmyrBCajSHIXNlPPYaEhKHKOmJkFUgn3kwYwPbV3CgYAQXoLOctK6TxvKlKL0FTmNPX3+MVUlY0jzAn9DEV9eXQ8bvomRJC4KQxTSh9xJKCba/C0wgUkO/3EECCPIArrdYHKzFjpXP18SIbvuBQvPoGHUcfClFIKP8G0gXYSCyiMAZ4b3a6CpydMb+PW0zGsEqEHL1EZlhn5cbYZzUfXKIYutO5A8h9dDcrCqOhUIzo2ZOy69sN9oSPPJRrvZOUOo+yzZHSutLI6r5ncVislRIQFw1QDN8HCJAfsDqDz2NcL3bJt8vRgHiI/98lKFIqkErrWwggGASIs0npmBVnlaraTUUW+B08MpkTXLdwcj98X8mMbSDThlNFJUymY7+HJ+YwKtdZ/pjfn7zAXaaPLn2v8Vu5M+uwV+KcVxRqLIRU41jB7DxkBA0Tu3sI6FHbaJwt6BB+xlJXw3d2MLeaJqN1+tc2rb6BiTIlRoRS2k1kqdLQlsvuCmSS+5s=
-#  file_glob: true
-#  file: output/*
-#  skip_cleanup: true
-#  overwrite: true
-#  on:
-#    branch: master
+deploy:
+  provider: heroku
+  api_key:
+    secure: HxKG0Ch3lz3AlAcmzQWtc41cVrlgOGs4CbL+SoIPaPVI1oCht6YTOhtJ97cyV2TwO9b8yo0v5+lYADqcT1Wyy+10L9bVNYlOm998WNoMnPZzldWCgPNVb35ilaeRh4yMBmPs5/v1iFNkBekx2t4Ls8KfB0ZeSj0HYUMf2t17bNVv0Qw6yOlOsepRKTSlz50mq0zkZ8XtAoGJMzR8hsQ9pkJGJW3go7xp3Knx6y/QkSDWSCrG1E2ggetPOq7UEL/+Fnxu4GJT7cQhDfXeolmEurK75S7vVfZKLI/3wUjZCKoTYnp+Im5Dk1VZWqIY24G0YIMGGzIkEl6640H/Q9sDQPMdY6gykBHrO2w0t0hOX3DuCiUarHP1mD/CEn4hExQMhZa1HEBwGk59tMmM8INZMAyxVze8E+3q0CEhDIAo1T3ru0saPFgVxgHGA2m6rXRsBoLdlo9xyFd8mRub7PHM35qidtnQrHhAL0jUYFw2ky1/ppPFhRUWklT4ajlxuL59iMM+jlXIZyz13LAJHnQvgl2Q+pP4//nklpnHnwy82linczx2G8wShbZG4zv33ko7jDmBgB314oJyFTg6qjwL6viyhOdxmUmWtfFqspioENipzdAL2V7BQLbuu3SDeSB23ZCBWHGYMknJkUcK4nuj7iCoeYskmvupPAdjEu5ig90=
+    app: medimodo
+after_deploy:
+  - ./scripts/cypress.sh
+  - cd tests && gulp _unit-gi-failed-gi-all
