@@ -470,7 +470,7 @@ gulp.task('test-push-parsing', function(callback) {
         qmTests.tests.parseCorrelationNotificationTest(callback);
     });
 });
-gulp.task('unit-tests', function(callback) {
+gulp.task('_unit-tests', function(callback){
     qm.currentTask = this.currentTask.name;
     qmTests.getStaticData();
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
@@ -480,7 +480,7 @@ gulp.task('unit-tests', function(callback) {
         'test-get-common-variable',
         'test-record-measurement-intent',
         'test-get-units',
-        function (error) {
+        function(error){
             if (error) {throw error.message;}
             qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
@@ -496,11 +496,13 @@ gulp.task('_unit-gi-failed-gi-all', function(callback) {
     qm.currentTask = this.currentTask.name;
     qmTests.setTestParams(this._params); // For tests triggered by gulp API
     runSequence(
-        'unit-tests',
+        '_unit-tests',
         'gi-failed',
         'gi-all',
-        function (error) {
-            if (error) {throw error.message;}
+        function(error){
+            if(error){
+                throw error.message;
+            }
             qmLog.green('TESTS FINISHED SUCCESSFULLY');
             callback(error);
         });
