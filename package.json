@@ -116,15 +116,19 @@
   },
   "scripts": {
     "bower": "bower install --allow-root --quiet",
+    "build": "bower install --allow-root --quiet && gulp configureAppAfterNpmInstall",
     "configure:app": "npm run bower && gulp configureAppAfterNpmInstall",
     "cypress:open": "cypress open",
+    "heroku-deploy": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "heroku-postbuild": "npm run configure:app",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
     "heroku-push": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "postinstall": "",
+    "pretest": "npm run build",
     "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
     "test:cypress": "bash ./scripts/cypress.sh",
-    "test:gi": "cd tests && gulp _unit-gi-failed-gi-all"
+    "test:gi": "cd tests && gulp _unit-gi-failed-gi-all",
+    "test-unit": "cd tests && gulp _unit-tests"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
