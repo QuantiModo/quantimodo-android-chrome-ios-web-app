@@ -64,6 +64,7 @@ env:
     - ANDROID_API_LEVEL=28
     - ANDROID_BUILD_TOOLS_VERSION=28.0.3
     - ANDROID_ABI=armeabi-v7a
+    - START_URL=https://medimodo.herokuapp.com/
 notifications:
   webhooks: https://www.travisbuddy.com/
   email:
@@ -78,9 +79,11 @@ notifications:
     on_failure: always
 deploy:
   provider: heroku
+  app: medimodo
+  on:
+    all_branches: true
   api_key:
-    secure: HxKG0Ch3lz3AlAcmzQWtc41cVrlgOGs4CbL+SoIPaPVI1oCht6YTOhtJ97cyV2TwO9b8yo0v5+lYADqcT1Wyy+10L9bVNYlOm998WNoMnPZzldWCgPNVb35ilaeRh4yMBmPs5/v1iFNkBekx2t4Ls8KfB0ZeSj0HYUMf2t17bNVv0Qw6yOlOsepRKTSlz50mq0zkZ8XtAoGJMzR8hsQ9pkJGJW3go7xp3Knx6y/QkSDWSCrG1E2ggetPOq7UEL/+Fnxu4GJT7cQhDfXeolmEurK75S7vVfZKLI/3wUjZCKoTYnp+Im5Dk1VZWqIY24G0YIMGGzIkEl6640H/Q9sDQPMdY6gykBHrO2w0t0hOX3DuCiUarHP1mD/CEn4hExQMhZa1HEBwGk59tMmM8INZMAyxVze8E+3q0CEhDIAo1T3ru0saPFgVxgHGA2m6rXRsBoLdlo9xyFd8mRub7PHM35qidtnQrHhAL0jUYFw2ky1/ppPFhRUWklT4ajlxuL59iMM+jlXIZyz13LAJHnQvgl2Q+pP4//nklpnHnwy82linczx2G8wShbZG4zv33ko7jDmBgB314oJyFTg6qjwL6viyhOdxmUmWtfFqspioENipzdAL2V7BQLbuu3SDeSB23ZCBWHGYMknJkUcK4nuj7iCoeYskmvupPAdjEu5ig90=
-    app: medimodo
+    secure: NEnR75wgMU5wny8aCK8zy4Feyoa1TtUOt3sHFcNEQFJLP2Ec2HeZfWCFz3WCzlptUOhChtLZeRJTHo/3rUGZNIVD+W6PbefZw9A9CXZaLJ0KzUDp9OlHGXnUBxy20551pnq0seD/XVkBPCylDQrSE0hAQ4PF0pY6jvEyOR8UyjoLzjzIvCKih/PBUf95uN/b0IPk5jETtla/VYW1jw0S4i7n2oC9QDa+VNGacpmphkTYRHLe3jmA+AlaQvd0A0cY9UE3XVI3ZpI6K4UT8L8yhGVIXDxm81Hfgw4nR0BMuJNU2PZkze14H6+gZkKt+G9rWFtMIsOFIlOrpul2fbeaxC8d0XG2pwbxD0Kmqw/7OL/xoBC9QUzksIJpXSdwqQbuOxZPsgKnzS0+4EHaYUk6NTqtiHjvUsbdM7sXSxQKKjwTTfWqes6s/bZ5qdFI03RJIaibkZIQmIwS57Py1PRASWiHNYAbpSveQ2ZeL1RZ6D+LBmR5U3dDdBVA4IY8+51oEMorx1kKnNrA+huzasSVH9xxyg33MdFhPtaauFZezKiKFgaz1HcBzUceFI9W/tMZoraoJZtGg9PWw3QAeacp1/ZrPyIwKEkaN78OVbR2PjTNxcijViGoi0CzWxhxt+5hVtMR9xfTKH1JI99p9BqCv1kXuxO7fB8XBgBdDhKdOms=
 after_deploy:
-  - ./scripts/cypress.sh
+  - "./scripts/cypress.sh"
   - cd tests && gulp _unit-gi-failed-gi-all
