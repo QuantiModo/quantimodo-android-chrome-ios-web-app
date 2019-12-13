@@ -914,7 +914,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     return qm.connectorHelper.storeConnectorResponse(response);
                 },
-                weatherConnect: function(connector, $scope){
+                weatherConnect: function(connector, $scope, successHandler, errorHandler){
                     if(!connector){
                         qm.connectorHelper.getConnectorByName('weather', function(connector){
                             showPopup(connector, $scope);
@@ -948,6 +948,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         });
                         myPopup.then(function(res){
                             qmService.showInfoToast("Connecting weather...");
+                            if(successHandler){successHandler();}
+                            if(errorHandler){errorHandler();}
                             qmService.connectors.connectWithParams({zip: res}, connector.name);
                         });
                     }
@@ -6749,13 +6751,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
         };
         qmService.setupOnboardingPages = function(){
-            var onboardingPagesFromLocalStorage = qm.storage.getItem('onboardingPages');
             var activeOnboardingPages = $rootScope.appSettings.appDesign.onboarding.active;
-            if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-                if(!$rootScope.appSettings.designMode){
-                    activeOnboardingPages = onboardingPagesFromLocalStorage;
-                }
-            }
             $rootScope.appSettings.appDesign.onboarding.active = qmService.addColorsCategoriesAndNames(activeOnboardingPages);
         };
         qmService.setupUpgradePages = function(){
