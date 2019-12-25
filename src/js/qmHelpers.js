@@ -9143,7 +9143,7 @@ var qm = {
                 if(reason && typeof reason !== "string"){throw "Reason should be a string!"}
                 requestParams.reason = reason;
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
-                    if(localVariables && variablesFromApi.length < localVariables.length){
+                    if(localVariables && variablesFromApi.length < localVariables.length && variablesFromApi.length < 50){
                         qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!",
                         {
                             local: localVariables.length,
@@ -9170,9 +9170,14 @@ var qm = {
             if(requestParams.includePublic){
                 qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
                     var localCount = localVariables.length;
-                    if(localVariables && localCount >= min){
-                        sortUpdateSubtitlesAndReturnVariables(localVariables);
-                        return;
+                    if(localVariables){
+                        qm.qmLog.debug("Returning " + localVariables.length + " local variables that match");
+                        sortUpdateSubtitlesAndReturnVariables(localVariables); // Return the local ones we found
+                        if(localCount >= min){
+                            qm.qmLog.debug("No need for API request because we have more than " + min);
+                            return;
+                        }
+                        qm.qmLog.debug("Searching api as well because we don't have more than " + min);
                     }
                     getFromApi(localVariables, "only " + localCount +
                         " local user or common variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is " + min);
