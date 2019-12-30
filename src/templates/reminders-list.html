@@ -27,15 +27,16 @@
             </div>
             <div id="favoriteItem"
                  ng-if="!trackingReminder.hide"
-                 ng-repeat="trackingReminder in state.favoritesArray  | filter:state.searchText track by $index"
+                 ng-repeat="trackingReminder in state.favoritesArray  | filter:state.searchText track by trackingReminder.id"
                  on-hold="showFavoriteActionSheet(favorite, $index, null, state)">
                 <div ng-include="'templates/items/favorite-item.html'"></div>
             </div>
             <div class="item item-divider"
                  ng-if="state.trackingReminders && state.trackingReminders.length">Scheduled
             </div>
-            <div ng-repeat="trackingReminder in state.trackingReminders | filter:state.searchText | orderBy:reminderOrderParameter"
-                 ng-if="!trackingReminder.hide">
+            <div
+                    ng-repeat="trackingReminder in state.trackingReminders | filter:state.searchText | orderBy:reminderOrderParameter track by trackingReminder.id"
+                    ng-if="!trackingReminder.hide">
                 <div ng-if="!trackingReminder.addMeasurement"
                      ng-include="'templates/items/variable-item.html'"></div>
                 <div ng-if="trackingReminder.addMeasurement"
@@ -47,7 +48,7 @@
             </div>
             <div ng-if="!trackingReminder.hide"
                  style="opacity: 0.6"
-                 ng-repeat="trackingReminder in state.archivedTrackingReminders | filter:state.searchText | orderBy:reminderOrderParameter track by $index">
+                 ng-repeat="trackingReminder in state.archivedTrackingReminders | filter:state.searchText | orderBy:reminderOrderParameter track by trackingReminder.id">
                 <div ng-if="!trackingReminder.addMeasurement"
                      ng-include="'templates/items/variable-item.html'"></div>
                 <div ng-if="trackingReminder.addMeasurement"
