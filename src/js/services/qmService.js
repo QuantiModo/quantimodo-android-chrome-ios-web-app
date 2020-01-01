@@ -1832,7 +1832,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var trackingReminder = trackingReminderNotification;
                     trackingReminder.id = trackingReminderNotification.trackingReminderId;
                     var variableObject = trackingReminderNotification;
-                    variableObject.id = trackingReminderNotification.variableId;
+                    variableObject.variableId = trackingReminderNotification.variableId;
                     variableObject.name = trackingReminderNotification.variableName;
                     var buttons = [
                         {text: 'Actions for ' + trackingReminderNotification.variableName},
@@ -2200,7 +2200,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         doneState = options.doneState;
                     }
                     var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
-                    trackingReminder.variableId = variableObject.id;
+                    trackingReminder.variableId = variableObject.variableId;
                     delete trackingReminder.id;
                     trackingReminder.variableName = variableObject.name;
                     if(variableObject.unit){
@@ -2700,7 +2700,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var variableName = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableId', $scope, $stateParams);
                     var variableObject = qmService.stateHelper.getValueFromScopeStateParamsOrUrl('variableObject', $scope, $stateParams);
                     if(variableObject){
-                        variableName = variableObject.variableId || variableObject.id;
+                        variableName = variableObject.variableId || variableObject.variableId;
                     }
                     return variableName;
                 },
@@ -7199,7 +7199,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.addToFavoritesUsingVariableObject = function(variableObject){
             var trackingReminder = {};
-            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableId = variableObject.variableId;
             trackingReminder.variableName = variableObject.name;
             trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
             trackingReminder.valence = variableObject.valence;
@@ -7387,7 +7387,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.convertTrackingReminderToVariableObject = function(trackingReminder){
             var variableObject = JSON.parse(JSON.stringify(trackingReminder));
-            variableObject.id = trackingReminder.variableId;
+            variableObject.variableId = trackingReminder.variableId;
             variableObject.name = trackingReminder.variableName;
             return variableObject;
         };
@@ -8309,7 +8309,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ' measurements publicly visible? You can make them private again at any time on this page.';
             function yesCallback(){
                 variableObject.shareUserMeasurements = true;
-                var body = {variableId: variableObject.id, shareUserMeasurements: true};
+                var body = {variableId: variableObject.variableId, shareUserMeasurements: true};
                 qmService.showBlackRingLoader();
                 qmService.postUserVariableDeferred(body).then(function(){
                     qmService.hideLoader();
@@ -8331,7 +8331,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 'previously shared with this variable will no longer work.';
             function yesCallback(){
                 variableObject.shareUserMeasurements = false;
-                var body = {variableId: variableObject.id, shareUserMeasurements: false};
+                var body = {variableId: variableObject.variableId, shareUserMeasurements: false};
                 qmService.postUserVariableDeferred(body).then(function(){
                 }, function(error){
                     qmLog.error(error);

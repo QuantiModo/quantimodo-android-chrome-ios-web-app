@@ -146,7 +146,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     });
                 }else{
                     userTagData = {
-                        userTagVariableId: selectedVariable.id, userTaggedVariableId: $scope.state.variableObject.id,
+                        userTagVariableId: selectedVariable.variableId,
+                        userTaggedVariableId: $scope.state.variableObject.variableId,
                         conversionFactor: getConversionFactor(dialogParameters.conversionFactor)
                     };
                     qmService.showBlackRingLoader();
@@ -161,10 +162,11 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         function goToAddTagState(stateParams){
             stateParams.fromState = $state.current.name;
             stateParams.fromStateParams = {
-                variableObject: $scope.state.variableObject, // This gets deleted in tagAdd for some reason we need to get from local storage
-                variableId: $scope.state.variableObject.id  // with variable id
+                variableObject: $scope.state.variableObject, // This gets deleted in tagAdd for some reason we need to
+                                                             // get from local storage
+                variableId: $scope.state.variableObject.variableId  // with variable id
             };
-            qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.id;
+            qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.variableId;
             qmService.goToState(qm.stateNames.tagAdd, stateParams);
         }
         $scope.state.openParentVariableSearchDialog = function(e){
@@ -175,7 +177,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 "when your parent category variable is analyzed, measurements from " +
                 $scope.state.variableObject.name.toUpperCase() + " will be included.";
             dialogParameters.placeholder = "Search for a parent category...";
-            var requestParams = {childUserTagVariableId: $scope.state.variableObject.id};
+            var requestParams = {childUserTagVariableId: $scope.state.variableObject.variableId};
             openTagVariableSearchDialog(e, requestParams, dialogParameters);
         };
         $scope.state.openIngredientVariableSearchDialog = function(e){
@@ -186,7 +188,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 "when your ingredient variable is analyzed, converted measurements from " +
                 $scope.state.variableObject.name.toUpperCase() + " will be included.";
             dialogParameters.placeholder = "Search for an ingredient...";
-            var requestParams = {ingredientOfUserTagVariableId: $scope.state.variableObject.id};
+            var requestParams = {ingredientOfUserTagVariableId: $scope.state.variableObject.variableId};
             openTagVariableSearchDialog(e, requestParams, dialogParameters);
         };
         $scope.state.openChildVariableSearchDialog = function(e){
@@ -197,7 +199,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, measurements from " +
                 "your child sub-type variable will also be included.";
             dialogParameters.placeholder = "Search for a variable to tag...";
-            var requestParams = {parentUserTagVariableId: $scope.state.variableObject.id};
+            var requestParams = {parentUserTagVariableId: $scope.state.variableObject.variableId};
             openTageeVariableSearchDialog(e, requestParams, dialogParameters);
         };
         $scope.state.openIngredientOfVariableSearchDialog = function(e){
@@ -207,7 +209,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 "when " + $scope.state.variableObject.name.toUpperCase() + " is analyzed, converted measurements from " +
                 "your selected variable will also be included.";
             dialogParameters.placeholder = "Search for variable containing " + $scope.state.variableObject.name;
-            var requestParams = {ingredientUserTagVariableId: $scope.state.variableObject.id};
+            var requestParams = {ingredientUserTagVariableId: $scope.state.variableObject.variableId};
             openTageeVariableSearchDialog(e, requestParams, dialogParameters);
         };
         function openTageeVariableSearchDialog($event, requestParams, dialogParameters){
@@ -221,7 +223,8 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     });
                 }else{
                     userTagData = {
-                        userTaggedVariableId: selectedVariable.id, userTagVariableId: $scope.state.variableObject.id,
+                        userTaggedVariableId: selectedVariable.variableId,
+                        userTagVariableId: $scope.state.variableObject.variableId,
                         conversionFactor: getConversionFactor(dialogParameters.conversionFactor)
                     };
                     qmService.showBlackRingLoader();
@@ -237,12 +240,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         $scope.state.openJoinVariableSearchDialog = function($event, requestParams){
             qmLog.info("openJoinVariableSearchDialog called by this event:", $event);
             qmLog.info("openJoinVariableSearchDialog requestParams:", requestParams);
-            requestParams = requestParams || {joinVariableId: $scope.state.variableObject.id};
+            requestParams = requestParams || {joinVariableId: $scope.state.variableObject.variableId};
             requestParams.includePublic = true;
             function selectVariable(selectedVariable){
                 var variableData = {
-                    parentVariableId: $scope.state.variableObject.id,
-                    joinedVariableId: selectedVariable.id,
+                    parentVariableId: $scope.state.variableObject.variableId,
+                    joinedVariableId: selectedVariable.variableId,
                     conversionFactor: 1
                 };
                 qmService.postVariableJoinDeferred(variableData).then(function(currentVariable){
@@ -376,7 +379,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmService.showInfoToast('Resetting ' + variableObject.name + ' analysis settings back to global defaults (this could take a minute)', 30);
             qmService.showBlackRingLoader();
             $scope.state.variableObject = null;
-            qmService.resetUserVariableDeferred(variableObject.id).then(function(userVariable){
+            qmService.resetUserVariableDeferred(variableObject.variableId).then(function(userVariable){
                 setVariableObject(userVariable);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             });
@@ -406,7 +409,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 }
             }
             var body = {
-                variableId: variableObject.id,
+                variableId: variableObject.variableId,
                 durationOfAction: variableObject.durationOfActionInHours * 60 * 60,
                 fillingValue: variableObject.fillingValue,
                 //joinWith
@@ -440,19 +443,25 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         $scope.deleteTaggedVariable = function(taggedVariable){
             taggedVariable.hide = true;
             var userTagData = {
-                userTagVariableId: $scope.state.variableObject.id,
-                userTaggedVariableId: taggedVariable.id
+                userTagVariableId: $scope.state.variableObject.variableId,
+                userTaggedVariableId: taggedVariable.variableId
             };
             qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
         };
         $scope.deleteTagVariable = function(tagVariable){
             tagVariable.hide = true;
-            var userTagData = {userTaggedVariableId: $scope.state.variableObject.id, userTagVariableId: tagVariable.id};
+            var userTagData = {
+                userTaggedVariableId: $scope.state.variableObject.variableId,
+                userTagVariableId: tagVariable.variableId
+            };
             qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
         };
         $scope.deleteJoinedVariable = function(tagVariable){
             tagVariable.hide = true;
-            var postBody = {currentVariableId: $scope.state.variableObject.id, joinedUserTagVariableId: tagVariable.id};
+            var postBody = {
+                currentVariableId: $scope.state.variableObject.variableId,
+                joinedUserTagVariableId: tagVariable.variableId
+            };
             qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
         };
         $scope.editTag = function(userTagVariable){

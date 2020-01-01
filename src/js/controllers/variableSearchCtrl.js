@@ -88,8 +88,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     });
                 }else{
                     userTagData = {
-                        userTagVariableId: variableObject.id,
-                        userTaggedVariableId: $scope.state.userTaggedVariableObject.id,
+                        userTagVariableId: variableObject.variableId,
+                        userTaggedVariableId: $scope.state.userTaggedVariableObject.variableId,
                         conversionFactor: 1
                     };
                     qmService.showBlackRingLoader();
@@ -112,8 +112,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                     });
                 }else{
                     userTagData = {
-                        userTagVariableId: $scope.state.userTagVariableObject.id,
-                        userTaggedVariableId: variableObject.id,
+                        userTagVariableId: $scope.state.userTagVariableObject.variableId,
+                        userTaggedVariableId: variableObject.variableId,
                         conversionFactor: 1
                     };
                     qmService.showBlackRingLoader();
