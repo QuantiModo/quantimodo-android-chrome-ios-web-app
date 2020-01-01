@@ -23,20 +23,20 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     // delete measurement
     $scope.deleteTag = function(variableObject){
         var userTagData = {
-            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
+            userTagVariableId: $scope.stateParams.userTagVariableObject.variableId,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.variableId
         };
         qmService.showBlackRingLoader();
         if(variableObject.userTagVariables){
             variableObject.userTagVariables =
                 variableObject.userTagVariables.filter(function(obj){
-                    return obj.id !== $scope.stateParams.userTagVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTagVariableObject.variableId;
                 });
         }
         if(variableObject.userTaggedVariables){
             variableObject.userTaggedVariables =
                 variableObject.userTaggedVariables.filter(function(obj){
-                    return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTaggedVariableObject.variableId;
                 });
         }
         qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
@@ -81,8 +81,8 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
             $scope.stateParams.tagConversionFactor = 1;
         }
         var userTagData = {
-            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id,
+            userTagVariableId: $scope.stateParams.userTagVariableObject.variableId,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.variableId,
             conversionFactor: $scope.stateParams.tagConversionFactor
         };
         addTaggedToTagVariable();
