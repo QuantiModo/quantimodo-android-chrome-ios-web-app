@@ -7820,7 +7820,7 @@ var qm = {
                     return parseInt(lastStudyOrCorrelation.causeVariableId);
                 }
                 if(lastStudyOrCorrelation.causeVariable){
-                    return parseInt(lastStudyOrCorrelation.causeVariable.variableId || lastStudyOrCorrelation.causeVariable.id);
+                    return parseInt(lastStudyOrCorrelation.causeVariable.variableId || lastStudyOrCorrelation.causeVariable.variableId);
                 }
             }
         },
@@ -7835,7 +7835,7 @@ var qm = {
                     return parseInt(lastStudyOrCorrelation.effectVariableId);
                 }
                 if(lastStudyOrCorrelation.effectVariable){
-                    return parseInt(lastStudyOrCorrelation.effectVariable.variableId || lastStudyOrCorrelation.effectVariable.id);
+                    return parseInt(lastStudyOrCorrelation.effectVariable.variableId || lastStudyOrCorrelation.effectVariable.variableId);
                 }
             }
         },
@@ -7854,10 +7854,14 @@ var qm = {
             if(!effectVariableName && study.effectVariable){effectVariableName = study.effectVariable.name;}
 
             var causeVariableId = study.causeVariableId;
-            if(!causeVariableId && study.causeVariable){causeVariableId = study.causeVariable.id;}
+            if(!causeVariableId && study.causeVariable){
+                causeVariableId = study.causeVariable.variableId;
+            }
 
             var effectVariableId = study.effectVariableId;
-            if(!effectVariableId && study.effectVariable){effectVariableId = study.effectVariable.id;}
+            if(!effectVariableId && study.effectVariable){
+                effectVariableId = study.effectVariable.variableId;
+            }
 
             if(params.causeVariableId && params.causeVariableId !== causeVariableId){
                 return false;
