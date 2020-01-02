@@ -924,7 +924,7 @@ var qm = {
         },
         getAppSettingsFromMemory: function(){
             //if(qm.appMode.isPhysician() && qm.staticData){return qm.staticData.appSettings;}
-            var appSettings = qm.globalHelper.getItem(qm.items.appSettings)
+            var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
             if(!appSettings){
                 if(!qm.staticData){
                     qm.qmLog.error("qm.staticData not set!");
@@ -7683,12 +7683,6 @@ var qm = {
         removeLastCharacter: function(string){
             return string.substring(0, string.length - 1);
         },
-        getFirstCharacter: function(string){
-            while(string.charAt(0) === '0'){
-                string = string.substr(1);
-            }
-            return string;
-        },
         slugify: function(str){
             str = str.replace(/^\s+|\s+$/g, ''); // trim
             str = str.toLowerCase();
@@ -8820,7 +8814,27 @@ var qm = {
                 drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
                     email: user.email,
                     name: user.displayName,
-                  })
+                })
+            }
+            if(typeof LogRocket !== "undefined"){
+                LogRocket.identify(user.id, {
+                    name: user.displayName,
+                    email: user.email,
+                    upgraded: user.stripeActive,
+                    // Add your own custom user variables here, ie:
+                    subscriptionType: 'pro'
+                });
+                if(typeof drift !== "undefined"){
+                    LogRocket.getSessionURL(function(sessionURL){
+                        drift.track('LogRocket', {sessionURL: sessionURL});
+                    });
+                }
+                if(typeof Bugsnag !== "undefined"){
+                    Bugsnag.beforeNotify = function(data){
+                        data.metaData.sessionURL = LogRocket.sessionURL;
+                        return data;
+                    };
+                }
             }
         },
         setUser: function(user){
@@ -9149,11 +9163,11 @@ var qm = {
                 qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length){
                         qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!",
-                        {
-                            local: localVariables.length,
-                            api: variablesFromApi.length,
-                            params: requestParams
-                        });
+                            {
+                                local: localVariables.length,
+                                api: variablesFromApi.length,
+                                params: requestParams
+                            });
                     }
                     sortUpdateSubtitlesAndReturnVariables(variablesFromApi);
                 }, function(error){
@@ -9874,7 +9888,7 @@ var qm = {
         },
         postWebPushSubscriptionToServer: function(deviceTokenString){
             if(!deviceTokenString){
-                qm.qmLog.error("No deviceTokenString for postWebPushSubscriptionToServer!")
+                qm.qmLog.error("No deviceTokenString for postWebPushSubscriptionToServer!");
                 return;
             }
             if(qm.webNotifications.tokenJustPosted && qm.webNotifications.tokenJustPosted === deviceTokenString){
