@@ -11,7 +11,7 @@
     "@bower_components/angular-material": "angular/bower-material#v1.1.20",
     "@bower_components/angular-material-datetimepicker": "mikepsinn/angular-material-datetimepicker#f50eb7d5aa49c9915396cfdae524da87ad3a402e",
     "@bower_components/angular-material-icons": "klarsys/angular-material-icons#^0.7.1",
-    "@bower_components/angular-messages": "angular/bower-angular-messages#1.5.9",
+    "@bower_components/angular-messages": "angular/bower-angular-messages#v1.7.9",
     "@bower_components/angular-moment": "urish/angular-moment#^1.2.0",
     "@bower_components/angular-sanitize": "angular/bower-angular-sanitize#1.5.9",
     "@bower_components/angular-ui-router": "angular-ui/angular-ui-router-bower#0.2.13",
