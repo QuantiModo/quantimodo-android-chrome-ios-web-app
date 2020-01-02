@@ -302,7 +302,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.showActionSheetForMeasurement = function(measurement){
             $scope.state.measurement = measurement;
             var variableObject = JSON.parse(JSON.stringify(measurement));
-            variableObject.id = measurement.variableId;
+            variableObject.variableId = measurement.variableId;
             variableObject.name = measurement.variableName;
             var buttons = [
                 {text: '<i class="icon ion-edit"></i>Edit Measurement'},

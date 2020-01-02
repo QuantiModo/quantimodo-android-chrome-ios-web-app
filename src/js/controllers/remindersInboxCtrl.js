@@ -447,7 +447,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.state.trackingReminder = trackingReminderNotification;
             $scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
             $scope.state.variableObject = trackingReminderNotification;
-            $scope.state.variableObject.id = trackingReminderNotification.variableId;
+            $scope.state.variableObject.variableId = trackingReminderNotification.variableId;
             $scope.state.variableObject.name = trackingReminderNotification.variableName;
             // Show the action sheet
             var buttons = [
