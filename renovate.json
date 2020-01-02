@@ -4,5 +4,8 @@
   ],
   "digest": {
     "enabled": false
-  }
+  },
+  "ignorePaths": [
+    "src/package.json"
+  ]
 }
