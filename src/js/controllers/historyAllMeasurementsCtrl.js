@@ -157,7 +157,26 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(qm.urlHelper.getParam('connectorName')){
                 return qm.urlHelper.getParam('connectorName');
             }
-            qmLog.info("Could not get variableName")
+            if(getConnectorId()){
+                var connectorId = getConnectorId();
+                var connector = qm.connectorHelper.getConnectorById(connectorId);
+                if(!connector){
+                    qm.qmLog.error(
+                        "Cannot filter by connector id because we could not find a matching connector locally");
+                    return null;
+                }
+                return connector.name;
+            }
+            qmLog.debug("Could not get connectorName")
+        }
+        function getConnectorId(){
+            if($stateParams.connectorId){
+                return $stateParams.connectorId;
+            }
+            if(qm.urlHelper.getParam('connector_id')){
+                return qm.urlHelper.getParam('connector_id');
+            }
+            qmLog.debug("Could not get connector_id")
         }
         $scope.editMeasurement = function(measurement){
             //measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
