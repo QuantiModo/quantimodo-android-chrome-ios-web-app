@@ -2035,7 +2035,7 @@ var qm = {
             qm.qmLog.info("Getting connectors from API...");
             function successHandler(response){
                 var connectors = response.connectors || response;
-                if(connectors){
+                if(connectors && connectors.length && Array.isArray(connectors)){
                     qm.qmLog.info("Got connectors from API...");
                     qm.storage.setItem(qm.items.connectors, connectors);
                     if(successCallback){
@@ -2055,9 +2055,14 @@ var qm = {
         },
         getConnectorsFromLocalStorage: function(){
             var connectors = qm.storage.getItem(qm.items.connectors);
-            if(connectors && connectors.connectors){
+            if(connectors && connectors.connectors && connectors.length && Array.isArray(connectors)){
                 qm.storage.setItem(qm.items.connectors, connectors.connectors);
                 return connectors.connectors;
+            }
+            if(!connectors || !connectors.length || !Array.isArray(connectors)){
+                qm.qmLog.error("Connectors from local storage is ", connectors);
+                qm.connectorHelper.getConnectorsFromApi();
+                return null;
             }
             return connectors;
         },
@@ -2119,10 +2124,29 @@ var qm = {
                 }
             }, errorHandler)
         },
+        getConnectorById: function(connectorId, successHandler, errorHandler){
+            connectorId = parseInt(connectorId);
+            if(!successHandler){
+                var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
+                if(!connectors){
+                    return null;
+                }
+                return connectors.find(function(connector){
+                    return connector.id === connectorId;
+                });
+            }
+            qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(connectors){
+                let c = connectors.find(function(connector){
+                    return connector.id === connectorId;
+                });
+                successHandler(c);
+            }, errorHandler);
+        },
         storeConnectorResponse: function(response){
             function hideUnavailableConnectors(connectors){
                 for(var i = 0; i < connectors.length; i++){
-                    //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide = true;}
+                    //if(connectors[i].name === 'facebook' && $rootScope.platform.isAndroid) {connectors[i].hide =
+                    // true;}
                     if(connectors[i].spreadsheetUpload && qm.platform.isMobile()){
                         connectors[i].hide = true;
                     }
