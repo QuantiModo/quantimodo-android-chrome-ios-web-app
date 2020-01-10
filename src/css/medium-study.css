@@ -52,6 +52,7 @@ img {
     outline: none;
     text-decoration: none;
     -ms-interpolation-mode: bicubic;
+    margin: auto;
 }
 a {
     text-decoration: none;
