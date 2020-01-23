@@ -10,7 +10,7 @@
   "version": "1.0.0",
   "description": "Perfect your life!",
   "devDependencies": {
-    "compromise": "12.2.0",
+    "compromise": "12.3.0",
     "cordova-ios-plugin-no-export-compliance": "0.0.6",
     "cordova-plugin-appsettings": "1.0.2",
     "cordova-plugin-datepicker": "0.9.3",
