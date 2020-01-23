@@ -8840,7 +8840,8 @@ var qm = {
                     name: user.displayName,
                 })
             }
-            if(typeof LogRocket !== "undefined"){
+            if(typeof LogRocket !== "undefined" && qm.appMode.isProduction()){
+                LogRocket.init('zi2x4l/quantimodo');
                 LogRocket.identify(user.id, {
                     name: user.displayName,
                     email: user.email,
