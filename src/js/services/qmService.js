@@ -187,17 +187,39 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             adSense: {
                 showOrHide: function(){
                     function showAdSense(){
-                        return qm.platform.isWeb() &&
-                            $rootScope.hideNavigationMenu === false &&
-                            $rootScope.user &&
-                            !$rootScope.user.stripeActive &&
-                            $rootScope.appSettings.additionalSettings.monetizationSettings.advertisingEnabled
+                        var u = $rootScope.user;
+                        if(!u){
+                            return false;
+                        }
+                        if(!u.stripeActive && u.id !== 230){
+                            return false;
+                        } // Show ads for mike so he sees any issues
+                        if(!qm.platform.isWeb()){
+                            return false;
+                        }
+                        if($rootScope.hideNavigationMenu !== false){
+                            return false;
+                        }
+                        return $rootScope.appSettings.additionalSettings.monetizationSettings.advertisingEnabled;
                     }
-                    if($rootScope.showAdSense !== showAdSense()){
-                        $timeout(function(){
-                            qmService.rootScope.setProperty('showAdSense', showAdSense()); // This is necessary because of "No slot size for availableWidth=0" error
-                        }, 3000)
+                    if(!showAdSense()){
+                        return;
                     }
+                    qm.userHelper.userIsOlderThan1Day(function(OlderThan1Day){
+                        if(!OlderThan1Day){
+                            qmLog.info("admob: Not showing admob because user not older than 1 day");
+                            return;
+                        }
+                        if($rootScope.showAdSense !== showAdSense()){
+                            $timeout(function(){
+                                qmService.rootScope.setProperty('showAdSense', showAdSense()); // This is necessary
+                                                                                               // because of "No slot
+                                                                                               // size for
+                                                                                               // availableWidth=0"
+                                                                                               // error
+                            }, 3000)
+                        }
+                    });
                 }
             },
             alerts: {

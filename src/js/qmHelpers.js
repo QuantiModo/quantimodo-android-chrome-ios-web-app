@@ -2089,7 +2089,7 @@ var qm = {
             }
         },
         filterConnectorsByName: function(name, connectors){
-            let c = connectors.find(function(connector){
+            var c = connectors.find(function(connector){
                 return connector.name === name.toLowerCase();
             });
             if(!c){
@@ -2102,7 +2102,7 @@ var qm = {
         getConnectorByName: function(connectorName, successHandler, errorHandler){
             if(!successHandler){
                 var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
-                let c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
+                var c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
                 return c;
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(connectors){
@@ -2113,7 +2113,7 @@ var qm = {
                     }
                     return;
                 }
-                let c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
+                var c = qm.connectorHelper.filterConnectorsByName(connectorName, connectors);
                 if(c){
                     successHandler(c);
                 }else{
@@ -2136,7 +2136,7 @@ var qm = {
                 });
             }
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(connectors){
-                let c = connectors.find(function(connector){
+                var c = connectors.find(function(connector){
                     return connector.id === connectorId;
                 });
                 successHandler(c);
@@ -8840,7 +8840,8 @@ var qm = {
                     name: user.displayName,
                 })
             }
-            if(typeof LogRocket !== "undefined"){
+            if(typeof LogRocket !== "undefined" && qm.appMode.isProduction()){
+                LogRocket.init('zi2x4l/quantimodo');
                 LogRocket.identify(user.id, {
                     name: user.displayName,
                     email: user.email,
