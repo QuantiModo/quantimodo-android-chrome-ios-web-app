@@ -129,3 +129,4 @@ sh.exe.stackdump
 .vscode/launch.json
 src/css/app.css
 src/css/app.min.css
+.env
