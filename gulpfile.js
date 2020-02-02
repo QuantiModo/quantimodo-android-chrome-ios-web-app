@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
 try {
-    var dotenv = require('dotenv').config({path: './.env'});
+    var dotenv = require('dotenv').config({path: './secrets/.env'});
 } catch (e) {
     console.error(e);
 }
