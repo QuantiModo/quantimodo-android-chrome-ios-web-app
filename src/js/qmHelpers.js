@@ -3634,6 +3634,26 @@ var qm = {
             }
         }
     },
+    imageHelper: {
+        replaceOldCategoryImages: function(str){
+            str = qm.stringHelper.str_replace([
+                'maxcdn.icons8.com/Color/PNG/96/Business',
+                'maxcdn.icons8.com/Color/PNG/96/Finance',
+                'maxcdn.icons8.com/Color/PNG/96/Food',
+                'maxcdn.icons8.com/Color/PNG/96/Healthcare',
+                'maxcdn.icons8.com/Color/PNG/96/Household',
+                'maxcdn.icons8.com/Color/PNG/96/Maps',
+                'maxcdn.icons8.com/Color/PNG/96/Messaging',
+                'maxcdn.icons8.com/Color/PNG/96/Music',
+                'maxcdn.icons8.com/Color/PNG/96/Printing',
+                'maxcdn.icons8.com/Color/PNG/96/Programming',
+                'maxcdn.icons8.com/Color/PNG/96/Sports',
+                'maxcdn.icons8.com/Color/PNG/96/Users',
+                'maxcdn.icons8.com/Color/PNG/96/Weather',
+            ], 'static.quantimo.do/img/variable_categories', str);
+            return str;
+        }
+    },
     integration: {
         getIntegrationJsWithoutClientId: function(clientId, callback){
             qm.api.configureClient(arguments.callee.name);
@@ -7726,6 +7746,11 @@ var qm = {
                 .replace(/-+/g, '-'); // collapse dashes
 
             return str;
+        },
+        str_replace: function(arr, replace, str) {
+             arr.forEach(function (search) {
+                 str = str.replace(search, replace);
+             });
         }
     },
     studyHelper: {
