@@ -3529,7 +3529,7 @@ var qm = {
             return study;
         },
         setItem: function(key, value){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             qm.storage.setGlobal(key, value);
@@ -3975,7 +3975,7 @@ var qm = {
             })
         },
         setItem: function(key, value, successHandler, errorHandler){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
@@ -3994,7 +3994,7 @@ var qm = {
                 }
                 return;
             }
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             if(qm.pouch.enabled){
@@ -7168,13 +7168,13 @@ var qm = {
         },
     },
     storage: {
-        valueIsValid: function(value){
+        valueIsValid: function(value, key){
             if(typeof value === "undefined"){
-                qm.qmLog.error("value provided to qm.storage.setItem is undefined!");
+                qm.qmLog.error(key+ " value provided to qm.storage.setItem is undefined!");
                 return false;
             }
             if(value === "null"){
-                qm.qmLog.error("null string provided to qm.storage.setItem!");
+                qm.qmLog.error("null string provided to qm.storage.setItem for "+key);
                 return false;
             }
             return true;
@@ -7346,7 +7346,7 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             var globalValue = qm.storage.getGlobal(key);
