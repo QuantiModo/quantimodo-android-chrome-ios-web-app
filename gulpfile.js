@@ -1,5 +1,9 @@
 /* eslint-disable no-process-env */
-var dotenv = require('dotenv').config({path: './.env'});
+try {
+    var dotenv = require('dotenv').config({path: './.env'});
+} catch (e) {
+    console.error(e);
+}
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 var devCredentials;
 var androidArm7DebugApkName = 'android-armv7-debug';
