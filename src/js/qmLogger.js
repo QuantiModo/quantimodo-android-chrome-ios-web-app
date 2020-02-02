@@ -81,7 +81,7 @@ var qmLog = {
         if(qmLog.logLevel){
             return qmLog.logLevel;
         }
-        if(typeof localStorage !== "undefined"){
+        if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
             qmLog.logLevel = localStorage.getItem(qmLog.qm.items.logLevel);  // Can't use qmLog.qm.storage because of recursion issue
         }
         if(qmLog.logLevel){
