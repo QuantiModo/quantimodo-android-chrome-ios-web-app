@@ -80,7 +80,7 @@
     "gulp-util": "3.0.8",
     "gulp-watch": "5.0.1",
     "gulp-zip": "5.0.1",
-    "inquirer": "7.0.3",
+    "inquirer": "7.0.4",
     "ionic": "2.2.3",
     "jshint": "2.11.0",
     "lazypipe": "1.0.2",
