@@ -3638,6 +3638,7 @@ var qm = {
         replaceOldCategoryImages: function(str){
             str = qm.stringHelper.str_replace([
                 'maxcdn.icons8.com/Color/PNG/96/Business',
+                'maxcdn.icons8.com/Color/PNG/96/Cinema',
                 'maxcdn.icons8.com/Color/PNG/96/Finance',
                 'maxcdn.icons8.com/Color/PNG/96/Food',
                 'maxcdn.icons8.com/Color/PNG/96/Healthcare',
@@ -7748,9 +7749,10 @@ var qm = {
             return str;
         },
         str_replace: function(arr, replace, str) {
-             arr.forEach(function (search) {
-                 str = str.replace(search, replace);
-             });
+            arr.forEach(function (search) {
+                str = qm.stringHelper.replaceAll(str, search, replace);
+            });
+            return str;
         }
     },
     studyHelper: {
