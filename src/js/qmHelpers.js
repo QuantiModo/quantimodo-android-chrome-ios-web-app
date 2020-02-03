@@ -3529,7 +3529,7 @@ var qm = {
             return study;
         },
         setItem: function(key, value){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             qm.storage.setGlobal(key, value);
@@ -3632,6 +3632,27 @@ var qm = {
             }else{
                 qm.apiHelper.getParameterDescription(parameterOrPropertyName, callback)
             }
+        }
+    },
+    imageHelper: {
+        replaceOldCategoryImages: function(str){
+            str = qm.stringHelper.str_replace([
+                'maxcdn.icons8.com/Color/PNG/96/Business',
+                'maxcdn.icons8.com/Color/PNG/96/Cinema',
+                'maxcdn.icons8.com/Color/PNG/96/Finance',
+                'maxcdn.icons8.com/Color/PNG/96/Food',
+                'maxcdn.icons8.com/Color/PNG/96/Healthcare',
+                'maxcdn.icons8.com/Color/PNG/96/Household',
+                'maxcdn.icons8.com/Color/PNG/96/Maps',
+                'maxcdn.icons8.com/Color/PNG/96/Messaging',
+                'maxcdn.icons8.com/Color/PNG/96/Music',
+                'maxcdn.icons8.com/Color/PNG/96/Printing',
+                'maxcdn.icons8.com/Color/PNG/96/Programming',
+                'maxcdn.icons8.com/Color/PNG/96/Sports',
+                'maxcdn.icons8.com/Color/PNG/96/Users',
+                'maxcdn.icons8.com/Color/PNG/96/Weather',
+            ], 'static.quantimo.do/img/variable_categories', str);
+            return str;
         }
     },
     integration: {
@@ -3975,7 +3996,7 @@ var qm = {
             })
         },
         setItem: function(key, value, successHandler, errorHandler){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
@@ -3994,7 +4015,7 @@ var qm = {
                 }
                 return;
             }
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             if(qm.pouch.enabled){
@@ -7168,13 +7189,13 @@ var qm = {
         },
     },
     storage: {
-        valueIsValid: function(value){
+        valueIsValid: function(value, key){
             if(typeof value === "undefined"){
-                qm.qmLog.error("value provided to qm.storage.setItem is undefined!");
+                qm.qmLog.error(key+ " value provided to qm.storage.setItem is undefined!");
                 return false;
             }
             if(value === "null"){
-                qm.qmLog.error("null string provided to qm.storage.setItem!");
+                qm.qmLog.error("null string provided to qm.storage.setItem for "+key);
                 return false;
             }
             return true;
@@ -7346,7 +7367,7 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(!qm.storage.valueIsValid(value)){
+            if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             var globalValue = qm.storage.getGlobal(key);
@@ -7725,6 +7746,12 @@ var qm = {
                 .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
                 .replace(/-+/g, '-'); // collapse dashes
 
+            return str;
+        },
+        str_replace: function(arr, replace, str) {
+            arr.forEach(function (search) {
+                str = qm.stringHelper.replaceAll(str, search, replace);
+            });
             return str;
         }
     },
