@@ -42,7 +42,12 @@ angular.module('starter').controller('OnboardingCtrl',
                 initializeAddRemindersPageIfNecessary();
             });
             function getPages(){
-                return $rootScope.appSettings.appDesign.onboarding.active;
+                var pages = $rootScope.appSettings.appDesign.onboarding.active;
+                pages = pages.map(function(page) {
+                    page.image.url = qm.imageHelper.replaceOldCategoryImages(page.image.url);
+                    return page;
+                });
+                return pages;
             }
             function nextPage(){
                 pageIndex++;
