@@ -4276,16 +4276,17 @@ var qm = {
             return measurements;
         },
     },
-    manualTrackingVariableCategoryNames: [
+    manualTrackingVariableCategoryNames: [,
         'Emotions',
-        'Symptoms',
-        'Treatments',
+        'Environment',
         'Foods',
-        'Vital Signs',
+        'Goals',
+        'Miscellaneous',
         'Physical Activity',
         'Sleep',
-        'Miscellaneous',
-        'Environment'
+        'Symptoms',
+        'Treatments',
+        'Vital Signs'
     ],
     memory: {
         askForMemoryAnswer: function(memoryQuestionStatement){
