@@ -27,6 +27,8 @@
     "power-assert": "1.6.1"
   },
   "dependencies": {
+    "@bugsnag/js": "^6.5.0",
+    "@bugsnag/plugin-express": "^6.5.1",
     "ansi-colors": "4.1.1",
     "async": "2.6.1",
     "body-parser": "1.18.3",
@@ -40,7 +42,7 @@
     "cordova-plugin-googleplus": "8.4.0",
     "es6-promise-plugin": "4.2.2",
     "event-stream": "4.0.1",
-    "express": "4.17.1",
+    "express": "^4.17.1",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "2.2.6",
     "gulp-change": "1.0.2",
