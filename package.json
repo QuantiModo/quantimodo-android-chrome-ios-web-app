@@ -27,7 +27,7 @@
     "power-assert": "1.6.1"
   },
   "dependencies": {
-    "@bugsnag/js": "6.5.0",
+    "@bugsnag/js": "6.5.2",
     "@bugsnag/plugin-express": "6.5.1",
     "ansi-colors": "4.1.1",
     "async": "2.6.1",
