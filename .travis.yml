@@ -77,13 +77,13 @@ notifications:
       - quantimodo:BijCp5nmBJtuwXTnJ1ALT6xo#web
     on_success: always
     on_failure: always
-deploy:
-  provider: heroku
-  app: medimodo
-  on:
-    all_branches: true
-  api_key:
-    secure: NEnR75wgMU5wny8aCK8zy4Feyoa1TtUOt3sHFcNEQFJLP2Ec2HeZfWCFz3WCzlptUOhChtLZeRJTHo/3rUGZNIVD+W6PbefZw9A9CXZaLJ0KzUDp9OlHGXnUBxy20551pnq0seD/XVkBPCylDQrSE0hAQ4PF0pY6jvEyOR8UyjoLzjzIvCKih/PBUf95uN/b0IPk5jETtla/VYW1jw0S4i7n2oC9QDa+VNGacpmphkTYRHLe3jmA+AlaQvd0A0cY9UE3XVI3ZpI6K4UT8L8yhGVIXDxm81Hfgw4nR0BMuJNU2PZkze14H6+gZkKt+G9rWFtMIsOFIlOrpul2fbeaxC8d0XG2pwbxD0Kmqw/7OL/xoBC9QUzksIJpXSdwqQbuOxZPsgKnzS0+4EHaYUk6NTqtiHjvUsbdM7sXSxQKKjwTTfWqes6s/bZ5qdFI03RJIaibkZIQmIwS57Py1PRASWiHNYAbpSveQ2ZeL1RZ6D+LBmR5U3dDdBVA4IY8+51oEMorx1kKnNrA+huzasSVH9xxyg33MdFhPtaauFZezKiKFgaz1HcBzUceFI9W/tMZoraoJZtGg9PWw3QAeacp1/ZrPyIwKEkaN78OVbR2PjTNxcijViGoi0CzWxhxt+5hVtMR9xfTKH1JI99p9BqCv1kXuxO7fB8XBgBdDhKdOms=
-after_deploy:
-  - "./scripts/cypress.sh"
-  - cd tests && gulp _unit-gi-failed-gi-all
+#deploy:
+#  provider: heroku
+#  app: medimodo
+#  on:
+#    all_branches: true
+#  api_key:
+#    secure: NEnR75wgMU5wny8aCK8zy4Feyoa1TtUOt3sHFcNEQFJLP2Ec2HeZfWCFz3WCzlptUOhChtLZeRJTHo/3rUGZNIVD+W6PbefZw9A9CXZaLJ0KzUDp9OlHGXnUBxy20551pnq0seD/XVkBPCylDQrSE0hAQ4PF0pY6jvEyOR8UyjoLzjzIvCKih/PBUf95uN/b0IPk5jETtla/VYW1jw0S4i7n2oC9QDa+VNGacpmphkTYRHLe3jmA+AlaQvd0A0cY9UE3XVI3ZpI6K4UT8L8yhGVIXDxm81Hfgw4nR0BMuJNU2PZkze14H6+gZkKt+G9rWFtMIsOFIlOrpul2fbeaxC8d0XG2pwbxD0Kmqw/7OL/xoBC9QUzksIJpXSdwqQbuOxZPsgKnzS0+4EHaYUk6NTqtiHjvUsbdM7sXSxQKKjwTTfWqes6s/bZ5qdFI03RJIaibkZIQmIwS57Py1PRASWiHNYAbpSveQ2ZeL1RZ6D+LBmR5U3dDdBVA4IY8+51oEMorx1kKnNrA+huzasSVH9xxyg33MdFhPtaauFZezKiKFgaz1HcBzUceFI9W/tMZoraoJZtGg9PWw3QAeacp1/ZrPyIwKEkaN78OVbR2PjTNxcijViGoi0CzWxhxt+5hVtMR9xfTKH1JI99p9BqCv1kXuxO7fB8XBgBdDhKdOms=
+#after_deploy:
+#  - "./scripts/cypress.sh"
+#  - cd tests && gulp _unit-gi-failed-gi-all
