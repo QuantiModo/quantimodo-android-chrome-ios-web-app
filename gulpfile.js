@@ -1419,27 +1419,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'https://*.intercom.com/*',
             'https://*.intercom.io/*',
             'https://*.googleapis.com/*',
-            'https://*.google-analytics.com/*',
-            'webRequest',
-            'webRequestBlocking',
-            'http://www.amazon.com/*',
-            'https://www.amazon.com/*',
-            'http://www.amazon.ca/*',
-            'https://www.amazon.ca/*',
-            'http://www.amazon.co.uk/*',
-            'https://www.amazon.co.uk/*',
-            'http://www.amazon.de/*',
-            'https://www.amazon.de/*',
-            'http://www.amazon.es/*',
-            'https://www.amazon.es/*',
-            'http://www.amazon.fr/*',
-            'https://www.amazon.fr/*',
-            'http://www.amazon.it/*',
-            'https://www.amazon.it/*',
-            'http://www.amazon.co.jp/*',
-            'https://www.amazon.co.jp/*',
-            'http://www.amazon.cn/*',
-            'https://www.amazon.cn/*'
+            'https://*.google-analytics.com/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
@@ -1450,6 +1430,30 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'persistent': true
         }
     };
+    var amazonScraperPermissions = [
+        'webRequest',
+        'webRequestBlocking',
+        'http://www.amazon.com/*',
+        'https://www.amazon.com/*',
+        'http://www.amazon.ca/*',
+        'https://www.amazon.ca/*',
+        'http://www.amazon.co.uk/*',
+        'https://www.amazon.co.uk/*',
+        'http://www.amazon.de/*',
+        'https://www.amazon.de/*',
+        'http://www.amazon.es/*',
+        'https://www.amazon.es/*',
+        'http://www.amazon.fr/*',
+        'https://www.amazon.fr/*',
+        'http://www.amazon.it/*',
+        'https://www.amazon.it/*',
+        'http://www.amazon.co.jp/*',
+        'https://www.amazon.co.jp/*',
+        'http://www.amazon.cn/*',
+        'https://www.amazon.cn/*'
+    ];
+    var useAmazonOrderScraper = false;
+    if(useAmazonOrderScraper){chromeManifestObject.permssions = chromeManifestObject.permissions.concat(amazonScraperPermissions);}
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
     var chromeManifestString = JSON.stringify(chromeManifestObject, null, 2);
     qmLog.info("Creating chrome manifest at " + outputPath);
