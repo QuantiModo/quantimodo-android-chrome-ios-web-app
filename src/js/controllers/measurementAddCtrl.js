@@ -31,6 +31,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
             $scope.state.title = 'Record a Measurement';
             $scope.state.selectedDate = moment();
+            $scope.state.units = qm.unitHelper.getNonAdvancedUnits();
             if($stateParams.trackingReminder){
                 setupTrackingByReminderNotification($stateParams.trackingReminder);
             }else if($stateParams.measurement){
