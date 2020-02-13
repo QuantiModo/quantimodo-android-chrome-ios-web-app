@@ -27,7 +27,7 @@
     "power-assert": "1.6.1"
   },
   "dependencies": {
-    "@bugsnag/js": "6.5.0",
+    "@bugsnag/js": "6.5.2",
     "@bugsnag/plugin-express": "6.5.1",
     "ansi-colors": "4.1.1",
     "async": "2.6.1",
@@ -40,7 +40,7 @@
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-drawoverapps": "git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git#37813e845f8309edc339d847b0ea653032b8f748",
     "cordova-plugin-googleplus": "8.4.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "8.2.0",
     "es6-promise-plugin": "4.2.2",
     "event-stream": "4.0.1",
     "express": "4.17.1",
@@ -72,7 +72,7 @@
     "gulp-run": "1.7.1",
     "gulp-s3-upload": "1.7.3",
     "gulp-sass": "3.2.1",
-    "gulp-shell": "0.7.1",
+    "gulp-shell": "0.8.0",
     "gulp-sourcemaps": "2.6.4",
     "gulp-streamify": "1.0.2",
     "gulp-string-replace": "1.1.2",
