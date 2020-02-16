@@ -1,6 +1,7 @@
 /* eslint-disable no-process-env */
 try {
-    var dotenv = require('dotenv').config({path: './secrets/.env'});
+    var dotenv = require('dotenv')
+    dotenv.config({path: './secrets/.env'});
 } catch (e) {
     console.error(e);
 }
@@ -359,7 +360,7 @@ var qmGit = {
     }
 };
 qmGit.setBranchName();
-var majorMinorVersionNumbers = '2.9.';
+var majorMinorVersionNumbers = '2.10.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
@@ -1020,8 +1021,9 @@ function resizeIcon(callback, resolution, noAlpha) {
     }
     execute(command, function (error) {
         if (error) {
-            qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
-            qmLog.info('ERROR: ' + JSON.stringify(error));
+            qmLog.error('ERROR: ' + JSON.stringify(error));
+            throw "Please install imagemagick in order to resize icons.  The windows version is here: "+
+                "https://sourceforge.net/projects/imagemagick/?source=typ_redirect";
         }
         copyFiles([outputIconPath], paths.src.icons);
         uploadAppImagesToS3(outputIconPath);
