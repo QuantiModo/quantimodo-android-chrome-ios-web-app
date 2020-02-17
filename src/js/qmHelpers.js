@@ -67,16 +67,18 @@ var qm = {
             if(qm.appMode.mode === 'development'){
                 return true;
             }
-            if(!qm.platform.getWindow()){
+            var win = qm.platform.getWindow();
+            if(!win){
                 return false;
             }
-            if(window.location.origin.indexOf('http://localhost:') !== -1){
+            var origin = window.location.origin;
+            if(origin.indexOf('http://localhost:') !== -1){
                 return true;
             }
-            if(window.location.origin.indexOf('https://dev-web.quantimo.do') !== -1){
+            if(origin.indexOf('https://dev-') === 0){
                 return true;
             }
-            return window.location.origin.indexOf('local.quantimo.do') !== -1;
+            return origin.indexOf('local.quantimo.do') !== -1;
         },
         isStaging: function(){
             if(!qm.platform.getWindow()){

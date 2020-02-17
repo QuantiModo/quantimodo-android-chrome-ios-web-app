@@ -7433,6 +7433,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
             function AlertDialogController($scope, $mdDialog, dialogParameters){
+                var blackList = [
+                    'Unauthorized cannot GET'
+                ];
+                var content = dialogParameters.textContent;
+                for (let i = 0; i < blackList.length; i++) {
+                    var contentElement = blackList[i];
+                    if(dialogParameters.textContent.indexOf(contentElement) !== -1){
+                        qmLog.errorAndExceptionTestingOrDevelopment("Material alert should not contain "+value+ " but is"+content);
+                        return;
+                    }
+                }
                 var self = this;
                 self.title = dialogParameters.title;
                 self.textContent = dialogParameters.textContent;
