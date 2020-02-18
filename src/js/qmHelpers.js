@@ -5943,6 +5943,11 @@ var qm = {
             return null;
         }
     },
+    patient: {
+        switchToPatientInNewTab: function (user) {
+            qm.urlHelper.openUrlInNewTab(qm.urlHelper.getPatientHistoryUrl(user.accessToken));
+        }
+    },
     platform: {
         getWindow: function(){
             if(typeof window === "undefined"){
@@ -8615,17 +8620,23 @@ var qm = {
             }
             return queryString;
         },
-        openUrlInNewTab: function(url, showLocation){
-            if(!qm.platform.getWindow()){
-                return false;
-            }
+        openUrlInNewTab: function(url){
+            if(!qm.platform.getWindow()){return false;}
             qm.qmLog.info("openUrlInNewTab: " + url);
-            showLocation = showLocation || 'yes';
-            //window.open(url, '_blank', 'location='+showLocation);
             window.open(url, '_blank');
         },
-        openUrl: function(url){
-            qm.urlHelper.goToUrl(url);
+        openUrl: function(url, showLocationBar, windowTarget){
+            showLocationBar = showLocationBar || "no";
+            windowTarget = windowTarget || '_blank';
+            if(typeof cordova !== "undefined"){
+                cordova.InAppBrowser.open(url, windowTarget, 'location=' + showLocationBar + ',toolbar=yes,clearcache=no,clearsessioncache=no');
+            }else{
+                if(qm.platform.isWeb()){
+                    window.open(url, windowTarget);  // Otherwise it opens weird popup instead of new tab
+                }else{
+                    window.open(url, windowTarget, 'location=' + showLocationBar + ',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                }
+            }
         },
         getIonicUrlForPath: function(path){
             return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
@@ -8807,6 +8818,12 @@ var qm = {
                 url = url.replace(query, '') + query;
             }
             return url;
+        },
+        getPatientHistoryUrl: function(accessToken, subDomain){
+            subDomain = subDomain || 'patient';
+            var referrerClientId = qm.getAppSettings().clientId;
+            return "https://"+subDomain+".quantimo.do/#/app/history-all-category/Anything?accessToken=" + accessToken +
+                '&quantimodoClientId=' + referrerClientId;
         }
     },
     user: null,
