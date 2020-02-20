@@ -2562,6 +2562,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             return {
                                 value: variable.name.toLowerCase(),
                                 name: variableName,
+                                displayName: variable.displayName,
                                 variable: variable,
                                 ionIcon: variable.ionIcon,
                                 subtitle: variable.subtitle
