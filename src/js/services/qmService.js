@@ -7444,7 +7444,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     'Unauthorized cannot GET'
                 ];
                 var content = dialogParameters.textContent;
-                for (let i = 0; i < blackList.length; i++) {
+                for (var i = 0; i < blackList.length; i++) {
                     var contentElement = blackList[i];
                     if(dialogParameters.textContent.indexOf(contentElement) !== -1){
                         qmLog.errorAndExceptionTestingOrDevelopment("Material alert should not contain "+value+ " but is"+content);
