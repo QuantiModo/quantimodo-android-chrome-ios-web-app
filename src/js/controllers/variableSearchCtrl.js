@@ -132,8 +132,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 qmService.goToState($scope.state.nextState, $scope.state);
             }
         };
-        $scope.goToStateFromVariableSearch = function(stateName){
-            qmService.goToState(stateName, $stateParams);
+        $scope.goToStateFromVariableSearch = function(stateName, params){
+            if(!params){params = $stateParams;}
+            qmService.goToState(stateName, params);
         };
         // when a query is searched in the search box
         function showAddVariableButtonIfNecessary(variables){
