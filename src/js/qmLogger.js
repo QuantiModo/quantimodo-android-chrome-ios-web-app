@@ -435,7 +435,8 @@ var qmLog = {
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;
         qmLog.error(name, message, metaData, stackTrace);
-        if(qmLog.qm.appMode.isTesting() || qmLog.qm.appMode.isDevelopment()){
+        var dev = qmLog.qm.appMode.isDevelopment();
+        if(qmLog.qm.appMode.isTesting() || dev){
             throw name;
         }
     },

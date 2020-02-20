@@ -2562,6 +2562,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             return {
                                 value: variable.name.toLowerCase(),
                                 name: variableName,
+                                displayName: variable.displayName,
                                 variable: variable,
                                 ionIcon: variable.ionIcon,
                                 subtitle: variable.subtitle
@@ -7073,6 +7074,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 );
             }, false);
         };
+        qmService.sendEmail = function(subjectLine, emailBody, emailAddress){
+            if($rootScope.isMobile){
+                qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress);
+            }else{
+                qmService.sendWithMailTo(subjectLine, emailBody, emailAddress);
+            }
+        };
         qmService.sendWithMailTo = function(subjectLine, emailBody, emailAddress){
             if(!emailBody){
                 emailBody = "I love you!";
@@ -7433,6 +7441,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             AlertDialogController.$inject = ["$scope", "$mdDialog", "dialogParameters"];
             function AlertDialogController($scope, $mdDialog, dialogParameters){
+                var blackList = [
+                    'Unauthorized cannot GET'
+                ];
+                var content = dialogParameters.textContent;
+                for (var i = 0; i < blackList.length; i++) {
+                    var contentElement = blackList[i];
+                    if(dialogParameters.textContent.indexOf(contentElement) !== -1){
+                        qmLog.errorAndExceptionTestingOrDevelopment("Material alert should not contain "+value+ " but is"+content);
+                        return;
+                    }
+                }
                 var self = this;
                 self.title = dialogParameters.title;
                 self.textContent = dialogParameters.textContent;
@@ -7866,7 +7885,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             qmService.processAndSaveAppSettings(appSettings);
-            qmService.switchBackToPhysician();
+            qmService.patient.switchBackToPhysician();
             qmService.getUserFromLocalStorageOrRefreshIfNecessary();
             qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
             qmService.backgroundGeolocationStartIfEnabled();
@@ -8418,36 +8437,52 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }, 2000);
         };
-        qmService.switchToPatient = function(patientUser){
-            if(!patientUser.accessToken){
-                qmLog.error("No access token for patientUser!");
+        qmService.patient = {
+            switchToPatientInNewTab: function (user) {
+                qm.patient.switchToPatientInNewTab(user);
+            },
+            switchBackFromPatient: function($scope){
+                qmService.rootScope.setProperty(qm.items.patientUser, null);
+                $scope.iframeUrl = null;
+                qmService.navBar.showNavigationMenu();
+            },
+            switchToPatientInIFrame: function(user, $scope, $sce){
+                qmService.showBasicLoader();
+                qmService.navBar.hideNavigationMenu();
+                $scope.iframeUrl = $sce.trustAsResourceUrl(qm.urlHelper.getPatientHistoryUrl(user.accessToken));
+                qmService.rootScope.setProperty(qm.items.patientUser, user, function(){qmService.hideLoader();});
+            },
+            switchToPatientInCurrentApp: function(patientUser){
+                if(!patientUser.accessToken){
+                    qmLog.error("No access token for patientUser!");
+                }
+                if(!$rootScope.switchBackToPhysician){
+                    $rootScope.switchBackToPhysician = qmService.patient.switchBackToPhysician;
+                }
+                qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
+                qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
+                qmService.showBlackRingLoader();
+                qmService.completelyResetAppState("switching back to patient");
+                qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
+                qm.storage.setItem(qm.items.physicianUser, $rootScope.physicianUser);
+                qmService.goToState(qm.stateNames.historyAll);
+                qmService.showInfoToast("Now acting as " + patientUser.displayName + ". Click the icon at the top to switch back.");
+            },
+            switchBackToPhysician: function(){
+                if(!qm.storage.getItem(qm.items.physicianUser)){
+                    qmLog.debug("No physician to switch back to");
+                    return;
+                }
+                var physicianUser = JSON.parse(JSON.stringify(qm.storage.getItem(qm.items.physicianUser)));
+                qmService.showBlackRingLoader();
+                qmService.completelyResetAppState("switching back to physician");
+                qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
+                qm.storage.setItem(qm.items.physicianUser, null);
+                qmService.rootScope.setProperty(qm.items.physicianUser, null);
+                qmService.rootScope.setUser(physicianUser);
+                qmService.goToDefaultState();
+                qmService.showInfoToast("Switched back to your account");
             }
-            if(!$rootScope.switchBackToPhysician){
-                $rootScope.switchBackToPhysician = qmService.switchBackToPhysician;
-            }
-            qmService.rootScope.setProperty(qm.items.physicianUser, $rootScope.user);
-            qm.storage.setItem(qm.items.physicianUser, $rootScope.user);
-            qmService.showBlackRingLoader();
-            qmService.completelyResetAppState("switching back to patient");
-            qmService.setUserInLocalStorageBugsnagIntercomPush(patientUser);
-            qm.storage.setItem(qm.items.physicianUser, $rootScope.physicianUser);
-            qmService.goToState(qm.stateNames.historyAll);
-            qmService.showInfoToast("Now acting as " + patientUser.displayName + ". Click the icon at the top to switch back.");
-        };
-        qmService.switchBackToPhysician = function(){
-            if(!qm.storage.getItem(qm.items.physicianUser)){
-                qmLog.debug("No physician to switch back to");
-                return;
-            }
-            var physicianUser = JSON.parse(JSON.stringify(qm.storage.getItem(qm.items.physicianUser)));
-            qmService.showBlackRingLoader();
-            qmService.completelyResetAppState("switching back to physician");
-            qmService.setUserInLocalStorageBugsnagIntercomPush(physicianUser);
-            qm.storage.setItem(qm.items.physicianUser, null);
-            qmService.rootScope.setProperty(qm.items.physicianUser, null);
-            qmService.rootScope.setUser(physicianUser);
-            qmService.goToDefaultState();
-            qmService.showInfoToast("Switched back to your account");
         };
         function saveDeviceTokenToSyncWhenWeLogInAgain(){
             // Getting token so we can post as the new user if they log in again
