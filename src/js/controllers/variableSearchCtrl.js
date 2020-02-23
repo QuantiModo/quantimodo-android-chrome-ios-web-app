@@ -319,6 +319,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             return null;
         }
         function getVariableCategoryName(){
+            var fromUrl = qm.urlHelper.getParam('variableCategoryName');
+            if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;
