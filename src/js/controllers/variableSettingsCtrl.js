@@ -420,7 +420,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 shareUserMeasurements: variableObject.shareUserMeasurements,
                 defaultUnitId: variableObject.userUnitId,
                 userVariableVariableCategoryName: variableObject.variableCategoryName,
-                //userVariableAlias: $scope.state.userVariableAlias
+                alias: variableObject.alias,
                 experimentStartTimeString: experimentStartTimeString,
                 experimentEndTimeString: experimentEndTimeString
             };
