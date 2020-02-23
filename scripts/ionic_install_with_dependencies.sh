@@ -7,6 +7,7 @@ cd ${SCRIPT_FOLDER}
 cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
+set -x
 
 sudo bash ${IONIC_PATH}/scripts/android_sdk_install.sh
 
@@ -21,14 +22,7 @@ sudo ${IONIC_PATH}/scripts/nvm_install.sh
 nvm install 4.4.4
 nvm use 4.4.4
 
-echo -e "${GREEN}Installing Ionic...${DEFAULT}"
-sudo npm install -g cordova ionic
-
-echo -e "${GREEN}Installing Gulp...${DEFAULT}"
-sudo npm install -g gulp
-
-echo -e "${GREEN}Installing Bower...${DEFAULT}"
-sudo npm install -g bower
+sudo npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower
 
 sudo chmod -R 777 /usr/local/lib
 sudo chmod -R 777 /usr/lib/node_modules
