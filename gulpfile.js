@@ -1527,7 +1527,7 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
 }
 gulp.task('createSuccessFile', function () {
     writeToFile('lastCommitBuilt', qmGit.getCurrentGitCommitSha());
-    return fs.writeFileSync('success');
+    return fs.writeFileSync('success', qmGit.getCurrentGitCommitSha());
 });
 gulp.task('deleteSuccessFile', function () {
     if(qmPlatform.buildingFor.ios()){
@@ -2222,6 +2222,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .on('error', function (err) {
             var gutil = require('gulp-util');
             gutil.log(gutil.colors.red('[Error]'), err.toString());
+            process.exit(1)
         })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
