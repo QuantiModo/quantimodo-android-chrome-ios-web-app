@@ -132,3 +132,5 @@ src/css/app.min.css
 
 secrets/*
 !/secrets/.env.example
+/.gradle/
+/ionic.iml
