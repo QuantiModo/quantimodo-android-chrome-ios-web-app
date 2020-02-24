@@ -1576,10 +1576,12 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
-gulp.task('downloadSplashScreen', [], function(){
+gulp.task('downloadSplashScreen', ['getAppConfigs'], function(){
     /** @namespace qm.getAppSettings().additionalSettings.appImages.splashScreen */
-    var splashScreen = (qmGulp.getAdditionalSettings().appImages.splashScreen) ? qmGulp.getAdditionalSettings().appImages.splashScreen : qmGulp.getAppSettings().splashScreen;
-    return downloadFile(splashScreen, 'splash.png', "./resources");
+    var images = qmGulp.getAdditionalSettings().appImages;
+    var splash = (images.splashScreen) ? images.splashScreen : qmGulp.getAppSettings().splashScreen;
+    splash = splash.replace('https://raw.githubusercontent.com/mikepsinn/quantimodo-images/master', 'https://static.quantimo.do/img');
+    return downloadFile(splash, 'splash.png', "./resources");
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
