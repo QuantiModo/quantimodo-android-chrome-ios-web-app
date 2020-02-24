@@ -21,7 +21,8 @@
     </div>
     <div ng-if="card.htmlContent" style="padding: 5px;" ng-bind-html="trustAsHtml(card.htmlContent)"></div>
     <p ng-if="!card.htmlContent" style="padding: 10px; text-align: center; color: white;">{{card.content}}</p>
-    <div ng-repeat="button in card.buttons">
+<!-- If we show both buttons and htmlContent we get duplicate buttons in the case of tracking instruction cards-->
+    <div ng-if="!card.htmlContent" ng-repeat="button in card.buttons">
         <div class="row">
             <div class="button-bar">
                 <a id="{{button.id}}" class="button button-clear button-balanced"
