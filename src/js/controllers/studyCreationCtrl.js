@@ -12,7 +12,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         };
         $scope.$on('$ionicView.beforeEnter', function(){
             if(!qm.getUser()){
-                qm.auth.setAfterLoginGoToUrlAndSendToLogin("no user in study creation state beforeEnter");
+                qmService.login.sendToLoginIfNecessaryAndComeBack("no user in study creation state beforeEnter");
             }
             if($stateParams.causeVariable){
                 $scope.state.causeVariable = $stateParams.causeVariable;
