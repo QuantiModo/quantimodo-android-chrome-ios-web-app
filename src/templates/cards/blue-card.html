@@ -19,10 +19,11 @@
                 style="position: absolute; top: 10px; right: 10px; font-size: 25px;"><i class="ion-close-round"></i>
         </button>
     </div>
-    <div ng-if="card.htmlContent" style="padding: 5px;" ng-bind-html="trustAsHtml(card.htmlContent)"></div>
-    <p ng-if="!card.htmlContent" style="padding: 10px; text-align: center; color: white;">{{card.content}}</p>
-<!-- If we show both buttons and htmlContent we get duplicate buttons in the case of tracking instruction cards-->
-    <div ng-if="!card.htmlContent" ng-repeat="button in card.buttons">
+    <!-- If we show both buttons and htmlContent we get duplicate buttons in the case of tracking instruction cards-->
+    <!-- Also htmlContent has black text which is bad on blue background-->
+<!--    <div ng-if="card.htmlContent" style="padding: 5px;" ng-bind-html="trustAsHtml(card.htmlContent)"></div>-->
+    <p style="padding: 10px; text-align: center; color: white;">{{card.content}}</p>
+    <div ng-repeat="button in card.buttons">
         <div class="row">
             <div class="button-bar">
                 <a id="{{button.id}}" class="button button-clear button-balanced"
