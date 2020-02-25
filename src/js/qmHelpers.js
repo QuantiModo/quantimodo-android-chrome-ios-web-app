@@ -2062,7 +2062,7 @@ var qm = {
                 return connectors.connectors;
             }
             if(!connectors || !connectors.length || !Array.isArray(connectors)){
-                qm.qmLog.error("Connectors from local storage is ", connectors);
+                qm.qmLog.debug("Connectors from local storage is ", connectors);
                 qm.connectorHelper.getConnectorsFromApi();
                 return null;
             }
@@ -7375,6 +7375,9 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
+            if(!key){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");
+            }
             if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
