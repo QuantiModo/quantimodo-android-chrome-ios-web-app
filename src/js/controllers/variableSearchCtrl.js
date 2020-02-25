@@ -3,29 +3,24 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                                                      qmService, qmLogService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
-        $scope.state = JSON.parse(JSON.stringify($stateParams));
-        $scope.state.searching = true;
-        $scope.state.variableSearchResults = [];
-        if(!$scope.state.variableSearchParameters){
-            $scope.state.variableSearchParameters = {};
-        }
-        $scope.state.variableSearchQuery = {name: ''};
-        if(!$scope.state.noVariablesFoundCard){
-            $scope.state.noVariablesFoundCard = {
-                show: false,
-                title: 'No Variables Found',
-                body: "You don't have any data, yet.  Start tracking!"
-            };
-        }
-        if(!$scope.state.title){
-            $scope.state.title = "Select Variable";
-        }
-        if(!$scope.state.variableSearchPlaceholderText){
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-        }
         $scope.$on('$ionicView.beforeEnter', function(e){
             qmLog.info($state.current.name + ' beforeEnter...');
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
+            //qm.objectHelper.copyPropertiesFromOneObjectToAnother($stateParams, $scope.state, true);
+            $scope.state = JSON.parse(JSON.stringify($stateParams)); // Overwrites cached results.  Necessary if in a different state
+            $scope.state.searching = true;
+            $scope.state.variableSearchResults = [];
+            if(!$scope.state.variableSearchParameters){$scope.state.variableSearchParameters = {};}
+            $scope.state.variableSearchQuery = {name: ''};
+            if(!$scope.state.noVariablesFoundCard){
+                $scope.state.noVariablesFoundCard = {
+                    show: false,
+                    title: 'No Variables Found',
+                    body: "You don't have any data, yet.  Start tracking!"
+                };
+            }
+            if(!$scope.state.title){$scope.state.title = "Select Variable";}
+            if(!$scope.state.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = "Search for a variable here...";}
             $scope.state.variableSearchParameters.variableCategoryName = getVariableCategoryName();
             //$scope.showBarcodeScanner = $rootScope.platform.isMobile && (qm.arrayHelper.inArray($scope.state.variableSearchParameters.variableCategoryName, ['Anything', 'Foods', 'Treatments']));
             if(getVariableCategoryName()){
