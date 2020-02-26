@@ -9123,20 +9123,20 @@ var qm = {
                 qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
-        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+        getFromLocalStorage: function(params, successHandler, errorHandler){
             if(!qm.getUser()){
                 qm.qmLog.error("No user to get user variables!");
-                qm.commonVariablesHelper.getFromLocalStorage(requestParams, successHandler, errorHandler);
+                qm.commonVariablesHelper.getFromLocalStorage(params, successHandler, errorHandler);
                 return;
             }
-            if(!requestParams){
-                requestParams = {};
+            if(!params){
+                params = {};
             }
-            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function(userVariables){
-                if(!requestParams.sort){
-                    userVariables = qm.variablesHelper.defaultVariableSort(userVariables);
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
+                if(!params.sort){
+                    variables = qm.variablesHelper.defaultVariableSort(variables);
                 }
-                successHandler(userVariables);
+                successHandler(variables);
             }, function(error){
                 qm.qmLog.error(error);
                 if(errorHandler){
@@ -9263,8 +9263,8 @@ var qm = {
             if(requestParams.includePublic){
                 qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
                     var localCount = localVariables.length;
-                    if(localVariables){
-                        qm.qmLog.debug("Returning " + localVariables.length + " local variables that match");
+                    if(localCount){
+                        qm.qmLog.debug("Returning " + localCount + " local variables that match");
                         sortUpdateSubtitlesAndReturnVariables(localVariables); // Return the local ones we found
                         if(localCount >= min){
                             qm.qmLog.debug("No need for API request because we have more than " + min);
