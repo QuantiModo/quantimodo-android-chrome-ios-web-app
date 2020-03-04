@@ -48,7 +48,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 });
             }
             if(qm.urlHelper.getParam('upc')){
-                qmService.barcodeScanner.scanSuccessHandler({text: qm.urlHelper.getParam('upc')}, {}, function(variables){
+                qmService.barcodeScanner.scanSuccessHandler({text: qm.urlHelper.getParam('upc')},
+                    {}, function(variables){
                     console.log(variables)
                 }, function(error){
                     console.error(error);
@@ -135,10 +136,12 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         function showAddVariableButtonIfNecessary(variables){
             if($scope.state.variableSearchQuery.barcode &&
                 $scope.state.variableSearchQuery.barcode === $scope.state.variableSearchQuery.name){
-                return $scope.state.showAddVariableButton = false;
+                $scope.state.showAddVariableButton = false;
+                return;
             }
             if($scope.state.doNotShowAddVariableButton){
-                return $scope.state.showAddVariableButton = false;
+                $scope.state.showAddVariableButton = false;
+                return;
             }
             var resultIndex = 0;
             var found = false;
