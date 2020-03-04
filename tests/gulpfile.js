@@ -309,6 +309,29 @@ var qmTests = {
                 });
             }
         },
+        variables: {
+            getManualTrackingVariables: function (callback) {
+                qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken());
+                qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+                    if(!qm.getUser()){throw "No user!"}
+                    var requestParams = {
+                        limit: 100,
+                        includePublic: true,
+                        manualTracking: true,
+                    };
+                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                        qmLog.info('Got ' + variables.length + ' variables');
+                        qm.assert.count(requestParams.limit, variables);
+                        var manual = variables.filter(function (v) {
+                            return v.manualTracking;
+                        })
+                        qm.assert.count(requestParams.limit, manual);
+                        qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
+                        callback();
+                    });
+                });
+            }
+        },
         parseCorrelationNotificationTest: function(cb){
             var pushData = {
                 color: "#2196F3",
@@ -452,6 +475,12 @@ gulp.task('test-get-common-variable', function(callback) {
     qmTests.getStaticData();
     qmTests.setTestParams(this._params);
     qmTests.tests.commonVariables.getCar(callback);
+});
+gulp.task('test-get-manual-tracking-variable', function(callback) {
+    qm.currentTask = this.currentTask.name;
+    qmTests.getStaticData();
+    qmTests.setTestParams(this._params);
+    qmTests.tests.variables.getManualTrackingVariables(callback);
 });
 gulp.task('test-record-measurement-intent', function(callback) {
     qm.currentTask = this.currentTask.name;
