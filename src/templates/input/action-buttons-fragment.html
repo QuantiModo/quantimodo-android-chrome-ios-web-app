@@ -1,9 +1,10 @@
+<p style="text-align: center;">Recent Values</p>
 <span class="buttons" ng-repeat="actionItem in trackingReminderNotification.actionArray">
     <button class="button button-assertive"
-            ng-if="actionItem.action !== 'snooze'"
+            ng-if="actionItem.action !== 'snooze' && actionItem.action !== 'skip'"
             on-hold="trackAllWithConfirmation(trackingReminderNotification, actionItem.modifiedValue, $event)"
             ng-click="track(trackingReminderNotification, actionItem.modifiedValue, $event)">
-        <md-tooltip md-direction="down" ng-if="!platform.isMobile">{{actionItem.longTitle}}</md-tooltip>
+        <md-tooltip md-direction="down" ng-if="!platform.isMobile" class="hide-xs">{{actionItem.longTitle}}</md-tooltip>
         {{actionItem.title}}
     </button>
 </span>

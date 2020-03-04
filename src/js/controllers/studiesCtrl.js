@@ -5,13 +5,14 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.state = {
             variableName: null,
             studiesResponse: {studies: []},
-            showLoadMoreButton: false
+            showLoadMoreButton: false,
+            title: "Studies"
         };
         $scope.data = {"search": ''};
         $scope.filterSearchQuery = '';
         $scope.searching = true;
         $scope.$on('$ionicView.beforeEnter', function(e){
-            qmLogService.debug('beforeEnter state ' + $state.current.name);
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('beforeEnter state ' + $state.current.name);
             $scope.showSearchFilterBox = false;
             qmService.navBar.setFilterBarSearchIcon(true);
@@ -32,7 +33,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                         {text: '<i class="icon ion-arrow-up-c"></i>Negative Relationships'},
                         {text: '<i class="icon ion-arrow-down-c"></i>Number of Participants'},
                         {text: '<i class="icon ion-arrow-up-c"></i>Ascending pValue'},
-                        {text: '<i class="icon ion-arrow-down-c"></i>Optimal Pearson Product'},
+                        {text: '<i class="icon ion-arrow-down-c"></i>Your Down-Votes'},
                         qmService.actionSheets.actionSheetButtons.refresh,
                         qmService.actionSheets.actionSheetButtons.settings
                     ],
@@ -42,25 +43,27 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
-                            populateStudyList('-statisticalSignificance');
+                            populateStudyListBySortParam('-statisticalSignificance');
                         }
                         if(index === 1){
-                            populateStudyList('-qmScore');
+                            populateStudyListBySortParam('-qmScore');
                         }
                         if(index === 2){
-                            populateStudyList('correlationCoefficient');
+                            populateStudyListBySortParam('correlationCoefficient');
                         }
                         if(index === 3){
-                            populateStudyList('-correlationCoefficient');
+                            populateStudyListBySortParam('-correlationCoefficient');
                         }
                         if(index === 4){
-                            populateStudyList('-numberOfUsers');
+                            populateStudyListBySortParam('-numberOfUsers');
                         }
                         if(index === 5){
-                            populateStudyList('pValue');
+                            populateStudyListBySortParam('pValue');
                         }
                         if(index === 6){
-                            populateStudyList('-optimalPearsonProduct');
+                            resetAndShowLoader();
+                            $scope.state.requestParams.downvoted = true; // Need to attach to scope so it's still included when clicking load more
+                            populateStudyList($scope.state.requestParams);
                         }
                         if(index === 7){
                             $scope.refreshList();
@@ -98,22 +101,9 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
             }
             setTitle();
-            populateStudyList();
+            populateStudyListBySortParam();
         });
-        function populateStudyList(newSortParam, refresh){
-            if(newSortParam){
-                $scope.state.studiesResponse.studies = [];
-                qmLogService.debug('Sort by ' + newSortParam);
-                $scope.state.requestParams.sort = newSortParam;
-            }
-            $scope.searching = true;
-            var params = $scope.state.requestParams;
-            params.open = getOpenParam();
-            if(refresh){
-                params.refresh = refresh;
-            }
-            params.created = getCreatedParam();
-            params.limit = 10;
+        function populateStudyList(params){
             qmLog.info('Getting studies with params ' + JSON.stringify(params));
             qm.studyHelper.getStudiesFromApi(params, function(studiesResponse){
                 if(!studiesResponse){
@@ -143,6 +133,22 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 hideLoader();
                 qmLogService.error('studiesCtrl: Could not get studies: ' + JSON.stringify(error));
             });
+        }
+        function populateStudyListBySortParam(newSortParam, refresh){
+            if(newSortParam){
+                $scope.state.studiesResponse.studies = [];
+                qmLogService.debug('Sort by ' + newSortParam);
+                $scope.state.requestParams.sort = newSortParam;
+            }
+            $scope.searching = true;
+            var params = $scope.state.requestParams;
+            params.open = getOpenParam();
+            if(refresh){
+                params.refresh = refresh;
+            }
+            params.created = getCreatedParam();
+            params.limit = 10;
+            populateStudyList(params);
         }
         function getCreatedParam(){
             return qm.parameterHelper.getStateUrlRootScopeOrRequestParam('created', $stateParams, $scope, $rootScope);
@@ -213,7 +219,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 $stateParams.causeVariableName = '**' + $scope.data.search + '**';
             }
             $scope.state.requestParams.offset = null;
-            populateStudyList();
+            populateStudyListBySortParam();
         };
         function showLoadMoreButtonIfNecessary(){
             if($scope.state.studiesResponse.studies.length &&
@@ -233,12 +239,12 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             //qmService.showBlackRingLoader();
             if($scope.state.studiesResponse.studies.length){
                 $scope.state.requestParams.offset = $scope.state.studiesResponse.studies.length;
-                populateStudyList();
+                populateStudyListBySortParam();
             }
         };
         $scope.refreshList = function(){
             $scope.state.requestParams.offset = 0;
-            populateStudyList(null, true);
+            populateStudyListBySortParam(null, true);
         };
         $scope.openStore = function(name){
             qmLogService.debug('open store for ', null, name); // make url
@@ -246,6 +252,11 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             var url = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
             $scope.openUrl(url);
         };
+        function resetAndShowLoader(){
+            $scope.state.studiesResponse.studies = [];
+            $scope.searching = true;
+            qm.loaders.robots();
+        }
         $rootScope.openStudySearchDialog = function($event){
             $mdDialog.show({
                 controller: StudySearchCtrl,

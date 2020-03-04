@@ -1,9 +1,13 @@
-angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope", "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog", function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
-                                                                                                                                                                                                                                                            $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog){
+angular.module("starter").controller("StudyCtrl", [
+    "$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope",
+    "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog",
+    function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
+             $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog){
     VariableSettingsController.$inject = ["qmService", "qmLogService", "dialogParameters"];
     $scope.controller_name = "StudyCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on("$ionicView.beforeEnter", function(){
+        if (document.title !== "Study") {document.title = "Study";}
         $scope.loadingCharts = true;  // Need to do this here so robot works properly
         qmLogService.debug('beforeEnter state ' + $state.current.name);
         $scope.state = {
@@ -11,7 +15,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
             requestParams: {},
             hideStudyButton: true,
             loading: true,
-            study: $stateParams.study
+            study: $stateParams.study,
+            copyLinkText: "Copy Shareable Link to Clipboard"
         };
         qmService.hideLoader(); // Hide before robot is called in afterEnter
         setAllStateProperties(getScopedStudyIfMatchesVariableNames());
@@ -127,9 +132,8 @@ angular.module("starter").controller("StudyCtrl", ["$scope", "$state", "qmServic
         qmLogService.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
-    $scope.copyLinkText = "Copy Shareable Link to Clipboard";
     $scope.copyStudyUrlToClipboard = function(causeVariableName, effectVariableName){
-        $scope.copyLinkText = "Copied!";
+        $scope.state.copyLinkText = "Copied!";
         var studyLink = qmService.getStudyLinkStatic(causeVariableName, effectVariableName, $scope.state.study);
         clipboard.copyText(studyLink);
     };

@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-
+var Q = require("q");
 var sourceDir = 'resources/android/values';
 var platformDir = 'platforms/android/res/values';
 var allowedFiles = ['themes.xml','styles.xml']
@@ -10,7 +10,6 @@ module.exports = function(ctx) {
     return;
   }
 
-  var Q = ctx.requireCordovaModule('q');
   var deferred = Q.defer();
   var customResourcesDir = path.join(ctx.opts.projectRoot, sourceDir);
 

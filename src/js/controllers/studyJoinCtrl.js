@@ -14,6 +14,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
             joining: false
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             $scope.state.study = $stateParams.study;
             qmLogService.debug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name, null);

@@ -56,7 +56,7 @@
     "pouchdb-upsert": "^2.2.0",
     "pusher-js": "pusher#^4.3.0",
     "quagga": "^0.12.1",
-    "quantimodo": "5.10.12613",
+    "quantimodo": "5.10.100719",
     "svg-morpheus": "^0.3.2",
     "underscore": "^1.9.1",
     "moment-timezone": "^0.5.23",

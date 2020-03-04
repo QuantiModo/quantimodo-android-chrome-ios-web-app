@@ -32,3 +32,27 @@ body {
   left: 15px !important;     // FreshChat on left to avoid FAB overlap
   z-index: 10 !important;  // Don't cover toasts or action sheet
 }
+.siq_bR {
+  left: 10px !important;     // ZOHO on left to avoid FAB overlap
+  z-index: 10 !important;  // Don't cover toasts or action sheet
+}
+
+.zsiq_custommain {
+  z-index: 10 !important; } // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_floatmain {
+  z-index: 10 !important; } // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_custommain, .zsiq_floatmain {
+  z-index: 10 !important; }  // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_custommain img, .zsiq_float {
+  display: inline-block;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 50%; }
+
+#payment-form {
+  max-width: 400px;
+  margin: auto;
+}

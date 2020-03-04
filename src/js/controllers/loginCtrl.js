@@ -2,23 +2,52 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
     "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
     function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog){
         $scope.state = {
-            useLocalUserNamePasswordForms: false,  // Temporarily disabled until complete
+            useLocalUserNamePasswordForms: qm.platform.isMobileOrChromeExtension(),
             loading: false,
             alreadyRetried: false,
             showRetry: false,
             registrationForm: false,
             loginForm: false,
             tryToGetUser: function(force){
-                var params = $scope.state.registrationForm || $scope.state.loginForm;
                 qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
                 console.info("Trying to get user");
-                qmService.refreshUser(force, params).then(function(){
+                qmService.refreshUser(force, {}).then(function(){
                     console.info("Got user");
                     qmService.hideLoader();
                     leaveIfLoggedIn();
                 }, function(error){
                     console.info("Could not get user! error: " + error);
                     //qmService.showMaterialAlert(error);  Can't do this because it has a not authenticate popup
+                    qmService.hideLoader();  // Hides login loader too early
+                    leaveIfLoggedIn();
+                });
+            },
+            emailRegister: function () {
+                var params = $scope.state.registrationForm;
+                params.register = true;
+                if(!params.pwdConfirm || params.pwdConfirm !== params.pwd){
+                    qmService.showMaterialAlert("Confirm Password", "Passwords do not match!");
+                    return;
+                }
+                qmService.showBasicLoader();
+                qmService.post('api/v3/userSettings', [], params, function(response){
+                    qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+                    qmService.hideLoader();
+                    leaveIfLoggedIn();
+                }, function(error){
+                    qmService.showMaterialAlert("Error", error);
+                    qmService.hideLoader();  // Hides login loader too early
+                    leaveIfLoggedIn();
+                });
+            },
+            emailLogin: function () {
+                qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
+                qmService.refreshUser(true, $scope.state.loginForm).then(function(){
+                    qmService.hideLoader();
+                    leaveIfLoggedIn();
+                }, function(error){
+                    qmLog.error("Email Login Error", error);
+                    qmService.showMaterialAlert("Login Error", "Hmm. I couldn't sign you in with those credentials.  Please double check them or contact me at https://help.quantimo.do.");
                     qmService.hideLoader();  // Hides login loader too early
                     leaveIfLoggedIn();
                 });
@@ -100,6 +129,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             }, duration * 1000);
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Login") {document.title = "Login";}
             qmLog.authDebug('beforeEnter in state ' + $state.current.name);
             leaveIfLoggedIn();
             if(qm.urlHelper.getParam('loggingIn') || qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags($state.current.name)){
@@ -118,9 +148,14 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             qm.connectorHelper.getConnectorsFromLocalStorageOrApi();  // Pre-load to speed up login
             //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
             qmService.splash.hideSplashScreen();
-            if(!qm.stringHelper.isFalsey(qm.urlHelper.getParam('error'))){
-                qmLog.error(qm.urlHelper.getParam('error'));
-                qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  :D")
+            var errorMessage = qm.urlHelper.getParam('error');
+            if(!qm.stringHelper.isFalsey(errorMessage)){
+                errorMessage = decodeURIComponent(errorMessage);
+                qmLog.error(errorMessage);
+                if(!qm.getUser()){
+                    qmService.showMaterialAlert("Login Issue", "Hmm.  I couldn't log you in with that method.  Could you try a different one?  Thanks!  Error: " +
+                    errorMessage);
+                }
             }
             if(qm.speech.getSpeechEnabled() && !qm.urlHelper.getParam('loggingIn')){
                 //qm.speech.sayIfNotInRecentStatements("I'm not sure who you are... So while you're logging in... Take that time to ask yourself who YOU... think YOU are on a deeper level.");

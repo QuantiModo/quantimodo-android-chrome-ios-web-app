@@ -81,7 +81,7 @@ var qmLog = {
         if(qmLog.logLevel){
             return qmLog.logLevel;
         }
-        if(typeof localStorage !== "undefined"){
+        if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
             qmLog.logLevel = localStorage.getItem(qmLog.qm.items.logLevel);  // Can't use qmLog.qm.storage because of recursion issue
         }
         if(qmLog.logLevel){
@@ -248,7 +248,7 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "...";
+                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "[redacted]";
             }
         }
         if(censoredString !== lowerCase){
@@ -420,12 +420,23 @@ var qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
+    errorOrDebugIfTesting: function(name, message, metaData, stackTrace){
+        message = message || name;
+        name = name || message;
+        qmLog.globalMetaData = qmLog.globalMetaData || null;
+        if(qmLog.qm.appMode.isTesting()){
+            qmLog.debug(name, message, metaData, stackTrace);
+        }else{
+            qmLog.error(name, message, metaData, stackTrace);
+        }
+    },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
         message = message || name;
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;
         qmLog.error(name, message, metaData, stackTrace);
-        if(qmLog.qm.appMode.isTesting() || qmLog.qm.appMode.isDevelopment()){
+        var dev = qmLog.qm.appMode.isDevelopment();
+        if(qmLog.qm.appMode.isTesting() || dev){
             throw name;
         }
     },

@@ -12,7 +12,7 @@
 #ionic platform add ios
 #cd "${INTERMEDIATE_PATH}"
 #echo "Adding android platform for ${QUANTIMODO_CLIENT_ID} at ${PWD}"
-#ionic platform add android@6.2.2
+#ionic platform add android@8.0.0
 echo "Generating images for ${QUANTIMODO_CLIENT_ID} at ${PWD}..."
 ionic resources
 convert resources/icon.psd -flatten -background transparent resources/icon.png || true

@@ -1,0 +1,14 @@
+<div ng-click="upVote(study, $index, $event)" class="show-inline">
+    <div class="tooltip" title="Relationship Seems Plausible">
+        <img ng-if="study.studyVotes.userVote === null || study.studyVotes.userVote === 0"
+             src="img/thumbs/thumb_up_white.png" height="32px" width="32px"/>
+        <img ng-if="study.studyVotes.userVote === 1" src="img/thumbs/thumb_up_black.png" height="32px" width="32px"/>
+    </div>
+</div> &nbsp;&nbsp;
+<div ng-click="downVote(study, $index, $event)" class="show-inline">
+    <div class="tooltip" title="Relationship Seems Impossible">
+        <img ng-if="study.studyVotes.userVote === null || study.studyVotes.userVote === 1"
+             src="img/thumbs/thumb_down_white.png" height="32px" width="32px"/>
+        <img ng-if="study.studyVotes.userVote === 0" src="img/thumbs/thumb_down_black.png" height="32px" width="32px"/>
+    </div>
+</div>

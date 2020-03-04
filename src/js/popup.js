@@ -10,6 +10,11 @@ function setFaceButtonListeners(){
     document.getElementById('buttonMoodOk').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodHappy').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodEcstatic').onclick = onFaceButtonClicked;
+    document.getElementById('button1').onclick = onFaceButtonClicked;
+    document.getElementById('button2').onclick = onFaceButtonClicked;
+    document.getElementById('button3').onclick = onFaceButtonClicked;
+    document.getElementById('button4').onclick = onFaceButtonClicked;
+    document.getElementById('button5').onclick = onFaceButtonClicked;
     //document.getElementById('buttonInbox').onclick = inboxButtonClicked;
     document.getElementById('question').onclick = inboxButtonClicked;
 }
@@ -70,31 +75,27 @@ var onFaceButtonClicked = function(){
     qmLog.pushDebug('popup onFaceButtonClicked: onFaceButtonClicked buttonId ' + buttonId);
     var ratingValue; // Figure out what rating was selected
     if(buttonId === "buttonMoodDepressed"){
-        if(valenceNegative()){
-            ratingValue = 5;
-        }else{
-            ratingValue = 1;
-        }
+        if(valenceNegative()){ ratingValue = 5; }else{ ratingValue = 1; }
     }else if(buttonId === "buttonMoodSad"){
-        if(valenceNegative()){
-            ratingValue = 4;
-        }else{
-            ratingValue = 2;
-        }
+        if(valenceNegative()){ ratingValue = 4; }else{ ratingValue = 2; }
     }else if(buttonId === "buttonMoodOk"){
         ratingValue = 3;
     }else if(buttonId === "buttonMoodHappy"){
-        if(valenceNegative()){
-            ratingValue = 2;
-        }else{
-            ratingValue = 4;
-        }
+        if(valenceNegative()){ratingValue = 2;}else{ratingValue = 4;}
     }else if(buttonId === "buttonMoodEcstatic"){
-        if(valenceNegative()){
-            ratingValue = 1;
-        }else{
-            ratingValue = 5;
-        }
+        if(valenceNegative()){ratingValue = 1;}else{ratingValue = 5;}
+    }else if(buttonId === "button1"){
+        ratingValue = 1;
+    }else if(buttonId === "button2"){
+        ratingValue = 2;
+    }else if(buttonId === "button3"){
+        ratingValue = 3;
+    }else if(buttonId === "button4"){
+        ratingValue = 4;
+    }else if(buttonId === "button5"){
+        ratingValue = 5;
+    }else {
+        throw "Please create handler for button id "+ buttonId;
     }
     if(!qmPopup.trackingReminderNotification){
         qmLog.error("No qmPopup.trackingReminderNotification to post or add to queue!");
@@ -159,23 +160,21 @@ function hidePopup(){
     window.resizeTo(ratingPopupWidth, 0);
 }
 function showLoader(){
-    var sectionRate = getRatingSectionElement();
     var loader = document.getElementById("loader");
     loader.style.display = "block";
-    sectionRate.style.display = "none";
-    getQuestionElement().style.display = "none";
+    numericRatingButtons().style.display = faceRatingButtons().style.display = question().style.display = "none";
 }
 function unHidePopup(){
     window.qmLog.info('unHidePopup: resizing to ' + ratingPopupWidth + " x " + ratingPopupHeight);
     window.resizeTo(ratingPopupWidth, ratingPopupHeight);
 }
 // function hideLoader() {
-//     var sectionRate = getRatingSectionElement();
+//     var faceRatingButtons = faceRatingButtons();
 //     var loader = document.getElementById("loader");
 //     loader.className = "invisible";
 //     loader.style.display = "none";
-//     sectionRate.style.display = "block";
-//     sectionRate.className = "visible";
+//     faceRatingButtons.style.display = "block";
+//     faceRatingButtons.className = "visible";
 // }
 function updateQuestion(variableName){
     qmLog.pushDebug("popup: updateQuestion...");
@@ -196,51 +195,66 @@ function updateQuestion(variableName){
     var questionText;
     variableName = qmPopup.trackingReminderNotification.displayName || variableName;
     if(qmPopup.trackingReminderNotification.unitAbbreviatedName === '/5'){
-        questionText = "How is your " + variableName.toLowerCase() + "?";
-        if(variableName.toLowerCase() === 'meditation'){
-            qmLog.error("Asking " + questionText + "!", "qmPopup.trackingReminderNotification is: " + JSON.stringify(qmPopup.trackingReminderNotification),
-                {trackingReminderNotification: qmPopup.trackingReminderNotification});
-        }
-        getRatingSectionElement().style.display = "block";
-        getLastValueSectionElement().style.display = "none";
+        showRatingSection();
     }else{
-        function setLastValueButtonProperties(textElement, buttonElement, notificationAction){
-            if(notificationAction.modifiedValue !== null){
+        showLastValuesSection();
+    }
+    if(qmPopup.trackingReminderNotification.question){
+        questionText = qmPopup.trackingReminderNotification.question;
+    }
+    window.qmLog.pushDebug('popup: Updating question to ' + questionText);
+    question().innerHTML = questionText;
+    document.title = questionText;
+    if(qm.platform.isChromeExtension()){
+        qmLog.pushDebug('popup: Setting question display to none ');
+        question().style.display = "none";
+    }else{
+        getInboxButtonElement().style.display = "none";
+        qmLog.pushDebug('NOT setting question display to none because not on Chrome');
+    }
+    unHidePopup();
+    function showLastValuesSection() {
+        function setLastValueButtonProperties(textElement, buttonElement, notificationAction) {
+            if (notificationAction.modifiedValue !== null) {
                 buttonElement.style.display = "none";
                 var size = 30 - notificationAction.shortTitle.length * 12 / 3;
                 buttonElement.style.fontSize = size + "px";
                 textElement.innerHTML = notificationAction.shortTitle;
                 buttonElement.style.display = "inline-block";
-            }else{
+            }
+            else {
                 buttonElement.style.display = "none";
             }
         }
         setLastValueButtonProperties(getLastValueElement(), getLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[0]);
         setLastValueButtonProperties(getSecondToLastValueElement(), getSecondToLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[1]);
         setLastValueButtonProperties(getThirdToLastValueElement(), getThirdToLastValueButtonElement(), qmPopup.trackingReminderNotification.actionArray[2]);
-        getRatingSectionElement().style.display = "none";
+        numericRatingButtons().style.display = faceRatingButtons().style.display = "none";
         getLastValueSectionElement().style.display = "block";
         questionText = "Record " + variableName + " (" + qmPopup.trackingReminderNotification.unitAbbreviatedName + ")";
-        if(qmPopup.trackingReminderNotification.unitAbbreviatedName === 'count'){
+        if (qmPopup.trackingReminderNotification.unitAbbreviatedName === 'count') {
             questionText = "Record " + variableName;
         }
     }
-    if(qmPopup.trackingReminderNotification.question){
-        questionText = qmPopup.trackingReminderNotification.question;
+
+    function showRatingSection() {
+        questionText = "How is your " + variableName.toLowerCase() + "?";
+        if(variableName.toLowerCase() === 'meditation'){
+            qmLog.error("Asking " + questionText + "!", "qmPopup.trackingReminderNotification is: " + JSON.stringify(qmPopup.trackingReminderNotification),
+                {trackingReminderNotification: qmPopup.trackingReminderNotification});
+        }
+        if (qmPopup.trackingReminderNotification.valence === "positive" || 
+            qmPopup.trackingReminderNotification.valence === "negative") {
+            numericRatingButtons().style.display = "none";
+            faceRatingButtons().style.display = "block";
+        } else {
+            faceRatingButtons().style.display = "none";
+            numericRatingButtons().style.display = "block";
+        }
+        getLastValueSectionElement().style.display = "none";
     }
-    window.qmLog.pushDebug('popup: Updating question to ' + questionText);
-    getQuestionElement().innerHTML = questionText;
-    document.title = questionText;
-    if(qm.platform.isChromeExtension()){
-        qmLog.pushDebug('popup: Setting question display to none ');
-        getQuestionElement().style.display = "none";
-    }else{
-        getInboxButtonElement().style.display = "none";
-        qmLog.pushDebug('NOT setting question display to none because not on Chrome');
-    }
-    unHidePopup();
 }
-function getQuestionElement(){
+function question(){
     return document.getElementById("question");
 }
 function getInboxButtonElement(){
@@ -267,8 +281,11 @@ function getThirdToLastValueButtonElement(){
 function getLastValueSectionElement(){
     return document.getElementById("lastValueSection");
 }
-function getRatingSectionElement(){
-    return document.getElementById("sectionRate");
+function faceRatingButtons(){
+    return document.getElementById("faceRatingButtons");
+}
+function numericRatingButtons(){
+    return document.getElementById("numericRatingButtons");
 }
 document.addEventListener('DOMContentLoaded', function(){
     qmLog.pushDebug("popup addEventListener: popup.js DOMContentLoaded");

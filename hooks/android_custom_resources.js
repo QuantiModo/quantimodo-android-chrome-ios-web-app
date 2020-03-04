@@ -1,9 +1,10 @@
 var fs = require('fs');
 var path = require('path');
 var shell = require( "shelljs" );
+var Q = require("q");
 console.log("Started copying android_custom_resources and icons hook...");
 var sourceDir = 'resources/android/custom';
-var platformDir = 'platforms/android';
+var platformDir = 'platforms/android/app/src/main/';
 var resourceDirs = [
   'res/drawable-ldpi',
   'res/drawable-mdpi',
@@ -18,7 +19,6 @@ module.exports = function(ctx) {
     console.log("Platform not android so quitting");
     return;
   }
-  var Q = ctx.requireCordovaModule('q');
   var deferred = Q.defer();
   var androidPlatformDir = path.join(ctx.opts.projectRoot, platformDir);
   var customResourcesDir = path.join(ctx.opts.projectRoot, sourceDir);
@@ -72,7 +72,12 @@ module.exports = function(ctx) {
       // shell.exec("cp resources/android/res/drawable-xxhdpi/* platforms/android/res/drawable", {silent:true} ); // Must be done first
       // shell.exec("cp resources/android/res/drawable-xxhdpi-v11/* platforms/android/res/drawable", {silent:true} );
       copies.map(function(args) {
-        return copy.apply(copy, args);
+        try {
+          return copy.apply(copy, args);
+        } catch (e){
+          console.log(e.toString());
+          return;
+        }
       });
       Q.all(copies).then(function(r) {
         deferred.resolve();

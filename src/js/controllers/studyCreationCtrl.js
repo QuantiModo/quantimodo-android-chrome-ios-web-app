@@ -12,7 +12,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         };
         $scope.$on('$ionicView.beforeEnter', function(){
             if(!qm.getUser()){
-                qm.auth.setAfterLoginGoToUrlAndSendToLogin("no user in study creation state beforeEnter");
+                qmService.login.sendToLoginIfNecessaryAndComeBack("no user in study creation state beforeEnter");
             }
             if($stateParams.causeVariable){
                 $scope.state.causeVariable = $stateParams.causeVariable;
@@ -30,7 +30,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
             qmService.hideLoader();
         });
         if(!clipboard.supported){
-            qmLog.debug('Sorry, copy to clipboard is not supported', null);
+            qmLog.debug('Sorry, copy to clipboard is not supported');
             $scope.hideClipboardButton = true;
         }
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
@@ -86,7 +86,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         };
         $scope.createStudy = function(type){
             qmLog.info('Clicked createStudy for ' + getCauseVariableName() + ' and ' + getEffectVariableName());
-            qmService.showInfoToast("Creating study...", 20);
+            qmService.showInfoToast("Creating study (this could take a minute)", 45);
             qmService.showBasicLoader(60);
             var body = new Quantimodo.StudyCreationBody(getCauseVariableName(), getEffectVariableName(), type);
             qm.studiesCreated.createStudy(body, function(study){

@@ -5,10 +5,29 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
              //$ionicDeploy,
              $ionicPlatform, $mdDialog){
         $scope.controller_name = "SettingsCtrl";
-        $scope.state = {};
+        $scope.state = {
+            title: "Settings",
+            updatePrimaryOutcomeVariable: function(ev){
+                qm.help.getExplanation('primaryOutcomeVariable', null, function(explanation){
+                    var dialogParameters = {
+                        title: explanation.title,
+                        helpText: explanation.textContent,
+                        placeholder: "Search for an outcome...",
+                        buttonText: "Select Outcome",
+                        requestParams: {includePublic: true, outcome: true,  sort: "-numberOfUserVariables"}
+                    };
+                    qmService.showVariableSearchDialog(dialogParameters, function(v){
+                        $rootScope.user.primaryOutcomeVariableId = v.id;
+                        $rootScope.user.primaryOutcomeVariableName = v.name;
+                        qmService.updateUserSettingsDeferred({primaryOutcomeVariableId: v.id});
+                    }, null, ev);
+                });
+            }
+        };
         $scope.userEmail = qm.urlHelper.getParam('userEmail');
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('beforeEnter state ' + $state.current.name, null);
             $scope.debugMode = qmLog.getDebugMode();
             if($rootScope.user){
@@ -33,6 +52,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }
             if(!$rootScope.user){
                 qmService.login.sendToLoginIfNecessaryAndComeBack("No $rootScope.user in " + $state.current.name);
+            } else {
+                qmService.refreshUser();
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){

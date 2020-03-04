@@ -7,6 +7,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             title: "Charts",
         };
         $scope.$on('$ionicView.enter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('Entering state ' + $state.current.name);
             qm.urlHelper.addUrlParamsToObject($scope.state);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -78,7 +79,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             return clonedVariable;
         }
         function getCharts(refresh){
-            qm.userVariables.getByName(getVariableName(), {includeCharts: true}, refresh, function(variableObject){
+            var params = {includeCharts: true, refresh: true};
+            if(refresh){params.refresh = true;}
+            qm.userVariables.getByName(getVariableName(), params, refresh, function(variableObject){
                 qmLog.info("Got variable " + variableObject.name);
                 if(!variableObject.charts){
                     qmLog.error("No charts!");

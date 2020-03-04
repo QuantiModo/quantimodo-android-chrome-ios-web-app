@@ -6,7 +6,8 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.state = {
         coupon: null,
-        hideFeatures: false
+        hideFeatures: false,
+        title: "Upgrade"
     };
     $scope.signUpQuestions = [
         {
@@ -25,6 +26,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         },
     ];
     $scope.$on('$ionicView.beforeEnter', function(e){
+        if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         qmLogService.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){
@@ -122,13 +124,6 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         });
         return formObj;
     }
-    function stripeTokenHandler(token){
-        var formObject = getFormObj('payment-form');
-        formObject.productId = $scope.productId;
-        formObject.couponCode = $scope.state.coupon;
-        formObject.stripeToken = token;
-        qmService.postCreditCardDeferred(formObject);
-    }
     function stripeSetup(){
         var stripe = Stripe('pk_live_jwzyvmlPu1cU7ZQ5LbanoELX');  // Create a Stripe client.
         if(qm.appMode.isTesting()){
@@ -164,14 +159,23 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         });  // Handle real-time validation errors from the card Element.
         var form = document.getElementById('payment-form'); // Handle form submission.
         form.addEventListener('submit', function(event){
+            qmService.showBasicLoader();
             event.preventDefault();
             stripe.createToken(card).then(function(result){
+                qmService.hideLoader();
                 if(result.error){
                     // Inform the user if there was an error.
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = result.error.message;
+                    qmService.showMaterialAlert("Whoops!", result.error.message);
+                    qmLog.error(result.error.message, result.error);
+                    qm.chatButton.openDriftSidebar();
                 }else{
-                    stripeTokenHandler(result.token); // Send the token to your server.
+                    var formObject = getFormObj('payment-form');
+                    formObject.productId = $scope.productId;
+                    formObject.couponCode = $scope.state.coupon;
+                    formObject.stripeToken = result.token;
+                    qmService.postCreditCardDeferred(formObject);
                 }
             });
         });

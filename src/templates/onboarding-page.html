@@ -10,22 +10,22 @@
                     <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
                 </md-button>
                 <md-button id="enableLocationTrackingButton" class="button circle-page-button"
-                           ng-show="circlePage.id === 'locationTrackingPage'&& !state.requireUpgrades"
+                           ng-if="circlePage.id === 'locationTrackingPage'&& !state.requireUpgrades"
                            ng-click="enableLocationTrackingWithMeasurements($event)">
                     <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
                 </md-button>
                 <md-button id="enableWeatherTrackingButton" class="button circle-page-button"
-                           ng-show="circlePage.id === 'weatherTrackingPage'&& !state.requireUpgrades"
+                           ng-if="circlePage.id === 'weatherTrackingPage'&& !state.requireUpgrades"
                            ng-click="connectWeatherOnboarding()">
                     <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
                 </md-button>
                 <md-button id="importDataButton" class="button circle-page-button"
-                           ng-show="circlePage.id === 'importDataPage' && !state.requireUpgrades"
+                           ng-if="circlePage.id === 'importDataPage' && !state.requireUpgrades"
                            ng-click="onboardingGoToImportPage()">
                     <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
                 </md-button>
                 <md-button id="goToUpgradePageButton" class="button circle-page-button"
-                           ng-show="circlePage.premiumFeature && state.requireUpgrades"
+                           ng-if="circlePage.premiumFeature && state.requireUpgrades"
                            ng-click="goToUpgradePage()">
                     <i class="ion-android-star"> &nbsp;Upgrade &nbsp;</i>
                 </md-button>
@@ -48,11 +48,11 @@
                     <i class="ion-close-round"> &nbsp; No &nbsp;</i>
                 </md-button>
                 <div>
-                    <md-button ng-show="state.showSkipButton && !appSettings.designMode" id="skipButtonWelcome"
+                    <md-button ng-if="state.showSkipButton && !appSettings.designMode" id="skipButtonWelcome"
                                class="button circle-page-button" style="font-size: 14px;" ng-click="skipOnboarding()">
                         &nbsp; Skip Setup &nbsp;
                     </md-button>
-                    <md-button ng-show="state.showSkipButton && !appSettings.designMode" id="moreInfoButton"
+                    <md-button ng-if="state.showSkipButton && !appSettings.designMode" id="moreInfoButton"
                                class="button circle-page-button" style="font-size: 14px;"
                                ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">
                         &nbsp; More Info &nbsp;

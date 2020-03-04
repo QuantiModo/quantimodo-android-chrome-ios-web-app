@@ -1,5 +1,5 @@
-angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qmService",
-    function($scope, $state, qmService){
+angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qmService", "$timeout",
+    function($scope, $state, qmService, $timeout){
         $scope.controller_name = "DataSharingCtrl";
         $scope.state = {
             authorizedClients: null,
@@ -12,6 +12,7 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
             }
         };
         $scope.$on("$ionicView.beforeEnter", function(){
+            if (document.title !== "Sharing") {document.title = "Sharing";}
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             $scope.state.refreshAuthorizedClients();
             qm.shares.getAuthorizedClientsFromLocalStorageOrApi(function(authorizedClients){
@@ -37,7 +38,9 @@ angular.module("starter").controller("DataSharingCtrl", ["$scope", "$state", "qm
         function setAuthorizedClients(response){
             var authorizedClients = response.authorizedClients || response;
             if(authorizedClients){
-                $scope.state.authorizedClients = authorizedClients;
+                $timeout(function(){
+                    $scope.state.authorizedClients = authorizedClients;
+                }, 0);
             }
             qmService.hideLoader();
         }

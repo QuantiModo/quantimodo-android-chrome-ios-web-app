@@ -2,6 +2,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", "$timeout",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
              $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse, $timeout){
+
         qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
         qmService.initializeApplication(appSettingsResponse);
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -21,6 +22,10 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 }else{
                     $scope.myIntro.ready = true;
                 }
+            },
+            triangleName: {
+                lineOne: "Dr.",
+                lineTwo: "Modo"
             }
         };
         var slide;
@@ -80,11 +85,13 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Welcome") {document.title = "Welcome";}
             $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
             //qmLogService.debug("Entering state " + $state.current.name);
             if(!$rootScope.appSettings){
                 qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
             }
+            if(qm.appMode.isPhysician()){qmService.goToState(qm.staticData.stateNames.physician);}
             makeBackgroundTransparentIfUsingFuturisticBackground();
             setColorsFromSlide(introSlides()[0]);
             if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
@@ -96,6 +103,22 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }
             if(!qm.speech.getSpeechAvailable() || useFuturisticBackground() === false){
                 $scope.state.setSpeechEnabled(false);
+            }
+            var appSettings = qm.getAppSettings();
+            if(!appSettings){
+                qmLog.error("Why isn't app settings set?");
+                appSettings = appSettingsResponse;
+                qm.appsManager.processAndSaveAppSettings(appSettingsResponse);
+            }
+            var displayName = appSettings.appDisplayName;
+            var words = displayName.split(' ');
+            if(words.length > 1){
+                $scope.state.triangleName = {
+                    lineOne: words[0],
+                    lineTwo: words[1]
+                }
+            } else {
+                $scope.state.triangleName.lineTwo = qm.appsManager.getDoctorRobotoAlias(appSettings);
             }
         });
         $scope.$on('$ionicView.afterEnter', function(){

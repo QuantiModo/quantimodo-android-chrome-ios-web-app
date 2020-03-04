@@ -145,11 +145,13 @@
                        class="item icon-left ion-clock"></label>
                 <div id="valenceSelectorBlock"
                      ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)">
-                    <p>&nbsp; &nbsp; Higher {{state.trackingReminder.variableName}} is </p>
+                    <h4 style="padding-left: 15px;">Rating Button Type</h4>
+                    <p style="padding-left: 15px;">Higher {{state.trackingReminder.variableName}} is </p>
                     <md-radio-group ng-model="state.trackingReminder.valence" flex layout="row" layout-padding
                                     layout-align="start center">
                         <md-radio-button value="positive" class="md-primary"> good</md-radio-button>
                         <md-radio-button value="negative"> bad</md-radio-button>
+                        <md-radio-button value="neutral" class="md-primary"> numeric</md-radio-button>
                     </md-radio-group>
                     <br>
                 </div>

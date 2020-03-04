@@ -14,6 +14,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             moreDataCanBeLoaded: true
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             if(!$scope.helpCard || $scope.helpCard.title !== "Past Measurements"){
                 $scope.helpCard = {
                     title: "Past Measurements",
@@ -32,15 +33,15 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                $scope.state.title = $stateParams.variableCategoryName + ' History';
+                document.title = $scope.state.title = $stateParams.variableCategoryName + ' History';
                 $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
             }
             if($stateParams.variableCategoryName){
                 setupVariableCategoryActionSheet();
             }
             getScopedVariableObject();
-            if(getVariableName()){
-                $scope.state.title = getVariableName() + ' History';
+            if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
+            if(false && getVariableName()){
                 qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
                     return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
                 });
@@ -67,7 +68,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
                             qmService.actionSheets.actionSheetButtons.refresh,
-                            qmService.actionSheets.actionSheetButtons.settings
+                            qmService.actionSheets.actionSheetButtons.settings,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingValue,
+                            qmService.actionSheets.actionSheetButtons.sortDescendingTime,
+                            qmService.actionSheets.actionSheetButtons.sortAscendingTime
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
@@ -80,11 +85,28 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                             if(index === 1){
                                 qmService.goToState(qm.stateNames.settings);
                             }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingValue.text){
+                                changeSortAndGetHistory('-value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingValue.text){
+                                changeSortAndGetHistory('value');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
+                                changeSortAndGetHistory('-startTimeEpoch');
+                            }
+                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
+                                changeSortAndGetHistory('startTimeEpoch');
+                            }
                             return true;
                         }
                     });
                 });
             }, 1);
+        }
+        function changeSortAndGetHistory(sort){
+            $scope.state.history = [];
+            $scope.state.sort = sort;
+            $scope.getHistory();
         }
         function updateMeasurementIfNecessary(){
             if($stateParams.updatedMeasurementHistory){
@@ -135,7 +157,26 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(qm.urlHelper.getParam('connectorName')){
                 return qm.urlHelper.getParam('connectorName');
             }
-            qmLog.info("Could not get variableName")
+            if(getConnectorId()){
+                var connectorId = getConnectorId();
+                var connector = qm.connectorHelper.getConnectorById(connectorId);
+                if(!connector){
+                    qm.qmLog.error(
+                        "Cannot filter by connector id because we could not find a matching connector locally");
+                    return null;
+                }
+                return connector.name;
+            }
+            qmLog.debug("Could not get connectorName")
+        }
+        function getConnectorId(){
+            if($stateParams.connectorId){
+                return $stateParams.connectorId;
+            }
+            if(qm.urlHelper.getParam('connector_id')){
+                return qm.urlHelper.getParam('connector_id');
+            }
+            qmLog.debug("Could not get connector_id")
         }
         $scope.editMeasurement = function(measurement){
             //measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
@@ -176,7 +217,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
-                sort: "-startTimeEpoch",
+                sort: $scope.state.sort || "-startTimeEpoch",
                 doNotProcess: true
             };
             params = getRequestParams(params);
@@ -280,7 +321,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.showActionSheetForMeasurement = function(measurement){
             $scope.state.measurement = measurement;
             var variableObject = JSON.parse(JSON.stringify(measurement));
-            variableObject.id = measurement.variableId;
+            variableObject.variableId = measurement.variableId;
             variableObject.name = measurement.variableName;
             var buttons = [
                 {text: '<i class="icon ion-edit"></i>Edit Measurement'},

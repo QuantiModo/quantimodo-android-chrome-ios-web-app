@@ -50,7 +50,7 @@ scripts/certs/dist.p12
 supply_json_key_for_google_play.json
 src/configuration-index.html
 src/configuration/
-*.css
+#*.css
 src/data/*.json
 src/img/CS6.zip
 src/img/icons/*
@@ -126,3 +126,11 @@ src/data/apiai/
 src/data/commits/
 tmp/
 sh.exe.stackdump
+.vscode/launch.json
+src/css/app.css
+src/css/app.min.css
+
+secrets/*
+!/secrets/.env.example
+/.gradle/
+/ionic.iml

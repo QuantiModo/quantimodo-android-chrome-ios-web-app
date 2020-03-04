@@ -72,58 +72,6 @@ qm.push.notificationClick = function(event){  // Have to attach to qm because it
 
     }));
 };
-function showNotification(pushData) {
-    //qm.api.postToQuantiModo(pushData, "pushData:"+JSON.stringify(pushData));
-    console.log("push data: ", pushData);
-    if(!pushData.title && pushData.data) {
-        console.log("Provided entire payload to showNotification instead of just payload.data");
-        pushData = pushData.data;
-    }
-    qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
-        // https://developers.google.com/web/fundamentals/push-notifications/notification-behaviour
-        var notificationOptions = {
-            actions: [],
-            requireInteraction: false,
-            body: pushData.message || "Click here for more options",
-            data: JSON.parse(JSON.stringify(pushData)),
-            //dir: NotificationDirection,
-            icon: pushData.icon || appSettings.additionalSettings.appImages.appIcon,
-            //lang: string,
-            tag: pushData.title, // The tag option is simply a way of grouping messages so that any old notifications that are currently displayed will be closed if they have the same tag as a new notification.
-            silent: true,  // Why do we still hear sounds on Chrome for Android?
-            onClick: qm.push.notificationClick
-        };
-        try {
-            qm.allActions = JSON.parse(pushData.actions);
-            console.log("allActions", qm.allActions);
-            for (var i = 0; i < qm.allActions.length; i++) {
-                notificationOptions.actions[i] = {
-                    action: qm.allActions[i].callback ||  qm.allActions[i].action || qm.allActions[i].functionName,
-                    title: qm.allActions[i].longTitle ||  qm.allActions[i].longTitle ||  qm.allActions[i].text
-                };
-            }
-            var maxVisibleActions = Notification.maxActions;
-            if (maxVisibleActions < 4) {
-                console.log("This notification will only display " + maxVisibleActions   +" actions.");
-            } else {
-                console.log("This notification can display up to " + maxVisibleActions +" actions");
-            }
-        } catch (error) {
-            console.error("could not parse actions in pushData: ", pushData);
-        }
-        //event.waitUntil(self.registration.showNotification(title, pushData));
-        console.log("Notification options", notificationOptions);
-        if(!pushData.title || pushData.title === "undefined"){
-            qmLog.error("pushData.title undefined! pushData: "+JSON.stringify(pushData) + " notificationOptions: "+
-                JSON.stringify(notificationOptions));
-        }
-        if(pushData.variableName){
-            pushData.title = pushData.variableName; // Exclude "Track" because it gets cut off
-            pushData.body = "Record " + pushData.variableName + " or click here for more options";
-        }
-        self.registration.showNotification(pushData.title, notificationOptions);
-    })
-}
 /**
  * Here is is the code snippet to initialize Firebase Messaging in the Service
  * Worker when your app is not hosted on Firebase Hosting.
@@ -150,7 +98,7 @@ function showNotification(pushData) {
 messaging.setBackgroundMessageHandler(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message payload: ', payload);
     qm.push.logPushReceived({pushType: 'background', payload: payload});
-    showNotification(payload.data);
+    qm.notifications.showWebNotification(payload.data);
 });
 // UPDATE:  Disregard the comment below because it didn't solve the problem and broke pushes. I guess both handlers are required?  I think the background thing might just be a dev console issue
 // I think addEventListener('push' isn't necessary since we use messaging.setBackgroundMessageHandler and I think duplicate handlers cause "Updated in background" notifications
@@ -163,7 +111,7 @@ self.addEventListener('push', function(event) {
         pushData = pushData.data;
         qmLog.info('[Service Worker] Non-background Push Received. pushData: ', pushData);
         qm.push.logPushReceived({pushType: 'non-background-push-data', pushData: pushData});
-        showNotification(pushData);
+        qm.notifications.showWebNotification(pushData);
     } catch (error) {
         qmLog.error("Could not show push notification because: " + error);
     }

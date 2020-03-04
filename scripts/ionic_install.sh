@@ -19,12 +19,9 @@ echo "ANDROID_HOME=~/android-sdk-linux" >> /home/vagrant/.bashrc
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /home/vagrant/.bashrc
 echo "PATH=\$PATH:~/android-sdk-linux/tools:~/android-sdk-linux/platform-tools" >> /home/vagrant/.bashrc
 
-npm install -g cordova
-npm install -g ionic
+npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli
 
 bash $DIR/android_22install
-
-
 
 cd $DIR
 sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp
