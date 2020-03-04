@@ -1,7 +1,12 @@
-angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "$ionicLoading", "qmService", "qmLogService", function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                                                                                                                                                                                                                $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLogService){
+angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams",
+    "$filter", "$ionicActionSheet", "$ionicHistory", "$ionicLoading", "qmService", "qmLogService",
+    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory,
+             $ionicLoading, qmService, qmLogService){
     $scope.controller_name = "TagAddCtrl";
-    $scope.state = {};
+    $scope.state = {
+        title: "Add Tag",
+        saveButtonText: "Save"
+    };
     $scope.cancel = function(){
         $ionicHistory.goBack();
     };
@@ -18,20 +23,20 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     // delete measurement
     $scope.deleteTag = function(variableObject){
         var userTagData = {
-            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
+            userTagVariableId: $scope.stateParams.userTagVariableObject.variableId,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.variableId
         };
         qmService.showBlackRingLoader();
         if(variableObject.userTagVariables){
             variableObject.userTagVariables =
                 variableObject.userTagVariables.filter(function(obj){
-                    return obj.id !== $scope.stateParams.userTagVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTagVariableObject.variableId;
                 });
         }
         if(variableObject.userTaggedVariables){
             variableObject.userTaggedVariables =
                 variableObject.userTaggedVariables.filter(function(obj){
-                    return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTaggedVariableObject.variableId;
                 });
         }
         qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
@@ -71,12 +76,13 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         qm.variablesHelper.setLastSelectedAtAndSave($scope.stateParams.userTaggedVariableObject);
     }
     $scope.done = function(){
+        $scope.state.saveButtonText = 'Saving...';
         if(!$scope.stateParams.tagConversionFactor){
             $scope.stateParams.tagConversionFactor = 1;
         }
         var userTagData = {
-            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id,
+            userTagVariableId: $scope.stateParams.userTagVariableObject.variableId,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.variableId,
             conversionFactor: $scope.stateParams.tagConversionFactor
         };
         addTaggedToTagVariable();
@@ -95,7 +101,9 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
         qmLogService.debug('$ionicView.enter ' + $state.current.name, null);
     });
     $scope.$on('$ionicView.beforeEnter', function(){
-        $scope.state.title = 'Record a Tag';
+        $scope.state.title = 'Add a Tag';
+        $scope.state.saveButtonText = 'Save';
+        if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         $scope.stateParams = $stateParams;
         var debug = false;
         if(debug && qm.appMode.isDevelopment()){

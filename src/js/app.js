@@ -138,7 +138,6 @@ angular.module('starter',
                  //, $opbeatProvider
         ){
             //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
-            var isBuilderMode = window.designMode = qm.appMode.isBuilder();
             if(qm.urlHelper.getParam(qm.items.apiUrl)){
                 qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));
             }
@@ -213,23 +212,29 @@ angular.module('starter',
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
             qm.staticData.states.forEach(function(state){
-                if(state.name === ''){
-                    return;
-                }
-                if(state.name === 'app'){
-                    state.resolve = config_resolver;
-                }
-                var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
-                if(isBuilderState && !isBuilderMode){
-                    return;
-                }
-                if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
-                    state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
-                }
-                $stateProvider.state(state.name, state);
-            });
+                    if(state.name === ''){
+                        return;
+                    }
+                    if(state.name === 'app'){
+                        state.resolve = config_resolver;
+                    }
+                    var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
+                    if(isBuilderState && !qm.appMode.isBuilder()){
+                        return;
+                    }
+                    var isPhysicianState = state.views && state.views.menuContent.templateUrl.indexOf('physician') !== -1;
+                    if(isPhysicianState && !qm.appMode.isPhysician()){
+                        return;
+                    }
+                    if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
+                        state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
+                    }
+                    $stateProvider.state(state.name, state);
+                });
             function setFallbackRoute(){
-                if(qm.appMode.isBuilder()){
+                if(qm.appMode.isPhysician()){
+                    $urlRouterProvider.otherwise('/app/physician');
+                } else if(qm.appMode.isBuilder()){
                     $urlRouterProvider.otherwise('/app/configuration');
                 }else if(!qm.storage.getItem(qm.items.introSeen)){
                     $urlRouterProvider.otherwise('/app/intro');

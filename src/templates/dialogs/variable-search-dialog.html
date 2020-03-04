@@ -38,7 +38,7 @@
                         <span class="item-title" id="variable-item-title">
                             <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
                             <i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>
-                            <span> {{item.name}} </span>
+                            <span> {{item.displayName || item.name}} </span>
                         </span>
                         <span class="item-metadata" id="variable-item-sub-title">
                             <span><small>{{item.subtitle}}</small></span>

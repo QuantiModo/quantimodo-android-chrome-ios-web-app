@@ -56,14 +56,14 @@
 .popup-buttons .button.activated {
   background-color: #007aff;
 }
-#sectionRate{
+#ratingButtons{
   opacity: 1;
   height: 52px;
   padding-top: 4px;
   padding-bottom: 4px;
   overflow: hidden;
 }
-#sectionRate img
+#ratingButtons img
 {
   height: 100%;
   display: inline-block;
@@ -72,11 +72,11 @@
   background-color: #FFFFFF;
   transition: all 200ms linear;
 }
-#sectionRate img:hover
+#ratingButtons img:hover
 {
   -webkit-filter: blur(1px) brightness(110%) saturate(150%);
 }
-#sectionRate div
+#ratingButtons div
 {
   width: 1px;
   position: relative;

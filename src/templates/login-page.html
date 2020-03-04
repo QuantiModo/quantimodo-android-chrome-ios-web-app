@@ -1,11 +1,11 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>Get Started</ion-nav-title>
-    <div ng-if="!state.registrationForm && !state.loginForm" class="outer"
+    <div class="outer"
          style=" background-color: {{circlePage.color.backgroundColor}};">
         <div class="middle">
             <div class="inner">
                 <div style="text-align: center; color: white; padding: 30px; height: 100%">
-                    <div>
+                    <div ng-if="!state.registrationForm && !state.loginForm" >
                         <div ng-include="'templates/fragments/circle-page.html'" on-hold="state.setAuthDebugEnabled()"
                              ng-cloak></div>
                         <div ng-if="state.showRetry" ng-click="retryLogin('user clicked retry button')"><br><br>Click
@@ -16,12 +16,21 @@
                                 <!--<md-button class="md-raised md-primary icon icon-left ion-social-github" style="background: #2d2d2d;" ng-click="state.socialLogin('github', $event)">
                                     &nbsp Github Login &nbsp
                                 </md-button>-->
-                                <md-button id="signInWithGoogle"
+                                <img src="img/signin-assets/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png"
+                                     alt="google login"
+                                     id="signInWithGoogle"
+                                     ng-if="!platform.isWebView"
+                                     ng-click="state.socialLogin('googleplus', $event)"
+                                >
+                                <br>
+                                <!-- Google Bitches About Our Standard Material Themed Button
+                                <md-button id="signInWithGoogle2"
+                                           ng-if="!platform.isWebView"
                                            class="md-raised md-primary icon icon-left ion-social-google"
                                            style="background: #d34836;"
                                            ng-click="state.socialLogin('googleplus', $event)">
                                     &nbsp Google Login &nbsp
-                                </md-button>
+                                </md-button>-->
                                 <md-button id="signInWithFacebook"
                                            class="md-raised md-primary icon icon-left ion-social-facebook"
                                            style="background: #3B5998;"
@@ -41,66 +50,78 @@
                             </div>
                         </div>
                     </div>
+                    <div id="registrationForm" ng-if="state.registrationForm" class="container" style="padding-top: 20px;">
+                        <div layout="column" layout-align="center center" layout-fill="layout-fill">
+                            <div layout="column" class="loginBox md-whiteframe-z1">
+                                <form name="registrationForm">
+                                    <md-content layout="column" class="md-padding">
+                                        <md-input-container>
+                                            <label>Email</label>
+                                            <input required type="text" ng-model="state.registrationForm.log" name="username"/>
+                                            <div ng-messages="loginForm.username.$error">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Password</label>
+                                            <input required type="password" ng-model="state.registrationForm.pwd" name="password"/>
+                                            <div ng-messages="loginForm.password.$error" role="alert">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Confirm Password</label>
+                                            <input required type="password" ng-model="state.registrationForm.pwdConfirm" name="passwordConfirm"/>
+                                            <div ng-messages="loginForm.password.$error" role="alert">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-button type="submit" ng-click="state.emailRegister()" class="md-raised md-primary">
+                                            Sign Up
+                                        </md-button>
+                                        <md-button ng-click="state.registrationForm = false;"
+                                                   md-no-ink>Already have an account?
+                                        </md-button>
+                                    </md-content>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="loginForm" ng-if="state.loginForm" class="container">
+                        <div layout="column" layout-align="center center" layout-fill="layout-fill">
+                            <div layout="column" class="loginBox md-whiteframe-z1">
+                                <form name="loginForm">
+                                    <md-content layout="column" class="md-padding">
+                                        <md-input-container>
+                                            <label>Email or Username</label>
+                                            <input required type="text" ng-model="state.loginForm.log" name="username"/>
+                                            <div ng-messages="loginForm.username.$error">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Password</label>
+                                            <input required type="password" ng-model="state.loginForm.pwd" name="password"/>
+                                            <div ng-messages="loginForm.password.$error" role="alert">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-button type="submit" ng-click="state.emailLogin(true)" class="md-raised md-primary">
+                                            Login
+                                        </md-button>
+                                        <md-button href="https://app.quantimo.do/api/v2/password/email" md-no-ink>Forgot Password</md-button>
+                                        <md-button ng-click="state.loginForm = false;"
+                                                   md-no-ink>
+                                            Sign Up
+                                        </md-button>
+                                    </md-content>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="registrationForm" ng-if="state.registrationForm" class="container" style="padding-top: 20px;">
-        <div layout="column" layout-align="center center" layout-fill="layout-fill">
-            <div layout="column" class="loginBox md-whiteframe-z1">
-                <form name="loginForm">
-                    <md-content layout="column" class="md-padding">
-                        <md-input-container>
-                            <label>Username</label>
-                            <input required type="text" ng-model="loginModel.username" name="username"/>
-                            <div ng-messages="loginForm.username.$error">
-                                <div ng-message="required">This is required.</div>
-                            </div>
-                        </md-input-container>
-                        <md-input-container>
-                            <label>Password</label>
-                            <input required type="password" ng-model="loginModel.password" name="password"/>
-                            <div ng-messages="loginForm.password.$error" role="alert">
-                                <div ng-message="required">This is required.</div>
-                            </div>
-                        </md-input-container>
-                        <md-button type="submit" class="md-raised md-primary">Sign Up</md-button>
-                        <md-button href="" md-no-ink>Forgot Password</md-button>
-                        <md-button ng-click="state.loginForm = state.registrationForm; state.registrationForm = false;"
-                                   md-no-ink>Already have an account?
-                        </md-button>
-                    </md-content>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div id="loginForm" ng-if="state.loginForm" class="container">
-        <div layout="column" layout-align="center center" layout-fill="layout-fill">
-            <div layout="column" class="loginBox md-whiteframe-z1">
-                <form name="loginForm">
-                    <md-content layout="column" class="md-padding">
-                        <md-input-container>
-                            <label>Username</label>
-                            <input required type="text" ng-model="loginModel.username" name="username"/>
-                            <div ng-messages="loginForm.username.$error">
-                                <div ng-message="required">This is required.</div>
-                            </div>
-                        </md-input-container>
-                        <md-input-container>
-                            <label>Password</label>
-                            <input required type="password" ng-model="loginModel.password" name="password"/>
-                            <div ng-messages="loginForm.password.$error" role="alert">
-                                <div ng-message="required">This is required.</div>
-                            </div>
-                        </md-input-container>
-                        <md-button type="submit" class="md-raised md-primary">Login</md-button>
-                        <md-button href="" md-no-ink>Forgot Password</md-button>
-                        <md-button ng-click="state.registrationForm = state.loginForm; state.loginForm = false;"
-                                   md-no-ink>Sign Up
-                        </md-button>
-                    </md-content>
-                </form>
-            </div>
-        </div>
-    </div>
+
 </ion-view>

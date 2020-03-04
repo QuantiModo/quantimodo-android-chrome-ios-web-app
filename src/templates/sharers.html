@@ -1,0 +1,37 @@
+<ion-view hide-nav-bar="hideNavigationMenu" style="max-height: 100%">
+    <ion-nav-title>{{ appSettings.appDesign.aliases.active.physicianAlias | camelCaseToTitleCase }} Dashboard
+    </ion-nav-title>
+    <ion-content ng-class="{ isBrowserView : isWeb == true }" style="max-height: 100%; overflow-y: scroll;">
+        <div id="patient-iframe" ng-if="iframeUrl" style="height: 100%; width: 100%;">
+            <md-toolbar>
+                <div class="md-toolbar-tools" ng-if="patientUser">
+                    <span flex> Acting as {{patientUser.displayName}}</span>
+                    <md-button class="icon icon-left ion-arrow-swap" ng-click="switchBackFromPatient()">
+                        &nbsp; Switch Back to Your Account
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <iframe ng-src="{{iframeUrl}}"
+                    data-tap-disabled="true" style="height: 90%; width: 100%;"
+                    frameborder="0">
+            </iframe>
+        </div>
+        <md-content ng-if="!patientUser">
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab>
+                    <md-tab-label>
+                        <span>{{appSettings.appDesign.aliases.active.patientAlias | capitalizeFirstLetter}}s</span>
+                    </md-tab-label>
+                    <md-tab-body>
+                        <div ng-include="'templates/lists/sharers.html'"></div>
+                    </md-tab-body>
+                    p
+                </md-tab>
+                <md-tab label="Reminders">
+                    <div ng-include="'templates/lists/default-reminders-list.html'"></div>
+                </md-tab>
+            </md-tabs>
+        </md-content>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

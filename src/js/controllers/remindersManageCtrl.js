@@ -30,9 +30,11 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             showSymptomInfoCard: false,
             noRemindersTitle: "Add Some Variables",
             noRemindersText: "You don't have any reminders, yet.",
-            noRemindersIcon: "ion-android-notifications-none"
+            noRemindersIcon: "ion-android-notifications-none",
+            title: "Manage Reminders"
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('beforeEnter RemindersManageCtrl', null);
             if(qm.urlHelper.getParam('variableCategoryName')){
                 $stateParams.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
@@ -53,7 +55,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                     }
                 }
                 if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = "Add a Variable";
+                    $scope.stateParams.addButtonText = "Add a Reminder";
                 }
                 if(!$scope.stateParams.addMeasurementButtonText){
                     $scope.stateParams.addMeasurementButtonText = "Record Measurement";
@@ -64,11 +66,9 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                 $scope.state.noRemindersTitle = "Add " + $stateParams.variableCategoryName;
                 $scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders here, yet.";
                 $scope.state.noRemindersIcon = qmService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
-                if(!$scope.stateParams.title){
-                    $scope.stateParams.title = $stateParams.variableCategoryName;
-                }
+                $scope.stateParams.title = document.title = $stateParams.variableCategoryName;
                 if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
+                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminder";
                 }
                 $scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
                 actionButtons[2] = {

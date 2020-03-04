@@ -1,5 +1,17 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm */
+function multiplyScreenHeight(factor){
+    if(typeof screen === "undefined"){
+        return false;
+    }
+    return parseInt(factor * screen.height);
+}
+function multiplyScreenWidth(factor){
+    if(typeof screen === "undefined"){
+        return false;
+    }
+    return parseInt(factor * screen.height);
+}
 window.qm.chrome = {
     allowFocusing: false,
     debugEnabled: true,
@@ -58,10 +70,12 @@ window.qm.chrome = {
             });
         }
         if(windowParams.url.indexOf('.quantimo.do') !== -1 || windowParams.url.indexOf('popup.html') !== -1){
+            qm.urlHelper.validateUrl(windowParams.url);
             createPopup(windowParams);
         }else{
             qm.client.getClientWebsiteUrl(function(fullWebsiteUrl){
-                windowParams.url = fullWebsiteUrl + windowParams.url;
+                //windowParams.url = fullWebsiteUrl + windowParams.url;
+                windowParams.url = qm.urlHelper.appendPathToUrl(fullWebsiteUrl, windowParams.url);
                 createPopup(windowParams);
             })
         }
@@ -137,7 +151,7 @@ window.qm.chrome = {
                 }
                 qm.chrome.createPopup(windowParams);
             });
-        })
+        });
     },
     handleNotificationClick: function(notificationId){
         window.qmLog.debug('onClicked: notificationId:' + notificationId);
@@ -175,6 +189,8 @@ window.qm.chrome = {
         }
     },
     initialize: function(){
+        console.info("Initializing a chrome extension...");
+        qm.qmLog.logLevel = "debug";
         //return;
         chrome.notifications.onClicked.addListener(function(notificationId){ // Called when the notification is clicked
             qm.chrome.handleNotificationClick(notificationId);
@@ -303,10 +319,10 @@ window.qm.chrome = {
                     qmLog.info("No notifications not opening popup");
                     return false;
                 }
-                if(qm.getUser().combineNotifications){
-                    qm.chrome.createSmallInboxNotification();
-                    return;
-                }
+                // if(qm.getUser().combineNotifications){
+                //     qm.chrome.createSmallInboxNotification();
+                //     return;
+                // }
                 window.trackingReminderNotification = window.qm.notifications.getMostRecentRatingNotificationNotInSyncQueue();
                 if(window.trackingReminderNotification){
                     qm.chrome.showRatingPopup(window.trackingReminderNotification);
@@ -372,18 +388,6 @@ window.qm.chrome = {
     }
 };
 if(typeof screen !== "undefined"){
-    function multiplyScreenHeight(factor){
-        if(typeof screen === "undefined"){
-            return false;
-        }
-        return parseInt(factor * screen.height);
-    }
-    function multiplyScreenWidth(factor){
-        if(typeof screen === "undefined"){
-            return false;
-        }
-        return parseInt(factor * screen.height);
-    }
     qm.chrome.windowParams = {
         introWindowParams: {
             url: "index.html#/app/intro",
@@ -437,4 +441,6 @@ if(typeof screen !== "undefined"){
 }
 if(qm.platform.isChromeExtension()){
     qm.chrome.initialize();
+} else {
+    //console.debug("Not a chrome extension");
 }

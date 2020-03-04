@@ -1,0 +1,25 @@
+# These rules will change if you change your site’s custom domains or HTTPS settings
+
+# Redirect default Netlify subdomain to primary domain
+https://staging-web.netlify.com/* https://staging-web.quantimo.do/:splat 301!
+https://medimodo.netlify.com/* https://medimodo.quantimo.do/:splat 301!
+https://qm-web.netlify.com/* https://web.quantimo.do/:splat 301!
+https://moodimodo.netlify.com/* https://moodimodo.quantimo.do/:splat 301!
+https://preve-wellness-tracker.netlify.com/* https://preve-wellness-tracker.quantimo.do/:splat 301!
+https://qm-builder.netlify.com/* https://builder.quantimo.do/:splat 301!
+https://qm-staging-builder.netlify.com/* https://staging-builder.quantimo.do/:splat 301!
+https://qm-physician.netlify.com/* https://physician.quantimo.do/:splat 301!
+
+
+/charts /#/app/chart-search 301!
+/history /#/app/history-all-category/Anything 301!
+/import /#/app/import 301!
+/inbox /#/app/reminders-inbox 301!
+/intro /#/app/intro 301!
+/login /#/app/login 301!
+/onboarding /#/app/onboarding 301!
+/outcomes /#/app/outcome-search 301!
+/predictors /#/app/predictor-search 301!
+/settings /#/app/settings 301!
+/studies /#/app/studies 301!
+/study-creation /#/app/study-creation 301!

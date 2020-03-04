@@ -16,7 +16,7 @@
                 <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
             </div>
         </div>
-        <div class="card" ng-show="loading">
+        <div class="card" ng-show="state.loading">
             <div class="item">
                 <div class="row">
                     <ion-spinner></ion-spinner>
@@ -29,15 +29,20 @@
              ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
-                <div ng-hide="hideNavigationMenu" class="item item-divider">{{divider.name}}
+                <div ng-hide="hideNavigationMenu"
+                     class="item item-divider">
+                    {{divider.name}}
                     <a style="float: right; margin: 5px; cursor: pointer;"
-                       ng-click="refreshTrackingReminderNotifications()"><i
-                            class="icon ion-refresh">&nbsp;Refresh</i></a>
+                       ng-click="refreshTrackingReminderNotifications()">
+                        <i class="icon ion-refresh">&nbsp;Refresh</i>
+                    </a>
                 </div>
-                <div ng-show="!trackingReminderNotification.hide"
-                     ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
-                     ng-init="trackingReminderNotificationIndex = $index">
-                    <div class="item" style="padding-bottom:10px;">
+                <div id="notification-item"
+                    ng-show="!trackingReminderNotification.hide"
+                    class="item"
+                    ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications track by trackingReminderNotification.id"
+                    ng-init="trackingReminderNotificationIndex = $index">
+                    <div style="padding-bottom:10px;">
                         <span ng-include="'templates/items/notification-item.html'"></span>
                     </div>
                 </div>
@@ -48,7 +53,7 @@
             <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
             <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         </div>
-        <div id="allCaughtUpCard" class="list card" ng-if="!loading && state.numberOfDisplayedNotifications === 0 ">
+        <div id="allCaughtUpCard" class="list card" ng-if="!state.loading && state.numberOfDisplayedNotifications === 0 ">
             <div class="item" style="padding-bottom:10px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
                 <div class="row">

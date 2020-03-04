@@ -23,17 +23,21 @@
             <a id="bug-report" class="item" ng-click="sendBugReport()"> <i class="icon ion-bug"></i> &nbsp; Submit Bug
                 Report </a>
         </div>
+        <div id="primary-outcome" class="list card">
+            <div class="item item-divider" ng-click="showHelpInfoPopup('primaryOutcomeVariable', $event)">
+                Primary Outcome Variable &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <a ng-if="user.primaryOutcomeVariableName" ng-click="state.updatePrimaryOutcomeVariable()" class="item">
+                {{ user.primaryOutcomeVariableName }}
+            </a>
+            <a ng-if="!user.primaryOutcomeVariableName" ng-click="state.updatePrimaryOutcomeVariable()" class="item">
+                Select an Outcome to Optimize
+            </a>
+        </div>
         <div id="add-email-address" class="list card" ng-show="user && !user.email">
             <a ng-click="updateEmailAndExecuteCallback()" class="item ">
                 <i class="icon ion-email"></i> &nbsp Add Your Email Address
                 <p style="white-space: normal">So you'll never lose access to your account</p>
-            </a>
-        </div>
-        <div id="user-description" class="list card" ng-show="user">
-            <a ng-click="state.showBioModalPromptPopup($event)" class="item ">
-                <i class="icon ion-email"></i> &nbsp Edit Your Bio
-                <p ng-if="!user.description" style="white-space: normal">Displayed on studies that you publish</p>
-                <p ng-if="user.description" style="white-space: normal">{{user.description}}</p>
             </a>
         </div>
         <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
@@ -145,6 +149,13 @@
         </div>
         <div id="time-zone" class="list card">
             <a class="item"><i class="icon ion-clock"></i>&nbsp; Your Time Zone: &nbsp;UTC {{timeZone}}</a>
+        </div>
+        <div id="user-description" class="list card" ng-show="user">
+            <a ng-click="state.showBioModalPromptPopup($event)" class="item ">
+                <i class="icon ion-email"></i> &nbsp Edit Your Bio
+                <p ng-if="!user.description" style="white-space: normal">Displayed on studies that you publish</p>
+                <p ng-if="user.description" style="white-space: normal">{{user.description}}</p>
+            </a>
         </div>
         <div id="delete-account" style="text-align: center;">
             <md-button ng-if="user" class="md-raised md-warn" ng-click="openDeleteUserAccountDialog($event)">Delete

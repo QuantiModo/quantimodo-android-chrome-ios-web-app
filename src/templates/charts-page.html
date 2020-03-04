@@ -59,6 +59,10 @@
                     <span class="input-label left-text">Kurtosis</span>
                     <span class="input-label right-text">{{state.variableObject.kurtosis}}</span>
                 </label>
+                <label class="item item-content" ng-if="state.variableObject.kurtosis">
+                    <span class="input-label left-text">Variable ID</span>
+                    <span class="input-label right-text">{{state.variableObject.variableId}}</span>
+                </label>
             </div>
             <div class="list card" ng-click="compareButtonClick()">
                 <a id="compareButton" class="item item-icon-left"> <i class="icon ion-plus positive"></i> Compare

@@ -1,5 +1,7 @@
-angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService", "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
-    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet, Upload, $timeout, $ionicPopup, $mdDialog){
+angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService",
+    "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet,
+             Upload, $timeout, $ionicPopup, $mdDialog){
         $scope.controller_name = "ImportCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -26,6 +28,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
+            if (document.title !== "Import") {document.title = "Import";}
             if(!$scope.helpCard || $scope.helpCard.title !== "Import Your Data"){
                 $scope.helpCard = {
                     title: "Import Your Data",
@@ -57,6 +60,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             if(message){
                 qmService.showMaterialAlert(decodeURIComponent(message), "You should begin seeing your imported data within an hour or so.")
             }
+            updateNavigationMenuButton();
         });
         function userCanConnect(connector){
             if(!$rootScope.user){
@@ -177,14 +181,8 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 qmService.goToState('app.upgrade');
                 return;
             }
-            var myPopup;
-            var options;
-            //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
             connector.loadingText = null;
             connector.connecting = true;
-            if(!qm.appMode.isDebug()){
-                button.text = "Import Scheduled";
-            }
             connector.message = 'You should begin seeing any new data within an hour or so.';
             connector.updateStatus = "CONNECTING"; // Need to make error message hidden
             if(qm.arrayHelper.inArray(connector.mobileConnectMethod, ['oauth', 'facebook', 'google'])){
@@ -193,196 +191,18 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 button.text = "Connecting...";
                 return;
             }
-            qmLog.info("connectConnector is not inArray('oauth', 'facebook', 'google') no not using qmService.connectors.oAuthConnect: " + JSON.stringify(connector), null, connector);
-            if(connector.name === 'worldweatheronline'){
-                qmService.connectors.connectWithParams({}, 'worldweatheronline');
+            qmLog.info("connectConnector is not inArray('oauth', 'facebook', 'google') no not using qmService.connectors.oAuthConnect: " +
+                JSON.stringify(connector), null, connector);
+            if(connector.name.indexOf('weather') !== -1){
+                button.text = "Import Scheduled";
+                qmService.connectors.weatherConnect(connector, $scope);
+                return;
             }
-            if(connector.name === 'whatpulse'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-person placeholder-icon"></i>' +
-                        '<input type="text" placeholder="Username" ng-model="data.username"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter your ' + connector.displayName + ' username found next to your avatar on the WhatPulse My Stats page',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.username){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data.username;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {username: $scope.data.username};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
+            if(connector.connectInstructions.parameters && connector.connectInstructions.parameters.length){
+                connectWithInputCredentials(connector, button);
+                return;
             }
-            if(connector.name === 'myfitnesspal'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-person placeholder-icon"></i>' +
-                        '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
-                        '<br> <label class="item item-input">' +
-                        '<i class="icon ion-locked placeholder-icon"></i>' +
-                        '<input type="password" placeholder="Password" ng-model="data.password"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.username || !$scope.data.password){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {username: $scope.data.username, password: $scope.data.password};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
-            }
-            if(connector.name === 'mint'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-person placeholder-icon"></i>' +
-                        '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
-                        '<br> <label class="item item-input">' +
-                        '<i class="icon ion-locked placeholder-icon"></i>' +
-                        '<input type="password" placeholder="Password" ng-model="data.password"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.username || !$scope.data.password){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {username: $scope.data.username, password: $scope.data.password};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
-            }
-            if(connector.name === 'mynetdiary'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-person placeholder-icon"></i>' +
-                        '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
-                        '<br> <label class="item item-input">' +
-                        '<i class="icon ion-locked placeholder-icon"></i>' +
-                        '<input type="password" placeholder="Password" ng-model="data.password"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.password || !$scope.data.username){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {username: $scope.data.username, password: $scope.data.password};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
-            }
-            if(connector.name === 'moodpanda'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-email placeholder-icon"></i>' +
-                        '<input type="email" placeholder="Email" ng-model="data.email"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your ' + connector.displayName + ' Email',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.email){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {email: $scope.data.email};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
-            }
-            if(connector.name === 'moodscope'){
-                $scope.data = {};
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                        '<i class="icon ion-person placeholder-icon"></i>' +
-                        '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
-                        '<br> <label class="item item-input">' +
-                        '<i class="icon ion-locked placeholder-icon"></i>' +
-                        '<input type="password" placeholder="Password" ng-model="data.password"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
-                    scope: $scope,
-                    buttons: [
-                        {text: 'Cancel'},
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e){
-                                if(!$scope.data.password || !$scope.data.username){
-                                    e.preventDefault();
-                                }else{
-                                    return $scope.data;
-                                }
-                            }
-                        }
-                    ]
-                });
-                myPopup.then(function(res){
-                    var params = {username: $scope.data.username, password: $scope.data.password};
-                    qmService.connectors.connectWithParams(params, connector.name);
-                });
-            }
+            qmLog.error("Not sure how to handle this connector: " + JSON.stringify(connector), null, connector);
         };
         function amazonSettings(connector, button, ev){
             qmLog.info("amazonSettings connector " + JSON.stringify(connector), null, connector);
@@ -495,4 +315,94 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     qmService.hideLoader();
                 });
         };
+        function updateNavigationMenuButton(){
+            $timeout(function(){
+                qmService.rootScope.setShowActionSheetMenu(function(){
+                    // Show the action sheet
+                    var hideSheet = $ionicActionSheet.show({
+                        buttons: [
+                            qmService.actionSheets.actionSheetButtons.refresh,
+                            qmService.actionSheets.actionSheetButtons.settings
+                        ],
+                        cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                        cancel: function(){
+                            qmLogService.debug('CANCELLED', null);
+                        },
+                        buttonClicked: function(index, button){
+                            if(index === 0){
+                                $scope.refreshConnectors();
+                            }
+                            if(index === 1){
+                                qmService.goToState(qm.stateNames.settings);
+                            }
+                            return true;
+                        }
+                    });
+                });
+            }, 1);
+        }
+        function connectWithInputCredentials(connector, button){
+            function getHtmlForInput(parameters){
+                var html ='';
+                parameters.forEach(function (param) {
+                    var ionIcon = param.ionIcon;
+                    if (param.type === "password") {
+                        ionIcon = 'ion-locked';
+                    }
+                    if (param.key.indexOf("user") !== -1) {
+                        ionIcon = 'ion-person';
+                    }
+                    if (param.key.indexOf("mail") !== -1) {
+                        ionIcon = 'ion-mail';
+                    }
+                    html += '<label class="item item-input">' +
+                        '<i class="icon ' + ionIcon + 'placeholder-icon"></i>' +
+                        '<input type="' + param.type + '" placeholder="' + param.displayName + '" ng-model="data.' + param.key + '">' +
+                        '</label>';
+                });
+                return html;
+            }
+            var parameters = connector.connectInstructions.parameters;
+            $scope.data = {};
+            parameters.forEach(function(param){
+                $scope.data[param.key] = null;
+            });
+            function getEmptyProperty(data){
+                for (var property in $scope.data) {
+                    if ($scope.data.hasOwnProperty(property)) {
+                        if(!$scope.data[property]){
+                            return property;
+                        }
+                    }
+                }
+                return false;
+            }
+            var myPopup = $ionicPopup.show({
+                template: getHtmlForInput(parameters),
+                title: connector.displayName,
+                subTitle: connector.connectInstructions.text || 'Enter your ' + connector.displayName + ' credentials',
+                scope: $scope,
+                buttons: [
+                    {text: 'Cancel'},
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e){
+                            if(getEmptyProperty($scope.data)){
+                                e.preventDefault();
+                                return false;
+                            } else{
+                                return $scope.data;
+                            }
+                        }
+                    }
+                ]
+            });
+            myPopup.then(function(data){
+                if(data){
+                    button.text = "Import Scheduled";
+                    qmService.connectors.connectWithParams(data, connector.name);
+                }
+            });
+        }
     }]);

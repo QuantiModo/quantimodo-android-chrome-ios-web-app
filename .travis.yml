@@ -1,20 +1,6 @@
-#branches:
-#  #only:
-#  #- master
-#  #- develop
-#  #- /^renovate.*$/
-#  except:
-#    - /^feature.*$/
 matrix:
   include:
-    #  - env: PLATFORM=ios-11.0
-    #    os: osx
-    #    osx_image: xcode8.3
-    #    language: node_js
-    #    node_js: '4.2'
-    #    rvm:
-    #      - 2.2.5
-    - env: PLATFORM=android-25
+    - env: PLATFORM=android-28
       os: linux
       sudo: false
       language: android
@@ -24,8 +10,8 @@ matrix:
           - tools
           - platform-tools
           - tools
-          - build-tools-26.0.0
-          - android-25
+          - build-tools-28.0.3
+          - android-28
           - extra-google-google_play_services
           - extra-google-m2repository
           - extra-android-m2repository
@@ -40,6 +26,7 @@ matrix:
             - imagemagick
       licenses:
         - android-sdk-preview-license-.+
+        - android-sdk-preview-license-52d11cd2
         - android-sdk-license-.+
         - google-gdk-license-.+
 before_cache:
@@ -50,10 +37,9 @@ before_cache:
 cache:
   directories:
     - bundler
-    - $HOME/.gradle/caches/
-    #- $HOME/.gradle/wrapper/ # I think this causes Exception in thread "main" java.io.FileNotFoundException: /home/travis/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3-all.zip (Permission denied)
-    - $HOME/Library/Caches/Yarn/v1/
-    - $HOME/.cache/yarn/v1/
+    - "$HOME/.gradle/caches/"
+    - "$HOME/Library/Caches/Yarn/v1/"
+    - "$HOME/.cache/yarn/v1/"
 before_install:
   - echo -e "machine github.com\n  login $GITHUB_ACCESS_TOKEN" >> ~/.netrc
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm install 2.2.5; fi
@@ -61,30 +47,24 @@ before_install:
   - bundle update
   - export LANG=en_US.UTF-8
   - nvm install 8
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim ios-deploy imagemagick; fi
-  - yarn global add cordova@6.5.0 ionic@2.2.3 gulp bower cordova-hot-code-push-cli
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; brew install yarn ios-sim
+    ios-deploy imagemagick; fi
+  - npm install -g cordova ionic gulp bower cordova-hot-code-push-cli cordova-res
 script:
-  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://$GITHUB_ACCESS_TOKEN@github.com/mikepsinn/qm-ios-build && cp -R qm-ios-build/* .; fi
-  - yarn install
-  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then gulp buildAllIosApps; fi  # Broken on Travis
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp buildAndroidAfterCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp buildAndroidAfterCleaning; fi
-
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp buildAllAndroidAppsWithCleaning; fi
-
-  # Temporarily disabled CHCP tests because it keeps using up our Ghost Inspector quota and running concurrently/conflicting with feature test runs
-  # TODO: Create separate GI test suite for this and re-enable
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" != *"feature"* && "$TRAVIS_BRANCH" != *"renovate"* ]]; then source tests/test_chcp.sh; fi
-
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then source tests/test_netlify.sh; fi  Can be done in Jenkins concurrently since they use different test domains
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then source tests/test_netlify.sh; fi
-
-  #- if [[ "$TRAVIS_BRANCH" = *"feature"* ]]; then gulp _update-remote-and-deploy-to-github-pages; fi
-  #- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then gulp _build-all-chrome; fi
+  - npm install
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"renovate"* ]]; then gulp
+    buildAndroidAfterCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"develop"* ]]; then gulp
+    buildAllAndroidAppsWithCleaning; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" && "$TRAVIS_BRANCH" = *"master"* ]]; then gulp
+    buildAllAndroidAppsWithCleaning; fi
 env:
   global:
     - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    - ANDROID_API_LEVEL=28
+    - ANDROID_BUILD_TOOLS_VERSION=28.0.3
+    - ANDROID_ABI=armeabi-v7a
+    - START_URL=https://medimodo.herokuapp.com/
 notifications:
   webhooks: https://www.travisbuddy.com/
   email:
@@ -92,13 +72,18 @@ notifications:
       - mike@quantimo.do
     on_success: never
     on_failure: always
+  slack:
+    rooms:
+      - quantimodo:BijCp5nmBJtuwXTnJ1ALT6xo#web
+    on_success: always
+    on_failure: always
 #deploy:
-#  provider: releases
-#  api_key:
-#    secure: 1WU0Csb0tb7rKRbRE6oV6wBdHozMTE+uWkBMD0RSc9ZVzrl4aravifrUZNq5QPjt13eB8ZuMQTi+6882cyEtr68Uhy8LE/85I86AkyOsxQdnPgoB4fLFuow7fc80+lCH+QLc8HU9XH5Jwx/a9f2HxSv5ZGkluaHkMglGLTTIqE0pKDWfowmyrBCajSHIXNlPPYaEhKHKOmJkFUgn3kwYwPbV3CgYAQXoLOctK6TxvKlKL0FTmNPX3+MVUlY0jzAn9DEV9eXQ8bvomRJC4KQxTSh9xJKCba/C0wgUkO/3EECCPIArrdYHKzFjpXP18SIbvuBQvPoGHUcfClFIKP8G0gXYSCyiMAZ4b3a6CpydMb+PW0zGsEqEHL1EZlhn5cbYZzUfXKIYutO5A8h9dDcrCqOhUIzo2ZOy69sN9oSPPJRrvZOUOo+yzZHSutLI6r5ncVislRIQFw1QDN8HCJAfsDqDz2NcL3bJt8vRgHiI/98lKFIqkErrWwggGASIs0npmBVnlaraTUUW+B08MpkTXLdwcj98X8mMbSDThlNFJUymY7+HJ+YwKtdZ/pjfn7zAXaaPLn2v8Vu5M+uwV+KcVxRqLIRU41jB7DxkBA0Tu3sI6FHbaJwt6BB+xlJXw3d2MLeaJqN1+tc2rb6BiTIlRoRS2k1kqdLQlsvuCmSS+5s=
-#  file_glob: true
-#  file: output/*
-#  skip_cleanup: true
-#  overwrite: true
+#  provider: heroku
+#  app: medimodo
 #  on:
-#    branch: master
+#    all_branches: true
+#  api_key:
+#    secure: NEnR75wgMU5wny8aCK8zy4Feyoa1TtUOt3sHFcNEQFJLP2Ec2HeZfWCFz3WCzlptUOhChtLZeRJTHo/3rUGZNIVD+W6PbefZw9A9CXZaLJ0KzUDp9OlHGXnUBxy20551pnq0seD/XVkBPCylDQrSE0hAQ4PF0pY6jvEyOR8UyjoLzjzIvCKih/PBUf95uN/b0IPk5jETtla/VYW1jw0S4i7n2oC9QDa+VNGacpmphkTYRHLe3jmA+AlaQvd0A0cY9UE3XVI3ZpI6K4UT8L8yhGVIXDxm81Hfgw4nR0BMuJNU2PZkze14H6+gZkKt+G9rWFtMIsOFIlOrpul2fbeaxC8d0XG2pwbxD0Kmqw/7OL/xoBC9QUzksIJpXSdwqQbuOxZPsgKnzS0+4EHaYUk6NTqtiHjvUsbdM7sXSxQKKjwTTfWqes6s/bZ5qdFI03RJIaibkZIQmIwS57Py1PRASWiHNYAbpSveQ2ZeL1RZ6D+LBmR5U3dDdBVA4IY8+51oEMorx1kKnNrA+huzasSVH9xxyg33MdFhPtaauFZezKiKFgaz1HcBzUceFI9W/tMZoraoJZtGg9PWw3QAeacp1/ZrPyIwKEkaN78OVbR2PjTNxcijViGoi0CzWxhxt+5hVtMR9xfTKH1JI99p9BqCv1kXuxO7fB8XBgBdDhKdOms=
+#after_deploy:
+#  - "./scripts/cypress.sh"
+#  - cd tests && gulp _unit-gi-failed-gi-all

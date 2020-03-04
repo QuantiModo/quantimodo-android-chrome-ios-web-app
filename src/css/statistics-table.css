@@ -1,0 +1,154 @@
+/*noinspection CssUnknownTarget*/
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);
+.css-parser-hack {
+    --x-height-multiplier: 0.342;
+}
+/*For some reason parser ignores first rule*/
+/*
+body {
+    background-color: #3e94ec;
+    font-family: "Roboto", helvetica, arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+}
+*/
+.study-text {
+    --x-height-multiplier: 0.342;
+    --baseline-multiplier: 0.22;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    font-style: normal;
+    /*font-size: 42px;*/
+    margin-left: -2.63px;
+    line-height: 1.04;
+}
+div.table-title {
+    display: block;
+    margin: auto;
+    max-width: 600px;
+    padding: 5px;
+    width: 100%;
+}
+.table-title h3 {
+    color: #fafafa;
+    font-size: 30px;
+    font-weight: 400;
+    font-style: normal;
+    font-family: "Roboto", helvetica, arial, sans-serif;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+}
+/*** Table Styles **/
+.table-fill {
+    background: white;
+    border-radius: 3px;
+    border-collapse: collapse;
+    height: 320px;
+    margin: auto;
+    max-width: 600px;
+    padding: 5px;
+    width: 100%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    animation: float 5s infinite;
+}
+
+.statistics-table th {
+    color: #D5DDE5;;
+    background: #1b1e24;
+    border-bottom: 4px solid #9ea7af;
+    border-right: 1px solid #343a45;
+    font-size: 23px;
+    font-weight: 100;
+    padding: 24px;
+    text-align: left;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    vertical-align: middle;
+}
+
+.statistics-table th:first-child {
+    border-top-left-radius: 3px;
+}
+
+.statistics-table th:last-child {
+    border-top-right-radius: 3px;
+    border-right: none;
+}
+
+.statistics-table tr {
+    border-top: 1px solid #C1C3D1;
+    border-bottom: 1px solid #C1C3D1;
+    color: #666B85;
+    font-size: 16px;
+    font-weight: normal;
+    text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+
+.statistics-table tr:hover td {
+    background: #4E5066;
+    /*color: #FFFFFF;*/
+    /*border-top: 1px solid #22262e;*/
+}
+
+.statistics-table tr:first-child {
+    border-top: none;
+}
+
+.statistics-table tr:last-child {
+    border-bottom: none;
+}
+
+.statistics-table tr:nth-child(odd) td {
+    background: #EBEBEB;
+}
+
+.statistics-table tr:nth-child(odd):hover td {
+    background: #4E5066;
+}
+
+.statistics-table tr:last-child td:first-child {
+    border-bottom-left-radius: 3px;
+}
+
+.statistics-table tr:last-child td:last-child {
+    border-bottom-right-radius: 3px;
+}
+
+.statistics-table td {
+    background: #FFFFFF;
+    padding: 20px;
+    text-align: left;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 18px;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #C1C3D1;
+}
+
+.statistics-table td:last-child {
+    border-right: 0px;
+}
+
+.statistics-table th.text-left {
+    text-align: left;
+}
+
+.statistics-table th.text-center {
+    text-align: center;
+}
+
+.statistics-table th.text-right {
+    text-align: right;
+}
+
+.statistics-table td.text-left {
+    text-align: left;
+}
+
+.statistics-table td.text-center {
+    text-align: center;
+}
+
+.statistics-table td.text-right {
+    text-align: right;
+}

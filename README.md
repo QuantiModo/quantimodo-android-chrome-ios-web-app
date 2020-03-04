@@ -3,7 +3,7 @@
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 
 # DEMOS
-- [QuantiModo Web App](https://app.quantimo.do) 
+- [QuantiModo Web App](https://app.quantimo.do)
 - [QuantiModo for iOS](https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8)
 - [QuantiModo Chrome Extension ](https://Chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi)
 - [QuantiModo for Android](https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo)
@@ -46,7 +46,7 @@ Ionic docker image for development, build and continous integration (and certain
 ## Why
 - Installing Java and Android SDK is a pain
 - Keeping your Node modules in sync and up-to-date is a pain
-- Ensuring all project developers have exactly the same Java version, Android SDK, and node modules is a Sisyphos like task, not to mention your CI environment. 
+- Ensuring all project developers have exactly the same Java version, Android SDK, and node modules is a Sisyphos like task, not to mention your CI environment.
 - Using a standardized Docker image and a versionednDocker-Compose file for your project ensures an identical environment for all developers, testers, build bots etc.
 
 
@@ -102,7 +102,7 @@ Congratulations! Look at the default Ionic project at localhost:8100 that is ser
 
 
 ## Usage
-1. Install Docker 
+1. Install Docker
 Install docker for your platform [Linux](https://docs.docker.com/engine/installation/linux/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/).
 
 
@@ -195,34 +195,34 @@ To manage the build and run options in your project via cli parameters is a hass
     This will generate a Docker image named "my-great-ionic2-project" with the default configuration and a user, who's name is identical to the one on the host.
 
 
-2. Feel free to use your image and connect with a bash shell: 
+2. Feel free to use your image and connect with a bash shell:
 
     ```
     docker run --name "my-great-ionic2-project" -it \
                -v $PWD:/app:rw \
                -v /dev/bus/usb:/dev/bus/usb \
                -u `id -u $USER` \
-               -p 3000:3000 -p 5000:5000 -p 8100:8100 -p 8080:8080 -p 9876:9876 -p 35729:35729 \                                                     
+               -p 3000:3000 -p 5000:5000 -p 8100:8100 -p 8080:8080 -p 9876:9876 -p 35729:35729 \
                my-great-ionic2-project-container
     ```
     This will run the created image with the following features:
 
    - **Project Directory**:
-    
+
         The option ```-v $PWD:/app:rw``` will map your hosts current directory to /app in the container. This should  allways be our project root directory, where the package.jsons ist provided.
 
     - **USB Devices**:
-    
+
         The option ```-v /dev/bus/usb:/dev/bus/usb``` will map your hosts usb ports such that you can build/deploy your project directly to your device.
-        
+
         **Attention**: this will not work on osx.
 
     - **Container User Id**
-        
+
         The option ```-u `id -u $USER``` will run the container with the current user's id. This will avoid permissions issues on the host.
 
     - **Port Mappings**
-        
+
         The defined port mappings ("-p") do map the following ports from the container to the host:
         - 3000: Angular Lite Server
         - 5000: node
@@ -232,45 +232,3 @@ To manage the build and run options in your project via cli parameters is a hass
         - 35729: ionic livereload
 
 Now you have a Docker container, that you can use to develop, build and serve your Ionic (or Cordova) project.
-
-
-
-## Credits
-
-**This project is inspired and builds on various other projects:**
-- https://github.com/agileek/docker
-- https://github.com/mkaag/docker-ionic
-- https://github.com/nodejs/docker-node
-- https://github.com/netizy/docker-ionic-2
-- https://github.com/rsaddey/jump-ionic2
-- https://github.com/DroidsOnRoids/bitrise-docker-android
-
-
-
-## FAQs
-* Why are you using Ubuntu 16.04 as base Docker image instead of smaller ones like Alpine?*
-
-    The goal of this image is to have a standardized development and build environment. Therefore the image should meet a developer's needs in terms of tools, command line usage etc. Since it is not planned to use this image in production or for deployment, minimizing size was not in scope.
-
-* Why is this image not available on the Docker hub?
-
-    The idea of this image is to have a custom build for your requirements. You might even want to have a separate image per project.
-
-* Why are you not running as the root user (like most other ionic images)?
-
-    Because this might cause permission issues on your host's mapped application directory. Furthermore, cli calls, tools behavior etc. would differ from a developer's host workflow.
-
-* How do I deploy my APK to a device on a mac
-
-    TODO: 
-
-## Roadmap & ToDos
-* Enable yarn version pinning
-* Review installed Android versions
-* Enable cache volume mapping from the client
-
-
-## Anything missing?
-Great! Open a ticket or send us a PR!
-
-
