@@ -378,6 +378,7 @@ var qm = {
             if(!qm.clientId){
                 qm.clientId = qm.api.getClientIdFromSubDomain();
             }
+            if(qm.clientId === "web"){qm.clientId = null;}
             return qm.clientId;
         },
         getClientId: function(successHandler){
@@ -935,10 +936,10 @@ var qm = {
                 appSettings = qm.staticData.appSettings;
             }
             var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
-            if(!clientId || clientId.toLowerCase() === appSettings.clientId.toLowerCase()){ // For some reason clientId from url is lowercase sometimes
-                return appSettings;
-            }
-            if(clientId === "physician"){
+            if(!clientId ||
+                clientId.toLowerCase() === appSettings.clientId.toLowerCase() ||   // For some reason clientId from url is lowercase sometimes
+                clientId === "web" ||
+                clientId === "physician"){
                 return appSettings;
             }
             return false;
