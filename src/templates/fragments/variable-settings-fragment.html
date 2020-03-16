@@ -146,7 +146,7 @@
                       readonly="false"
                       md-on-remove="deleteTagVariable($chip)"
                       >
-                <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
             </md-chips>
         </div>
     </div>

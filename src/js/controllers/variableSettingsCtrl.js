@@ -442,10 +442,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
         $scope.deleteTaggedVariable = function(taggedVariable){
             taggedVariable.hide = true;
+            var v = $scope.state.variableObject;
             var userTagData = {
-                userTagVariableId: $scope.state.variableObject.variableId,
+                userTagVariableId: v.variableId,
                 userTaggedVariableId: taggedVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+v.name+" tag from "+taggedVariable.name+"!")
             qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
         };
         $scope.deleteTagVariable = function(tagVariable){
@@ -454,6 +456,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 userTaggedVariableId: $scope.state.variableObject.variableId,
                 userTagVariableId: tagVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+tagVariable.name+" tag!")
             qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
         };
         $scope.deleteJoinedVariable = function(tagVariable){
@@ -462,6 +465,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 currentVariableId: $scope.state.variableObject.variableId,
                 joinedUserTagVariableId: tagVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+tagVariable.name+" join!")
             qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
         };
         $scope.editTag = function(userTagVariable){
