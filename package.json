@@ -55,7 +55,7 @@
     "gulp-eslint": "6.0.0",
     "gulp-filter": "6.0.0",
     "gulp-gh-pages-will": "0.5.5",
-    "gulp-git": "2.10.0",
+    "gulp-git": "2.10.1",
     "gulp-github": "https://github.com/mikepsinn/gulp-github.git#5d5ec40d17056e0ab86209197ba3e2b79ee2e9d3",
     "gulp-gitmodified": "1.2.0",
     "gulp-if-else": "1.0.3",
