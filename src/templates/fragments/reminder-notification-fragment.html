@@ -124,6 +124,7 @@
         <img id="{{'numericRatingOption-with-value-' + option.numericValue}}"
              ng-repeat="option in numericRatingOptions"
              ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
     </div>
     <br>
@@ -135,6 +136,7 @@
         <img id="{{'positiveRatingOption-with-value-' + option.numericValue}}"
              ng-repeat="option in positiveRatingOptions"
              ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
         <br>
     </div>
@@ -147,6 +149,7 @@
         <img id="{{'negativeRatingOption-with-value-' + option.numericValue}}"
              ng-repeat="option in negativeRatingOptions"
              ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
         <br>
     </div>
