@@ -60,6 +60,7 @@
                     <img id="{{'rating-button-with-value-' + option.numericValue}}"
                          ng-repeat="option in numericRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">
@@ -69,6 +70,7 @@
                     <img id="{{'positiveRatingOption-with-value-' + option.numericValue}}"
                          ng-repeat="option in positiveRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">
@@ -78,6 +80,7 @@
                     <img id="{{'negativeRatingOption-with-value-' + option.numericValue}}"
                          ng-repeat="option in negativeRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">

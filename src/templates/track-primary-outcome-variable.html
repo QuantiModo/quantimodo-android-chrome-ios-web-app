@@ -13,6 +13,7 @@
                     <img id="{{'positiveRatingOptions-with-value-' + option.numericValue}}"
                          ng-repeat="option in positiveRatingOptions"
                          ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)"
+                         title="{{option.numericValue}}/5"
                          ng-src="{{option.img}}">
                 </div>
                 <div ng-show="timeRemaining">
