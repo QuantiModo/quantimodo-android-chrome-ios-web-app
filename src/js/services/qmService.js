@@ -3369,10 +3369,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cache = params.cache;
                 params.cache = null;
             }
-            if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
-                if(requestSpecificErrorHandler){requestSpecificErrorHandler("Too soon to make request");}
-                return;
-            }
             if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
                 var message = 'Not making request to ' + route + ' user because we are in the intro state';
                 qmLog.debug(message, null, options.stackTrace);
@@ -3433,13 +3429,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
             delete body.stackTrace;
-            if(!qm.api.canWeMakeRequestYet('POST', route, options)){
-                qmLog.error("Cannot make request to " + route + " yet!");
-                if(requestSpecificErrorHandler){
-                    requestSpecificErrorHandler();
-                }
-                return;
-            }
             qmService.navBar.setOfflineConnectionErrorShowing(false);
             var bodyString = JSON.stringify(body);
             if(!qmLog.isDebugMode()){
@@ -3702,7 +3691,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
             var options = {};
-            options.minimumSecondsBetweenRequests = 10;
             options.doNotSendToLogin = true;
             qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
         };
@@ -3878,8 +3866,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             qmService.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
-            qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler,
-                errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
+            qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler, errorHandler);
         };
         // skip tracking reminder
         qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
@@ -5167,23 +5154,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests, params){
+        qmService.refreshTrackingReminderNotifications = function(params){
             var deferred = $q.defer();
-            var options = {};
-            options.minimumSecondsBetweenRequests = 3;
-            if(minimumSecondsBetweenRequests){
-                options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
-                options.blockRequests = true;
-            }
-            if(!qm.api.canWeMakeRequestYet('GET', qm.apiPaths.trackingReminderNotificationsPast, options)){
-                deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
-                return deferred.promise;
-            }
             qm.notifications.postNotifications(function(){
                 var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
-                if(!params){
-                    params = {};
-                }
+                if(!params){params = {};}
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
                 params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
