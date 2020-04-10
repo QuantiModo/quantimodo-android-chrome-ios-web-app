@@ -174,19 +174,6 @@ var qm = {
         },
         configureClient: function(functionName, errorHandler, requestParams){
             requestParams = requestParams || {};
-            var minimumSecondsBetweenRequests = requestParams.minimumSecondsBetweenRequests || 1;
-            var blockRequests = requestParams.blockRequests || true;
-            if(functionName && !qm.api.canWeMakeRequestYet('GET', functionName, {
-                minimumSecondsBetweenRequests: 1,
-                blockRequests: blockRequests
-            })){
-                if(errorHandler){
-                    errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
-                }else{
-                    console.error("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
-                }
-                return false;
-            }
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
@@ -503,42 +490,6 @@ var qm = {
             }
             qm.qmLog.debug('Using subDomain as client id: ' + subDomain);
             return subDomain;
-        },
-        canWeMakeRequestYet: function(type, route, options){
-            if(!route || route === ''){
-                qm.qmLog.error("No route provided to canWeMakeRequestYet!");
-                return true;
-            }
-            function getSecondsSinceLastRequest(type, route){
-                var secondsSinceLastRequest = 99999999;
-                if(qm.storage.getLastRequestTime(type, route)){
-                    secondsSinceLastRequest = qm.timeHelper.secondsAgo(qm.storage.getLastRequestTime(type, route));
-                }
-                return secondsSinceLastRequest;
-            }
-            var blockRequests = false;
-            if(options && options.blockRequests){
-                blockRequests = options.blockRequests;
-            }
-            var minimumSecondsBetweenRequests;
-            if(options && options.minimumSecondsBetweenRequests){
-                minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
-            }else{
-                minimumSecondsBetweenRequests = 1;
-            }
-            if(getSecondsSinceLastRequest(type, route) < minimumSecondsBetweenRequests){
-                var name = 'Just made a ' + type + ' request to ' + route;
-                var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
-                    getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-                if(blockRequests){
-                    qm.qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
-                    return false;
-                }else{
-                    qm.qmLog.info(name, message, options);
-                }
-            }
-            qm.storage.setItem(qm.api.getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
-            return true;
         },
         responseHandler: function(error, data, response, successHandler, errorHandler){
             if(!response){
@@ -5436,15 +5387,7 @@ var qm = {
         },
         promise: null,
         refreshNotifications: function(successHandler, errorHandler, options){
-            var type = "GET";
             var route = qm.apiPaths.trackingReminderNotificationsPast;
-            options = options || {blockRequests: true, minimumSecondsBetweenRequests: 300};
-            if(!qm.api.canWeMakeRequestYet(type, route, options)){
-                if(errorHandler){
-                    errorHandler("Too soon to refresh notifications again");
-                }
-                return;
-            }
             qm.api.getRequestUrl(route, function(url){
                 // Can't use QM SDK in service worker
                 qm.api.getViaXhrOrFetch(url, function(response){
@@ -5464,7 +5407,7 @@ var qm = {
                         }
                     }
                 })
-            });
+            }, options);
         },
         refreshAndShowPopupIfNecessary: function(notificationParams){
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
