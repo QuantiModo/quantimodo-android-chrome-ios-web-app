@@ -63,7 +63,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             });
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
-                    $scope.refreshTrackingReminderNotifications(3);
+                    $scope.refreshTrackingReminderNotifications();
                 },
                 getVariableCategoryName(), 'Clear All Notifications',
                 function(){
@@ -216,7 +216,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(!$scope.state.numberOfDisplayedNotifications){
                 if(getVariableCategoryName()){
                     qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
-                    qmService.refreshTrackingReminderNotifications(3, {
+                    qmService.refreshTrackingReminderNotifications({
                         variableCategoryName: getVariableCategoryName(),
                         onlyPast: true
                     }, function(response){
@@ -387,9 +387,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 10000);
         };
-        $scope.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
+        $scope.refreshTrackingReminderNotifications = function(params){
             showLoader();
-            qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
+            qmService.refreshTrackingReminderNotifications(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
                     getFallbackInboxContentIfNecessary();
