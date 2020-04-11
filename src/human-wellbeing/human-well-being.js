@@ -716,11 +716,19 @@ function getConfig(scale){
                 "</p>", 29),
             getAnnotation("Cotton Gin", 1770,
                 "<p>" +
-                "Benjamin Waterhouse introduces the smallpox vaccine to the United States and helps gain acceptance for the new procedure."+
-                "</p>", 29),
-            getAnnotation("Smallpox Vaccine", 1799,
-                "<p>" +
                 "Eli Whitney invents the cotton gin greatly increasing the productivity of processing cotton."+
+                "</p>", 29),
+            getAnnotation("Vaccines", 1799,
+                "<div class=\"edit\"><div class=\"row\"><div class=\"col-md-12\"><img src=\"https://info.Proclinical.com/hubfs/vaccines.jpg\" alt=\"vaccines\" class=\"initial loading\" data-was-processed=\"true\"></div><div><br></div></div></div>" +
+                "<p>" +
+                "It is difficult to pinpoint when vaccines became an accepted practice, mostly because the journey to " +
+                "discovery was long and complicated. Beginning with an attempt by Edward Jenner in 1796 to use" +
+                " inoculations to tame the infamous smallpox virus, the usefulness and popularity of vaccines " +
+                "grew very quickly. Throughout the 1800s and early 1900s, various vaccinations were created to combat" +
+                " some of the world’s deadliest diseases, including smallpox, rabies, tuberculosis, and cholera." +
+                " Over the course of 200 years, one of the deadliest diseases known to man – the small pox – was" +
+                " wiped off the face of the earth. Today, vaccines continue to save millions of lives each year -" +
+                " including jabs that protect against deadly flu strains and can help prevent some cancers."+
                 "</p>", 29),
             getAnnotation("Steamboats", 1807,
                 "<p>" +
@@ -748,13 +756,11 @@ function getConfig(scale){
                 "</p>", 29),
             getAnnotation("Anesthesia", 1846,
                 "<p>" +
-                "John Collins Warren, the School’s first dean, provides the first public demonstration of anesthesia in surgery."+
+                "Before the first use of a general anaesthetic in the mid-19th century, surgery was undertaken only as a last resort, with several patients opting for death rather than enduring the excruciating ordeal. Although there were countless earlier experiments with anaesthesia dating as far back to 4000 BC – William T. G. Morton made history in 1846 when he successfully used ether as an anaesthetic during surgery. Soon after, a faster-acting substance called chloroform became widely used, but was considered high-risk after several fatalities were reported. Over the 150 years since, safer anaesthetics have been developed, allowing millions of life-saving, painless operations to take place." +
                 "</p>", 30),
             getAnnotation("Germs", 1860,
-                "<p>" +
-                "In the 1860´s Louis Pasteur realizes the Germ Theory of Disease or pasteurization; the idea that infectious" +
-                " diseases are caused by germs, and then spread about by people." +
-                "</p>", 30),
+                "<p>Before the ‘germ’ theory came about, the widely believed theory was that disease was caused by ‘spontaneous generation’. In other words, physicians of the time thought that disease could appear out of thin air, rather than being air-borne or transferred via skin-to-skin contact. In 1861, French microbiologist Louis Pasteur proved through a simple experiment that infectious disease was a result of an invasion of specific microscopic organisms - also known as pathogens - into living hosts. This new understanding marked a significant turning point in how diseases were treated, controlled and prevented, helping to prevent devastating epidemics that were responsible for thousands of deaths every year, such as the plague, dysentery and typhoid fever.&nbsp;&nbsp;</p>",
+                30),
             getAnnotation("Telephone", 1876,
                 "<p>" +
                 " Alexander Graham Bell invents the telephone." +
@@ -762,10 +768,19 @@ function getConfig(scale){
             getAnnotation("Light Bulb", 1879,
                 "<p>" +
                 "Thomas Edison invents the first practical incandescent light bulb. It will allow factories to remain open after dark." +
-                "</p>", 36),
+                "</p>", 34),
             getAnnotation("Power Plants", 1891,
                 "<p>" +
                 "The first modern electrical power station is completed to provide power to central London." +
+                "</p>", 30),
+            getAnnotation("Medical Imaging", 1895,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/X-ray.jpg\" alt=\"\" class=\"loading\" data-was-processed=\"true\"></div>"+
+                "<p>" +
+                "The first medical imaging machines were X-rays. The X-ray, a form of electromagnetic radiation, was ‘accidentally’ invented in 1895 by German physicist Wilhelm Conrad Rӧntgen when experimenting with electrical currents through glass cathode-ray tubes. The discovery transformed medicine overnight and by the following year, Glasgow hospital opened the world's very first radiology department.\n" +
+                "\n" +
+                "Ultrasound, although originally discovered many years before, began being used for medical diagnosis in 1955. This medical imaging device uses high frequency sound waves to create a digital image, and was no less than ground-breaking in terms of detecting pre-natal conditions and other pelvic and abdominal abnormalities. In 1967, the computed tomography (CT) scanner was created, which uses X-ray detectors and computers to diagnose many different types of disease, and has become a fundamental diagnostic tool in modern medicine.\n" +
+                "\n" +
+                "The next major medical imaging technology was discovered in 1973 when Paul Lauterbur produced the first magnetic resonance image (MRI). The nuclear magnetic resonance data creates detailed images within the body and is a crucial tool in detecting life-threatening conditions including tumours, cysts, damage to the brain and spinal cord and some heart and liver problems." +
                 "</p>", 34),
             getAnnotation("Cars", 1908,
                 "<p>" +
@@ -775,18 +790,35 @@ function getConfig(scale){
                 "<p>" +
                 "Eliot Cutler performs the world’s first successful heart valve surgery at the Peter Bent Brigham " +
                 "Hospital, today part of Brigham and Women’s Hospital." +
-                "</p>", 40),
+                "</p>", 35),
+            getAnnotation("Penicillin", 1928,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/antibiotics.jpg\" alt=\"antibiotics\" class=\"loading\" data-was-processed=\"true\"></div>"+
+                "<p>" +
+                "Alexander Fleming’s penicillin, the world’s first antibiotic, completely revolutionised the war against deadly bacteria. Famously, the Scottish biologist accidentally discovered the anti-bacterial ‘mould’ in a petri dish in 1928. However, Fleming’s incredible findings were not properly recognised until the 1940s, when they began being mass-produced by American drug companies for use in World War II. Two other scientists were responsible for the mass distribution of penicillin, Australian Howard Florey and Nazi-Germany refugee Ernst Chain, and their development of the substance ended up saving millions of future lives. Unfortunately, over the years certain bacterium have become increasingly resistant to antibiotics, leading to a world-wide crisis that calls for the pharmaceutical industry to develop new anti-bacterial treatments as soon as possible." +
+                "</p>", 41),
             getAnnotation("Polio Treatment", 1929,
                 "<p>" +
                 "In a first, the newly developed Drinker Respirator (iron lung) saves a polio patient at Peter " +
                 "Bent Brigham in collaboration with Children's Hospital Medical Center, today Boston Children’s " +
                 "Hospital, and the Harvard School of Public Health." +
                 "</p>", 45),
-            getAnnotation("Kidney Transplant", 1952,
+            getAnnotation("Organ Transplants", 1954,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/Transplant.jpg\" alt=\"\" class=\"loading\" data-was-processed=\"true\"></div>"+
                 "<p>" +
-                "Surgeon Joseph Murray performs the first successful kidney transplant on identical twins at Peter " +
-                "Bent Brigham." +
-                "</p>", 45),
+                "In December 1954, the first successful kidney transplant was carried out by Dr Joseph Murray and Dr David Hume in Boston, USA. Despite many previous attempts in history, this was the first instance where the recipient of an organ transplant survived the operation. The turning point came when various technical issues were overcome, such as vascular anastomosis (the connection between two blood vessels), placement of the kidney and immune response. In 1963, the first lung transplant was carried out, followed by a pancreas/kidney in 1966, and liver and heart in 1967. Aside from saving thousands of lives in the years following, transplant procedures have also become increasingly innovative and complex, with doctors successfully completing the first hand transplant in 1998 and full-face transplant in 2010!" +
+                "</p>", 42),
+            getAnnotation("Antiviral Drugs", 1960,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/virus%202.jpg\" alt=\"\" class=\"loading\" data-was-processed=\"true\"></div>"+
+                "<p>Terrible viruses such as small-pox, influenza and hepatitis have ravaged many human populations throughout history. Unlike the sweeping success of antibiotics in the late 1930s and 1940s, the development of antivirals did not really take off until the 1960s. This was mostly due to the structure of a virus, which was a core of genetic material surrounded by a protective protein coat that hides and reproduces inside a person’s cells. As the virus information is so protected, it was difficult to treat them without damaging the host cell. Over the years antivirals have improved significantly, and work by blocking the rapid reproduction of viral infections, and some can even stimulate the immune system to attack the virus. The development of effective antivirals has been significant in treating and controlling the spread of deadly virus outbreaks such as HIV/AIDS, Ebola and rabies. </p>",
+                48),
+            getAnnotation("Stem Cell Therapy", 1970,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/stem%20cells.jpg\" alt=\"\" class=\"loading\" data-was-processed=\"true\"></div>" +
+                "<p>The incredible potential of stem cells was discovered in the late 1970s, when they were found inside human cord blood. Two specific characteristics make stem cells remarkable: they are unspecialised cells that can renew themselves through cell division even after being inactive, and under certain conditions can be used to make any type of human cell. This discovery has enormous potential and stem cell therapy has already been used to treat leukaemia and other blood disorders, as well as in bone marrow transplantation. Research is currently ongoing to use stem cells to treat spinal cord injuries and a number of neurological conditions such as Alzheimer’s, Parkinson’ and strokes. However, due to the ethical issues surrounding the&nbsp;<a href=\"https://www.eurostemcell.org/embryonic-stem-cell-research-ethical-dilemma\" target=\"_blank\">use of embryonic stem cells</a>, researchers are likely to face many obstacles when developing stem cell-based therapy.&nbsp;&nbsp;</p>" +
+                48),
+            getAnnotation("Immunotherapy", 1979,
+                "<div class=\"edit\"><img src=\"https://info.Proclinical.com/hubfs/Artificial%20Intelligence.jpg\" alt=\"\" class=\"loading\" data-was-processed=\"true\"></div>"+
+                "<p>Terrible viruses such as small-pox, influenza and hepatitis have ravaged many human populations throughout history. Unlike the sweeping success of antibiotics in the late 1930s and 1940s, the development of antivirals did not really take off until the 1960s. This was mostly due to the structure of a virus, which was a core of genetic material surrounded by a protective protein coat that hides and reproduces inside a person’s cells. As the virus information is so protected, it was difficult to treat them without damaging the host cell. Over the years antivirals have improved significantly, and work by blocking the rapid reproduction of viral infections, and some can even stimulate the immune system to attack the virus. The development of effective antivirals has been significant in treating and controlling the spread of deadly virus outbreaks such as HIV/AIDS, Ebola and rabies. </p>",
+                55),
             // getAnnotation("Started Washing Our Damn Hands", 1905 ,
             //     "<p>" +
             //     "In 1905 Florence Nightingale discovered that being clean was essential in patient care and reducing " +
@@ -794,10 +826,6 @@ function getConfig(scale){
             //     "reducing the spreading of microbes and also wins an award for it, and William Stewart Halsted was one" +
             //     " of the very first to use gloves while performing surgery as a way to prevent the spread of microbes" +
             //     "</p>", 34),
-            getAnnotation("test", 750,
-                "https://google.com"),
-            getAnnotation("test", 750,
-                "https://google.com"),
         ],
         exporting: {
             csv: {
@@ -887,6 +915,3 @@ function getConfig(scale){
 }
 Highcharts.stockChart('container', getConfig('linear'));
 Highcharts.stockChart('logarithmic-container', getConfig('logarithmic'));
-
-
-
