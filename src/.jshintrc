@@ -3,6 +3,7 @@
   "eqeqeq"  : true,
   "undef"   : true,
   "jquery"  : true,
+    "lastsemic": true,
   "globals": {
     "$"         : false,
     "_"         : false,

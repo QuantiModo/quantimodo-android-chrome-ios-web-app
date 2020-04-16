@@ -174,19 +174,6 @@ var qm = {
         },
         configureClient: function(functionName, errorHandler, requestParams){
             requestParams = requestParams || {};
-            var minimumSecondsBetweenRequests = requestParams.minimumSecondsBetweenRequests || 1;
-            var blockRequests = requestParams.blockRequests || true;
-            if(functionName && !qm.api.canWeMakeRequestYet('GET', functionName, {
-                minimumSecondsBetweenRequests: 1,
-                blockRequests: blockRequests
-            })){
-                if(errorHandler){
-                    errorHandler("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
-                }else{
-                    console.error("Already made request in last " + minimumSecondsBetweenRequests + " seconds");
-                }
-                return false;
-            }
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
@@ -378,6 +365,7 @@ var qm = {
             if(!qm.clientId){
                 qm.clientId = qm.api.getClientIdFromSubDomain();
             }
+            if(qm.clientId === "web"){qm.clientId = null;}
             return qm.clientId;
         },
         getClientId: function(successHandler){
@@ -502,42 +490,6 @@ var qm = {
             }
             qm.qmLog.debug('Using subDomain as client id: ' + subDomain);
             return subDomain;
-        },
-        canWeMakeRequestYet: function(type, route, options){
-            if(!route || route === ''){
-                qm.qmLog.error("No route provided to canWeMakeRequestYet!");
-                return true;
-            }
-            function getSecondsSinceLastRequest(type, route){
-                var secondsSinceLastRequest = 99999999;
-                if(qm.storage.getLastRequestTime(type, route)){
-                    secondsSinceLastRequest = qm.timeHelper.secondsAgo(qm.storage.getLastRequestTime(type, route));
-                }
-                return secondsSinceLastRequest;
-            }
-            var blockRequests = false;
-            if(options && options.blockRequests){
-                blockRequests = options.blockRequests;
-            }
-            var minimumSecondsBetweenRequests;
-            if(options && options.minimumSecondsBetweenRequests){
-                minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
-            }else{
-                minimumSecondsBetweenRequests = 1;
-            }
-            if(getSecondsSinceLastRequest(type, route) < minimumSecondsBetweenRequests){
-                var name = 'Just made a ' + type + ' request to ' + route;
-                var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
-                    getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-                if(blockRequests){
-                    qm.qmLog.info('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
-                    return false;
-                }else{
-                    qm.qmLog.info(name, message, options);
-                }
-            }
-            qm.storage.setItem(qm.api.getLocalStorageNameForRequest(type, route), qm.timeHelper.getUnixTimestampInSeconds());
-            return true;
         },
         responseHandler: function(error, data, response, successHandler, errorHandler){
             if(!response){
@@ -935,10 +887,10 @@ var qm = {
                 appSettings = qm.staticData.appSettings;
             }
             var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
-            if(!clientId || clientId.toLowerCase() === appSettings.clientId.toLowerCase()){ // For some reason clientId from url is lowercase sometimes
-                return appSettings;
-            }
-            if(clientId === "physician"){
+            if(!clientId ||
+                clientId.toLowerCase() === appSettings.clientId.toLowerCase() ||   // For some reason clientId from url is lowercase sometimes
+                clientId === "web" ||
+                clientId === "physician"){
                 return appSettings;
             }
             return false;
@@ -1398,14 +1350,14 @@ var qm = {
             }
             return a;
         },
-        filterByRequestParams: function(array, requestParams){
-            if(!array){
+        filterByRequestParams: function(provided, params){
+            if(!provided){
                 qm.qmLog.error("Nothing provided to filterByRequestParams");
-                return array;
+                return provided;
             }
-            if(!requestParams){
+            if(!params){
                 qm.qmLog.info("No requestParams provided to filterByRequestParams");
-                return array;
+                return provided;
             }
             var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
                 'variableName', 'connectorName'];
@@ -1419,11 +1371,11 @@ var qm = {
             var lessThanPropertyValue = null;
             var filterPropertyValues = [];
             var filterPropertyNames = [];
-            for(var key in requestParams){
-                if(!requestParams.hasOwnProperty(key)){
+            for(var key in params){
+                if(!params.hasOwnProperty(key)){
                     continue;
                 }
-                var value = requestParams[key];
+                var value = params[key];
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
                     lessThanPropertyValue = Number(lessThanPropertyValue);
@@ -1450,24 +1402,24 @@ var qm = {
                     filterPropertyNames.push(key);
                 }
             }
-            var results = qm.arrayHelper.filterByPropertyOrSize(array, null, null, lessThanPropertyName, lessThanPropertyValue,
+            var filtered = qm.arrayHelper.filterByPropertyOrSize(provided, null, null, lessThanPropertyName, lessThanPropertyValue,
                 greaterThanPropertyName, greaterThanPropertyValue);
-            if(results){
+            if(filtered){
                 for(var i = 0; i < filterPropertyNames.length; i++){
-                    results = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], results);
+                    filtered = qm.arrayHelper.filterByProperty(filterPropertyNames[i], filterPropertyValues[i], filtered);
                 }
             }
-            if(!results){
+            if(!filtered){
                 return null;
             }
-            if(requestParams.searchPhrase && requestParams.searchPhrase !== ""){
-                results = qm.arrayHelper.getWithNameContainingEveryWord(requestParams.searchPhrase, results);
+            if(params.searchPhrase && params.searchPhrase !== ""){
+                filtered = qm.arrayHelper.getWithNameContainingEveryWord(params.searchPhrase, filtered);
             }
-            if(requestParams && requestParams.sort){
-                results = qm.arrayHelper.sortByProperty(results, requestParams.sort);
+            if(params && params.sort){
+                filtered = qm.arrayHelper.sortByProperty(filtered, params.sort);
             }
-            results = qm.arrayHelper.removeArrayElementsWithDuplicateIds(results);
-            return results;
+            filtered = qm.arrayHelper.removeArrayElementsWithDuplicateIds(filtered);
+            return filtered;
         },
         getUnique: function(array, propertyName){
             if(!propertyName){
@@ -1682,7 +1634,7 @@ var qm = {
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qm.qmLog.error("accessTokenFromUrl is invalid: " + accessToken);
                 }else{
-                    qm.qmLog.info("qm.storage.getItem(qm.items.accessToken)returned " + accessToken);
+                    qm.qmLog.debug("qm.storage.getItem(qm.items.accessToken)returned " + accessToken);
                     return accessToken;
                 }
             }
@@ -2062,7 +2014,7 @@ var qm = {
                 return connectors.connectors;
             }
             if(!connectors || !connectors.length || !Array.isArray(connectors)){
-                qm.qmLog.error("Connectors from local storage is ", connectors);
+                qm.qmLog.debug("Connectors from local storage is ", connectors);
                 qm.connectorHelper.getConnectorsFromApi();
                 return null;
             }
@@ -5435,15 +5387,7 @@ var qm = {
         },
         promise: null,
         refreshNotifications: function(successHandler, errorHandler, options){
-            var type = "GET";
             var route = qm.apiPaths.trackingReminderNotificationsPast;
-            options = options || {blockRequests: true, minimumSecondsBetweenRequests: 300};
-            if(!qm.api.canWeMakeRequestYet(type, route, options)){
-                if(errorHandler){
-                    errorHandler("Too soon to refresh notifications again");
-                }
-                return;
-            }
             qm.api.getRequestUrl(route, function(url){
                 // Can't use QM SDK in service worker
                 qm.api.getViaXhrOrFetch(url, function(response){
@@ -5463,7 +5407,7 @@ var qm = {
                         }
                     }
                 })
-            });
+            }, options);
         },
         refreshAndShowPopupIfNecessary: function(notificationParams){
             qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
@@ -7375,6 +7319,9 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
+            if(!key){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");
+            }
             if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
@@ -9039,16 +8986,16 @@ var qm = {
         },
     },
     commonVariablesHelper: {
-        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+        getFromLocalStorage: function(params, successHandler){
             if(!successHandler){
                 qm.qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
                 return;
             }
-            if(!requestParams){
-                requestParams = {};
+            if(!params){
+                params = {};
             }
-            var commonVariables = qm.arrayHelper.filterByRequestParams(qm.staticData.commonVariables, requestParams);
-            if(!requestParams.sort){
+            var commonVariables = qm.arrayHelper.filterByRequestParams(qm.staticData.commonVariables, params);
+            if(!params.sort){
                 commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);
             }
             successHandler(commonVariables);
@@ -9120,20 +9067,20 @@ var qm = {
                 qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
-        getFromLocalStorage: function(requestParams, successHandler, errorHandler){
+        getFromLocalStorage: function(params, successHandler, errorHandler){
             if(!qm.getUser()){
                 qm.qmLog.error("No user to get user variables!");
-                qm.commonVariablesHelper.getFromLocalStorage(requestParams, successHandler, errorHandler);
+                qm.commonVariablesHelper.getFromLocalStorage(params, successHandler, errorHandler);
                 return;
             }
-            if(!requestParams){
-                requestParams = {};
+            if(!params){
+                params = {};
             }
-            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, requestParams, function(userVariables){
-                if(!requestParams.sort){
-                    userVariables = qm.variablesHelper.defaultVariableSort(userVariables);
+            qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
+                if(!params.sort){
+                    variables = qm.variablesHelper.defaultVariableSort(variables);
                 }
-                successHandler(userVariables);
+                successHandler(variables);
             }, function(error){
                 qm.qmLog.error(error);
                 if(errorHandler){
@@ -9211,37 +9158,40 @@ var qm = {
         }
     },
     variablesHelper: {
-        getFromLocalStorageOrApi: function(requestParams, successHandler, errorHandler){
-            requestParams = requestParams || {};
-            var search = requestParams.searchPhrase;
-            var min = requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest;
+        getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
+            params = params || {};
+            var search = params.searchPhrase;
+            var min = params.minimumNumberOfResultsRequiredToAvoidAPIRequest;
             if(!search || search === ""){min = 20;}
             if(search && search.length > 8){min = 4;}
             if(search && search.length > 12){min = 2;}
             if(search && search.length > 16){min = 1;} // Must be 16 search.length or we don't make API request to get Green Olives
-            if(requestParams.id || requestParams.name){min = 1;}
-            function sortUpdateSubtitlesAndReturnVariables(variables){
-                if(!requestParams.sort){
+            if(params.id || params.name){min = 1;}
+            function sortUpdateSubtitlesAndReturnVariables(variables, params){
+                if(!params.sort){
                     variables = qm.variablesHelper.defaultVariableSort(variables);
                 }
-                variables = qm.variablesHelper.updateSubtitles(variables, requestParams);
+                variables = qm.variablesHelper.updateSubtitles(variables, params);
+                if(params && params.limit){
+                    variables = variables.slice(0, params.limit)
+                }
                 if(successHandler){
                     successHandler(variables);
                 }
             }
             function getFromApi(localVariables, reason){
                 if(reason && typeof reason !== "string"){throw "Reason should be a string!"}
-                requestParams.reason = reason;
-                qm.userVariables.getFromApi(requestParams, function(variablesFromApi){
-                    if(localVariables && variablesFromApi.length < localVariables.length){
+                params.reason = reason;
+                qm.userVariables.getFromApi(params, function(variablesFromApi){
+                    if(localVariables && variablesFromApi.length < localVariables.length && variablesFromApi.length < 50){
                         qm.qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!",
                             {
                                 local: localVariables.length,
                                 api: variablesFromApi.length,
-                                params: requestParams
+                                params: params
                             });
                     }
-                    sortUpdateSubtitlesAndReturnVariables(variablesFromApi);
+                    sortUpdateSubtitlesAndReturnVariables(variablesFromApi, params);
                 }, function(error){
                     qm.qmLog.error(error);
                     if(errorHandler){
@@ -9252,17 +9202,22 @@ var qm = {
                     }
                 });
             }
-            if(requestParams.excludeLocal){
-                getFromApi(null, "excludeLocal is " + requestParams.excludeLocal +
+            if(params.excludeLocal){
+                getFromApi(null, "excludeLocal is " + params.excludeLocal +
                     " (excludeLocal is necessary for complex filtering like tag searches)");
                 return;
             }
-            if(requestParams.includePublic){
-                qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(requestParams, function(localVariables){
+            if(params.includePublic){
+                qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(params, function(localVariables){
                     var localCount = localVariables.length;
-                    if(localVariables && localCount >= min){
-                        sortUpdateSubtitlesAndReturnVariables(localVariables);
-                        return;
+                    if(localCount){
+                        qm.qmLog.debug("Returning " + localCount + " local variables that match");
+                        sortUpdateSubtitlesAndReturnVariables(localVariables, params); // Return the local ones we found
+                        if(localCount >= min){
+                            qm.qmLog.debug("No need for API request because we have more than " + min);
+                            return;
+                        }
+                        qm.qmLog.debug("Searching api as well because we don't have more than " + min);
                     }
                     getFromApi(localVariables, "only " + localCount +
                         " local user or common variables and minimumNumberOfResultsRequiredToAvoidAPIRequest is " + min);
@@ -9270,8 +9225,8 @@ var qm = {
                     getFromApi(null, "error getting local user and common variables: " + error);
                 });
             }else{
-                qm.userVariables.getFromLocalStorageOrApi(requestParams, function(userVariables){
-                    sortUpdateSubtitlesAndReturnVariables(userVariables);
+                qm.userVariables.getFromLocalStorageOrApi(params, function(userVariables){
+                    sortUpdateSubtitlesAndReturnVariables(userVariables, params);
                 }, errorHandler);
             }
         },
@@ -9290,7 +9245,7 @@ var qm = {
         },
         defaultVariableSort: function(variables){
             if(!variables){
-                qm.qmLog.info("no variables provided to defaultVariableSort");
+                qm.qmLog.debug("no variables provided to defaultVariableSort");
                 return null;
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
@@ -9321,9 +9276,6 @@ var qm = {
                     var both = userVariables.concat(commonVariables);
                     both = qm.arrayHelper.getUnique(both, 'id');
                     successHandler(both);
-                }, function(error){
-                    qm.qmLog.info(error);
-                    successHandler(userVariables);
                 });
             }, errorHandler);
         },

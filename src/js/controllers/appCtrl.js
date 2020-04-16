@@ -32,6 +32,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.closeMenu = function(){
                 $ionicSideMenuDelegate.toggleLeft(false);
             };
+            $scope.showVariableActionSheet = function(v, extraButtons){
+                qmService.actionSheets.showVariableObjectActionSheet(v.name, v, extraButtons);
+            }
             $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
             $scope.$watch(function(){
                 return $ionicSideMenuDelegate.getOpenRatio();
@@ -409,8 +412,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 function selectVariable(variable){
                     $scope.variableObject = variable;
                     qmLogService.debug('Selected variable: ' + variable.name);
-                    var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variable.name, variable);
-                    showActionSheet();
+                    qmService.actionSheets.showVariableObjectActionSheet(variable.name, variable);
                 }
                 var dialogParameters = {
                     title: 'Select Variable',

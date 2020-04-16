@@ -21,6 +21,7 @@
                     <img id="{{'positiveRatingOption-with-value-' + option.numericValue}}"
                          ng-repeat="option in positiveRatingOptions"
                          ng-click="storeRatingLocally(option.numericValue)"
+                         title="{{option.numericValue}}/5"
                          ng-src="{{option.img}}"
                     >
                 </div>

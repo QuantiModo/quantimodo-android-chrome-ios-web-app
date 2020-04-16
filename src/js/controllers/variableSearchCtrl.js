@@ -48,7 +48,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 });
             }
             if(qm.urlHelper.getParam('upc')){
-                qmService.barcodeScanner.scanSuccessHandler({text: qm.urlHelper.getParam('upc')}, {}, function(variables){
+                qmService.barcodeScanner.scanSuccessHandler({text: qm.urlHelper.getParam('upc')},
+                    {}, function(variables){
                     console.log(variables)
                 }, function(error){
                     console.error(error);
@@ -135,10 +136,12 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         function showAddVariableButtonIfNecessary(variables){
             if($scope.state.variableSearchQuery.barcode &&
                 $scope.state.variableSearchQuery.barcode === $scope.state.variableSearchQuery.name){
-                return $scope.state.showAddVariableButton = false;
+                $scope.state.showAddVariableButton = false;
+                return;
             }
             if($scope.state.doNotShowAddVariableButton){
-                return $scope.state.showAddVariableButton = false;
+                $scope.state.showAddVariableButton = false;
+                return;
             }
             var resultIndex = 0;
             var found = false;
@@ -217,13 +220,14 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
             var params = getVariableSearchParameters();
-            qmLog.info($state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name + " with params: " + JSON.stringify(params));
-            if($scope.state.variableSearchQuery.name.length > 2){
+            var q = $scope.state.variableSearchQuery.name;
+            qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: \n" +
+                JSON.stringify(params, null, 2));
+            if(q.length > 2){
                 $scope.state.searching = true;
-                qmService.searchVariablesDeferred($scope.state.variableSearchQuery.name, params)
-                    .then(function(variables){
-                        variableSearchSuccessHandler(variables, successHandler, errorHandler);
-                    });
+                qmService.searchVariablesDeferred(q, params).then(function(variables){
+                    variableSearchSuccessHandler(variables, successHandler, errorHandler);
+                });
             }else{
                 populateSearchResults();
             }
@@ -233,24 +237,19 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 return;
             }
             $scope.state.showAddVariableButton = false;
-            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
-                $scope.state.searching = true;
-            }
+            var previous = $scope.state.variableSearchResults;
+            if(!previous || previous.length < 1){$scope.state.searching = true;}
             var params = getVariableSearchParameters();
             qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
                 if(variables && variables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3){
-                        if($scope.state.variableSearchResults){
-                            variables = $scope.state.variableSearchResults.concat(variables);
-                        }
+                        if(previous){variables = previous.concat(variables);}
                         addVariablesToScope(variables);
                     }
                 }else{
                     $scope.state.noVariablesFoundCard.show = true;
                     $scope.state.searching = false;
                 }
-            }, function(error){
-                qmLog.error(error);
             });
         };
         $scope.addNewVariable = function(){
