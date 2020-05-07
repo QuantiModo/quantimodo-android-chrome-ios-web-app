@@ -8507,6 +8507,14 @@ var qm = {
             //window.history.pushState({ path: url }, '', url);
         },
         getParam: function(parameterName, url, shouldDecode){
+            if(Array.isArray(parameterName)){
+                for (let i = 0; i < parameterName.length; i++) {
+                    var one = parameterName[i];
+                    var res = qm.urlHelper.getParam(one);
+                    if(res !== null){return res;}
+                }
+                return null;
+            }
             if(!url){
                 url = qm.urlHelper.getCurrentUrl();
             }
