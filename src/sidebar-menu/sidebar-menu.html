@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="#" method="get" class="sidebar-form" _lpchecked="1">
+    <div class="input-group">
+        <input id="sidebar-menu"
+               onkeyup="filterMenu()"
+               type="text"
+               name="q"
+               placeholder="Search..." class="form-control"> <span
+            class="input-group-btn">
+        <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i
+            class="fa fa-search"></i></button>
+    </span></div>
+</form>
+<ul id="sidebar-list" data-widget="tree" class="sidebar-menu tree">
+    <li id="analyze-menu" class="treeview"><a href="#"><i class="fa fa-line-chart"></i> <span>Analyze</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="https://testing.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/commonTags"><i
+                    class="fa fa-tags"></i><span>Common Tags</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/correlations"><i class="fa fa-line-chart"></i><span>Correlations</span></a>
+            </li>
+            <li class="active"><a href="https://testing.quantimo.do/admin/measurements"><i class="fa fa-edit"></i><span>Measurements</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/userTags"><i
+                    class="fa fa-tags"></i><span>User Tags</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/variables"><i
+                    class="fa fa-line-chart"></i><span>Variables</span></a></li>
+        </ul>
+    </li>
+    <li id="import-menu" class="treeview menu-open"><a href="#"><i class="fa fa-cloud-download"></i> <span>Import</span>
+        <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu" style="display: block;">
+            <li><a href="https://testing.quantimo.do/admin/applications"><i
+                    class="fa fa-mobile"></i><span>Applications</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/connections"><i
+                    class="fa fa-download"></i><span>Connections</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/connectors"><i class="fa fa-cloud-upload"></i><span>Connectors</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/connectorRequests"><i class="fa fa-edit"></i><span>Connector Requests</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
+            </li>
+        </ul>
+    </li>
+    <li id="models-menu" class="treeview"><a href="#"><i class="fa fa-link"></i> <span>Models</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="https://testing.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/applications"><i
+                    class="fa fa-mobile"></i><span>Applications</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/collaborators"><i
+                    class="fa fa-users"></i><span>Collaborators</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/commonTags"><i
+                    class="fa fa-tags"></i><span>Common Tags</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/connections"><i
+                    class="fa fa-download"></i><span>Connections</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/connectors"><i class="fa fa-cloud-upload"></i><span>Connectors</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/correlations"><i class="fa fa-line-chart"></i><span>Correlations</span></a>
+            </li>
+            <li class="active"><a href="https://testing.quantimo.do/admin/measurements"><i class="fa fa-edit"></i><span>Measurements</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/measurementExports"><i class="fa fa-download"></i><span>Measurement Exports</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/wpBpMessagesMessages"><i class="fa fa-envelope"></i><span>Messages</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/notifications"><i
+                    class="fa fa-bell"></i><span>Notifications</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/purchases"><i
+                    class="fa fa-cart-plus"></i><span>Purchases</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/sentEmails"><i class="fa fa-mail-forward"></i><span>Sent Emails</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/subscriptions"><i class="fa fa-cart-plus"></i><span>Subscriptions</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/trackingReminders"><i class="fa fa-edit"></i><span>Tracking Reminders</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/trackingReminderNotifications"><i
+                    class="fa fa-edit"></i><span>Tracking Reminder Notifications</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/userTags"><i
+                    class="fa fa-tags"></i><span>User Tags</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/variables"><i
+                    class="fa fa-line-chart"></i><span>Variables</span></a></li>
+            <li><a href="https://testing.quantimo.do/admin/variableCategories"><i class="fa fa-tags"></i><span>Variable Categories</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/variableUserSources"><i class="fa fa-upload"></i><span>Variable User Sources</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/votes"><i class="fa fa-thumbs-up"></i><span>Votes</span></a>
+            </li>
+            <li><a href="https://testing.quantimo.do/admin/wpBpNotifications"><i class="fa fa-bell"></i><span>BP Notifications</span></a>
+            </li>
+        </ul>
+    </li>
+    <li id="devops-menu" class="treeview"><a href="#"><i class="fab fa-jenkins"></i> <span>Dev Ops</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="http://quantimodo2.asuscomm.com:8082/view/Deploy/" target="_blank"><i
+                    class="fab fa-jenkins"></i> <span>Deploy</span></a></li>
+            <li><a href="http://quantimodo2.asuscomm.com:8082/view/Jobs/" target="_blank"><i class="fab fa-jenkins"></i>
+                <span>Jobs</span></a></li>
+            <li>
+                <a href="https://cloud.digitalocean.com/projects/e5920904-c953-4fcd-af1e-a3fa92575477/resources?i=14a8d8"
+                   target="_blank"><i class="fab fa-digital-ocean"></i> <span>Digital Ocean</span></a></li>
+            <li class="nav-item"><a href="https://testing.quantimo.do/admin/ssh" class="nav-link"><i
+                    class="material-icons">computer</i> <span class="sidebar-normal"> SSH </span></a></li>
+            <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-searchengin"></i>
+                <span>Nginx Amplify</span></a></li>
+        </ul>
+    </li>
+    <li id="database-menu" class="treeview"><a href="#"><i class="fa fa-database"></i> <span>DB</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-digital-ocean"></i>
+                <span>Digital Ocean</span></a></li>
+            <li><a href="http://134.209.130.63/phpmyadmin/server_status_processes.php" target="_blank"><i
+                    class="fas fa-database"></i> <span>Production DB</span></a></li>
+            <li><a href="http://167.172.15.169/phpmyadmin/server_status_processes.php" target="_blank"><i
+                    class="fas fa-database"></i> <span>Staging DB</span></a></li>
+            <li class="nav-item"><a href="https://testing.quantimo.do/admin/slow-queries" class="nav-link"><i
+                    class="material-icons">hourglass_empty</i> <span class="sidebar-normal"> Slow Queries </span></a>
+            </li>
+            <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-searchengin"></i>
+                <span>Nginx Amplify</span></a></li>
+        </ul>
+    </li>
+    <li id="design-menu" class="treeview"><a href="#"><i class="fa fa-paint-brush"></i> <span>Design</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="https://adminlte.io/themes/AdminLTE/pages/examples/profile.html" target="_blank"><i
+                    class="fa fa-shield"></i> <span>AdminLTE Demo</span></a></li>
+            <li><a href="https://staging.quantimo.do/examples/dashboard" target="_blank"><i
+                    class="fab fa-paint-brush"></i> <span>Material Demo</span></a></li>
+            <li><a href="https://getmdl.io/" target="_blank"><img src="https://getmdl.io/assets/favicon.png" alt="">
+                <span>Material Lite</span></a></li>
+        </ul>
+    </li>
+    <li id="account-menu" class="treeview"><a href="#"><i class="fa fa-user"></i> <span>Account</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="https://testing.quantimo.do/api/v2/account/subscription"><i
+                    class="menu-icon fa fa-fw fa-credit-card"></i> <span class="mm-text ">Subscription</span></a></li>
+            <li><a href="https://testing.quantimo.do/api/v2/account/password"><i class="menu-icon fa fa-fw fa-key"></i>
+                <span class="mm-text ">Change Password</span></a></li>
+            <li><a href="https://testing.quantimo.do/api/v2/account/edit"><i
+                    class="menu-icon fa fa-fw fa-pencil-square-o"></i> <span
+                    class="mm-text ">Edit Your Profile</span></a></li>
+            <li data-container="body" data-toggle="popover" data-placement="right"
+                data-content="Manage which applications or studies are allowed to access your QuantiModo data"
+                data-trigger="hover"><a href="https://testing.quantimo.do/api/v2/account/applications"><i
+                    class="menu-icon fa fa-fw fa-lock"></i> <span class="mm-text ">Data Sharing</span></a></li>
+            <li><a href="https://testing.quantimo.do/api/v2/account/export-data"><i
+                    class="menu-icon fa fa-fw fa-download"></i> <span class="mm-text ">Export Your Data</span></a></li>
+        </ul>
+    </li>
+    <li id="developer-menu" class="treeview"><a href="#"><i class="fa fa-code"></i> <span>Developers</span> <span
+            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li data-container="body" data-toggle="popover" data-placement="right"
+                data-content="Create your own app and take advantage of QuantiModo's data aggregation, storage, and analytical capabilities"
+                data-trigger="hover"><a href="https://testing.quantimo.do/api/v2/apps"><i
+                    class="menu-icon fa fa-fw fa-mobile"></i> <span class="mm-text ">Your Apps</span></a></li>
+            <li><a href="https://testing.quantimo.do/api/v2/account/api-explorer"><i
+                    class="menu-icon fa fa-fw fa-exchange"></i> <span class="mm-text ">API Explorer</span></a></li>
+            <li><a target="_blank" href="http://github.com/quantimodo"><i class="menu-icon fa fa-fw fa-code-fork"></i>
+                <span class="mm-text ">SDK's</span></a></li>
+        </ul>
+    </li>
+</ul>
+<script src="js/sidebar-menu-filter.js"></script>
+</body>
+</html>
