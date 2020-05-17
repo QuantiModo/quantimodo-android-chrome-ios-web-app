@@ -8508,7 +8508,7 @@ var qm = {
         },
         getParam: function(parameterName, url, shouldDecode){
             if(Array.isArray(parameterName)){
-                for (let i = 0; i < parameterName.length; i++) {
+                for (i = 0; i < parameterName.length; i++) {
                     var one = parameterName[i];
                     var res = qm.urlHelper.getParam(one);
                     if(res !== null){return res;}
