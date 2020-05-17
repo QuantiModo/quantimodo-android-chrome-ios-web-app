@@ -8498,13 +8498,8 @@ var qm = {
                     break;
                 }
             }
-            if(i < 0){
-                kvp[kvp.length] = [key, value].join('=');
-            }
-            //this will reload the page, it's likely better to store this until finished
+            if(i < 0){kvp[kvp.length] = [key, value].join('=');}
             document.location.search = kvp.join('&');
-            //var url = qm.urlHelper.addUrlQueryParamsToUrlString(params);  // Not working
-            //window.history.pushState({ path: url }, '', url);
         },
         getParam: function(parameterName, url, shouldDecode){
             if(Array.isArray(parameterName)){
