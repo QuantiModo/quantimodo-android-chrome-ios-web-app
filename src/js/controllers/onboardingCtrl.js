@@ -118,11 +118,11 @@ angular.module('starter').controller('OnboardingCtrl',
             };
             $scope.goToReminderSearchFromOnboarding = function(ev){
                 qmService.search.reminderSearch(function(variableObject){
-                    var pages = getPages();
-                    if(pages && pages[0] && pages[0].id.toLowerCase().indexOf('reminder') !== -1){
-                        var page = pages[0];
+                    var page = $scope.circlePage;
+                    if(page.id.toLowerCase().indexOf('reminder') !== -1){
                         if(page.title){
                             page.title = page.title.replace('Any', 'More');
+                            page.title = page.title.replace('any', 'more');
                         }
                         page.addButtonText = "Add Another";
                         page.nextPageButtonText = "All Done";
