@@ -66,7 +66,7 @@ var qmLog = {
             return;
         }
         qmLog.logLevel = value;
-        if(typeof localStorage !== "undefined"){
+        if(typeof localStorage !== "undefined" && localStorage){
             localStorage.setItem(qmLog.qm.items.logLevel, value); // Can't use qmLog.qm.storage because of recursion issue
         }
     },
