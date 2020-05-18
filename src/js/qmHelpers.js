@@ -8718,6 +8718,11 @@ var qm = {
             if(!url){
                 url = event.data;
             }
+            if(!url){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No url from event in getParameterFromEventUrl!  event is "+
+                    JSON.stringify(event), null, event)
+                return;
+            }
             if(!qm.urlHelper.isQuantiMoDoDomain(url)){
                 return;
             }
