@@ -6267,6 +6267,23 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
+        removeDuplicateNotifications:function(notifications){
+            var ids = [];
+            var toKeep = [];
+            notifications.forEach(function(n){
+                if(n.id !== n.trackingReminderNotificationId){
+                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
+                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
+                }
+                var id = n.trackingReminderNotificationId || n.id;
+                if(ids.indexOf(id) !== -1) {
+                    qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
+                }
+                toKeep.push(n);
+                ids.push(id);
+            });
+            return toKeep;
+        },
     },
     ratingImages: {
         positive: [
@@ -7178,6 +7195,7 @@ var qm = {
             qm.qmLog.info("Saving " + notifications.length + " notifications to local storage");
             qm.notifications.setLastNotificationsRefreshTime();
             qm.chrome.updateChromeBadge(notifications.length);
+            notifications = qm.reminderHelper.removeDuplicateNotifications(notifications);
             qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
         },
         deleteByProperty: function(localStorageItemName, propertyName, propertyValue){
@@ -7255,7 +7273,7 @@ var qm = {
                     qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return notifications;
+            return qm.reminderHelper.removeDuplicateNotifications(notifications);
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);
@@ -8498,17 +8516,12 @@ var qm = {
                     break;
                 }
             }
-            if(i < 0){
-                kvp[kvp.length] = [key, value].join('=');
-            }
-            //this will reload the page, it's likely better to store this until finished
+            if(i < 0){kvp[kvp.length] = [key, value].join('=');}
             document.location.search = kvp.join('&');
-            //var url = qm.urlHelper.addUrlQueryParamsToUrlString(params);  // Not working
-            //window.history.pushState({ path: url }, '', url);
         },
         getParam: function(parameterName, url, shouldDecode){
             if(Array.isArray(parameterName)){
-                for (let i = 0; i < parameterName.length; i++) {
+                for (i = 0; i < parameterName.length; i++) {
                     var one = parameterName[i];
                     var res = qm.urlHelper.getParam(one);
                     if(res !== null){return res;}
