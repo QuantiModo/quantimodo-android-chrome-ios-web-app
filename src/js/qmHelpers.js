@@ -8316,8 +8316,12 @@ var qm = {
         showQuestionToast: function(question, successMessage, callback){
             var Toast = Swal.mixin({
                 toast: true,
+                icon: "question",
                 position: 'top-end',
+                confirmButtonText: "Yes",
+                //cancelButtonText: "No",
                 showConfirmButton: true,
+                showCloseButton: true,
                 timer: 15000,
                 timerProgressBar: true,
                 onOpen: (toast) => {
@@ -8331,9 +8335,19 @@ var qm = {
             }).then(function(result){
                 if (result.value) {
                     callback(result);
-                    Toast.fire({
+                    Swal.update({
                         icon: 'success',
-                        title: successMessage
+                        title: successMessage,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        onOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
                     })
                 }
             })
