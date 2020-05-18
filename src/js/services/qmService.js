@@ -3118,62 +3118,56 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return false; // Don't close if clicking top variable name
             },
-            getVariableObjectActionSheet: function(variableName, variableObject){
-                if(!variableObject){
-                    variableObject = qm.storage.getUserVariableByName(variableName);
+            getVariableObjectActionSheet: function(variableName, variableObject, extraButtons){
+                if(!variableName || typeof variableName !== "string"){
+                    if(!variableObject){variableObject = variableName;}
+                    variableName = variableObject.variableName || variableObject.name;
                 }
-                if(!variableObject){
-                    window.qmLog.error("Could not get variable for action sheet");
-                    return;
-                }
-                if(!variableName){
-                    variableName = variableObject.name;
-                }
+                if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
+                if(!variableName){variableName = variableObject.variableName || variableObject.name;}
                 qmLog.info("Getting action sheet for variable " + variableName);
                 return function(){
                     qmLog.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
                     variableName = variableObject.displayName || variableObject.variableName || variableObject.name;
-                    var buttons = [
-                        qmService.actionSheets.addHtmlToActionSheetButton({
-                            icon: variableObject.ionIcon,
-                            text: qmService.getTruncatedVariableName(variableName)
-                        }, 'variableName'),
+                    var titleButton = qmService.actionSheets.addHtmlToActionSheetButton({
+                        icon: variableObject.ionIcon,
+                        text: qmService.getTruncatedVariableName(variableName)
+                    }, 'variableName');
+                    var buttons = [titleButton];
+                    if(extraButtons){
+                        if(!Array.isArray(extraButtons)){extraButtons = [extraButtons];}
+                        buttons = buttons.concat(extraButtons);
+                    }
+                    buttons = buttons.concat([
                         qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                         qmService.actionSheets.actionSheetButtons.reminderAdd
-                    ];
+                    ]);
                     var hasMeasurements = variableObject.userId && variableObject.numberOfRawMeasurements;
                     if(hasMeasurements){
                         buttons.push(qmService.actionSheets.actionSheetButtons.charts);
                         buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
                     }
-                    var hasMeasurementsOrIsAdmin = hasMeasurements ||
-                        (qm.getUser() && qm.getUser().administrator);
-                    if(hasMeasurementsOrIsAdmin){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);
-                    }
-                    if(variableObject){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.compare);
-                    }
+                    var u = qm.getUser();
+                    var hasMeasurementsOrIsAdmin = hasMeasurements || (u && u.administrator);
+                    if(hasMeasurementsOrIsAdmin){buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);}
+                    if(variableObject){buttons.push(qmService.actionSheets.actionSheetButtons.compare);}
                     if(variableObject && variableObject.outcome){
                         buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
                     }else{
                         buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
                     }
-                    if(variableObject.actionArray){
-                        for(var i = 0; i < variableObject.actionArray.length; i++){
-                            var actionArrayItem = variableObject.actionArray[i];
-                            qmLog.debug("Action array item: ", actionArrayItem);
-                            if(actionArrayItem.action !== "snooze"){
-                                buttons.push({
-                                    action: actionArrayItem,
-                                    id: actionArrayItem.callback,
-                                    text: '<span id="' + actionArrayItem.callback + '"><i class="icon ' +
-                                        ionIcons.recordMeasurement + '"></i>' + actionArrayItem.longTitle + '</span>'
-                                });
+                    var actions = variableObject.actionArray;
+                    if(actions){
+                        for(var i = 0; i < actions.length; i++){
+                            var item = actions[i];
+                            var id = item.callback || item.id;
+                            var text = item.longTitle || item.title || item.text;
+                            var ionIcon = item.ionIcon || ionIcons.recordMeasurement;
+                            qmLog.debug("Action array item: ", item);
+                            if(item.action === "track"){
+                                buttons.push({action: item, id: id, text: '<span id="' + id + '"><i class="icon ' + ionIcon + '"></i>' + text + '</span>'});
                             }
-                            if(buttons.length > 8){
-                                break;
-                            }
+                            if(buttons.length > 8){break;}
                         }
                     }
                     for(var j = 0; j < buttons.length; j++){
@@ -3199,11 +3193,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         };
                     }
                     var hideSheet = $ionicActionSheet.show(actionSheetParams);
-                    //$timeout(function() {hideSheet();}, 30000);
                 };
             },
-            showVariableObjectActionSheet: function(variableName, variableObject){
-                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variableName, variableObject);
+            showVariableObjectActionSheet: function(variableName, variableObject, extraButtons){
+                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variableName, variableObject, extraButtons);
                 return showActionSheet();
             },
             addActionArrayButtonsToActionSheet: function(actionArray, buttons){
@@ -3376,10 +3369,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 cache = params.cache;
                 params.cache = null;
             }
-            if(!qm.api.canWeMakeRequestYet('GET', route, options) && !params.force){
-                if(requestSpecificErrorHandler){requestSpecificErrorHandler("Too soon to make request");}
-                return;
-            }
             if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
                 var message = 'Not making request to ' + route + ' user because we are in the intro state';
                 qmLog.debug(message, null, options.stackTrace);
@@ -3440,13 +3429,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
             delete body.stackTrace;
-            if(!qm.api.canWeMakeRequestYet('POST', route, options)){
-                qmLog.error("Cannot make request to " + route + " yet!");
-                if(requestSpecificErrorHandler){
-                    requestSpecificErrorHandler();
-                }
-                return;
-            }
             qmService.navBar.setOfflineConnectionErrorShowing(false);
             var bodyString = JSON.stringify(body);
             if(!qmLog.isDebugMode()){
@@ -3709,7 +3691,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
             var options = {};
-            options.minimumSecondsBetweenRequests = 10;
             options.doNotSendToLogin = true;
             qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
         };
@@ -3885,8 +3866,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             qmService.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
-            qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler,
-                errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
+            qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler, errorHandler);
         };
         // skip tracking reminder
         qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
@@ -5174,23 +5154,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests, params){
+        qmService.refreshTrackingReminderNotifications = function(params){
             var deferred = $q.defer();
-            var options = {};
-            options.minimumSecondsBetweenRequests = 3;
-            if(minimumSecondsBetweenRequests){
-                options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
-                options.blockRequests = true;
-            }
-            if(!qm.api.canWeMakeRequestYet('GET', qm.apiPaths.trackingReminderNotificationsPast, options)){
-                deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
-                return deferred.promise;
-            }
             qm.notifications.postNotifications(function(){
                 var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
-                if(!params){
-                    params = {};
-                }
+                if(!params){params = {};}
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
                 params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance

@@ -99,6 +99,7 @@
                      ng-repeat="option in numericRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
                      ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
+                     title="{{option.numericValue}}/5"
                      ng-src="{{option.img}}">
             </div>
         </div>
@@ -109,6 +110,7 @@
                      ng-repeat="option in positiveRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
                      ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
+                     title="{{option.numericValue}}/5"
                      ng-src="{{option.img}}">
             </div>
         </div>
@@ -119,6 +121,7 @@
                      ng-repeat="option in negativeRatingOptions"
                      on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], option.numericValue, $event)"
                      ng-click="track(trackingReminderNotifications[0], option.numericValue, $event)"
+                     title="{{option.numericValue}}/5"
                      ng-src="{{option.img}}">
             </div>
         </div>

@@ -7,5 +7,11 @@
   },
   "ignorePaths": [
     "src/package.json"
+  ],
+  "packageRules": [
+    {
+      "packageNames": ["@bugsnag/js", "@bugsnag/plugin-express", "bugsnag", "bugsnag-sourcemaps"],
+      "extends": [":disableMajorUpdates"]
+    }
   ]
 }
