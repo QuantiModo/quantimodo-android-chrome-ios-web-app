@@ -70,41 +70,14 @@ angular.module('starter').controller('PhysicianCtrl', function($state, $scope, $
             qmService.showMaterialAlert("Error", error);
         });
     };
-    $scope.switchToPatientUser = function(user, newWindow){
-        qmService.showBasicLoader();
-        qmService.navBar.hideNavigationMenu();
-        var iframeUrl = "https://web.quantimo.do/#/app/history-all-category/Anything?accessToken=" + user.accessToken;
-        if(newWindow){
-            $scope.openUrl(iframeUrl);
-            return;
-        }
-        $scope.iframeUrl = $sce.trustAsResourceUrl(
-            iframeUrl
-        );
-        qmService.rootScope.setProperty(qm.items.patientUser, user, function(){
-            qmService.hideLoader();
-        });
+    $scope.switchToPatientInIFrame = function(user){
+        qmService.patient.switchToPatientInIFrame(user, $scope, $sce);
     };
-    $scope.switchBackFromPatientUser = function(){
-        qmService.rootScope.setProperty(qm.items.patientUser, null);
-        $scope.iframeUrl = null;
-        qmService.navBar.showNavigationMenu();
+    $scope.switchToPatientInNewTab = qm.patient.switchToPatientInNewTab;
+    $scope.switchBackFromPatient = function(){
+        qmService.patient.switchBackFromPatient($scope);
     };
-    $scope.sendEmail = function(subjectLine, emailAddress, emailBody){
-        if($rootScope.isMobile){
-            qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress);
-        }else{
-            qmService.sendWithMailTo(subjectLine, emailBody, emailAddress);
-        }
-    };
-    $scope.openEmbedPreview = function(){
-        function openInNewTab(url){
-            var win = window.open(url, '_blank');
-            win.focus();
-        }
-        openInNewTab('/qm-connect/fab-preview.html?clientId=' + $rootScope.appSettings.clientId +
-            "&previewUrl=" + $rootScope.appSettings.homepageUrl.replace('https://', '').replace('http://', ''));
-    };
+    $scope.sendEmail = qmService.sendEmail;
     $scope.addReminder = function(){
         configurationService.reminders.addReminder($state);
     };

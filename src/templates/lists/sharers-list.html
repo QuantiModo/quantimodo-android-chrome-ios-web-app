@@ -8,12 +8,12 @@
     <div ng-if="state.card && !state.card.hide" ng-include="'templates/cards/blue-card.html'" ng-model="state.card"></div>
     <md-list class="md-dense" flex>
         <md-list-item ng-repeat="clientUser in state.users" class="noright">
-            <img alt="{{ clientUser.displayName }}" 
-                ng-click="switchToPatientUser(clientUser)" 
+            <img alt="{{ clientUser.displayName }}"
+                ng-click="switchToPatientInNewTab(clientUser)"
                 style="cursor: pointer;"
-                ng-src="{{ clientUser.avatarImage }}" 
+                ng-src="{{ clientUser.avatarImage }}"
                 class="md-avatar"/>
-            <div class="md-list-item-text" ng-click="switchToPatientUser(clientUser)" style="cursor: pointer;">
+            <div class="md-list-item-text" ng-click="switchToPatientInNewTab(clientUser)" style="cursor: pointer;">
                 <h3>Switch to {{ clientUser.displayName }} </h3>
                 <md-tooltip md-direction="down">
                     User ID {{ clientUser.id }} {{ clientUser.userEmail }} (last active {{clientUser.lastActive}})

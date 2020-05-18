@@ -67,16 +67,18 @@ var qm = {
             if(qm.appMode.mode === 'development'){
                 return true;
             }
-            if(!qm.platform.getWindow()){
+            var win = qm.platform.getWindow();
+            if(!win){
                 return false;
             }
-            if(window.location.origin.indexOf('http://localhost:') !== -1){
+            var origin = window.location.origin;
+            if(origin.indexOf('http://localhost:') !== -1){
                 return true;
             }
-            if(window.location.origin.indexOf('https://dev-web.quantimo.do') !== -1){
+            if(origin.indexOf('https://dev-') === 0){
                 return true;
             }
-            return window.location.origin.indexOf('local.quantimo.do') !== -1;
+            return origin.indexOf('local.quantimo.do') !== -1;
         },
         isStaging: function(){
             if(!qm.platform.getWindow()){
@@ -1987,9 +1989,9 @@ var qm = {
         },
         hideDriftButton: function(){
             if(typeof drift === "undefined"){return;}
-            console.debug("called hide drift");
+            qm.qmLog.debug("called hide drift");
             drift.on('ready',function(api){
-                console.debug("hiding drift");
+                qm.qmLog.debug("hiding drift");
                 api.widget.hide();
             })
         },
@@ -1998,9 +2000,9 @@ var qm = {
                 qm.qmLog.error("drift not defined!");
                 return;
             }
-            console.debug("called show drift");
+            qm.qmLog.debug("called show drift");
             drift.on('ready',function(api){
-                console.debug("showing drift");
+                qm.qmLog.debug("showing drift");
                 api.widget.show();
             })
         },
@@ -2009,9 +2011,9 @@ var qm = {
                 qm.qmLog.error("drift not defined!");
                 return;
             }
-            console.debug("called open drift");
+            qm.qmLog.debug("called open drift");
             drift.on('ready',function(api){
-                console.debug("open drift");
+                qm.qmLog.debug("open drift");
                 api.sidebar.open(); // https://devdocs.drift.com/docs/conversation-sidebar
             })
         }
@@ -2256,19 +2258,19 @@ var qm = {
                     }
                     bravyIntentEntities.push({entity: bravyEntityName, id: dialogFlowIntentParameterEntity.name});
                 }
-                console.debug("bravyIntentEntities", bravyIntentEntities);
+                qm.qmLog.debug("bravyIntentEntities", bravyIntentEntities);
                 if(bravyIntentEntities.length){
                     bravy.addIntent(intentName, bravyIntentEntities);
                 }
             });
             bravy.addEntity(new Bravey.NumberEntityRecognizer("number"));
-            console.debug("Adding matches...");
+            qm.qmLog.debug("Adding matches...");
             var entities = qm.staticData.dialogAgent.entities;
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 if(entityName === "variableName"){
                     return;
                 }
-                console.debug("Adding sentences for " + entityName);
+                qm.qmLog.debug("Adding sentences for " + entityName);
                 var braveyEntity = new Bravey.StringEntityRecognizer(entityName);
                 var entries = entity.entries;
                 for(var i = 0; i < entries.length; i++){
@@ -2280,10 +2282,10 @@ var qm = {
                         continue;
                     }
                     var synonyms = entry.synonyms;
-                    console.debug("Adding synonyms for " + entry.value);
+                    qm.qmLog.debug("Adding synonyms for " + entry.value);
                     for(var j = 0; j < synonyms.length; j++){
                         var synonym = synonyms[j];
-                        console.debug("addMatch for " + synonym);
+                        qm.qmLog.debug("addMatch for " + synonym);
                         try{
                             braveyEntity.addMatch(entry.value, synonym);
                         }catch (error){
@@ -2291,12 +2293,12 @@ var qm = {
                         }
                     }
                 }
-                console.debug("braveyEntity", braveyEntity);
+                qm.qmLog.debug("braveyEntity", braveyEntity);
                 bravy.addEntity(braveyEntity);
             });
-            console.debug("Adding sentences...");
+            qm.qmLog.debug("Adding sentences...");
             qm.objectHelper.loopThroughProperties(intents, function(intentName, intent){
-                console.debug("Adding sentences for " + intentName);
+                qm.qmLog.debug("Adding sentences for " + intentName);
                 var userSaysSentences = intent.usersays;
                 if(!userSaysSentences){
                     qm.qmLog.error("No userSaysSentences in " + intentName + ": ", intent);
@@ -2315,12 +2317,12 @@ var qm = {
                             bravySentence += "{" + entityName + "}";
                         }
                     }
-                    console.debug("bravySentence", bravySentence);
+                    qm.qmLog.debug("bravySentence", bravySentence);
                     bravy.addDocument(bravySentence, intentName);
                 }
             });
             qm.dialogFlow.bravy = bravy;
-            console.debug("bravy", bravy);
+            qm.qmLog.debug("bravy", bravy);
             return bravy;
         },
         post: function(body, successHandler, errorHandler){
@@ -3307,7 +3309,7 @@ var qm = {
             if(appSettings){
                 return appSettings;
             }
-            console.debug("No app settings and no successHandler!"); // qm.qmLog here causes infinite loop
+            qm.qmLog.debug("No app settings and no successHandler!"); // qm.qmLog here causes infinite loop
             return null;
         }
         qm.appsManager.getAppSettingsLocallyOrFromApi(successHandler, errorHandler);
@@ -4276,16 +4278,17 @@ var qm = {
             return measurements;
         },
     },
-    manualTrackingVariableCategoryNames: [
+    manualTrackingVariableCategoryNames: [,
         'Emotions',
-        'Symptoms',
-        'Treatments',
+        'Environment',
         'Foods',
-        'Vital Signs',
+        'Goals',
+        'Miscellaneous',
         'Physical Activity',
         'Sleep',
-        'Miscellaneous',
-        'Environment'
+        'Symptoms',
+        'Treatments',
+        'Vital Signs'
     ],
     memory: {
         askForMemoryAnswer: function(memoryQuestionStatement){
@@ -5942,6 +5945,11 @@ var qm = {
             return null;
         }
     },
+    patient: {
+        switchToPatientInNewTab: function (user) {
+            qm.urlHelper.openUrlInNewTab(qm.urlHelper.getPatientHistoryUrl(user.accessToken));
+        }
+    },
     platform: {
         getWindow: function(){
             if(typeof window === "undefined"){
@@ -6556,7 +6564,7 @@ var qm = {
             var isChromeBrowser = qm.platform.browser.isChromeBrowser();
             if(isWebBrowser && !isChromeBrowser){
                 if(!qm.appMode.isTesting()){
-                    qm.qmLog.error("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
+                    qm.qmLog.debug("Speech only available on Chrome browser.  Current " + qm.platform.getPlatformAndBrowserString());
                 }
                 // TODO: Why is this necessary if we already check typeof speechSynthesis === "undefined"
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
@@ -8614,17 +8622,23 @@ var qm = {
             }
             return queryString;
         },
-        openUrlInNewTab: function(url, showLocation){
-            if(!qm.platform.getWindow()){
-                return false;
-            }
+        openUrlInNewTab: function(url){
+            if(!qm.platform.getWindow()){return false;}
             qm.qmLog.info("openUrlInNewTab: " + url);
-            showLocation = showLocation || 'yes';
-            //window.open(url, '_blank', 'location='+showLocation);
             window.open(url, '_blank');
         },
-        openUrl: function(url){
-            qm.urlHelper.goToUrl(url);
+        openUrl: function(url, showLocationBar, windowTarget){
+            showLocationBar = showLocationBar || "no";
+            windowTarget = windowTarget || '_blank';
+            if(typeof cordova !== "undefined"){
+                cordova.InAppBrowser.open(url, windowTarget, 'location=' + showLocationBar + ',toolbar=yes,clearcache=no,clearsessioncache=no');
+            }else{
+                if(qm.platform.isWeb()){
+                    window.open(url, windowTarget);  // Otherwise it opens weird popup instead of new tab
+                }else{
+                    window.open(url, windowTarget, 'location=' + showLocationBar + ',toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                }
+            }
         },
         getIonicUrlForPath: function(path){
             return qm.urlHelper.getIonicAppBaseUrl() + "index.html#/app/" + path;
@@ -8806,6 +8820,12 @@ var qm = {
                 url = url.replace(query, '') + query;
             }
             return url;
+        },
+        getPatientHistoryUrl: function(accessToken, subDomain){
+            subDomain = subDomain || 'patient';
+            var referrerClientId = qm.getAppSettings().clientId;
+            return "https://"+subDomain+".quantimo.do/#/app/history-all-category/Anything?accessToken=" + accessToken +
+                '&quantimodoClientId=' + referrerClientId;
         }
     },
     user: null,
@@ -9846,7 +9866,7 @@ var qm = {
                 storageBucket: "quantimo-do.appspot.com",
                 messagingSenderId: "1052648855194"
             };
-            console.debug("firebase.initializeApp(config)");
+            qm.qmLog.debug("firebase.initializeApp(config)");
             qm.firebase = firebase.initializeApp(config);
             return qm.firebase;
         },

@@ -1,6 +1,7 @@
 /* eslint-disable no-process-env */
 try {
-    var dotenv = require('dotenv').config({path: './secrets/.env'});
+    var dotenv = require('dotenv')
+    dotenv.config({path: './secrets/.env'});
 } catch (e) {
     console.error(e);
 }
@@ -30,15 +31,6 @@ var qmPlatform = {
         },
         setChrome: function(){
             qmPlatform.buildingFor.platform = qmPlatform.chrome;
-        },
-        setAndroid: function(){
-            qmPlatform.buildingFor.platform = qmPlatform.android;
-        },
-        setWeb: function(){
-            qmPlatform.buildingFor.platform = qmPlatform.web;
-        },
-        setIOS: function(){
-            qmPlatform.buildingFor.platform = qmPlatform.ios;
         },
         platform: null,
         web: function () {
@@ -368,22 +360,13 @@ var qmGit = {
     }
 };
 qmGit.setBranchName();
-var majorMinorVersionNumbers = '2.9.';
+var majorMinorVersionNumbers = '2.10.';
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
 var qmGulp = {
     chcp: {
         enabled: false,
-        loginBuildAndDeploy: function(callback){ // DOESN'T WORK
-            // loginAndBuild doesn't complete soon enough for ordova-hcp deploy to work.
-            // Have to use in sequence buildAndroidApp task to provide necessary delay
-            qmGulp.chcp.loginAndBuild(function(){
-                qmGulp.chcp.outputCordovaHcpJson();
-                qmLog.info("For some reason, you have to run cordova-hcp deploy manually in the console instead of in gulp task");
-                execute("cordova-hcp deploy", callback, false, true);  // Causes stdout maxBuffer exceeded error
-            });
-        },
         loginAndBuild: function(callback){
             /** @namespace qm.getAppSettings().additionalSettings.appIds.appleId */
             qmGulp.staticData.chcp = {
@@ -501,9 +484,6 @@ var qmGulp = {
                 return false;
             }
             return true;
-        },
-        setDoNotMinify: function(value){
-            qmGulp.buildSettings.doNotMinify = value;
         },
         buildDebug: function () {
             if(isTruthy(process.env.BUILD_ANDROID_RELEASE)){return false;}
@@ -709,6 +689,7 @@ var qmGulp = {
         if(!process.env.GITHUB_ACCESS_TOKEN){
             throw "Please set GITHUB_ACCESS_TOKEN env in order to update Github statuses";
         }
+        // noinspection JSUnusedLocalSymbols,JSUnusedLocalSymbols
         var options = {
             // Required options: git_token, git_repo
             // refer to https://help.github.com/articles/creating-an-access-token-for-command-line-use/
@@ -872,6 +853,7 @@ function convertFilePathToPropertyName(filePath) {
 }
 function getS3AppUploadsRelativePath(relative_filename) {
     var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+    // noinspection JSUnusedLocalSymbols
     var numbers = qmGulp.buildInfoHelper.buildInfo.versionNumbers;
     if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
         var slug = qmLog.slugify(qmGit.getBranchName());
@@ -908,9 +890,11 @@ function uploadToS3(filePath) {
         qmLog.info("No S3 credentials to upload " + filePath);
         return;
     }
+    // noinspection JSUnusedLocalSymbols
     fs.stat(filePath, function (err, stat) {
         if (!err) {
             qmLog.info("Uploading " + filePath + " to S3...");
+            // noinspection JSUnusedLocalSymbols
             return gulp.src([filePath]).pipe(s3({
                 Bucket: 'quantimodo',
                 ACL: 'public-read',
@@ -945,6 +929,7 @@ function execute(command, callback, suppressErrors, lotsOfOutput) {
         ps.stderr.on('data', function (data) {qmLog.error(command + '  stderr: ' + data);});
         ps.on('close', function (code) {if (code !== 0) {qmLog.error(command + ' process exited with code ' + code);}});
     } else {
+        // noinspection JSUnusedLocalSymbols
         var my_child_process = exec(command, function (error, stdout, stderr) {
             if (error !== null) {if (suppressErrors) {qmLog.info('ERROR: exec ' + error);} else {qmLog.error('ERROR: exec ' + error);}}
             callback(error, stdout);
@@ -963,6 +948,7 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath + '" -d -a -out "' + decryptedFilePath + '"';
     execute(cmd, function (error) {
         if (error !== null) {qmLog.error('ERROR: DECRYPTING: ' + error);} else {qmLog.info('DECRYPTED to ' + decryptedFilePath);}
+        // noinspection JSUnusedLocalSymbols
         fs.stat(decryptedFilePath, function (err, stat) {
             if (!err) {
                 qmLog.info(decryptedFilePath + ' exists');
@@ -1011,6 +997,7 @@ function zipAndUploadToS3(folderPath, zipFileName) {
     var s3Path = getS3AppUploadsRelativePath(folderPath + '.zip');
     qmLog.info("Zipping " + folderPath + " to " + s3Path);
     qmLog.debug('If this fails, make sure there are no symlinks.');
+    // noinspection JSUnusedLocalSymbols
     return gulp.src([folderPath + '/**/*'])
         .pipe(zip(zipFileName))
         .pipe(s3({
@@ -1034,8 +1021,9 @@ function resizeIcon(callback, resolution, noAlpha) {
     }
     execute(command, function (error) {
         if (error) {
-            qmLog.info("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
-            qmLog.info('ERROR: ' + JSON.stringify(error));
+            qmLog.error('ERROR: ' + JSON.stringify(error));
+            throw "Please install imagemagick in order to resize icons.  The windows version is here: "+
+                "https://sourceforge.net/projects/imagemagick/?source=typ_redirect";
         }
         copyFiles([outputIconPath], paths.src.icons);
         uploadAppImagesToS3(outputIconPath);
@@ -1044,6 +1032,7 @@ function resizeIcon(callback, resolution, noAlpha) {
 }
 function cordovaResources(callback){
     resizeIcon1024(function(){
+        // noinspection JSUnusedLocalSymbols
         execute("cordova-res", function (error) {
             callback();
         });
@@ -1158,6 +1147,7 @@ function getAppDesignerUrl() {
     return 'https://builder.quantimo.do/#/app/configuration?clientId=' + qmGulp.getClientIdFromStaticData();
 }
 function verifyExistenceOfFile(filePath) {
+    // noinspection JSUnusedLocalSymbols
     return fs.stat(filePath, function (err, stat) {
         if (!err) {qmLog.info(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
     });
@@ -1393,6 +1383,7 @@ var chromeScripts = [
     'lib/underscore/underscore-min.js'
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
+// noinspection JSUnusedLocalSymbols
 function deleteFile(path){
     if (fs.existsSync(path)) {
         return cleanFiles([path]);
@@ -1424,27 +1415,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'https://*.intercom.com/*',
             'https://*.intercom.io/*',
             'https://*.googleapis.com/*',
-            'https://*.google-analytics.com/*',
-            'webRequest',
-            'webRequestBlocking',
-            'http://www.amazon.com/*',
-            'https://www.amazon.com/*',
-            'http://www.amazon.ca/*',
-            'https://www.amazon.ca/*',
-            'http://www.amazon.co.uk/*',
-            'https://www.amazon.co.uk/*',
-            'http://www.amazon.de/*',
-            'https://www.amazon.de/*',
-            'http://www.amazon.es/*',
-            'https://www.amazon.es/*',
-            'http://www.amazon.fr/*',
-            'https://www.amazon.fr/*',
-            'http://www.amazon.it/*',
-            'https://www.amazon.it/*',
-            'http://www.amazon.co.jp/*',
-            'https://www.amazon.co.jp/*',
-            'http://www.amazon.cn/*',
-            'https://www.amazon.cn/*'
+            'https://*.google-analytics.com/*'
         ],
         'browser_action': {
             'default_icon':  'img/icons/icon_700.png',
@@ -1455,6 +1426,30 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'persistent': true
         }
     };
+    var amazonScraperPermissions = [
+        'webRequest',
+        'webRequestBlocking',
+        'http://www.amazon.com/*',
+        'https://www.amazon.com/*',
+        'http://www.amazon.ca/*',
+        'https://www.amazon.ca/*',
+        'http://www.amazon.co.uk/*',
+        'https://www.amazon.co.uk/*',
+        'http://www.amazon.de/*',
+        'https://www.amazon.de/*',
+        'http://www.amazon.es/*',
+        'https://www.amazon.es/*',
+        'http://www.amazon.fr/*',
+        'https://www.amazon.fr/*',
+        'http://www.amazon.it/*',
+        'https://www.amazon.it/*',
+        'http://www.amazon.co.jp/*',
+        'https://www.amazon.co.jp/*',
+        'http://www.amazon.cn/*',
+        'https://www.amazon.cn/*'
+    ];
+    var useAmazonOrderScraper = false;
+    if(useAmazonOrderScraper){chromeManifestObject.permssions = chromeManifestObject.permissions.concat(amazonScraperPermissions);}
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
     var chromeManifestString = JSON.stringify(chromeManifestObject, null, 2);
     qmLog.info("Creating chrome manifest at " + outputPath);
@@ -1532,7 +1527,7 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
 }
 gulp.task('createSuccessFile', function () {
     writeToFile('lastCommitBuilt', qmGit.getCurrentGitCommitSha());
-    return fs.writeFileSync('success');
+    return fs.writeFileSync('success', qmGit.getCurrentGitCommitSha());
 });
 gulp.task('deleteSuccessFile', function () {
     if(qmPlatform.buildingFor.ios()){
@@ -1585,10 +1580,12 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
-gulp.task('downloadSplashScreen', [], function(){
+gulp.task('downloadSplashScreen', ['getAppConfigs'], function(){
     /** @namespace qm.getAppSettings().additionalSettings.appImages.splashScreen */
-    var splashScreen = (qmGulp.getAdditionalSettings().appImages.splashScreen) ? qmGulp.getAdditionalSettings().appImages.splashScreen : qmGulp.getAppSettings().splashScreen;
-    return downloadFile(splashScreen, 'splash.png', "./resources");
+    var images = qmGulp.getAdditionalSettings().appImages;
+    var splash = (images.splashScreen) ? images.splashScreen : qmGulp.getAppSettings().splashScreen;
+    splash = splash.replace('https://raw.githubusercontent.com/mikepsinn/quantimodo-images/master', 'https://static.quantimo.do/img');
+    return downloadFile(splash, 'splash.png', "./resources");
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
@@ -2118,10 +2115,11 @@ gulp.task('git-check', function (done) {
     done();
 });
 function executeSynchronously(cmd, catchExceptions){
-    const execSync = require('child_process').execSync;
+    var execSync = require('child_process').execSync;
     qmLog.info(cmd);
     try {
-        let res = execSync(cmd);
+        // noinspection JSUnusedLocalSymbols
+        var res = execSync(cmd);
         //qmLog.info(res);
     } catch (error) {
         if(catchExceptions){
@@ -2131,6 +2129,7 @@ function executeSynchronously(cmd, catchExceptions){
         }
     }
 }
+// noinspection JSUnusedLocalSymbols
 gulp.task('git-create-feature-for-each-changed-file', function (done) {
     var gitModified = require('gulp-gitmodified');
     var i = 0;
@@ -2145,10 +2144,10 @@ gulp.task('git-create-feature-for-each-changed-file', function (done) {
             fileName = fileName[fileName.length - 1];
             console.log('Modified file:', filePath);
             var feature = 'feature/'+qmLog.slugify(fileName);
-            executeSynchronously(`git checkout -b ${feature} develop`, true);
-            executeSynchronously(`git add ${filePath}`, true);
-            executeSynchronously(`git commit -m ${fileName}`);
-            executeSynchronously(`git push origin ${feature}`);
+            executeSynchronously("git checkout -b "+feature+" develop", true);
+            executeSynchronously("git add "+filePath, true);
+            executeSynchronously("git commit -m "+fileName);
+            executeSynchronously("git push origin "+feature);
             //if(cb && i === files.length){cb();}
         });
 });
@@ -2225,6 +2224,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .on('error', function (err) {
             var gutil = require('gulp-util');
             gutil.log(gutil.colors.red('[Error]'), err.toString());
+            process.exit(1)
         })
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
@@ -2793,10 +2793,12 @@ gulp.task('uncommentCordovaJsInIndexHtml', function () {
     return replaceTextInFiles(['src/index.html'], commentedCordovaScript, uncommentedCordovaScript);
 });
 gulp.task('uncommentBugsnagInIndexHtml', function () {
-    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/bugsnag/dist/bugsnag.js"></script>-->', '<script src="lib/bugsnag/dist/bugsnag.js"></script>');
+    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/bugsnag/dist/bugsnag.js"></script>-->',
+        '<script src="lib/bugsnag/dist/bugsnag.js"></script>');
 });
 gulp.task('uncommentOpbeatInIndexHtml', function () {
-    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->', '<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>');
+    return replaceTextInFiles(['src/index.html'], '<!--<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>-->',
+        '<script src="lib/opbeat-angular/opbeat-angular.min.js"></script>');
 });
 gulp.task('commentOrUncommentCordovaJs', function () {
     if(process.env.BUILD_IOS || process.env.BUILD_ANDROID){
@@ -2924,7 +2926,9 @@ gulp.task('copyMaterialIconsToWww', [], function () {
     return copyFiles('src/lib/angular-material-icons/*', 'www/lib/angular-material-icons');
 });
 gulp.task('copySrcToWwwExceptJsLibrariesAndConfigs', [], function () {
-    if(true || !qmGulp.buildSettings.weShouldMinify()){ // I think we should always do this?  When are templates copied otherwise?
+    var minify = true;
+    //var minify = qmGulp.buildSettings.weShouldMinify(); // I think we should always do this?  When are templates copied otherwise?
+    if(minify){
         return copyFiles('src/**/*', 'www', [
             '!src/chcp*',
             '!src/configs',
@@ -2947,6 +2951,7 @@ gulp.task('_copy-src-js-to-www', [], function () {
 });
 var chromeBackgroundJsFilename = 'qmChromeBackground.js';
 gulp.task('chromeBackgroundJS', [], function () {
+    // noinspection JSUnusedLocalSymbols
     var uglify      = require('gulp-uglify');
     var concat = require('gulp-concat');
     var base = './src/';

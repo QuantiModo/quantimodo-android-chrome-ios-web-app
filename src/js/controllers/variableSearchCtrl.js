@@ -132,8 +132,9 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 qmService.goToState($scope.state.nextState, $scope.state);
             }
         };
-        $scope.goToStateFromVariableSearch = function(stateName){
-            qmService.goToState(stateName, $stateParams);
+        $scope.goToStateFromVariableSearch = function(stateName, params){
+            if(!params){params = $stateParams;}
+            qmService.goToState(stateName, params);
         };
         // when a query is searched in the search box
         function showAddVariableButtonIfNecessary(variables){
@@ -318,6 +319,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             return null;
         }
         function getVariableCategoryName(){
+            var fromUrl = qm.urlHelper.getParam('variableCategoryName');
+            if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;

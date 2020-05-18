@@ -421,7 +421,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 };
                 qmService.showVariableSearchDialog(dialogParameters, selectVariable, null, ev);
             };
-            $scope.switchToPatient = qmService.switchToPatient;
+            $scope.switchToPatientInCurrentApp = qmService.patient.switchToPatientInCurrentApp;
             $scope.trustAsHtml = function(string){
                 return $sce.trustAsHtml(string);
             };

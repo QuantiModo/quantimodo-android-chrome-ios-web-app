@@ -13,17 +13,21 @@
     <div id="variablePropertiesCard" class="card variable-settings">
         <div class="list">
             <div class="item item-divider ng-binding">Variable Properties</div>
-            <!--FIXME Use this once variable aliasing is implemented-->
-            <!--
-                <div class="item item-input">
-                    <span class="input-label left-span">Variable Alias:</span>
-                    <span class="right-span"><input class="right-input" type="text" ng-model="state.userVariableAlias"></span>
-                </div>
-            -->
             <label class="item item-content" style="padding: 6px 10px 5px 16px;">
                 <span class="input-label left-text">Variable Name</span>
-                <span class="input-label right-text " id="variableName">{{variableName}}</span>
+                <span class="input-label right-text " id="variableName">
+                    {{variableName}}
+                </span>
             </label>
+            <div class="item item-input">
+                <span class="input-label left-span">Custom Display Name</span>
+                <span class="right-span">
+                    <input class="right-input"
+                           placeholder="Enter Optional Alias"
+                           type="text"
+                           ng-model="state.variableObject.alias">
+                </span>
+            </div>
         </div>
     </div>
     <md-card ng-cloak ng-show="state.variableObject">
@@ -78,7 +82,7 @@
                   ng-show="state.variableObject.joinedUserTagVariables && state.variableObject.joinedUserTagVariables.length"
                   md-contact-name="name"
                   md-contact-image="pngUrl"
-                  md-on-remove="deleteJoinedVariable($chip)" 
+                  md-on-remove="deleteJoinedVariable($chip)"
                   md-on-select="deleteJoinedVariable($chip)">
             <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
         </md-chips>
@@ -97,9 +101,9 @@
             <md-chips ng-model="state.variableObject.joinedCommonTagVariables"
                       md-contact-name="name"
                       md-contact-image="pngUrl"
-                      name="joinedCommonTagVariables" 
+                      name="joinedCommonTagVariables"
                       readonly="false"
-                      md-on-remove="deleteJoinedVariable($chip)" 
+                      md-on-remove="deleteJoinedVariable($chip)"
                       >
                 <md-chip-template>
                     <em>{{$chip.name}}</em>
@@ -138,9 +142,9 @@
             <md-chips ng-model="state.variableObject.parentCommonTagVariables"
                       md-contact-name="name"
                       md-contact-image="pngUrl"
-                      name="parentCommonTagVariables" 
+                      name="parentCommonTagVariables"
                       readonly="false"
-                      md-on-remove="deleteTagVariable($chip)" 
+                      md-on-remove="deleteTagVariable($chip)"
                       >
                 <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
             </md-chips>
@@ -159,7 +163,7 @@
                   md-contact-name="name"
                   md-contact-image="pngUrl"
                   ng-show="state.variableObject.childUserTagVariables && state.variableObject.childUserTagVariables.length"
-                  md-on-remove="deleteTaggedVariable($chip)" 
+                  md-on-remove="deleteTaggedVariable($chip)"
                   md-on-select="editTagged($chip)">
             <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
         </md-chips>
@@ -179,7 +183,7 @@
                       md-contact-name="name"
                       md-contact-image="pngUrl"
                       readonly="false"
-                      md-on-remove="deleteTaggedVariable($chip)" 
+                      md-on-remove="deleteTaggedVariable($chip)"
                       >
                 <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
             </md-chips>
@@ -200,7 +204,7 @@
                   ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
                   md-contact-name="tagDisplayText"
                   md-contact-image="pngUrl"
-                  md-on-remove="deleteTagVariable($chip)" 
+                  md-on-remove="deleteTagVariable($chip)"
                   md-on-select="editTag($chip)">
             <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
         </md-chips>
@@ -218,9 +222,9 @@
             <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
             <md-chips ng-model="state.variableObject.ingredientCommonTagVariables"
                       md-contact-name="tagDisplayText" md-contact-image="pngUrl"
-                      name="ingredientCommonTagVariables" 
+                      name="ingredientCommonTagVariables"
                       readonly="false"
-                      md-on-remove="deleteTagVariable($chip)" 
+                      md-on-remove="deleteTagVariable($chip)"
                       >
                 <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
             </md-chips>
@@ -240,7 +244,7 @@
                   ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
                   md-contact-name="tagDisplayText"
                   md-contact-image="pngUrl"
-                  md-on-remove="deleteTaggedVariable($chip)" 
+                  md-on-remove="deleteTaggedVariable($chip)"
                   md-on-select="editTagged($chip)">
             <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
         </md-chips>
@@ -259,9 +263,9 @@
             <md-chips ng-model="state.variableObject.ingredientOfCommonTagVariables"
                       md-contact-name="tagDisplayText"
                       md-contact-image="pngUrl"
-                      name="ingredientOfCommonTagVariables" 
+                      name="ingredientOfCommonTagVariables"
                       readonly="false"
-                      md-on-remove="deleteTaggedVariable($chip)" 
+                      md-on-remove="deleteTaggedVariable($chip)"
                       >
                 <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
             </md-chips>
